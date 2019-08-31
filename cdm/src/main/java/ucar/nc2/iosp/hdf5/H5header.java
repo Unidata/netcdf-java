@@ -117,6 +117,7 @@ public class H5header extends NCheader {
   private java.text.SimpleDateFormat hdfDateParser;
 
   private java.io.PrintWriter debugOut = null;
+  private boolean mustClose;
   private MemTracker memTracker;
 
   H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) {
@@ -134,12 +135,14 @@ public class H5header extends NCheader {
   }
 
   public void read(java.io.PrintWriter debugPS) throws IOException {
-    if (debugPS != null)
+    if (debugPS != null) {
       debugOut = debugPS;
-    else if (debug1 || debugContinueMessage || debugCreationOrder || debugDetail || debugDimensionScales
+    } else if (debug1 || debugContinueMessage || debugCreationOrder || debugDetail || debugDimensionScales
         || debugGroupBtree || debugHardLink || debugHeap || debugPos || debugReference || debugTracker || debugV
-        || debugSoftLink || warnings)
+        || debugSoftLink || warnings) {
       debugOut = new PrintWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
+      mustClose = true;
+    }
 
     long actualSize = raf.length();
 
@@ -192,19 +195,16 @@ public class H5header extends NCheader {
     if (allSharedDimensions)
       isNetcdf4 = true;
 
-    /*
-     * if (debugReference) {
-     * log.debug("DataObjects");
-     * for (DataObject ob : addressMap.values())
-     * log.debug("  " + ob.name + " address= " + ob.address + " filePos= " + getFileOffset(ob.address));
-     * }
-     */
     if (debugTracker) {
       Formatter f = new Formatter();
       memTracker.report(f);
       log.debug(f.toString());
     }
-    debugOut = null;
+
+    if (mustClose) {
+      debugOut.close();
+      debugOut = null;
+    }
   }
 
   private void readSuperBlock1(long superblockStart, byte versionSB) throws IOException {
@@ -645,25 +645,19 @@ public class H5header extends NCheader {
           if (facade.dobj.mds.ndims > 1)
             facade.is2DCoordinate = true;
 
-          /*
-           * old way
-           * findNetcdf4DimidAttribute(facade);
-           * if (facade.dobj.mds.ndims == 1) { // 1D dimension scale
-           * // create a dimension
-           * facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0],
-           * facade.dobj.mds.maxLength[0] == -1);
-           * if (! h5iosp.includeOriginalAttributes) iter.remove();
-           * if (debugDimensionScales)
-           * System.out.printf("Found dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
-           * } else { // multiD dimension scale
-           * int dimIndex = findCoordinateDimensionIndex(facade, h5group);
-           * addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex],
-           * facade.dobj.mds.maxLength[dimIndex] == -1);
-           * if (! h5iosp.includeOriginalAttributes) iter.remove();
-           * if (debugDimensionScales)
-           * System.out.printf("Found multidim dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getFullName(),
-           * matt);
-           * }
+          /* old way
+            findNetcdf4DimidAttribute(facade);
+            if (facade.dobj.mds.ndims == 1) { // 1D dimension scale
+              // create a dimension
+              facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0],
+              facade.dobj.mds.maxLength[0] == -1);
+              if (! h5iosp.includeOriginalAttributes) iter.remove();
+            } else { // multiD dimension scale
+              int dimIndex = findCoordinateDimensionIndex(facade, h5group);
+              addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex],
+              facade.dobj.mds.maxLength[dimIndex] == -1);
+              if (!h5iosp.includeOriginalAttributes) iter.remove();
+            }
            */
 
         }
@@ -1001,9 +995,6 @@ public class H5header extends NCheader {
       else
         return new Attribute(matt.name, dtype);
     }
-
-    // if (matt.name.equals("DIMENSION_LIST"))
-    // System.out.printf("HEY%n");
 
     Array attData;
     try {
@@ -4724,7 +4715,6 @@ public class H5header extends NCheader {
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
-    // if (H5iosp.debugHeapStrings) System.out.printf(" readHeapString ho=%s%n", ho);
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
   }
@@ -4900,7 +4890,6 @@ public class H5header extends NCheader {
         int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
         countBytes += dsize + 16;
 
-        // System.out.printf("%d heapId=%d dataSize=%d countBytes=%d%n", count, o.id, o.dataSize, countBytes);
         if (o.id == 0)
           break; // ?? look
         if (o.dataSize < 0)

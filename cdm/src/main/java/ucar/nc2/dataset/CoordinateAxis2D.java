@@ -72,8 +72,6 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
     if (data.getRank() != 2)
       throw new IllegalArgumentException("must be 2D");
-    if (debug)
-      System.out.printf("Coordinate2D read%n");
 
     coords = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, data.getShape(), data.get1DJavaArray(DataType.DOUBLE));
 

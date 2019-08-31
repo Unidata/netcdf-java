@@ -7,11 +7,14 @@ package ucar.nc2.stream;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by rmay on 8/10/15.
  */
 public class NcStreamCompression {
+  private static Logger logger = LoggerFactory.getLogger(NcStreamCompression.class);
   NcStreamProto.Compress type;
   Object compressInfo;
 
@@ -47,7 +50,7 @@ public class NcStreamCompression {
         return new NcStreamCompressedOutputStream(out, bufferSize, level);
 
       default:
-        System.out.printf(" Unknown compression type %s. Defaulting to none.%n", type);
+        logger.info(" Unknown compression type {}. Defaulting to none", type);
 
         // In the case of no compression, go ahead and write the block
         // size so that the stream is ready for data

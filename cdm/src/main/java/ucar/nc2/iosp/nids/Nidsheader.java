@@ -230,8 +230,6 @@ class Nidsheader {
 
   ucar.unidata.io.RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
-  // private PrintStream out = System.out;
-  // private Vinfo myInfo;
   private String cmemo, ctilt, ctitle, cunit, cname;
 
   public void setProperty(String name, String value) {}
@@ -3367,8 +3365,6 @@ class Nidsheader {
       try {
         resultLength = inflater.inflate(uncomp, offset, 4000);
       } catch (DataFormatException ex) {
-        // System.out.println("ERROR on inflation "+ex.getMessage());
-        // ex.printStackTrace();
         log.error("nids Inflater", ex);
         throw new IOException(ex.getMessage(), ex);
       }

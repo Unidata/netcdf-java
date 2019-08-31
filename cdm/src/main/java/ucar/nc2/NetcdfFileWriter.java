@@ -615,7 +615,6 @@ public class NetcdfFileWriter implements Closeable {
     long size = v.getSize() * v.getElementSize();
     if (version == Version.netcdf3 && size > N3iosp.MAX_VARSIZE)
       throw new IllegalArgumentException("Variable size in bytes " + size + " may not exceed " + N3iosp.MAX_VARSIZE);
-    // System.out.printf("Variable size in bytes " + size + " may not exceed " + N3iosp.MAX_VARSIZE);
 
     ncfile.addVariable(g, v);
     return v;
@@ -710,7 +709,6 @@ public class NetcdfFileWriter implements Closeable {
       String err = "No data found for Variable " + stringVar.getShortName()
           + ". Cannot determine the lentgh of the new CHAR variable.";
       log.error(err);
-      System.out.println(err);
     }
 
     return addStringVariable(g, stringVar.getShortName(), dims, max_strlen);
@@ -952,9 +950,6 @@ public class NetcdfFileWriter implements Closeable {
         log.warn("rewrite unable to delete {}", tmpFile.getPath());
     }
     if (!prevFile.renameTo(tmpFile)) {
-      System.out
-          .println(prevFile.getPath() + " prevFile.exists " + prevFile.exists() + " canRead = " + prevFile.canRead());
-      System.out.println(tmpFile.getPath() + " tmpFile.exists " + tmpFile.exists() + " canWrite " + tmpFile.canWrite());
       throw new RuntimeException("Cant rename " + prevFile.getAbsolutePath() + " to " + tmpFile.getAbsolutePath());
     }
 
@@ -1006,7 +1001,6 @@ public class NetcdfFileWriter implements Closeable {
       } else {
         String message = "Cannot find variable " + oldVarName + " to copy to new file.";
         log.warn(message);
-        System.out.println(message);
       }
     }
 

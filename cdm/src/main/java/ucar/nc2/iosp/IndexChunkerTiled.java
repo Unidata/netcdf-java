@@ -78,61 +78,11 @@ public class IndexChunkerTiled {
       wantStride *= wr.length();
     }
 
-    /*
-     * the origin can be handled by adding to the startPos
-     * long fileOffset = 0; // offset in file
-     * for (Dim dim : dimList) {
-     * int d = dim.intersect.first() - dim.data.first();
-     * if (d > 0) fileOffset += elemSize * dim.dataStride * d;
-     * }
-     * this.startPos = startFilePos + fileOffset;
-     */
-
     // the offset in the result Array of this piece of it
     startDestElem = wantSection.offset(intersect);
     startSrcElem = dataSection.offset(intersect);
     if (debugStartingElems)
       System.out.println(" startDestElem=" + startDestElem + " startSrcElem=" + startSrcElem);
-
-    /*
-     * for (Dim dim : dimList) {
-     * int d = dim.intersect.first() - dim.want.first();
-     * if (d > 0) startElem += dim.wantStride * d;
-     * }
-     */
-
-
-    // LOOK : not merging inner dimensions
-    /*
-     * merge contiguous inner dimensions for efficiency
-     * if (debugMerge) System.out.println("RegularSectionLayout= " + this);
-     * 
-     * // count how many merge dimensions
-     * int merge = 0;
-     * for (int i = 0; i < dimList.size()-1; i++) {
-     * Dim elem = dimList.get(i);
-     * if (elem.want.stride() != 1) break;
-     * 
-     * if (i > 0) {
-     * Dim prevElem = dimList.get(i-1);
-     * if (prevElem.want.length() != prevElem.intersect.length()) break;
-     * if (prevElem.data.length() != prevElem.intersect.length()) break;
-     * }
-     * merge++;
-     * }
-     * 
-     * // merge the dimensions
-     * for (int i = 0; i < merge; i++) {
-     * Dim elem = dimList.get(i);
-     * Dim elem2 = dimList.get(i + 1);
-     * elem2.dataStride *= elem.dataStride;
-     * elem2.wantStride *= elem.wantStride;
-     * if (debugMerge) System.out.println(" ----" + this);
-     * }
-     * 
-     * // delete merged
-     * dimList = dimList.subList(merge, varRank);
-     */
 
     // how many elements can we do at a time?
     if (varRank == 0)

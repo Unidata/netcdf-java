@@ -33,7 +33,7 @@ public class BufrDataProcess {
   public BufrDataProcess(String filename, OutputStream os, FileFilter ff) throws IOException {
     File f = new File(filename);
     if (!f.exists()) {
-      System.out.println(filename + " does not exist");
+      out.println(filename + " does not exist");
       return;
     }
 
@@ -50,7 +50,7 @@ public class BufrDataProcess {
   public int processAllInDir(File dir, OutputStream os, FileFilter ff, Counter gtotal) throws IOException {
     int nmess = 0;
 
-    System.out.println("---------------Reading directory " + dir.getPath());
+    out.println("---------------Reading directory " + dir.getPath());
     File[] allFiles = dir.listFiles();
 
     if (allFiles == null)
@@ -118,7 +118,7 @@ public class BufrDataProcess {
           total.add(counter);
 
         } catch (Exception e) {
-          System.out.printf("  BARF:%s on %s%n", e.getMessage(), m.getHeader());
+          out.printf("  BARF:%s on %s%n", e.getMessage(), m.getHeader());
           indent.setIndentLevel(0);
         }
       }

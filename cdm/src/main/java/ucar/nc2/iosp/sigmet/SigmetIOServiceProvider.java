@@ -13,6 +13,8 @@ import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Range;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
@@ -75,6 +77,7 @@ import ucar.unidata.io.RandomAccessFile;
  */
 
 public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
+  private static Logger logger = LoggerFactory.getLogger(SigmetIOServiceProvider.class);
   private ArrayList<Variable> varList = null;
   private int[] tsu_sec = null;
   private int[] sweep_bins = null;
@@ -113,7 +116,7 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       raf.readShort(data, 0, 13);
       return (data[0] == (short) 27 && data[6] == (short) 26 && data[12] == (short) 15);
     } catch (IOException ioe) {
-      System.out.println("In isValidFile(): " + ioe.toString());
+      logger.info("In isValidFile(): " + ioe.toString());
       return false;
     }
   }
@@ -197,18 +200,17 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
       recHdr1.put("radar_height", radar_height);
       recHdr1.put("radar_alt", radar_alt);
       recHdr1.put("step", step);
-      recHdr1.put("bins", bins); // System.out.println(" bins="+bins);
-      recHdr1.put("num_rays", num_rays); // System.out.println(" rays="+num_rays);
-      recHdr1.put("nparams", nparams);// System.out.println(" nparams="+nparams);
+      recHdr1.put("bins", bins);
+      recHdr1.put("num_rays", num_rays);
+      recHdr1.put("nparams", nparams);
       recHdr1.put("multiprf", multiprf);
-      recHdr1.put("number_sweeps", number_sweeps); // System.out.println("IN HDR: number_sweeps="+number_sweeps);
+      recHdr1.put("number_sweeps", number_sweeps);
       recHdr1.put("year", year);
       recHdr1.put("month", month);
       recHdr1.put("day", day);
       recHdr1.put("base_time", base_time);
     } catch (Exception e) {
-      System.out.println(e.toString());
-      e.printStackTrace();
+      logger.warn("readRecordsHdr", e);
     }
     return recHdr1;
   }
@@ -220,14 +222,13 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     java.util.Map<String, String> hdrNames = new java.util.HashMap<>();
     try {
       raf.seek(6288);
-      String stnName = raf.readString(16); // System.out.println(" stnName="+stnName.trim());
+      String stnName = raf.readString(16);
       raf.seek(6306);
       String stnName_util = raf.readString(16);
       hdrNames.put("StationName", stnName.trim());
       hdrNames.put("StationName_SetupUtility", stnName_util.trim());
     } catch (Exception e) {
-      System.out.println(e.toString());
-      e.printStackTrace();
+      logger.warn("readStnNames", e);
     }
     return hdrNames;
   }
@@ -255,19 +256,18 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
     String stnName = hdrNames.get("StationName");
     String stnName_util = hdrNames.get("StationName_SetupUtility");
-    float radar_lat = recHdr.get("radar_lat").floatValue(); // System.out.println("rad_lat="+radar_lat);
-    float radar_lon = recHdr.get("radar_lon").floatValue(); // System.out.println("rad_lon="+radar_lon);
-    short ground_height = recHdr.get("ground_height").shortValue(); // System.out.println("ground_H="+ground_height);
-    short radar_height = recHdr.get("radar_height").shortValue(); // System.out.println("radar_H="+radar_height);
-    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100; // System.out.println("rad_alt="+radar_alt);
-    short num_rays = recHdr.get("num_rays").shortValue(); // System.out.println("num_rays="+num_rays);
-    short bins = recHdr.get("bins").shortValue(); // System.out.println("bins="+bins);
-    float range_first = (recHdr.get("range_first").intValue()) * 0.01f; // System.out.println("range_1st="+range_first);
-    float range_last = (recHdr.get("range_last").intValue()) * 0.01f; // System.out.println("step="+step);
+    float radar_lat = recHdr.get("radar_lat").floatValue();
+    float radar_lon = recHdr.get("radar_lon").floatValue();
+    short ground_height = recHdr.get("ground_height").shortValue();
+    short radar_height = recHdr.get("radar_height").shortValue();
+    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100;
+    short num_rays = recHdr.get("num_rays").shortValue();
+    short bins = recHdr.get("bins").shortValue();
+    float range_first = (recHdr.get("range_first").intValue()) * 0.01f;
+    float range_last = (recHdr.get("range_last").intValue()) * 0.01f;
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
-    // System.out.println("number_sweeps="+number_sweeps);
-    int nparams = (recHdr.get("nparams").intValue()); // System.out.println("nparams="+nparams);
-    short year = recHdr.get("year").shortValue(); // System.out.println("year="+year);
+    int nparams = (recHdr.get("nparams").intValue());
+    short year = recHdr.get("year").shortValue();
     short month = recHdr.get("month").shortValue();
     short day = recHdr.get("day").shortValue();
     int base_time = (recHdr.get("base_time").intValue());
@@ -494,16 +494,16 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     Short ray_header_length = 6;
     int ngates;
 
-    float radar_lat = recHdr.get("radar_lat").floatValue(); // System.out.println("rad_lat="+radar_lat);
-    float radar_lon = recHdr.get("radar_lon").floatValue(); // System.out.println("rad_lon="+radar_lon);
-    short ground_height = recHdr.get("ground_height").shortValue(); // System.out.println("ground_H="+ground_height);
-    short radar_height = recHdr.get("radar_height").shortValue(); // System.out.println("radar_H="+radar_height);
-    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100; // System.out.println("rad_alt="+radar_alt);
-    short num_rays = recHdr.get("num_rays").shortValue(); // System.out.println("HERE!! num_rays="+num_rays);
-    float range_first = (recHdr.get("range_first").intValue()) * 0.01f; // System.out.println("range_1st="+range_first);
-    float range_last = (recHdr.get("range_last").intValue()) * 0.01f; // System.out.println("step="+step);
+    float radar_lat = recHdr.get("radar_lat").floatValue();
+    float radar_lon = recHdr.get("radar_lon").floatValue();
+    short ground_height = recHdr.get("ground_height").shortValue();
+    short radar_height = recHdr.get("radar_height").shortValue();
+    int radar_alt = (recHdr.get("radar_alt").intValue()) / 100;
+    short num_rays = recHdr.get("num_rays").shortValue();
+    float range_first = (recHdr.get("range_first").intValue()) * 0.01f;
+    float range_last = (recHdr.get("range_last").intValue()) * 0.01f;
     short number_sweeps = recHdr.get("number_sweeps").shortValue();
-    int nparams = (recHdr.get("nparams").intValue()); // System.out.println("nparams="+nparams);
+    int nparams = (recHdr.get("nparams").intValue());
     // define date/time
     // int last_t=(int)(ray[nparams*number_sweeps-1][num_rays-1].getTime());
     int last_t = volScan.lastRay.getTime();
@@ -535,8 +535,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
 
       Ray[] rtemp = new Ray[(int) num_rays];
 
-      // NCdump.printArray(dataArr[0], "Total_Power", System.out, null);
-
       Variable[] distanceR = new Variable[number_sweeps];
       ArrayFloat.D1[] distArr = new ArrayFloat.D1[number_sweeps];
       Index[] distIndex = new Index[number_sweeps];
@@ -561,7 +559,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
           distArr[i].setFloat(distIndex[i].set(ii), (range_first + ii * stp));
         }
       }
-      // NCdump.printArray(distArr[0], "distanceR", System.out, null);
       List rgp = volScan.getTotalPowerGroups();
       if (rgp.size() == 0)
         rgp = volScan.getReflectivityGroups();
@@ -586,9 +583,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
           }
         }
 
-        // if (time[i].getShape().length == 0) {
-        // continue;
-        // }
         timeArr[i] = (ArrayInt.D1) Array.factory(DataType.INT, time[i].getShape());
         timeIndex[i] = timeArr[i].getIndex();
         List rlist = sgp[i];
@@ -600,8 +594,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
           timeArr[i].setInt(timeIndex[i].set(jj), rtemp[jj].getTime());
         }
       }
-
-      // NCdump.printArray(timeArr[0], "time", System.out, null);
 
       Variable[] azimuthR = new Variable[number_sweeps];
       ArrayFloat.D1[] azimArr = new ArrayFloat.D1[number_sweeps];
@@ -628,7 +620,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
           azimArr[i].setFloat(azimIndex[i].set(jj), rtemp[jj].getAz());
         }
       }
-      // NCdump.printArray(azimArr[0], "azimuthR", System.out, null);
 
       Variable[] elevationR = new Variable[number_sweeps];
       ArrayFloat.D1[] elevArr = new ArrayFloat.D1[number_sweeps];
@@ -655,7 +646,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
           elevArr[i].setFloat(elevIndex[i].set(jj), rtemp[jj].getElev());
         }
       }
-      // NCdump.printArray(elevArr[0], "elevationR", System.out, null);
 
       Variable numGates = null;
       for (int i = 0; i < number_sweeps; i++) {
@@ -685,30 +675,9 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
         elevationR[i].setCachedData(elevArr[i], false);
       }
       numGates.setCachedData(gatesArr, false);
-      // startSweep.setCachedData(sweepArr, false);
-
-      // -------------------------------------------------
-      // int b=(int)ray[0][0].getBins();
-
-      // -- Test of readData() and readToByteChannel() -----------------
-      /*
-       * Range r1=new Range(356, 359);
-       * Range r2=new Range(0, 15);
-       * java.util.List arlist=new ArrayList();
-       * arlist.add(r1);
-       * arlist.add(r2);
-       * Array testArr=readData(v[0], new Section(arlist));
-       * NCdump.printArray(testArr, "Total_Power_sweep_1", System.out, null);
-       * WritableByteChannel channel=new FileOutputStream(new File("C:\\netcdf\\tt.dat")).getChannel();
-       * long ikk=readToByteChannel(v[0], new Section(arlist), channel);
-       * System.out.println("IKK="+ikk);
-       * channel.close();
-       */
-      // ---------------------------------------------------
 
     } catch (Exception e) {
-      System.out.println(e.toString());
-      e.printStackTrace();
+      logger.error("doNetcdfFileCoordinate", e);
     }
   } // ----------- end of doNetcdf ----------------------------------
 
@@ -859,7 +828,6 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     buffer = ByteBuffer.wrap(bytedata);
     // write the bytes to the channel
     int count = channel.write(buffer);
-    System.out.println("COUNT=" + count);
     // check if all bytes where written
     if (buffer.hasRemaining()) {
       // if not all bytes were written, move the unwritten bytes to the beginning and

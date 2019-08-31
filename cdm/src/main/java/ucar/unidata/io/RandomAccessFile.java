@@ -354,8 +354,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       count_openFiles.getAndIncrement();
       if (showOpen)
         System.out.println(" DebugRAF open " + location);
-      // if (openFiles.size() > 1000)
-      // System.out.println("RandomAccessFile debugLeaks");
     }
   }
 
@@ -436,7 +434,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     long fileSize = file.length();
     if (!readonly && (minLength != 0) && (minLength != fileSize)) {
       file.setLength(minLength);
-      // System.out.println("TRUNCATE!!! minlength="+minLength);
     }
 
     // Close the underlying file object.
@@ -580,7 +577,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     if (bufferModified) {
       file.seek(bufferStart);
       file.write(buffer, 0, dataSize);
-      // System.out.println("--flush at "+bufferStart+" dataSize= "+dataSize+ " filePosition= "+filePosition);
       bufferModified = false;
     }
 
@@ -747,14 +743,12 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     int n = file.read(b, offset, len);
     if (debugAccess) {
       if (showRead)
-        System.out
-            .println(" **read_ " + location + " = " + len + " bytes at " + pos + "; block = " + (pos / buffer.length));
+        System.out.printf(" **read_ %s = %d bytes at %d; block = %d%n", location, len, pos , (pos / buffer.length));
       debug_nseeks.incrementAndGet();
       debug_nbytes.addAndGet(len);
     }
 
     if (extendMode && (n < len)) {
-      // System.out.println(" read_ = "+len+" at "+pos+"; got = "+n);
       n = len;
     }
     return n;
@@ -953,13 +947,11 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
         dataEnd = (myDataEnd > dataEnd) ? myDataEnd : dataEnd;
         dataSize = (int) (dataEnd - bufferStart);
         filePosition += copyLength;
-        /// System.out.println("--copy to buffer "+copyLength+" "+len);
       }
 
       // If there is any data remaining, move to the new position and copy to
       // the new buffer.
       if (copyLength < len) {
-        // System.out.println("--need more "+copyLength+" "+len+" space= "+spaceInBuffer);
         seek(filePosition); // triggers a flush
         System.arraycopy(b, off + copyLength, buffer, (int) (filePosition - bufferStart), len - copyLength);
         bufferModified = true;
@@ -978,7 +970,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       }
       file.seek(filePosition); // moved per Steve Cerruti; Jan 14, 2005
       file.write(b, off, len);
-      // System.out.println("--write at "+filePosition+" "+len);
 
       filePosition += len;
       bufferStart = filePosition; // an empty buffer

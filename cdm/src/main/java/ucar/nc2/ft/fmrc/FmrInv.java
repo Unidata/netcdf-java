@@ -23,8 +23,6 @@ import java.util.*;
  * @since Jan 11, 2010
  */
 public class FmrInv implements Comparable<FmrInv> {
-  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrInv.class);
-
   private final List<TimeCoord> timeCoords = new ArrayList<>(); // list of unique TimeCoord
   private final List<EnsCoord> ensCoords = new ArrayList<>(); // list of unique EnsCoord
   private final List<VertCoord> vertCoords = new ArrayList<>(); // list of unique VertCoord
@@ -145,7 +143,6 @@ public class FmrInv implements Comparable<FmrInv> {
     EnsCoord ensCoordUnion = null; // union of ens coords NOT USED YET
     TimeCoord timeCoordUnion = null; // union of time coords
     TimeCoord timeExpected = null; // expected time coords
-    // private int countInv, countExpected;
 
     GridVariable(String name) {
       this.name = name;
@@ -227,8 +224,6 @@ public class FmrInv implements Comparable<FmrInv> {
         if (vc_union == null)
           vc_union = new VertCoord(vc);
         else if (!vc_union.equalsData(vc)) {
-          // System.out.printf("GridVariable %s has different vert coords in file %s %n", grid.getName(),
-          // grid.getFile());
           vertList.add(vc);
         }
       }

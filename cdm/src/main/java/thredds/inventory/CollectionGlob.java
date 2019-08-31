@@ -55,7 +55,6 @@ public class CollectionGlob extends CollectionAbstract {
     super(collectionName, logger);
 
     matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
-    System.out.printf("glob=%s%n", glob);
 
     // lets suppose the first "*" indicates the top dir
     int pos = glob.indexOf("*");
@@ -119,7 +118,6 @@ public class CollectionGlob extends CollectionAbstract {
       while (true) {
 
         try {
-          // if (debug && count % 100 == 0) System.out.printf("%d ", count);
           while (!dirStreamIterator.hasNext()) {
             dirStream.close();
             if (subdirs.isEmpty()) {
@@ -142,13 +140,11 @@ public class CollectionGlob extends CollectionAbstract {
           }
 
           if (!matcher.matches(nextPath)) {
-            // if (debug) System.out.printf(" SKIP %s%n ", nextPath);
             continue;
           }
 
           nextMFile = new MFileOS7(nextPath, attr);
           return true;
-          // if (debug) System.out.printf(" OK %s%n ", nextMFile);
 
         } catch (IOException e) {
           throw new RuntimeException(e);

@@ -342,7 +342,6 @@ public abstract class GridDefRecord {
    * @param value of the param
    */
   public final void addParam(String key, String value) {
-    // System.out.println(" adding " + key + " = " + value);
     paramStr.put(key.trim(), value);
     paramsValues = paramsValues + "\t" + key + "\t" + value;
   }
@@ -354,7 +353,6 @@ public abstract class GridDefRecord {
    * @param value of the param
    */
   public final void addParam(String key, int value) {
-    // System.out.println(" adding " + key + " = " + value);
     paramInt.put(key, value);
     paramStr.put(key, Integer.toString(value));
   }
@@ -366,7 +364,6 @@ public abstract class GridDefRecord {
    * @param value of the param
    */
   public final void addParam(String key, Integer value) {
-    // System.out.println(" adding " + key + " = " + value);
     paramInt.put(key, value);
   }
 
@@ -377,7 +374,6 @@ public abstract class GridDefRecord {
    * @param value of the param
    */
   public final void addParam(String key, float value) {
-    // System.out.println(" adding " + key + " = " + value);
     paramDbl.put(key, (double) value);
     paramStr.put(key, Float.toString(value));
   }
@@ -389,7 +385,6 @@ public abstract class GridDefRecord {
    * @param value of the param
    */
   public final void addParam(String key, double value) {
-    // System.out.println(" adding " + key + " = " + value);
     paramDbl.put(key, value);
     paramStr.put(key, Double.toString(value));
   }
@@ -401,7 +396,6 @@ public abstract class GridDefRecord {
    * @param value of the param
    */
   public final void addParam(String key, Double value) {
-    // System.out.println(" adding " + key + " = " + value);
     paramDbl.put(key, value);
   }
 

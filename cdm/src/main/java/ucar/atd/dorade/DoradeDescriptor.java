@@ -13,7 +13,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.HashMap;
 
 abstract class DoradeDescriptor {
 
@@ -21,12 +20,8 @@ abstract class DoradeDescriptor {
   protected String expectedName;
   protected RandomAccessFile file;
   protected boolean littleEndianData;
-  protected boolean verbose;
 
   protected static final TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
-  private static boolean defaultVerboseState = false;
-  // map from descriptor names to per-class default verbose states
-  private static HashMap<String, Boolean> classVerboseStates = new HashMap<>();
 
   static class DescriptorException extends Exception {
     protected DescriptorException(String message) {
@@ -58,7 +53,6 @@ abstract class DoradeDescriptor {
     this.file = file;
     this.littleEndianData = littleEndianData;
     this.expectedName = expectedName;
-    verbose = getDefaultVerboseState(expectedName);
 
     byte[] data;
 
@@ -291,7 +285,6 @@ abstract class DoradeDescriptor {
     return findNextWithName(expectedName, file, littleEndianData);
   }
 
-
   /**
    * Return a string with a reasonable and complete representation of the
    * given <code>Date</code>, shown in UTC.
@@ -303,47 +296,4 @@ abstract class DoradeDescriptor {
     return CalendarDateFormatter.toDateTimeString(date);
   }
 
-  /**
-   * Get the default verbose state for new <code>DoradeDescriptor</code>-s.
-   */
-  public static boolean getDefaultVerboseState() {
-    return defaultVerboseState;
-  }
-
-  /**
-   * Set the default verbose state for new <code>DoradeDescriptor</code>-s.
-   *
-   * @param verbose the new default verbose state
-   */
-  public static void setDefaultVerboseState(boolean verbose) {
-    defaultVerboseState = verbose;
-    classVerboseStates.clear();
-  }
-
-  /**
-   * Get the default verbose state for new <code>DoradeDescriptor</code>-s
-   * of the given name.
-   *
-   * @param descriptorName the descriptor name for which the new default
-   *        verbose state will apply
-   */
-  public static boolean getDefaultVerboseState(String descriptorName) {
-    Boolean classVerboseState = classVerboseStates.get(descriptorName.toUpperCase());
-    if (classVerboseState != null)
-      return classVerboseState;
-    else
-      return defaultVerboseState;
-  }
-
-  /**
-   * Set the default verbose state for new <code>DoradeDescriptor</code>-s
-   * of the given name.
-   *
-   * @param descriptorName the descriptor name for which the new default
-   *        verbose state will apply
-   * @param verbose the new default verbose state
-   */
-  public static void setDefaultVerboseState(String descriptorName, boolean verbose) {
-    classVerboseStates.put(descriptorName.toUpperCase(), verbose);
-  }
 }

@@ -132,13 +132,7 @@ public class XMLStore {
     InputStream primIS = c.getResourceAsStream(resourceName);
     InputStream objIS = c.getResourceAsStream(resourceName);
 
-    // debug
-    // InputStream debugIS = c.getResourceAsStream(fileName);
-    // System.out.println("Resource stream= "+fileName);
-    // thredds.util.IO.copy(debugIS, System.out);
-
     if (primIS == null) {
-      // System.out.println("classLoader="+new XMLStore().getClass().getClassLoader());
       throw new java.io.IOException("XMLStore.createFromResource cant find <" + resourceName + ">");
     }
 
@@ -215,7 +209,6 @@ public class XMLStore {
       }
     });
 
-    // System.out.println("openBeanDecoder at "+objIS);
     return beanDecoder;
   }
 

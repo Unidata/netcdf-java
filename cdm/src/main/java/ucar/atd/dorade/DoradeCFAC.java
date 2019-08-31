@@ -48,12 +48,6 @@ class DoradeCFAC extends DoradeDescriptor {
     driftCorrection = grabFloat(data, 60);
     rotationAngleCorrection = grabFloat(data, 64);
     tiltAngleCorrection = grabFloat(data, 68);
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   public String toString() {

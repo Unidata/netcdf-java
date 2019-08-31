@@ -15,6 +15,8 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.ArrayStructureBBsection;
@@ -35,6 +37,7 @@ import ucar.unidata.io.RandomAccessFile;
  * Proof of concept for making ncStream-encoded file into a version of the netcdf format.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
+  private static Logger logger = LoggerFactory.getLogger(NcStreamIosp.class);
   private static final boolean debug = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -273,7 +276,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
 
       Variable v = ncfile.findVariable(dproto.getVarName());
       if (v == null) {
-        System.out.printf(" ERR cant find var %s%n%s%n", dproto.getVarName(), dproto);
+        logger.warn(" ERR cant find var {} {}", dproto.getVarName(), dproto);
       }
       if (debug)
         System.out.printf(" dproto = %s for %s%n", dproto, v.getShortName());

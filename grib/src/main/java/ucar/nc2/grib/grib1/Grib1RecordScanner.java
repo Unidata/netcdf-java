@@ -214,7 +214,7 @@ public class Grib1RecordScanner {
        * if ((length + raf.getFilePointer()) < EOR) {
        * dataOffset = raf.getFilePointer() - 3; // ok
        * } else {
-       * //System.out.println("ECMWF off by 1 bug" );
+       * // ECMWF off by 1 bug
        * dataOffset = raf.getFilePointer() - 2;
        * }
        * } else {

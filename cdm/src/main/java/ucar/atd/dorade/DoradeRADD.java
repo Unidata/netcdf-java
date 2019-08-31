@@ -196,12 +196,6 @@ class DoradeRADD extends DoradeDescriptor {
     for (int i = 0; i < 5; i++)
       PRTs[i] = grabFloat(data, 124 + 4 * i);
 
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
-
     myPARMs = new DoradePARM[nParams];
     for (int i = 0; i < nParams; i++)
       myPARMs[i] = new DoradePARM(file, littleEndianData, this);

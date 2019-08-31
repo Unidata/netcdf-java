@@ -251,9 +251,6 @@ public abstract class CDMNode {
     return getShortName(); // default
   }
 
-  // experimental
-  public abstract void hashCodeShow(Indent indent);
-
   // Override the node's hashCode for subclasses of CDMNode.
 
   public int localhash() {

@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * Manage cdm index (ncx) for Bufr files.
  * Covers BufrCdmIndexProto
- * Never completes or in operational use, could redo as needed
+ * Never completed for operational use, could redo as needed
  *
  * @author caron
  * @since 8/14/13
@@ -144,9 +144,6 @@ public class BufrCdmIndex {
       raf.write(b); // message - all in one gulp
       log.debug("  write BufrCdmIndexProto= {} bytes", b.length);
 
-      // System.out.printf(" write BufrCdmIndexProto= %d bytes", b.length);
-      // showProtoRoot(rootf);
-
       log.debug("  file size = {} bytes", raf.length());
       return true;
     }
@@ -258,14 +255,6 @@ public class BufrCdmIndex {
     }
 
     return true;
-  }
-
-  static void showProtoRoot(BufrCdmIndexProto.Field fld) {
-    String act = (fld.getAction() != BufrCdmIndexProto.FldAction.defa) ? fld.getAction().toString() : "-";
-    System.out.printf("%10s %s%n", act, fld.getName());
-    for (BufrCdmIndexProto.Field child : fld.getFldsList())
-      showProtoRoot(child);
-
   }
 
   public void showIndex(Formatter f) {

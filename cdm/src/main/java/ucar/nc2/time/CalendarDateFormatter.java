@@ -198,7 +198,6 @@ public class CalendarDateFormatter {
 
     Matcher m = isodatePattern.matcher(iso);
     if (!m.matches()) {
-      // System.out.printf("'%s' does not match regexp '%s'%n", dateUnitString, udunitPatternString);
       throw new IllegalArgumentException(iso + " does not match regexp " + isodatePatternString);
     }
 

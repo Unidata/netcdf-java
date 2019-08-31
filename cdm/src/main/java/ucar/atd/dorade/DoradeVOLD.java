@@ -62,12 +62,6 @@ class DoradeVOLD extends DoradeDescriptor {
     nSensors = grabShort(data, 70);
 
     //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
-
-    //
     // get our myRADDs
     //
     myRADDs = new DoradeRADD[nSensors];

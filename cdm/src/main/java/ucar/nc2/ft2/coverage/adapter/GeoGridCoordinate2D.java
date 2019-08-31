@@ -136,9 +136,6 @@ public class GeoGridCoordinate2D {
       if (count > 10) {
         // last ditch attempt
         return incr(wantLat, wantLon, rectIndex);
-        // if (!ok)
-        // log.error("findCoordElement didnt converge lat,lon = "+wantLat+" "+ wantLon);
-        // return ok;
       }
     }
   }

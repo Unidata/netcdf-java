@@ -504,8 +504,7 @@ public class ArrayStructureBB extends ArrayStructure {
     int offset = calcOffsetSetOrder(recnum, m);
     int index = bbuffer.getInt(offset);
     if (heap == null) {
-      System.out.println("ArrayStructureBB null heap");
-      return null;
+      throw new IllegalStateException("getArraySequence heap is null");
     }
     Object ho = heap.get(index);
     if (ho instanceof ArraySequence)

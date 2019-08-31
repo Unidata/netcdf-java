@@ -174,7 +174,6 @@ public class GempakParameterTable {
           Pattern p = Pattern.compile(key);
           Matcher m = p.matcher(name);
           if (m.matches()) {
-            // System.out.println("found match " + key + " for " + name);
             String value = m.group(1);
             GempakParameter match = templateParamMap.get(key);
             param = new GempakParameter(match.getNumber(), name, match.getDescription() + " (" + value + " hour)",

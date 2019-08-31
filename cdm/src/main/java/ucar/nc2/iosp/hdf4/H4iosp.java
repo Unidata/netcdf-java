@@ -203,7 +203,6 @@ public class H4iosp extends AbstractIOServiceProvider {
   private InputStream getCompressedInputStream(H4header.Vinfo vinfo) throws IOException {
     // probably could construct an input stream from a channel from a raf
     // for now, just read it in.
-    // System.out.println(" read "+ vinfo.length+" from "+ vinfo.start);
     byte[] buffer = new byte[vinfo.length];
     raf.seek(vinfo.start);
     raf.readFully(buffer);
@@ -267,18 +266,6 @@ public class H4iosp extends AbstractIOServiceProvider {
       return true;
     }
 
-    /*
-     * public int read(byte b[]) throws IOException {
-     * //System.out.println("request "+b.length);
-     * return super.read(b);
-     * }
-     * 
-     * public int read(byte b[], int off, int len) throws IOException {
-     * //System.out.println("request "+len+" buffer size="+b.length+" offset="+off);
-     * return super.read(b, off, len);
-     * }
-     */
-
     public int read() throws IOException {
       if (segpos == segSize) {
         boolean ok = readSegment();
@@ -287,7 +274,6 @@ public class H4iosp extends AbstractIOServiceProvider {
       }
 
       int b = buffer[segpos] & 0xff;
-      // System.out.println(" byte "+b+ " at= "+segpos);
       segpos++;
       return b;
     }
@@ -321,7 +307,6 @@ public class H4iosp extends AbstractIOServiceProvider {
         byte[] cbuffer = new byte[cdata.length];
         raf.seek(cdata.offset);
         raf.readFully(cbuffer);
-        // System.out.println(" read compress " + cdata.length + " at= " + cdata.offset);
 
         // uncompress it
         if (chunkData.compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
@@ -329,7 +314,6 @@ public class H4iosp extends AbstractIOServiceProvider {
           ByteArrayOutputStream out = new ByteArrayOutputStream(chunkData.compress.uncomp_length);
           IO.copy(in, out);
           buffer = out.toByteArray();
-          // System.out.println(" uncompress "+buffer.length + ", wanted="+chunkData.compress.uncomp_length);
         } else {
           throw new IllegalStateException("unknown compression type =" + chunkData.compress.compress_type);
         }
@@ -348,22 +332,9 @@ public class H4iosp extends AbstractIOServiceProvider {
       if (segPos == segSize)
         readChunk();
       int b = buffer[segPos] & 0xff;
-      // System.out.println(" byte "+b+ " at= "+segPos);
       segPos++;
       return b;
     }
-
-    /*
-     * public int read(byte b[]) throws IOException {
-     * System.out.println("request "+b.length);
-     * return super.read(b);
-     * }
-     * 
-     * public int read(byte b[], int off, int len) throws IOException {
-     * System.out.println("request "+len+" buffer size="+b.length+" offset="+off);
-     * return super.read(b, off, len);
-     * } //
-     */
   }
 
   private static class H4ChunkIterator implements LayoutTiled.DataChunkIterator {
@@ -441,7 +412,6 @@ public class H4iosp extends AbstractIOServiceProvider {
         } else { // or compressed data stored in linked storage
           in = new LinkedInputStream(cdata.linked);
         }
-        // System.out.println(" read compress " + cdata.length + " at= " + cdata.offset);
 
         // uncompress it
         if (compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
@@ -451,7 +421,6 @@ public class H4iosp extends AbstractIOServiceProvider {
           IO.copy(zin, out);
           byte[] buffer = out.toByteArray();
           bb = ByteBuffer.wrap(buffer);
-          // System.out.println(" uncompress " + buffer.length + ", wanted=" + compress.uncomp_length);
 
         } else if (compress.compress_type == TagEnum.COMP_CODE_NONE) {
           // just read the stream in

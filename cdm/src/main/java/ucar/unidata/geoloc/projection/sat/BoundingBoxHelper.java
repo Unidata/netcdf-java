@@ -105,7 +105,6 @@ public class BoundingBoxHelper {
   private boolean addGoodPts(List<ProjectionPoint> goodPts, ProjectionPoint pt) {
     if (!ProjectionPointImpl.isInfinite(pt)) {
       goodPts.add(pt);
-      // System.out.println(" good= "+pt);
       return true;
     } else
       return false;

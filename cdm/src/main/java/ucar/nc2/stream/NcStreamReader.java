@@ -235,7 +235,6 @@ public class NcStreamReader {
     byte[] dp = new byte[psize];
     NcStream.readFully(is, dp);
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-    // if (debug) System.out.println(" readData proto = " + dproto);
 
     Structure s = (Structure) ncfile.findVariable(dproto.getVarName());
     StructureMembers members = s.makeStructureMembers();
@@ -282,7 +281,6 @@ public class NcStreamReader {
         byte[] datab = new byte[dsize];
         NcStream.readFully(is, datab);
         // curr = NcStream.decodeStructureData(members, bo, datab); LOOK
-        // System.out.printf("StreamDataIterator read sdata size= %d%n", dsize);
 
       } else if (NcStream.test(b, NcStream.MAGIC_VEND)) {
         curr = null;

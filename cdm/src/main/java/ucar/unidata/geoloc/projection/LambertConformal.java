@@ -179,7 +179,6 @@ public class LambertConformal extends ProjectionImpl {
     // need to know the pole value for crossSeam
     // Point2D pt = latLonToProj( 90.0, 0.0);
     // maxY = pt.getY();
-    // System.out.println("LC = " +pt);
   }
 
 

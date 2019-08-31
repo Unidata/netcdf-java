@@ -84,7 +84,6 @@ public class H4header extends NCheader {
   private Map<Short, Vinfo> refnoMap = new HashMap<>();
 
   private MemTracker memTracker;
-  // private PrintStream debugOut = System.out;
   private java.io.PrintWriter debugOut = new PrintWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
 
   public boolean isEos() {
@@ -298,8 +297,6 @@ public class H4header extends NCheader {
         }
       }
       Group current = dim.getGroup();
-      // if (current == null)
-      // System.out.println("HEY! current == null");
       if (lowest != null && current != lowest) {
         lowest.addDimension(dim);
         current.remove(dim);
@@ -353,8 +350,7 @@ public class H4header extends NCheader {
           raf.seek(data.offset);
           int length2 = raf.readInt();
           if (debugConstruct)
-            System.out
-                .println("dimension length=" + length2 + " for TagVGroup= " + group + " using data " + data.refno);
+            System.out.println("dimension length=" + length2 + " for TagVGroup= " + group + " using data " + data.refno);
           if (length2 > 0) {
             length = length2;
             break;
@@ -1191,8 +1187,6 @@ public class H4header extends NCheader {
       t = TagEnum.getTag(this.code);
       if ((code > 1) && debugTracker)
         memTracker.add(t.getName() + " " + refno, offset, offset + length);
-      // if (extended)
-      // System.out.println("");
     }
 
     // read the offset/length part of the tag. overridden by subclasses
@@ -1372,9 +1366,6 @@ public class H4header extends NCheader {
         if (debugChunkTable)
           System.out.println(" Reading " + n + " DataChunk tags");
         for (int i = 0; i < n; i++) {
-          // if (i == 341)
-          // System.out.println("HEYA");
-
           int[] origin = sdata.getJavaArrayInt(i, originM);
           short tag = sdata.getScalarShort(i, tagM);
           short ref = sdata.getScalarShort(i, refM);

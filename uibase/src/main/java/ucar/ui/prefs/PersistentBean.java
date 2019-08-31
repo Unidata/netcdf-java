@@ -141,7 +141,6 @@ public class PersistentBean implements PersistenceManager {
         return propClass.newInstance();
       } catch (Exception ee) {
         ee.printStackTrace();
-        // System.out.println("PersistentBean error createObject: "+prop.getName()+" "+ee.getMessage());
         throw new IllegalArgumentException(
             "PersistentBean error createObject: " + prop.getName() + " " + ee.getMessage());
       }
@@ -266,8 +265,6 @@ public class PersistentBean implements PersistenceManager {
            * for (Iterator iter = nestedParser.getProperties(); iter.hasNext(); ) {
            * PropertyDescriptor nestedProp = (PropertyDescriptor)iter.next();
            * properties.put( prop.getName()+"."+nestedProp.getName(), nestedProp);
-           * if (debugBeanParser) System.out.println( " -added property "+
-           * prop.getName()+"."+nestedProp.getName());
            * }
            * }
            */

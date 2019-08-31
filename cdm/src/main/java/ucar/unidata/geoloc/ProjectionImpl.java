@@ -730,11 +730,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @return minimum enclosing box in lat,lon coordinates.
    */
   public LatLonRect projToLatLonBBold(ProjectionRect world) {
-    // System.out.println("world = " + world);
     ProjectionPoint min = world.getMinPoint();
     ProjectionPoint max = world.getMaxPoint();
-    // System.out.println("min = " + min);
-    // System.out.println("max = " + max);
     LatLonRect llbb;
     LatLonPointImpl llmin = new LatLonPointImpl();
     LatLonPointImpl llmax = new LatLonPointImpl();
@@ -743,12 +740,11 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     projToLatLon(min, llmin);
     projToLatLon(max, llmax);
     llbb = new LatLonRect(llmin, llmax);
-    // System.out.println("llbb = " + llbb);
 
     /*
      * double lona = la.getLongitude();
      * double lonb = lb.getLongitude();
-     * 
+     *
      * if (((lona < lonb) && (lonb - lona <= 180.0))
      * || ((lona > lonb) && (lona - lonb >= 180.0))) {
      * llbb = new LatLonRect(la, lb);

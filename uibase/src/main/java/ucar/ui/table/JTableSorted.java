@@ -198,7 +198,6 @@ public class JTableSorted extends JPanel {
    * visible[ modelIndex[i]] = true;
    * for (int i=0; i<ncols; i++)
    * if (!visible[i]) {
-   * //System.out.println( colName[i]+" hide "+i);
    * acts[i].hideColumn();
    * acts[i].putValue(BAMutil.STATE, new Boolean(false));
    * }
@@ -222,13 +221,7 @@ public class JTableSorted extends JPanel {
    * int [] size = (int []) store.get(objectName+"ColumnWidths" );
    * if (size != null)
    * setColumnWidths( size);
-   * if (debug) {
-   * System.out.println(objectName+" read widths = ");
-   * for (int i=0; i<size.length; i++)
-   * System.out.print(" "+size[i]);
-   * System.out.println();
-   * }
-   * 
+   *
    * if ( null != store.get( objectName+"SortOnCol")) {
    * model.sortCol = ((Integer) store.get( objectName+"SortOnCol")).intValue();
    * model.reverse = ((Boolean) store.get( objectName+"SortReverse")).booleanValue();
@@ -265,15 +258,6 @@ public class JTableSorted extends JPanel {
    * store.put( objectName+"SortReverse", new Boolean(model.reverse));
    * 
    * store.put( objectName+"SortReverse", new Boolean(model.reverse));
-   * 
-   * 
-   * if (debug) {
-   * System.out.println(objectName+" store widths = ");
-   * for (int i=0; i<size.length; i++)
-   * System.out.print(" "+size[i]);
-   * System.out.println();
-   * }
-   * 
    * }
    */
 
@@ -462,7 +446,6 @@ public class JTableSorted extends JPanel {
         hideColumn();
 
       JTableSorted.this.revalidate();
-      // System.out.println(id+" "+state);
     }
 
     public void hideColumn() {
@@ -581,7 +564,6 @@ public class JTableSorted extends JPanel {
 
       Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-      // System.out.println(" MyTableCellRenderer comp = "+c.hashCode()+" "+c.getClass().getName());
       if ((c instanceof JComponent) && (value instanceof NamedObject)) {
         ((JComponent) c).setToolTipText(((NamedObject) value).getDescription());
       } // LOOK!! should turn tip off if there is none !!
@@ -589,7 +571,6 @@ public class JTableSorted extends JPanel {
     }
 
     public Point getToolTipLocation(MouseEvent e) {
-      System.out.println(" cellR getToolTipLocation " + e.getPoint());
       return e.getPoint();
     }
   }
@@ -598,7 +579,6 @@ public class JTableSorted extends JPanel {
   private static class MyJTable extends javax.swing.JTable {
 
     public Point getToolTipLocation(MouseEvent e) {
-      // System.out.println(" JTable getToolTipLocation "+e.getPoint());
       return e.getPoint();
     }
   }
@@ -641,11 +621,9 @@ public class JTableSorted extends JPanel {
         this.reverse = reverse;
         hasSortIndicator = true;
 
-        // System.out.println("setSortCol on "+modelCol+" "+sortCol+" "+reverse);
       } else if (hasSortIndicator) {
         compPanel.remove(1);
         hasSortIndicator = false;
-        // System.out.println("setSortCol off "+modelCol+" "+sortCol+" "+reverse);
       }
     }
 

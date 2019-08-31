@@ -87,10 +87,6 @@ public class CEDRICRadarConvention extends CF1Convention {
     tvar.setCachedData(data, false);
 
     super.augmentDataset(ncDataset, cancelTask);
-
-    // System.out.println("here\n");
-
-    // ncDataset.finish();
   }
 }
 

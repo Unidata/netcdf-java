@@ -44,13 +44,13 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * @since Oct 30, 2008
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
+  private static org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   public static final boolean DEBUG = false;
 
   public static int NC_TURN_OFF_LOGGING = -1;
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
-  private static org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   private static Nc4prototypes nc4 = null;
   public static final String JNA_PATH = "jna.library.path";
   public static final String JNA_PATH_ENV = "JNA_PATH"; // environment var
@@ -298,7 +298,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     isClosed = true;
-    // System.out.printf("%s closed%n", ncfile.getLocation());
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -705,8 +704,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           break;
 
         case Nc4prototypes.NC_STRING:
-          if (len > 1)
-            System.out.println("HEY string len > 1");
           String[] valss = new String[len];
           ret = nc4.nc_get_att_string(grpid, varid, attname, valss);
           if (ret != 0)
@@ -758,14 +755,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         Array intArray = Array.factory(DataType.INT, new int[] {count});
         IndexIterator iter = intArray.getIndexIterator();
         for (int i = 0; i < len; i++) {
-          // System.out.print(" len=" + vlen[i].len + "; p= " + vlen[i].p + ";");
           // Coverity[FB.UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           int[] ba = vlen[i].p.getIntArray(0, vlen[i].len);
           for (int aBa : ba) {
-            // System.out.print(" " + ba[j]);
             iter.setIntNext(aBa);
           }
-          // System.out.println();
         }
         return intArray;
 
@@ -1099,8 +1093,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private Variable makeVariable(Group g, Structure parent, String vname, int typeid, String dimList)
       throws IOException {
-    // if (typeid == Nc4prototypes.NC_STRING)
-    // System.out.println("HEY");
     ConvertedType cvttype = convertDataType(typeid);
     DataType dtype = cvttype.dt;
     UserType utype = userTypes.get(typeid);
@@ -1505,8 +1497,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ut.setSize(sizep2.getValue().intValue());
         // doesnt seem to be any new info
         // String nameos = makeString(nameo);
-        // System.out.printf(" opaque type=%d name=%s size=%d %n ",
-        // typeid, nameos, sizep2.getValue().longValue());
       }
     }
   }
@@ -1552,8 +1542,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int nmembers = numMembers.getValue().intValue();
 
-    // System.out.printf(" type=%d name=%s baseType=%d baseType=%d numMembers=%d %n ",
-    // xtype, name, baseType.getValue(), baseSize.getValue().longValue(), nmembers);
     Map<Integer, String> map = new HashMap<>(2 * nmembers);
 
     for (int i = 0; i < nmembers; i++) {
@@ -1564,7 +1552,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
       String mname = makeString(mnameb);
-      // System.out.printf(" member name=%s value=%d %n ", mname, value.getValue());
       map.put(value.getValue(), mname);
     }
     return map;
@@ -3042,12 +3029,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
 
         if (ret != 0) {
-          /*
-           * System.out.printf("fail %d on %s origin=%s, shape=%s, stride=%s%n", ret, v.getShortName(), show(origin),
-           * show(shape), show(stride));
-           * log.error("{} on var {}", nc4.nc_strerror(ret), v.getShortName());
-           * return;
-           */
           throw new IOException(nc4.nc_strerror(ret));
         }
         break;
@@ -3207,10 +3188,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (debugCompound)
       System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
 
-    // IntByReference val = new IntByReference();
-    // int ret2 = nc4.nc_inq_var_fletcher32(grpid, varid, val);
-    // System.out.printf("%d = %d%n", ret2, val.getValue());
-
     // write the data
     // int ret = nc4.nc_put_var(grpid, varid, bbuff);
     int ret;
@@ -3236,8 +3213,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     SizeT[] shape = new SizeT[] {new SizeT(1)};
     SizeT[] stride = new SizeT[] {new SizeT(1)};
 
-    // ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder()); // n4 wants native byte
-    // order
+    // ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());
+    // n4 wants native byte order
     // ByteBuffer bbuff = valuesBB.getByteBuffer();
     ByteBuffer bbuff = makeBB(s, sdata);
 
@@ -3270,7 +3247,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       StructureMembers.Member m = sdata.findMember(v.getShortName());
       if (m == null) {
-        System.out.printf("WARN Nc4Iosp.makeBB() cant find %s%n", v.getShortName());
+        log.warn("WARN Nc4Iosp.makeBB() cant find {}", v.getShortName());
         bb.position((int) (offset + v.getElementSize() * v.getSize())); // skip over it
       } else {
         copy(sdata, m, bb);
@@ -3479,8 +3456,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * 
    * throw new IOException("Unsupported userType = " + typeid + " userType= " + userType);
    * }
-   * // System.out.printf("OK var %s%n", v);
-   * 
+   *
    * }
    */
 

@@ -133,12 +133,6 @@ class DoradeSSWB extends DoradeDescriptor {
             new KeyTable(grabInt(data, entrystart), grabInt(data, entrystart + 4), grabInt(data, entrystart + 8));
       }
     }
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   public String toString() {

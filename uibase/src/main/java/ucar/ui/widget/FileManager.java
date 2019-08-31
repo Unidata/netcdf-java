@@ -88,21 +88,11 @@ public class FileManager {
       defaultDirs.add(dirName);
     }
 
-    /*
-     * funky windows workaround
-     * String osName = System.getProperty("os.name");
-     * //System.out.println("OS ==  "+ osName+" def ="+defDir);
-     * boolean isWindose = (0 <= osName.indexOf("Windows"));
-     * if (isWindose)
-     * defaultDirs.add("C:/");
-     */
-
     File defaultDirectory = findDefaultDirectory(defaultDirs);
     try {
       chooser = new ImprovedFileChooser(defaultDirectory);
 
     } catch (SecurityException se) {
-      System.out.println("FileManager SecurityException " + se);
       readOk = false;
       JOptionPane.showMessageDialog(null, "Sorry, this Applet does not have disk read permission.");
     }
@@ -110,8 +100,6 @@ public class FileManager {
     chooser.addActionListener(e -> {
       if (debug)
         System.out.println("**** chooser event=" + e.getActionCommand() + "\n  " + e);
-      // if (debug) System.out.println(" curr directory="+chooser.getCurrentDirectory());
-      // if (debug) System.out.println(" selected file="+chooser.getSelectedFile());
 
       if (e.getActionCommand().equals("ApproveSelection"))
         selectedFile = true;
@@ -140,7 +128,6 @@ public class FileManager {
     AbstractAction usedirAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         String item = (String) dirComboBox.getSelectedItem();
-        // System.out.println(" cb = "+item);
         if (item != null)
           chooser.setCurrentDirectory(new File(item));
       }
@@ -150,7 +137,6 @@ public class FileManager {
     AbstractAction savedirAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         File currDir = chooser.getCurrentDirectory();
-        // System.out.println(" curr directory="+currDir);
         if (currDir != null)
           dirComboBox.addItem(currDir.getPath());
       }
@@ -223,21 +209,6 @@ public class FileManager {
   public JFileChooser getFileChooser() {
     return chooser;
   }
-
-  /*
-   * public java.io.File chooseFile() {
-   * if (!readOk) return null;
-   * w.show();
-   * 
-   * if (chooser.showOpenDialog( parent) == JFileChooser.APPROVE_OPTION) {
-   * File file = chooser.getSelectedFile();
-   * if (debug) System.out.println("FileManager result "+file.getPath());
-   * if (file != null)
-   * return file;
-   * }
-   * return null;
-   * }
-   */
 
   public String chooseFilenameToSave(String defaultFilename) {
     chooser.setDialogType(JFileChooser.SAVE_DIALOG);

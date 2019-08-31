@@ -120,7 +120,6 @@ public class CalendarDateUnit {
 
     Matcher m = udunitPattern.matcher(dateUnitString);
     if (!m.matches()) {
-      // System.out.printf("'%s' does not match regexp '%s'%n", dateUnitString, udunitPatternString);
       throw new IllegalArgumentException(dateUnitString + " does not match " + udunitPatternString);
     }
 

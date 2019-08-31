@@ -1095,26 +1095,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return hashCode;
   }
 
-  public void hashCodeShow(Indent indent) {
-    System.out.printf("%sVar hash = %d%n", indent, hashCode());
-    System.out.printf("%s shortName %s = %d%n", indent, getShortName(), getShortName().hashCode());
-    System.out.printf("%s isScalar %s%n", indent, isScalar());
-    System.out.printf("%s dataType %s%n", indent, getDataType());
-    System.out.printf("%s parentGroup %s = %d%n", indent, getParentGroup(), getParentGroup().hashCode());
-    System.out.printf("%s isVariableLength %s%n", indent, isVariableLength);
-    System.out.printf("%s dimensions %d len=%d%n", indent, dimensions.hashCode(), dimensions.size());
-    indent.incr();
-    for (Dimension d : dimensions) {
-      d.hashCodeShow(indent);
-    }
-    indent.decr();
-    if (getParentStructure() != null) {
-      System.out.printf("%s parentStructure %d%n", indent, getParentStructure().hashCode());
-      getParentStructure().hashCodeShow(indent.incr());
-      indent.decr();
-    }
-  }
-
   protected int hashCode = 0;
 
   /**

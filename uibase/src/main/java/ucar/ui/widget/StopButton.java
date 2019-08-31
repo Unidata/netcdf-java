@@ -130,8 +130,6 @@ public class StopButton extends JButton {
     // create timer, whose events happen on the awt event Thread
     ActionListener watcher = new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
-        // System.out.println("timer event"+evt);
-
         if (isCancelled && !task.isCancel()) {
           task.cancel();
           if (debug)

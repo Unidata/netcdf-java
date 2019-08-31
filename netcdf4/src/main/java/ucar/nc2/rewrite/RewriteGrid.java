@@ -13,12 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
-/**
- * Describe
- *
- * @author caron
- * @since 8/5/2014
- */
+/** Rewrite a GridDataset to netcdf-4. Experimental. Not finished. */
 public class RewriteGrid {
 
   double rewrite(String filenameIn, String filenameOut, NetcdfFileWriter.Version version,

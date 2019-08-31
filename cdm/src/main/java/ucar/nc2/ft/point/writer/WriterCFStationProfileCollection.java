@@ -5,6 +5,8 @@
 
 package ucar.nc2.ft.point.writer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -28,6 +30,7 @@ import java.util.*;
  * @since 7/14/2014
  */
 public class WriterCFStationProfileCollection extends CFPointWriter {
+  private static Logger log = LoggerFactory.getLogger(WriterCFStationProfileCollection.class);
 
   private List<StationFeature> stnList;
   protected Structure stationStruct; // used for netcdf4 extended
@@ -92,7 +95,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
     Integer stnIndex = stationIndexMap.get(spf.getName());
     if (stnIndex == null) {
-      System.out.printf("BAD station %s%n", spf.getName());
+      log.warn("BAD station {}", spf.getName());
     } else {
       writeProfileData(stnIndex, profile, count);
     }
@@ -127,27 +130,6 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
       stationIndexMap.put(sf.getName(), count);
       count++;
     }
-
-    /*
-     * prefill any needed profile vars
-     * if (!isExtendedModel) {
-     * Variable stnIndexVar = writer.findVariable(stationIndexName);
-     * try {
-     * writer.write(stnIndexVar, Array.factory(DataType.INT, new int[]{nfeatures})); // default 0
-     * } catch (InvalidRangeException e) {
-     * e.printStackTrace();
-     * }
-     * 
-     * Variable profileIdxVar = writer.findVariable(profileIdName);
-     * try {
-     * Array prefill = Array.factory(DataType.INT, new int[]{nfeatures});
-     * MAMath.setDouble(prefill, idMissingValue);
-     * writer.write(stnIndexVar, prefill);
-     * } catch (InvalidRangeException e) {
-     * e.printStackTrace();
-     * }
-     * }
-     */
 
   }
 

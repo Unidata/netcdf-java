@@ -407,7 +407,6 @@ public class Uspln extends AbstractLightningIOSP {
       offsets[i] = off;
     }
 
-    // System.out.println("processed " + count + " records");
     return count;
   }
 

@@ -74,22 +74,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   @Override
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog)
       throws IOException {
-    /*
-     * BufrIosp2 iosp = (BufrIosp2) ncd.getIosp();
-     * BufrConfig config = iosp.getConfig();
-     * Formatter f = new Formatter();
-     * config.show(f);
-     * System.out.printf("%s%n", f);
-     * 
-     * Element iospParam = iosp.getElem();
-     * if (iospParam != null) {
-     * Element parent = iospParam.getChild("bufr2nc", NcMLReader.ncNS);
-     * show(parent, new Indent(2));
-     * 
-     * processSeq((Structure) ncd.findVariable(BufrIosp2.obsRecord), parent);
-     * }
-     */
-
 
     // must have an index file
     File indexFile = BufrCdmIndex.calcIndexFile(ncd.getLocation());
@@ -100,7 +84,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     return new BufrStationDataset(ncd, index);
   }
 
-  private void show(Element parent, Indent indent) {
+  private void show(Element parent, Indent indent, Formatter f) {
     if (parent == null)
       return;
     for (Element child : parent.getChildren("fld", Catalog.ncmlNS)) {
@@ -108,9 +92,9 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       String fxy = child.getAttributeValue("fxy");
       String name = child.getAttributeValue("name");
       String action = child.getAttributeValue("action");
-      System.out.printf("%sidx='%s' fxy='%s' name='%s' action='%s'%n", indent, idx, fxy, name, action);
+      f.format("%sidx='%s' fxy='%s' name='%s' action='%s'%n", indent, idx, fxy, name, action);
       indent.incr();
-      show(child, indent);
+      show(child, indent, f);
       indent.decr();
     }
   }
@@ -128,7 +112,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
       Variable want = vars.get(idx);
       struct.removeMemberVariable(want);
-      System.out.printf("removed %s%n", want);
     }
   }
 
@@ -220,8 +203,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
             extract.extract(sdata);
             String stationId = extract.getStationId();
-            // System.out.printf(" '%s' '%s' (%d) %n", s.getName(), stationId, countRecords++);
-            // if (count > 10) return null;
             if (!stationId.equals(s.getName()))
               return null;
             CalendarDate date = extract.makeCalendarDate();
@@ -307,8 +288,8 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
           @Override
           public void close() {
-            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere,
-                getInfo().nfeatures);
+            log.debug(String.format("BufrRecordIterator passed %d features super claims %d%n", countHere,
+                getInfo().nfeatures));
             super.close();
           }
 

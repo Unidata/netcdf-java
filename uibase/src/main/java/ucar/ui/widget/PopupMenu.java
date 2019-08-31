@@ -127,7 +127,6 @@ public class PopupMenu extends JPopupMenu {
     PopupTriggerListener() {}
 
     public void mousePressed(MouseEvent e) {
-      // System.out.println( "PopupTriggerListener "+e);
       if (anyButton || e.isPopupTrigger())
         showPopup(e);
     }

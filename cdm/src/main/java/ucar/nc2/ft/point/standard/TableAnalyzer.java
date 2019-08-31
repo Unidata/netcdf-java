@@ -233,7 +233,7 @@ public class TableAnalyzer {
             break;
           }
         } catch (Exception ex) {
-          System.out.println("ERROR: Class " + c.getName() + " Exception invoking isMine method%n" + ex);
+          log.error("Class {} exception invoking isMine method", c.getName(), ex);
         }
       }
     }
@@ -408,11 +408,7 @@ public class TableAnalyzer {
         leaves.add(flatTable);
       }
     }
-
-    if (PointDatasetStandardFactory.showTables)
-      getDetailInfo(new Formatter(System.out));
   }
-
 
   private void addTable(TableConfig t) {
     tableFind.put(t.name, t);
@@ -566,47 +562,17 @@ public class TableAnalyzer {
   /////////////////////////////////////////////////////
   /*
    * track station info
-   * 
+   *
    * private StationInfo stationInfo = new StationInfo();
-   * 
+   *
    * private StationInfo getStationInfo() {
    * return stationInfo;
    * }
-   * 
+   *
    * public class StationInfo {
    * public String stationId, stationDesc, stationNpts;
    * public int nstations;
    * public String latName, lonName, elevName;
-   * }
-   */
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /*
-   * public void showCoordSys(java.util.Formatter sf) {
-   * sf.format("%nCoordinate Systems%n");
-   * for (CoordinateSystem cs : ds.getCoordinateSystems()) {
-   * sf.format(" %s%n", cs);
-   * }
-   * }
-   * 
-   * public void showCoordAxes(java.util.Formatter sf) {
-   * sf.format("%nAxes%n");
-   * for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-   * sf.format(" %s %s%n", axis.getAxisType(), axis.getNameAndDimensions());
-   * }
-   * }
-   */
-
-  /*
-   * public void showTables(java.util.Formatter sf) {
-   * sf.format("%nTables%n");
-   * for (NestedTable.Table t : tableSet)
-   * sf.format(" %s%n", t);
-   * 
-   * sf.format("%nJoins%n");
-   * for (Join j : joins)
-   * sf.format(" %s%n", j);
    * }
    */
 

@@ -22,12 +22,6 @@ class DoradeRDAT extends DoradeDescriptor {
     paramName = new String(data, 8, 8, CDM.utf8Charset).trim();
     paramData = new byte[data.length - 16];
     System.arraycopy(data, 16, paramData, 0, data.length - 16);
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   public String toString() {

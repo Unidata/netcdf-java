@@ -96,9 +96,6 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     if (gemreader == null) {
       return null;
     }
-    // System.out.println("looking for " + v2);
-    // System.out.println("Section = " + section);
-    // Trace.call1("GEMPAKSIOSP: readData");
     Array array = null;
     if (gemreader.getFileSubType().equals(GempakSurfaceFileReader.SHIP)) {
       array = readShipData(v2, section);
@@ -107,9 +104,6 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     } else { // climate data
       // array = readClimateData(v2, section);
     }
-    // long took = System.currentTimeMillis() - start;
-    // System.out.println(" read data took=" + took + " msec ");
-    // Trace.call2("GEMPAKSIOSP: readData");
     return array;
   }
 

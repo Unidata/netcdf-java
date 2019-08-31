@@ -21,6 +21,8 @@ import java.util.*;
  * @since 8/10/11
  */
 public class WmoXmlReader {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WmoXmlReader.class);
+
   public enum Version {
     BUFR_14_1_0, BUFR_14_2_0, BUFR_15_1_1, BUFR_16_0_0, BUFR_WMO;
 
@@ -215,28 +217,28 @@ public class WmoXmlReader {
         y = xy % 1000;
 
       } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' fails parsing %n", fxy, name);
+        log.warn(" key {} name '{}' fails parsing", fxy, name);
       }
 
       try {
         s = elem.getChildTextNormalize("BUFR_Scale");
         scale = Integer.parseInt(cleanNumber(s));
       } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy, name, s);
+        log.warn(" key {} name '{}' has bad scale='{}'", fxy, name, s);
       }
 
       try {
         s = elem.getChildTextNormalize("BUFR_ReferenceValue");
         reference = Integer.parseInt(cleanNumber(s));
       } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad reference='%s' %n", fxy, name, s);
+        log.warn(" key {} name '{}' has bad reference='{}'", fxy, name, s);
       }
 
       try {
         s = elem.getChildTextNormalize("BUFR_DataWidth_Bits");
         width = Integer.parseInt(cleanNumber(s));
       } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad width='%s' %n", fxy, name, s);
+        log.warn(" key {} name '{}' has bad width='{}'", fxy, name, s);
       }
 
       b.addDescriptor((short) x, (short) y, scale, reference, width, name, units, null);

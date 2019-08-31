@@ -288,11 +288,9 @@ public class CatalogTreeView extends JPanel {
     node.makeChildren(includeCatref);
     tree.expandPath(makeTreePath(node));
 
-    // System.out.printf("open %s%n", node);
     Enumeration e = node.children();
     while (e.hasMoreElements()) {
       InvCatalogTreeNode child = (InvCatalogTreeNode) e.nextElement();
-      // System.out.printf(" child %s%n", child);
       open(child, includeCatref);
     }
   }

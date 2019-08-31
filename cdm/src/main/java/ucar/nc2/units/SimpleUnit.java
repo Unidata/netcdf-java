@@ -46,7 +46,6 @@ public class SimpleUnit {
       pressureUnit = SimpleUnit.factoryWithExceptions("Pa");
 
     } catch (Exception e) {
-      System.out.println("SimpleUnit initialization failed " + e);
       throw new RuntimeException("SimpleUnit initialization failed " + e);
     }
   }
@@ -119,7 +118,6 @@ public class SimpleUnit {
       return false;
     }
 
-    // System.out.println("udunits isCompatible "+ uu1+ " "+ uu2);
     return uu1.isCompatible(uu2);
   }
 

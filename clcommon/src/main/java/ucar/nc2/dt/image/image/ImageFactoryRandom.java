@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Read in all images in a dir and subdirs, and randomly iterate.
@@ -19,6 +21,7 @@ import java.util.Random;
  * @since Oct 9, 2008
  */
 public class ImageFactoryRandom {
+  private static Logger logger = LoggerFactory.getLogger(ImageFactoryRandom.class);
   private java.util.List<File> holdList;
   private java.util.List<File> fileList;
   private Random random = new Random(System.currentTimeMillis());
@@ -29,7 +32,6 @@ public class ImageFactoryRandom {
 
     fileList = new ArrayList<>(1000);
     addToList(topDir, fileList);
-    System.out.println("nfiles= " + fileList.size());
     holdList = new ArrayList<>(fileList);
   }
 
@@ -53,14 +55,12 @@ public class ImageFactoryRandom {
     holdList.remove(nextFile); // random draw without replacement
 
     try {
-      System.out.printf("next %d %s %n", next, nextFile);
       return javax.imageio.ImageIO.read(nextFile);
     } catch (IOException e) {
-      System.out.println("Failed to open image " + nextFile);
+      logger.warn("Failed to open image {}", nextFile);
       fileList.remove(nextFile);
       return getNextImage();
     }
-
   }
 
   // remove last file

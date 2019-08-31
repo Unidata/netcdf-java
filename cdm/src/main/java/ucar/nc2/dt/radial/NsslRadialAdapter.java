@@ -81,9 +81,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   private void addCoordSystem(NetcdfDataset ds) throws IOException {
-
-
-    // int time = ds.findGlobalAttributeIgnoreCase("Time").getNumericValue().intValue();
     double ele = 0;
     Attribute attr = ds.findGlobalAttributeIgnoreCase("Elevation");
     if (attr != null)
@@ -110,7 +107,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
       ds.addDimension(null, new Dimension("Elevation", spsize, true));
       String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
       CoordinateAxis v = new CoordinateAxis1D(ds, null, "Elevation", DataType.DOUBLE, "Elevation", "degrees", lName);
-      // ds.setValues(v, (ArrayList)spdata);
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
       ds.addVariable(null, v);
 
@@ -126,7 +122,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
     ds.addAttribute(null, new Attribute("VolumeCoveragePatternName", vcp));
     ds.finish();
-
   }
 
   public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
@@ -152,7 +147,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   public String getDataFormat() {
     return "NetCDF Level II";
   }
-
 
   public void setIsVolume(NetcdfDataset nds) {
     String format = nds.findAttValueIgnoreCase(null, "volume", null);
@@ -189,7 +183,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
     origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
   }
-
 
   protected void setTimeUnits() throws Exception {
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
@@ -326,9 +319,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
         this.nrays = rays;
         this.ngates = gates;
         this.sweepVar = v;
-
-        // setMeanElevation();
-        // setMeanAzimuth();
       }
 
       public Variable getsweepVar() {
@@ -367,7 +357,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
         return (float[]) allData.get1DJavaArray(float.class);
       }
 
-      // private Object MUTEX =new Object();
       /* read 1d data ngates */
       public float[] readData(int ray) throws java.io.IOException {
 
@@ -472,10 +461,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
         return sweepno;
       }
 
-      // public int getNumGates() {
-      // return ngates;
-      // }
-
       private void setMeanAzimuth() {
         meanAzimuth = 0.0;
       }
@@ -528,7 +513,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
         }
       }
 
-
       public float getRadialDistance(int gate) throws IOException {
         float gateStart = getRangeToFirstGate();
         Variable gateSize = ds.findVariable("GateWidth");
@@ -575,57 +559,5 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
     } // Netcdf2Sweep class
 
   } // Netcdf2Variable
-
-  private static void testRadialVariable(RadialDatasetSweep.RadialVariable rv) throws IOException {
-    int nsweep = rv.getNumSweeps();
-    // System.out.println("*** radar Sweep number is: \n" + nsweep);
-    Sweep sw;
-    float[] az;
-    for (int i = 0; i < nsweep; i++) {
-      // ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable getSweep " + i);
-      sw = rv.getSweep(i);
-      sw.getMeanElevation();
-      // ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable getSweep " + i);
-      float me = sw.getMeanElevation();
-      System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
-      int nrays = sw.getRadialNumber();
-      az = new float[nrays];
-      for (int j = 0; j < nrays; j++) {
-        float azi = sw.getAzimuth(j);
-        az[j] = azi;
-      }
-      // System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
-    }
-    sw = rv.getSweep(0);
-    // ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable readData");
-    float[] ddd = sw.readData();
-    sw.getAzimuth();
-    sw.getElevation();
-    // ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable readData");
-    assert (null != ddd);
-    int nrays = sw.getRadialNumber();
-    az = new float[nrays];
-    for (int i = 0; i < nrays; i++) {
-
-      int ngates = sw.getGateNumber();
-      assert (ngates > 0);
-      float[] d = sw.readData(i);
-      assert (null != d);
-      // float [] e = sw.readDataNew(i);
-      // assert(null != e);
-      float azi = sw.getAzimuth(i);
-      assert (azi > 0);
-      az[i] = azi;
-      float ele = sw.getElevation(i);
-      assert (ele > 0);
-      float la = (float) sw.getOrigin(i).getLatitude();
-      assert (la > 0);
-      float lo = (float) sw.getOrigin(i).getLongitude();
-      assert (lo > 0);
-      float al = (float) sw.getOrigin(i).getAltitude();
-      assert (al > 0);
-    }
-    assert (0 != nrays);
-  }
 
 }

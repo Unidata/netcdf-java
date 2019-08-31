@@ -1243,7 +1243,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
               maxj = j;
             if (j < minj)
               minj = j;
-            // System.out.println(j+" "+i+" lat="+lat+" lon="+lon);
           }
         }
       }

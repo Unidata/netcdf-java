@@ -132,7 +132,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
       GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
       GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/ncepgrib2.tbl");
     } catch (Exception e) {
-      System.out.println("unable to init tables");
+      throw new RuntimeException("unable to init tables", e);
     }
   }
 

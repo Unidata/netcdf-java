@@ -141,7 +141,6 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
       // construct the "dataSection" by replacing the tiled dimensions
       Section tiledSection = dtiled.makeVarSection(mainv);
-      // System.out.println(" tiledSection: " + tiledSection);
 
       // now use a TileLayout to figure out how to "distribute" it to the result array
       Array varData;
@@ -165,7 +164,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
         try {
           Array.arraycopy(varData, index.srcPos, allData, index.resultPos, index.nelems);
         } catch (RuntimeException e) {
-          System.out.println(index.toString());
+          logger.error("reallyRead {} ", index, e);
           throw e;
         }
       }
@@ -233,8 +232,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
         try {
           Array.arraycopy(varData, index.srcPos, allData, index.resultPos, index.nelems);
         } catch (RuntimeException e) {
-          System.out.println(" tiledSection: " + tiledSection);
-          System.out.println(index.toString());
+          logger.error("tiledSection {} {} ", index, tiledSection, e);
           throw e;
         }
       }
@@ -260,10 +258,10 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     TileLayout(Section localSection, Section wantSection) throws InvalidRangeException {
       Section dataSection = localSection.compact();
       Section resultSection = wantSection.compact();
-      if (debug)
+      if (debug) {
         System.out.println(" resultSection: " + resultSection);
-      if (debug)
         System.out.println(" dataSection: " + dataSection);
+      }
 
       int rank = dataSection.getRank();
 

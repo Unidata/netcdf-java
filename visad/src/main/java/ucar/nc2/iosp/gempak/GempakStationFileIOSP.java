@@ -123,7 +123,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
 
-    // System.out.printf("GempakSurfaceIOSP open %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
     super.open(raf, ncfile, cancelTask);
     if (gemreader == null) {
       gemreader = makeStationReader();
@@ -152,33 +151,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     return ff.toString();
   }
 
-  /*
-   * Sync the file
-   *
-   * @return true if needed to sync
-   * 
-   * @throws IOException problem synching the file
-   *
-   * public boolean sync() throws IOException {
-   * //printStack("***************************** sync ************************", 100);
-   * //System.out.printf("check sync on %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
-   * 
-   * if (gemreader.getInitFileSize() < raf.length()) {
-   * long start = System.currentTimeMillis();
-   * log.debug("GEMPAKStationIOSP.sync: file " + raf.getLocation()
-   * + " is bigger: " + raf.length() + " > "
-   * + gemreader.getInitFileSize());
-   * gemreader.init(raf, true);
-   * // reconstruct the ncfile objects
-   * buildNCFile();
-   * //System.out.printf("sync on %s took %d msecs%n", raf.getLocation(), (System.currentTimeMillis()-start));
-   * return true;
-   * }
-   * return false;
-   * }
-   */
-
-
   /**
    * Build the netCDF file
    *
@@ -189,7 +161,6 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     fillNCFile();
     addGlobalAttributes();
     ncfile.finish();
-    // System.out.println(ncfile);
   }
 
   /**

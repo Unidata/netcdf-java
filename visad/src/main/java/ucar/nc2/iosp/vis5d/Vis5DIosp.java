@@ -220,11 +220,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     int nl = sizes[2];
     int ntimes = sizes[3];
     int nvars = sizes[4];
-    // System.out.println("nr: "+nr);
-    // System.out.println("nc: "+nc);
-    // System.out.println("nl: "+nl);
-    // System.out.println("ntimes: "+ntimes);
-    // System.out.println("nvars: "+nvars);
 
     Dimension time = new Dimension(TIME, ntimes, true);
     Dimension row = new Dimension(ROW, nr, true);

@@ -51,8 +51,6 @@ public class NOWRadheader {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NOWRadheader.class);
   DateFormatter formatter = new DateFormatter();
 
-  // private PrintStream out = System.out;
-  // private Vinfo myInfo;
   private String cmemo, ctilt, ctitle, cunit, cname;
   private ucar.nc2.NetcdfFile ncfile;
 

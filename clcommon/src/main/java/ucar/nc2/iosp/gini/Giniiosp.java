@@ -169,9 +169,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
       try {
         offset += inflater.inflate(uncomp, offset, uncomp.length - offset);
       } catch (DataFormatException ex) {
-        System.out.println("ERROR on inflation " + ex.getMessage());
-        ex.printStackTrace();
-        throw new IOException(ex.getMessage());
+        throw new IOException(ex);
       }
 
       // If the last block finished...

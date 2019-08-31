@@ -576,7 +576,6 @@ public class GridIndexToNC {
  * pv.setTimeCoord( useTimeCoord);
  * 
  * // check for ensemble members
- * //System.out.println( pv.getName() +"  "+ pv.getParamName() );
  * GridEnsembleCoord useEnsembleCoord = null;
  * GridEnsembleCoord ensembleCoord = new GridEnsembleCoord(record, lookup);
  * for (GridEnsembleCoord gec : ensembleCoords) {
@@ -633,7 +632,6 @@ public class GridIndexToNC {
  * 
  * } // loop over hcs
  * 
- * if (debug) System.out.println("GridIndexToNC.makeDefinedCoordSys for "+ncfile.getLocation());
  * }
  * 
  * Find the variable name for the grid
@@ -672,27 +670,23 @@ public class GridIndexToNC {
  * // first lookup with name & vert name
  * String name = makeVariableName(gr, lookup, true, true);
  * if (debug)
- * System.out.println( "name ="+ name );
  * if (fmr.hasVariable( name))
  * return name;
  * 
  * // now try just the name
  * String pname = lookup.getParameter(gr).getDescription();
  * if (debug)
- * System.out.println( "pname ="+ pname );
  * if (fmr.hasVariable( pname))
  * return pname;
  * 
  * // try replacing the blanks
  * String nameWunder = StringUtil.replace(name, ' ', "_");
  * if (debug)
- * System.out.println( "nameWunder ="+ nameWunder );
  * if (fmr.hasVariable( nameWunder))
  * return nameWunder;
  * 
  * String pnameWunder = StringUtil.replace(pname, ' ', "_");
  * if (debug)
- * System.out.println( "pnameWunder ="+ pnameWunder );
  * if (fmr.hasVariable( pnameWunder))
  * return pnameWunder;
  * 

@@ -51,7 +51,6 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
         if (!wasRemoved(curr))
           result.add(curr); // skip if in removed list
       }
-      // System.out.printf("%s%n", mfile);
       curr.addFile(mfile);
     }
 

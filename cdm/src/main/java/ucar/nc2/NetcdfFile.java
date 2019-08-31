@@ -690,15 +690,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
             break;
 
           } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
-            // hvandam2
-            System.out.println("NetcdfFile.java Line 684, OFLE msg: " + oe.getMessage());
-            oe.printStackTrace(System.out);
+            log.warn("OverlappingFileLockException", oe);
             try {
               Thread.sleep(100); // msecs
             } catch (InterruptedException e1) {
-              // hvandam2
-              System.out.println("NetcdfFile.java Line 688, IE msg: " + oe.getMessage());
-              e1.printStackTrace(System.out);
               break;
             }
           }
@@ -731,15 +726,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
           break;
 
         } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
-          // hvandam2
-          System.out.println("NetcdfFile.java Line 720, OFLE msg: " + oe.getMessage() + oe);
-          oe.printStackTrace(System.out);
+          log.warn("OverlappingFileLockException2", oe);
           try {
             Thread.sleep(100); // msecs
           } catch (InterruptedException e1) {
-            // hvandam2
-            System.out.println("NetcdfFile.java Line 724, IE msg: " + oe.getMessage());
-            e1.printStackTrace(System.out);
           }
         }
       }

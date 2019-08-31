@@ -146,8 +146,8 @@ public class TableLookup {
     }
 
     if (d == null && showErrors)
-      System.out.printf(" TableLookup cant find Table D descriptor %s in tables %s,%s mode=%s%n",
-          Descriptor.makeString(fxy), getLocalTableDName(), getWmoTableDName(), mode);
+      log.warn(String.format(" TableLookup cant find Table D descriptor %s in tables %s,%s mode=%s%n",
+          Descriptor.makeString(fxy), getLocalTableDName(), getWmoTableDName(), mode));
     return d;
   }
 

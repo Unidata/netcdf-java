@@ -86,7 +86,6 @@ public class N3header extends NCheader {
   void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, Formatter fout) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
-    // this.out = (fout == null) ? new Formatter(System.out) : fout;
 
     long actualSize = raf.length();
     nonRecordDataSize = 0; // length of non-record data
@@ -961,8 +960,6 @@ public class N3header extends NCheader {
 
   // write a string then pad to 4 byte boundary
   private void writeString(String s) throws IOException {
-    // if (s.length() == 0)
-    // System.out.println("HEY");
     byte[] b = s.getBytes(CDM.utf8Charset); // all strings are encoded in UTF-8 Unicode.
     raf.writeInt(b.length);
     raf.write(b);

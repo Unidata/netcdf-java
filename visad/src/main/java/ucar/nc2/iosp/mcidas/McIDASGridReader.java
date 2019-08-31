@@ -136,8 +136,6 @@ public class McIDASGridReader {
     if (numEntries > MAX_GRIDS) {
       return false;
     }
-    // System.out.println("need to Swap = " + needToSwap);
-    // System.out.println("number entries="+numEntries);
 
     // go back to the beginning
     rf.seek(0);
@@ -157,18 +155,12 @@ public class McIDASGridReader {
       }
     }
 
-    // System.out.println("label = " + label);
-
-    // int project = readInt(8);
-    // System.out.println("Project = " + project);
-
     int date = readInt(9);
     // dates are supposed to be yyyddd, but account for ccyyddd up to year 4000
     if ((date < 10000) || (date > 400000)) {
       logError("date wrong, not a McIDAS grid");
       return false;
     }
-    // System.out.println("date = " + date);
 
     if (rf.length() < 4 * (numEntries + 12))
       return false;
@@ -207,7 +199,6 @@ public class McIDASGridReader {
         gridIndex.addGridRecord(gr);
         if (gdsMap.get(gr.getGridDefRecordId()) == null) {
           McGridDefRecord mcdef = gr.getGridDefRecord();
-          // System.out.println("new nav " + mcdef.toString());
           gdsMap.put(mcdef.toString(), mcdef);
           gridIndex.addHorizCoordSys(mcdef);
         }
@@ -266,9 +257,6 @@ public class McIDASGridReader {
       }
     }
     rf.order(RandomAccessFile.BIG_ENDIAN);
-    // } catch (Exception esc) {
-    // System.out.println(esc);
-    // }
     return data;
   }
 

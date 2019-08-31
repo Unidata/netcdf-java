@@ -185,14 +185,6 @@ public class EnumTypedef extends CDMNode {
   }
 
   @Override
-  public void hashCodeShow(Indent indent) {
-    System.out.printf("%sEnum hash = %d%n", indent, hashCode());
-    System.out.printf("%s shortName '%s' = %d%n", indent, getShortName(),
-        getShortName() == null ? -1 : getShortName().hashCode());
-    System.out.printf("%s map = %s%n", indent, map.hashCode());
-  }
-
-  @Override
   public String toString() {
     final Formatter f = new Formatter();
     f.format("EnumTypedef %s: ", getShortName());

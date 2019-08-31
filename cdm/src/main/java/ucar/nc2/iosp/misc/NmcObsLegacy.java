@@ -26,14 +26,10 @@ import java.nio.ByteBuffer;
  * @since Feb 22, 2008
  */
 public class NmcObsLegacy extends AbstractIOServiceProvider {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NmcObsLegacy.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NmcObsLegacy.class);
 
   private List<Station> stations = new ArrayList<>();
   private List<Report> reports = new ArrayList<>();
-  // private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
-  // private List<String> stations;
-
-  // private int nobs = 0, nstations = 0;
   private Calendar cal = null;
   private DateFormatter dateFormatter = new DateFormatter();
   private Date refDate; // from the header
@@ -110,7 +106,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       ncfile.addVariable(null, reportVar);
 
     } catch (InvalidRangeException e) {
-      log.error("open ON29 File", e);
+      logger.error("open ON29 File", e);
       throw new IllegalStateException(e.getMessage());
     }
   }
@@ -361,50 +357,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return abb;
   }
 
-  /*
-   * private class ReportIterator implements StructureDataIterator {
-   * List<Report> reports;
-   * Iterator<Report> iter;
-   * StructureMembers members;
-   * 
-   * ReportIterator(List<Report> reports) {
-   * this.reports = reports;
-   * iter = reports.iterator();
-   * 
-   * members = reportVar.makeStructureMembers();
-   * for (Variable v2 : reportVar.getVariables()) {
-   * Vinfo vinfo = (Vinfo) v2.getSPobject();
-   * StructureMembers.Member m = members.findMember(v2.getShortName());
-   * m.setDataParam(vinfo.offset);
-   * }
-   * }
-   * 
-   * public boolean hasNext() throws IOException {
-   * return iter.hasNext();
-   * }
-   * 
-   * public StructureData next() throws IOException {
-   * Report r = iter.next();
-   * 
-   * // LOOK should optimize - read 10 at a time or something ???
-   * ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{1});
-   * ByteBuffer bb = abb.getByteBuffer();
-   * bb.position(0);
-   * r.loadStructureData(abb, bb);
-   * return abb.getStructureData(0);
-   * }
-   * 
-   * public void setBufferSize(int bytes) {
-   * }
-   * 
-   * public StructureDataIterator reset() {
-   * iter = reports.iterator();
-   * return this;
-   * }
-   * }
-   */
-
-
   private Report firstReport = null;
 
   private void init() throws IOException {
@@ -459,57 +411,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Collections.sort(stations);
 
-
     if (checkPositions)
       System.out.println("\nnon matching lats= " + badPos);
     if (checkType)
       System.out.println("\nnon matching reportTypes= " + badType);
-
-    // System.out.println(firstReport);
-    // firstReport.show();
-    // firstReport.readData();
-
-    /*
-     * Set<String> keys = map.keySet();
-     * if (showTimes || readData || checkSort) {
-     * int unsorted = 0;
-     * 
-     * for (String key : keys) {
-     * List<Report> reports = map.get(key);
-     * if (showTimes) System.out.print("Station " + key + ": ");
-     * if (summarizeData) System.out.println("Station " + key + " :");
-     * Report last = null;
-     * for (Report r : reports) {
-     * if ((last != null) && last.date.after(r.date)) {
-     * System.out.println("***NOT ORDERED " + key +
-     * " last=" + dateFormatter.toDateTimeStringISO(last.date) + "(" + last.filePos + ")" +
-     * " next =" + dateFormatter.toDateTimeStringISO(r.date) + "(" + r.filePos + ")");
-     * unsorted++;
-     * }
-     * last = r;
-     * 
-     * if (showTimes) System.out.print(dateFormatter.toDateTimeStringISO(r.date) + " ");
-     * if (readData || summarizeData) {
-     * List<Record> cats = r.readData();
-     * if (summarizeData) {
-     * System.out.print("  " + r.obsTime + ": (");
-     * for (Record cat : cats)
-     * System.out.print(cat.code + "/" + cat.nlevels + " ");
-     * System.out.println(")");
-     * }
-     * }
-     * 
-     * }
-     * if (showTimes) System.out.println();
-     * }
-     * if (checkSort)
-     * System.out.println("\nunsorted= " + unsorted);
-     * 
-     * }
-     * nstations = keys.size();
-     */
-
-    // System.out.println("\nnreports= " + reports.size() + " nstations= " + stations.size());
   }
 
   private static class Station implements Comparable<Station> {
@@ -561,7 +466,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         latS = new String(reportId, 0, 5, CDM.utf8Charset);
       }
 
-      // System.out.println("ReportId start at " + start);
       try {
         lat = (float) (.01 * Float.parseFloat(latS));
         lon = (float) (360.0 - .01 * Float.parseFloat(new String(reportId, 5, 5, CDM.utf8Charset)));

@@ -555,9 +555,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     // assign Coordinate Transforms
     assignCoordinateTransforms(ncDataset);
-
-    if (debug)
-      System.out.println("parseInfo = \n" + parseInfo.toString());
   }
 
   private void addVariables(NetcdfDataset ncDataset, List<Variable> varList, List<VarProcess> varProcessList) {

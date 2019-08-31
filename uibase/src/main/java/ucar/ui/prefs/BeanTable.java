@@ -233,9 +233,7 @@ public class BeanTable<T> extends JPanel {
 
   // debug
   public String getToolTipText(MouseEvent event) {
-    String text = super.getToolTipText(event);
-    System.out.println("BeanTable tooltip " + text);
-    return text;
+    return super.getToolTipText(event);
   }
 
   public void setProperty(String propertyName, String displayName, String toolTipText) {
@@ -711,26 +709,21 @@ public class BeanTable<T> extends JPanel {
     public void setProperty(String propertyName, String displayName, String toolTipText) {
       PropertyDescriptor pd = getProperty(propertyName);
       if (pd != null) {
-
-
         if (displayName != null) {
           pd.setDisplayName(displayName);
           JLabel hl = (JLabel) pd.getValue("Header");
           if (hl != null)
             hl.setText(displayName);
-          // System.out.println("setDisplayName <"+displayName+"> on "+propertyName);
         }
         if (toolTipText != null) {
           pd.setShortDescription(toolTipText);
           JComponent jc = (JComponent) pd.getValue("ToolTipComp");
           if (jc != null)
             jc.setToolTipText(toolTipText);
-          // System.out.println("setToolTipText <"+toolTipText+"> on "+propertyName);
         }
       } else
         System.out.println("BeanTable.setProperty " + beanClass.getName() + " no property named " + propertyName);
     }
-
 
     // AbstractTableModel methods
     public int getRowCount() {

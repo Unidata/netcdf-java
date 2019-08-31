@@ -6,6 +6,8 @@ package ucar.nc2.iosp.noaa;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -29,6 +31,8 @@ import java.util.List;
  * @since 3/3/11
  */
 public class IgraPor extends AbstractIOServiceProvider {
+  private static Logger logger = LoggerFactory.getLogger(IgraPor.class);
+
   private static final String dataPatternRegexp =
       "(\\d{2})([ \\-\\d]{6})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})([ \\-\\d]{5})([ \\-\\d]{5})$";
 
@@ -278,7 +282,6 @@ public class IgraPor extends AbstractIOServiceProvider {
           continue;
         if (line.trim().length() == 0)
           continue;
-        // System.out.printf("line %s%n", line);
         matcher = vinfo.p.matcher(line);
         if (matcher.matches()) {
           String stnid = matcher.group(stn_fldno).trim();
@@ -328,14 +331,12 @@ public class IgraPor extends AbstractIOServiceProvider {
       boolean more = (vinfo.rafile.getFilePointer() < totalBytes); // && (recno < 10);
       if (!more) {
         vinfo.nelems = recno;
-        // System.out.printf("nelems=%d%n", recno);
         return false;
       }
       curr = reallyNext();
       more = (curr != null);
       if (!more) {
         vinfo.nelems = recno;
-        // System.out.printf("nelems=%d%n", recno);
         return false;
       }
       return more;
@@ -356,11 +357,10 @@ public class IgraPor extends AbstractIOServiceProvider {
           continue;
         if (line.trim().length() == 0)
           continue;
-        // System.out.printf("line %s%n", line);
         matcher = vinfo.p.matcher(line);
         if (matcher.matches())
           break;
-        System.out.printf("FAIL %s%n", line);
+        logger.error("FAIL at line {}", line);
       }
       recno++;
       return new StationData(vinfo.sm, matcher);
@@ -469,7 +469,7 @@ public class IgraPor extends AbstractIOServiceProvider {
         matcher = seriesVinfo.p.matcher(line);
         if (matcher.matches())
           break;
-        System.out.printf("FAIL TimeSeriesIter <%s>%n", line);
+        logger.error("FAIL TimeSeriesIter at line {}", line);
       }
       countRead++;
       return new TimeSeriesData(matcher);
@@ -566,160 +566,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
       }
     }
-
   }
-
-
-  ///////////////////////////////////////////
-  /*
-   * private void readIndex(String indexFilename) throws IOException {
-   * FileInputStream fin = new FileInputStream(indexFilename);
-   * 
-   * if (!NcStream.readAndTest(fin, MAGIC_START_IDX.getBytes("UTF-8")))
-   * throw new IllegalStateException("bad index file");
-   * int version = fin.read();
-   * if (version != 1)
-   * throw new IllegalStateException("Bad version = " + version);
-   * 
-   * int count = NcStream.readVInt(fin);
-   * 
-   * for (int i = 0; i < count; i++) {
-   * int size = NcStream.readVInt(fin);
-   * byte[] pb = new byte[size];
-   * NcStream.readFully(fin, pb);
-   * StationIndex si = decodeStationIndex(pb);
-   * map.put(si.stnId, si);
-   * }
-   * fin.close();
-   * 
-   * System.out.println(" read index map size=" + map.values().size());
-   * }
-   * 
-   * private void makeIndex(StructureDataRegexp.Vinfo stnInfo, StructureDataRegexp.Vinfo dataInfo, File indexFile)
-   * throws IOException {
-   * // get map of Stations
-   * StructureMembers.Member m = stnInfo.sm.findMember(STNID);
-   * StructureDataRegexp.VinfoField f = (StructureDataRegexp.VinfoField) m.getDataObject();
-   * int stnCount = 0;
-   * 
-   * // read through entire file LOOK: could use SeqIter
-   * stnInfo.rafile.seek(0);
-   * while (true) {
-   * long stnPos = stnInfo.rafile.getFilePointer();
-   * String line = stnInfo.rafile.readLine();
-   * if (line == null) break;
-   * 
-   * Matcher matcher = stnInfo.p.matcher(line);
-   * if (!matcher.matches()) {
-   * System.out.printf("FAIL %s%n", line);
-   * continue;
-   * }
-   * String svalue = matcher.group(f.fldno);
-   * Long id = Long.parseLong(svalue.trim());
-   * 
-   * StationIndex s = new StationIndex();
-   * s.stnId = id;
-   * s.stnPos = stnPos;
-   * map.put(id, s);
-   * stnCount++;
-   * }
-   * 
-   * // assumes that the stn data is in order by stnId
-   * m = dataInfo.sm.findMember(STNID);
-   * f = (StructureDataRegexp.VinfoField) m.getDataObject();
-   * StationIndex currStn = null;
-   * int totalCount = 0;
-   * 
-   * // read through entire data file
-   * dataInfo.rafile.seek(0);
-   * while (true) {
-   * long dataPos = dataInfo.rafile.getFilePointer();
-   * String line = dataInfo.rafile.readLine();
-   * if (line == null) break;
-   * 
-   * Matcher matcher = dataInfo.p.matcher(line);
-   * if (!matcher.matches()) {
-   * System.out.printf("FAIL %s%n", line);
-   * continue;
-   * }
-   * 
-   * String svalue = matcher.group(f.fldno).trim();
-   * Long id = Long.parseLong(svalue);
-   * 
-   * if ((currStn == null) || (currStn.stnId != id)) {
-   * StationIndex s = map.get(id);
-   * if (s == null)
-   * System.out.printf("Cant find %d%n", id);
-   * else if (s.dataCount != 0)
-   * System.out.printf("Not in order %d at pos %d %n", id, dataPos);
-   * else {
-   * s.dataPos = dataPos;
-   * totalCount++;
-   * }
-   * currStn = s;
-   * }
-   * currStn.dataCount++;
-   * }
-   * //System.out.printf("ok stns=%s data=%d%n", stnCount, totalCount);
-   * 
-   * //////////////////////////////
-   * // write the index file
-   * FileOutputStream fout = new FileOutputStream(indexFile); // LOOK need DiskCache for non-writeable directories
-   * long size = 0;
-   * 
-   * //// header message
-   * fout.write(MAGIC_START_IDX.getBytes("UTF-8"));
-   * fout.write(version);
-   * size += NcStream.writeVInt(fout, stnCount);
-   * 
-   * /* byte[] pb = encodeStationListProto( map.values());
-   * size += NcStream.writeVInt(fout, pb.length);
-   * size += pb.length;
-   * fout.write(pb);
-   * 
-   * for (StationIndex s : map.values()) {
-   * byte[] pb = s.encodeStationProto();
-   * size += NcStream.writeVInt(fout, pb.length);
-   * size += pb.length;
-   * fout.write(pb);
-   * }
-   * fout.close();
-   * 
-   * //System.out.println(" index size=" + size);
-   * }
-   * 
-   * private StationIndex decodeStationIndex(byte[] data) throws InvalidProtocolBufferException {
-   * ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto = GhcnmProto.StationIndex.parseFrom(data);
-   * return new StationIndex(proto);
-   * }
-   * 
-   * private class StationIndex {
-   * long stnId;
-   * long stnPos; // file pos in inv file
-   * long dataPos; // file pos of first data line in the data file
-   * int dataCount; // number of data records
-   * 
-   * StationIndex() {
-   * }
-   * 
-   * StationIndex(ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto) {
-   * this.stnId = proto.getStnid();
-   * this.stnPos = proto.getStnPos();
-   * this.dataPos = proto.getDataPos();
-   * this.dataCount = proto.getDataCount();
-   * }
-   * 
-   * private byte[] encodeStationProto() {
-   * GhcnmProto.StationIndex.Builder builder = GhcnmProto.StationIndex.newBuilder();
-   * builder.setStnid(stnId);
-   * builder.setStnPos(stnPos);
-   * builder.setDataPos(dataPos);
-   * builder.setDataCount(dataCount);
-   * ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto = builder.build();
-   * return proto.toByteArray();
-   * }
-   * }
-   */
 
 }
 

@@ -5,6 +5,8 @@
 
 package ucar.nc2.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
@@ -73,6 +75,7 @@ import java.net.URL;
  * 
  */
 public class TableParser {
+  private static Logger logger = LoggerFactory.getLogger(TableParser.class);
   static private final boolean debug = false;
 
   /**
@@ -225,7 +228,6 @@ public class TableParser {
         svalue = line.substring(start);
       else
         svalue = line.substring(start, end);
-      // System.out.printf(" [%d,%d) = %s %n",start, end, svalue);
 
       if (type == String.class)
         return svalue;
@@ -246,7 +248,7 @@ public class TableParser {
           return isBlank ? 0L : new Long(svalue);
 
       } catch (NumberFormatException e) {
-        System.out.printf("  [%d,%d) = <%s> %n", start, end, svalue);
+        logger.warn("Bad line={} ", String.format("  [%d,%d) = <%s> %n", start, end, svalue));
         throw e;
       }
 
@@ -301,7 +303,7 @@ public class TableParser {
         }
         return r;
       } catch (NumberFormatException e) {
-        System.out.printf("Bad line=%s %n", line);
+        logger.warn("Bad line={}", line);
         return null;
       }
     }

@@ -27,6 +27,7 @@ import java.util.*;
  * @since 5/1/2015
  */
 public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
+  private static boolean debug = false;
 
   public static FeatureDatasetCoverage factory(DtCoverageDataset proxy, Formatter errlog) {
     DtCoverageAdapter reader = new DtCoverageAdapter(proxy);
@@ -391,7 +392,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     // Could use an Array composite here, if we had one
     Array result = Array.factory(coverage.getDataType(), subsetCoordSys.getShape());
-    System.out.printf(" read %s result shape=%s%n", coverage.getName(), Misc.showInts(result.getShape()));
+    if (debug)
+      System.out.printf(" read %s result shape=%s%n", coverage.getName(), Misc.showInts(result.getShape()));
     int[] origin = new int[result.getRank()]; // all zeroes
 
     ranges.add(null); // make room for last
@@ -401,13 +403,13 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       // read the data
       ranges.set(n - 1, (Range) ri.setName(comp.getName())); // add last
       Section want = new Section(ranges);
-      System.out.printf("  composite read section=%s%n", want);
+      if (debug) System.out.printf("  composite read section=%s%n", want);
       Array data = grid.readDataSection(want, canonicalOrder);
 
       // where does it go?
       Section dataSection = new Section(data.getShape());
       Section sectionInResult = dataSection.shiftOrigin(origin);
-      System.out.printf("  sectionInResult=%s%n", sectionInResult);
+      if (debug) System.out.printf("  sectionInResult=%s%n", sectionInResult);
 
       // copy it there
       IndexIterator resultIter = result.getRangeIterator(sectionInResult.getRanges());

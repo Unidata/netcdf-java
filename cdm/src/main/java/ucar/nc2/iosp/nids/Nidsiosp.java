@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.nids;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -24,7 +26,7 @@ import java.nio.ByteBuffer;
  */
 
 public class Nidsiosp extends AbstractIOServiceProvider {
-
+  private static Logger logger = LoggerFactory.getLogger(Nidsiosp.class);
   protected boolean readonly;
   protected Nidsheader headerParser;
 
@@ -435,7 +437,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     for (int i = 1; i < size; i++) {
       int r = pos[i] - pos[i - 1];
       if (r != recsize)
-        System.out.println(" PROBLEM at " + i + " == " + r);
+        logger.warn(" PROBLEM at i = {} : r {} != recsize {}", i, r, recsize);
     }
 
     StructureMembers members = pdata.makeStructureMembers();
@@ -445,7 +447,6 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     members.findMember("radius").setDataParam(4);
     members.setStructureSize(recsize);
     return new ArrayStructureBBpos(members, new int[] {size}, bos, pos);
-
   }
 
   /**
@@ -757,34 +758,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
         }
       }
       return fdata;
-
     }
-
-    /*
-     * else if(vName.endsWith( "_Brightness" )){
-     * float ratio = 256.0f/vinfo.level;
-     * 
-     * float [] fdata = new float[npixel];
-     * for ( int i = 0; i < vinfo.yt * vinfo.xt; i++ ) {
-     * fdata[i] = pdata[i] * ratio;
-     * }
-     * return fdata;
-     * 
-     * } else if ( vName.endsWith( "_VIP" )) {
-     * int [] levels = vinfo.len;
-     * int iscale = vinfo.code;
-     * int [] dvip ={ 0, 30, 40, 45, 50, 55 };
-     * float [] fdata = new float[npixel];
-     * for (int i = 0; i < npixel; i++ ) {
-     * float dbz = levels[pdata[i]] / iscale + offset;
-     * for (int j = 0; j <= 5; j++ ) {
-     * if ( dbz > dvip[j] ) fdata[i] = j + 1;
-     * }
-     * }
-     * return fdata;
-     * 
-     * }
-     */
     return null;
   }
 
@@ -903,7 +877,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
       for (int i = 1; i < size; i++) {
         int r = pos[i] - pos[i - 1];
         if (r != recsize)
-          System.out.println(" PROBLEM at " + i + " == " + r);
+          logger.warn(" PROBLEM at i = {} : r {} != recsize {}", i, r, recsize);
       }
     } else
       recsize = 1;
@@ -980,7 +954,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     for (int i = 1; i < size; i++) {
       int r = pos[i] - pos[i - 1];
       if (r != recsize)
-        System.out.println(" PROBLEM at " + i + " == " + r);
+        logger.warn(" PROBLEM at i = {} : r {} != recsize {}", i, r, recsize);
     }
 
     StructureMembers members = pdata.makeStructureMembers();
@@ -992,75 +966,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
     members.setStructureSize(recsize);
     return new ArrayStructureBBpos(members, new int[] {size}, bos, pos);
-    /*
-     * Structure pdata = new Structure(ncfile, null, null,"vectorArrow" );
-     * 
-     * Variable ii0 = new Variable(ncfile, null, pdata, "x_start");
-     * ii0.setDimensions((String)null);
-     * ii0.setDataType(DataType.SHORT);
-     * pdata.addMemberVariable(ii0);
-     * 
-     * Variable ii1 = new Variable(ncfile, null, pdata, "y_start");
-     * ii1.setDimensions((String)null);
-     * ii1.setDataType(DataType.SHORT);
-     * pdata.addMemberVariable(ii1);
-     * 
-     * Variable direct = new Variable(ncfile, null, pdata, "direction");
-     * direct.setDimensions((String)null);
-     * direct.setDataType(DataType.SHORT);
-     * pdata.addMemberVariable(direct);
-     * 
-     * Variable speed = new Variable(ncfile, null, pdata, "arrowLength");
-     * speed.setDimensions((String)null);
-     * speed.setDataType(DataType.SHORT);
-     * pdata.addMemberVariable(speed);
-     * 
-     * Variable v = new Variable(ncfile, null, null, "arrowHeadLength");
-     * v.setDataType(DataType.SHORT);
-     * v.setDimensions((String)null);
-     * pdata.addMemberVariable(v);
-     * 
-     * StructureMembers members = pdata.makeStructureMembers();
-     * ArrayStructureW asw = new ArrayStructureW(members, new int[] {size});
-     * 
-     * for (int i=0; i< size; i++) {
-     * bos.position( pos[i]);
-     * 
-     * istart = bos.getShort();
-     * jstart = bos.getShort();
-     * direction = bos.getShort();
-     * arrowvalue = bos.getShort();
-     * arrowHeadValue = bos.getShort();
-     * 
-     * ArrayStructureW.StructureDataW sdata = asw.new StructureDataW();
-     * Iterator memberIter = sdata.getMembers().iterator();
-     * 
-     * ArrayObject.D0 sArray = new ArrayObject.D0(DataType.SHORT);
-     * sArray.set(new Short(istart));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * sArray = new ArrayObject.D0(Short.class);
-     * sArray.set(new Short(jstart));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * sArray = new ArrayObject.D0(String.class);
-     * sArray.set(new Short(direction));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * sArray = new ArrayObject.D0(Short.class);
-     * sArray.set(new Short(arrowvalue));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * sArray = new ArrayObject.D0(String.class);
-     * sArray.set(new Short(arrowHeadValue));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * asw.setStructureData(sdata, i);
-     * } //end of for loop
-     */
-    // return asw;
-
-  }
+   }
 
   /**
    * Read nested data
@@ -1129,79 +1035,6 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     }
 
     return new MyArrayStructureBBpos(members, new int[] {size}, bos, pos, sizes);
-    // StructureData[] outdata = new StructureData[size];
-    // Structure pdata = new Structure(ncfile, null, null,"textdata" );
-    /*
-     * short istart = 0;
-     * short jstart = 0;
-     * short sValue = 0;
-     * 
-     * Variable ii0 = new Variable(ncfile, null, pdata, "x_start");
-     * ii0.setDimensions((String)null);
-     * ii0.setDataType(DataType.SHORT);
-     * pdata.addMemberVariable(ii0);
-     * Variable ii1 = new Variable(ncfile, null, pdata, "y_start");
-     * ii1.setDimensions((String)null);
-     * ii1.setDataType(DataType.SHORT);
-     * pdata.addMemberVariable(ii1);
-     * Variable jj0 = new Variable(ncfile, null, pdata, "textString");
-     * jj0.setDimensions((String)null);
-     * jj0.setDataType(DataType.STRING);
-     * pdata.addMemberVariable(jj0);
-     * 
-     * if(vinfo.code == 8){
-     * Variable v = new Variable(ncfile, null, null, "strValue");
-     * v.setDataType(DataType.SHORT);
-     * v.setDimensions((String)null);
-     * pdata.addMemberVariable(v);
-     * }
-     * 
-     * StructureMembers members = pdata.makeStructureMembers();
-     * ArrayStructureW asw = new ArrayStructureW(members, new int[] {size});
-     * 
-     * for (int i=0; i< size; i++) {
-     * bos.position( pos[i] - 2); //re read the length of block
-     * int strLen = bos.getShort();
-     * 
-     * if(vinfo.code == 8) {
-     * strLen = strLen - 6;
-     * sValue = bos.getShort();
-     * } else {
-     * strLen = strLen - 4;
-     * }
-     * byte[] bb = new byte[strLen];
-     * ArrayStructureW.StructureDataW sdata = asw.new StructureDataW();
-     * Iterator memberIter = sdata.getMembers().iterator();
-     * 
-     * ArrayObject.D0 sArray = new ArrayObject.D0(Short.class);
-     * istart = bos.getShort();
-     * jstart = bos.getShort();
-     * bos.get(bb);
-     * String tstring = new String(bb);
-     * 
-     * sArray.set(new Short(istart));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * sArray = new ArrayObject.D0(Short.class);
-     * sArray.set(new Short(jstart));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * sArray = new ArrayObject.D0(String.class);
-     * sArray.set(new String(tstring));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * 
-     * if(vinfo.code == 8) {
-     * sArray = new ArrayObject.D0(Short.class);
-     * sArray.set(new Short(sValue));
-     * sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
-     * }
-     * 
-     * asw.setStructureData(sdata, i);
-     * 
-     * } //end of for loop
-     */
-    // return asw;
-
   }
 
   private static class MyArrayStructureBBpos extends ArrayStructureBBpos {
@@ -1689,8 +1522,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
       try {
         resultLength = inf.inflate(uncomp, result, 4000);
       } catch (DataFormatException ex) {
-        System.out.println("ERROR on inflation " + ex.getMessage());
-        ex.printStackTrace();
+        logger.error("ERROR on inflation ", ex);
         throw new IOException(ex.getMessage());
       }
 
@@ -1717,44 +1549,6 @@ public class Nidsiosp extends AbstractIOServiceProvider {
       }
 
     }
-    /*
-     * while ( inf.getRemaining() > 0) {
-     * try{
-     * resultLength = inf.inflate(uncomp);
-     * }
-     * catch (DataFormatException ex) {
-     * System.out.println("ERROR on inflation");
-     * ex.printStackTrace();
-     * }
-     * if(resultLength > 0 ) {
-     * result = result + resultLength;
-     * inflateData = new byte[result];
-     * if(tmp != null) {
-     * System.arraycopy(tmp, 0, inflateData, 0, tmp.length);
-     * System.arraycopy(uncomp, 0, inflateData, tmp.length, resultLength);
-     * } else {
-     * System.arraycopy(uncomp, 0, inflateData, 0, resultLength);
-     * }
-     * tmp = new byte[result];
-     * System.arraycopy(inflateData, 0, tmp, 0, result);
-     * uncomp = new byte[(int)uncompLen];
-     * } else {
-     * int tt = inf.getRemaining();
-     * byte [] b2 = new byte[2];
-     * System.arraycopy(b,(int)hoff+numin-4-tt, b2, 0, 2);
-     * if( headerParser.isZlibHed( b2 ) == 0 ) {
-     * result = result + tt;
-     * inflateData = new byte[result];
-     * System.arraycopy(tmp, 0, inflateData, 0, tmp.length);
-     * System.arraycopy(b, (int)hoff+numin-4-tt, inflateData, tmp.length, tt);
-     * break;
-     * }
-     * inf.reset();
-     * inf.setInput(b, (int)hoff+numin-4-tt, tt);
-     * 
-     * }
-     * }
-     */
     inf.end();
 
     int off;

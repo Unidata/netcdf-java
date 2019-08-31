@@ -92,8 +92,6 @@ public abstract class Field {
       storeData.addPreferenceChangeListener(new PreferenceChangeListener() {
         public void preferenceChange(PreferenceChangeEvent evt) {
           if (evt.getKey().equals(getName())) {
-            // System.out.println("Field: node listener on "+ evt.getNode().name()+" key = <"+evt.getKey()+"> val=
-            // <"+evt.getNewValue()+">");
             // the value in the store has change: update the edit component
             // send event if its different from previous
             setNewValueFromStore();
@@ -105,13 +103,6 @@ public abstract class Field {
 
   protected void finish() {
     addStandardPopups();
-    /*
-     * getDeepEditComponent().addPropertyChangeListener(new PropertyChangeListener () {
-     * public void propertyChange(PropertyChangeEvent evt) {
-     * System.out.println(name+" got propertyChange "+evt.getPropertyName());
-     * }
-     * });
-     */
   }
 
   //// public methods
@@ -130,17 +121,6 @@ public abstract class Field {
   public PersistenceManager getPersistenceManager() {
     return storeData;
   }
-  /*
-   * Set the PersistenceManager component
-   * public void setPersistenceManager(PersistenceManager storeData) {
-   * this.storeData = storeData;
-   * Object value = getStoreValue( null);
-   * if (value != null) {
-   * if (debugPersistence) System.out.println(name+" setEditValue "+value+" ("+value.getClass().getName()+")");
-   * setEditValue( value); LOOK need addPreferenceChangeListener
-   * }
-   * }
-   */
 
   /** Return whether the field is enabled */
   public boolean isEnabled() {
@@ -288,7 +268,6 @@ public abstract class Field {
    * @return true if its different.
    */
   protected boolean acceptIfDifferent(Object newValue) {
-    // System.out.println("isDifferent "+newValue+" "+value);
     if ((newValue == null) && (validValue == null))
       return false;
     if ((validValue != null) && validValue.equals(newValue))
@@ -945,7 +924,6 @@ public abstract class Field {
    * 
    * this.tf.addActionListener(new ActionListener() {
    * public void actionPerformed(ActionEvent e) {
-   * // System.out.println("Field.TextFormatted: got Action event on "+getName());
    * accept();
    * next();
    * }
@@ -962,7 +940,6 @@ public abstract class Field {
    * return tf.getValue();
    * } catch (java.text.ParseException e) {
    * java.awt.Toolkit.getDefaultToolkit().beep();
-   * System.out.println("Field.TextFormatted: invalid format "+ getName()+" = "+tf.getText());
    * return null;
    * }
    * }
@@ -1090,10 +1067,6 @@ public abstract class Field {
    * //decf.setMaximumFractionDigits( 5);
    * //tf.setFormatterFactory(new DoubleFormatterFactory(decf));
    * 
-   * /* System.out.println("getMaximumIntegerDigits="+decf.getMaximumIntegerDigits());
-   * System.out.println("getMinimumIntegerDigits="+decf.getMinimumIntegerDigits());
-   * System.out.println("getMaximumFractionDigits="+decf.getMaximumFractionDigits());
-   * System.out.println("getMinimumFractionDigits="+decf.getMinimumFractionDigits());
    * }
    * 
    * /**

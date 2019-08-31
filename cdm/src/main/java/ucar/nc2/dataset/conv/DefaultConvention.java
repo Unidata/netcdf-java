@@ -215,7 +215,6 @@ public class DefaultConvention extends CoordSysBuilder {
     if (vname.equalsIgnoreCase("time") && v.getDataType() == DataType.STRING) {
       try {
         Array firstValue = v.read("0");
-        // System.out.printf("%s%n", NCdumpW.printArray(firstValue, "firstValue", null));
         if (firstValue instanceof ArrayObject.D1) {
           ArrayObject.D1 sarry = (ArrayObject.D1) firstValue;
           String firstStringValue = (String) sarry.get(0);

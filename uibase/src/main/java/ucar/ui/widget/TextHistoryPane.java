@@ -210,7 +210,6 @@ public class TextHistoryPane extends JPanel {
       nlinesFld.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           int numLines = Integer.parseInt(nlinesFld.getText());
-          // System.out.println( "numLines = "+numLines);
           TextHistoryPane.this.nlines = Math.max(numLines - 1, removeIncr);
           popup.setVisible(false);
         }
@@ -229,9 +228,7 @@ public class TextHistoryPane extends JPanel {
           printJob.setPrintable(MyPopupMenu.this, pf);
           if (printJob.printDialog()) {
             try {
-              // if (Debug.isSet("print.job")) System.out.println("call printJob.print");
               printJob.print();
-              // if (Debug.isSet("print.job")) System.out.println(" printJob done");
             } catch (Exception PrintException) {
               PrintException.printStackTrace();
             } finally {
@@ -252,7 +249,6 @@ public class TextHistoryPane extends JPanel {
 
             JOptionPane.showMessageDialog(null, "Text written to" + filename);
           } catch (IOException ioe) {
-            // System.out.println(" write TextArea to file = "+filename+" "+ioe);
             JOptionPane.showConfirmDialog(null, "Error writting to" + filename + " " + ioe.getMessage());
           }
           popup.setVisible(false);

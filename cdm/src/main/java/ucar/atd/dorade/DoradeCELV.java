@@ -22,12 +22,6 @@ class DoradeCELV extends DoradeDescriptor {
     ranges = new float[nCells];
     for (int i = 0; i < nCells; i++)
       ranges[i] = grabFloat(data, 12 + 4 * i);
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   protected DoradeCELV() {}

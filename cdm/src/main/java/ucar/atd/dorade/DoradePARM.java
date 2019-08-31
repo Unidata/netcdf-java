@@ -82,12 +82,6 @@ public class DoradePARM extends DoradeDescriptor {
     scale = grabFloat(data, 92);
     bias = grabFloat(data, 96);
     badDataFlag = grabInt(data, 100);
-
-    //
-    // debugging output
-    //
-    if (verbose)
-      System.out.println(this);
   }
 
   public String toString() {

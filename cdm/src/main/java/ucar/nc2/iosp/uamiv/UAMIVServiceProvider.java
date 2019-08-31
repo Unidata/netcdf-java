@@ -617,8 +617,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       if ((count != 0) && ((count % this.n2dvals) == 0)) {
         pad2 = raf.readInt();
         if (pad1 != pad2) {
-          // System.out.println(pad1);
-          // System.out.println(pad2);
           throw new IOException("Asymmetric fortran buffer values: 2");
         }
         if ((count % this.n3dvals) == 0) {

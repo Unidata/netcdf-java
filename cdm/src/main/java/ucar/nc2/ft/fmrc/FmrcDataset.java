@@ -76,10 +76,6 @@ class FmrcDataset {
   static private final boolean debugEnhance = false, debugRead = false;
 
   private final FeatureCollectionConfig config;
-  // private final Element ncmlOuter, ncmlInner;
-
-  // private List<String> protoList; // the list of datasets in the proto that have proxy reader, so these need to
-  // exist. not implemented yet
 
   // allow to build a new state while old state can still be safely used
   private static class State {
@@ -539,8 +535,6 @@ class FmrcDataset {
     result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();
-    // CoordSysBuilderIF builder = result.enhance();
-    // if (debugEnhance) System.out.printf("buildDataset2D.enhance() parseInfo = %s%n", builder.getParseInfo());
 
     addAttributeInfo(result, CDM.HISTORY, "FMRC 2D Dataset");
 
@@ -552,13 +546,7 @@ class FmrcDataset {
     result.removeDimension(null, runtimeDimName); // remove previous declaration, if any
     result.addDimension(null, runDim);
 
-    // deal with promoteGlobalAttribute
-    // promoteGlobalAttributes((AggregationOuterDimension.DatasetOuterDimension) typicalDataset);
-
     ProxyReader2D proxyReader2D = new ProxyReader2D();
-
-    // extract a copy of the runtimes for thread safety
-    // List<Date> runTimes = new ArrayList<Date>(fmrcInv.getRunTimes());
 
     // create runtime aggregation coordinate variable
     DataType coordType = DataType.DOUBLE; // LOOK getCoordinateType();
@@ -589,12 +577,9 @@ class FmrcDataset {
 
       DataType dtype = DataType.DOUBLE;
       String dims = getRunDimensionName() + " " + gridset.gridsetName;
-      VariableDS timeVar = new VariableDS(result, newGroup, null, gridset.gridsetName, dtype, dims, null, null); // LOOK
-                                                                                                                 // could
-                                                                                                                 // just
-                                                                                                                 // make
-                                                                                                                 // a
-                                                                                                                 // CoordinateAxis1D
+      VariableDS timeVar = new VariableDS(result, newGroup, null, gridset.gridsetName, dtype, dims, null, null);
+      // LOOK could just make a CoordinateAxis1D
+
       timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "Forecast time for ForecastModelRunCollection"));
       timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
       timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + lite.base));
@@ -644,22 +629,10 @@ class FmrcDataset {
         String coords = makeCoordinateList(aggVar, gridset.gridsetName, true);
         aggVar.removeAttribute(_Coordinate.Axes);
         aggVar.addAttribute(new Attribute(CF.COORDINATES, coords));
-
-        /*
-         * transfer Coordinate Systems
-         * VariableDS protoV = (VariableDS) proto.findVariable(aggVar.getName());
-         * for (CoordinateSystem protoCs : protoV.getCoordinateSystems()) {
-         * CoordinateSystem cs = findReplacementCs(protoCs, gridset.gridsetName, result);
-         * aggVar.addCoordinateSystem(cs);
-         * }
-         */
       }
     }
 
     result.finish(); // this puts the new dimensions into the global structures
-
-    // CoordSysBuilderIF builder = result.enhance();
-    // if (debugEnhance) System.out.printf("parseInfo = %s%n", builder.getParseInfo());
 
     // LOOK better not to do this when you only want the NetcdfDataset
     Formatter parseInfo = new Formatter();
@@ -685,92 +658,6 @@ class FmrcDataset {
     result.addCoordinateSystem(cs);
     return cs;
   }
-
-  /*
-   * private ArrayDouble.D2 makeTimeCoordinateData2D(Date baseDate, FmrcInv.RunSeq runSeq, VariableDS timeVar) { //
-   * throws IOException {
-   * int[] shape = timeVar.getShape();
-   * int nruntimes = shape[0];
-   * int noffsets = shape[1];
-   * 
-   * ArrayDouble.D2 timeCoordVals = new ArrayDouble.D2(nruntimes, noffsets);
-   * Index ima = timeCoordVals.getIndex();
-   * MAMath.setDouble(timeCoordVals, Double.NaN); // all default to missing
-   * 
-   * int runIdx = 0;
-   * for (TimeCoord tc : runSeq.getTimes()) {
-   * double runOffset = FmrcInv.getOffsetInHours(baseDate, tc.getRunDate());
-   * double[] offset = tc.getOffsetHours();
-   * for (int j = 0; j < offset.length; j++)
-   * timeCoordVals.setDouble(ima.set(runIdx, j), offset[j] + runOffset); // offset reletive to base date
-   * runIdx++;
-   * }
-   * 
-   * return timeCoordVals;
-   * }
-   * 
-   * // keep track of the ugrid and 2D time coords for each variable, put in SPobject
-   * 
-   * private class Vstate2D {
-   * String varName;
-   * ArrayObject.D2 location;
-   * ArrayInt.D2 invIndex;
-   * Date baseDate;
-   * 
-   * private Vstate2D(FmrcInv.UberGrid ugrid, Date baseDate, ArrayDouble.D2 timeCoordVals, List<Date> runDates) {
-   * this.varName = ugrid.getName();
-   * this.baseDate = baseDate;
-   * 
-   * int[] shape = timeCoordVals.getShape();
-   * int nruns = shape[0]; // this will always equal the complete set of runs
-   * int ntimes = shape[1];
-   * 
-   * this.location = (ArrayObject.D2) Array.factory(DataType.STRING, shape);
-   * this.invIndex = (ArrayInt.D2) Array.factory(DataType.INT, shape);
-   * 
-   * // loop over runDates
-   * int gridIdx = 0;
-   * List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate
-   * 
-   * for (int runIdx=0; runIdx<nruns; runIdx++ ) {
-   * Date runDate = runDates.get(runIdx);
-   * 
-   * // do we have a grid for this runDate?
-   * FmrInv.GridVariable grid = grids.get(gridIdx);
-   * if (!grid.getRunDate().equals(runDate)) continue;
-   * gridIdx++; // for next loop
-   * 
-   * // loop over actual inventory
-   * for (GridDatasetInv.Grid inv : grid.getInventory()) {
-   * double invOffset = FmrcInv.getOffsetInHours(baseDate, inv.tc.getRunDate()); // offset reletive to inv
-   * double[] offsets = inv.tc.getOffsetHours();
-   * for (int i = 0; i < offsets.length; i++) {
-   * int timeIdx = findIndex(timeCoordVals, runIdx, ntimes, invOffset + offsets[i]);
-   * if (timeIdx >= 0) {
-   * location.set(runIdx, timeIdx, inv.getLocation());
-   * invIndex.set(runIdx, timeIdx, i);
-   * }
-   * }
-   * }
-   * }
-   * 
-   * }
-   * 
-   * // look in the runIdx row of coords to see if a value matches want, return index else -1
-   * private int findIndex(ArrayDouble.D2 coords, int runIdx, int ntimes, double want) {
-   * for (int j=0; j<ntimes; j++)
-   * if (Misc.nearlyEquals(coords.get(runIdx, j), want)) return j;
-   * return -1;
-   * }
-   * 
-   * private TimeInstance findInventory(int runIdx, int timeIdx) {
-   * String loc = (String) location.get(runIdx, timeIdx);
-   * if (loc == null) return null;
-   * return new TimeInstance(loc, invIndex.get(runIdx, timeIdx));
-   * }
-   * 
-   * }
-   */
 
   private class ProxyReader2D implements ProxyReader {
 
@@ -1155,62 +1042,6 @@ class FmrcDataset {
 
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /*
-   * private BestInventory makeBestInventory(TimeCoord.TimeResult bestTimeCoord, FmrcInv.UberGrid ugrid) {
-   * BestInventory bestInv = new BestInventory(bestTimeCoord, ugrid);
-   * 
-   * // each run
-   * for (FmrInv.GridVariable grid : ugrid.getRuns()) {
-   * 
-   * // each file in the run
-   * for (GridDatasetInv.Grid inv : grid.getInventory()) {
-   * double invOffset = FmrcInv.getOffsetInHours(bestTimeCoord.base, inv.tc.getRunDate()); // offset reletive to inv
-   * 
-   * // set of offsets are relative to inv.tc.getRunDate()
-   * double[] offsets = inv.tc.getOffsetHours();
-   * for (int i = 0; i < offsets.length; i++) {
-   * bestInv.setOffset(offsets[i] + invOffset, inv.getLocation(), i); // later ones override
-   * }
-   * }
-   * }
-   * 
-   * return bestInv;
-   * }
-   * 
-   * public static class BestInventory {
-   * String varName;
-   * double[] offsets;
-   * String[] location; // file location
-   * int[] invIndex; // the index in the file
-   * 
-   * BestInventory(TimeCoord.TimeResult tc, FmrcInv.UberGrid ugrid) {
-   * this.varName = ugrid.getName();
-   * this.offsets = tc.offsets; // all the TimeCoords possible
-   * this.location = new String[tc.offsets.length];
-   * this.invIndex = new int[tc.offsets.length];
-   * }
-   * 
-   * void setOffset(double offsetHour, String location, int invIndex) {
-   * int offsetIndex = findIndex(offsetHour);
-   * if (offsetIndex < 0)
-   * throw new IllegalStateException("BestInventory cant find hour " + offsetHour + " in " + varName);
-   * this.location[offsetIndex] = location;
-   * this.invIndex[offsetIndex] = invIndex;
-   * }
-   * 
-   * // linear search - barf
-   * private int findIndex(double offsetHour) {
-   * for (int i = 0; i < offsets.length; i++)
-   * if (Misc.nearlyEquals(offsets[i], offsetHour))
-   * return i;
-   * return -1;
-   * }
-   * 
-   * }
-   */
-
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // the general case is to get only one time per read - probably not too inefficient, eg GRIB, except maybe for remote
@@ -1232,7 +1063,6 @@ class FmrcDataset {
     s.insertRange(0, timeRange);
     return v.read(s);
   }
-
 
   /**
    * Open a file, keep track of open files
@@ -1265,38 +1095,6 @@ class FmrcDataset {
 
     return ncd;
   }
-
-  /*
-   * from Aggregation.Dataset
-   * public NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
-   * if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
-   * long start = System.currentTimeMillis();
-   * 
-   * NetcdfFile ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
-   * 
-   * // must merge NcML before enhancing
-   * if (mergeNcml != null)
-   * ncfile = NcMLReader.mergeNcML(ncfile, mergeNcml); // create new dataset
-   * if (enhance == null || enhance.isEmpty()) {
-   * if (debugOpenFile) System.out.println(" acquire (no enhance) " + cacheLocation + " took " +
-   * (System.currentTimeMillis() - start));
-   * return ncfile;
-   * }
-   * 
-   * // must enhance
-   * NetcdfDataset ds;
-   * if (ncfile instanceof NetcdfDataset) {
-   * ds = (NetcdfDataset) ncfile;
-   * ds.enhance(enhance); // enhance "in place", ie modify the NetcdfDataset
-   * } else {
-   * ds = new NetcdfDataset(ncfile, enhance); // enhance when wrapping
-   * }
-   * 
-   * if (debugOpenFile) System.out.println(" acquire (enhance) " + cacheLocation + " took " +
-   * (System.currentTimeMillis() - start));
-   * return ds;
-   * }
-   */
 
   private void closeAll(Map<String, NetcdfDataset> openFiles) throws IOException {
     for (NetcdfDataset ncfile : openFiles.values())

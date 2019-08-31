@@ -148,13 +148,9 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     return "Universal Format";
   }
 
-
-
   public boolean isVolume() {
     return true;
   }
-
-
 
   public boolean isStationary() {
     return true;
@@ -268,7 +264,6 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     // if high resolution data, it will be transfered to the same dimension
     public float[] readAllData() throws IOException {
       Array allData;
-      Array hrData = null;
       RadialDatasetSweep.Sweep spn = sweeps.get(sweeps.size() - 1);
       Variable v = spn.getsweepVar();
       try {
@@ -276,9 +271,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
       } catch (IOException e) {
         throw new IOException(e.getMessage());
       }
-
       return (float[]) allData.get1DJavaArray(float.class);
-
     }
 
     public void clearVariableMemory() {}
@@ -302,7 +295,6 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
         this.sweepno = sweepno;
         this.nrays = rays;
         this.ngates = gates;
-        // ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable mine");
 
         Attribute att = sweepVar.findAttribute("abbrev");
         abbrev = att.getStringValue();
@@ -334,7 +326,6 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
         }
       }
 
-      // private Object MUTEX =new Object();
       /* read 1d data ngates */
       public float[] readData(int ray) throws java.io.IOException {
         return rayData(sweepno, ray);
@@ -595,56 +586,5 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     } // LevelII2Sweep class
 
   } // LevelII2Variable
-
-
-  private static void testRadialVariable(RadialDatasetSweep.RadialVariable rv) throws IOException {
-    int nsweep = rv.getNumSweeps();
-    // System.out.println("*** radar Sweep number is: \n" + nsweep);
-    RadialDatasetSweep.Sweep sw;
-    for (int i = 0; i < nsweep; i++) {
-      // ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable getSweep " + i);
-      sw = rv.getSweep(i);
-      // mele = sw.getMeanElevation();
-      // ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable getSweep " + i);
-      float me = sw.getMeanElevation();
-
-      System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
-      int nrays = sw.getRadialNumber();
-      float[] az = new float[nrays];
-      for (int j = 0; j < nrays; j++) {
-        float azi = sw.getAzimuth(j);
-        az[j] = azi;
-      }
-      // System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
-    }
-    sw = rv.getSweep(0);
-    // ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable readData");
-    float[] ddd = sw.readData();
-    // ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable readData");
-    assert (null != ddd);
-    int nrays = sw.getRadialNumber();
-    float[] az = new float[nrays];
-    for (int i = 0; i < nrays; i++) {
-
-      int ngates = sw.getGateNumber();
-      assert (ngates > 0);
-      float[] d = sw.readData(i);
-      assert (null != d);
-      // float [] e = sw.readDataNew(i);
-      // assert(null != e);
-      float azi = sw.getAzimuth(i);
-      assert (azi > 0);
-      az[i] = azi;
-      float ele = sw.getElevation(i);
-      assert (ele > 0);
-      float la = (float) sw.getOrigin(i).getLatitude();
-      assert (la > 0);
-      float lo = (float) sw.getOrigin(i).getLongitude();
-      assert (lo > 0);
-      float al = (float) sw.getOrigin(i).getAltitude();
-      assert (al > 0);
-    }
-    assert (0 != nrays);
-  }
 
 }

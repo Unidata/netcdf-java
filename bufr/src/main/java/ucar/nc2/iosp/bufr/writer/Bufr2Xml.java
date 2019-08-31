@@ -31,8 +31,6 @@ import java.util.Formatter;
  * @since Aug 9, 2008
  */
 public class Bufr2Xml {
-
-  // private Formatter out = new Formatter(System.out);
   private XMLStreamWriter staxWriter;
   private Indent indent;
   private Escaper escaper = XmlEscapers.xmlAttributeEscaper();

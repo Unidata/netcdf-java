@@ -81,7 +81,6 @@ public class HtmlBrowser extends JPanel {
     cbox = new ComboBox(null);
     cbox.setAction(new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        // System.out.println("From catListBox Action " + e+" "+eventsOK);
         if (!eventsOK)
           return;
         System.out.println("cbox= " + cbox.getSelectedItem());
@@ -129,7 +128,6 @@ public class HtmlBrowser extends JPanel {
     htmlViewer.setEditable(false);
     htmlViewer.addHyperlinkListener(new HyperlinkListener() {
       public void hyperlinkUpdate(HyperlinkEvent e) {
-        // System.out.println("hyperlinkUpdate event "+e.getEventType()+" "+e.getDescription());
         if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
           statusText.setText(e.getDescription());
 

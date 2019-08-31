@@ -79,7 +79,6 @@ public class PathMatcher {
     if (tail.isEmpty())
       return null;
     String after = tail.firstKey();
-    // System.out.println(" "+path+"; after="+afterPath);
     if (path.startsWith(after)) // common case
       return treeMap.get(after);
 

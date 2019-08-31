@@ -168,8 +168,6 @@ public abstract class TreeTableModelAbstract implements TreeTableModel {
    * @see EventListenerList
    */
   protected void fireTreeStructureChanged(Object source, Object[] path, int[] childIndices, Object[] children) {
-    // System.out.println("fireTreeStructureChanged");
-
     // Guaranteed to return a non-null array
     Object[] listeners = listenerList.getListenerList();
     TreeModelEvent e = null;

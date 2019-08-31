@@ -86,7 +86,6 @@ import java.util.Map;
  *   m.setDataArray(data);
  * 
  *   ArrayStructureMA as = new ArrayStructureMA(members, new int[] {4});
- *   // System.out.println( NCdumpW.printArray(as, "", null));
  *   new TestStructureArray().testArrayStructure(as);
  * 
  *   // get f2 out of the 3nd "s"

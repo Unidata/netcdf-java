@@ -47,8 +47,6 @@ public class KMPMatch {
     int j = 0;
     if (data.length == 0)
       return -1;
-    if (start + max > data.length)
-      System.out.println("HEY KMPMatch");
 
     for (int i = start; i < start + max; i++) {
       while (j > 0 && match[j] != data[i])

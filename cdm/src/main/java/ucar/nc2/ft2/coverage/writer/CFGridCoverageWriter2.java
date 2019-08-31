@@ -452,16 +452,12 @@ public class CFGridCoverageWriter2 {
 
     CoverageCoordSys csysData = geo.getCoordSysForData();
 
-    // System.out.printf(" csys=%s%n", csys);
-    // System.out.printf("csysData=%s%n", csysData);
-
     Section s = new Section(csys.getShape());
     Section so = new Section(csysData.getShape());
 
     boolean ok = s.conformal(so);
 
     int[] dataShape = geo.getData().getShape();
-    // System.out.printf("dataShape=%s%n", Misc.showInts(dataShape));
     Section sdata = new Section(dataShape);
     boolean ok2 = s.conformal(sdata);
 

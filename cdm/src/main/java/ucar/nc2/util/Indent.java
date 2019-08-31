@@ -12,16 +12,14 @@ public class Indent {
   private int nspaces;
 
   private int level = 0;
-  private StringBuilder blanks;
+  private final StringBuilder blanks = new StringBuilder();
   private String indent = "";
 
   // nspaces = how many spaces each level adds.
   // max 100 levels
   public Indent(int nspaces) {
     this.nspaces = nspaces;
-    blanks = new StringBuilder();
-    for (int i = 0; i < 100 * nspaces; i++)
-      blanks.append(" ");
+    makeBlanks(100);
   }
 
   public Indent incr() {
@@ -47,8 +45,13 @@ public class Indent {
   public void setIndentLevel(int level) {
     this.level = level;
     if (level * nspaces >= blanks.length())
-      System.out.printf("HEY setIndentLevel!%n");
+      makeBlanks(100);
     int end = Math.min(level * nspaces, blanks.length());
     indent = blanks.substring(0, end);
+  }
+
+  private void makeBlanks(int len) {
+    for (int i = 0; i < len * nspaces; i++)
+      blanks.append(" ");
   }
 }
