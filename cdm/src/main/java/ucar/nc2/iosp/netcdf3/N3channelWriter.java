@@ -20,8 +20,8 @@ import java.nio.ByteBuffer;
  * @author john
  */
 public class N3channelWriter extends N3streamWriter {
-  static private int buffer_size = 1000 * 1000;
-  static private boolean debugWrite = false;
+  private static int buffer_size = 1000 * 1000;
+  private static boolean debugWrite = false;
 
   public N3channelWriter(ucar.nc2.NetcdfFile ncfile) {
     super(ncfile);

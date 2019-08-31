@@ -25,7 +25,7 @@ import java.util.StringTokenizer;
  * @since Apr 23, 2008
  */
 public class UnidataPointObs extends TableConfigurerImpl {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataPointObs.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataPointObs.class);
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION)

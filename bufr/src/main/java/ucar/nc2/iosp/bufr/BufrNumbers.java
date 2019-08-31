@@ -12,10 +12,10 @@ import ucar.unidata.io.RandomAccessFile;
  * bytes into one float or integer.
  */
 
-final public class BufrNumbers {
+public final class BufrNumbers {
 
   // used to check missing values when value is packed with all 1's
-  static private final long[] missing_value = new long[65];
+  private static final long[] missing_value = new long[65];
 
   static {
     long accum = 0;
@@ -25,7 +25,7 @@ final public class BufrNumbers {
     }
   }
 
-  static public boolean isMissing(long raw, int bitWidth) {
+  public static boolean isMissing(long raw, int bitWidth) {
     return (raw == BufrNumbers.missing_value[bitWidth]);
   }
 

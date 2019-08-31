@@ -19,7 +19,7 @@ public class SliceIterator implements Iterator<Long> {
   //////////////////////////////////////////////////
   // Constants
 
-  static protected enum STATE {
+  protected static enum STATE {
     INITIAL, STARTED, DONE
   }
 

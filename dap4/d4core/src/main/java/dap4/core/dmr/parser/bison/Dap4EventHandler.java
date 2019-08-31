@@ -17,7 +17,7 @@ public class Dap4EventHandler extends SaxEventHandler {
   //////////////////////////////////////////////////
   // Constants
 
-  static public String SPECIALATTRPREFIX = "_";
+  public static String SPECIALATTRPREFIX = "_";
 
   //////////////////////////////////////////////////
   // static types

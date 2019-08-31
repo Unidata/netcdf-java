@@ -40,15 +40,15 @@ import java.util.TimeZone;
  * To change this template use File | Settings | File Templates.
  */
 public class NOWRadheader {
-  final static int NEXET = 2; // Echo Tops Composite
-  final static int NEXLH = 5; // Layer Reflectivity - High
-  final static int NEXLL = 3; // Layer Reflectivity - Low
-  final static int NEXLM = 4; // Layer Reflectivity - Mid
-  final static int NEXVI = 6; // Vert. Integrated Liquid Water
-  final static int NOWRADHF = 0; // 2km Base Reflectivity
-  final static int USRADHF = 1; // 8km Base Reflectivity
-  static public String[] mons = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NOWRadheader.class);
+  static final int NEXET = 2; // Echo Tops Composite
+  static final int NEXLH = 5; // Layer Reflectivity - High
+  static final int NEXLL = 3; // Layer Reflectivity - Low
+  static final int NEXLM = 4; // Layer Reflectivity - Mid
+  static final int NEXVI = 6; // Vert. Integrated Liquid Water
+  static final int NOWRADHF = 0; // 2km Base Reflectivity
+  static final int USRADHF = 1; // 8km Base Reflectivity
+  public static String[] mons = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NOWRadheader.class);
   DateFormatter formatter = new DateFormatter();
 
   private String cmemo, ctilt, ctitle, cunit, cname;
@@ -766,7 +766,7 @@ public class NOWRadheader {
   }
 
   /** get java date */
-  static public java.util.Date getDate(int julianDays, int msecs) {
+  public static java.util.Date getDate(int julianDays, int msecs) {
     long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
 
     return new Date(total);

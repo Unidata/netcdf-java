@@ -29,7 +29,7 @@ public class BitCounterUncompressed implements BitCounter {
   private int countBits; // total nbits in this table
   private int bitOffset = 0; // count bits
 
-  static private boolean debug = false;
+  private static boolean debug = false;
 
   /**
    * This counts the size of an array of Structures or Sequences, ie Structure(n)

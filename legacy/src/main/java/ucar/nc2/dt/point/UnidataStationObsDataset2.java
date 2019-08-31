@@ -28,7 +28,7 @@ import java.util.*;
 
 public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     return ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("Unidata Station Format v1.0");
   }
 

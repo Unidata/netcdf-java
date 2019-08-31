@@ -32,11 +32,11 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 
 public class CompositeDatasetFactory {
-  static public final String SCHEME = "collection:";
+  public static final String SCHEME = "collection:";
   // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
   static boolean debug = false;
 
-  static public FeatureDataset factory(String location, FeatureType wantFeatureType, MFileCollectionManager dcm,
+  public static FeatureDataset factory(String location, FeatureType wantFeatureType, MFileCollectionManager dcm,
       Formatter errlog) throws IOException {
 
     TimedCollection collection = new TimedCollection(dcm, errlog);

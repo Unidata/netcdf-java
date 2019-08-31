@@ -50,7 +50,7 @@ import org.jdom2.Text;
  */
 public final class Version {
 
-  private final static String version = "0.0.7";
+  private static final String version = "0.0.7";
 
   public static String getVersionString() {
     return (version);

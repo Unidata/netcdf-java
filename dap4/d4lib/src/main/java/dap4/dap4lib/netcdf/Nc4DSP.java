@@ -42,20 +42,20 @@ public class Nc4DSP extends AbstractDSP {
   //////////////////////////////////////////////////
   // Constants
 
-  static public final boolean DEBUG = false;
-  static public final boolean DUMPDMR = false;
+  public static final boolean DEBUG = false;
+  public static final boolean DUMPDMR = false;
 
   static String PATHSUFFIX = "/src/data";
 
-  static public String[] EXTENSIONS = new String[] {".nc", ".hdf5"};
+  public static String[] EXTENSIONS = new String[] {".nc", ".hdf5"};
 
   static final Pointer NC_NULL = Pointer.NULL;
   static final int NC_FALSE = 0;
   static final int NC_TRUE = 1;
   // "null" id(s)
-  static public final int NC_GRPNULL = 0;
-  static public final int NC_IDNULL = -1;
-  static public final int NC_NOERR = 0;
+  public static final int NC_GRPNULL = 0;
+  public static final int NC_IDNULL = -1;
+  public static final int NC_NOERR = 0;
 
   static int NC_INT_BYTES = (java.lang.Integer.SIZE / java.lang.Byte.SIZE);
   static int NC_LONG_BYTES = (Native.LONG_SIZE);
@@ -69,8 +69,8 @@ public class Nc4DSP extends AbstractDSP {
    * Provide a wrapper for pointers that tracks the size.
    * Also allows for allocation.
    */
-  static public class Nc4Pointer {
-    static public Nc4Pointer allocate(long size) {
+  public static class Nc4Pointer {
+    public static Nc4Pointer allocate(long size) {
       if (size == 0)
         throw new IllegalArgumentException("Attempt to allocate zero bytes");
       Memory m = new Memory(size);
@@ -99,7 +99,7 @@ public class Nc4DSP extends AbstractDSP {
       return String.format("0x%016x/%d", Pointer.nativeValue(this.p), this.size);
     }
 
-    static public boolean validate(Nc4Pointer mem, long require) {
+    public static boolean validate(Nc4Pointer mem, long require) {
       if (mem == null || mem.p == null || mem.size == 0)
         return false;
       return (mem.size > require);
@@ -394,7 +394,7 @@ public class Nc4DSP extends AbstractDSP {
   //////////////////////////////////////////////////
   // Utilities
 
-  static public String makeString(byte[] b) {
+  public static String makeString(byte[] b) {
     // null terminates
     int count;
     for (count = 0; (count < b.length && b[count] != 0); count++) {

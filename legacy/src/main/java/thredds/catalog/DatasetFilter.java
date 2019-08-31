@@ -23,12 +23,12 @@ public interface DatasetFilter {
    * @param d dataset to filter
    * @return 1 if pass, -1 if fail, 0 is dont know.
    */
-  abstract public int accept(InvDataset d);
+  public abstract int accept(InvDataset d);
 
   /**
    * Filter a Catalog by the access service type.
    */
-  static public class ByServiceType implements DatasetFilter {
+  public static class ByServiceType implements DatasetFilter {
     private ServiceType type;
 
     public ByServiceType(ServiceType type) {
@@ -57,7 +57,7 @@ public interface DatasetFilter {
   /**
    * Filter a Catalog by the dataset data type.
    */
-  static public class ByDataType implements DatasetFilter {
+  public static class ByDataType implements DatasetFilter {
     private FeatureType type;
 
     public ByDataType(FeatureType type) {

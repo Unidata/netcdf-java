@@ -22,8 +22,8 @@ import ucar.nc2.dt.radial.*;
  */
 public class TypedDatasetFactory {
 
-  static private List<Factory> transformList = new ArrayList<Factory>();
-  static private boolean userMode = false;
+  private static List<Factory> transformList = new ArrayList<Factory>();
+  private static boolean userMode = false;
 
   // search in the order added
   static {
@@ -64,7 +64,7 @@ public class TypedDatasetFactory {
    * @param datatype scientific data type
    * @throws ClassNotFoundException if loading error
    */
-  static public void registerFactory(FeatureType datatype, String className) throws ClassNotFoundException {
+  public static void registerFactory(FeatureType datatype, String className) throws ClassNotFoundException {
     Class c = Class.forName(className);
     registerFactory(datatype, c);
   }
@@ -75,7 +75,7 @@ public class TypedDatasetFactory {
    * @param datatype scientific data type
    * @param c class that implements TypedDatasetFactoryIF.
    */
-  static public void registerFactory(FeatureType datatype, Class c) {
+  public static void registerFactory(FeatureType datatype, Class c) {
     if (!(TypedDatasetFactoryIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must implement TypedDatasetFactoryIF");
 
@@ -98,7 +98,7 @@ public class TypedDatasetFactory {
 
   }
 
-  static private class Factory {
+  private static class Factory {
     FeatureType datatype;
     Class c;
     TypedDatasetFactoryIF instance;
@@ -121,7 +121,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open(FeatureType datatype, String location, ucar.nc2.util.CancelTask task,
+  public static TypedDataset open(FeatureType datatype, String location, ucar.nc2.util.CancelTask task,
       StringBuilder errlog) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, task);
@@ -139,7 +139,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset, or null if cant find
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open(FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task,
+  public static TypedDataset open(FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task,
       StringBuilder errlog) throws IOException {
 
     // look for a Factory that claims this dataset

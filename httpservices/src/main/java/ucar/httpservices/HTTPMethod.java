@@ -136,7 +136,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
   //////////////////////////////////////////////////
   // Type Decl
 
-  static public interface Executor {
+  public static interface Executor {
     public HttpResponse execute(HttpRequestBase rq) throws IOException;
   }
 

@@ -48,8 +48,8 @@ import java.io.IOException;
  */
 
 public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCoordSystem {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordSys.class);
-  static private final boolean warnUnits = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordSys.class);
+  private static final boolean warnUnits = false;
 
   /**
    * Determine if this CoordinateSystem can be made into a GridCoordSys. Optionally for a given variable.
@@ -1696,7 +1696,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   ///////////////////////////////////////////////////////////////////////
   // experimental
 
-  static private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
+  private static double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
     double midpoint = (lon1 + lon2) / 2;
     lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
     lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
@@ -1704,7 +1704,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
   }
 
-  static public LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx,
+  public static LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx,
       double endy) {
 
     if (proj instanceof LatLonProjection) {

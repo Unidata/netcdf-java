@@ -36,54 +36,54 @@ class Nidsheader {
   private static final Pattern PARAM_PATTERN =
       Pattern.compile("([\\w*\\s*?]*)\\=([(\\<|\\{|\\[|\\()?\\w*\\s*?\\.?\\,?\\-?\\/?\\%?(\\>|\\}|\\]|\\))?]*)");
 
-  final static int NEXR_PID_READ = 100;
-  final static int DEF_NUM_ELEMS = 640; /* default num of elements to send */
-  final static int DEF_NUM_LINES = 480; /* default num of lines to send */
-  final static int NEXR_FILE_READ = -1; /* # flag to read entire NIDS file */
-  final static int NEXR_DIR_READ = 356; /* just enough bytes for NIDS directory */
-  final static int READ_BUFFER_SIZE = 1; /* # of image lines to buffer on read */
-  final static int ZLIB_BUF_LEN = 4000; /* max size of an uncompressed ZLIB buffer */
+  static final int NEXR_PID_READ = 100;
+  static final int DEF_NUM_ELEMS = 640; /* default num of elements to send */
+  static final int DEF_NUM_LINES = 480; /* default num of lines to send */
+  static final int NEXR_FILE_READ = -1; /* # flag to read entire NIDS file */
+  static final int NEXR_DIR_READ = 356; /* just enough bytes for NIDS directory */
+  static final int READ_BUFFER_SIZE = 1; /* # of image lines to buffer on read */
+  static final int ZLIB_BUF_LEN = 4000; /* max size of an uncompressed ZLIB buffer */
   byte Z_DEFLATED = 8;
   byte DEF_WBITS = 15;
-  final static int Other = 0;
-  final static int Base_Reflect = 1;
-  final static int Velocity = 2;
-  final static int Comp_Reflect = 3;
-  final static int Layer_Reflect_Avg = 4;
-  final static int Layer_Reflect_Max = 5;
-  final static int Echo_Tops = 6;
-  final static int Vert_Liquid = 7;
-  final static int Precip_1 = 8;
-  final static int Precip_3 = 9;
-  final static int Precip_Accum = 10;
-  final static int Precip_Array = 11;
-  final static int BaseReflect248 = 12;
-  final static int StrmRelMeanVel = 13;
-  final static int VAD = 14;
-  final static int SPECTRUM = 15;
-  final static int DigitalHybridReflect = 16;
-  final static int DigitalStormTotalPrecip = 17;
-  final static int Reflect1 = 18;
-  final static int Velocity1 = 19;
-  final static int SPECTRUM1 = 20;
-  final static int BaseReflectivityDR = 21;
-  final static int BaseVelocityDV = 22;
-  final static int EnhancedEcho_Tops = 23;
-  final static int DigitalVert_Liquid = 24;
-  final static int DigitalDifferentialReflectivity = 30;
-  final static int DigitalCorrelationCoefficient = 31;
-  final static int DigitalDifferentialPhase = 32;
-  final static int HydrometeorClassification = 33;
-  final static int OneHourAccumulation = 36;
-  final static int DigitalAccumulationArray = 37;
-  final static int StormTotalAccumulation = 38;
-  final static int DigitalStormTotalAccumulation = 39;
-  final static int Accumulation3Hour = 40;
-  final static int Accumulation24Hour = 41;
-  final static int Digital1HourDifferenceAccumulation = 42;
-  final static int DigitalTotalDifferenceAccumulation = 43;
-  final static int DigitalInstantaneousPrecipitationRate = 44;
-  final static int HypridHydrometeorClassification = 45;
+  static final int Other = 0;
+  static final int Base_Reflect = 1;
+  static final int Velocity = 2;
+  static final int Comp_Reflect = 3;
+  static final int Layer_Reflect_Avg = 4;
+  static final int Layer_Reflect_Max = 5;
+  static final int Echo_Tops = 6;
+  static final int Vert_Liquid = 7;
+  static final int Precip_1 = 8;
+  static final int Precip_3 = 9;
+  static final int Precip_Accum = 10;
+  static final int Precip_Array = 11;
+  static final int BaseReflect248 = 12;
+  static final int StrmRelMeanVel = 13;
+  static final int VAD = 14;
+  static final int SPECTRUM = 15;
+  static final int DigitalHybridReflect = 16;
+  static final int DigitalStormTotalPrecip = 17;
+  static final int Reflect1 = 18;
+  static final int Velocity1 = 19;
+  static final int SPECTRUM1 = 20;
+  static final int BaseReflectivityDR = 21;
+  static final int BaseVelocityDV = 22;
+  static final int EnhancedEcho_Tops = 23;
+  static final int DigitalVert_Liquid = 24;
+  static final int DigitalDifferentialReflectivity = 30;
+  static final int DigitalCorrelationCoefficient = 31;
+  static final int DigitalDifferentialPhase = 32;
+  static final int HydrometeorClassification = 33;
+  static final int OneHourAccumulation = 36;
+  static final int DigitalAccumulationArray = 37;
+  static final int StormTotalAccumulation = 38;
+  static final int DigitalStormTotalAccumulation = 39;
+  static final int Accumulation3Hour = 40;
+  static final int Accumulation24Hour = 41;
+  static final int Digital1HourDifferenceAccumulation = 42;
+  static final int DigitalTotalDifferenceAccumulation = 43;
+  static final int DigitalInstantaneousPrecipitationRate = 44;
+  static final int HypridHydrometeorClassification = 45;
 
   // message header block
 
@@ -2959,7 +2959,7 @@ class Nidsheader {
   /**
    * get java date
    */
-  static public java.util.Date getDate(int julianDays, int msecs) {
+  public static java.util.Date getDate(int julianDays, int msecs) {
     long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
     return new Date(total);
   }

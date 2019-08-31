@@ -18,7 +18,7 @@ import org.jdom2.Document;
  * @since Dec 6, 2005 1:45:07 PM
  */
 public class StandardCatalogBuilder implements CatalogBuilder {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StandardCatalogBuilder.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StandardCatalogBuilder.class);
 
   private String collectionPath;
   private String collectionName;

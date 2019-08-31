@@ -117,13 +117,13 @@ public class HTTPSession implements Closeable {
   // Constants
 
   // only used when testing flag is set
-  static public boolean TESTING = false; // set to true during testing, should be false otherwise
+  public static boolean TESTING = false; // set to true during testing, should be false otherwise
 
   /**
    * Determine wether to use a Pooling connection manager
    * or to manage a bunch of individual connections.
    */
-  static protected final boolean USEPOOL = true;
+  protected static final boolean USEPOOL = true;
 
   // Define all the legal properties
   // Previously taken from class AllClientPNames, but that is now
@@ -135,8 +135,8 @@ public class HTTPSession implements Closeable {
 
   // Header names
   // from: http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
-  static final public String HEADER_USERAGENT = "User-Agent";
-  static final public String ACCEPT_ENCODING = "Accept-Encoding";
+  public static final String HEADER_USERAGENT = "User-Agent";
+  public static final String ACCEPT_ENCODING = "Accept-Encoding";
 
   static final int DFALTREDIRECTS = 25;
   static final int DFALTCONNTIMEOUT = 1 * 60 * 1000; // 1 minutes (60000 milliseconds)
@@ -305,7 +305,7 @@ public class HTTPSession implements Closeable {
   ////////////////////////////////////////////////////////////////////////
   // Static variables
 
-  static final public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
+  public static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
 
   // Define a settings object to hold all the
   // settable values; there will be one
@@ -322,22 +322,22 @@ public class HTTPSession implements Closeable {
   // This is a hack to suppress content-encoding headers from request
   // Effectively final because its set in the static initializer and otherwise
   // read only.
-  static protected HttpResponseInterceptor CEKILL;
+  protected static HttpResponseInterceptor CEKILL;
 
   // Debug Header interceptors
-  static protected List<HttpRequestInterceptor> dbgreq = new CopyOnWriteArrayList<>();
-  static protected List<HttpResponseInterceptor> dbgrsp = new CopyOnWriteArrayList<>();
+  protected static List<HttpRequestInterceptor> dbgreq = new CopyOnWriteArrayList<>();
+  protected static List<HttpResponseInterceptor> dbgrsp = new CopyOnWriteArrayList<>();
 
-  static protected HTTPConnections connmgr;
+  protected static HTTPConnections connmgr;
 
-  static protected Map<String, InputStreamFactory> contentDecoderMap;
+  protected static Map<String, InputStreamFactory> contentDecoderMap;
 
   // public final HttpClientBuilder setContentDecoderRegistry(Map<String,InputStreamFactory> contentDecoderMap)
 
-  static protected Map<AuthScope, HTTPProviderFactory> globalcredfactories = new HashMap<>();
+  protected static Map<AuthScope, HTTPProviderFactory> globalcredfactories = new HashMap<>();
 
   // As taken from the command line
-  static protected AuthControls authcontrols;
+  protected static AuthControls authcontrols;
 
   static { // watch out: order is important for these initializers
     if (USEPOOL)
@@ -360,7 +360,7 @@ public class HTTPSession implements Closeable {
     connmgr.addProtocol("https", (ConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
   }
 
-  static protected int getDPropInt(String key) {
+  protected static int getDPropInt(String key) {
     String p = System.getProperty(key);
     if (p == null)
       return -1;
@@ -376,7 +376,7 @@ public class HTTPSession implements Closeable {
   // Static Initialization
 
   // Provide defaults for a settings map
-  static synchronized protected void setDefaults(Map<Prop, Object> props) {
+  protected static synchronized void setDefaults(Map<Prop, Object> props) {
     if (false) {// turn off for now
       props.put(Prop.HANDLE_AUTHENTICATION, Boolean.TRUE);
     }
@@ -411,7 +411,7 @@ public class HTTPSession implements Closeable {
     authcontrols.put(AuthProp.TRUSTPASSWORD, trustpassword);
   }
 
-  static protected KeyStore buildkeystore(String keypath, String keypassword) {
+  protected static KeyStore buildkeystore(String keypath, String keypassword) {
     KeyStore keystore;
     try {
       if (keypath != null && keypassword != null) {
@@ -580,35 +580,35 @@ public class HTTPSession implements Closeable {
   // Static Methods (Mostly global accessors)
   // Synchronized as a rule.
 
-  static synchronized public void setGlobalUserAgent(String userAgent) {
+  public static synchronized void setGlobalUserAgent(String userAgent) {
     globalsettings.put(Prop.USER_AGENT, userAgent);
   }
 
-  static synchronized public String getGlobalUserAgent() {
+  public static synchronized String getGlobalUserAgent() {
     return (String) globalsettings.get(Prop.USER_AGENT);
   }
 
-  static synchronized public void setGlobalMaxConnections(int n) {
+  public static synchronized void setGlobalMaxConnections(int n) {
     globalsettings.put(Prop.MAX_CONNECTIONS, n);
     HTTPConnections.setDefaultMaxConections(n);
     if (connmgr != null)
       connmgr.setMaxConnections(n);
   }
 
-  static synchronized public int getGlobalMaxConnection() {
+  public static synchronized int getGlobalMaxConnection() {
     return (Integer) globalsettings.get(Prop.MAX_CONNECTIONS);
   }
 
   // Timeouts
 
-  static synchronized public void setGlobalConnectionTimeout(int timeout) {
+  public static synchronized void setGlobalConnectionTimeout(int timeout) {
     if (timeout >= 0) {
       globalsettings.put(Prop.CONN_TIMEOUT, (Integer) timeout);
       globalsettings.put(Prop.CONN_REQ_TIMEOUT, (Integer) timeout);
     }
   }
 
-  static synchronized public void setGlobalSoTimeout(int timeout) {
+  public static synchronized void setGlobalSoTimeout(int timeout) {
     if (timeout >= 0)
       globalsettings.put(Prop.SO_TIMEOUT, (Integer) timeout);
   }
@@ -617,7 +617,7 @@ public class HTTPSession implements Closeable {
    * Enable/disable redirection following
    * Default is yes.
    */
-  static synchronized public void setGlobalFollowRedirects(boolean tf) {
+  public static synchronized void setGlobalFollowRedirects(boolean tf) {
     globalsettings.put(Prop.HANDLE_REDIRECTS, (Boolean) tf);
   }
 
@@ -627,20 +627,20 @@ public class HTTPSession implements Closeable {
    *
    * @param n
    */
-  static synchronized public void setGlobalMaxRedirects(int n) {
+  public static synchronized void setGlobalMaxRedirects(int n) {
     if (n < 0) // validate
       throw new IllegalArgumentException("setMaxRedirects");
     globalsettings.put(Prop.MAX_REDIRECTS, n);
   }
 
-  static synchronized public Object getGlobalSetting(String key) {
+  public static synchronized Object getGlobalSetting(String key) {
     return globalsettings.get(key);
   }
 
   //////////////////////////////////////////////////
   // Compression
 
-  static synchronized public void setGlobalCompression(String compressors) {
+  public static synchronized void setGlobalCompression(String compressors) {
     if (globalsettings.get(Prop.COMPRESSION) != null)
       removeGlobalCompression();
     String compresslist = checkCompressors(compressors);
@@ -658,7 +658,7 @@ public class HTTPSession implements Closeable {
     }
   }
 
-  static synchronized public void removeGlobalCompression() {
+  public static synchronized void removeGlobalCompression() {
     if (globalsettings.remove(Prop.COMPRESSION) != null) {
       for (int i = rspintercepts.size() - 1; i >= 0; i--) { // walk backwards
         HttpResponseInterceptor hrsi = rspintercepts.get(i);
@@ -668,7 +668,7 @@ public class HTTPSession implements Closeable {
     }
   }
 
-  static synchronized protected String checkCompressors(String compressors) {
+  protected static synchronized String checkCompressors(String compressors) {
     // Syntactic check of compressors
     Set<String> cset = new HashSet<>();
     compressors = compressors.replace(',', ' ');
@@ -699,7 +699,7 @@ public class HTTPSession implements Closeable {
    * @param scope where to use it (i.e. on what host)
    * @throws HTTPException
    */
-  static public void setCredentialsProviderFactory(HTTPProviderFactory factory, AuthScope scope) throws HTTPException {
+  public static void setCredentialsProviderFactory(HTTPProviderFactory factory, AuthScope scope) throws HTTPException {
     if (factory == null)
       throw new NullPointerException(HTTPSession.class.getName());
     if (scope == null)
@@ -715,7 +715,7 @@ public class HTTPSession implements Closeable {
    * @param creds
    * @throws HTTPException
    */
-  static public void setGlobalCredentials(Credentials creds) throws HTTPException {
+  public static void setGlobalCredentials(Credentials creds) throws HTTPException {
     setGlobalCredentials(creds, null);
   }
 
@@ -727,7 +727,7 @@ public class HTTPSession implements Closeable {
    * @param scope where to use it (i.e. on what host)
    * @throws HTTPException
    */
-  static public void setGlobalCredentials(Credentials creds, AuthScope scope) throws HTTPException {
+  public static void setGlobalCredentials(Credentials creds, AuthScope scope) throws HTTPException {
     assert (creds != null);
     if (scope == null)
       scope = AuthScope.ANY;
@@ -744,7 +744,7 @@ public class HTTPSession implements Closeable {
     globalcredfactories.clear();
   }
 
-  static synchronized public void setGlobalRetryCount(int n) {
+  public static synchronized void setGlobalRetryCount(int n) {
     if (n < 0) // validate
       throw new IllegalArgumentException("setGlobalRetryCount");
     globalsettings.put(Prop.RETRIES, n);
@@ -818,7 +818,7 @@ public class HTTPSession implements Closeable {
   //////////////////////////////////////////////////
   // Interceptors: Only supported at global level
 
-  static protected void setInterceptors(HttpClientBuilder cb) {
+  protected static void setInterceptors(HttpClientBuilder cb) {
     for (HttpRequestInterceptor hrq : reqintercepts) {
       cb.addInterceptorLast(hrq);
     }
@@ -975,7 +975,7 @@ public class HTTPSession implements Closeable {
    * any open methods.
    */
 
-  synchronized public void close() {
+  public synchronized void close() {
     if (this.closed)
       return; // multiple calls ok
     closed = true;
@@ -1068,7 +1068,7 @@ public class HTTPSession implements Closeable {
    * @throws HTTPException
    */
 
-  synchronized protected void setAuthenticationAndProxy(HttpClientBuilder cb) throws HTTPException {
+  protected synchronized void setAuthenticationAndProxy(HttpClientBuilder cb) throws HTTPException {
     // First, setup the ssl factory
     cb.setSSLSocketFactory((SSLConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
 
@@ -1230,11 +1230,11 @@ public class HTTPSession implements Closeable {
   // Testing support
 
   // Expose the state for testing purposes
-  synchronized public boolean isClosed() {
+  public synchronized boolean isClosed() {
     return this.closed;
   }
 
-  synchronized public int getMethodcount() {
+  public synchronized int getMethodcount() {
     return methods.size();
   }
 
@@ -1249,7 +1249,7 @@ public class HTTPSession implements Closeable {
   static Set<HTTPSession> sessionList = null; // List of all HTTPSession instances
 
   // If we are testing, then track the sessions for kill
-  static protected synchronized void track(HTTPSession session) {
+  protected static synchronized void track(HTTPSession session) {
     if (!TESTING)
       throw new UnsupportedOperationException();
     if (sessionList == null)
@@ -1257,7 +1257,7 @@ public class HTTPSession implements Closeable {
     sessionList.add(session);
   }
 
-  static synchronized public void setInterceptors(boolean print) {
+  public static synchronized void setInterceptors(boolean print) {
     if (!TESTING)
       throw new UnsupportedOperationException();
     HTTPUtil.InterceptRequest rq = new HTTPUtil.InterceptRequest();
@@ -1310,7 +1310,7 @@ public class HTTPSession implements Closeable {
 
 
   /* Only allow if debugging */
-  static public void clearkeystore() {
+  public static void clearkeystore() {
     if (!TESTING)
       throw new UnsupportedOperationException();
     authcontrols.setReadOnly(false);
@@ -1322,7 +1322,7 @@ public class HTTPSession implements Closeable {
   }
 
   /* Only allow if debugging */
-  static public void rebuildkeystore(String path, String pwd) {
+  public static void rebuildkeystore(String path, String pwd) {
     if (!TESTING)
       throw new UnsupportedOperationException();
     KeyStore newks = buildkeystore(path, pwd);
@@ -1335,19 +1335,19 @@ public class HTTPSession implements Closeable {
   // Deprecated, but here for back compatibility
 
   @Deprecated
-  static public void setGlobalCredentialsProvider(AuthScope scope, CredentialsProvider provider) throws HTTPException {
+  public static void setGlobalCredentialsProvider(AuthScope scope, CredentialsProvider provider) throws HTTPException {
     setGlobalCredentialsProvider(provider, scope);
   }
 
   @Deprecated
-  static public void setGlobalCredentialsProvider(String url, CredentialsProvider provider) throws HTTPException {
+  public static void setGlobalCredentialsProvider(String url, CredentialsProvider provider) throws HTTPException {
     assert (url != null && provider != null);
     AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
     setGlobalCredentialsProvider(provider, scope);
   }
 
   @Deprecated
-  static public void setGlobalCredentials(String url, Credentials creds) throws HTTPException {
+  public static void setGlobalCredentials(String url, Credentials creds) throws HTTPException {
     assert (url != null && creds != null);
     AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
     CredentialsProvider provider = new BasicCredentialsProvider();
@@ -1377,17 +1377,17 @@ public class HTTPSession implements Closeable {
   }
 
   @Deprecated
-  static public int getRetryCount() {
+  public static int getRetryCount() {
     throw new UnsupportedOperationException();
   }
 
   @Deprecated
-  static public void setGlobalCompression() {
+  public static void setGlobalCompression() {
     setGlobalCompression("gzip,deflate");
   }
 
   @Deprecated
-  static public void setGlobalProxy(String host, int port) {
+  public static void setGlobalProxy(String host, int port) {
     throw new UnsupportedOperationException("setGlobalProxy: use -D flags");
   }
 
@@ -1398,7 +1398,7 @@ public class HTTPSession implements Closeable {
 
 
   @Deprecated
-  static public void setGlobalCredentialsProvider(CredentialsProvider provider, String scheme) throws HTTPException {
+  public static void setGlobalCredentialsProvider(CredentialsProvider provider, String scheme) throws HTTPException {
     setGlobalCredentialsProvider(provider);
   }
 
@@ -1416,7 +1416,7 @@ public class HTTPSession implements Closeable {
   //////////////////////////////////////////////////
   // obsolete
 
-  static protected synchronized void kill() {
+  protected static synchronized void kill() {
     if (sessionList != null) {
       for (HTTPSession session : sessionList) {
         session.close();
@@ -1427,7 +1427,7 @@ public class HTTPSession implements Closeable {
   }
 
 
-  static public void validatestate() {
+  public static void validatestate() {
     connmgr.validate();
   }
 
@@ -1436,7 +1436,7 @@ public class HTTPSession implements Closeable {
    * @throws HTTPException
    */
   @Deprecated
-  static public void setGlobalCredentialsProvider(CredentialsProvider provider) throws HTTPException {
+  public static void setGlobalCredentialsProvider(CredentialsProvider provider) throws HTTPException {
     setGlobalCredentialsProvider(provider, (AuthScope) null);
   }
 
@@ -1448,7 +1448,7 @@ public class HTTPSession implements Closeable {
    * @throws HTTPException
    */
   @Deprecated
-  static public void setGlobalCredentialsProvider(CredentialsProvider provider, AuthScope scope) throws HTTPException {
+  public static void setGlobalCredentialsProvider(CredentialsProvider provider, AuthScope scope) throws HTTPException {
     HTTPProviderFactory factory = new SingleProviderFactory(provider);
     setCredentialsProviderFactory(factory, scope);
   }

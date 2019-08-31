@@ -36,7 +36,7 @@ import java.util.*;
  * @since 1/8/2015
  */
 public class CatalogBuilder {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogBuilder.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogBuilder.class);
 
   //////////////////////////////////////////////////////////////////////////////////
   // used when reading from XML
@@ -1241,7 +1241,7 @@ public class CatalogBuilder {
     return new ThreddsMetadata.VariableGroup(vocab, variableVocabUri, variableMap, variables);
   }
 
-  static public ThreddsMetadata.Variable readVariable(Element varElem) {
+  public static ThreddsMetadata.Variable readVariable(Element varElem) {
     if (varElem == null) {
       return null;
     }

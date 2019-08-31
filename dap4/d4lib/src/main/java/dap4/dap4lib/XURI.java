@@ -28,7 +28,7 @@ public class XURI {
 
   // Define assembly flags
 
-  static public enum Parts {
+  public static enum Parts {
     FORMAT, // format protocol
     BASE, // base protocol
     PWD, // including user
@@ -37,12 +37,12 @@ public class XURI {
   }
 
   // Mnemonics
-  static public final EnumSet<Parts> URLONLY = EnumSet.of(Parts.BASE, Parts.PWD, Parts.HOST, Parts.PATH);
-  static public final EnumSet<Parts> URLALL =
+  public static final EnumSet<Parts> URLONLY = EnumSet.of(Parts.BASE, Parts.PWD, Parts.HOST, Parts.PATH);
+  public static final EnumSet<Parts> URLALL =
       EnumSet.of(Parts.FORMAT, Parts.BASE, Parts.PWD, Parts.HOST, Parts.PATH, Parts.QUERY, Parts.FRAG);
-  static public final EnumSet<Parts> URLBASE =
+  public static final EnumSet<Parts> URLBASE =
       EnumSet.of(Parts.BASE, Parts.PWD, Parts.HOST, Parts.PATH, Parts.QUERY, Parts.FRAG);
-  static public final EnumSet<Parts> URLPATH = EnumSet.of(Parts.PATH, Parts.QUERY, Parts.FRAG);
+  public static final EnumSet<Parts> URLPATH = EnumSet.of(Parts.PATH, Parts.QUERY, Parts.FRAG);
 
   //////////////////////////////////////////////////
   // Instance variables
@@ -303,7 +303,7 @@ public class XURI {
    *
    * @param s part of the url
    */
-  static public String canonical(String s) {
+  public static String canonical(String s) {
     if (s != null) {
       s = s.trim();
       if (s.length() == 0)

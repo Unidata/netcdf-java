@@ -40,15 +40,15 @@ import ucar.nc2.units.DateType;
  */
 
 public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConverterIF {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvCatalogFactory10.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvCatalogFactory10.class);
 
-  static public final Namespace defNS = Namespace.getNamespace(XMLEntityResolver.CATALOG_NAMESPACE_10);
-  static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XMLEntityResolver.XLINK_NAMESPACE);
-  static public final Namespace ncmlNS = Namespace.getNamespace("ncml", XMLEntityResolver.NJ22_NAMESPACE);
+  public static final Namespace defNS = Namespace.getNamespace(XMLEntityResolver.CATALOG_NAMESPACE_10);
+  public static final Namespace xlinkNS = Namespace.getNamespace("xlink", XMLEntityResolver.XLINK_NAMESPACE);
+  public static final Namespace ncmlNS = Namespace.getNamespace("ncml", XMLEntityResolver.NJ22_NAMESPACE);
 
-  static private boolean useBytesForDataSize = false;
+  private static boolean useBytesForDataSize = false;
 
-  static public void useBytesForDataSize(boolean b) {
+  public static void useBytesForDataSize(boolean b) {
     useBytesForDataSize = b;
   }
 

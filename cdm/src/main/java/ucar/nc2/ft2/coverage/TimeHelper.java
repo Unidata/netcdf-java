@@ -23,7 +23,7 @@ import java.util.List;
 @Immutable
 public class TimeHelper {
 
-  static public TimeHelper factory(String units, AttributeContainer atts) {
+  public static TimeHelper factory(String units, AttributeContainer atts) {
     if (units == null)
       units = atts.findAttValueIgnoreCase(CDM.UDUNITS, null);
     if (units == null)

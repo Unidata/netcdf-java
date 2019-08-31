@@ -41,12 +41,12 @@ public class DtCoverageDataset implements Closeable {
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public DtCoverageDataset open(String location) throws java.io.IOException {
+  public static DtCoverageDataset open(String location) throws java.io.IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
     return open(durl, NetcdfDataset.getDefaultEnhanceMode());
   }
 
-  static public DtCoverageDataset open(DatasetUrl durl) throws java.io.IOException {
+  public static DtCoverageDataset open(DatasetUrl durl) throws java.io.IOException {
     return open(durl, NetcdfDataset.getDefaultEnhanceMode());
   }
 
@@ -60,13 +60,13 @@ public class DtCoverageDataset implements Closeable {
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public DtCoverageDataset open(DatasetUrl durl, Set<NetcdfDataset.Enhance> enhanceMode)
+  public static DtCoverageDataset open(DatasetUrl durl, Set<NetcdfDataset.Enhance> enhanceMode)
       throws java.io.IOException {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, durl, enhanceMode, -1, null, null);
     return new DtCoverageDataset(ds, null);
   }
 
-  static public DtCoverageDataset open(NetcdfDataset ds) throws java.io.IOException {
+  public static DtCoverageDataset open(NetcdfDataset ds) throws java.io.IOException {
     return new DtCoverageDataset(ds, null);
   }
 

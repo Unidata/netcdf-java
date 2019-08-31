@@ -16,32 +16,32 @@ public class DapStartLog {
   //////////////////////////////////////////////////
   // Static variables
 
-  static private org.slf4j.Logger log = null;
+  private static org.slf4j.Logger log = null;
 
-  static synchronized private void getLog() {
+  private static synchronized void getLog() {
     if (log == null)
       log = org.slf4j.LoggerFactory.getLogger("serverStartup");
   }
 
-  static synchronized public void error(String s) {
+  public static synchronized void error(String s) {
     if (log == null)
       getLog();
     log.error(s);
   }
 
-  static synchronized public void warn(String s) {
+  public static synchronized void warn(String s) {
     if (log == null)
       getLog();
     log.warn(s);
   }
 
-  static synchronized public void info(String s) {
+  public static synchronized void info(String s) {
     if (log == null)
       getLog();
     log.info(s);
   }
 
-  static synchronized public void debug(String s) {
+  public static synchronized void debug(String s) {
     if (log == null)
       getLog();
     log.debug(s);

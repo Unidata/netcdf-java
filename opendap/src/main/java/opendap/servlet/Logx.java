@@ -52,43 +52,43 @@ public class Logx {
 
   static final Charset UTF8 = Charset.forName("UTF-8");
 
-  static private PrintWriter logger = null;
-  static private ByteArrayOutputStream buff = null;
+  private static PrintWriter logger = null;
+  private static ByteArrayOutputStream buff = null;
 
-  static public void println(String s) {
+  public static void println(String s) {
     if (logger != null)
       logger.println(s);
   }
 
-  static public void printDODSException(opendap.dap.DAP2Exception de) {
+  public static void printDODSException(opendap.dap.DAP2Exception de) {
     if (logger != null) {
       de.print(logger);
       de.printStackTrace(logger);
     }
   }
 
-  static public void printThrowable(Throwable t) {
+  public static void printThrowable(Throwable t) {
     if (logger != null) {
       logger.println(t.getMessage());
       t.printStackTrace(logger);
     }
   }
 
-  static public void reset() {
+  public static void reset() {
     buff = new ByteArrayOutputStream();
     logger = new PrintWriter(new OutputStreamWriter(buff, Util.UTF8));
   }
 
-  static public boolean isOn() {
+  public static boolean isOn() {
     return (logger != null);
   }
 
-  static public void close() {
+  public static void close() {
     logger = null;
     buff = null;
   }
 
-  static public String getContents() {
+  public static String getContents() {
     if (buff == null)
       return "null";
     else

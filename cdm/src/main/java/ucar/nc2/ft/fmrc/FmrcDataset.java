@@ -72,8 +72,8 @@ import java.util.Set;
  */
 @ThreadSafe
 class FmrcDataset {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FmrcDataset.class);
-  static private final boolean debugEnhance = false, debugRead = false;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FmrcDataset.class);
+  private static final boolean debugEnhance = false, debugRead = false;
 
   private final FeatureCollectionConfig config;
 

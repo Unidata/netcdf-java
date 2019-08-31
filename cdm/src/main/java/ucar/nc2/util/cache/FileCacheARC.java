@@ -28,8 +28,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @ThreadSafe
 public class FileCacheARC implements FileCacheIF {
-  static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCacheARC.class);
-  static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCacheARC.class);
+  protected static final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static boolean debug = false;
   static boolean debugPrint = false;
   static boolean trackAll = true;
@@ -473,7 +473,7 @@ public class FileCacheARC implements FileCacheIF {
     }
   }
 
-  static private class CacheElementComparator implements Comparator<CacheElement> {
+  private static class CacheElementComparator implements Comparator<CacheElement> {
     @Override
     public int compare(CacheElement o1, CacheElement o2) {
       return Misc.compare(o1.getLastAccessed(), o2.getLastAccessed());

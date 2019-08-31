@@ -44,7 +44,7 @@ public class DapNetcdfFile extends NetcdfFile {
   //////////////////////////////////////////////////
   // Type Declarations
 
-  static protected class NullCancelTask implements CancelTask {
+  protected static class NullCancelTask implements CancelTask {
     public boolean isCancel() {
       return false;
     }
@@ -58,12 +58,12 @@ public class DapNetcdfFile extends NetcdfFile {
   //////////////////////////////////////////////////
   // Static variables
 
-  static protected final NullCancelTask nullcancel = new NullCancelTask();
+  protected static final NullCancelTask nullcancel = new NullCancelTask();
 
   /**
    * Define a map of known DSP classes.
    */
-  static protected DSPRegistry dspregistry = new DSPRegistry();
+  protected static DSPRegistry dspregistry = new DSPRegistry();
 
   static {
     dspregistry.register(FileDSP.class, DSPRegistry.FIRST);

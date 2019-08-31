@@ -110,7 +110,7 @@ public class Assert2 {
   // JUnit is licensed under Eclipse Public License 1.0. A copy of the license can be found at
   // docs/src/private/licenses/third-party/junit/LICENSE-junit.txt
 
-  static private void failNotEquals(String message, Object expected, Object actual) {
+  private static void failNotEquals(String message, Object expected, Object actual) {
     Assert.fail(format(message, expected, actual));
   }
 

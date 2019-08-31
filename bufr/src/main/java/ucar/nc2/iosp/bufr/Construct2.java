@@ -24,8 +24,8 @@ import java.io.IOException;
  */
 
 class Construct2 {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Construct2.class);
-  static private final boolean warnUnits = false;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Construct2.class);
+  private static final boolean warnUnits = false;
 
   private ucar.nc2.NetcdfFile ncfile;
 

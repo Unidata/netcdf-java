@@ -25,30 +25,30 @@ import java.util.Arrays;
  * @see "http://www.camx.com/"
  */
 public class UAMIVServiceProvider extends AbstractIOServiceProvider {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UAMIVServiceProvider.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UAMIVServiceProvider.class);
 
-  static private final String AVERAGE = "A   V   E   R   A   G   E               ";
-  static private final String EMISSIONS = "E   M   I   S   S   I   O   N   S       ";
-  static private final String AIRQUALITY = "A   I   R   Q   U   A   L   I   T   Y   ";
-  static private final String INSTANT = "I   N   S   T   A   N   T               ";
+  private static final String AVERAGE = "A   V   E   R   A   G   E               ";
+  private static final String EMISSIONS = "E   M   I   S   S   I   O   N   S       ";
+  private static final String AIRQUALITY = "A   I   R   Q   U   A   L   I   T   Y   ";
+  private static final String INSTANT = "I   N   S   T   A   N   T               ";
 
-  static private final String HEIGHT = "HEIGHT";
-  static private final String PBL = "PBL";
+  private static final String HEIGHT = "HEIGHT";
+  private static final String PBL = "PBL";
 
-  static private final String TEMP = "TEMP";
+  private static final String TEMP = "TEMP";
 
-  static private final String PRESS = "PRESS";
+  private static final String PRESS = "PRESS";
 
-  static private final String WINDX = "WINDX";
-  static private final String WINDY = "WINDY";
-  static private final String VERTDIFF = "Kv";
-  static private final String SPEED = "SPEED";
+  private static final String WINDX = "WINDX";
+  private static final String WINDY = "WINDY";
+  private static final String VERTDIFF = "Kv";
+  private static final String SPEED = "SPEED";
 
-  static private final String CLDOD = "CLD OPDEP";
+  private static final String CLDOD = "CLD OPDEP";
 
-  static private final String CLDWATER = "CLD WATER";
-  static private final String PRECIP = "PCP WATER";
-  static private final String RAIN = "RAIN";
+  private static final String CLDWATER = "CLD WATER";
+  private static final String PRECIP = "PCP WATER";
+  private static final String RAIN = "RAIN";
 
   private String[] species_names;
   private long data_start;

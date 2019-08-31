@@ -103,7 +103,7 @@ public enum Calendar {
     associate(Calendar.uniform30day, ThreeSixtyDayChronology.getInstanceUTC());
   }
 
-  static private void associate(Calendar cal, Chronology cron) {
+  private static void associate(Calendar cal, Chronology cron) {
     CHRONOLOGIES.put(cal, cron);
     CALENDARS.put(cron, cal);
   }

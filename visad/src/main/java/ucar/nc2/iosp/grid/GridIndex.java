@@ -18,7 +18,7 @@ public final class GridIndex {
   /**
    * used to check versions of already created indexes.
    */
-  static public final String current_index_version = "8.0";
+  public static final String current_index_version = "8.0";
 
   public final String filename;
 

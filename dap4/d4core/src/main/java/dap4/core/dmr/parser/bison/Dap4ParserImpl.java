@@ -29,12 +29,12 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser {
   //////////////////////////////////////////////////
   // static variables
 
-  static protected int globaldebuglevel = 0;
+  protected static int globaldebuglevel = 0;
 
   //////////////////////////////////////////////////
   // Static methods
 
-  static public void setGlobalDebugLevel(int level) {
+  public static void setGlobalDebugLevel(int level) {
     globaldebuglevel = level;
   }
 

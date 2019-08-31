@@ -19,8 +19,8 @@ import java.io.IOException;
  */
 @Immutable
 public class BufrIdentificationSection {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIdentificationSection.class);
-  static final private boolean warnDate = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIdentificationSection.class);
+  private static final boolean warnDate = false;
 
   /**
    * Master Table number.

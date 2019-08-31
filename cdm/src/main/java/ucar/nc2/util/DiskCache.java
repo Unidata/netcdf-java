@@ -73,14 +73,14 @@ import java.util.*;
  */
 public class DiskCache {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
-  static private String root;
-  static private boolean standardPolicy = false;
-  static private boolean checkExist = false;
+  private static String root;
+  private static boolean standardPolicy = false;
+  private static boolean checkExist = false;
 
   /**
    * debug only
    */
-  static public boolean simulateUnwritableDir = false;
+  public static boolean simulateUnwritableDir = false;
 
   static {
     root = System.getProperty("nj22.cache");
@@ -107,7 +107,7 @@ public class DiskCache {
    *
    * @param cacheDir the cache directory
    */
-  static public void setRootDirectory(String cacheDir) {
+  public static void setRootDirectory(String cacheDir) {
     if (!cacheDir.endsWith("/"))
       cacheDir = cacheDir + "/";
     root = StringUtil2.replace(cacheDir, '\\', "/"); // no nasty backslash
@@ -118,7 +118,7 @@ public class DiskCache {
   /**
    * Make sure that the current root directory exists.
    */
-  static public void makeRootDirectory() {
+  public static void makeRootDirectory() {
     File dir = new File(root);
     if (!dir.exists())
       if (!dir.mkdirs())
@@ -132,7 +132,7 @@ public class DiskCache {
    *
    * @return name of the root directory
    */
-  static public String getRootDirectory() {
+  public static String getRootDirectory() {
     return root;
   }
 
@@ -143,7 +143,7 @@ public class DiskCache {
    *
    * @param alwaysInCache make this the default policy
    */
-  static public void setCachePolicy(boolean alwaysInCache) {
+  public static void setCachePolicy(boolean alwaysInCache) {
     standardPolicy = alwaysInCache;
   }
 
@@ -162,7 +162,7 @@ public class DiskCache {
    * @param fileLocation normal file location
    * @return WriteableFile holding the writeable File and a possibly opened FileOutputStream (append false)
    */
-  static public File getFileStandardPolicy(String fileLocation) {
+  public static File getFileStandardPolicy(String fileLocation) {
     return getFile(fileLocation, standardPolicy);
   }
 
@@ -176,7 +176,7 @@ public class DiskCache {
    * @param alwaysInCache true if you want to look only in the cache
    * @return a File that either exists or is writeable.
    */
-  static public File getFile(String fileLocation, boolean alwaysInCache) {
+  public static File getFile(String fileLocation, boolean alwaysInCache) {
     if (alwaysInCache) {
       return getCacheFile(fileLocation);
 
@@ -208,7 +208,7 @@ public class DiskCache {
    * @param fileLocation normal file location
    * @return equivalent File in the cache.
    */
-  static public File getCacheFile(String fileLocation) {
+  public static File getCacheFile(String fileLocation) {
     File f = new File(makeCachePath(fileLocation));
     if (f.exists()) {
       if (!f.setLastModified(System.currentTimeMillis()))
@@ -230,7 +230,7 @@ public class DiskCache {
    * @param fileLocation normal file location
    * @return cache filename
    */
-  static private String makeCachePath(String fileLocation) {
+  private static String makeCachePath(String fileLocation) {
     Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
 
     fileLocation = fileLocation.replace('\\', '/'); // LOOK - use better normalization code eg Spring StringUtils
@@ -239,7 +239,7 @@ public class DiskCache {
     return root + cachePath;
   }
 
-  static public void showCache(PrintStream pw) {
+  public static void showCache(PrintStream pw) {
     pw.println("Cache files");
     pw.println("Size   LastModified       Filename");
     File dir = new File(root);
@@ -258,7 +258,7 @@ public class DiskCache {
    * @param cutoff earliest date to allow
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(Date cutoff, StringBuilder sbuff) {
+  public static void cleanCache(Date cutoff, StringBuilder sbuff) {
     if (sbuff != null)
       sbuff.append("CleanCache files before ").append(cutoff).append("\n");
     File dir = new File(root);
@@ -285,7 +285,7 @@ public class DiskCache {
    * @param maxBytes max number of bytes in cache.
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(long maxBytes, StringBuilder sbuff) {
+  public static void cleanCache(long maxBytes, StringBuilder sbuff) {
     cleanCache(maxBytes, new FileAgeComparator(), sbuff);
   }
 
@@ -298,7 +298,7 @@ public class DiskCache {
    * @param fileComparator sort files first with this
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(long maxBytes, Comparator<File> fileComparator, StringBuilder sbuff) {
+  public static void cleanCache(long maxBytes, Comparator<File> fileComparator, StringBuilder sbuff) {
     if (sbuff != null)
       sbuff.append("DiskCache clean maxBytes= ").append(maxBytes).append("on dir ").append(root).append("\n");
 
@@ -329,7 +329,7 @@ public class DiskCache {
   }
 
   // reverse sort - latest come first
-  static private class FileAgeComparator implements Comparator<File> {
+  private static class FileAgeComparator implements Comparator<File> {
     public int compare(File f1, File f2) {
       long f1Age = f1.lastModified();
       long f2Age = f2.lastModified();

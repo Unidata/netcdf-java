@@ -286,7 +286,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     return prefix;
   }
 
-  final public Unit unitSpec(UnitDB unitDB)
+  public final Unit unitSpec(UnitDB unitDB)
       throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit = DerivedUnitImpl.DIMENSIONLESS;
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -314,7 +314,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit shiftExpr(UnitDB unitDB)
+  public final Unit shiftExpr(UnitDB unitDB)
       throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     Date timestamp;
@@ -352,7 +352,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit productExpr(UnitDB unitDB)
+  public final Unit productExpr(UnitDB unitDB)
       throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     Unit unit2;
@@ -425,7 +425,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit powerExpr(UnitDB unitDB)
+  public final Unit powerExpr(UnitDB unitDB)
       throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     int exponent;
@@ -455,7 +455,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit basicExpr(UnitDB unitDB)
+  public final Unit basicExpr(UnitDB unitDB)
       throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     Unit unit;
     double number;
@@ -508,7 +508,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit logExpr(UnitDB unitDB)
+  public final Unit logExpr(UnitDB unitDB)
       throws ParseException, OperationException, UnitSystemException, PrefixDBException, UnitDBException {
     double base;
     Unit ref;
@@ -546,7 +546,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public double number() throws ParseException {
+  public final double number() throws ParseException {
     double number;
     if (jj_2_2(2147483647)) {
       number = real();
@@ -570,7 +570,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public double real() throws ParseException {
+  public final double real() throws ParseException {
     int sign = 1;
     double tenFactor = 1;
     double udecimal;
@@ -610,7 +610,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public int sign() throws ParseException {
+  public final int sign() throws ParseException {
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
       case PLUS:
         jj_consume_token(PLUS); {
@@ -632,7 +632,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public double unsignedDecimal() throws ParseException {
+  public final double unsignedDecimal() throws ParseException {
     int integer = 0;
     Token token;
     double fraction = 0;
@@ -666,7 +666,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public double tenFactor() throws ParseException {
+  public final double tenFactor() throws ParseException {
     Token token;
     token = jj_consume_token(REAL_EXP);
     {
@@ -676,7 +676,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public int integer() throws ParseException {
+  public final int integer() throws ParseException {
     int magnitude;
     int sign = 1;
     switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -695,7 +695,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public int unsignedInteger() throws ParseException {
+  public final int unsignedInteger() throws ParseException {
     Token token;
     token = jj_consume_token(UINT);
     {
@@ -705,7 +705,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Unit unitIdentifier(UnitDB unitDB)
+  public final Unit unitIdentifier(UnitDB unitDB)
       throws ParseException, UnitDBException, UnitSystemException, PrefixDBException, OperationException {
     Token token;
     Unit unit;
@@ -752,7 +752,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
    * See <http://www.cl.cam.ac.uk/~mgk25/iso-time.html> for a discussion of the
    * relevant timestamp format or lookup "ISO 8601".
    */
-  final public Date timeOriginExpr() throws ParseException {
+  public final Date timeOriginExpr() throws ParseException {
     Calendar calendar;
     calendar = dateExpr();
     if (jj_2_6(2)) {
@@ -791,7 +791,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Calendar dateExpr() throws ParseException {
+  public final Calendar dateExpr() throws ParseException {
     int sign = 1;
     int year;
     int month = 1;
@@ -853,7 +853,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Calendar clockExpr(Calendar calendar) throws ParseException {
+  public final Calendar clockExpr(Calendar calendar) throws ParseException {
     double hour;
     int minute = 0;
     double seconds = 0;
@@ -935,7 +935,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw new Error("Missing return statement in function");
   }
 
-  final public Calendar zoneExpr(Calendar calendar) throws ParseException {
+  public final Calendar zoneExpr(Calendar calendar) throws ParseException {
     int sign = 1;
     int zoneHour;
     int zoneMinute = 0;
@@ -1528,8 +1528,8 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[36];
-  static private int[] jj_la1_0;
+  private final int[] jj_la1 = new int[36];
+  private static int[] jj_la1_0;
 
   static {
     jj_la1_init_0();
@@ -1541,7 +1541,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
         0x10, 0x10, 0xc, 0x10, 0x30, 0x4002c,};
   }
 
-  final private JJCalls[] jj_2_rtns = new JJCalls[8];
+  private final JJCalls[] jj_2_rtns = new JJCalls[8];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1682,10 +1682,10 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
     throw generateParseException();
   }
 
-  static private final class LookaheadSuccess extends java.lang.Error {
+  private static final class LookaheadSuccess extends java.lang.Error {
   }
 
-  final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+  private final LookaheadSuccess jj_ls = new LookaheadSuccess();
 
   private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
@@ -1719,7 +1719,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
   /**
    * Get the next Token.
    */
-  final public Token getNextToken() {
+  public final Token getNextToken() {
     if (token.next != null)
       token = token.next;
     else
@@ -1732,7 +1732,7 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
   /**
    * Get the specific Token.
    */
-  final public Token getToken(int index) {
+  public final Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
       if (t.next != null)
@@ -1822,12 +1822,12 @@ public final class StandardUnitFormat extends UnitFormatImpl implements Standard
   /**
    * Enable tracing.
    */
-  final public void enable_tracing() {}
+  public final void enable_tracing() {}
 
   /**
    * Disable tracing.
    */
-  final public void disable_tracing() {}
+  public final void disable_tracing() {}
 
   private void jj_rescan_token() {
     jj_rescan = true;

@@ -13,27 +13,27 @@ import java.util.List;
  */
 
 public class ParseUtil {
-  static public final int MAXTEXT = 12;
+  public static final int MAXTEXT = 12;
 
   /* Common Flag Set */
-  static public final int FLAG_NONE = 0;
-  static public final int FLAG_ESCAPE = 1; // convert \n,\r, etc to \\ form
-  static public final int FLAG_NOCR = 2; // elide \r
-  static public final int FLAG_ELIDETEXT = 4; // only print the first 12 characters of text
-  static public final int FLAG_TRIMTEXT = 8; // remove leading and trailing whitespace;
+  public static final int FLAG_NONE = 0;
+  public static final int FLAG_ESCAPE = 1; // convert \n,\r, etc to \\ form
+  public static final int FLAG_NOCR = 2; // elide \r
+  public static final int FLAG_ELIDETEXT = 4; // only print the first 12 characters of text
+  public static final int FLAG_TRIMTEXT = 8; // remove leading and trailing whitespace;
   // if result is empty, then ignore
-  static public final int FLAG_TRACE = 16; // Trace the DomLexer tokens
+  public static final int FLAG_TRACE = 16; // Trace the DomLexer tokens
 
-  static public final int DEFAULTFLAGS = (FLAG_ELIDETEXT | FLAG_ESCAPE | FLAG_NOCR | FLAG_TRIMTEXT);
+  public static final int DEFAULTFLAGS = (FLAG_ELIDETEXT | FLAG_ESCAPE | FLAG_NOCR | FLAG_TRIMTEXT);
 
   /* Characters legal as first char of an element or attribute name */
-  static public boolean namechar1(char c) {
+  public static boolean namechar1(char c) {
     return (":_?".indexOf(c) >= 0 || "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0
         || ((int) c) > 127);
   }
 
   /* Characters legal as greater than first char of an element or attribute name */
-  static public boolean namecharn(char c) {
+  public static boolean namecharn(char c) {
     return (namechar1(c) || "-.".indexOf(c) >= 0 || "0123456789".indexOf(c) >= 0);
   }
 
@@ -42,7 +42,7 @@ public class ParseUtil {
    * Generally, type checking is not performed. String quotes
    * are obeyed and backslash escapes are removed.
    */
-  static public List<String> collectValues(String text) throws ParseException {
+  public static List<String> collectValues(String text) throws ParseException {
     List<String> values = new ArrayList<String>();
     StringBuffer buf = new StringBuffer();
     text = text.trim() + '\0';
@@ -96,7 +96,7 @@ public class ParseUtil {
     return values;
   }
 
-  static public boolean isLegalEnumConstName(String name) {
+  public static boolean isLegalEnumConstName(String name) {
     // Name must consist of non-blank non-control characters
     for (int i = 0; i < name.length(); i++) {
       char c = name.charAt(i);

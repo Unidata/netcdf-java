@@ -41,31 +41,31 @@ import java.nio.*;
  * 3) all variables' dimensions have a dimension scale
  */
 public class H5header extends NCheader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // special attribute names in HDF5
-  static public final String HDF5_CLASS = "CLASS";
-  static public final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
-  static public final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
-  static public final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
-  static public final String HDF5_DIMENSION_NAME = "NAME";
-  static public final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
+  public static final String HDF5_CLASS = "CLASS";
+  public static final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
+  public static final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
+  public static final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
+  public static final String HDF5_DIMENSION_NAME = "NAME";
+  public static final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
 
   // debugging
-  static private boolean debugEnum = false, debugVlen = false;
-  static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
-  static private boolean debugGroupBtree = false, debugDataBtree = false, debugBtree2 = false;
-  static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false,
+  private static boolean debugEnum = false, debugVlen = false;
+  private static boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
+  private static boolean debugGroupBtree = false, debugDataBtree = false, debugBtree2 = false;
+  private static boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false,
       debugHardLink = false, debugSymbolTable = false;
-  static private boolean warnings = true, debugReference = false, debugRegionReference = false,
+  private static boolean warnings = true, debugReference = false, debugRegionReference = false,
       debugCreationOrder = false, debugStructure = false;
-  static private boolean debugDimensionScales = false;
+  private static boolean debugDimensionScales = false;
 
-  static public void setWarnings(boolean warn) {
+  public static void setWarnings(boolean warn) {
     warnings = warn;
   }
 
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug1 = debugFlag.isSet("H5header/header");
     debugBtree2 = debugFlag.isSet("H5header/btree2");
     debugContinueMessage = debugFlag.isSet("H5header/continueMessage");
@@ -83,12 +83,12 @@ public class H5header extends NCheader {
     debugStructure = debugFlag.isSet("H5header/structure");
   }
 
-  static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
-  static private final String hdf5magic = new String(head, CDM.utf8Charset);
-  static private final long maxHeaderPos = 50000; // header's gotta be within this
-  static private final boolean transformReference = true;
+  private static final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
+  private static final String hdf5magic = new String(head, CDM.utf8Charset);
+  private static final long maxHeaderPos = 50000; // header's gotta be within this
+  private static final boolean transformReference = true;
 
-  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return checkFileType(raf) == NC_FORMAT_NETCDF4;
   }
 
@@ -2686,31 +2686,31 @@ public class H5header extends NCheader {
   } // DataObject
 
   // type safe enum
-  static public class MessageType {
+  public static class MessageType {
     private static int MAX_MESSAGE = 23;
     private static java.util.Map<String, MessageType> hash = new java.util.HashMap<>(10);
     private static MessageType[] mess = new MessageType[MAX_MESSAGE];
 
-    public final static MessageType NIL = new MessageType("NIL", 0);
-    public final static MessageType SimpleDataspace = new MessageType("SimpleDataspace", 1);
-    public final static MessageType GroupNew = new MessageType("GroupNew", 2);
-    public final static MessageType Datatype = new MessageType("Datatype", 3);
-    public final static MessageType FillValueOld = new MessageType("FillValueOld", 4);
-    public final static MessageType FillValue = new MessageType("FillValue", 5);
-    public final static MessageType Link = new MessageType("Link", 6);
-    public final static MessageType ExternalDataFiles = new MessageType("ExternalDataFiles", 7);
-    public final static MessageType Layout = new MessageType("Layout", 8);
-    public final static MessageType GroupInfo = new MessageType("GroupInfo", 10);
-    public final static MessageType FilterPipeline = new MessageType("FilterPipeline", 11);
-    public final static MessageType Attribute = new MessageType("Attribute", 12);
-    public final static MessageType Comment = new MessageType("Comment", 13);
-    public final static MessageType LastModifiedOld = new MessageType("LastModifiedOld", 14);
-    public final static MessageType SharedObject = new MessageType("SharedObject", 15);
-    public final static MessageType ObjectHeaderContinuation = new MessageType("ObjectHeaderContinuation", 16);
-    public final static MessageType Group = new MessageType("Group", 17);
-    public final static MessageType LastModified = new MessageType("LastModified", 18);
-    public final static MessageType AttributeInfo = new MessageType("AttributeInfo", 21);
-    public final static MessageType ObjectReferenceCount = new MessageType("ObjectReferenceCount", 22);
+    public static final MessageType NIL = new MessageType("NIL", 0);
+    public static final MessageType SimpleDataspace = new MessageType("SimpleDataspace", 1);
+    public static final MessageType GroupNew = new MessageType("GroupNew", 2);
+    public static final MessageType Datatype = new MessageType("Datatype", 3);
+    public static final MessageType FillValueOld = new MessageType("FillValueOld", 4);
+    public static final MessageType FillValue = new MessageType("FillValue", 5);
+    public static final MessageType Link = new MessageType("Link", 6);
+    public static final MessageType ExternalDataFiles = new MessageType("ExternalDataFiles", 7);
+    public static final MessageType Layout = new MessageType("Layout", 8);
+    public static final MessageType GroupInfo = new MessageType("GroupInfo", 10);
+    public static final MessageType FilterPipeline = new MessageType("FilterPipeline", 11);
+    public static final MessageType Attribute = new MessageType("Attribute", 12);
+    public static final MessageType Comment = new MessageType("Comment", 13);
+    public static final MessageType LastModifiedOld = new MessageType("LastModifiedOld", 14);
+    public static final MessageType SharedObject = new MessageType("SharedObject", 15);
+    public static final MessageType ObjectHeaderContinuation = new MessageType("ObjectHeaderContinuation", 16);
+    public static final MessageType Group = new MessageType("Group", 17);
+    public static final MessageType LastModified = new MessageType("LastModified", 18);
+    public static final MessageType AttributeInfo = new MessageType("AttributeInfo", 21);
+    public static final MessageType ObjectReferenceCount = new MessageType("ObjectReferenceCount", 22);
 
     private String name;
     private int num;

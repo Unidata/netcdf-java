@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-abstract public class DapNode {
+public abstract class DapNode {
 
   //////////////////////////////////////////////////
   // Instance variables
@@ -154,7 +154,7 @@ abstract public class DapNode {
   }
 
   // This may occur after initial construction
-  synchronized public DapAttribute setAttribute(DapAttribute attr) throws DapException {
+  public synchronized DapAttribute setAttribute(DapAttribute attr) throws DapException {
     if (attributes == null)
       attributes = new HashMap<String, DapAttribute>();
     DapAttribute old = attributes.get(attr.getShortName());

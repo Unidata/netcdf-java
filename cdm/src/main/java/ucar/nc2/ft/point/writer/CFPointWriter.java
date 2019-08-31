@@ -40,7 +40,7 @@ import java.util.*;
  * @since 4/11/12
  */
 public abstract class CFPointWriter implements Closeable {
-  static private final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
+  private static final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
 
   public static final String recordName = "obs";
   public static final String recordDimName = "obs";

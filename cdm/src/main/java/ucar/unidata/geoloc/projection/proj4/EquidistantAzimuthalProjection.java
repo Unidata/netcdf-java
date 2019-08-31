@@ -29,12 +29,12 @@ import ucar.unidata.geoloc.*;
  * Port from proj4.
  */
 public class EquidistantAzimuthalProjection extends ProjectionImpl {
-  public final static int NORTH_POLE = 1;
-  public final static int SOUTH_POLE = 2;
-  public final static int EQUATOR = 3;
-  public final static int OBLIQUE = 4;
+  public static final int NORTH_POLE = 1;
+  public static final int SOUTH_POLE = 2;
+  public static final int EQUATOR = 3;
+  public static final int OBLIQUE = 4;
 
-  private final static double TOL = 1.e-8;
+  private static final double TOL = 1.e-8;
 
   private double lat0, lon0; // degrees
   private double projectionLatitude, projectionLongitude; // radians

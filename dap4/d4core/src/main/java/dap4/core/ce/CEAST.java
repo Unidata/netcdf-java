@@ -16,31 +16,31 @@ public class CEAST {
   //////////////////////////////////////////////////
   // Type Decls
 
-  static public class NodeList extends ArrayList<CEAST> {
+  public static class NodeList extends ArrayList<CEAST> {
   }
 
-  static public class Path extends NodeList {
+  public static class Path extends NodeList {
   }
 
-  static public class StringList extends ArrayList<String> {
+  public static class StringList extends ArrayList<String> {
   }
 
-  static public class SliceList extends ArrayList<Slice> {
+  public static class SliceList extends ArrayList<Slice> {
   }
 
-  static public enum Sort {
+  public static enum Sort {
     CONSTRAINT, PROJECTION, SEGMENT, SELECTION, EXPR, CONSTANT, DEFINE,
   }
 
-  static public enum Constant {
+  public static enum Constant {
     STRING, LONG, DOUBLE, BOOLEAN;
 
-    static public EnumSet<Constant> COMPARABLE = EnumSet.of(LONG, DOUBLE, STRING);
-    static public EnumSet<Constant> NUMERIC = EnumSet.of(LONG, DOUBLE);
+    public static EnumSet<Constant> COMPARABLE = EnumSet.of(LONG, DOUBLE, STRING);
+    public static EnumSet<Constant> NUMERIC = EnumSet.of(LONG, DOUBLE);
 
   }
 
-  static public enum Operator {
+  public static enum Operator {
     LT("<", true, Constant.BOOLEAN, Constant.COMPARABLE), LE("<=", true, Constant.BOOLEAN, Constant.COMPARABLE), GT(">",
         true, Constant.BOOLEAN, Constant.COMPARABLE), GE(">=", true, Constant.BOOLEAN, Constant.COMPARABLE), EQ("==",
             true, Constant.BOOLEAN, Constant.COMPARABLE), NEQ("!=", true, Constant.BOOLEAN, Constant.COMPARABLE), REQ(
@@ -131,7 +131,7 @@ public class CEAST {
   //////////////////////////////////////////////////
   // Misc.
 
-  static public void toString(CEAST node, StringBuilder buf) {
+  public static void toString(CEAST node, StringBuilder buf) {
     if (node == null)
       return;
     switch (node.sort) {

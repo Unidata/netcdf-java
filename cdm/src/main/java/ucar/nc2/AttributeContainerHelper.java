@@ -130,7 +130,7 @@ public class AttributeContainerHelper implements AttributeContainer {
     return att != null && atts.remove(att);
   }
 
-  static public AttributeContainer filter(AttributeContainer atts, String... remove) {
+  public static AttributeContainer filter(AttributeContainer atts, String... remove) {
     List<Attribute> result = new ArrayList<>();
     for (Attribute att : atts.getAttributes()) {
       boolean ok = true;
@@ -143,7 +143,7 @@ public class AttributeContainerHelper implements AttributeContainer {
     return new AttributeContainerHelper(atts.getName(), result);
   }
 
-  static public void show(AttributeContainer atts, Indent indent, Formatter f) {
+  public static void show(AttributeContainer atts, Indent indent, Formatter f) {
     for (Attribute att : atts.getAttributes()) {
       f.format("%s%s%n", indent, att);
     }

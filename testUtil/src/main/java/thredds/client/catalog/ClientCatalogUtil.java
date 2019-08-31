@@ -15,11 +15,11 @@ import java.lang.invoke.MethodHandles;
 public class ClientCatalogUtil {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String makeUrlFromFragment(String catFrag) {
+  public static String makeUrlFromFragment(String catFrag) {
     return "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/" + catFrag;
   }
 
-  static public Catalog open(String urlString) throws IOException {
+  public static Catalog open(String urlString) throws IOException {
     if (!urlString.startsWith("http:") && !urlString.startsWith("file:")) {
       urlString = makeUrlFromFragment(urlString);
     } else {

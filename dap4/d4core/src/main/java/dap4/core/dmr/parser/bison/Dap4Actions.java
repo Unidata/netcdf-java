@@ -21,7 +21,7 @@ import java.util.Map;
  * 3. Define useful common utility procedures
  */
 
-abstract public class Dap4Actions extends Dap4EventHandler {
+public abstract class Dap4Actions extends Dap4EventHandler {
 
   //////////////////////////////////////////////////
   // Constants

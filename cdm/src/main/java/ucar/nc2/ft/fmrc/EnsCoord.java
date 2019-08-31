@@ -110,7 +110,7 @@ public class EnsCoord implements Comparable {
   }
 
   ////////////////
-  static public EnsCoord findEnsCoord(List<EnsCoord> ensCoords, EnsCoord want) {
+  public static EnsCoord findEnsCoord(List<EnsCoord> ensCoords, EnsCoord want) {
     if (want == null)
       return null;
 
@@ -131,7 +131,7 @@ public class EnsCoord implements Comparable {
    * @param result extend this coord
    * @param ecList list of EnsCoord, may be empty
    */
-  static public void normalize(EnsCoord result, List<EnsCoord> ecList) {
+  public static void normalize(EnsCoord result, List<EnsCoord> ecList) {
     List<EnsCoord> extra = new ArrayList<>();
     for (EnsCoord ec : ecList) {
       if (!result.equalsData(ec)) {

@@ -22,7 +22,7 @@ import java.util.Iterator;
  */
 @ThreadSafe
 public class ControllerOS7 implements MController {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS7.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS7.class);
 
   ////////////////////////////////////////
 

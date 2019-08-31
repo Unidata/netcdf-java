@@ -242,7 +242,7 @@ public class CECompiler {
     return null;
   }
 
-  static protected boolean isFQN(String s) {
+  protected static boolean isFQN(String s) {
     if (s == null || s.length() == 0)
       return false;
     return (s.charAt(0) == '/');

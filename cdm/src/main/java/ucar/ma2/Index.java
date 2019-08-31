@@ -27,7 +27,7 @@ public class Index implements Cloneable {
    * @param shape use this shape
    * @return a subclass of Index optimized for this array's rank
    */
-  static public Index factory(int[] shape) {
+  public static Index factory(int[] shape) {
     int rank = shape.length;
     switch (rank) {
       case 0:
@@ -81,7 +81,7 @@ public class Index implements Cloneable {
    * @param shape length of array in each dimension.
    * @return total number of elements in the array.
    */
-  static public long computeSize(int[] shape) {
+  public static long computeSize(int[] shape) {
     long product = 1;
     for (int aShape : shape) {
       if (aShape < 0)
@@ -99,7 +99,7 @@ public class Index implements Cloneable {
    * @param stride put result here
    * @return standard strides based on array's shape.
    */
-  static private long computeStrides(int[] shape, int[] stride) {
+  private static long computeStrides(int[] shape, int[] stride) {
     long product = 1;
     for (int ii = shape.length - 1; ii >= 0; ii--) {
       final int thisDim = shape[ii];

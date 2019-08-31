@@ -46,8 +46,8 @@ import ucar.nc2.constants.CDM;
  */
 
 class DodsV implements Comparable {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsV.class);
-  static private boolean debugAttributes = false;
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsV.class);
+  private static boolean debugAttributes = false;
 
   /**
    * Parse the DDS, creating a tree of DodsV objects. The root node is only a container, ie it has no BaseType.
@@ -77,7 +77,7 @@ class DodsV implements Comparable {
    * @param parent of the tree
    * @param children list of BaseType
    */
-  static private void parseVariables(DodsV parent, Enumeration children) {
+  private static void parseVariables(DodsV parent, Enumeration children) {
     while (children.hasMoreElements()) {
       opendap.dap.BaseType bt = (opendap.dap.BaseType) children.nextElement();
 
@@ -155,7 +155,7 @@ class DodsV implements Comparable {
    * @param children list of BaseType
    * @throws opendap.dap.NoSuchVariableException if children and parent are inconsistent
    */
-  static private void parseDataVariables(DodsV parent, Enumeration children) throws NoSuchVariableException {
+  private static void parseDataVariables(DodsV parent, Enumeration children) throws NoSuchVariableException {
     while (children.hasMoreElements()) {
       opendap.dap.BaseType bt = (opendap.dap.BaseType) children.nextElement();
       DodsV dodsV = new DodsV(parent, bt);
@@ -210,7 +210,7 @@ class DodsV implements Comparable {
     }
   }
 
-  static private void processDArray(DodsV dodsV) {
+  private static void processDArray(DodsV dodsV) {
     DArray da = dodsV.darray;
     Enumeration dims = da.getDimensions();
     while (dims.hasMoreElements()) {

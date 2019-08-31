@@ -19,8 +19,8 @@ import java.util.zip.DataFormatException;
  */
 
 public class Giniiosp extends AbstractIOServiceProvider {
-  final static int Z_DEFLATED = 8;
-  final static int DEF_WBITS = 15;
+  static final int Z_DEFLATED = 8;
+  static final int DEF_WBITS = 15;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     return Giniheader.isValidFile(raf);

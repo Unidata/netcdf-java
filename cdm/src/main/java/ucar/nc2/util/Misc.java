@@ -145,7 +145,7 @@ public class Misc {
   }
 
 
-  static public String showInts(int[] inta) {
+  public static String showInts(int[] inta) {
     if (inta == null)
       return "null";
     Formatter f = new Formatter();
@@ -154,7 +154,7 @@ public class Misc {
     return f.toString();
   }
 
-  static public String showInts(List<Integer> intList) {
+  public static String showInts(List<Integer> intList) {
     if (intList == null)
       return "null";
     Formatter f = new Formatter();
@@ -163,7 +163,7 @@ public class Misc {
     return f.toString();
   }
 
-  static public void showInts(int[] inta, Formatter f) {
+  public static void showInts(int[] inta, Formatter f) {
     if (inta == null) {
       f.format("null");
       return;
@@ -172,7 +172,7 @@ public class Misc {
       f.format("%d, ", i);
   }
 
-  static public String showBytes(byte[] buff) {
+  public static String showBytes(byte[] buff) {
     StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < buff.length; i++) {
       byte b = buff[i];
@@ -184,14 +184,14 @@ public class Misc {
     return sbuff.toString();
   }
 
-  static public void showBytes(byte[] buff, Formatter f) {
+  public static void showBytes(byte[] buff, Formatter f) {
     for (byte b : buff) {
       int ub = (b < 0) ? b + 256 : b;
       f.format("%3d ", ub);
     }
   }
 
-  static public int getSize(Iterable ii) {
+  public static int getSize(Iterable ii) {
     if (ii instanceof Collection)
       return ((Collection) ii).size();
     int count = 0;
@@ -200,7 +200,7 @@ public class Misc {
     return count;
   }
 
-  static public List getList(Iterable ii) {
+  public static List getList(Iterable ii) {
     if (ii instanceof List)
       return (List) ii;
     List<Object> result = new ArrayList<>();
@@ -224,7 +224,7 @@ public class Misc {
 
   //////////////////////////////////////////////////////////////////////
 
-  static public boolean compare(byte[] raw1, byte[] raw2, Formatter f) {
+  public static boolean compare(byte[] raw1, byte[] raw2, Formatter f) {
     if (raw1 == null || raw2 == null)
       return false;
 
@@ -244,7 +244,7 @@ public class Misc {
     return ndiff == 0 && (raw1.length == raw2.length);
   }
 
-  static public void compare(float[] raw1, float[] raw2, Formatter f) {
+  public static void compare(float[] raw1, float[] raw2, Formatter f) {
     if (raw1.length != raw2.length) {
       f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
     }

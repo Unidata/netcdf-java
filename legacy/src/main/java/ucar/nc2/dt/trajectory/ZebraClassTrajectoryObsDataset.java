@@ -41,7 +41,7 @@ public class ZebraClassTrajectoryObsDataset extends SingleTrajectoryObsDataset i
 
   private static String trajId = "trajectory data";
 
-  static public boolean isValidFile(NetcdfDataset ncd) {
+  public static boolean isValidFile(NetcdfDataset ncd) {
     return (buildConfig(ncd) != null);
   }
 

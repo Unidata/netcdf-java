@@ -27,8 +27,8 @@ import java.util.List;
  * @since 5/26/2015
  */
 public class DtCoverage implements IsMissingEvaluator {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverage.class);
-  static private final boolean debugArrayShape = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverage.class);
+  private static final boolean debugArrayShape = false;
 
   private final DtCoverageDataset dataset;
   private final DtCoverageCS gcs;

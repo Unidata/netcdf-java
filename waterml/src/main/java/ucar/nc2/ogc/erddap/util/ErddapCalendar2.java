@@ -54,14 +54,14 @@ import java.util.TimeZone;
  */
 public class ErddapCalendar2 {
     //useful static variables
-    public final static int YEAR        = Calendar.YEAR;
-    public final static int MILLISECOND = Calendar.MILLISECOND;
+    public static final int YEAR        = Calendar.YEAR;
+    public static final int MILLISECOND = Calendar.MILLISECOND;
 
-    public final static int SECONDS_PER_MINUTE = 60; 
-    public final static int SECONDS_PER_HOUR   = 60 * 60; //3600
-    public final static int SECONDS_PER_DAY    = 24 * 60 * 60; //86400   31Days=2678400  365days=31536000
+    public static final int SECONDS_PER_MINUTE = 60;
+    public static final int SECONDS_PER_HOUR   = 60 * 60; //3600
+    public static final int SECONDS_PER_DAY    = 24 * 60 * 60; //86400   31Days=2678400  365days=31536000
 
-    public final static TimeZone zuluTimeZone = TimeZone.getTimeZone("Zulu");
+    public static final TimeZone zuluTimeZone = TimeZone.getTimeZone("Zulu");
 
     /**
      * This converts a string "[units] since [isoDate]" 

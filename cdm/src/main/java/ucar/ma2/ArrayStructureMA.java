@@ -200,7 +200,7 @@ public class ArrayStructureMA extends ArrayStructure {
    * @return equivalent ArrayStructureMA
    * @throws java.io.IOException on error reading a sequence
    */
-  static public ArrayStructureMA factoryMA(ArrayStructure from) throws IOException {
+  public static ArrayStructureMA factoryMA(ArrayStructure from) throws IOException {
     if (from instanceof ArrayStructureMA)
       return (ArrayStructureMA) from;
 
@@ -289,7 +289,7 @@ public class ArrayStructureMA extends ArrayStructure {
    * @param shape the shape of the ArrayStructure
    * @return equivilent ArrayStructureMA
    */
-  static public ArrayStructureMA factoryMA(Structure from, int[] shape) {
+  public static ArrayStructureMA factoryMA(Structure from, int[] shape) {
     StructureMembers sm = from.makeStructureMembers();
     for (Variable v : from.getVariables()) {
       Array data;
@@ -312,7 +312,7 @@ public class ArrayStructureMA extends ArrayStructure {
     return new ArrayStructureMA(sm, shape);
   }
 
-  static private int[] combine(int[] shape1, int[] shape2) {
+  private static int[] combine(int[] shape1, int[] shape2) {
     int[] result = new int[shape1.length + shape2.length];
     System.arraycopy(shape1, 0, result, 0, shape1.length);
     System.arraycopy(shape2, 0, result, shape1.length, shape2.length);

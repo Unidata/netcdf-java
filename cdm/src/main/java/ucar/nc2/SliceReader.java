@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 
 class SliceReader implements ProxyReader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SliceReader.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SliceReader.class);
 
   private Variable orgClient;
   private int sliceDim; // dimension index into original

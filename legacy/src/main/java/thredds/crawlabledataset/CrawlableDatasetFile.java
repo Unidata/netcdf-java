@@ -29,7 +29,7 @@ import java.util.*;
  * @since Jun 8, 2005 15:34:04 -0600
  */
 public class CrawlableDatasetFile implements CrawlableDataset {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetFile.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetFile.class);
   // private static Log log = LogFactory.getLog( CrawlableDatasetFile.class );
 
   private final File file;

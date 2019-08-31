@@ -140,7 +140,7 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
    * @param pt point to check
    * @return true if either coordinate is +/- infinite.
    */
-  static public boolean isInfinite(ProjectionPoint pt) {
+  public static boolean isInfinite(ProjectionPoint pt) {
     return (pt.getX() == java.lang.Double.POSITIVE_INFINITY) || (pt.getX() == java.lang.Double.NEGATIVE_INFINITY)
         || (pt.getY() == java.lang.Double.POSITIVE_INFINITY) || (pt.getY() == java.lang.Double.NEGATIVE_INFINITY);
   }

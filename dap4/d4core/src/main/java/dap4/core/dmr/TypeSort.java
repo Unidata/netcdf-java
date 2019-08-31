@@ -21,19 +21,19 @@ import static dap4.core.dmr.TypeConstants.*;
  */
 abstract class TypeConstants {
   // define classification flag mnemonics
-  static public final int ISINTEGER = (1 << 0);
-  static public final int ISFLOAT = (1 << 1);
-  static public final int ISSTRING = (1 << 2);
-  static public final int ISCHAR = (1 << 3);
-  static public final int ISOPAQUE = (1 << 4);
-  static public final int ISUNSIGNED = (1 << 5);
-  static public final int ISFIXEDSIZE = (1 << 6);
-  static public final int ISENUM = (1 << 7);
-  static public final int ISSTRUCT = (1 << 8);
-  static public final int ISSEQ = (1 << 9);
-  static public final int ISATOMIC = (1 << 10);
-  static public final int ISCOMPOUND = (1 << 11);
-  static public final int ISLEGALATTRTYPE = (1 << 12);
+  public static final int ISINTEGER = (1 << 0);
+  public static final int ISFLOAT = (1 << 1);
+  public static final int ISSTRING = (1 << 2);
+  public static final int ISCHAR = (1 << 3);
+  public static final int ISOPAQUE = (1 << 4);
+  public static final int ISUNSIGNED = (1 << 5);
+  public static final int ISFIXEDSIZE = (1 << 6);
+  public static final int ISENUM = (1 << 7);
+  public static final int ISSTRUCT = (1 << 8);
+  public static final int ISSEQ = (1 << 9);
+  public static final int ISATOMIC = (1 << 10);
+  public static final int ISCOMPOUND = (1 << 11);
+  public static final int ISLEGALATTRTYPE = (1 << 12);
 }
 
 
@@ -79,7 +79,7 @@ public enum TypeSort {
     return javaclass;
   }
 
-  static public final TypeSort getSignedVersion(TypeSort uat) {
+  public static final TypeSort getSignedVersion(TypeSort uat) {
     switch (uat) {
       case Int8:
       case UInt8:
@@ -99,7 +99,7 @@ public enum TypeSort {
     return null;
   }
 
-  static public final int getSize(TypeSort uat) {
+  public static final int getSize(TypeSort uat) {
     switch (uat) {
       case Char:
       case Int8:
@@ -123,7 +123,7 @@ public enum TypeSort {
   }
 
   // Map String -> TypeSort
-  static public TypeSort getTypeSort(String typename) {
+  public static TypeSort getTypeSort(String typename) {
     for (TypeSort dt : TypeSort.values()) {
       if (typename.equalsIgnoreCase(dt.getTypeName()))
         return dt;

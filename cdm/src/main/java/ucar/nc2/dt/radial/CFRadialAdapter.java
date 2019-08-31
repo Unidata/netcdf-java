@@ -28,7 +28,7 @@ import static ucar.ma2.MAMath.nearlyEquals;
  */
 public class CFRadialAdapter extends AbstractRadialAdapter {
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFRadialAdapter.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFRadialAdapter.class);
 
   private NetcdfDataset ds = null;
   private double latv, lonv, elev;

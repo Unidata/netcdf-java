@@ -25,7 +25,7 @@ public class GridVariable {
   /**
    * logger
    */
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridVariable.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridVariable.class);
 
   private final String filename;
 

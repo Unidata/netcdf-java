@@ -52,20 +52,20 @@ import org.jdom2.Element;
  * @since Jul 23, 2007
  */
 public class HdfEos {
-  static public final String HDF5_GROUP = "HDFEOS_INFORMATION";
-  static public final String HDFEOS_CRS = "_HDFEOS_CRS";
-  static public final String HDFEOS_CRS_Projection = "Projection";
-  static public final String HDFEOS_CRS_UpperLeft = "UpperLeftPointMtrs";
-  static public final String HDFEOS_CRS_LowerRight = "LowerRightMtrs";
-  static public final String HDFEOS_CRS_ProjParams = "ProjParams";
-  static public final String HDFEOS_CRS_SphereCode = "SphereCode";
+  public static final String HDF5_GROUP = "HDFEOS_INFORMATION";
+  public static final String HDFEOS_CRS = "_HDFEOS_CRS";
+  public static final String HDFEOS_CRS_Projection = "Projection";
+  public static final String HDFEOS_CRS_UpperLeft = "UpperLeftPointMtrs";
+  public static final String HDFEOS_CRS_LowerRight = "LowerRightMtrs";
+  public static final String HDFEOS_CRS_ProjParams = "ProjParams";
+  public static final String HDFEOS_CRS_SphereCode = "SphereCode";
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static boolean showWork = false; // set in debug
-  static private final String GEOLOC_FIELDS = "Geolocation Fields";
-  static private final String GEOLOC_FIELDS2 = "Geolocation_Fields";
-  static private final String DATA_FIELDS = "Data Fields";
-  static private final String DATA_FIELDS2 = "Data_Fields";
+  private static final String GEOLOC_FIELDS = "Geolocation Fields";
+  private static final String GEOLOC_FIELDS2 = "Geolocation_Fields";
+  private static final String DATA_FIELDS = "Data Fields";
+  private static final String DATA_FIELDS2 = "Data_Fields";
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
@@ -77,7 +77,7 @@ public class HdfEos {
    * @return true if HDF-EOS info was found
    * @throws IOException on read error
    */
-  static public boolean amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
+  public static boolean amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
     String smeta = getStructMetadata(eosGroup);
     if (smeta == null) {
       return false;
@@ -92,7 +92,7 @@ public class HdfEos {
   /**
    *
    */
-  static public boolean getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
+  public static boolean getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
     String smeta = getStructMetadata(eosGroup);
     if (smeta == null) {
       f.format("No StructMetadata variables in group %s %n", eosGroup.getFullName());
@@ -110,7 +110,7 @@ public class HdfEos {
   /**
    *
    */
-  static private String getStructMetadata(Group eosGroup) throws IOException {
+  private static String getStructMetadata(Group eosGroup) throws IOException {
     StringBuilder sbuff = null;
     String structMetadata = null;
 

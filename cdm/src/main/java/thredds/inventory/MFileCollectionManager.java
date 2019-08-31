@@ -32,31 +32,31 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @ThreadSafe
 public class MFileCollectionManager extends CollectionManagerAbstract {
-  static private MController controller;
+  private static MController controller;
 
   /**
    * Set the MController used by scan. Defaults to thredds.filesystem.ControllerOS() if not set.
    *
    * @param _controller use this MController
    */
-  static public void setController(MController _controller) {
+  public static void setController(MController _controller) {
     controller = _controller;
   }
 
-  static public MController getController() {
+  public static MController getController() {
     if (null == controller)
       controller = new thredds.filesystem.ControllerOS(); // default
     return controller;
   }
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
-  static public MFileCollectionManager open(String collectionName, String collectionSpec, String olderThan,
+  public static MFileCollectionManager open(String collectionName, String collectionSpec, String olderThan,
       Formatter errlog) {
     return new MFileCollectionManager(collectionName, collectionSpec, olderThan, errlog);
   }
 
   // retrofit to Aggregation
-  static public MFileCollectionManager openWithRecheck(String collectionName, String recheckS) {
+  public static MFileCollectionManager openWithRecheck(String collectionName, String recheckS) {
     return new MFileCollectionManager(collectionName, recheckS);
   }
 

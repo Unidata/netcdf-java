@@ -68,7 +68,7 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
  */
 
 public class InvCatalogFactory {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InvCatalogFactory.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InvCatalogFactory.class);
 
   public static boolean debugURL = false, debugOpen = false, debugVersion = false;
   public static boolean showParsedXML = false, showStackTrace = false;

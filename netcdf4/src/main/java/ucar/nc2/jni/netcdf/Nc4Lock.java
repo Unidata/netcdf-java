@@ -13,5 +13,5 @@ package ucar.nc2.jni.netcdf;
  * @author dmh
  */
 
-abstract public class Nc4Lock {
+public abstract class Nc4Lock {
 }

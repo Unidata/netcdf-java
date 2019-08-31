@@ -25,11 +25,11 @@ import java.util.Formatter;
  * @author john caron
  */
 public class CoordTransBuilder {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransBuilder.class);
-  static private List<Transform> transformList = new ArrayList<>();
-  static private boolean userMode;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransBuilder.class);
+  private static List<Transform> transformList = new ArrayList<>();
+  private static boolean userMode;
 
-  static private final boolean loadWarnings = false;
+  private static final boolean loadWarnings = false;
 
   // search in the order added
   static {
@@ -80,7 +80,7 @@ public class CoordTransBuilder {
    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
    * @param c class that implements CoordTransBuilderIF.
    */
-  static public void registerTransform(String transformName, Class c) {
+  public static void registerTransform(String transformName, Class c) {
     if (!(VertTransformBuilderIF.class.isAssignableFrom(c)) && !(HorizTransformBuilderIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException(
           "Class " + c.getName() + " must implement VertTransformBuilderIF or HorizTransformBuilderIF");
@@ -110,7 +110,7 @@ public class CoordTransBuilder {
    * @param className name of class that implements CoordTransBuilderIF.
    * @throws ClassNotFoundException if Class.forName( className) fails
    */
-  static public void registerTransform(String transformName, String className) throws ClassNotFoundException {
+  public static void registerTransform(String transformName, String className) throws ClassNotFoundException {
     Class c = Class.forName(className);
     registerTransform(transformName, c);
   }
@@ -121,7 +121,7 @@ public class CoordTransBuilder {
    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
    * @param className name of class that implements CoordTransBuilderIF.
    */
-  static public void registerTransformMaybe(String transformName, String className) {
+  public static void registerTransformMaybe(String transformName, String className) {
     Class c;
     try {
       c = Class.forName(className);
@@ -133,7 +133,7 @@ public class CoordTransBuilder {
     registerTransform(transformName, c);
   }
 
-  static private class Transform {
+  private static class Transform {
     String transName;
     Class transClass;
 
@@ -153,7 +153,7 @@ public class CoordTransBuilder {
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
-  static public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
+  public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
       Formatter parseInfo, Formatter errInfo) {
     // standard name
     String transform_name = ctv.findAttValueIgnoreCase("transform_name", null);
@@ -236,7 +236,7 @@ public class CoordTransBuilder {
    * @param ct based on the CoordinateTransform
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
-  static public VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
+  public static VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
     VariableDS v = new VariableDS(ds, null, null, ct.getName(), DataType.CHAR, "", null, null);
     List<Parameter> params = ct.getParameters();
     for (Parameter p : params) {
@@ -264,7 +264,7 @@ public class CoordTransBuilder {
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
-  static public ProjectionImpl makeProjection(CoverageTransform gct, Formatter errInfo) {
+  public static ProjectionImpl makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
     String transform_name = gct.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
 

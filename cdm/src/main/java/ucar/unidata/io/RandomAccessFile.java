@@ -53,32 +53,32 @@ import java.util.concurrent.atomic.AtomicLong;
 @NotThreadSafe
 public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, Closeable {
 
-  static public final int BIG_ENDIAN = 0;
-  static public final int LITTLE_ENDIAN = 1;
+  public static final int BIG_ENDIAN = 0;
+  public static final int LITTLE_ENDIAN = 1;
 
-  static protected final int defaultBufferSize = 8092; // The default buffer size, in bytes.
+  protected static final int defaultBufferSize = 8092; // The default buffer size, in bytes.
 
   ///////////////////////////////////////////////////////////////////////
   // debug leaks - keep track of open files
-  static protected boolean debugLeaks = false;
-  static protected boolean debugAccess = false;
-  static protected Set<String> allFiles = null;
-  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<>()); // could keep map on file
+  protected static boolean debugLeaks = false;
+  protected static boolean debugAccess = false;
+  protected static Set<String> allFiles = null;
+  protected static List<String> openFiles = Collections.synchronizedList(new ArrayList<>()); // could keep map on file
                                                                                              // hashcode
-  static private AtomicLong count_openFiles = new AtomicLong();
-  static private AtomicInteger maxOpenFiles = new AtomicInteger();
-  static private AtomicInteger debug_nseeks = new AtomicInteger();
-  static private AtomicLong debug_nbytes = new AtomicLong();
+                                                                                             private static AtomicLong count_openFiles = new AtomicLong();
+  private static AtomicInteger maxOpenFiles = new AtomicInteger();
+  private static AtomicInteger debug_nseeks = new AtomicInteger();
+  private static AtomicLong debug_nbytes = new AtomicLong();
 
-  static protected boolean showOpen = false;
-  static protected boolean showRead = false;
+  protected static boolean showOpen = false;
+  protected static boolean showRead = false;
 
   /**
    * Debugging, do not use.
    *
    * @return true if debugLeaks is on
    */
-  static public boolean getDebugLeaks() {
+  public static boolean getDebugLeaks() {
     return debugLeaks;
   }
 
@@ -88,7 +88,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * 
    * @param b set true to track java.io.RandomAccessFile
    */
-  static public void setDebugLeaks(boolean b) {
+  public static void setDebugLeaks(boolean b) {
     if (b) {
       count_openFiles.set(0);
       maxOpenFiles.set(0);
@@ -102,15 +102,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *
    * @return list of open files.
    */
-  static public List<String> getOpenFiles() {
+  public static List<String> getOpenFiles() {
     return Collections.unmodifiableList(openFiles);
   }
 
-  static public long getOpenFileCount() {
+  public static long getOpenFileCount() {
     return count_openFiles.get();
   }
 
-  static public int getMaxOpenFileCount() {
+  public static int getMaxOpenFileCount() {
     return maxOpenFiles.get();
   }
 
@@ -119,7 +119,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *
    * @return list of all files used.
    */
-  static public List<String> getAllFiles() {
+  public static List<String> getAllFiles() {
     if (null == allFiles)
       return null;
     return allFiles.stream().sorted().collect(Collectors.toList());
@@ -130,7 +130,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *
    * @param b to debug file reading
    */
-  static public void setDebugAccess(boolean b) {
+  public static void setDebugAccess(boolean b) {
     debugAccess = b;
     if (b) {
       debug_nseeks = new AtomicInteger();
@@ -143,7 +143,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *
    * @return number of seeks
    */
-  static public int getDebugNseeks() {
+  public static int getDebugNseeks() {
     return (debug_nseeks == null) ? 0 : debug_nseeks.intValue();
   }
 
@@ -152,7 +152,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *
    * @return number of bytes read
    */
-  static public long getDebugNbytes() {
+  public static long getDebugNbytes() {
     return (debug_nbytes == null) ? 0 : debug_nbytes.longValue();
   }
 
@@ -161,7 +161,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   // internal File Caching. this allows a global pool of OS files.
   // note read only
 
-  static private final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
+  private static final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
       String location = StringUtil2.replace(durl.trueurl, "\\", "/"); // canonicalize the name
@@ -171,33 +171,33 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     }
   };
 
-  static private FileCacheIF cache = null;
+  private static FileCacheIF cache = null;
 
-  static public synchronized void enableDefaultGlobalFileCache() {
+  public static synchronized void enableDefaultGlobalFileCache() {
     if (cache != null)
       cache.disable();
     cache = new FileCache("RandomAccessFile", 200, 300, 400, 60 * 60); // default; override for higher performance, or
                                                                        // set to null for no caching;
   }
 
-  static public synchronized void setGlobalFileCache(FileCacheIF _cache) {
+  public static synchronized void setGlobalFileCache(FileCacheIF _cache) {
     if (cache != null)
       cache.disable();
     cache = _cache;
   }
 
-  static public synchronized FileCacheIF getGlobalFileCache() {
+  public static synchronized FileCacheIF getGlobalFileCache() {
     return cache;
   }
 
-  static public RandomAccessFile acquire(String location) throws IOException {
+  public static RandomAccessFile acquire(String location) throws IOException {
     if (cache == null)
       return new RandomAccessFile(location, "r");
     else
       return (RandomAccessFile) cache.acquire(factory, new DatasetUrl(null, location));
   }
 
-  static public RandomAccessFile acquire(String location, int buffer_size) throws IOException {
+  public static RandomAccessFile acquire(String location, int buffer_size) throws IOException {
     if (cache == null)
       return new RandomAccessFile(location, "r", buffer_size);
     else
@@ -205,12 +205,12 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
           null);
   }
 
-  static public void eject(String location) {
+  public static void eject(String location) {
     if (cache != null)
       cache.eject(location);
   }
 
-  static public void shutdown() {
+  public static void shutdown() {
     if (cache != null)
       cache.clearCache(true);
   }

@@ -226,7 +226,7 @@ public class IndexChunker {
    * Everything is done in elements, not bytes.
    * Read nelems from src at srcPos, store in destination at destPos.
    */
-  static public class Chunk implements Layout.Chunk {
+  public static class Chunk implements Layout.Chunk {
     private long srcElem; // start reading/writing here in the file
     private int nelems; // read these many contiguous elements
     private long destElem; // start writing/reading here in array
@@ -335,21 +335,21 @@ public class IndexChunker {
   }
 
   // debugging
-  static protected String printa(int[] a) {
+  protected static String printa(int[] a) {
     StringBuilder sbuff = new StringBuilder();
     for (int anA : a)
       sbuff.append(anA).append(" ");
     return sbuff.toString();
   }
 
-  static protected void printa(String name, int[] a) {
+  protected static void printa(String name, int[] a) {
     System.out.print(name + "= ");
     for (int anA : a)
       System.out.print(anA + " ");
     System.out.println();
   }
 
-  static protected void printl(String name, long[] a) {
+  protected static void printl(String name, long[] a) {
     System.out.print(name + "= ");
     for (long anA : a)
       System.out.print(anA + " ");

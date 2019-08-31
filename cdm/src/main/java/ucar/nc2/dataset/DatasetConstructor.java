@@ -27,12 +27,12 @@ public class DatasetConstructor {
    * @param replaceCheck if null, add if a Variable of the same name doesnt already exist, otherwise
    *        replace if replaceCheck.replace( Variable v) is true
    */
-  static public void transferDataset(NetcdfFile src, NetcdfDataset target, ReplaceVariableCheck replaceCheck) {
+  public static void transferDataset(NetcdfFile src, NetcdfDataset target, ReplaceVariableCheck replaceCheck) {
     transferGroup(src, target, src.getRootGroup(), target.getRootGroup(), replaceCheck);
   }
 
   // transfer the objects in src group to the target group
-  static private void transferGroup(NetcdfFile ds, NetcdfDataset targetDs, Group src, Group targetGroup,
+  private static void transferGroup(NetcdfFile ds, NetcdfDataset targetDs, Group src, Group targetGroup,
       ReplaceVariableCheck replaceCheck) {
     boolean unlimitedOK = true; // LOOK why not allowed?
 
@@ -93,7 +93,7 @@ public class DatasetConstructor {
    * @param src copy from here
    * @param target copy to here
    */
-  static public void transferVariableAttributes(Variable src, Variable target) {
+  public static void transferVariableAttributes(Variable src, Variable target) {
     for (Attribute a : src.getAttributes()) {
       if (null == target.findAttribute(a.getShortName()))
         target.addAttribute(a);
@@ -106,7 +106,7 @@ public class DatasetConstructor {
    * @param src copy from here
    * @param target copy to here
    */
-  static public void transferGroupAttributes(Group src, Group target) {
+  public static void transferGroupAttributes(Group src, Group target) {
     for (Attribute a : src.getAttributes()) {
       if (null == target.findAttribute(a.getShortName()))
         target.addAttribute(a);
@@ -120,7 +120,7 @@ public class DatasetConstructor {
    * @param oldGroup corresponding (by name) with oldGroup
    * @return corresponding Group, or null if no match.
    */
-  static public Group findGroup(NetcdfFile newFile, Group oldGroup) {
+  public static Group findGroup(NetcdfFile newFile, Group oldGroup) {
     List<Group> chain = new ArrayList<>(5);
     Group g = oldGroup;
     while (g.getParentGroup() != null) { // skip the root
@@ -137,9 +137,9 @@ public class DatasetConstructor {
     return newg;
   }
 
-  static private final String boundsDimName = "bounds_dim";
+  private static final String boundsDimName = "bounds_dim";
 
-  static public Dimension getBoundsDimension(NetcdfFile ncfile) {
+  public static Dimension getBoundsDimension(NetcdfFile ncfile) {
     Group g = ncfile.getRootGroup();
     Dimension d = g.findDimension(boundsDimName);
     if (d == null)

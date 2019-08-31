@@ -55,7 +55,7 @@ import java.io.*;
  * @see DArray
  * @see PrimitiveVector
  */
-abstract public class DVector extends BaseType implements ClientIO {
+public abstract class DVector extends BaseType implements ClientIO {
   /**
    * The values in this <code>DVector</code>, stored in a
    * <code>PrimitiveVector</code>.

@@ -32,10 +32,10 @@ import java.util.*;
  */
 public class DiskCache2 {
   private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
-  static private Timer timer;
+  private static Timer timer;
 
   /** Be sure to call this when your application exits, otherwise your process may not exit without being killed. */
-  static public void exit() {
+  public static void exit() {
     if (timer != null) {
       timer.cancel();
       cacheLog.info("DiskCache2.exit()%n");
@@ -43,7 +43,7 @@ public class DiskCache2 {
     timer = null;
   }
 
-  static private synchronized void startTimer() {
+  private static synchronized void startTimer() {
     if (timer == null)
       timer = new Timer("DiskCache2");
   }
@@ -67,7 +67,7 @@ public class DiskCache2 {
    * Default DiskCache2 strategy: use $user_home/.unidata/cache/, no scouring, alwaysUseCache = false
    * Mimics default DiskCache static class
    */
-  static public DiskCache2 getDefault() {
+  public static DiskCache2 getDefault() {
     String root = System.getProperty("nj22.cache");
 
     if (root == null) {
@@ -89,7 +89,7 @@ public class DiskCache2 {
   }
 
   // NOOP
-  static public DiskCache2 getNoop() {
+  public static DiskCache2 getNoop() {
     DiskCache2 noop = new DiskCache2();
     noop.neverUseCache = true;
     return noop;

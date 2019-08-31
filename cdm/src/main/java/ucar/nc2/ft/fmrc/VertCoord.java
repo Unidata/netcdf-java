@@ -136,7 +136,7 @@ public class VertCoord implements Comparable<VertCoord> {
 
   ///////////////////////////////////////////////////////
 
-  static public VertCoord findVertCoord(List<VertCoord> vertCoords, VertCoord want) {
+  public static VertCoord findVertCoord(List<VertCoord> vertCoords, VertCoord want) {
     if (want == null)
       return null;
 
@@ -158,7 +158,7 @@ public class VertCoord implements Comparable<VertCoord> {
    * @param result extend this coord
    * @param vcList list of VertCoord, may be empty
    */
-  static public void normalize(VertCoord result, List<VertCoord> vcList) {
+  public static void normalize(VertCoord result, List<VertCoord> vcList) {
     // get all values into a HashSet of LevelCoord
     Set<LevelCoord> valueSet = new HashSet<>();
     addValues(valueSet, result.getValues1(), result.getValues2());
@@ -183,7 +183,7 @@ public class VertCoord implements Comparable<VertCoord> {
       result.setValues2(values2);
   }
 
-  static private void addValues(Set<LevelCoord> valueSet, double[] values1, double[] values2) {
+  private static void addValues(Set<LevelCoord> valueSet, double[] values1, double[] values2) {
     for (int i = 0; i < values1.length; i++) {
       double val2 = (values2 == null) ? 0.0 : values2[i];
       valueSet.add(new LevelCoord(values1[i], val2));
@@ -191,7 +191,7 @@ public class VertCoord implements Comparable<VertCoord> {
   }
 
   @Immutable
-  static private class LevelCoord implements Comparable<LevelCoord> {
+  private static class LevelCoord implements Comparable<LevelCoord> {
     final double mid;
     final double value1;
     final double value2;

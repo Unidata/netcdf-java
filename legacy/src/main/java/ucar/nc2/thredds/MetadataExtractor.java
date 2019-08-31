@@ -30,7 +30,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author caron
  */
 public class MetadataExtractor {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MetadataExtractor.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MetadataExtractor.class);
 
   /**
    * Extract the lat/lon/alt bounding boxes from the dataset.
@@ -39,7 +39,7 @@ public class MetadataExtractor {
    * @return ThreddsMetadata.GeospatialCoverage, or null if unable.
    * @throws IOException on read error
    */
-  static public ThreddsMetadata.GeospatialCoverage extractGeospatial(InvDatasetImpl threddsDataset) throws IOException {
+  public static ThreddsMetadata.GeospatialCoverage extractGeospatial(InvDatasetImpl threddsDataset) throws IOException {
     ThreddsDataFactory.Result result = null;
 
     try {
@@ -84,7 +84,7 @@ public class MetadataExtractor {
     return null;
   }
 
-  static public ThreddsMetadata.GeospatialCoverage extractGeospatial(GridDataset gridDataset) {
+  public static ThreddsMetadata.GeospatialCoverage extractGeospatial(GridDataset gridDataset) {
     ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
     LatLonRect llbb = null;
     CoordinateAxis1D vaxis = null;
@@ -115,7 +115,7 @@ public class MetadataExtractor {
    * @return ThreddsMetadata.Variables, or null if unable.
    * @throws IOException on read error
    */
-  static public ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset) throws IOException {
+  public static ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset) throws IOException {
     ThreddsDataFactory.Result result = null;
 
     try {
@@ -161,11 +161,11 @@ public class MetadataExtractor {
     return null;
   }
 
-  static public ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset, GridDataset gridDataset) {
+  public static ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset, GridDataset gridDataset) {
     return extractVariables(threddsDataset.getDataFormatType(), gridDataset);
   }
 
-  static public ThreddsMetadata.Variables extractVariables(thredds.catalog.DataFormatType fileFormat,
+  public static ThreddsMetadata.Variables extractVariables(thredds.catalog.DataFormatType fileFormat,
       GridDataset gridDataset) {
     if ((fileFormat != null) && (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2))) {
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
@@ -208,7 +208,7 @@ public class MetadataExtractor {
 
   }
 
-  static public CalendarDateRange extractCalendarDateRange(GridDataset gridDataset) {
+  public static CalendarDateRange extractCalendarDateRange(GridDataset gridDataset) {
     CalendarDateRange maxDateRange = null;
 
     for (GridDataset.Gridset gridset : gridDataset.getGridsets()) {
@@ -244,7 +244,7 @@ public class MetadataExtractor {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
-  static public ThreddsMetadata.Variables extractVariables(FeatureDatasetPoint fd) {
+  public static ThreddsMetadata.Variables extractVariables(FeatureDatasetPoint fd) {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.5");
     List<VariableSimpleIF> dataVars = fd.getDataVariables();
     if (dataVars == null)
@@ -266,7 +266,7 @@ public class MetadataExtractor {
     return vars;
   }
 
-  static public ThreddsMetadata.GeospatialCoverage extractGeospatial(FeatureDatasetPoint fd) {
+  public static ThreddsMetadata.GeospatialCoverage extractGeospatial(FeatureDatasetPoint fd) {
     LatLonRect llbb = fd.getBoundingBox();
     if (llbb != null) {
       ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
@@ -276,7 +276,7 @@ public class MetadataExtractor {
     return null;
   }
 
-  static public CalendarDateRange extractCalendarDateRange(FeatureDatasetPoint fd) {
+  public static CalendarDateRange extractCalendarDateRange(FeatureDatasetPoint fd) {
     return fd.getCalendarDateRange();
   }
 

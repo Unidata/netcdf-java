@@ -39,8 +39,8 @@ import java.util.List;
  * @author Ethan Davis
  * @version $Id: DatasetSource.java 63 2006-07-12 21:50:51Z edavis $
  */
-abstract public class DatasetSource {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetSource.class);
+public abstract class DatasetSource {
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetSource.class);
 
   /** The catalog that results from expanding this DatasetSource. */
   protected InvCatalog resultingCatalog;
@@ -491,7 +491,7 @@ abstract public class DatasetSource {
    *         accessPointHeader directory.
    * @throws NullPointerException if the given dataset location is null.
    */
-  abstract protected InvDataset createDataset(String datasetLocation, String prefixUrlPath) throws IOException;
+  protected abstract InvDataset createDataset(String datasetLocation, String prefixUrlPath) throws IOException;
 
   /**
    * Return true if the given dataset is a collection dataset, false otherwise.
@@ -501,7 +501,7 @@ abstract public class DatasetSource {
    * @throws NullPointerException if the given InvDataset is null.
    * @throws ClassCastException if the given InvDataset is not a LocalInvDataset.
    */
-  abstract protected boolean isCollection(InvDataset dataset);
+  protected abstract boolean isCollection(InvDataset dataset);
 
   /**
    * Return a skeleton InvCatalog for this DatasetSource. The skeleton catalog
@@ -513,7 +513,7 @@ abstract public class DatasetSource {
    *
    * @throws IOException if top-level dataset does not exist or is not a collection dataset.
    */
-  abstract protected InvCatalog createSkeletonCatalog(String prefixUrlPath) throws IOException;
+  protected abstract InvCatalog createSkeletonCatalog(String prefixUrlPath) throws IOException;
 
   /**
    * Return a list of the InvDatasets contained in the given collection dataset
@@ -526,7 +526,7 @@ abstract public class DatasetSource {
    * @throws NullPointerException if given dataset is null.
    * @throws ClassCastException if the given InvDataset is not a LocalInvDataset.
    */
-  abstract protected List expandThisLevel(InvDataset collectionDataset, String prefixUrlPath);
+  protected abstract List expandThisLevel(InvDataset collectionDataset, String prefixUrlPath);
 
   /**
    * Use the list of dsNamers to name the given list of datasets.

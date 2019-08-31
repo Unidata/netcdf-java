@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 
 public class DODSGrid extends DODSVariable {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSGrid.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSGrid.class);
 
   DODSGrid(DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DodsV dodsV)
       throws IOException {

@@ -76,7 +76,7 @@ import java.net.URL;
  */
 public class TableParser {
   private static Logger logger = LoggerFactory.getLogger(TableParser.class);
-  static private final boolean debug = false;
+  private static final boolean debug = false;
 
   /**
    * Reads a URL or file in as a table.
@@ -89,7 +89,7 @@ public class TableParser {
    * @throws NumberFormatException on parse number error
    * @see #readTable(InputStream ios, String format, int maxLines)
    */
-  static public List<Record> readTable(String urlString, String format, int maxLines)
+  public static List<Record> readTable(String urlString, String format, int maxLines)
       throws IOException, NumberFormatException {
 
     InputStream ios;
@@ -114,7 +114,7 @@ public class TableParser {
    * @throws IOException on read error
    * @throws NumberFormatException on parse number error
    */
-  static public List<Record> readTable(InputStream ios, String format, int maxLines)
+  public static List<Record> readTable(InputStream ios, String format, int maxLines)
       throws IOException, NumberFormatException {
     List<Record> result;
     try {
@@ -291,7 +291,7 @@ public class TableParser {
   /**
    * A set of values for one line.
    */
-  static public class Record {
+  public static class Record {
     List<Object> values = new ArrayList<>();
 
     static Record make(String line, List fields) {

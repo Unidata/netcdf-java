@@ -28,7 +28,7 @@ import java.io.IOException;
 
 public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString())
         && !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;

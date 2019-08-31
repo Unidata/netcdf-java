@@ -53,7 +53,7 @@ import ucar.unidata.util.Parameter;
  * @author caron
  */
 public class CFGridWriter {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridWriter.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridWriter.class);
 
   /**
    * Write a netcdf-3 file from a subset of a grid dataset
@@ -66,13 +66,13 @@ public class CFGridWriter {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  static public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
+  public static void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
       CalendarDateRange range) throws IOException, InvalidRangeException {
     CFGridWriter writer = new CFGridWriter();
     writer.makeFile(location, gds, gridList, llbb, range, false, 1, 1, 1);
   }
 
-  static public void makeFileVersioned(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+  public static void makeFileVersioned(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
       LatLonRect llbb, CalendarDateRange dateRange, NetcdfFileWriter.Version version)
       throws IOException, InvalidRangeException {
     CFGridWriter writer = new CFGridWriter();

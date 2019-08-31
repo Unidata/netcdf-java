@@ -19,7 +19,7 @@ import ucar.nc2.Variable;
  * @author caron
  */
 public class ConvertD2N {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
 
   /*
    * Difficult cases.

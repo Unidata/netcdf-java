@@ -58,11 +58,11 @@ import ucar.nc2.ft.point.standard.plug.UnidataPointObs;
  * @since Mar 20, 2008
  */
 public class TableAnalyzer {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
-  static private final List<Configurator> conventionList = new ArrayList<>();
-  static private boolean userMode;
-  static private final boolean debug = false;
+  private static final List<Configurator> conventionList = new ArrayList<>();
+  private static boolean userMode;
+  private static final boolean debug = false;
 
   // search in the order added
   static {
@@ -96,7 +96,7 @@ public class TableAnalyzer {
     userMode = true;
   }
 
-  static public void registerAnalyzer(String conventionName, Class c, ConventionNameOk match) {
+  public static void registerAnalyzer(String conventionName, Class c, ConventionNameOk match) {
     if (!(TableConfigurer.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must implement TableConfigurer");
 
@@ -122,7 +122,7 @@ public class TableAnalyzer {
     boolean isMatch(String convName, String wantName);
   }
 
-  static private class Configurator {
+  private static class Configurator {
     String convName;
     Class confClass;
     TableConfigurer confInstance;
@@ -136,7 +136,7 @@ public class TableAnalyzer {
     }
   }
 
-  static private Configurator matchConfigurator(String convName) {
+  private static Configurator matchConfigurator(String convName) {
     for (Configurator anal : conventionList) {
       if ((anal.match == null) && anal.convName.equalsIgnoreCase(convName))
         return anal;
@@ -153,7 +153,7 @@ public class TableAnalyzer {
    * @param ds for this dataset
    * @return TableConfigurer or null if not found
    */
-  static public TableConfigurer getTableConfigurer(FeatureType wantFeatureType, NetcdfDataset ds) {
+  public static TableConfigurer getTableConfigurer(FeatureType wantFeatureType, NetcdfDataset ds) {
     String convUsed = null;
 
     // search for the Conventions attribute
@@ -262,7 +262,7 @@ public class TableAnalyzer {
    * @return TableAnalyser
    * @throws IOException on read error
    */
-  static public TableAnalyzer factory(TableConfigurer tc, FeatureType wantFeatureType, NetcdfDataset ds)
+  public static TableAnalyzer factory(TableConfigurer tc, FeatureType wantFeatureType, NetcdfDataset ds)
       throws IOException {
 
     // Create a TableAnalyzer with this TableConfigurer (may be null)

@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 
 public class MultiOdometer extends Odometer {
 
-  static protected boolean DEBUG = false;
+  protected static boolean DEBUG = false;
 
   //////////////////////////////////////////////////
   // Instance variables

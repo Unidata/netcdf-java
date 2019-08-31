@@ -47,10 +47,10 @@ import java.util.TreeMap;
  */
 
 public class Debug {
-  static private TreeMap map = new TreeMap();
-  static private boolean debug = false, changed = true;
+  private static TreeMap map = new TreeMap();
+  private static boolean debug = false, changed = true;
 
-  static public boolean isSet(String flagName) {
+  public static boolean isSet(String flagName) {
     Object val;
     if (null == (val = map.get(flagName))) {
       if (debug)
@@ -63,7 +63,7 @@ public class Debug {
     return ((Boolean) val).booleanValue();
   }
 
-  static public void set(String flagName, boolean value) {
+  public static void set(String flagName, boolean value) {
     Object val;
     if (null == (val = map.get(flagName))) {
       changed = true;
@@ -73,11 +73,11 @@ public class Debug {
       System.out.println("  Debug.set " + flagName + " " + value);
   }
 
-  static public void clear() {
+  public static void clear() {
     map = new TreeMap();
   }
 
-  static public java.util.Set keySet() {
+  public static java.util.Set keySet() {
     return map.keySet();
   }
 }

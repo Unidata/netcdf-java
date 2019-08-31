@@ -58,7 +58,7 @@ public enum ServiceType {
   }
 
   // ignore case
-  static public ServiceType getServiceTypeIgnoreCase(String typeS) {
+  public static ServiceType getServiceTypeIgnoreCase(String typeS) {
     for (ServiceType s : values()) {
       if (s.toString().equalsIgnoreCase(typeS))
         return s;

@@ -632,10 +632,10 @@ public class DMSPHeader {
    */
   static class DateFormatHandler {
     // Available date format handlers.
-    public final static DateFormatHandler ISO_DATE = new DateFormatHandler("yyyy-MM-dd");
-    public final static DateFormatHandler ISO_TIME = new DateFormatHandler("HH:mm:ss.SSSz");
-    public final static DateFormatHandler ISO_DATE_TIME = new DateFormatHandler("yyyy-MM-dd\'T\'HH:mm:ss.SSS'Z'");
-    public final static DateFormatHandler ALT_DATE_TIME = new DateFormatHandler("EEE MMM dd HH:mm:ss yyyy");
+    public static final DateFormatHandler ISO_DATE = new DateFormatHandler("yyyy-MM-dd");
+    public static final DateFormatHandler ISO_TIME = new DateFormatHandler("HH:mm:ss.SSSz");
+    public static final DateFormatHandler ISO_DATE_TIME = new DateFormatHandler("yyyy-MM-dd\'T\'HH:mm:ss.SSS'Z'");
+    public static final DateFormatHandler ALT_DATE_TIME = new DateFormatHandler("EEE MMM dd HH:mm:ss yyyy");
 
     private String dateTimeFormatString;
 
@@ -687,64 +687,64 @@ public class DMSPHeader {
   static class HeaderInfoTitle {
     private static java.util.Map<String, HeaderInfoTitle> hash = new java.util.HashMap<>(20);
 
-    public final static HeaderInfoTitle FILE_ID = new HeaderInfoTitle("file ID"); // /dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp
-    public final static HeaderInfoTitle DATA_SET_ID = new HeaderInfoTitle("data set ID"); // DMSP F14 OLS LS & TS
-    public final static HeaderInfoTitle RECORD_BYTES = new HeaderInfoTitle("record bytes"); // 3040
-    public final static HeaderInfoTitle NUM_HEADER_RECORDS = new HeaderInfoTitle("number of header records"); // 1
-    public final static HeaderInfoTitle NUM_RECORDS = new HeaderInfoTitle("number of records"); // 692
-    public final static HeaderInfoTitle SUBORBIT_HISTORY = new HeaderInfoTitle("suborbit history"); // F14200307192230.OIS
+    public static final HeaderInfoTitle FILE_ID = new HeaderInfoTitle("file ID"); // /dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp
+    public static final HeaderInfoTitle DATA_SET_ID = new HeaderInfoTitle("data set ID"); // DMSP F14 OLS LS & TS
+    public static final HeaderInfoTitle RECORD_BYTES = new HeaderInfoTitle("record bytes"); // 3040
+    public static final HeaderInfoTitle NUM_HEADER_RECORDS = new HeaderInfoTitle("number of header records"); // 1
+    public static final HeaderInfoTitle NUM_RECORDS = new HeaderInfoTitle("number of records"); // 692
+    public static final HeaderInfoTitle SUBORBIT_HISTORY = new HeaderInfoTitle("suborbit history"); // F14200307192230.OIS
                                                                                                     // (1,691)
-    public final static HeaderInfoTitle PROCESSING_SYSTEM = new HeaderInfoTitle("processing system"); // v2.1b
-    public final static HeaderInfoTitle PROCESSING_DATE = new HeaderInfoTitle("processing date"); // Sat Jul 19 19:33:23
+                                                                                                    public static final HeaderInfoTitle PROCESSING_SYSTEM = new HeaderInfoTitle("processing system"); // v2.1b
+    public static final HeaderInfoTitle PROCESSING_DATE = new HeaderInfoTitle("processing date"); // Sat Jul 19 19:33:23
                                                                                                   // 2003
-    public final static HeaderInfoTitle SPACECRAFT_ID = new HeaderInfoTitle("spacecraft ID"); // F14
-    public final static HeaderInfoTitle NORAD_ID = new HeaderInfoTitle("NORAD ID"); // 24753
-    public final static HeaderInfoTitle START_DATE_UTC = new HeaderInfoTitle("start date UTC"); // 2003-07-19
-    public final static HeaderInfoTitle START_TIME_UTC = new HeaderInfoTitle("start time UTC"); // 22:30:31.37112
-    public final static HeaderInfoTitle END_DATE_UTC = new HeaderInfoTitle("end date UTC"); // 2003-07-19
-    public final static HeaderInfoTitle END_TIME_UTC = new HeaderInfoTitle("end time UTC"); // 22:35:21.83694
-    public final static HeaderInfoTitle START_DATE_LOCAL = new HeaderInfoTitle("start date local"); // 2003-07-19
-    public final static HeaderInfoTitle START_TIME_LOCAL = new HeaderInfoTitle("start time local"); // 19:52:42.03518
-    public final static HeaderInfoTitle START_LAT_LON = new HeaderInfoTitle("start lat,lon"); // 0.00 320.54
-    public final static HeaderInfoTitle END_LAT_LON = new HeaderInfoTitle("end lat,lon"); // 16.99 316.69
-    public final static HeaderInfoTitle START_SUBSOLAR_COORD = new HeaderInfoTitle("start sub-solar coord"); // 20.87
+                                                                                                  public static final HeaderInfoTitle SPACECRAFT_ID = new HeaderInfoTitle("spacecraft ID"); // F14
+    public static final HeaderInfoTitle NORAD_ID = new HeaderInfoTitle("NORAD ID"); // 24753
+    public static final HeaderInfoTitle START_DATE_UTC = new HeaderInfoTitle("start date UTC"); // 2003-07-19
+    public static final HeaderInfoTitle START_TIME_UTC = new HeaderInfoTitle("start time UTC"); // 22:30:31.37112
+    public static final HeaderInfoTitle END_DATE_UTC = new HeaderInfoTitle("end date UTC"); // 2003-07-19
+    public static final HeaderInfoTitle END_TIME_UTC = new HeaderInfoTitle("end time UTC"); // 22:35:21.83694
+    public static final HeaderInfoTitle START_DATE_LOCAL = new HeaderInfoTitle("start date local"); // 2003-07-19
+    public static final HeaderInfoTitle START_TIME_LOCAL = new HeaderInfoTitle("start time local"); // 19:52:42.03518
+    public static final HeaderInfoTitle START_LAT_LON = new HeaderInfoTitle("start lat,lon"); // 0.00 320.54
+    public static final HeaderInfoTitle END_LAT_LON = new HeaderInfoTitle("end lat,lon"); // 16.99 316.69
+    public static final HeaderInfoTitle START_SUBSOLAR_COORD = new HeaderInfoTitle("start sub-solar coord"); // 20.87
                                                                                                              // 202.37
-    public final static HeaderInfoTitle END_SUBSOLAR_COORD = new HeaderInfoTitle("end sub-solar coord"); // 20.87 201.16
-    public final static HeaderInfoTitle START_LUNAR_COORD = new HeaderInfoTitle("start lunar coord"); // UNKNOWN
-    public final static HeaderInfoTitle END_LUNAR_COORD = new HeaderInfoTitle("end lunar coord"); // UNKNOWN
-    public final static HeaderInfoTitle START_DIRECTION = new HeaderInfoTitle("start direction");
-    public final static HeaderInfoTitle QA_1_8 = new HeaderInfoTitle("QA 1/8");
-    public final static HeaderInfoTitle QA_2_8 = new HeaderInfoTitle("QA 2/8");
-    public final static HeaderInfoTitle QA_3_8 = new HeaderInfoTitle("QA 3/8");
-    public final static HeaderInfoTitle QA_4_8 = new HeaderInfoTitle("QA 4/8");
-    public final static HeaderInfoTitle QA_5_8 = new HeaderInfoTitle("QA 5/8");
-    public final static HeaderInfoTitle QA_6_8 = new HeaderInfoTitle("QA 6/8");
-    public final static HeaderInfoTitle QA_7_8 = new HeaderInfoTitle("QA 7/8");
-    public final static HeaderInfoTitle QA_8_8 = new HeaderInfoTitle("QA 8/8");
-    public final static HeaderInfoTitle DELTA_T = new HeaderInfoTitle("delta-t");
-    public final static HeaderInfoTitle ASCENDING_NODE = new HeaderInfoTitle("ascending node"); // 320.55
-    public final static HeaderInfoTitle NODE_HEADING = new HeaderInfoTitle("node heading"); // 8.64
-    public final static HeaderInfoTitle EPHEMERIS_SOURCE = new HeaderInfoTitle("ephemeris source"); // NORAD
-    public final static HeaderInfoTitle NUM_DATA_RECORDS = new HeaderInfoTitle("number of data records"); // 691
-    public final static HeaderInfoTitle NUM_ARTIFICIAL_DATA_RECORDS =
+                                                                                                             public static final HeaderInfoTitle END_SUBSOLAR_COORD = new HeaderInfoTitle("end sub-solar coord"); // 20.87 201.16
+    public static final HeaderInfoTitle START_LUNAR_COORD = new HeaderInfoTitle("start lunar coord"); // UNKNOWN
+    public static final HeaderInfoTitle END_LUNAR_COORD = new HeaderInfoTitle("end lunar coord"); // UNKNOWN
+    public static final HeaderInfoTitle START_DIRECTION = new HeaderInfoTitle("start direction");
+    public static final HeaderInfoTitle QA_1_8 = new HeaderInfoTitle("QA 1/8");
+    public static final HeaderInfoTitle QA_2_8 = new HeaderInfoTitle("QA 2/8");
+    public static final HeaderInfoTitle QA_3_8 = new HeaderInfoTitle("QA 3/8");
+    public static final HeaderInfoTitle QA_4_8 = new HeaderInfoTitle("QA 4/8");
+    public static final HeaderInfoTitle QA_5_8 = new HeaderInfoTitle("QA 5/8");
+    public static final HeaderInfoTitle QA_6_8 = new HeaderInfoTitle("QA 6/8");
+    public static final HeaderInfoTitle QA_7_8 = new HeaderInfoTitle("QA 7/8");
+    public static final HeaderInfoTitle QA_8_8 = new HeaderInfoTitle("QA 8/8");
+    public static final HeaderInfoTitle DELTA_T = new HeaderInfoTitle("delta-t");
+    public static final HeaderInfoTitle ASCENDING_NODE = new HeaderInfoTitle("ascending node"); // 320.55
+    public static final HeaderInfoTitle NODE_HEADING = new HeaderInfoTitle("node heading"); // 8.64
+    public static final HeaderInfoTitle EPHEMERIS_SOURCE = new HeaderInfoTitle("ephemeris source"); // NORAD
+    public static final HeaderInfoTitle NUM_DATA_RECORDS = new HeaderInfoTitle("number of data records"); // 691
+    public static final HeaderInfoTitle NUM_ARTIFICIAL_DATA_RECORDS =
         new HeaderInfoTitle("number of artificial data records"); // 0
-    public final static HeaderInfoTitle NOMINAL_RESOLUTION = new HeaderInfoTitle("nominal resolution"); // 2.7 km
-    public final static HeaderInfoTitle BANDS_PER_SCANLINE = new HeaderInfoTitle("bands per scanline"); // 2
-    public final static HeaderInfoTitle SAMPLES_PER_BAND = new HeaderInfoTitle("samples per band"); // 1465
-    public final static HeaderInfoTitle BYTES_PER_SAMPLE = new HeaderInfoTitle("bytes per sample"); // 1
-    public final static HeaderInfoTitle BYTE_OFFSET_BAND_1 = new HeaderInfoTitle("byte offset band 1"); // 96
-    public final static HeaderInfoTitle BYTE_OFFSET_BAND_2 = new HeaderInfoTitle("byte offset band 2"); // 1568
-    public final static HeaderInfoTitle BAND_1 = new HeaderInfoTitle("band 1"); // OLS Visible .4-1.1um
-    public final static HeaderInfoTitle BAND_2 = new HeaderInfoTitle("band 2"); // OLS Thermal 10.5-12.6um
-    public final static HeaderInfoTitle ORGANIZATION = new HeaderInfoTitle("organization"); // band interleaved by line
-    public final static HeaderInfoTitle THERMAL_OFFSET = new HeaderInfoTitle("thermal offset"); // 190.00 K
-    public final static HeaderInfoTitle THERMAL_SCALE = new HeaderInfoTitle("thermal scale"); // 0.47
-    public final static HeaderInfoTitle QC_FLAGS = new HeaderInfoTitle("QC flags"); // 0=not QC'ed 1=artificial 2=bad
+    public static final HeaderInfoTitle NOMINAL_RESOLUTION = new HeaderInfoTitle("nominal resolution"); // 2.7 km
+    public static final HeaderInfoTitle BANDS_PER_SCANLINE = new HeaderInfoTitle("bands per scanline"); // 2
+    public static final HeaderInfoTitle SAMPLES_PER_BAND = new HeaderInfoTitle("samples per band"); // 1465
+    public static final HeaderInfoTitle BYTES_PER_SAMPLE = new HeaderInfoTitle("bytes per sample"); // 1
+    public static final HeaderInfoTitle BYTE_OFFSET_BAND_1 = new HeaderInfoTitle("byte offset band 1"); // 96
+    public static final HeaderInfoTitle BYTE_OFFSET_BAND_2 = new HeaderInfoTitle("byte offset band 2"); // 1568
+    public static final HeaderInfoTitle BAND_1 = new HeaderInfoTitle("band 1"); // OLS Visible .4-1.1um
+    public static final HeaderInfoTitle BAND_2 = new HeaderInfoTitle("band 2"); // OLS Thermal 10.5-12.6um
+    public static final HeaderInfoTitle ORGANIZATION = new HeaderInfoTitle("organization"); // band interleaved by line
+    public static final HeaderInfoTitle THERMAL_OFFSET = new HeaderInfoTitle("thermal offset"); // 190.00 K
+    public static final HeaderInfoTitle THERMAL_SCALE = new HeaderInfoTitle("thermal scale"); // 0.47
+    public static final HeaderInfoTitle QC_FLAGS = new HeaderInfoTitle("QC flags"); // 0=not QC'ed 1=artificial 2=bad
                                                                                     // vis
-    public final static HeaderInfoTitle PERCENT_DAYLIGHT = new HeaderInfoTitle("% daylight"); // 0.0
-    public final static HeaderInfoTitle PERCENT_FULL_MOON = new HeaderInfoTitle("% full moon"); // 57.8
-    public final static HeaderInfoTitle PERCENT_TERMINATOR_EVIDENT = new HeaderInfoTitle("% terminator evident"); // 0.0
-    public final static HeaderInfoTitle END_HEADER = new HeaderInfoTitle("end header");
+                                                                                    public static final HeaderInfoTitle PERCENT_DAYLIGHT = new HeaderInfoTitle("% daylight"); // 0.0
+    public static final HeaderInfoTitle PERCENT_FULL_MOON = new HeaderInfoTitle("% full moon"); // 57.8
+    public static final HeaderInfoTitle PERCENT_TERMINATOR_EVIDENT = new HeaderInfoTitle("% terminator evident"); // 0.0
+    public static final HeaderInfoTitle END_HEADER = new HeaderInfoTitle("end header");
 
 
     private String HeaderInfoTitle;

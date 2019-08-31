@@ -313,7 +313,7 @@ public class CdmrfReader {
         reader, null);
   }
 
-  static public AxisType convertAxisType(CdmrFeatureProto.AxisType dtype) {
+  public static AxisType convertAxisType(CdmrFeatureProto.AxisType dtype) {
     switch (dtype) {
       case RunTime:
         return AxisType.RunTime;
@@ -349,7 +349,7 @@ public class CdmrfReader {
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  static public Calendar convertCalendar(CdmrFeatureProto.Calendar type) {
+  public static Calendar convertCalendar(CdmrFeatureProto.Calendar type) {
     switch (type) {
       case gregorian:
         return Calendar.gregorian;
@@ -371,7 +371,7 @@ public class CdmrfReader {
 
   // public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
-  static public FeatureType convertCoverageType(CdmrFeatureProto.CoverageType type) {
+  public static FeatureType convertCoverageType(CdmrFeatureProto.CoverageType type) {
     switch (type) {
       case General:
         return FeatureType.COVERAGE;
@@ -387,7 +387,7 @@ public class CdmrfReader {
     throw new IllegalStateException("illegal CoverageType " + type);
   }
 
-  static public CoverageCoordAxis.DependenceType convertDependenceType(CdmrFeatureProto.DependenceType type) {
+  public static CoverageCoordAxis.DependenceType convertDependenceType(CdmrFeatureProto.DependenceType type) {
     switch (type) {
       case independent:
         return CoverageCoordAxis.DependenceType.independent;
@@ -404,7 +404,7 @@ public class CdmrfReader {
   }
 
 
-  static public CoverageCoordAxis.Spacing convertSpacing(CdmrFeatureProto.AxisSpacing type) {
+  public static CoverageCoordAxis.Spacing convertSpacing(CdmrFeatureProto.AxisSpacing type) {
     switch (type) {
       case regularPoint:
         return CoverageCoordAxis.Spacing.regularPoint;

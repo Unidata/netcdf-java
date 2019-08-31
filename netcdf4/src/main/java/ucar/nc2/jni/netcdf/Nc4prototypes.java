@@ -119,9 +119,9 @@ public interface Nc4prototypes extends Library {
 
   class Vlen_t extends Structure {
 
-    static public int VLENSIZE = new Vlen_t().size();
+    public static int VLENSIZE = new Vlen_t().size();
 
-    static public byte[] contents(Vlen_t v) {
+    public static byte[] contents(Vlen_t v) {
       if (v.p == Pointer.NULL)
         return null;
       return v.p.getByteArray(0, v.len);

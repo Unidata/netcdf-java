@@ -19,7 +19,7 @@ import java.util.Formatter;
  * @since Nov 10, 2009
  */
 public class MadisAcars extends Madis {
-  static private final String TRAJ_ID = "en_tailNumber";
+  private static final String TRAJ_ID = "en_tailNumber";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.TRAJECTORY))

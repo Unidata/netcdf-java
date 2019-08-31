@@ -57,7 +57,7 @@ import ucar.unidata.geoloc.EarthLocationImpl;
  * @since Mar 28, 2008
  */
 public class NestedTable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NestedTable.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NestedTable.class);
 
   private NetcdfDataset ds;
   private Formatter errlog;

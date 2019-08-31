@@ -18,8 +18,8 @@ import java.util.List;
  * some code forked from ucar.nc2.dataset.GridCoordinate2D
  */
 public class HorizCoordSys2D extends HorizCoordSys {
-  static private boolean debug = false;
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HorizCoordSys2D.class);
+  private static boolean debug = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HorizCoordSys2D.class);
 
   // private final LatLonAxis2D latAxis, lonAxis;
   private final int nrows, ncols;

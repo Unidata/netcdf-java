@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class BufrTableLookup {
 
-  static public BufrTableLookup factory(Message m) throws IOException {
+  public static BufrTableLookup factory(Message m) throws IOException {
     return new BufrTableLookup(m.is.getBufrEdition(), m.ids.getCenterId(), m.ids.getSubCenterId(),
         m.ids.getMasterTableId(), m.ids.getMasterTableVersion(), m.ids.getLocalTableVersion(), m.ids.getCategory(),
         m.ids.getSubCategory(), m.ids.getLocalSubCategory());

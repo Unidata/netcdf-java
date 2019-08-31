@@ -26,16 +26,16 @@ import java.nio.ByteOrder;
  * including a leading DMR.
  */
 
-abstract public class D4DSP extends AbstractDSP {
+public abstract class D4DSP extends AbstractDSP {
   //////////////////////////////////////////////////
   // Constants
 
-  static public boolean DEBUG = false;
-  static public boolean DUMPDMR = false;
-  static public boolean DUMPDAP = false;
+  public static boolean DEBUG = false;
+  public static boolean DUMPDMR = false;
+  public static boolean DUMPDAP = false;
 
-  static protected final String DAPVERSION = "4.0";
-  static protected final String DMRVERSION = "1.0";
+  protected static final String DAPVERSION = "4.0";
+  protected static final String DMRVERSION = "1.0";
 
   //////////////////////////////////////////////////
   // Instance variables

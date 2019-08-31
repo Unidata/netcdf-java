@@ -53,7 +53,7 @@ import java.util.Vector;
 public class Util {
 
 
-  static public Charset UTF8 = Charset.forName("UTF-8");
+  public static Charset UTF8 = Charset.forName("UTF-8");
 
   /**
    * Compares elements in a <code>Vector</code> of <code>BaseType</code>s and
@@ -119,7 +119,7 @@ public class Util {
    * @param lo0 the low index to sort.
    * @param hi0 the high index to sort.
    */
-  static private void quickSort(String a[], int lo0, int hi0) {
+  private static void quickSort(String a[], int lo0, int hi0) {
     int lo = lo0;
     int hi = hi0;
     String mid;
@@ -167,7 +167,7 @@ public class Util {
    * @param i the index of the first element.
    * @param j the index of the second element.
    */
-  static private void swap(String a[], int i, int j) {
+  private static void swap(String a[], int i, int j) {
     String T;
     T = a[i];
     a[i] = a[j];
@@ -208,7 +208,7 @@ public class Util {
    * Filter out runtime exceptions from other exceptions and re-throw
    */
 
-  static public void check(Exception ex) throws RuntimeException {
+  public static void check(Exception ex) throws RuntimeException {
     if (ex instanceof RuntimeException)
       throw (RuntimeException) ex;
   }

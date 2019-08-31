@@ -23,7 +23,7 @@ import java.util.*;
  * @since 8/14/13
  */
 public class BufrCdmIndex {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrCdmIndex.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrCdmIndex.class);
 
   public static final String MAGIC_START = "BufrCdmIndex";
   public static final String NCX_IDX = ".ncx";

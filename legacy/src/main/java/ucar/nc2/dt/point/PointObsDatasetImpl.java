@@ -27,7 +27,7 @@ import java.text.ParseException;
  * @author caron
  */
 
-abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements PointObsDataset {
+public abstract class PointObsDatasetImpl extends TypedDatasetImpl implements PointObsDataset {
 
   /**
    * Get conversion factor for this unit into meters.

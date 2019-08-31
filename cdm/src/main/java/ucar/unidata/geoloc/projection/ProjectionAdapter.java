@@ -29,7 +29,7 @@ public class ProjectionAdapter extends ProjectionImpl {
    * @param proj projection
    * @return a ProjectionImpl representing the projection
    */
-  static public ProjectionImpl factory(Projection proj) {
+  public static ProjectionImpl factory(Projection proj) {
     if (proj instanceof ProjectionImpl) {
       return (ProjectionImpl) proj;
     }

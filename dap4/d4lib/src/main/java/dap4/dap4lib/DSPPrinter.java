@@ -34,21 +34,21 @@ public class DSPPrinter {
   //////////////////////////////////////////////////
   // Constants
 
-  static protected final int COLUMNS = 8;
+  protected static final int COLUMNS = 8;
 
-  static protected final char LPAREN = '(';
-  static protected final char RPAREN = ')';
-  static protected final char LBRACE = '{';
-  static protected final char RBRACE = '}';
-  static protected final char LBRACKET = '[';
-  static protected final char RBRACKET = ']';
+  protected static final char LPAREN = '(';
+  protected static final char RPAREN = ')';
+  protected static final char LBRACE = '{';
+  protected static final char RBRACE = '}';
+  protected static final char LBRACKET = '[';
+  protected static final char RBRACKET = ']';
 
   // Could use enumset, but it is so ugly,
   // so use good old OR'able flags
-  static protected final int NILFLAGS = 0;
-  static protected final int PERLINE = 1; // print xml attributes 1 per line
-  static protected final int NONAME = 2; // do not print name xml attribute
-  static protected final int NONNIL = 4; // print empty xml attributes
+  protected static final int NILFLAGS = 0;
+  protected static final int PERLINE = 1; // print xml attributes 1 per line
+  protected static final int NONAME = 2; // do not print name xml attribute
+  protected static final int NONNIL = 4; // print empty xml attributes
 
   //////////////////////////////////////////////////
   // Instance variables
@@ -366,12 +366,12 @@ public class DSPPrinter {
   //////////////////////////////////////////////////
   // Misc. Utilities
 
-  static protected char hexchar(int i) {
+  protected static char hexchar(int i) {
     return "0123456789ABCDEF".charAt((i & 0xF));
   }
 
 
-  static protected String getPrintValue(Object value) {
+  protected static String getPrintValue(Object value) {
     if (value instanceof String) {
       return Escape.entityEscape((String) value, null);
     } else

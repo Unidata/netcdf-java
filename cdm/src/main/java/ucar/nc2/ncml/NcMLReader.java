@@ -57,9 +57,9 @@ import static ucar.unidata.util.StringUtil2.getTokens;
 
 public class NcMLReader {
 
-  static private final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
-  static private final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
+  private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
+  private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
 
   private Namespace ncNS;
 
@@ -67,7 +67,7 @@ public class NcMLReader {
   private static boolean debugOpen = false, debugConstruct = false, debugCmd = false;
   private static boolean debugAggDetail = false;
 
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugURL = debugFlag.isSet("NcML/debugURL");
     debugXML = debugFlag.isSet("NcML/debugXML");
     showParsedXML = debugFlag.isSet("NcML/showParsedXML");
@@ -88,7 +88,7 @@ public class NcMLReader {
    * @param cancelTask allow user to cancel task; may be null
    * @throws IOException on read error
    */
-  static public void wrapNcMLresource(NetcdfDataset ncDataset, String ncmlResourceLocation, CancelTask cancelTask)
+  public static void wrapNcMLresource(NetcdfDataset ncDataset, String ncmlResourceLocation, CancelTask cancelTask)
       throws IOException {
     ClassLoader cl = ncDataset.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(ncmlResourceLocation)) {
@@ -137,7 +137,7 @@ public class NcMLReader {
    * @param cancelTask allow user to cancel task; may be null
    * @throws IOException on read error
    */
-  static public void wrapNcML(NetcdfDataset ncDataset, String ncmlLocation, CancelTask cancelTask) throws IOException {
+  public static void wrapNcML(NetcdfDataset ncDataset, String ncmlLocation, CancelTask cancelTask) throws IOException {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -172,7 +172,7 @@ public class NcMLReader {
    * @return new dataset with the merged info
    * @throws IOException on read error
    */
-  static public NetcdfDataset mergeNcML(NetcdfFile ref, Element parentElem) throws IOException {
+  public static NetcdfDataset mergeNcML(NetcdfFile ref, Element parentElem) throws IOException {
     NetcdfDataset targetDS = new NetcdfDataset(ref, null); // no enhance
 
     NcMLReader reader = new NcMLReader();
@@ -189,7 +189,7 @@ public class NcMLReader {
    * @param parentElem parent element - usually the aggregation element of the ncml
    * @return new dataset with the merged info
    */
-  static public NetcdfDataset mergeNcMLdirect(NetcdfDataset targetDS, Element parentElem) {
+  public static NetcdfDataset mergeNcMLdirect(NetcdfDataset targetDS, Element parentElem) {
 
     NcMLReader reader = new NcMLReader();
     reader.readGroup(targetDS, targetDS, null, null, parentElem);
@@ -208,7 +208,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(String ncmlLocation, CancelTask cancelTask) throws IOException {
+  public static NetcdfDataset readNcML(String ncmlLocation, CancelTask cancelTask) throws IOException {
     return readNcML(ncmlLocation, (String) null, cancelTask);
   }
 
@@ -222,7 +222,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(String ncmlLocation, String referencedDatasetUri, CancelTask cancelTask)
+  public static NetcdfDataset readNcML(String ncmlLocation, String referencedDatasetUri, CancelTask cancelTask)
       throws IOException {
     URL url = new URL(ncmlLocation);
 
@@ -279,7 +279,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(InputStream ins, CancelTask cancelTask) throws IOException {
+  public static NetcdfDataset readNcML(InputStream ins, CancelTask cancelTask) throws IOException {
 
     org.jdom2.Document doc;
     try {
@@ -311,7 +311,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(Reader r, CancelTask cancelTask) throws IOException {
+  public static NetcdfDataset readNcML(Reader r, CancelTask cancelTask) throws IOException {
     return readNcML(r, "NcMLReader", cancelTask);
   }
 
@@ -327,7 +327,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(Reader r, String ncmlLocation, CancelTask cancelTask) throws IOException {
+  public static NetcdfDataset readNcML(Reader r, String ncmlLocation, CancelTask cancelTask) throws IOException {
 
     org.jdom2.Document doc;
     try {
@@ -362,7 +362,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(String ncmlLocation, Element netcdfElem, CancelTask cancelTask)
+  public static NetcdfDataset readNcML(String ncmlLocation, Element netcdfElem, CancelTask cancelTask)
       throws IOException {
     // the ncml probably refers to another dataset, but doesnt have to
     String referencedDatasetUri = netcdfElem.getAttributeValue("location");
@@ -387,7 +387,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(String ncmlLocation, Element netcdfElem, String referencedDatasetUri,
+  public static NetcdfDataset readNcML(String ncmlLocation, Element netcdfElem, String referencedDatasetUri,
       CancelTask cancelTask) throws IOException {
     NcMLReader reader = new NcMLReader();
     return reader._readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);

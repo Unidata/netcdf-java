@@ -24,8 +24,8 @@ import java.util.List;
  */
 
 public class CoordinateAxis2D extends CoordinateAxis {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
-  static private final boolean debug = false;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
+  private static final boolean debug = false;
 
   private ArrayDouble.D2 coords = null; // LOOK maybe optional for large arrays, or maybe eliminate all together, and
                                         // read each time ??
@@ -114,7 +114,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   private static final double MAX_JUMP = 100.0; // larger than you would ever expect
 
-  static private double connectLon(double connect, double val) {
+  private static double connectLon(double connect, double val) {
     if (Double.isNaN(connect))
       return val;
     if (Double.isNaN(val))
@@ -205,7 +205,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
    * @param midpoints values of midpoints with shape (ny, nx)
    * @return values of edges with shape (ny+1, nx+1)
    */
-  static public ArrayDouble.D2 makeEdges(ArrayDouble.D2 midpoints) {
+  public static ArrayDouble.D2 makeEdges(ArrayDouble.D2 midpoints) {
     int[] shape = midpoints.getShape();
     int ny = shape[0];
     int nx = shape[1];
@@ -239,7 +239,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
    * @param midx x coordinates of midpoints
    * @return x coordinates of edges with shape (ny+2, nx+1)
    */
-  static public ArrayDouble.D2 makeXEdgesRotated(ArrayDouble.D2 midx) {
+  public static ArrayDouble.D2 makeXEdgesRotated(ArrayDouble.D2 midx) {
     int[] shape = midx.getShape();
     int ny = shape[0];
     int nx = shape[1];
@@ -274,7 +274,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
    * @param midy y coordinates of midpoints
    * @return y coordinates of edges with shape (ny+2, nx+1)
    */
-  static public ArrayDouble.D2 makeYEdgesRotated(ArrayDouble.D2 midy) {
+  public static ArrayDouble.D2 makeYEdgesRotated(ArrayDouble.D2 midy) {
     int[] shape = midy.getShape();
     int ny = shape[0];
     int nx = shape[1];

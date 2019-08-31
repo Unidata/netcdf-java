@@ -40,7 +40,7 @@ public class Attribute extends CDMNode {
    * @param atts list of attributes
    * @return map of attributes by name
    */
-  static public Map<String, Attribute> makeMap(List<Attribute> atts) {
+  public static Map<String, Attribute> makeMap(List<Attribute> atts) {
     int size = (atts == null) ? 1 : atts.size();
     Map<String, Attribute> result = new HashMap<>(size);
     if (atts == null)
@@ -50,7 +50,7 @@ public class Attribute extends CDMNode {
     return result;
   }
 
-  static public boolean isspecial(Attribute a) {
+  public static boolean isspecial(Attribute a) {
     String nm = a.getShortName();
     if (nm.startsWith(SPECIALPREFIX)) {
       /* Check for selected special attributes */
@@ -320,7 +320,7 @@ public class Attribute extends CDMNode {
    * @param s string to quote
    * @return equivilent string replacing special chars
    */
-  static public String encodeString(String s) {
+  public static String encodeString(String s) {
     return StringUtil2.replace(s, org, replace);
   }
 

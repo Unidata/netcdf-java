@@ -24,7 +24,7 @@ public class StructureDataFactory {
    * }
    */
 
-  static public StructureData make(String name, Object value) {
+  public static StructureData make(String name, Object value) {
     StructureMembers members = new StructureMembers("");
     DataType dtype = DataType.getType(value.getClass(), false); // LOOK unsigned
     StructureMembers.Member m = members.addMember(name, null, null, dtype, new int[] {1});
@@ -35,11 +35,11 @@ public class StructureDataFactory {
     return sw;
   }
 
-  static public StructureData make(StructureData s1, StructureData s2) {
+  public static StructureData make(StructureData s1, StructureData s2) {
     return make(new StructureData[] {s1, s2});
   }
 
-  static public StructureData make(StructureData[] sdatas) {
+  public static StructureData make(StructureData[] sdatas) {
     if (sdatas.length == 1)
       return sdatas[0];
 
@@ -64,7 +64,7 @@ public class StructureDataFactory {
     return result2;
   }
 
-  static public StructureData make(Iterable<StructureData> sdatas) {
+  public static StructureData make(Iterable<StructureData> sdatas) {
     // look for singleton
     int count = 0;
     StructureData result = null;

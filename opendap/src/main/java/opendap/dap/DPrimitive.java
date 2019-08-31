@@ -45,7 +45,7 @@ package opendap.dap;
  * Placeholder for doing instanceof operations
  */
 
-abstract public class DPrimitive extends BaseType {
+public abstract class DPrimitive extends BaseType {
   public DPrimitive(String n) {
     super(n);
   }

@@ -102,19 +102,19 @@ public class TestDir {
 
   private static String remoteTestServerPropName = "remotetestserver";
 
-  static public String remoteTestServer = "localhost:8081";
+  public static String remoteTestServer = "localhost:8081";
 
   // DAP 2 Test server (for testing)
 
-  static public String dap2TestServerPropName = "dts";
+  public static String dap2TestServerPropName = "dts";
 
-  static public String dap2TestServer = "localhost:8080";
+  public static String dap2TestServer = "localhost:8080";
 
   // DAP4 Test server (for testing)
 
-  static public String dap4TestServerPropName = "d4ts";
+  public static String dap4TestServerPropName = "d4ts";
 
-  static public String dap4TestServer = "localhost:8080";
+  public static String dap4TestServer = "localhost:8080";
 
   //////////////////////////////////////////////////
 
@@ -168,7 +168,7 @@ public class TestDir {
     return open(TestDir.cdmLocalTestDataDir + filename);
   }
 
-  static public long checkLeaks() {
+  public static long checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
       logger.debug("RandomAccessFile still open:");
       for (String filename : RandomAccessFile.getOpenFiles()) {
@@ -329,7 +329,7 @@ public class TestDir {
     return new Section(shape);
   }
 
-  static public int readAllData(NetcdfFile ncfile) throws IOException {
+  public static int readAllData(NetcdfFile ncfile) throws IOException {
     logger.debug("------Reading ncfile {}", ncfile.getLocation());
     try {
       for (Variable v : ncfile.getVariables()) {

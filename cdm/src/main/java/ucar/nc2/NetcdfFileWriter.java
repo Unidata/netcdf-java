@@ -49,8 +49,8 @@ import java.util.*;
  * @since 7/25/12
  */
 public class NetcdfFileWriter implements Closeable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
-  static private Set<DataType> validN3types =
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
+  private static Set<DataType> validN3types =
       EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT, DataType.DOUBLE, DataType.FLOAT);
 
   /**
@@ -95,15 +95,15 @@ public class NetcdfFileWriter implements Closeable {
    * @return existing file that can be written to
    * @throws java.io.IOException on I/O error
    */
-  static public NetcdfFileWriter openExisting(String location) throws IOException {
+  public static NetcdfFileWriter openExisting(String location) throws IOException {
     return new NetcdfFileWriter(null, location, true, null); // dont know the version yet
   }
 
-  static public NetcdfFileWriter createNew(Version version, String location) throws IOException {
+  public static NetcdfFileWriter createNew(Version version, String location) throws IOException {
     return new NetcdfFileWriter(version, location, false, null);
   }
 
-  static public NetcdfFileWriter createNew(String location, boolean fill) throws IOException {
+  public static NetcdfFileWriter createNew(String location, boolean fill) throws IOException {
     NetcdfFileWriter result = new NetcdfFileWriter(Version.netcdf3, location, false, null);
     result.setFill(fill);
     return result;
@@ -118,7 +118,7 @@ public class NetcdfFileWriter implements Closeable {
    * @return new NetcdfFileWriter
    * @throws IOException on I/O error
    */
-  static public NetcdfFileWriter createNew(Version version, String location, Nc4Chunking chunker) throws IOException {
+  public static NetcdfFileWriter createNew(Version version, String location, Nc4Chunking chunker) throws IOException {
     return new NetcdfFileWriter(version, location, false, chunker);
   }
 

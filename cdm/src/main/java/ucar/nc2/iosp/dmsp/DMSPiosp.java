@@ -515,73 +515,73 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     private static java.util.List<VariableInfo> list = new java.util.ArrayList<>(30);
     private static java.util.Map<String, VariableInfo> hash = new java.util.HashMap<>(30);
 
-    public final static VariableInfo YEAR =
+    public static final VariableInfo YEAR =
         new VariableInfo("year", "year at time of scan", "year", DataType.INT, 0, 1);
-    public final static VariableInfo DAY_OF_YEAR =
+    public static final VariableInfo DAY_OF_YEAR =
         new VariableInfo("dayOfYear", "day of year at time of scan", "day of year", DataType.INT, 4, 1);
-    public final static VariableInfo SECONDS_OF_DAY =
+    public static final VariableInfo SECONDS_OF_DAY =
         new VariableInfo("secondsOfDay", "seconds of day at time of scan", "seconds of day", DataType.DOUBLE, 8, 1);
-    public final static VariableInfo TIME =
+    public static final VariableInfo TIME =
         new VariableInfo("time", "time of scan", "seconds since ??? (see above)", DataType.FLOAT, -1, 1);
 
-    public final static VariableInfo SAT_EPHEM_LATITUDE = new VariableInfo("satEphemLatitude",
+    public static final VariableInfo SAT_EPHEM_LATITUDE = new VariableInfo("satEphemLatitude",
         "geodetic latitude of the satellite for this scan", CDM.LAT_UNITS, DataType.FLOAT, 16, 1);
-    public final static VariableInfo SAT_EPHEM_LONGITUDE = new VariableInfo("satEphemLongitude",
+    public static final VariableInfo SAT_EPHEM_LONGITUDE = new VariableInfo("satEphemLongitude",
         "longitude of the satellite for this scan", CDM.LON_UNITS, DataType.FLOAT, 20, 1);
-    public final static VariableInfo SAT_EPHEM_ALTITUDE = new VariableInfo("satEphemAltitude",
+    public static final VariableInfo SAT_EPHEM_ALTITUDE = new VariableInfo("satEphemAltitude",
         "altitude of the satellite for this scan", "kilometers", DataType.FLOAT, 24, 1);
-    public final static VariableInfo SAT_EPHEM_HEADING = new VariableInfo("satEphemHeading",
+    public static final VariableInfo SAT_EPHEM_HEADING = new VariableInfo("satEphemHeading",
         "heading of the satellite (degrees west of north) for this scan", "degrees", DataType.FLOAT, 28, 1);
 
-    public final static VariableInfo SCANNER_OFFSET =
+    public static final VariableInfo SCANNER_OFFSET =
         new VariableInfo("scannerOffset", "scanner offset", "radians", DataType.FLOAT, 32, 1);
-    public final static VariableInfo SCAN_DIRECTION =
+    public static final VariableInfo SCAN_DIRECTION =
         new VariableInfo("scanDirection", "scan direction", "", DataType.BYTE, 36, 1);
 
-    public final static VariableInfo SOLAR_ELEVATION =
+    public static final VariableInfo SOLAR_ELEVATION =
         new VariableInfo("solarElevation", "solar elevation", "degrees", DataType.FLOAT, 40, 1);
-    public final static VariableInfo SOLAR_AZIMUTH =
+    public static final VariableInfo SOLAR_AZIMUTH =
         new VariableInfo("solarAzimuth", "solar azimuth", "degrees", DataType.FLOAT, 44, 1);
-    public final static VariableInfo LUNAR_ELEVATION =
+    public static final VariableInfo LUNAR_ELEVATION =
         new VariableInfo("lunarElevation", "lunar elevation", "degrees", DataType.FLOAT, 48, 1);
-    public final static VariableInfo LUNAR_AZIMUTH =
+    public static final VariableInfo LUNAR_AZIMUTH =
         new VariableInfo("lunarAzimuth", "lunar azimuth", "degrees", DataType.FLOAT, 52, 1);
-    public final static VariableInfo LUNAR_PHASE =
+    public static final VariableInfo LUNAR_PHASE =
         new VariableInfo("lunarPhase", "lunar phase", "degrees", DataType.FLOAT, 56, 1);
 
-    public final static VariableInfo GAIN_CODE =
+    public static final VariableInfo GAIN_CODE =
         new VariableInfo("gainCode", "gain code", "decibels", DataType.FLOAT, 60, 1);
-    public final static VariableInfo GAIN_MODE =
+    public static final VariableInfo GAIN_MODE =
         new VariableInfo("gainMode", "gain mode (0=linear, 1=logrithmic)", "", DataType.BYTE, 64, 1);
-    public final static VariableInfo GAIN_SUB_MODE =
+    public static final VariableInfo GAIN_SUB_MODE =
         new VariableInfo("gainSubMode", "gain sub-mode", "", DataType.BYTE, 68, 1);
 
-    public final static VariableInfo HOT_T_CAL_SEGMENT_ID =
+    public static final VariableInfo HOT_T_CAL_SEGMENT_ID =
         new VariableInfo("hotTCalSegmentID", "Hot T cal seg ID (0 = right, 1 = left)", "", DataType.BYTE, 72, 1);
-    public final static VariableInfo COLD_T_CAL_SEGMENT_ID =
+    public static final VariableInfo COLD_T_CAL_SEGMENT_ID =
         new VariableInfo("coldTCalSegmentID", "Cold T cal seg ID (0 = right, 1 = left)", "", DataType.BYTE, 76, 1);
-    public final static VariableInfo HOT_T_CAL =
+    public static final VariableInfo HOT_T_CAL =
         new VariableInfo("hotTCal", "Hot T calibration", "", DataType.BYTE, 80, 1);
-    public final static VariableInfo COLD_T_CAL =
+    public static final VariableInfo COLD_T_CAL =
         new VariableInfo("coldTCal", "Cold T calibration", "", DataType.BYTE, 84, 1);
-    public final static VariableInfo PMT_CAL =
+    public static final VariableInfo PMT_CAL =
         new VariableInfo("pmtCal", "Photomultiplier tube calibration", "", DataType.BYTE, 88, 1);
-    public final static VariableInfo T_CHANNEL_GAIN =
+    public static final VariableInfo T_CHANNEL_GAIN =
         new VariableInfo("tChannelGain", "T channel gain", "decibels", DataType.FLOAT, 92, 1);
 
-    public final static VariableInfo VISIBLE_SCAN_QUALITY_FLAG =
+    public static final VariableInfo VISIBLE_SCAN_QUALITY_FLAG =
         new VariableInfo("visibleScanQualityFlag", "quality flag for the visible scan", "", DataType.INT, 96, 1);
-    public final static VariableInfo THERMAL_SCAN_QUALITY_FLAG =
+    public static final VariableInfo THERMAL_SCAN_QUALITY_FLAG =
         new VariableInfo("thermalScanQualityFlag", "quality flag for the thermal scan", "", DataType.INT, 1568, 1);
 
-    public final static VariableInfo LATITUDE =
+    public static final VariableInfo LATITUDE =
         new VariableInfo("latitude", "latitude of pixel", "degrees_north", DataType.FLOAT, -1, 1465);
-    public final static VariableInfo LONGITUDE =
+    public static final VariableInfo LONGITUDE =
         new VariableInfo("longitude", "longitude of pixel", "degrees_east", DataType.FLOAT, -1, 1465);
 
-    public final static VariableInfo VISIBLE_SCAN =
+    public static final VariableInfo VISIBLE_SCAN =
         new VariableInfo("visibleImagery", "visible imagery  (6-bit per pixel)", "", DataType.UBYTE, 100, 1465);
-    public final static VariableInfo THERMAL_SCAN =
+    public static final VariableInfo THERMAL_SCAN =
         new VariableInfo("infraredImagery", "infrared imagery (8-bit per pixel)", "kelvin", DataType.UBYTE, 1572, 1465);
 
     // Infrared pixel values correspond to a temperature range of 190 to 310 Kelvins

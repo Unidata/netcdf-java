@@ -29,11 +29,11 @@ import java.util.*;
  * @since 5/8/2015
  */
 public class CFGridCoverageWriter2 {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CFGridCoverageWriter2.class);
-  static private final boolean show = false;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CFGridCoverageWriter2.class);
+  private static final boolean show = false;
 
-  static private final String BOUNDS = "_bounds";
-  static private final String BOUNDS_DIM = "bounds_dim"; // dimension of length 2, can be used by any bounds coordinate
+  private static final String BOUNDS = "_bounds";
+  private static final String BOUNDS_DIM = "bounds_dim"; // dimension of length 2, can be used by any bounds coordinate
 
   /**
    * Write a netcdf/CF file from a CoverageDataset

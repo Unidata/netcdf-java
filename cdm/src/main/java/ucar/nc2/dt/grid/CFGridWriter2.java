@@ -32,7 +32,7 @@ import java.util.List;
  * @since 6/18/2014
  */
 public class CFGridWriter2 {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridWriter2.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridWriter2.class);
 
   /**
    * Compute the size of the file without writing
@@ -48,7 +48,7 @@ public class CFGridWriter2 {
    * @param addLatLon add 2D lat/lon coordinates if needed
    * @return total bytes written
    */
-  static public long makeSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
+  public static long makeSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
       ProjectionRect projRect, int horizStride, Range zRange, CalendarDateRange dateRange, int stride_time,
       boolean addLatLon) throws IOException, InvalidRangeException {
 
@@ -72,7 +72,7 @@ public class CFGridWriter2 {
    * @param writer this does the actual writing
    * @return total bytes written
    */
-  static public long writeFile(ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
+  public static long writeFile(ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
       ProjectionRect projRect, int horizStride, Range zRange, CalendarDateRange dateRange, int stride_time,
       boolean addLatLon, NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 

@@ -174,7 +174,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    * @return subcenter name, or null if not found
    */
   @Nullable
-  static public String getSubCenterName(int center_id, int subcenter_id) {
+  public static String getSubCenterName(int center_id, int subcenter_id) {
     return getTableValue(12, center_id, subcenter_id);
   }
 
@@ -186,7 +186,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    * @return subcategory name, or null if not found
    */
   @Nullable
-  static public String getDataSubcategoy(int cat, int subcat) {
+  public static String getDataSubcategoy(int cat, int subcat) {
     return getTableValue(13, cat, subcat);
   }
 
@@ -236,7 +236,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     return te.value;
   }
 
-  static private CommonCodeTable readCommonCodes(Table version) throws IOException {
+  private static CommonCodeTable readCommonCodes(Table version) throws IOException {
     InputStream ios = null;
     try {
       Class c = CommonCodeTable.class;

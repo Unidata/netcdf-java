@@ -29,9 +29,9 @@ import ucar.nc2.units.DateRange;
  */
 public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
-  static private final Logger logger = LoggerFactory.getLogger(CoordinateAxis1DTime.class);
+  private static final Logger logger = LoggerFactory.getLogger(CoordinateAxis1DTime.class);
 
-  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages)
+  public static CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages)
       throws IOException {
     if (org instanceof CoordinateAxis1DTime)
       return (CoordinateAxis1DTime) org;

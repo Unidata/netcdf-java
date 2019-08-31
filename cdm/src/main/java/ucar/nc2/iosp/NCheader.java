@@ -18,29 +18,29 @@ public class NCheader {
   // Constants
 
   // Constants for check_file_type
-  static private final int MAGIC_NUMBER_LEN = 8;
-  static private final long MAXHEADERPOS = 50000; // header's gotta be within this range
+  private static final int MAGIC_NUMBER_LEN = 8;
+  private static final long MAXHEADERPOS = 50000; // header's gotta be within this range
 
-  static public final byte[] H5HEAD = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', (byte) 0x1a, '\n'};
-  static public final byte[] H4HEAD = {(byte) 0x0e, (byte) 0x03, (byte) 0x13, (byte) 0x01};
-  static public final byte[] CDF1HEAD = {(byte) 'C', (byte) 'D', (byte) 'F', (byte) 0x01};
-  static public final byte[] CDF2HEAD = {(byte) 'C', (byte) 'D', (byte) 'F', (byte) 0x02};
-  static public final byte[] CDF5HEAD = {(byte) 'C', (byte) 'D', (byte) 'F', (byte) 0x05};
+  public static final byte[] H5HEAD = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', (byte) 0x1a, '\n'};
+  public static final byte[] H4HEAD = {(byte) 0x0e, (byte) 0x03, (byte) 0x13, (byte) 0x01};
+  public static final byte[] CDF1HEAD = {(byte) 'C', (byte) 'D', (byte) 'F', (byte) 0x01};
+  public static final byte[] CDF2HEAD = {(byte) 'C', (byte) 'D', (byte) 'F', (byte) 0x02};
+  public static final byte[] CDF5HEAD = {(byte) 'C', (byte) 'D', (byte) 'F', (byte) 0x05};
 
   // These should match the constants in netcdf-c/include/netcdf.h
-  static public final int NC_FORMAT_NETCDF3 = (1);
-  static public final int NC_FORMAT_64BIT_OFFSET = (2);
-  static public final int NC_FORMAT_NETCDF4 = (3);
-  static public final int NC_FORMAT_64BIT_DATA = (5);
+  public static final int NC_FORMAT_NETCDF3 = (1);
+  public static final int NC_FORMAT_64BIT_OFFSET = (2);
+  public static final int NC_FORMAT_NETCDF4 = (3);
+  public static final int NC_FORMAT_64BIT_DATA = (5);
 
   // Extensions
-  static public final int NC_FORMAT_HDF4 = (0x7005);
+  public static final int NC_FORMAT_HDF4 = (0x7005);
 
   // Aliases
-  static public final int NC_FORMAT_CLASSIC = (NC_FORMAT_NETCDF3);
-  static public final int NC_FORMAT_64BIT = (NC_FORMAT_64BIT_OFFSET);
-  static public final int NC_FORMAT_CDF5 = (NC_FORMAT_64BIT_DATA);
-  static public final int NC_FORMAT_HDF5 = (NC_FORMAT_NETCDF4);
+  public static final int NC_FORMAT_CLASSIC = (NC_FORMAT_NETCDF3);
+  public static final int NC_FORMAT_64BIT = (NC_FORMAT_64BIT_OFFSET);
+  public static final int NC_FORMAT_CDF5 = (NC_FORMAT_64BIT_DATA);
+  public static final int NC_FORMAT_HDF5 = (NC_FORMAT_NETCDF4);
 
   //////////////////////////////////////////////////
   // Static Methods
@@ -52,7 +52,7 @@ public class NCheader {
    * @param raf to test type
    * @return integer that matches constants in netcdf-c/include/netcdf.h
    */
-  static public int checkFileType(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  public static int checkFileType(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     int format;
 
     byte[] magic = new byte[MAGIC_NUMBER_LEN];
@@ -119,7 +119,7 @@ public class NCheader {
     return true;
   }
 
-  static public String formatName(int format) {
+  public static String formatName(int format) {
     switch (format) {
       case NCheader.NC_FORMAT_NETCDF3:
         return "netcdf-3";

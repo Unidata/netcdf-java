@@ -38,13 +38,13 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   // these defaults are for clients, TDS sets these explicitly
-  static protected IndexExtendMode indexFileModeOnOpen = IndexExtendMode.rewrite; // default is to rewrite
-  static protected IndexExtendMode indexFileModeOnSync = IndexExtendMode.extendwrite; // default is to extend
+  protected static IndexExtendMode indexFileModeOnOpen = IndexExtendMode.rewrite; // default is to rewrite
+  protected static IndexExtendMode indexFileModeOnSync = IndexExtendMode.extendwrite; // default is to extend
 
-  static protected boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance LOOK should not be
+  protected static boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance LOOK should not be
                                               // static !
-  static protected boolean forceNewIndex = false; // force that a new index file is written - for debugging
-  static protected boolean alwaysInCache = false;
+                                              protected static boolean forceNewIndex = false; // force that a new index file is written - for debugging
+  protected static boolean alwaysInCache = false;
 
   /**
    * debug flags
@@ -57,7 +57,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param b true to use
    */
-  static public void forceNewIndex(boolean b) {
+  public static void forceNewIndex(boolean b) {
     forceNewIndex = b;
   }
 
@@ -66,7 +66,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param debugFlag debug flags
    */
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("Grid/open");
     debugMissing = debugFlag.isSet("Grid/missing");
     debugMissingDetails = debugFlag.isSet("Grid/missingDetails");
@@ -88,7 +88,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param mode IndexExtendMode when file is opened
    */
-  static public void setIndexFileModeOnOpen(IndexExtendMode mode) {
+  public static void setIndexFileModeOnOpen(IndexExtendMode mode) {
     indexFileModeOnOpen = mode;
   }
 
@@ -107,7 +107,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param mode IndexExtendMode when file is opened
    */
-  static public void setIndexFileModeOnSync(IndexExtendMode mode) {
+  public static void setIndexFileModeOnSync(IndexExtendMode mode) {
     indexFileModeOnSync = mode;
   }
 
@@ -118,7 +118,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @param b if true, set modes to IndexExtendMode.extendwrite, else IndexExtendMode.readonly
    * @deprecated use setIndexFileModeOnSync and setIndexFileModeOnOpen
    */
-  static public void setExtendIndex(boolean b) {
+  public static void setExtendIndex(boolean b) {
     indexFileModeOnOpen = b ? IndexExtendMode.extendwrite : IndexExtendMode.readonly;
     indexFileModeOnSync = b ? IndexExtendMode.extendwrite : IndexExtendMode.readonly;
   }
@@ -130,7 +130,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param b set to this value
    */
-  static public void setIndexAlwaysInCache(boolean b) {
+  public static void setIndexAlwaysInCache(boolean b) {
     alwaysInCache = b;
   }
 

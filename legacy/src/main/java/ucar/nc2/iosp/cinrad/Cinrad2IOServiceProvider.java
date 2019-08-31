@@ -22,12 +22,12 @@ import java.util.*;
  * @author caron
  */
 public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Cinrad2IOServiceProvider.class);
-  static private final int MISSING_INT = -9999;
-  static private final float MISSING_FLOAT = Float.NaN;
-  static public boolean isSC = false;
-  static public boolean isCC = false;
-  static public boolean isCC20 = false;
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Cinrad2IOServiceProvider.class);
+  private static final int MISSING_INT = -9999;
+  private static final float MISSING_FLOAT = Float.NaN;
+  public static boolean isSC = false;
+  public static boolean isCC = false;
+  public static boolean isCC20 = false;
 
   public boolean isValidFileOld(RandomAccessFile raf) {
     try {

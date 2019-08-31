@@ -48,7 +48,7 @@ import java.util.*;
  *      Model</a>
  */
 public class CoordinateSystem {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
 
   /**
    * Create standard name from list of axes. Sort the axes first
@@ -56,7 +56,7 @@ public class CoordinateSystem {
    * @param axes list of CoordinateAxis
    * @return CoordinateSystem name, created from axes names
    */
-  static public String makeName(List<CoordinateAxis> axes) {
+  public static String makeName(List<CoordinateAxis> axes) {
     List<CoordinateAxis> axesSorted = new ArrayList<>(axes);
     axesSorted.sort(new CoordinateAxis.AxisComparator());
     StringBuilder buff = new StringBuilder();

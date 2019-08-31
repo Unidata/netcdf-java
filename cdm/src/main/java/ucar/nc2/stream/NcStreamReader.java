@@ -27,7 +27,7 @@ import ucar.nc2.constants.CDM;
  * @since Feb 7, 2009
  */
 public class NcStreamReader {
-  static private final Logger logger = LoggerFactory.getLogger(NcStreamReader.class);
+  private static final Logger logger = LoggerFactory.getLogger(NcStreamReader.class);
 
   private static final boolean debug = false;
   private static final boolean showDeflate = false;
@@ -35,7 +35,7 @@ public class NcStreamReader {
   private static double total_uncompressedSize = 0.0;
   private static double total_compressedSize = 0.0;
 
-  static public double getCompression(boolean reset) {
+  public static double getCompression(boolean reset) {
     double result = total_uncompressedSize / total_compressedSize;
     if (reset) {
       total_compressedSize = 0;
@@ -87,7 +87,7 @@ public class NcStreamReader {
     return ncfile;
   }
 
-  static public class DataResult {
+  public static class DataResult {
     public String varNameFullEsc;
     public Array data;
 

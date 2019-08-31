@@ -36,7 +36,7 @@ import java.util.*;
  * @author caron
  */
 public class GridHorizCoordSys {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridHorizCoordSys.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridHorizCoordSys.class);
 
   /**
    * GridVariables that have this GridHorizCoordSys

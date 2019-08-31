@@ -29,8 +29,8 @@ import java.util.concurrent.ExecutorCompletionService;
  */
 
 public abstract class AggregationOuterDimension extends Aggregation implements ProxyReader {
-  static protected boolean debugCache = false, debugInvocation = false, debugStride = false;
-  static public int invocation = 0; // debugging
+  protected static boolean debugCache = false, debugInvocation = false, debugStride = false;
+  public static int invocation = 0; // debugging
 
   protected List<String> aggVarNames = new ArrayList<>(); // explicitly specified in the NcML
   protected List<VariableDS> aggVars = new ArrayList<>(); // actual vars that will be aggregated

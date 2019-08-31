@@ -27,15 +27,15 @@ import java.util.Map;
  */
 
 public class DataToCDM {
-  static public boolean DEBUG = false;
+  public static boolean DEBUG = false;
 
   //////////////////////////////////////////////////
   // Constants
 
-  static protected final int COUNTSIZE = 8; // databuffer as specified by the DAP4 spec
+  protected static final int COUNTSIZE = 8; // databuffer as specified by the DAP4 spec
 
-  static protected final String LBRACE = "{";
-  static protected final String RBRACE = "}";
+  protected static final String LBRACE = "{";
+  protected static final String RBRACE = "}";
 
   //////////////////////////////////////////////////
   // Instance variables

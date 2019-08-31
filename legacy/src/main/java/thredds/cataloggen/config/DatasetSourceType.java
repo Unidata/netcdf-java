@@ -15,10 +15,10 @@ package thredds.cataloggen.config;
 public final class DatasetSourceType {
   private static java.util.HashMap hash = new java.util.HashMap(20);
 
-  public final static DatasetSourceType LOCAL = new DatasetSourceType("Local");
-  public final static DatasetSourceType DODS_FILE_SERVER = new DatasetSourceType("DodsFileServer");
-  public final static DatasetSourceType DODS_DIR = new DatasetSourceType("DodsDir");
-  public final static DatasetSourceType GRADS_DATA_SERVER = new DatasetSourceType("GrADSDataServer");
+  public static final DatasetSourceType LOCAL = new DatasetSourceType("Local");
+  public static final DatasetSourceType DODS_FILE_SERVER = new DatasetSourceType("DodsFileServer");
+  public static final DatasetSourceType DODS_DIR = new DatasetSourceType("DodsDir");
+  public static final DatasetSourceType GRADS_DATA_SERVER = new DatasetSourceType("GrADSDataServer");
 
   private String typeName;
 

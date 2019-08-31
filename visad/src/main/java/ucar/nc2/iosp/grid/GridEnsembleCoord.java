@@ -12,12 +12,12 @@ import java.util.*;
  * Handles the Ensemble coordinate dimension.
  */
 public abstract class GridEnsembleCoord {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
 
   protected List<EnsCoord> ensCoords;
   protected int seq = 0;
 
-  static protected class EnsCoord implements Comparable<EnsCoord> {
+  protected static class EnsCoord implements Comparable<EnsCoord> {
     public int number, type;
 
     public EnsCoord(int number, int type) {

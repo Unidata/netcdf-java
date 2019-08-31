@@ -32,7 +32,7 @@ import java.util.*;
 // might then become an interface or abstract class with common method declarations/definitions.
 @Immutable
 public class HorizCoordSys {
-  static private final Logger logger = LoggerFactory.getLogger(HorizCoordSys.class);
+  private static final Logger logger = LoggerFactory.getLogger(HorizCoordSys.class);
 
   public static HorizCoordSys factory(CoverageCoordAxis1D xAxis, CoverageCoordAxis1D yAxis, CoverageCoordAxis latAxis,
       CoverageCoordAxis lonAxis, CoverageTransform transform) {

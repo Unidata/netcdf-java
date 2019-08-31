@@ -29,9 +29,9 @@ import java.io.IOException;
  * @author caron
  */
 public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
-  static private final String ID = "_id";
+  private static final String ID = "_id";
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (conv == null)
       return false;
@@ -46,7 +46,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     return false;
   }
 
-  static public PointObsDataset factory(NetcdfDataset ds) throws IOException {
+  public static PointObsDataset factory(NetcdfDataset ds) throws IOException {
     Variable latVar = null, timeVar = null;
 
     // identify key variables
@@ -70,7 +70,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       return new DapperStationDataset(ds);
   }
 
-  static private StructureDS getWrappingParent(NetcdfDataset ds, Variable v) {
+  private static StructureDS getWrappingParent(NetcdfDataset ds, Variable v) {
     String name = v.getParentStructure().getFullNameEscaped();
     return (StructureDS) ds.findVariable(name);
   }

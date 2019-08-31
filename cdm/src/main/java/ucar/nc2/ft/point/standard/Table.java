@@ -48,7 +48,7 @@ import ucar.nc2.ft.point.StructureDataIteratorLinked;
  * @since Jan 20, 2009
  */
 public abstract class Table {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Table.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Table.class);
 
   public enum CoordName {
     Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt, FeatureId, MissingVar
@@ -204,7 +204,7 @@ public abstract class Table {
    * @return iterater over the rows of this table.
    * @throws IOException on read error
    */
-  abstract public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException;
+  public abstract StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException;
 
   String findCoordinateVariableName(CoordName coordName) {
     switch (coordName) {

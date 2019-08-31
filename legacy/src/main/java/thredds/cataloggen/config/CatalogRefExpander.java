@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 public class CatalogRefExpander {
   // private static Log log = LogFactory.getLog( CatalogRefExpander.class );
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogRefExpander.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogRefExpander.class);
 
   private String name;
   private String directoryMatchPattern; // whenCreateCatalogRef

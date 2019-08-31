@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class CrawlableDatasetAlias implements CrawlableDataset {
   // private static Log log = LogFactory.getLog( CrawlableDatasetAlias.class );
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetAlias.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetAlias.class);
 
   private String path;
   private String name;

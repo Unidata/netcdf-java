@@ -34,11 +34,11 @@ public class CalendarDate implements Comparable<CalendarDate> {
    * 
    * @return CalendarDate representing the present moment in UTC
    */
-  static public CalendarDate present() {
+  public static CalendarDate present() {
     return new CalendarDate(null, new DateTime());
   }
 
-  static public CalendarDate present(Calendar cal) {
+  public static CalendarDate present(Calendar cal) {
     return new CalendarDate(cal, new DateTime());
   }
 

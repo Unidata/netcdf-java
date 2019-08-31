@@ -18,9 +18,9 @@ import java.nio.channels.WritableByteChannel;
  */
 public class MessageScanner {
   // static public final int MAX_MESSAGE_SIZE = 500 * 1000; // GTS allows up to 500 Kb messages (ref?)
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MessageScanner.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MessageScanner.class);
 
-  static private final KMPMatch matcher = new KMPMatch("BUFR".getBytes(CDM.utf8Charset));
+  private static final KMPMatch matcher = new KMPMatch("BUFR".getBytes(CDM.utf8Charset));
 
   /**
    * is this a valid BUFR file.
@@ -29,7 +29,7 @@ public class MessageScanner {
    * @return true if its a BUFR file
    * @throws IOException on read error
    */
-  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     raf.seek(0);
     if (!raf.searchForward(matcher, 40 * 1000))
       return false; // must find "BUFR" in first 40k

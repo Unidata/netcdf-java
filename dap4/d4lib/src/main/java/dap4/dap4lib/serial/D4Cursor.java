@@ -364,7 +364,7 @@ public class D4Cursor extends AbstractCursor {
     return b;
   }
 
-  static public long getLength(ByteBuffer b) {
+  public static long getLength(ByteBuffer b) {
     if (b.position() + D4LENSIZE > b.limit())
       throw new IllegalArgumentException();
     long n = b.getLong();

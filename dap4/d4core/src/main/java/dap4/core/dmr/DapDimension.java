@@ -15,7 +15,7 @@ public class DapDimension extends DapNode implements DapDecl, Cloneable {
   //////////////////////////////////////////////////
   // Constants
 
-  static final public long UNDEFINED = -2;
+  public static final long UNDEFINED = -2;
 
   //////////////////////////////////////////////////
   // Instance variables

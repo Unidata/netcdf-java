@@ -64,7 +64,7 @@ import java.util.Map;
 
 public class DAPNode implements Cloneable, Serializable {
   //////////////////////////////////////////////////////////////////////////
-  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DAPNode.class);
+  public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DAPNode.class);
   //////////////////////////////////////////////////////////////////////////
 
   static final long serialVersionUID = 1;
@@ -217,7 +217,7 @@ public class DAPNode implements Cloneable, Serializable {
 
   // Define a class for holding all the clone mapping information.
   // Members are kept public for direct access.
-  static public class CloneMap {
+  public static class CloneMap {
     Map<DAPNode, DAPNode> nodes = new HashMap<DAPNode, DAPNode>(); // map base object to clone
   }
 
@@ -262,7 +262,7 @@ public class DAPNode implements Cloneable, Serializable {
    * @return the clone of the src node
    * @throws CloneNotSupportedException
    */
-  static public DAPNode cloneDAG(CloneMap map, DAPNode src) throws CloneNotSupportedException {
+  public static DAPNode cloneDAG(CloneMap map, DAPNode src) throws CloneNotSupportedException {
     DAPNode bt = map.nodes.get(src);
     if (bt == null)
       bt = src.cloneDAG(map);

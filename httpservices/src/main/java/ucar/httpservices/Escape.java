@@ -53,16 +53,16 @@ public class Escape {
   // Sets of ascii characters of interest
 
   // This is set of legal characters that can appear unescaped in a url
-  static protected final String _allowableInUrl =
+  protected static final String _allowableInUrl =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$&'()*+,-./:;=?@_~";
 
-  static protected final String _allowableInUrlQuery =
+  protected static final String _allowableInUrlQuery =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&'()*+,-./:;=?@_~";
 
-  static private final char _URIEscape = '%';
+  private static final char _URIEscape = '%';
 
-  static private final char _BACKSLASHEscape = '\\';
-  static private final String _MustBackslashEscape = "?#./\\\"'";
+  private static final char _BACKSLASHEscape = '\\';
+  private static final String _MustBackslashEscape = "?#./\\\"'";
 
   /**
    * Replace all characters in the String <code>in</code> not present in the String <code>allowable</code> with
@@ -210,7 +210,7 @@ public class Escape {
    * @param url The url string
    * @return The escaped expression.
    */
-  static private final Pattern p = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
+  private static final Pattern p = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
 
   public static String escapeURL(String surl) {
     String protocol = null;

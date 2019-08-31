@@ -12,7 +12,7 @@ import dap4.core.dmr.TypeSort;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-abstract public class CoreTypeFcns {
+public abstract class CoreTypeFcns {
 
   /**
    * Force an attribute value (typically string)
@@ -22,7 +22,7 @@ abstract public class CoreTypeFcns {
    * @param value actual value
    * @return the value as made to conform to the expected type
    */
-  static public Object attributeConvert(DapType type, Object value) {
+  public static Object attributeConvert(DapType type, Object value) {
     if (value == null)
       return value;
     if (type.isEnumType()) {
@@ -54,7 +54,7 @@ abstract public class CoreTypeFcns {
   }
 
   /* Get the size of an equivalent java object; zero if not defined */
-  static public int getJavaSize(TypeSort atomtype) {
+  public static int getJavaSize(TypeSort atomtype) {
     switch (atomtype) {
       case Char:
       case Int8:
@@ -93,7 +93,7 @@ abstract public class CoreTypeFcns {
    * @return forced value
    * @throws ConversionException if forcing is not possible
    */
-  static public long forceRange(TypeSort basetype, long value) {
+  public static long forceRange(TypeSort basetype, long value) {
     assert basetype.isIntegerType() : "Internal error";
     switch (basetype) {
       case Char:
@@ -134,7 +134,7 @@ abstract public class CoreTypeFcns {
    * @param max peg to this if value is > max
    * @return pegg'ed value
    */
-  static protected long minmax(long value, long min, long max) {
+  protected static long minmax(long value, long min, long max) {
     if (value < min)
       return min;
     if (value > max)
@@ -142,7 +142,7 @@ abstract public class CoreTypeFcns {
     return value;
   }
 
-  static public Object get(DapType type, Object v, int n) {
+  public static Object get(DapType type, Object v, int n) {
     switch (type.getAtomicType()) {
       case Char:
         return ((char[]) v)[n];
@@ -177,7 +177,7 @@ abstract public class CoreTypeFcns {
     throw new IllegalArgumentException();
   }
 
-  static public void put(TypeSort sort, Object v, int n, Object value) {
+  public static void put(TypeSort sort, Object v, int n, Object value) {
     switch (sort) {
       case Char:
         ((char[]) v)[n] = ((char[]) value)[0];
@@ -219,7 +219,7 @@ abstract public class CoreTypeFcns {
     }
   }
 
-  static public int putVector(TypeSort sort, Object v, int offset, Object vec) {
+  public static int putVector(TypeSort sort, Object v, int offset, Object vec) {
     int len = 0;
     switch (sort) {
       case Char:
@@ -272,7 +272,7 @@ abstract public class CoreTypeFcns {
     return len;
   }
 
-  static public Object get(TypeSort sort, ByteBuffer b, int n) {
+  public static Object get(TypeSort sort, ByteBuffer b, int n) {
     switch (sort) {
       case Char:
         return (char) (b.get(n) & 0xFFL);
@@ -311,7 +311,7 @@ abstract public class CoreTypeFcns {
   }
 
 
-  static public Object createVector(TypeSort type, long count) {
+  public static Object createVector(TypeSort type, long count) {
     int icount = (int) count;
     Object vector = null;
     switch (type) {

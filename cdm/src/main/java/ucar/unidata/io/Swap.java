@@ -25,7 +25,7 @@ public class Swap {
    * @return the short represented by the bytes
    *         <code>b[offset+1], b[offset]</code>
    */
-  static public short swapShort(byte[] b, int offset) {
+  public static short swapShort(byte[] b, int offset) {
     // 2 bytes
     int low = b[offset] & 0xff;
     int high = b[offset + 1] & 0xff;
@@ -41,7 +41,7 @@ public class Swap {
    * @return the int represented by the bytes
    *         <code>b[offset+3], b[offset+2], ..., b[offset]</code>
    */
-  static public int swapInt(byte[] b, int offset) {
+  public static int swapInt(byte[] b, int offset) {
     // 4 bytes
     int accum = 0;
     for (int shiftBy = 0, i = offset; shiftBy < 32; shiftBy += 8, i++) {
@@ -59,7 +59,7 @@ public class Swap {
    * @return the long represented by the bytes
    *         <code>b[offset+7], b[offset+6], ..., b[offset]</code>
    */
-  static public long swapLong(byte[] b, int offset) {
+  public static long swapLong(byte[] b, int offset) {
     // 8 bytes
     long accum = 0;
     long shiftedval;
@@ -79,7 +79,7 @@ public class Swap {
    * @return the float represented by the bytes
    *         <code>b[offset+3], b[offset+2], ..., b[offset]</code>
    */
-  static public float swapFloat(byte[] b, int offset) {
+  public static float swapFloat(byte[] b, int offset) {
     int accum = 0;
     for (int shiftBy = 0, i = offset; shiftBy < 32; shiftBy += 8, i++) {
       accum |= (b[i] & 0xff) << shiftBy;
@@ -96,7 +96,7 @@ public class Swap {
    * @return the double represented by the bytes
    *         <code>b[offset+7], b[offset+6], ..., b[offset]</code>
    */
-  static public double swapDouble(byte[] b, int offset) {
+  public static double swapDouble(byte[] b, int offset) {
     long accum = 0;
     long shiftedval;
     for (int shiftBy = 0, i = offset; shiftBy < 64; shiftBy += 8, i++) {
@@ -115,7 +115,7 @@ public class Swap {
    * @return the char represented by the bytes
    *         <code>b[offset+1], b[offset]</code>
    */
-  static public char swapChar(byte[] b, int offset) {
+  public static char swapChar(byte[] b, int offset) {
     // 2 bytes
     int low = b[offset] & 0xff;
     int high = b[offset + 1] & 0xff;
@@ -130,7 +130,7 @@ public class Swap {
    * @return the value represented by the bytes of <code>s</code>
    *         reversed
    */
-  static public short swapShort(short s) {
+  public static short swapShort(short s) {
     return (swapShort(shortToBytes(s), 0));
   }
 
@@ -142,7 +142,7 @@ public class Swap {
    * @return the value represented by the bytes of <code>v</code>
    *         reversed
    */
-  static public int swapInt(int v) {
+  public static int swapInt(int v) {
     return (swapInt(intToBytes(v), 0));
   }
 
@@ -154,7 +154,7 @@ public class Swap {
    * @return the value represented by the bytes of <code>l</code>
    *         reversed
    */
-  static public long swapLong(long l) {
+  public static long swapLong(long l) {
     return (swapLong(longToBytes(l), 0));
   }
 
@@ -166,7 +166,7 @@ public class Swap {
    * @return the value represented by the bytes of <code>v</code>
    *         reversed
    */
-  static public float swapFloat(float v) {
+  public static float swapFloat(float v) {
     int l = swapInt(Float.floatToIntBits(v));
     return (Float.intBitsToFloat(l));
   }
@@ -179,7 +179,7 @@ public class Swap {
    * @return the value represented by the bytes of <code>v</code>
    *         reversed
    */
-  static public double swapDouble(double v) {
+  public static double swapDouble(double v) {
     long l = swapLong(Double.doubleToLongBits(v));
     return (Double.longBitsToDouble(l));
   }
@@ -190,7 +190,7 @@ public class Swap {
    * @param v input value
    * @return the corresponding array of bytes
    */
-  static public byte[] shortToBytes(short v) {
+  public static byte[] shortToBytes(short v) {
     byte[] b = new byte[2];
     int allbits = 255;
     for (int i = 0; i < 2; i++) {
@@ -205,7 +205,7 @@ public class Swap {
    * @param v input value
    * @return the corresponding array of bytes
    */
-  static public byte[] intToBytes(int v) {
+  public static byte[] intToBytes(int v) {
     byte[] b = new byte[4];
     int allbits = 255;
     for (int i = 0; i < 4; i++) {
@@ -220,7 +220,7 @@ public class Swap {
    * @param v input value
    * @return the corresponding array of bytes
    */
-  static public byte[] longToBytes(long v) {
+  public static byte[] longToBytes(long v) {
     byte[] b = new byte[8];
     long allbits = 255;
     for (int i = 0; i < 8; i++) {

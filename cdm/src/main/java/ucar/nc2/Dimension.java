@@ -31,7 +31,7 @@ public class Dimension extends CDMNode implements Comparable {
   /**
    * A variable-length dimension: the length is not known until the data is read.
    */
-  static public Dimension VLEN = new Dimension("*", -1, false, false, true).setImmutable(); // for Sequences, HDF5
+  public static Dimension VLEN = new Dimension("*", -1, false, false, true).setImmutable(); // for Sequences, HDF5
                                                                                             // VarLength
 
   /*
@@ -49,7 +49,7 @@ public class Dimension extends CDMNode implements Comparable {
    *
    * @return space-delineated String of Dimension names.
    */
-  static public String makeDimensionsString(List<Dimension> dimensions) {
+  public static String makeDimensionsString(List<Dimension> dimensions) {
     if (dimensions == null)
       return "";
 
@@ -85,7 +85,7 @@ public class Dimension extends CDMNode implements Comparable {
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
-  static public List<Dimension> makeDimensionsList(Group parentGroup, String dimString)
+  public static List<Dimension> makeDimensionsList(Group parentGroup, String dimString)
       throws IllegalArgumentException {
     List<Dimension> newDimensions = new ArrayList<>();
     if (dimString == null) // scalar
@@ -117,7 +117,7 @@ public class Dimension extends CDMNode implements Comparable {
     return newDimensions;
   }
 
-  static public List<Dimension> makeDimensionsAnon(int[] shape) {
+  public static List<Dimension> makeDimensionsAnon(int[] shape) {
 
     List<Dimension> newDimensions = new ArrayList<>();
 

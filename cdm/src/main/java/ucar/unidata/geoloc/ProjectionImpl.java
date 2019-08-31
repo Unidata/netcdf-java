@@ -40,7 +40,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   /**
    * Earth radius in kilometers
    */
-  static public final double EARTH_RADIUS = Earth.getRadius() * 0.001; // km
+  public static final double EARTH_RADIUS = Earth.getRadius() * 0.001; // km
 
   /**
    * Latitude index
@@ -109,7 +109,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    *
    * @return a copy of this Projection
    */
-  abstract public ProjectionImpl constructCopy();
+  public abstract ProjectionImpl constructCopy();
 
   protected ProjectionImpl(String name, boolean isLatLon) {
     this.name = name;

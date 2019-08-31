@@ -41,12 +41,12 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   private double e; // earth.getEccentricity
   private double totalScale; // scale to convert cartesian coords in km
 
-  private final static int NORTH_POLE = 1;
-  private final static int SOUTH_POLE = 2;
-  private final static int EQUATOR = 3;
-  private final static int OBLIQUE = 4;
+  private static final int NORTH_POLE = 1;
+  private static final int SOUTH_POLE = 2;
+  private static final int EQUATOR = 3;
+  private static final int OBLIQUE = 4;
 
-  private final static double TOL = 1.e-8;
+  private static final double TOL = 1.e-8;
 
   private double akm1, sinphi0, cosphi0;
   private int mode;

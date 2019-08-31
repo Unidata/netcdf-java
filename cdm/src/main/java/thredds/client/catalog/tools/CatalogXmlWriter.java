@@ -28,13 +28,13 @@ import java.util.List;
  * @since 1/11/2015
  */
 public class CatalogXmlWriter {
-  static private boolean useBytesForDataSize = false;
+  private static boolean useBytesForDataSize = false;
 
-  static public void useBytesForDataSize(boolean b) {
+  public static void useBytesForDataSize(boolean b) {
     useBytesForDataSize = b;
   }
 
-  static private final String version = "1.2";
+  private static final String version = "1.2";
 
   ////////////////////////////////////////////////////////////////////////
   private boolean raw = false;

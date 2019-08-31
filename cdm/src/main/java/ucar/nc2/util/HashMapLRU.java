@@ -17,7 +17,7 @@ import java.util.Map;
  * @see java.util.LinkedHashMap
  */
 public class HashMapLRU<K, V> extends LinkedHashMap<K, V> {
-  static private final Logger logger = LoggerFactory.getLogger(HashMapLRU.class);
+  private static final Logger logger = LoggerFactory.getLogger(HashMapLRU.class);
 
   private int max_entries;
 

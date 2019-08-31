@@ -16,7 +16,7 @@ import java.io.IOException;
  * @since Mar 26, 2008
  */
 public class StructureDataIteratorLinked implements StructureDataIterator {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
 
   private Structure s;
   private int firstRecord, nextRecno, numRecords;

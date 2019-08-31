@@ -24,8 +24,8 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class NOWRadiosp extends AbstractIOServiceProvider {
-  final static int DEF_WBITS = 15;
-  final static int Z_DEFLATED = 8;
+  static final int DEF_WBITS = 15;
+  static final int Z_DEFLATED = 8;
 
   // used for writing
   protected int fileUsed = 0; // how much of the file is written to ?

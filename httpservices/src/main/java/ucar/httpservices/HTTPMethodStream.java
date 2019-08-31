@@ -32,7 +32,7 @@ import java.io.InputStream;
 
 public class HTTPMethodStream extends FilterInputStream implements Closeable {
   //////////////////////////////////////////////////////////////////////////
-  static public org.slf4j.Logger log = HTTPSession.log;
+  public static org.slf4j.Logger log = HTTPSession.log;
 
   //////////////////////////////////////////////////////////////////////////
   HTTPMethod method = null;

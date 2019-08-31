@@ -39,7 +39,7 @@ import java.io.IOException;
 
 public class CatGenConfigMetadataFactory implements MetadataConverterIF {
   // private static Log log = LogFactory.getLog( CatGenConfigMetadataFactory.class );
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatGenConfigMetadataFactory.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatGenConfigMetadataFactory.class);
 
   private static boolean showParsedXML = false, debug = false;
   private static final Namespace CATALOG_GEN_CONFIG_NAMESPACE_0_5 =

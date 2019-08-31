@@ -16,7 +16,7 @@ import thredds.catalog.InvDatasetScan;
  * @since Apr 20, 2005 17:02:08 PM
  */
 public class DatasetSorter {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetSorter.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetSorter.class);
 
   // Location(s) in catalog heirarchy wher this sorter should be applied.
   // E.g., "NCEP models/Eta 211", "models/eta_211", "*", "models/*/A" -- must be dataset names

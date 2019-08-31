@@ -75,7 +75,7 @@ public abstract class Convert {
    * @throws ConversionException if cannot convert (runtime exception)
    */
 
-  static public Object convert(DapType dsttype, DapType srctype, Object values) {
+  public static Object convert(DapType dsttype, DapType srctype, Object values) {
     if (dsttype == srctype)
       return values;
 
@@ -358,7 +358,7 @@ public abstract class Convert {
     return result;
   }
 
-  static protected long[] double2long(double[] in) {
+  protected static long[] double2long(double[] in) {
     long[] out = new long[in.length];
     for (int i = 0; i < in.length; i++) {
       out[i] = (long) in[i];
@@ -366,7 +366,7 @@ public abstract class Convert {
     return out;
   }
 
-  static protected double[] long2double(long[] in) {
+  protected static double[] long2double(long[] in) {
     double[] out = new double[in.length];
     for (int i = 0; i < in.length; i++) {
       out[i] = (double) in[i];
@@ -374,7 +374,7 @@ public abstract class Convert {
     return out;
   }
 
-  static protected long[] string2long(String[] in) {
+  protected static long[] string2long(String[] in) {
     long[] out = new long[in.length];
     for (int i = 0; i < in.length; i++) {
       try {
@@ -386,7 +386,7 @@ public abstract class Convert {
     return out;
   }
 
-  static protected double[] string2double(String[] in) {
+  protected static double[] string2double(String[] in) {
     double[] out = new double[in.length];
     for (int i = 0; i < in.length; i++) {
       try {
@@ -398,7 +398,7 @@ public abstract class Convert {
     return out;
   }
 
-  static public DapType vectorType(Object o) {
+  public static DapType vectorType(Object o) {
     Class c = o.getClass();
     if (!c.isArray())
       return null;

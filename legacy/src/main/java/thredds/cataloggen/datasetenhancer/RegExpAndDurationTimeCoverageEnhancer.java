@@ -29,7 +29,7 @@ import ucar.nc2.units.TimeDuration;
  * @since Dec 6, 2005 10:59:21 AM
  */
 public class RegExpAndDurationTimeCoverageEnhancer implements DatasetEnhancer {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RegExpAndDurationTimeCoverageEnhancer.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RegExpAndDurationTimeCoverageEnhancer.class);
 
   private final String matchPattern;
   private final String substitutionPattern;

@@ -18,10 +18,10 @@ import java.util.List;
  * @since 11/11/13
  */
 public class FeatureCollectionReader {
-  static private final Logger logger = LoggerFactory.getLogger(FeatureCollectionReader.class);
+  private static final Logger logger = LoggerFactory.getLogger(FeatureCollectionReader.class);
 
   // input is xml file with just the <featureCollection>
-  static public FeatureCollectionConfig getConfigFromSnippet(String filename) {
+  public static FeatureCollectionConfig getConfigFromSnippet(String filename) {
 
     org.jdom2.Document doc;
     try {
@@ -42,7 +42,7 @@ public class FeatureCollectionReader {
    * @param catalogAndPath catalog filename, or catalog#featureName
    * @return FeatureCollectionConfig or null
    */
-  static public FeatureCollectionConfig readFeatureCollection(String catalogAndPath) {
+  public static FeatureCollectionConfig readFeatureCollection(String catalogAndPath) {
     String catFilename;
     String fcName = null;
 
@@ -77,7 +77,7 @@ public class FeatureCollectionReader {
     return null;
   }
 
-  static private void findFeatureCollection(Element parent, String name, List<Element> fcElems) {
+  private static void findFeatureCollection(Element parent, String name, List<Element> fcElems) {
     List<Element> elist = parent.getChildren("featureCollection", InvCatalogFactory10.defNS);
     if (name == null)
       fcElems.addAll(elist);
@@ -91,7 +91,7 @@ public class FeatureCollectionReader {
       findFeatureCollection(child, name, fcElems);
   }
 
-  static public FeatureCollectionConfig readFeatureCollection(Element featureCollectionElement) {
+  public static FeatureCollectionConfig readFeatureCollection(Element featureCollectionElement) {
     String name = featureCollectionElement.getAttributeValue("name");
     String path = featureCollectionElement.getAttributeValue("path");
     String fcTypeS = featureCollectionElement.getAttributeValue("featureType");
@@ -183,7 +183,7 @@ public class FeatureCollectionReader {
     return config;
   }
 
-  static private FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
+  private static FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
     if (updateElem == null) {
       return new FeatureCollectionConfig.UpdateConfig(); // default
     }

@@ -32,7 +32,7 @@ public class NdbcDataset extends StationObsDatasetImpl implements TypedDatasetFa
   private RecordDatasetHelper recordHelper;
   private StationImpl station;
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS"))
       return false;
     if (!ds.findAttValueIgnoreCase(null, "data_provider", "").equalsIgnoreCase("National Data Buoy Center"))

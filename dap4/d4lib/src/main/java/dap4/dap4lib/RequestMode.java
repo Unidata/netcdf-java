@@ -22,7 +22,7 @@ public enum RequestMode {
     return extension;
   }
 
-  static public RequestMode modeFor(String s) {
+  public static RequestMode modeFor(String s) {
     for (RequestMode mode : RequestMode.values()) {
       if (mode.extension() != null && s.equalsIgnoreCase(mode.extension) || s.equalsIgnoreCase("." + mode.extension))
         return mode;

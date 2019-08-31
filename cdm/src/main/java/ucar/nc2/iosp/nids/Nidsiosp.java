@@ -32,8 +32,8 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
   private int pcode;
 
-  final static int Z_DEFLATED = 8;
-  final static int DEF_WBITS = 15;
+  static final int Z_DEFLATED = 8;
+  static final int DEF_WBITS = 15;
 
   // used for writing
   protected int fileUsed = 0; // how much of the file is written to ?

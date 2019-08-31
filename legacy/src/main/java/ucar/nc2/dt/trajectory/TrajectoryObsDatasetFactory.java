@@ -19,11 +19,11 @@ import java.io.IOException;
  */
 public class TrajectoryObsDatasetFactory {
 
-  static public TrajectoryObsDataset open(String netcdfFileURI) throws IOException {
+  public static TrajectoryObsDataset open(String netcdfFileURI) throws IOException {
     return open(netcdfFileURI, null);
   }
 
-  static public TrajectoryObsDataset open(String netcdfFileURI, ucar.nc2.util.CancelTask cancelTask)
+  public static TrajectoryObsDataset open(String netcdfFileURI, ucar.nc2.util.CancelTask cancelTask)
       throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(netcdfFileURI);
     NetcdfDataset ds = NetcdfDataset.acquireDataset(durl, true, cancelTask);

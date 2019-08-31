@@ -15,7 +15,7 @@ public class DapEnumeration extends DapType {
   //////////////////////////////////////////////////
   // Constants
 
-  static public final DapType DEFAULTBASETYPE = DapType.INT32;
+  public static final DapType DEFAULTBASETYPE = DapType.INT32;
 
   //////////////////////////////////////////////////
   // Instance Variables

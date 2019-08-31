@@ -11,7 +11,7 @@ import thredds.catalog.InvCatalog;
 import java.util.List;
 
 public class GrADSDataServerDatasetSource extends DatasetSource {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GrADSDataServerDatasetSource.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GrADSDataServerDatasetSource.class);
 
   public GrADSDataServerDatasetSource() {
     this.type = DatasetSourceType.getType("GrADSDataServer");

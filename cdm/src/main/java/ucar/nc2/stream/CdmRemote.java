@@ -26,18 +26,18 @@ import java.util.Formatter;
  * @since Feb 7, 2009
  */
 public class CdmRemote extends ucar.nc2.NetcdfFile {
-  static public final String PROTOCOL = "cdmremote";
-  static public final String SCHEME = PROTOCOL + ":";
+  public static final String PROTOCOL = "cdmremote";
+  public static final String SCHEME = PROTOCOL + ":";
 
   // static private org.slf4SCHEMEj.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private boolean showRequest = false;
-  static private boolean compress = false;
+  private static boolean showRequest = false;
+  private static boolean compress = false;
 
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
   }
 
-  static public void setAllowCompression(boolean b) {
+  public static void setAllowCompression(boolean b) {
     compress = b;
   }
 

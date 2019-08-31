@@ -34,7 +34,7 @@ class H5tiledLayoutBB implements LayoutBB {
   // System property name for -D flag
   static final String INFLATEBUFFERSIZE = "unidata.h5iosp.inflate.buffersize";
 
-  static public boolean debugFilter = false;
+  public static boolean debugFilter = false;
 
   private LayoutBBTiled delegate;
 

@@ -66,7 +66,7 @@ public class TableB {
   /**
    * Composite pattern - collection of TableB
    */
-  static public class Composite extends TableB {
+  public static class Composite extends TableB {
     List<TableB> list = new ArrayList<>(3);
 
     public Composite(String name, String location) {

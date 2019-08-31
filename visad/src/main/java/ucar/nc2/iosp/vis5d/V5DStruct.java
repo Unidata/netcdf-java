@@ -26,7 +26,7 @@ import java.io.IOException;
  */
 public class V5DStruct {
 
-  static private final Logger logger = LoggerFactory.getLogger(V5DStruct.class);
+  private static final Logger logger = LoggerFactory.getLogger(V5DStruct.class);
 
 
   /**

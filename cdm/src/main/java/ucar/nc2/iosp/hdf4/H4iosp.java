@@ -26,8 +26,8 @@ import java.nio.ByteBuffer;
  * @since Dec 17, 2007
  */
 public class H4iosp extends AbstractIOServiceProvider {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
-  static private boolean showLayoutTypes = false;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
+  private static boolean showLayoutTypes = false;
 
   private H4header header = new H4header();
 

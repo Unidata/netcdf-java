@@ -35,12 +35,12 @@ import java.io.IOException;
  */
 
 public class OldUnidataPointObsDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
-  static private String latName = "lat";
-  static private String lonName = "lon";
-  static private String altName = "Depth";
-  static private String timeName = "timeObs";
+  private static String latName = "lat";
+  private static String lonName = "lon";
+  private static String altName = "Depth";
+  private static String timeName = "timeObs";
 
-  static public boolean isValidFile(NetcdfFile ds) {
+  public static boolean isValidFile(NetcdfFile ds) {
     if (!ds.hasUnlimitedDimension())
       return false;
     if (ds.findVariable(latName) == null)

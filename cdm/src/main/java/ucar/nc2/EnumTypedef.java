@@ -21,8 +21,8 @@ import java.util.*;
 public class EnumTypedef extends CDMNode {
 
   // Constants for the unsigned max values for enum(1,2,4)
-  static public final int UBYTE_MAX = 255;
-  static public final int USHORT_MAX = 65535;
+  public static final int UBYTE_MAX = 255;
+  public static final int USHORT_MAX = 65535;
   // not used static public final long UINT_MAX = 4294967295L;
 
   private final Map<Integer, String> map;

@@ -43,7 +43,7 @@ import java.util.List;
   // Define an open wrapper around a field array in order
   // to make the code somewhat more clear
 
-  static protected class FieldSet {
+  protected static class FieldSet {
     public Array[] fields;
 
     FieldSet(int nfields) {
@@ -51,7 +51,7 @@ import java.util.List;
     }
   }
 
-  static public class SDI implements StructureDataIterator {
+  public static class SDI implements StructureDataIterator {
     protected StructureData[] list;
     protected int position;
 

@@ -16,16 +16,16 @@ import static opendap.dap.parsers.Dap2Lex.*;
 public abstract class Dap2Parse {
 
   // Define some error states
-  static protected int EBADTYPE = 0;
-  static protected int EDIMSIZE = 1;
-  static protected int EDDS = 2;
-  static protected int EDAS = 3;
+  protected static int EBADTYPE = 0;
+  protected static int EDIMSIZE = 1;
+  protected static int EDDS = 2;
+  protected static int EDAS = 3;
 
   // Track what kind of file we parsed; use int instead of enum to simplify access
-  static public final int DapNUL = 0;
-  static public final int DapDAS = 1;
-  static public final int DapDDS = 2;
-  static public final int DapERR = 3;
+  public static final int DapNUL = 0;
+  public static final int DapDAS = 1;
+  public static final int DapDDS = 2;
+  public static final int DapERR = 3;
 
   static final int NA = DGrid.ARRAY;
 
@@ -66,15 +66,15 @@ public abstract class Dap2Parse {
    * **********************************************
    */
   /* Access into the Dap2Parser for otherwise inaccessible fields */
-  abstract public boolean parse(String text) throws ParseException;
+  public abstract boolean parse(String text) throws ParseException;
 
-  abstract public int getDebugLevel();
+  public abstract int getDebugLevel();
 
-  abstract public void setDebugLevel(int level);
+  public abstract void setDebugLevel(int level);
 
-  abstract public void setURL(String url);
+  public abstract void setURL(String url);
 
-  abstract public String getURL();
+  public abstract String getURL();
 
   /**
    * **********************************************

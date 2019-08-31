@@ -55,7 +55,7 @@ public abstract class AbstractLightningIOSP extends AbstractIOServiceProvider {
   public static final String RECORD = "record";
 
   /** time unit */
-  public final static String secondsSince1970 = "seconds since 1970-01-01 00:00:00";
+  public static final String secondsSince1970 = "seconds since 1970-01-01 00:00:00";
 
   /**
    * Make lightning variables

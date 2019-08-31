@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DodsFileServerDatasetSource extends DatasetSource {
   // private static Log log = LogFactory.getLog( DodsFileServerDatasetSource.class);
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DodsFileServerDatasetSource.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DodsFileServerDatasetSource.class);
 
   public DodsFileServerDatasetSource() {
     this.type = DatasetSourceType.getType("DodsFileServer");

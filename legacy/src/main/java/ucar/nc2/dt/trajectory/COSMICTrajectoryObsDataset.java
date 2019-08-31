@@ -61,7 +61,7 @@ public class COSMICTrajectoryObsDataset extends TrajectoryObsDatasetImpl impleme
   private static String trajId = "trajectory data";
   NetcdfDataset localNCD;
 
-  static public boolean isValidFile(NetcdfDataset ncd) {
+  public static boolean isValidFile(NetcdfDataset ncd) {
     return (buildConfig(ncd) != null);
   }
 

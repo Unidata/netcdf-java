@@ -40,7 +40,7 @@ import java.util.List;
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
   private boolean wasRead = false; // have the data values been read
   private boolean wasBoundsDone = false; // have we created the bounds arrays if exists ?

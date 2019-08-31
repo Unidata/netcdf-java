@@ -119,7 +119,7 @@ public abstract class BaseType extends DAPNode {
    *
    * @return the OPeNDAP type name of the class instance as a <code>String</code>.
    */
-  abstract public String getTypeName();
+  public abstract String getTypeName();
 
   /**
    * Returns the number of variables contained in this object. For simple and
@@ -291,7 +291,7 @@ public abstract class BaseType extends DAPNode {
    * @param print_decl_p a boolean value controlling whether the
    *        variable declaration is printed as well as the value.
    */
-  abstract public void printVal(PrintWriter os, String space, boolean print_decl_p);
+  public abstract void printVal(PrintWriter os, String space, boolean print_decl_p);
 
   /**
    * Print the variable's value. Same as

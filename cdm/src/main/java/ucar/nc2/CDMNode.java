@@ -266,7 +266,7 @@ public abstract class CDMNode {
    * @param node possibly wrapped ode
    * @return the lowest level node instance
    */
-  static public CDMNode unwrap(CDMNode node) {
+  public static CDMNode unwrap(CDMNode node) {
     if (!(node instanceof Variable))
       return node;
     Variable inner = (Variable) node;

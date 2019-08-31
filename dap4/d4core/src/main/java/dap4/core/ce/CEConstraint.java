@@ -81,8 +81,8 @@ public class CEConstraint implements Constraint {
   //////////////////////////////////////////////////
   // Constants
 
-  static protected final boolean PARSEDEBUG = false;
-  static protected final boolean DEBUG = false;
+  protected static final boolean PARSEDEBUG = false;
+  protected static final boolean DEBUG = false;
 
   // Mnemonics
 
@@ -93,13 +93,13 @@ public class CEConstraint implements Constraint {
   //////////////////////////////////////////////////
   // Type Decls
 
-  static protected enum Expand {
+  protected static enum Expand {
     NONE, EXPANDED, CONTRACTED
   }
 
   ;
 
-  static protected class Segment {
+  protected static class Segment {
     DapVariable var;
     List<Slice> slices; // projection slices for this variable
     List<DapDimension> dimset; // dimensions for the variable; including
@@ -248,10 +248,10 @@ public class CEConstraint implements Constraint {
   //////////////////////////////////////////////////
   // class variables and methods
 
-  static protected Map<DapDataset, CEConstraint> universals = new HashMap<>();
+  protected static Map<DapDataset, CEConstraint> universals = new HashMap<>();
 
 
-  static public CEConstraint getUniversal(DapDataset dmr) {
+  public static CEConstraint getUniversal(DapDataset dmr) {
     CEConstraint u = universals.get(dmr);
     if (u == null) {
       try {
@@ -264,11 +264,11 @@ public class CEConstraint implements Constraint {
     return u;
   }
 
-  static public void release(DapDataset dmr) {
+  public static void release(DapDataset dmr) {
     universals.remove(dmr);
   }
 
-  static protected DataCursor fieldValue(DapVariable sqvar, DapSequence seq, DataCursor record, String field)
+  protected static DataCursor fieldValue(DapVariable sqvar, DapSequence seq, DataCursor record, String field)
       throws DapException {
     DapVariable dapv = seq.findByName(field);
     if (dapv == null)
@@ -284,7 +284,7 @@ public class CEConstraint implements Constraint {
     return da;
   }
 
-  static protected int compare(Object lvalue, Object rvalue) throws DapException {
+  protected static int compare(Object lvalue, Object rvalue) throws DapException {
     if (lvalue instanceof String && rvalue instanceof String)
       return ((String) lvalue).compareTo((String) rvalue);
     if (lvalue instanceof Boolean && rvalue instanceof Boolean)
@@ -1022,7 +1022,7 @@ public class CEConstraint implements Constraint {
   //////////////////////////////////////////////////
   // Static Utility for compiling a constraint string
 
-  static public CEConstraint compile(String sce, DapDataset dmr) throws DapException {
+  public static CEConstraint compile(String sce, DapDataset dmr) throws DapException {
     // Process any constraint
     if (sce == null || sce.length() == 0)
       return CEConstraint.getUniversal(dmr);

@@ -44,9 +44,9 @@ import java.util.ServiceLoader;
  */
 public class FeatureDatasetFactoryManager {
 
-  static private List<Factory> factoryList = new ArrayList<>();
-  static private boolean userMode;
-  static private boolean debug = false;
+  private static List<Factory> factoryList = new ArrayList<>();
+  private static boolean userMode;
+  private static boolean debug = false;
 
   // search in the order added
   static {
@@ -81,7 +81,7 @@ public class FeatureDatasetFactoryManager {
    * @param className name of class that implements FeatureDatasetFactory.
    * @return true if successfully loaded
    */
-  static public boolean registerFactory(FeatureType datatype, String className) {
+  public static boolean registerFactory(FeatureType datatype, String className) {
     try {
       Class c = Class.forName(className);
       registerFactory(datatype, c);
@@ -99,7 +99,7 @@ public class FeatureDatasetFactoryManager {
    * @param datatype scientific data type
    * @param c class that implements FeatureDatasetFactory.
    */
-  static public void registerFactory(FeatureType datatype, Class c) {
+  public static void registerFactory(FeatureType datatype, Class c) {
     if (!(FeatureDatasetFactory.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must implement FeatureDatasetFactory");
 
@@ -128,7 +128,7 @@ public class FeatureDatasetFactoryManager {
    * @param className name of class that implements FeatureDatasetFactory.
    * @throws ClassNotFoundException if loading error
    */
-  static public void registerFactory(String className) throws ClassNotFoundException {
+  public static void registerFactory(String className) throws ClassNotFoundException {
     Class c = Class.forName(className);
     registerFactory(c);
   }
@@ -139,7 +139,7 @@ public class FeatureDatasetFactoryManager {
    *
    * @param c class that implements FeatureDatasetFactory.
    */
-  static public void registerFactory(Class c) {
+  public static void registerFactory(Class c) {
 
     if (!(FeatureDatasetFactory.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must implement FeatureDatasetFactory");
@@ -171,7 +171,7 @@ public class FeatureDatasetFactoryManager {
     }
   }
 
-  static private class Factory {
+  private static class Factory {
     FeatureType featureType;
     Class c;
     FeatureDatasetFactory factory;
@@ -226,7 +226,7 @@ public class FeatureDatasetFactoryManager {
    * @return a subclass of FeatureDataset, or null if no suitable factory was found, message in errlog
    * @throws java.io.IOException on io error
    */
-  static public FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task,
+  public static FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task,
       Formatter errlog) throws IOException {
 
     // special processing for thredds: datasets
@@ -289,7 +289,7 @@ public class FeatureDatasetFactoryManager {
    * @return a subclass of FeatureDataset, or null if no suitable factory was found
    * @throws java.io.IOException on io error
    */
-  static public FeatureDataset wrap(FeatureType wantFeatureType, NetcdfDataset ncd, ucar.nc2.util.CancelTask task,
+  public static FeatureDataset wrap(FeatureType wantFeatureType, NetcdfDataset ncd, ucar.nc2.util.CancelTask task,
       Formatter errlog) throws IOException {
     if (debug)
       System.out.println("wrap " + ncd.getLocation() + " want = " + wantFeatureType);
@@ -324,7 +324,7 @@ public class FeatureDatasetFactoryManager {
     return useFactory.open(wantFeatureType, ncd, analysis, task, errlog);
   }
 
-  static private FeatureDataset wrapUnknown(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, Formatter errlog)
+  private static FeatureDataset wrapUnknown(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, Formatter errlog)
       throws IOException {
     FeatureType ft = findFeatureType(ncd);
     if (ft != null)
@@ -402,7 +402,7 @@ public class FeatureDatasetFactoryManager {
    * @param facType factory is of this type
    * @return true if match
    */
-  static public boolean featureTypeOk(FeatureType want, FeatureType facType) {
+  public static boolean featureTypeOk(FeatureType want, FeatureType facType) {
     if (want == null)
       return true;
     if (want == facType)
@@ -441,7 +441,7 @@ public class FeatureDatasetFactoryManager {
    * @param ncd the dataset
    * @return FeatureType if found, else null
    */
-  static public FeatureType findFeatureType(NetcdfFile ncd) {
+  public static FeatureType findFeatureType(NetcdfFile ncd) {
     // search for explicit featureType global attribute
     String cdm_datatype = ncd.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
     if (cdm_datatype == null)

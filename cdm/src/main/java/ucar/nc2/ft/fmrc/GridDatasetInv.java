@@ -49,13 +49,13 @@ import thredds.inventory.MFile;
  * @since Jan 11, 2010
  */
 public class GridDatasetInv {
-  static private final Logger logger = LoggerFactory.getLogger(GridDatasetInv.class);
-  static private final int REQ_VERSION = 2; // minimum required version, else regenerate XML
-  static private final int CURR_VERSION = 2; // current version
+  private static final Logger logger = LoggerFactory.getLogger(GridDatasetInv.class);
+  private static final int REQ_VERSION = 2; // minimum required version, else regenerate XML
+  private static final int CURR_VERSION = 2; // current version
 
   // Cache the GridDatasetInv directly, not persisted to disk.
   // TODO: Add persistence if thats shown to be needed.
-  static private Cache<String, GridDatasetInv> cache = CacheBuilder.newBuilder().maximumSize(100).build();
+  private static Cache<String, GridDatasetInv> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   public static GridDatasetInv open(MCollection cm, MFile mfile, Element ncml) throws IOException {
     try {

@@ -30,7 +30,7 @@ import java.util.regex.PatternSyntaxException;
  */
 
 public class DatasetNamer {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetNamer.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetNamer.class);
 
   private InvDataset parentDataset = null;
 

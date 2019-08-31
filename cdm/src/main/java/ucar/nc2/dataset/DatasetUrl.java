@@ -26,8 +26,8 @@ import java.util.*;
  * @since 10/20/2015.
  */
 public class DatasetUrl {
-  static final protected String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  static final protected String slashalpha = "\\/" + alpha;
+  protected static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  protected static final String slashalpha = "\\/" + alpha;
 
   static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
   static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
@@ -45,7 +45,7 @@ public class DatasetUrl {
    * @param url the url whose protocols to return
    * @return list of leading protocols without the trailing :
    */
-  static public List<String> getProtocols(String url) {
+  public static List<String> getProtocols(String url) {
     List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
     // Note, we cannot use split because of the context sensitivity
@@ -77,7 +77,7 @@ public class DatasetUrl {
     return allprotocols;
   }
 
-  static private boolean validateprotocol(String url, int startpos, int endpos) {
+  private static boolean validateprotocol(String url, int startpos, int endpos) {
     int len = endpos - startpos;
     if (len == 0)
       return false;
@@ -92,7 +92,7 @@ public class DatasetUrl {
 
   /////////////////////////////////////////////////////////////////////////////////////
 
-  static public DatasetUrl findDatasetUrl(String orgLocation) throws IOException {
+  public static DatasetUrl findDatasetUrl(String orgLocation) throws IOException {
     ServiceType svctype = null;
 
     // Canonicalize the location
@@ -189,7 +189,7 @@ public class DatasetUrl {
    * @param fragment the fragment is to be examined
    * @return The discovered ServiceType, or null
    */
-  static private ServiceType searchFragment(String fragment) {
+  private static ServiceType searchFragment(String fragment) {
     if (fragment.length() == 0)
       return null;
     Map<String, String> map = parseFragment(fragment);
@@ -228,7 +228,7 @@ public class DatasetUrl {
    * @return a map of the name value pairs (possibly empty),
    *         or null if the fragment does not parse.
    */
-  static private Map<String, String> parseFragment(String fragment) {
+  private static Map<String, String> parseFragment(String fragment) {
     Map<String, String> map = new HashMap<>();
     if (fragment != null && fragment.length() >= 0) {
       if (fragment.charAt(0) == '#')
@@ -258,7 +258,7 @@ public class DatasetUrl {
    * @param url the url is to be examined
    * @return The discovered ServiceType, or null
    */
-  static private ServiceType searchPath(String url) {
+  private static ServiceType searchPath(String url) {
     if (false) { // Disable for now
       if (url == null || url.length() == 0)
         return null;
@@ -279,7 +279,7 @@ public class DatasetUrl {
    * @param path the path to examine for extension
    * @return ServiceType inferred from the extension or null
    */
-  static private ServiceType decodePathExtension(String path) {
+  private static ServiceType decodePathExtension(String path) {
     // Look at the path extensions
     if (path.endsWith(".dds") || path.endsWith(".das") || path.endsWith(".dods"))
       return ServiceType.OPENDAP;
@@ -307,7 +307,7 @@ public class DatasetUrl {
    * @return ServiceType indicating how to handle the url, or null.
    */
   @Urlencoded
-  static private ServiceType decodeLeadProtocol(String protocol) {
+  private static ServiceType decodeLeadProtocol(String protocol) {
     switch (protocol) {
       case "dods":
         return ServiceType.OPENDAP;
@@ -339,7 +339,7 @@ public class DatasetUrl {
    * @return ServiceType indicating how to handle the url
    */
   @Urlencoded
-  static private ServiceType disambiguateHttp(String location) throws IOException {
+  private static ServiceType disambiguateHttp(String location) throws IOException {
     boolean checkDap2 = false, checkDap4 = false, checkCdmr = false;
 
     // some TDS specific tests
@@ -383,7 +383,7 @@ public class DatasetUrl {
   }
 
   // cdmremote
-  static private ServiceType checkIfCdmr(String location) throws IOException {
+  private static ServiceType checkIfCdmr(String location) throws IOException {
 
     try (HTTPMethod method = HTTPFactory.Head(location + "?req=header")) {
       int statusCode = method.execute();
@@ -405,7 +405,7 @@ public class DatasetUrl {
   }
 
   // not sure what other opendap servers do, so fall back on check for dds
-  static private ServiceType checkIfDods(String location) throws IOException {
+  private static ServiceType checkIfDods(String location) throws IOException {
     int len = location.length();
     // Strip off any trailing .dds, .das, or .dods
     if (location.endsWith(".dds"))
@@ -441,7 +441,7 @@ public class DatasetUrl {
   }
 
   // check for dmr
-  static private ServiceType checkIfDap4(String location) throws IOException {
+  private static ServiceType checkIfDap4(String location) throws IOException {
     // Strip off any trailing DAP4 prefix
     if (location.endsWith(".dap"))
       location = location.substring(0, location.length() - ".dap".length());
@@ -475,7 +475,7 @@ public class DatasetUrl {
   // location="dods://ma
   private static int NUM_BYTES_TO_DETERMINE_NCML = 128;
 
-  static private boolean checkIfRemoteNcml(String location) throws IOException {
+  private static boolean checkIfRemoteNcml(String location) throws IOException {
     if (decodePathExtension(location) == ServiceType.NCML) {
       // just because location ends with ncml does not mean it's ncml
       // if the ncml file is being served up via http by a remote server,
@@ -504,7 +504,7 @@ public class DatasetUrl {
     return false;
   }
 
-  static private boolean checkIfNcml(File file) throws IOException {
+  private static boolean checkIfNcml(File file) throws IOException {
     if (!file.exists()) {
       return false;
     }
@@ -521,7 +521,7 @@ public class DatasetUrl {
     }
   }
 
-  static private boolean checkIfNcml(String string) {
+  private static boolean checkIfNcml(String string) {
     // Look for the ncml element as well as a reference to the ncml namespace URI.
     return string.contains("<netcdf ") && string.contains("unidata.ucar.edu/namespaces/netcdf/ncml");
   }

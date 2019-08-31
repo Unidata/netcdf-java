@@ -197,7 +197,7 @@ public abstract class InvCatalog {
    * @param show : print messages for each object (debug)
    * @return true if no fatal consistency errors.
    */
-  abstract public boolean check(StringBuilder out, boolean show);
+  public abstract boolean check(StringBuilder out, boolean show);
 
   /**
    * Check internal data structures.
@@ -214,13 +214,13 @@ public abstract class InvCatalog {
    *
    * @param dataset make this top; must be existing dataset in this catalog.
    */
-  abstract public void subset(InvDataset dataset);
+  public abstract void subset(InvDataset dataset);
 
   /**
    * Munge this catalog to remove any dataset that doesnt pass through the filter.
    *
    * @param filter remove datasets that dont pass this filter.
    */
-  abstract public void filter(DatasetFilter filter);
+  public abstract void filter(DatasetFilter filter);
 
 }

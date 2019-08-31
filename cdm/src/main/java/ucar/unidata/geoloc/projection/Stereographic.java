@@ -29,7 +29,7 @@ public class Stereographic extends ProjectionImpl {
    * @param latTrue latitude of true scale in degrees north; latitude where scale factor = 1.0
    * @return Stereographic projection
    */
-  static public Stereographic factory(double latt, double lont, double latTrue) {
+  public static Stereographic factory(double latt, double lont, double latTrue) {
     double scale = (1.0 + Math.sin(Math.toRadians(latTrue))) / 2.0;
     return new Stereographic(latt, lont, scale);
   }

@@ -17,7 +17,7 @@ import dap4.core.util.Index;
 import dap4.core.util.Slice;
 import java.util.List;
 
-abstract public class AbstractCursor implements DataCursor {
+public abstract class AbstractCursor implements DataCursor {
   //////////////////////////////////////////////////
   // Constants
 
@@ -73,16 +73,16 @@ abstract public class AbstractCursor implements DataCursor {
   // Unimplemented DataCursor API methods
 
   @Override
-  abstract public Object read(List<Slice> slices) throws DapException;
+  public abstract Object read(List<Slice> slices) throws DapException;
 
   @Override
-  abstract public Object read(Index index) throws DapException;
+  public abstract Object read(Index index) throws DapException;
 
   @Override
-  abstract public AbstractCursor readRecord(long i) throws DapException;
+  public abstract AbstractCursor readRecord(long i) throws DapException;
 
   @Override
-  abstract public AbstractCursor readField(int fieldindex) throws DapException;
+  public abstract AbstractCursor readField(int fieldindex) throws DapException;
 
   //////////////////////////////////////////////////
   // Selected DataCursor API overrides
@@ -222,7 +222,7 @@ abstract public class AbstractCursor implements DataCursor {
   //////////////////////////////////////////////////
   // Utilities
 
-  static public Scheme schemeFor(DapVariable field) {
+  public static Scheme schemeFor(DapVariable field) {
     DapType ftype = field.getBaseType();
     Scheme scheme = null;
     boolean isscalar = field.getRank() == 0;

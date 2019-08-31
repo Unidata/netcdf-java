@@ -91,8 +91,8 @@ public class DODSAttribute extends ucar.nc2.Attribute {
     setDODSName(DODSNetcdfFile.makeDODSName(dodsName));
   }
 
-  static private String[] escapeAttributeStrings = {"\\", "\""};
-  static private String[] substAttributeStrings = {"\\\\", "\\\""};
+  private static String[] escapeAttributeStrings = {"\\", "\""};
+  private static String[] substAttributeStrings = {"\\\\", "\\\""};
 
   private String unescapeAttributeStringValues(String value) {
     return StringUtil2.substitute(value, substAttributeStrings, escapeAttributeStrings);

@@ -29,7 +29,7 @@ import java.util.List;
  * Singleton
  */
 
-abstract public class CDMTypeFcns {
+public abstract class CDMTypeFcns {
   //////////////////////////////////////////////////
   // Constants
 
@@ -40,7 +40,7 @@ abstract public class CDMTypeFcns {
   // Static Methods
 
   /* Needed to implement Array.getElement() */
-  static public Class cdmElementClass(DataType dt) {
+  public static Class cdmElementClass(DataType dt) {
     switch (dt) {
       case BOOLEAN:
         return boolean.class;
@@ -79,7 +79,7 @@ abstract public class CDMTypeFcns {
     return null;
   }
 
-  static public Object createVector(DataType type, long count) {
+  public static Object createVector(DataType type, long count) {
     int icount = (int) count;
     Object vector = null;
     switch (type) {
@@ -126,13 +126,13 @@ abstract public class CDMTypeFcns {
     return vector;
   }
 
-  static public Object createVector(DapType type, long count) {
+  public static Object createVector(DapType type, long count) {
     if (type.getAtomicType() == TypeSort.Enum)
       return createVector(((DapEnumeration) type).getBaseType(), count);
     return CoreTypeFcns.createVector(type.getTypeSort(), count);
   }
 
-  static public DataType enumTypeFor(DapType type) {
+  public static DataType enumTypeFor(DapType type) {
     switch (type.getTypeSort()) {
       case Char:
       case Int8:
@@ -157,7 +157,7 @@ abstract public class CDMTypeFcns {
     return null;
   }
 
-  static public DapType cdmtype2daptype(DataType datatype) {
+  public static DapType cdmtype2daptype(DataType datatype) {
     switch (datatype) {
       case CHAR:
         return DapType.CHAR;
@@ -203,7 +203,7 @@ abstract public class CDMTypeFcns {
     return null;
   }
 
-  static public DataType daptype2cdmtype(DapType type) {
+  public static DataType daptype2cdmtype(DapType type) {
     assert (type != null);
     switch (type.getTypeSort()) {
       case Char:
@@ -274,7 +274,7 @@ abstract public class CDMTypeFcns {
    * @param atomtype The type of interest
    * @return the size, in databuffer
    */
-  static public int daptypeSize(TypeSort atomtype) {
+  public static int daptypeSize(TypeSort atomtype) {
     switch (atomtype) {
       case Char: // remember serial size is 1, not 2.
       case UInt8:
@@ -297,7 +297,7 @@ abstract public class CDMTypeFcns {
     return 0;
   }
 
-  static public long extract(TypeSort sort, Object value) {
+  public static long extract(TypeSort sort, Object value) {
     long lvalue = 0;
     switch (sort) {
       case Int8:
@@ -338,7 +338,7 @@ abstract public class CDMTypeFcns {
     return lvalue;
   }
 
-  static public Object convert(TypeSort dstsort, TypeSort srcsort, Object src) {
+  public static Object convert(TypeSort dstsort, TypeSort srcsort, Object src) {
     Object result = null;
     long lval;
     boolean ok = true;
@@ -1121,7 +1121,7 @@ abstract public class CDMTypeFcns {
   }
 
 
-  static public void vectorcopy(DapType datatype, Object src, Object dst, long srcoffset, long dstoffset)
+  public static void vectorcopy(DapType datatype, Object src, Object dst, long srcoffset, long dstoffset)
       throws DapException {
     switch (datatype.getTypeSort()) {
       case UInt8:
@@ -1179,7 +1179,7 @@ abstract public class CDMTypeFcns {
    * @param o
    * @return
    */
-  static public Object attributeParse(DataType cdmtype, EnumTypedef en, Object o) {
+  public static Object attributeParse(DataType cdmtype, EnumTypedef en, Object o) {
     String so = o.toString();
     if (en != null) {
       switch (cdmtype) {
@@ -1287,7 +1287,7 @@ abstract public class CDMTypeFcns {
     return o;
   }
 
-  static public boolean isPrimitiveVector(DataType type, Object o) {
+  public static boolean isPrimitiveVector(DataType type, Object o) {
     Class c = o.getClass();
     if (!c.isArray())
       return false;
@@ -1326,7 +1326,7 @@ abstract public class CDMTypeFcns {
     return false;
   }
 
-  static public Array arrayify(DataType datatype, Object o) {
+  public static Array arrayify(DataType datatype, Object o) {
     // 1. o is a constant
     if (!o.getClass().isArray()) {
       Object ovec = createVector(datatype, 1);
@@ -1337,13 +1337,13 @@ abstract public class CDMTypeFcns {
     return Array.factory(datatype, shape, o);
   }
 
-  static public Array arrayify(DapType type, Object o) {
+  public static Array arrayify(DapType type, Object o) {
     if (type.getAtomicType() == TypeSort.Enum)
       return arrayify(((DapEnumeration) type).getBaseType(), o);
     return arrayify(CDMTypeFcns.daptype2cdmtype(type), o);
   }
 
-  static public List listify(Object vector) {
+  public static List listify(Object vector) {
     List list = new ArrayList();
     int icount = java.lang.reflect.Array.getLength(vector);
     for (int i = 0; i < icount; i++) {

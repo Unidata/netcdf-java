@@ -22,12 +22,12 @@ public class CEParserImpl extends CEBisonParser {
   //////////////////////////////////////////////////
   // static variables
 
-  static protected int globaldebuglevel = 0;
+  protected static int globaldebuglevel = 0;
 
   //////////////////////////////////////////////////
   // static methods
 
-  static public void setGlobalDebugLevel(int level) {
+  public static void setGlobalDebugLevel(int level) {
     globaldebuglevel = level;
   }
   //////////////////////////////////////////////////

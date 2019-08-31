@@ -32,7 +32,7 @@ public enum ChecksumMode {
     return false;
   }
 
-  static public ChecksumMode modeFor(String s) {
+  public static ChecksumMode modeFor(String s) {
     if (s == null || s.length() == 0)
       return DAP;
     for (ChecksumMode mode : values()) {

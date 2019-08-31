@@ -43,25 +43,25 @@ import java.io.IOException;
  * @author caron
  */
 public class ThreddsDataFactory {
-  static public final String PROTOCOL = "thredds";
-  static public final String SCHEME = PROTOCOL + ":";
-  static private ServiceType[] preferAccess;
+  public static final String PROTOCOL = "thredds";
+  public static final String SCHEME = PROTOCOL + ":";
+  private static ServiceType[] preferAccess;
 
-  static public void setPreferCdm(boolean prefer) {
+  public static void setPreferCdm(boolean prefer) {
     preferAccess = prefer ? new ServiceType[] {ServiceType.CdmRemote} : null;
   }
 
-  static public void setPreferAccess(ServiceType... prefer) {
+  public static void setPreferAccess(ServiceType... prefer) {
     preferAccess = prefer;
   }
 
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("thredds/debugOpen");
     debugTypeOpen = debugFlag.isSet("thredds/openDatatype");
   }
 
-  static private boolean debugOpen = false;
-  static private boolean debugTypeOpen = false;
+  private static boolean debugOpen = false;
+  private static boolean debugTypeOpen = false;
 
   /**
    * The result of trying to open a THREDDS dataset.

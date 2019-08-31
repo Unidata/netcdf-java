@@ -28,7 +28,7 @@ import java.util.*;
  */
 @Immutable
 public class FmrcInv {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInv.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInv.class);
 
   /*
    * public static CalendarDate addHour(CalendarDate d, double hour) {

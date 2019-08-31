@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-abstract public class DapDump {
+public abstract class DapDump {
   //////////////////////////////////////////////////
   // Provide a simple dump of binary data
   // (Static method)
@@ -23,7 +23,7 @@ abstract public class DapDump {
   //////////////////////////////////////////////////
   // Provide a simple dump of binary data
 
-  static public void dumpbytes(ByteBuffer buf0, boolean skipdmr) {
+  public static void dumpbytes(ByteBuffer buf0, boolean skipdmr) {
     int savepos = buf0.position();
     int limit0 = buf0.limit();
     int skipcount = 0;
@@ -56,7 +56,7 @@ abstract public class DapDump {
    *
    * @param buf0 byte buffer to dump
    */
-  static public void dumpbytes(ByteBuffer buf0) {
+  public static void dumpbytes(ByteBuffer buf0) {
     int stop = buf0.limit();
     int size = stop + 8;
     int savepos = buf0.position();
@@ -107,22 +107,22 @@ abstract public class DapDump {
     }
   }
 
-  static public void dumpbytestream(OutputStream stream, ByteOrder order, String tag) {
+  public static void dumpbytestream(OutputStream stream, ByteOrder order, String tag) {
     if (stream instanceof ByteArrayOutputStream) {
       byte[] content = ((ByteArrayOutputStream) stream).toByteArray();
       dumpbytestream(content, order, tag);
     }
   }
 
-  static public void dumpbytestream(ByteBuffer buf, ByteOrder order, String tag) {
+  public static void dumpbytestream(ByteBuffer buf, ByteOrder order, String tag) {
     dumpbytestream(buf.array(), 0, buf.position(), order, tag);
   }
 
-  static public void dumpbytestream(byte[] content, ByteOrder order, String tag) {
+  public static void dumpbytestream(byte[] content, ByteOrder order, String tag) {
     dumpbytestream(content, 0, content.length, order, tag);
   }
 
-  static public void dumpbytestream(byte[] content, int start, int len, ByteOrder order, String tag) {
+  public static void dumpbytestream(byte[] content, int start, int len, ByteOrder order, String tag) {
     System.err.println("++++++++++ " + tag + " ++++++++++ ");
     ByteBuffer tmp = ByteBuffer.wrap(content).order(order);
     tmp.position(start);

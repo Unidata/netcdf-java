@@ -32,8 +32,8 @@ import java.io.File;
  */
 
 public class NetcdfFileWriteable extends NetcdfFile {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriteable.class);
-  static private Set<DataType> valid =
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriteable.class);
+  private static Set<DataType> valid =
       EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT, DataType.DOUBLE, DataType.FLOAT);
 
   /**
@@ -44,7 +44,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return existing file that can be written to
    * @throws java.io.IOException on I/O error
    */
-  static public NetcdfFileWriteable openExisting(String location) throws IOException {
+  public static NetcdfFileWriteable openExisting(String location) throws IOException {
     return new NetcdfFileWriteable(location, true, true);
   }
 
@@ -58,7 +58,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return existing file that can be written to
    * @throws IOException on I/O error
    */
-  static public NetcdfFileWriteable openExisting(String location, boolean fill) throws IOException {
+  public static NetcdfFileWriteable openExisting(String location, boolean fill) throws IOException {
     return new NetcdfFileWriteable(location, fill, true);
   }
 
@@ -69,7 +69,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return new file that can be written to
    * @throws IOException on I/O error
    */
-  static public NetcdfFileWriteable createNew(String location) throws IOException {
+  public static NetcdfFileWriteable createNew(String location) throws IOException {
     return new NetcdfFileWriteable(location, true, false);
   }
 
@@ -85,7 +85,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return new file that can be written to
    * @throws IOException on I/O error
    */
-  static public NetcdfFileWriteable createNew(String location, boolean fill) throws IOException {
+  public static NetcdfFileWriteable createNew(String location, boolean fill) throws IOException {
     return new NetcdfFileWriteable(location, fill, false);
   }
 
