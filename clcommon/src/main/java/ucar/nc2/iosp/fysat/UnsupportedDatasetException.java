@@ -12,8 +12,7 @@ public class UnsupportedDatasetException extends IOException {
   /**
    * Constructs an UnsupportedEncodingException without a detail message.
    */
-  public UnsupportedDatasetException() {
-  }
+  public UnsupportedDatasetException() {}
 
   /**
    * Constructs an UnsupportedEncodingException with a detail message.

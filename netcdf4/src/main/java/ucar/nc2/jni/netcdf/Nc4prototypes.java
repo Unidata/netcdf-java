@@ -134,8 +134,7 @@ public interface Nc4prototypes extends Library {
     public int len; /* Length of VL data (in base type units) */
     public Pointer p; /* Pointer to VL data */
 
-    public Vlen_t() {
-    }
+    public Vlen_t() {}
 
     public Vlen_t(Pointer p) {
       super(p);

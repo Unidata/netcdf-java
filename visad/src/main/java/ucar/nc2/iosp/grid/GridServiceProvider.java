@@ -42,15 +42,14 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   protected static IndexExtendMode indexFileModeOnSync = IndexExtendMode.extendwrite; // default is to extend
 
   protected static boolean addLatLon; // add lat/lon coordinates for strict CF compliance LOOK should not be
-                                              // static !
+                                      // static !
   protected static boolean forceNewIndex; // force that a new index file is written - for debugging
   protected static boolean alwaysInCache;
 
   /**
    * debug flags
    */
-  public static boolean debugOpen, debugMissing, debugMissingDetails, debugProj,
-      debugTiming, debugVert;
+  public static boolean debugOpen, debugMissing, debugMissingDetails, debugProj, debugTiming, debugVert;
 
   /**
    * Set whether to force new index or not
