@@ -21,7 +21,7 @@ import java.util.Map;
 public class TableA {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableA.class);
   private static final String TABLEA_FILENAME = "wmo/BUFR_25_0_0_TableA_en.xml";
-  private static Map<Integer, String> tableA = null;
+  private static Map<Integer, String> tableA;
 
   /*
    * <BUFR_19_1_1_TableA_en>

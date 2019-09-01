@@ -60,8 +60,8 @@ public class BufrSplitter {
   //////////////////////////////////////////////////////
   // Step 1 - read and extract a Bufr Message
 
-  int total_msgs = 0;
-  int bad_msgs = 0;
+  int total_msgs;
+  int bad_msgs;
 
   // process all the bytes in the stream
   private void processStream(InputStream is) throws IOException {
@@ -229,8 +229,8 @@ public class BufrSplitter {
   /////////////////////////////////////////////////////////////////////////////
   // efficiently read from an input stream
 
-  private boolean showRead = false;
-  private long bytesRead = 0;
+  private boolean showRead;
+  private long bytesRead;
   private int BUFFSIZE = 15000;
 
   private class Buffer {
@@ -311,14 +311,14 @@ public class BufrSplitter {
   ///////////////////////////////////////////////////////////////////////////
 
   private static class CommandLine {
-    @Parameter(names = {"--fileSpec"}, description = "File specification", required = true)
+    @Parameter(names = "--fileSpec", description = "File specification", required = true)
     File fileSpec;
 
-    @Parameter(names = {"--dirOut"}, description = "Output directory", required = true)
+    @Parameter(names = "--dirOut", description = "Output directory", required = true)
     File dirOut;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
-    boolean help = false;
+    boolean help;
 
     private final JCommander jc;
 

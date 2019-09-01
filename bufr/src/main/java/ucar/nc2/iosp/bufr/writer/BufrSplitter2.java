@@ -22,7 +22,7 @@ public class BufrSplitter2 {
   File dirOut;
   MessageDispatchDDS dispatcher;
   Formatter out;
-  int total_msgs = 0;
+  int total_msgs;
 
   public BufrSplitter2(String dirName, Formatter out) throws IOException {
     this.out = out;

@@ -134,7 +134,7 @@ public class BufrTables {
   private static final Map<String, TableB> tablesB = new ConcurrentHashMap<>();
   private static final Map<String, TableD> tablesD = new ConcurrentHashMap<>();
 
-  private static List<String> lookups = null;
+  private static List<String> lookups;
 
   public static synchronized void addLookupFile(String filename) throws FileNotFoundException {
     if (lookups == null)
@@ -219,7 +219,7 @@ public class BufrTables {
   }
 
   private static Format getFormat(String formatS, String line) {
-    if (formatS.length() == 0)
+    if (formatS.isEmpty())
       return null;
     try {
       return Format.valueOf(formatS);
@@ -578,7 +578,7 @@ public class BufrTables {
       String line = dataIS.readLine();
       if (line == null)
         break;
-      if (line.startsWith("#") || line.length() == 0)
+      if (line.startsWith("#") || line.isEmpty())
         continue;
 
       try {
@@ -613,7 +613,7 @@ public class BufrTables {
       String line = dataIS.readLine();
       if (line == null)
         break;
-      if (line.length() == 0)
+      if (line.isEmpty())
         continue;
       if (line.startsWith("<"))
         continue;
@@ -669,7 +669,7 @@ public class BufrTables {
       String line = dataIS.readLine();
       if (line == null)
         break;
-      if (line.startsWith("#") || line.length() == 0)
+      if (line.startsWith("#") || line.isEmpty())
         continue;
 
       try {
@@ -700,7 +700,7 @@ public class BufrTables {
       String line = dataIS.readLine();
       if (line == null)
         break;
-      if (line.startsWith("#") || line.length() == 0)
+      if (line.startsWith("#") || line.isEmpty())
         continue;
 
       try {
@@ -883,7 +883,7 @@ public class BufrTables {
   public static TableD readTableD(String location, Format format, boolean force) throws IOException {
     if (location == null)
       return null;
-    if (location.trim().length() == 0)
+    if (location.trim().isEmpty())
       return null;
 
     if (!force) {
@@ -976,7 +976,7 @@ public class BufrTables {
       String line = dataIS.readLine();
       if (line == null)
         break;
-      if (line.length() == 0)
+      if (line.isEmpty())
         continue;
       if (line.startsWith("<"))
         continue;
@@ -1054,7 +1054,7 @@ public class BufrTables {
       if (line == null)
         break;
       line = line.trim();
-      if (line.length() == 0)
+      if (line.isEmpty())
         continue;
       if (line.startsWith("#")) {
         name = line.substring(2).trim();
@@ -1063,7 +1063,7 @@ public class BufrTables {
 
       try {
         String[] flds = line.split(";");
-        if (flds[0].trim().length() != 0) {
+        if (!flds[0].trim().isEmpty()) {
           int x = Integer.parseInt(flds[1].trim());
           int y = Integer.parseInt(flds[2].trim());
           currDesc = t.addDescriptor((short) x, (short) y, name, new ArrayList<>());
@@ -1127,7 +1127,7 @@ public class BufrTables {
         int seq = Integer.parseInt(flds[fldidx++]);
         String seqName = flds[fldidx++];
         String featno = flds[fldidx++].trim();
-        if (featno.length() == 0) {
+        if (featno.isEmpty()) {
           if (showReadErrs)
             System.out.printf("%d no FXY2 specified; line == %s%n", count, line);
           continue;
@@ -1178,7 +1178,7 @@ public class BufrTables {
         break;
       count++;
       // check for comment lines
-      if (line.startsWith("#") || line.length() == 0)
+      if (line.startsWith("#") || line.isEmpty())
         continue;
 
       line = line.trim();
@@ -1211,7 +1211,7 @@ public class BufrTables {
             break;
           count++;
           // check for comment lines
-          if (line.startsWith("#") || line.length() == 0)
+          if (line.startsWith("#") || line.isEmpty())
             continue;
 
           Matcher m = threeInts.matcher(line);
@@ -1262,7 +1262,7 @@ public class BufrTables {
       String line = dataIS.readLine();
       if (line == null)
         break;
-      if (line.startsWith("#") || line.trim().length() == 0)
+      if (line.startsWith("#") || line.trim().isEmpty())
         continue;
 
       try {
@@ -1272,7 +1272,7 @@ public class BufrTables {
 
         String fxys = flds[0].trim();
 
-        if (fxys.length() > 0) {
+        if (!fxys.isEmpty()) {
           String[] xyflds = fxys.split("-");
           short x = Short.parseShort(clean(xyflds[1]));
           short y = Short.parseShort(clean(xyflds[2]));
@@ -1315,7 +1315,7 @@ public class BufrTables {
       if (line == null)
         break;
       line = line.trim();
-      if (line.startsWith("#") || line.length() == 0)
+      if (line.startsWith("#") || line.isEmpty())
         continue;
 
       try {

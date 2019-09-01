@@ -127,7 +127,7 @@ public class WriteT41_ncFlat {
       // create the file
       ncfile.create();
       if (debug)
-        System.out.println("File Out= " + ncfile.toString());
+        System.out.println("File Out= " + ncfile);
 
       // boolean ok = (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 

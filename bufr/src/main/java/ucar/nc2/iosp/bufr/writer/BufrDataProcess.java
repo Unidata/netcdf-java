@@ -26,8 +26,8 @@ public class BufrDataProcess {
 
   private PrintStream out;
   private Indent indent = new Indent(2);
-  private boolean showData = false;
-  private boolean showMess = false;
+  private boolean showData;
+  private boolean showMess;
   private boolean showFile = true;
 
   public BufrDataProcess(String filename, OutputStream os, FileFilter ff) throws IOException {

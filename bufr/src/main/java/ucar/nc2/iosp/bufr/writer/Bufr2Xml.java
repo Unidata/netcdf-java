@@ -77,7 +77,7 @@ public class Bufr2Xml {
       staxWriter.writeEndElement();
 
       String header = message.getHeader().trim();
-      if (header.length() > 0) {
+      if (!header.isEmpty()) {
         staxWriter.writeCharacters("\n");
         staxWriter.writeCharacters(indent.toString());
         staxWriter.writeStartElement("header");

@@ -28,7 +28,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   public static final String centerId = "BUFR:centerId";
 
   // debugging
-  private static boolean debugIter = false;
+  private static boolean debugIter;
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     // debugOpen = debugFlag.isSet("Bufr/open");
@@ -44,7 +44,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   private Structure obsStructure;
   private Message protoMessage;
   private MessageScanner scanner;
-  private HashSet<Integer> messHash = null;
+  private HashSet<Integer> messHash;
   private boolean isSingle;
   private BufrConfig config;
   private Element iospParam;
@@ -130,7 +130,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   private class SeqIter implements StructureDataIterator {
     StructureDataIterator currIter;
-    int recnum = 0;
+    int recnum;
 
     SeqIter() {
       reset();
@@ -224,7 +224,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   private class SeqIterSingle implements StructureDataIterator {
     StructureDataIterator currIter;
-    int recnum = 0;
+    int recnum;
 
     SeqIterSingle() {
       reset();

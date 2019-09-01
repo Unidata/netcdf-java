@@ -46,14 +46,14 @@ public class MessageScanner {
   private ucar.unidata.io.RandomAccessFile raf;
   private boolean useEmbeddedTables;
 
-  private int countMsgs = 0;
-  private int countObs = 0;
+  private int countMsgs;
+  private int countObs;
   private byte[] header;
-  private long startPos = 0;
+  private long startPos;
   private long lastPos;
-  private boolean debug = false;
+  private boolean debug;
 
-  private EmbeddedTable embedTable = null;
+  private EmbeddedTable embedTable;
 
   public MessageScanner(RandomAccessFile raf) throws IOException {
     this(raf, 0, true);

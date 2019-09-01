@@ -324,11 +324,11 @@ public class DataDescriptorTreeConstructor {
     }
   }
 
-  private DataDescriptor changeWidth = null; // 02 01 Y
-  private DataDescriptor changeScale = null; // 02 02 Y
-  private DataDescriptor changeRefval = null; // 02 03 Y
-  private DataDescriptor changeWtf = null; // 02 07 Y
-  private DataPresentIndicator dpi = null; // assume theres only one in effect at a time
+  private DataDescriptor changeWidth; // 02 01 Y
+  private DataDescriptor changeScale; // 02 02 Y
+  private DataDescriptor changeRefval; // 02 03 Y
+  private DataDescriptor changeWtf; // 02 07 Y
+  private DataPresentIndicator dpi; // assume theres only one in effect at a time
 
   private void operate(List<DataDescriptor> tree) {
     if (tree == null)

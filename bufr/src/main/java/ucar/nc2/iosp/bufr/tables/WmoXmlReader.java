@@ -188,7 +188,7 @@ public class WmoXmlReader {
     for (Version v : Version.values()) {
       elems = v.getElemNamesB();
       List<Element> featList = root.getChildren(elems[0]);
-      if (featList != null && featList.size() > 0) {
+      if (featList != null && !featList.isEmpty()) {
         break;
       }
     }
@@ -344,7 +344,7 @@ public class WmoXmlReader {
     for (Version v : Version.values()) {
       elems = v.getElemNamesD();
       List<Element> featList = root.getChildren(elems[0]);
-      if (featList != null && featList.size() > 0) {
+      if (featList != null && !featList.isEmpty()) {
         break;
       }
     }
