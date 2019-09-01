@@ -262,7 +262,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param sbuff place information messages here, may be null
    */
   public GridCoordSys(CoordinateSystem cs, Formatter sbuff) {
-    super();
     this.ds = cs.getNetcdfDataset();
 
     if (cs.isGeoXY()) {
@@ -442,7 +441,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public GridCoordSys(GridCoordSys from, Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range,
       Range x_range) throws InvalidRangeException {
-    super();
 
     CoordinateAxis xaxis = from.getXHorizAxis();
     CoordinateAxis yaxis = from.getYHorizAxis();

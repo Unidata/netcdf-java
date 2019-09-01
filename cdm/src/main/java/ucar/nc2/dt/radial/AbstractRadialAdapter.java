@@ -330,7 +330,6 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     private List<Attribute> attributes;
 
     public MyRadialVariableAdapter(String vName, List<Attribute> atts) {
-      super();
       rank = 1;
       shape = new int[] {1};
       name = vName;

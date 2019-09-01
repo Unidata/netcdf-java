@@ -81,8 +81,6 @@ public class RadialCoordSys {
    * Create a RadialCoordSys from an existing Coordinate System.
    */
   public RadialCoordSys(CoordinateSystem cs) {
-    super();
-
     aziAxis = cs.getAzimuthAxis();
     radialAxis = cs.getRadialAxis();
     elevAxis = cs.getElevationAxis();

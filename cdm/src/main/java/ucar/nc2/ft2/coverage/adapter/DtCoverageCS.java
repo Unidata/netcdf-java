@@ -40,7 +40,6 @@ public class DtCoverageCS {
    * @param builder create from this
    */
   public DtCoverageCS(DtCoverageCSBuilder builder) {
-    super();
     this.builder = builder;
 
     // make name based on coordinate
