@@ -21,7 +21,7 @@ import com.sun.jna.ptr.IntByReference;
  */
 public class Nc4wrapper implements Nc4prototypes {
 
-  public static boolean TRACE = false;
+  public static boolean TRACE;
 
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4wrapper.class);
 
@@ -61,7 +61,7 @@ public class Nc4wrapper implements Nc4prototypes {
     counter = 0;
   }
 
-  private Nc4prototypes nc4 = null;
+  private Nc4prototypes nc4;
 
   public Nc4wrapper(Nc4prototypes nc4) {
     this.nc4 = nc4;

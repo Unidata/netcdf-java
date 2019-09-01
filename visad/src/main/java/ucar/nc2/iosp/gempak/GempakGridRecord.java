@@ -56,7 +56,7 @@ public class GempakGridRecord implements GridRecord {
   private int validOffset;
 
   /** decimal scale */
-  private int decimalScale = 0;
+  private int decimalScale;
 
   /** actual valid time */
   private Date validTime;
@@ -237,7 +237,7 @@ public class GempakGridRecord implements GridRecord {
     // always use level
     // if (useLevel) {
     String levelName = lookup.getLevelName(this);
-    if (levelName.length() != 0) {
+    if (!levelName.isEmpty()) {
       if (lookup.isLayer(this))
         f.format("_%s_layer", lookup.getLevelName(this));
       else

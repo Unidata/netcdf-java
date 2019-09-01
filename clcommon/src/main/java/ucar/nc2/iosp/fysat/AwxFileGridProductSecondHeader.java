@@ -81,12 +81,6 @@ public final class AwxFileGridProductSecondHeader extends AwxFileSecondHeader {
   public static short GRID_SPACING_UNIT_KILOMETER = 1; // kilometer
   public static short GRID_SPACING_UNIT_METER = 2; // meter
 
-  public AwxFileGridProductSecondHeader() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-
-
 
   public void fillHeader(EndianByteBuffer byteBuffer) {
     satelliteName = byteBuffer.getString(8).trim();

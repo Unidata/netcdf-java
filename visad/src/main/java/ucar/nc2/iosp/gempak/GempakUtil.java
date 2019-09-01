@@ -16,10 +16,10 @@ import ucar.unidata.util.StringUtil2;
 public final class GempakUtil {
 
   /** day of month string */
-  private static int[] month = new int[] {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  private static int[] month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
   /** day of month string */
-  public static String[] vertCoords = new String[] {"NONE", "PRES", "THTA", "HGHT", "SGMA", "DPTH", "HYBL"};
+  public static String[] vertCoords = {"NONE", "PRES", "THTA", "HGHT", "SGMA", "DPTH", "HYBL"};
 
   /**
    * This subroutine converts the two integers stored in a grid file

@@ -459,7 +459,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
       builder.append(date);
       builder.append("\n");
     }
-    System.out.println(builder.toString());
+    System.out.println(builder);
   }
 
   /**
@@ -479,7 +479,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
       builder.append("\t");
       builder.append(getStations().size());
     }
-    System.out.println(builder.toString());
+    System.out.println(builder);
   }
 
   /**

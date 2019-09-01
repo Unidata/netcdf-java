@@ -622,11 +622,11 @@ public class GempakGridReader extends GempakFileReader {
   public void printNavBlock() {
     StringBuilder buf = new StringBuilder("GRID NAVIGATION:");
     if (navBlock != null) {
-      buf.append(navBlock.toString());
+      buf.append(navBlock);
     } else {
       buf.append("\n\tUNKNOWN GRID NAVIGATION");
     }
-    System.out.println(buf.toString());
+    System.out.println(buf);
   }
 
   /**
@@ -635,11 +635,11 @@ public class GempakGridReader extends GempakFileReader {
   public void printAnalBlock() {
     StringBuilder buf = new StringBuilder("GRID ANALYSIS BLOCK:");
     if (analBlock != null) {
-      buf.append(analBlock.toString());
+      buf.append(analBlock);
     } else {
       buf.append("\n\tUNKNOWN ANALYSIS TYPE");
     }
-    System.out.println(buf.toString());
+    System.out.println(buf);
   }
 
   /**
@@ -807,37 +807,37 @@ public class GempakGridReader extends GempakFileReader {
   /**
    * bit position
    */
-  private int bitPos = 0;
+  private int bitPos;
 
   /**
    * bit buffer
    */
-  private int bitBuf = 0;
+  private int bitBuf;
 
   /**
    * bit buffer size
    */
-  private int next = 0;
+  private int next;
 
   /**
    * character 1
    */
-  private int ch1 = 0;
+  private int ch1;
 
   /**
    * character 2
    */
-  private int ch2 = 0;
+  private int ch2;
 
   /**
    * character 3
    */
-  private int ch3 = 0;
+  private int ch3;
 
   /**
    * character 4
    */
-  private int ch4 = 0;
+  private int ch4;
 
   /**
    * Convert bits (nb) to Unsigned Int .

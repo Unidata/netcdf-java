@@ -17,11 +17,4 @@ public class AwxFileGridProductExtendedPart {
   char[] fillLength = new char[8];
   char[] fillData = new char[234];
 
-  /**
-   * 
-   */
-  public AwxFileGridProductExtendedPart() {
-    // TODO Auto-generated constructor stub
-  }
-
 }

@@ -21,7 +21,7 @@ public class McGridDefRecord extends GridDefRecord {
   /**
    * raw values
    */
-  int[] vals = null;
+  int[] vals;
 
   /**
    * Navigation type for pseudo-mercator grids

@@ -142,11 +142,6 @@ public class GempakStation implements Station {
   private String sdesc = "";
 
   /**
-   * Create a new GEMPAK station
-   */
-  public GempakStation() {}
-
-  /**
    * Return a String representation of this
    *
    * @return a String representation of this

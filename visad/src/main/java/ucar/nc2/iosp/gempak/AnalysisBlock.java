@@ -17,7 +17,7 @@ import com.google.common.base.MoreObjects;
 public class AnalysisBlock {
 
   /** raw values */
-  float[] vals = null;
+  float[] vals;
 
   /**
    * Create a new analysis block

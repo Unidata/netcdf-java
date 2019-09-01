@@ -113,7 +113,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
   /**
    * table of param name to units for well know params
    */
-  private static Hashtable<String, String> unitTable = null;
+  private static Hashtable<String, String> unitTable;
 
   /**
    * table of param name to var index
@@ -575,7 +575,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       ncfile.addVariable(null, lon);
 
-      int[] shape = new int[] {nc, nr};
+      int[] shape = {nc, nr};
       Array latArray = Array.factory(DataType.DOUBLE, shape);
       Array lonArray = Array.factory(DataType.DOUBLE, shape);
       double[][] rowcol = new double[2][nr * nc];
@@ -617,11 +617,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    * Get all the information about a Vis5D file
    */
   public static class Vis5DLookup implements GridTableLookup {
-
-    /**
-     * Gets a representative grid for this lookup
-     */
-    public Vis5DLookup() {}
 
     public String getShapeName(GridDefRecord gds) {
       return "Spherical";

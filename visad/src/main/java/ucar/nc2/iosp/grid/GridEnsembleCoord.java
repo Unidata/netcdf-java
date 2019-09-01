@@ -15,7 +15,7 @@ public abstract class GridEnsembleCoord {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
 
   protected List<EnsCoord> ensCoords;
-  protected int seq = 0;
+  protected int seq;
 
   protected static class EnsCoord implements Comparable<EnsCoord> {
     public int number, type;

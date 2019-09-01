@@ -586,9 +586,9 @@ public class V5DStruct {
   // **** Miscellaneous Functions **** //
   // ******************************************************************** //
 
-  private static boolean SIMPLE_COMPRESSION = false;
-  private static boolean KLUDGE = false;
-  private static boolean ORIGINAL = false;
+  private static boolean SIMPLE_COMPRESSION;
+  private static boolean KLUDGE;
+  private static boolean ORIGINAL;
 
   /** Convert a signed byte to an unsigned one, and return it in an int */
   public static int getUnsignedByte(byte b) {
@@ -786,8 +786,8 @@ public class V5DStruct {
       maxval[0] = max;
     } else {
       // compress grid on level-by-level basis
-      final float SMALLVALUE = -1.0e30f;
-      final float BIGVALUE = 1.0e30f;
+      float SMALLVALUE = -1.0e30f;
+      float BIGVALUE = 1.0e30f;
       float gridmin, gridmax;
       float[] levmin = new float[MAXLEVELS];
       float[] levmax = new float[MAXLEVELS];

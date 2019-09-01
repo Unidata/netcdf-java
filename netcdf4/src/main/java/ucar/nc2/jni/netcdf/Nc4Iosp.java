@@ -51,7 +51,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   public static int NC_TURN_OFF_LOGGING = -1;
 
-  private static Nc4prototypes nc4 = null;
+  private static Nc4prototypes nc4;
   public static final String JNA_PATH = "jna.library.path";
   public static final String JNA_PATH_ENV = "JNA_PATH"; // environment var
   public static final String JNA_LOG_LEVEL = "jna.library.loglevel";
@@ -68,10 +68,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   protected static String DEFAULTNETCDF4LIBNAME = "netcdf";
 
-  private static String jnaPath = null;
+  private static String jnaPath;
   private static String libName = DEFAULTNETCDF4LIBNAME;
 
-  private static int log_level = 0;
+  private static int log_level;
 
   // TODO: These flags currently control debug messages that are printed to STDOUT. They ought to be logged to SLF4J.
   // We could use SLF4J markers to filter which debug-level messages are printed.
@@ -154,7 +154,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   // Shared mutable state. Only read/written in isClibraryPresent().
-  private static Boolean isClibraryPresent = null;
+  private static Boolean isClibraryPresent;
 
   /**
    * Test if the netcdf C library is present and loaded
@@ -198,12 +198,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @return null if s.length() == 0, s otherwise
    */
   protected static String nullify(String s) {
-    if (s != null && s.length() == 0)
+    if (s != null && s.isEmpty())
       s = null;
     return s;
   }
 
-  private static boolean useHdfEos = false;
+  private static boolean useHdfEos;
 
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
@@ -214,18 +214,18 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   //////////////////////////////////////////////////
   // Instance Variables
 
-  private NetcdfFileWriter.Version version = null; // can use c library to create these different version files
+  private NetcdfFileWriter.Version version; // can use c library to create these different version files
   private boolean fill = true;
   private int ncid = -1; // file id
-  private int format = 0; // from nc_inq_format
+  private int format; // from nc_inq_format
   private boolean isClosed;
 
   private Map<Integer, UserType> userTypes = new HashMap<>(); // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<>(); // group -> nc4 grpid
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
-  private boolean isEos = false;
+  private boolean isEos;
 
-  private boolean markreserved = false;
+  private boolean markreserved;
 
   //////////////////////////////////////////////////
   // Constructor(s)
@@ -1379,7 +1379,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
+      StringBuilder sb = new StringBuilder();
       sb.append("Field");
       sb.append("{grpid=").append(grpid);
       sb.append(", typeid=").append(typeid);
@@ -3209,9 +3209,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(errMessage("nc_inq_dimlen", ret, vinfo.g4.grpid, dimid));
 
-    SizeT[] origin = new SizeT[] {lenp.getValue()};
-    SizeT[] shape = new SizeT[] {new SizeT(1)};
-    SizeT[] stride = new SizeT[] {new SizeT(1)};
+    SizeT[] origin = {lenp.getValue()};
+    SizeT[] shape = {new SizeT(1)};
+    SizeT[] stride = {new SizeT(1)};
 
     // ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());
     // n4 wants native byte order
@@ -3288,7 +3288,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           bb.putLong(sdata.getScalarLong(m));
           break;
         default:
-          throw new IllegalStateException("scalar " + dtype.toString());
+          throw new IllegalStateException("scalar " + dtype);
           /*
            * case BOOLEAN:
            * break;
@@ -3341,7 +3341,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             bb.putLong(ldata[i]);
           break;
         default:
-          throw new IllegalStateException("array " + dtype.toString());
+          throw new IllegalStateException("array " + dtype);
           /*
            * case BOOLEAN:
            * break;

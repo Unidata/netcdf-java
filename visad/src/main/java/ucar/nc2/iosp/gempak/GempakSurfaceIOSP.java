@@ -157,7 +157,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
           if (vals == null) {
             int k = 0;
             for (StructureMembers.Member member : mbers) {
-              if (member.getDataType().equals(DataType.FLOAT)) {
+              if (member.getDataType() == DataType.FLOAT) {
                 buf.putFloat(missing[k]);
               } else {
                 buf.put((byte) 1);

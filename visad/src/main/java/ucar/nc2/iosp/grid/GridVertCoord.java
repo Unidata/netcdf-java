@@ -30,18 +30,18 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
 
   protected GridTableLookup lookup;
 
-  protected int seq = 0;
+  protected int seq;
 
-  protected double[] coordValues = null;
+  protected double[] coordValues;
 
-  protected boolean usesBounds = false;
+  protected boolean usesBounds;
 
-  protected boolean isVerticalCoordinate = false;
+  protected boolean isVerticalCoordinate;
 
   /**
    * vertical pressure factors
    */
-  protected double[] factors = null;
+  protected double[] factors;
 
   /**
    * positive direction

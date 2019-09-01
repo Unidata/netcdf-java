@@ -135,7 +135,6 @@ public interface Nc4prototypes extends Library {
     public Pointer p; /* Pointer to VL data */
 
     public Vlen_t() {
-      super();
     }
 
     public Vlen_t(Pointer p) {

@@ -17,7 +17,7 @@ public class Rewrite {
   NetcdfFile ncIn;
   NetcdfFileWriter ncOut;
   NetcdfFileWriter.Version version;
-  boolean isRadial = false;
+  boolean isRadial;
 
   public Rewrite(NetcdfFile ncIn, NetcdfFileWriter ncOut) {
     this.ncIn = ncIn;
@@ -38,7 +38,7 @@ public class Rewrite {
     ncOut.close();
   }
 
-  private int anon = 0;
+  private int anon;
 
   void createGroup(Group newParent, Group oldGroup) throws IOException, InvalidRangeException {
     Group newGroup = ncOut.addGroup(newParent, oldGroup.getShortName());
@@ -135,7 +135,7 @@ public class Rewrite {
     int nt, chunksize;
 
     Array result, work;
-    int counter = 0;
+    int counter;
 
     Cache(int[] shape, int[] newshape, DataType dataType) {
       System.out.printf("shape = %d, ", new Section(shape).computeSize() / 1000);
@@ -152,7 +152,7 @@ public class Rewrite {
       this.result = Array.factory(dataType, this.newshape);
 
       // get view of result as a 2d array (any..., nt);
-      int[] reshape = new int[] {this.chunksize, this.nt};
+      int[] reshape = {this.chunksize, this.nt};
       this.work = this.result.reshapeNoCopy(reshape);
     }
 

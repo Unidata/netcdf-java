@@ -89,7 +89,7 @@ class Giniheader {
 
     // Test the next two bytes to see if the image portion looks like
     // it is zlib-compressed
-    byte[] b2 = new byte[] {b[pos], b[pos + 1]};
+    byte[] b2 = {b[pos], b[pos + 1]};
     int pos1 = 0;
 
     if (Giniiosp.isZlibHed(b2)) {
