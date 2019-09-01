@@ -4,8 +4,7 @@
  */
 package ucar.units;
 
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatter;
 import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 
@@ -25,7 +24,7 @@ public final class TimeScaleUnit extends UnitImpl {
    *
    * @serial
    */
-  static final DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // joda-time
+  private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
 
   /**
    * The second unit.
@@ -338,7 +337,7 @@ public final class TimeScaleUnit extends UnitImpl {
      * dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
      * dateFormat.applyPattern(" 'since' yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
      */
-    return getUnit().toString() + " since " + df_units.print(getOrigin().getTime());
+    return getUnit().toString() + " since " + dtf.format(getOrigin().toInstant());
   }
 
 }

@@ -6,7 +6,7 @@
 
 package ucar.nc2.iosp.cinrad;
 
-import org.joda.time.DateTime;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
@@ -321,8 +321,8 @@ public class Cinrad2Record {
   private short velocity_offset; // velocity data pointer (byte number from start of message)
   private short spectWidth_offset; // spectrum-width data pointer (byte number from start of message)
 
-  public DateTime dateTime0;
-  public DateTime dateTimeE;
+  public CalendarDate dateTime0;
+  public CalendarDate dateTimeE;
   public SweepInfo[] sweepInfo;
 
   public static Cinrad2Record factory(RandomAccessFile din, int record) throws IOException {
@@ -372,7 +372,7 @@ public class Cinrad2Record {
     short smi = convertunsignedByte2Short(din.readByte());
     short sss = convertunsignedByte2Short(din.readByte());
 
-    dateTime0 = new DateTime(syear, smm, sdd, shh, smi, sss);
+    dateTime0 = CalendarDate.of(null, syear, smm, sdd, shh, smi, sss);
 
     din.skipBytes(8);
     long offset = din.getFilePointer();
@@ -391,7 +391,7 @@ public class Cinrad2Record {
     smi = convertunsignedByte2Short(din.readByte());
     sss = convertunsignedByte2Short(din.readByte());
 
-    dateTimeE = new DateTime(syear, smm, sdd, shh, smi, sss);
+    dateTimeE = CalendarDate.of(null, syear, smm, sdd, shh, smi, sss);
 
   }
 
@@ -434,7 +434,7 @@ public class Cinrad2Record {
     short smi = convertunsignedByte2Short(din.readByte());
     short sss = convertunsignedByte2Short(din.readByte());
 
-    dateTime0 = new DateTime(syear, smm, sdd, shh, smi, sss);
+    dateTime0 = CalendarDate.of(null, syear, smm, sdd, shh, smi, sss);
 
     din.skipBytes(1);
 
@@ -447,7 +447,7 @@ public class Cinrad2Record {
     smi = convertunsignedByte2Short(din.readByte());
     sss = convertunsignedByte2Short(din.readByte());
 
-    dateTimeE = new DateTime(syear, smm, sdd, shh, smi, sss);
+    dateTimeE = CalendarDate.of(null, syear, smm, sdd, shh, smi, sss);
     short scanMode = convertunsignedByte2Short(din.readByte());
     if (scanMode == 10) {
       sweepN = 1;
@@ -529,7 +529,7 @@ public class Cinrad2Record {
     short smi = convertunsignedByte2Short(din.readByte());
     short sss = convertunsignedByte2Short(din.readByte());
 
-    dateTime0 = new DateTime(syear, smm, sdd, shh, smi, sss);
+    dateTime0 = CalendarDate.of(null, syear, smm, sdd, shh, smi, sss);
 
     din.skipBytes(14); // 14+ (35 - 21)
 
@@ -570,7 +570,7 @@ public class Cinrad2Record {
     smi = convertunsignedByte2Short(din.readByte());
     sss = convertunsignedByte2Short(din.readByte());
 
-    dateTimeE = new DateTime(syear, smm, sdd, shh, smi, sss);
+    dateTimeE = CalendarDate.of(null, syear, smm, sdd, shh, smi, sss);
 
   }
 

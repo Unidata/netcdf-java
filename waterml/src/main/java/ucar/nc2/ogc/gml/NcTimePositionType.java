@@ -1,7 +1,6 @@
 package ucar.nc2.ogc.gml;
 
 import net.opengis.gml.x32.TimePositionType;
-import org.joda.time.DateTime;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDate;
@@ -39,9 +38,9 @@ public abstract class NcTimePositionType {
 
   // wml2:Collection/wml2:observationMember/om:OM_Observation/om:resultTime/gml:TimeInstant/gml:timePosition
   public static TimePositionType initTimePosition(TimePositionType timePosition) {
-    DateTime resultTime = MarshallingUtil.fixedResultTime;
+    CalendarDate resultTime = MarshallingUtil.fixedResultTime;
     if (resultTime == null) {
-      resultTime = new DateTime(); // Initialized to "now".
+      resultTime = CalendarDate.present(); // Initialized to "now".
     }
 
     // TEXT
