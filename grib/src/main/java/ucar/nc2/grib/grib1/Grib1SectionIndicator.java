@@ -18,12 +18,12 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib1SectionIndicator {
-  static final byte[] MAGIC = new byte[] {'G', 'R', 'I', 'B'};
+  static final byte[] MAGIC = {'G', 'R', 'I', 'B'};
 
   private final long messageLength;
   private final long startPos;
   private final int messageLengthNotFixed;
-  boolean isMessageLengthFixed = false;
+  boolean isMessageLengthFixed;
 
   /**
    * Read Grib2SectionIndicator from raf.

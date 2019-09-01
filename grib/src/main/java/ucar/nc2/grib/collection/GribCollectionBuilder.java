@@ -127,10 +127,10 @@ abstract class GribCollectionBuilder {
     List<MFile> files = new ArrayList<>();
     List<? extends Group> groups = makeGroups(files, false, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
-    if (allFiles.size() == 0) {
+    if (allFiles.isEmpty()) {
       throw new IllegalStateException("No files in this collection =" + name + " topdir=" + dcm.getRoot());
     }
-    if (groups.size() == 0) {
+    if (groups.isEmpty()) {
       throw new IllegalStateException("No records in this collection =" + name + " topdir=" + dcm.getRoot());
     }
 
@@ -159,7 +159,7 @@ abstract class GribCollectionBuilder {
     }
     List<Long> sortedList = new ArrayList<>(allRuntimes);
     Collections.sort(sortedList);
-    if (sortedList.size() == 0)
+    if (sortedList.isEmpty())
       throw new IllegalArgumentException("No runtimes in this collection =" + name);
 
     else if (sortedList.size() == 1)

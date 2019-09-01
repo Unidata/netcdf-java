@@ -390,7 +390,7 @@ public abstract class Grib2Drs {
   public static class Type40 extends Type0 {
 
     int compressionMethod, compressionRatio;
-    boolean hasSignedProblem = false;
+    boolean hasSignedProblem;
 
     Type40(RandomAccessFile raf) throws IOException {
       super(raf);

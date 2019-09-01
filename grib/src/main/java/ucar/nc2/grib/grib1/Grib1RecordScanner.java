@@ -39,8 +39,8 @@ public class Grib1RecordScanner {
   private static final boolean debugGds = false;
   private static final int maxScan = 16000;
 
-  static boolean allowBadIsLength = false;
-  static boolean allowBadDsLength = false; // ECMWF workaround
+  static boolean allowBadIsLength;
+  static boolean allowBadDsLength; // ECMWF workaround
 
   public static void setAllowBadIsLength(boolean allowBadIsLength) {
     Grib1RecordScanner.allowBadIsLength = allowBadIsLength;

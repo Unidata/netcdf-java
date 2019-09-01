@@ -104,7 +104,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   protected final GribTables cust;
   protected final String indexFilename; // full path of index Filename
 
-  private FileCacheIF objCache = null; // optional object cache - used in the TDS
+  private FileCacheIF objCache; // optional object cache - used in the TDS
 
   GribCollectionImmutable(GribCollectionMutable gc) {
     countGC++;

@@ -97,7 +97,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     }
 
     firstValue = (firstValue * timeUnit.getValue());
-    return firstValue + "_" + timeUnit.getField().toString();
+    return firstValue + "_" + timeUnit.getField();
   }
 
   /**

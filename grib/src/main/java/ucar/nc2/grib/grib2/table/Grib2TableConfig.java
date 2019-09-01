@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +29,8 @@ import java.util.List;
 class Grib2TableConfig {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TableConfig.class);
   private static final String tableMapPath = "resources/grib2/standardTableMap.txt";
-  private static ImmutableList<Grib2TableConfig> tables = null;
-  private static Grib2TableConfig standardTable = null;
+  private static ImmutableList<Grib2TableConfig> tables;
+  private static Grib2TableConfig standardTable;
 
   private static ImmutableList<Grib2TableConfig> init() {
     List<Grib2TableConfig> result = new ArrayList<>();

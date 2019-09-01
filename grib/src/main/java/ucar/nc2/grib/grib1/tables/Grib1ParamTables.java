@@ -38,8 +38,8 @@ public class Grib1ParamTables {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
 
   private static final Object lock = new Object();
-  private static int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions
-                                              // can go first
+  private static int standardTablesStart; // heres where the standard tables start - keep track so user additions
+                                          // can go first
 
   private static Lookup standardLookup;
   private static Grib1ParamTableReader defaultWmoTable;
@@ -64,7 +64,7 @@ public class Grib1ParamTables {
     }
   }
 
-  private static boolean strict = false;
+  private static boolean strict;
 
   public static boolean isStrict() {
     return strict;
@@ -287,7 +287,7 @@ public class Grib1ParamTables {
         String line;
         while ((line = br.readLine()) != null) {
           line = line.trim();
-          if ((line.length() == 0) || line.startsWith("#")) {
+          if ((line.isEmpty()) || line.startsWith("#")) {
             continue;
           }
           String[] tableDefArr = line.split(":");

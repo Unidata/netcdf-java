@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
@@ -120,7 +119,7 @@ public class EccodesCodeTable implements Grib2CodeTableInterface {
           if (line == null) {
             break;
           }
-          if (line.startsWith("#") || line.trim().length() == 0) {
+          if (line.startsWith("#") || line.trim().isEmpty()) {
             continue;
           }
           count++;

@@ -41,7 +41,7 @@ import java.util.*;
 public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Tables.class);
   private static Map<Grib2TablesId, Grib2Tables> tables = new HashMap<>();
-  private static Grib2Tables wmoStandardTable = null;
+  private static Grib2Tables wmoStandardTable;
 
   public static Grib2Tables factory(Grib2Record gr) {
     Grib2SectionIdentification ids = gr.getId();

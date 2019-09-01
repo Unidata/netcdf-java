@@ -136,7 +136,7 @@ class EccodesLocalConcepts {
           if (line == null) {
             break; // done with the file
           }
-          if ((line.length() == 0)) {
+          if ((line.isEmpty())) {
             continue;
           }
           // skip header lines
@@ -190,7 +190,7 @@ class EccodesLocalConcepts {
 
   private static class AttributeBag {
     private final Map<String, Integer> atts = new TreeMap<>();
-    int hashCode = 0;
+    int hashCode;
 
     @Override
     public boolean equals(Object o) {

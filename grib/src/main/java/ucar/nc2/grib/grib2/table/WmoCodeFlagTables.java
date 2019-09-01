@@ -45,7 +45,7 @@ public class WmoCodeFlagTables {
     param, code, flag, cat
   }
 
-  private static WmoCodeFlagTables instance = null;
+  private static WmoCodeFlagTables instance;
 
   public static WmoCodeFlagTables getInstance() {
     if (instance == null) {

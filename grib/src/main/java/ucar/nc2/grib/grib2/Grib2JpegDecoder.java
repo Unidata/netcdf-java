@@ -47,7 +47,7 @@ public class Grib2JpegDecoder {
   /**
    * Parses the inputstream to analyze the box structure of the JP2 file.
    */
-  private ColorSpace csMap = null;
+  private ColorSpace csMap;
 
   /**
    * The exit code of the run method
@@ -116,7 +116,7 @@ public class Grib2JpegDecoder {
     return exitCode;
   }
 
-  private boolean hasSignedProblem = false;
+  private boolean hasSignedProblem;
 
   public boolean hasSignedProblem() {
     return hasSignedProblem;
@@ -130,7 +130,7 @@ public class Grib2JpegDecoder {
    */
   public void decode(byte[] buf) throws IOException {
     // int dataSize = buf.length;
-    final boolean verbose = false;
+    boolean verbose = false;
     int res; // resolution level to reconstruct
     FileFormatReader ff;
     HeaderDecoder hd;
@@ -238,7 +238,7 @@ public class Grib2JpegDecoder {
 
       // **** Color space mapping ****
       String p = pl.getParameter("nocolorspace");
-      boolean nocolorspace = (p != null) && p.equals("off"); // LOOK not sure what default is here
+      boolean nocolorspace = "off".equals(p); // LOOK not sure what default is here
       if (ff.JP2FFUsed && nocolorspace) {
         try {
           csMap = new ColorSpace(in, hd, pl);

@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribTables;
@@ -129,7 +128,7 @@ public class EccodesParamTable implements Grib2ParamTableInterface {
           if (line == null) {
             break;
           }
-          if (line.startsWith("#") || line.trim().length() == 0) {
+          if (line.startsWith("#") || line.trim().isEmpty()) {
             continue;
           }
           count++;

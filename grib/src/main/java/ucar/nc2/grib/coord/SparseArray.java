@@ -159,7 +159,7 @@ public class SparseArray<T> {
   }
 
   private int showMissingRecurse(int offset, List<Integer> sizes, Formatter f) {
-    if (sizes.size() == 0)
+    if (sizes.isEmpty())
       return 0;
     if (sizes.size() == 1) {
       int len = sizes.get(0);
@@ -207,7 +207,7 @@ public class SparseArray<T> {
     private int[] shape; // multidim sizes
     private int[] stride; // for index calculation
     private int totalSize; // product of sizes
-    private int ndups = 0; // number of duplicates
+    private int ndups; // number of duplicates
 
     private int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
     private List<T> content; // keep the things in a List.

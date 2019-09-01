@@ -39,7 +39,7 @@ public class CoordinateRuntime implements Coordinate {
 
     CalendarPeriod.Field cf = this.timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar " + cf.toString();
+      this.periodName = "calendar " + cf;
     else
       this.periodName = cf.toString();
   }
@@ -103,7 +103,7 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public String getUnit() {
-    return periodName + " since " + firstDate.toString();
+    return periodName + " since " + firstDate;
   }
 
   @Override

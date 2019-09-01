@@ -136,7 +136,7 @@ public class Grib1SectionGridDefinition {
     return rawData[index - 1] & 0xff;
   }
 
-  private Grib1Gds gds = null;
+  private Grib1Gds gds;
 
   public synchronized Grib1Gds getGDS() {
     if (gds != null)

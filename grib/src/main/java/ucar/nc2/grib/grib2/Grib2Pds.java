@@ -959,7 +959,7 @@ public abstract class Grib2Pds {
       return probHash;
     }
 
-    int probHash = 0;
+    int probHash;
 
     /*
      * Code Table Code table 4.9 - Probability type (4.9)

@@ -360,7 +360,7 @@ public class GribCollectionMutable implements Closeable {
       return varMap.get(want);
     }
 
-    private CalendarDateRange dateRange = null;
+    private CalendarDateRange dateRange;
 
     public CalendarDateRange getCalendarDateRange() {
       if (dateRange == null) {
@@ -623,10 +623,10 @@ public class GribCollectionMutable implements Closeable {
         sb.format("Variable {%d-%d-%d", discipline, category, parameter);
         sb.format(", levelType=%d", levelType);
         sb.format(", intvType=%d", intvType);
-        if (intvName != null && intvName.length() > 0) {
+        if (intvName != null && !intvName.isEmpty()) {
           sb.format(" intv=%s", intvName);
         }
-        if (probabilityName != null && probabilityName.length() > 0) {
+        if (probabilityName != null && !probabilityName.isEmpty()) {
           sb.format(" prob=%s", probabilityName);
         }
         sb.format(" cdmHash=%d}", gribVariable.hashCode());

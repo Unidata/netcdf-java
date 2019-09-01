@@ -86,7 +86,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate.toString());
+    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate);
     CalendarDate start = cdu.makeCalendarDate(timeUnit.getValue() * offsetSorted.get(0));
     CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * offsetSorted.get(getSize() - 1));
     return CalendarDateRange.of(start, end);

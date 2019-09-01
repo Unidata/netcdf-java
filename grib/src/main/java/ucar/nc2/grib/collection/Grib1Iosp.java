@@ -112,7 +112,7 @@ public class Grib1Iosp extends GribIosp {
       int levelType, boolean isLayer, int intvType, String intvName, String probabilityName) {
     try (Formatter f = new Formatter()) {
 
-      boolean isProb = (probabilityName != null && probabilityName.length() > 0);
+      boolean isProb = (probabilityName != null && !probabilityName.isEmpty());
       if (isProb) {
         f.format("Probability ");
       }
@@ -128,7 +128,7 @@ public class Grib1Iosp extends GribIosp {
         GribStatType stat = cust.getStatType(intvType);
         if (stat != null) {
           f.format(" (%s %s)", intvName, stat.name());
-        } else if (intvName != null && intvName.length() > 0) {
+        } else if (intvName != null && !intvName.isEmpty()) {
           f.format(" (%s)", intvName);
         }
       }

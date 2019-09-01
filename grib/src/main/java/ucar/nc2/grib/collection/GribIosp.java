@@ -49,7 +49,7 @@ import java.util.List;
  * @since 4/6/11
  */
 public abstract class GribIosp extends AbstractIOServiceProvider {
-  public static int debugIndexOnlyCount = 0; // count number of data accesses
+  public static int debugIndexOnlyCount; // count number of data accesses
 
   // store custom tables in here
   protected final FeatureCollectionConfig config = new FeatureCollectionConfig();
@@ -436,7 +436,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
             Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
             if (cm != null && timeCoord != null) {
-              v.addAttribute(new Attribute(CF.CELL_METHODS, timeCoord.getName() + ": " + cm.toString()));
+              v.addAttribute(new Attribute(CF.CELL_METHODS, timeCoord.getName() + ": " + cm));
             }
           } else {
             v.addAttribute(new Attribute(Grib.GRIB_STAT_TYPE, vindex.getIntvType()));

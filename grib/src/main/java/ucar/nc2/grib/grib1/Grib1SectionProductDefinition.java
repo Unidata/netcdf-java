@@ -353,7 +353,7 @@ public final class Grib1SectionProductDefinition {
       int[] intv = ptime.getInterval();
       CalendarDate cdate1 = unit.makeCalendarDate(period.getValue() * intv[0]);
       CalendarDate cdate2 = unit.makeCalendarDate(period.getValue() * intv[1]);
-      return "(" + cdate1.toString() + "," + cdate2.toString() + ")";
+      return "(" + cdate1 + "," + cdate2 + ")";
     } else {
       timeCoord = ptime.getForecastTime();
       CalendarDate cdate = unit.makeCalendarDate(period.getValue() * timeCoord);

@@ -228,8 +228,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
 
       if (existingFile == null) {
-        throw new FileNotFoundException(
-            "No index filename for partition= " + this.toString() + " looking for " + file.getPath());
+        throw new FileNotFoundException("No index filename for partition= " + this + " looking for " + file.getPath());
       }
 
       /*

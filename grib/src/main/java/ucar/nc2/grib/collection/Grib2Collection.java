@@ -212,7 +212,7 @@ public class Grib2Collection extends GribCollectionImmutable {
 
       if (vindex.getEnsDerivedType() >= 0) {
         f.format("_D%d", vindex.getEnsDerivedType());
-      } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+      } else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty()) {
         String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
         f.format("_Prob_%s", s);
       }
@@ -231,7 +231,7 @@ public class Grib2Collection extends GribCollectionImmutable {
     Grib2Tables cust2 = (Grib2Tables) gc.cust;
 
     v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
-    int[] param = new int[] {vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
+    int[] param = {vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
     v.addAttribute(new Attribute("Grib2_Parameter", Array.makeFromJavaArray(param, false)));
     String disc = cust2.getCodeTableValue("0.0", vindex.getDiscipline());
     if (disc != null)
@@ -251,7 +251,7 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     if (vindex.getEnsDerivedType() >= 0)
       v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.getEnsDerivedType()));
-    else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+    else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty()) {
       v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.getProbType()));
       v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.getProbabilityName()));
     }
