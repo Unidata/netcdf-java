@@ -4,6 +4,7 @@
  */
 package ucar.nc2.time;
 
+import java.util.GregorianCalendar;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
@@ -453,5 +454,12 @@ public class CalendarDate implements Comparable<CalendarDate> {
         return tyear - oyear;
     }
     return dateTime.getMillis() - o.dateTime.getMillis();
+  }
+
+  public GregorianCalendar toGregorianCalendar() {
+    DateTimeZone zone = dateTime.getZone();
+    GregorianCalendar cal = new GregorianCalendar(zone.toTimeZone());
+    cal.setTime(toDate());
+    return cal;
   }
 }

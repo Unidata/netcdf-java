@@ -2,7 +2,6 @@ package ucar.nc2.ogc;
 
 import net.opengis.waterml.x20.CollectionDocument;
 import org.apache.xmlbeans.*;
-import org.joda.time.DateTime;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ogc.waterml.NcCollectionType;
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
+import ucar.nc2.time.CalendarDate;
 
 /**
  * Created by cwardgar on 2014/04/29.
@@ -18,8 +18,8 @@ import java.util.function.Predicate;
 public class MarshallingUtil {
   /////////////////////////////////////////////// Testing Util ///////////////////////////////////////////////
 
-  public static DateTime fixedGenerationDate = null;
-  public static DateTime fixedResultTime = null;
+  public static CalendarDate fixedGenerationDate = null;
+  public static CalendarDate fixedResultTime = null;
 
   /////////////////////////////////////////////// ID Creation ///////////////////////////////////////////////
 
