@@ -28,7 +28,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   private static final boolean debug = false;
 
   private ArrayDouble.D2 coords; // LOOK maybe optional for large arrays, or maybe eliminate all together, and
-                                        // read each time ??
+                                 // read each time ??
 
   /**
    * Create a 2D coordinate axis from an existing VariableDS

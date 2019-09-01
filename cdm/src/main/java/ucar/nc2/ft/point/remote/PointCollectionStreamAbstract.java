@@ -84,8 +84,7 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
           needUnits = false;
         }
 
-        PointFeatureIterator iter = new PointIteratorStream(this, in,
-            new PointStream.ProtobufPointFeatureMaker(pfc));
+        PointFeatureIterator iter = new PointIteratorStream(this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
 
         leaveStreamOpen = true; // It is now iter's responsiblity to close the stream.
         return iter;

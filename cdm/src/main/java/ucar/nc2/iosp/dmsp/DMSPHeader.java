@@ -350,14 +350,12 @@ public class DMSPHeader {
     String fullHeader = new String(b, CDM.utf8Charset);
     // Make sure header starts with the proper item.
     if (!fullHeader.startsWith(HeaderInfoTitle.FILE_ID.toString())) {
-      throw new IOException(
-          "Invalid DMSP file: header does not start with \"" + HeaderInfoTitle.FILE_ID + "\".");
+      throw new IOException("Invalid DMSP file: header does not start with \"" + HeaderInfoTitle.FILE_ID + "\".");
     }
     // Make sure header contains end-of-header marker.
     int endOfHeaderIndex = fullHeader.indexOf(HeaderInfoTitle.END_HEADER.toString());
     if (endOfHeaderIndex == -1) {
-      throw new IOException(
-          "Invalid DMSP file: header does not end with \"" + HeaderInfoTitle.END_HEADER + "\".");
+      throw new IOException("Invalid DMSP file: header does not end with \"" + HeaderInfoTitle.END_HEADER + "\".");
     }
 
     // Drop the end-of-header marker and the line feed ('\n') proceeding it.
@@ -614,16 +612,14 @@ public class DMSPHeader {
   public String toString() {
 
     String retVal = HeaderInfoTitle.FILE_ID + ": " + this.fileIdAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.DATA_SET_ID + ": " + this.datasetIdAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.RECORD_BYTES + ": " + this.recordSizeInBytes + "\n"
-        + HeaderInfoTitle.NUM_HEADER_RECORDS + ": " + this.numHeaderRecords + "\n"
-        + HeaderInfoTitle.NUM_RECORDS + ": " + this.numRecords + "\n"
-        + HeaderInfoTitle.SUBORBIT_HISTORY + ": " + this.suborbitHistoryAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.PROCESSING_SYSTEM + ": " + this.processingSystemAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.PROCESSING_DATE + ": "
+        + HeaderInfoTitle.DATA_SET_ID + ": " + this.datasetIdAtt.getStringValue() + "\n" + HeaderInfoTitle.RECORD_BYTES
+        + ": " + this.recordSizeInBytes + "\n" + HeaderInfoTitle.NUM_HEADER_RECORDS + ": " + this.numHeaderRecords
+        + "\n" + HeaderInfoTitle.NUM_RECORDS + ": " + this.numRecords + "\n" + HeaderInfoTitle.SUBORBIT_HISTORY + ": "
+        + this.suborbitHistoryAtt.getStringValue() + "\n" + HeaderInfoTitle.PROCESSING_SYSTEM + ": "
+        + this.processingSystemAtt.getStringValue() + "\n" + HeaderInfoTitle.PROCESSING_DATE + ": "
         + DateFormatHandler.ALT_DATE_TIME.getDateTimeStringFromDate(this.processingDate) + "\n"
-        + HeaderInfoTitle.SPACECRAFT_ID + ": " + this.spacecraftIdAtt.getStringValue() + "\n"
-        + HeaderInfoTitle.NORAD_ID + ": " + this.noradIdAtt.getStringValue() + "\n";
+        + HeaderInfoTitle.SPACECRAFT_ID + ": " + this.spacecraftIdAtt.getStringValue() + "\n" + HeaderInfoTitle.NORAD_ID
+        + ": " + this.noradIdAtt.getStringValue() + "\n";
     return (retVal);
   }
 

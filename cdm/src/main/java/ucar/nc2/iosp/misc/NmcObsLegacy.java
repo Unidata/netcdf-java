@@ -36,8 +36,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   private List<StructureCode> catStructures = new ArrayList<>(10);
 
-  private boolean showObs, showSkip, showOverflow, showData, showHeader,
-      showTime;
+  private boolean showObs, showSkip, showOverflow, showData, showHeader, showTime;
   private boolean checkType, checkPositions;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {

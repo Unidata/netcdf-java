@@ -9,8 +9,7 @@ public class NoFactoryFoundException extends Exception {
    * Constructs a new NoFactoryFoundException with {@code null} as its detail message. The cause is not
    * initialized, and may subsequently be initialized by a call to {@link #initCause}.
    */
-  public NoFactoryFoundException() {
-  }
+  public NoFactoryFoundException() {}
 
   /**
    * Constructs a new NoFactoryFoundException with the specified detail message. The cause is not initialized,

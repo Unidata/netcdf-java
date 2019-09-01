@@ -55,10 +55,8 @@ public class H5header extends NCheader {
   private static boolean debugEnum, debugVlen;
   private static boolean debug1, debugDetail, debugPos, debugHeap, debugV;
   private static boolean debugGroupBtree, debugDataBtree, debugBtree2;
-  private static boolean debugContinueMessage, debugTracker, debugSoftLink,
-      debugHardLink, debugSymbolTable;
-  private static boolean warnings = true, debugReference, debugRegionReference,
-      debugCreationOrder, debugStructure;
+  private static boolean debugContinueMessage, debugTracker, debugSoftLink, debugHardLink, debugSymbolTable;
+  private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder, debugStructure;
   private static boolean debugDimensionScales;
 
   public static void setWarnings(boolean warn) {
@@ -3869,8 +3867,7 @@ public class H5header extends NCheader {
     }
   }
 
-  private static final String[] filterName =
-      {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
+  private static final String[] filterName = {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
 
   class Filter {
     short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset

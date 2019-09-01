@@ -132,24 +132,21 @@ public class RotatedPole extends ProjectionImpl {
     double latRad = Math.toRadians(lat);
 
     // Lon-lat pair to xyz coordinates on sphere with radius 1
-    double[] p0 =
-        {Math.cos(latRad) * Math.cos(lonRad), Math.cos(latRad) * Math.sin(lonRad), Math.sin(latRad)};
+    double[] p0 = {Math.cos(latRad) * Math.cos(lonRad), Math.cos(latRad) * Math.sin(lonRad), Math.sin(latRad)};
 
     // Rotate around Z-axis
     // double[] p1 = new double[] {
     // rotZ[0][0] * p0[0] + rotZ[0][1] * p0[1] + rotZ[0][2] * p0[2],
     // rotZ[1][0] * p0[0] + rotZ[1][1] * p0[1] + rotZ[1][2] * p0[2],
     // rotZ[2][0] * p0[0] + rotZ[2][1] * p0[1] + rotZ[2][2] * p0[2]};
-    double[] p1 =
-        {rotZ[0][0] * p0[0] + rotZ[0][1] * p0[1], rotZ[1][0] * p0[0] + rotZ[1][1] * p0[1], p0[2]};
+    double[] p1 = {rotZ[0][0] * p0[0] + rotZ[0][1] * p0[1], rotZ[1][0] * p0[0] + rotZ[1][1] * p0[1], p0[2]};
 
     // Rotate around Y-axis
     // double[] p2 = new double[] {
     // rotY[0][0] * p1[0] + rotY[0][1] * p1[1] + rotY[0][2] * p1[2],
     // rotY[1][0] * p1[0] + rotY[1][1] * p1[1] + rotY[1][2] * p1[2],
     // rotY[2][0] * p1[0] + rotY[2][1] * p1[1] + rotY[2][2] * p1[2]};
-    double[] p2 =
-        {rotY[0][0] * p1[0] + rotY[0][2] * p1[2], p1[1], rotY[2][0] * p1[0] + rotY[2][2] * p1[2]};
+    double[] p2 = {rotY[0][0] * p1[0] + rotY[0][2] * p1[2], p1[1], rotY[2][0] * p1[0] + rotY[2][2] * p1[2]};
 
     double lonR = LatLonPointImpl.range180(Math.atan2(p2[1], p2[0]) * DEG_PER_RAD);
     double latR = Math.asin(p2[2]) * DEG_PER_RAD;
@@ -182,24 +179,21 @@ public class RotatedPole extends ProjectionImpl {
     double latRRad = Math.toRadians(latR);
 
     // Lon-lat pair to xyz coordinates on sphere with radius 1
-    double[] p0 =
-        {Math.cos(latRRad) * Math.cos(lonRRad), Math.cos(latRRad) * Math.sin(lonRRad), Math.sin(latRRad)};
+    double[] p0 = {Math.cos(latRRad) * Math.cos(lonRRad), Math.cos(latRRad) * Math.sin(lonRRad), Math.sin(latRRad)};
 
     // Inverse rotate around Y-axis (using transpose of Y matrix)
     // final double[] p1 = new double[] {
     // rotY[0][0] * p0[0] + rotY[1][0] * p0[1] + rotY[2][0] * p0[2],
     // rotY[0][1] * p0[0] + rotY[1][1] * p0[1] + rotY[2][1] * p0[2],
     // rotY[0][2] * p0[0] + rotY[1][2] * p0[1] + rotY[2][2] * p0[2]};
-    double[] p1 =
-        {rotY[0][0] * p0[0] + rotY[2][0] * p0[2], p0[1], rotY[0][2] * p0[0] + rotY[2][2] * p0[2]};
+    double[] p1 = {rotY[0][0] * p0[0] + rotY[2][0] * p0[2], p0[1], rotY[0][2] * p0[0] + rotY[2][2] * p0[2]};
 
     // Inverse rotate around Z-axis (using transpose of Z matrix)
     // final double[] p2 = new double[] {
     // rotZ[0][0] * p1[0] + rotZ[1][0] * p1[1] + rotZ[2][0] * p1[2],
     // rotZ[0][1] * p1[0] + rotZ[1][1] * p1[1] + rotZ[2][1] * p1[2],
     // rotZ[0][2] * p1[0] + rotZ[1][2] * p1[1] + rotZ[2][2] * p1[2]};
-    double[] p2 =
-        {rotZ[0][0] * p1[0] + rotZ[1][0] * p1[1], rotZ[0][1] * p1[0] + rotZ[1][1] * p1[1], p1[2]};
+    double[] p2 = {rotZ[0][0] * p1[0] + rotZ[1][0] * p1[1], rotZ[0][1] * p1[0] + rotZ[1][1] * p1[1], p1[2]};
 
     double lon = Math.atan2(p2[1], p2[0]) * DEG_PER_RAD;
     double lat = Math.asin(p2[2]) * DEG_PER_RAD;
