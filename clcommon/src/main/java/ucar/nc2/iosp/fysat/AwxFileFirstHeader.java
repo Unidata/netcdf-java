@@ -41,13 +41,6 @@ public class AwxFileFirstHeader {
   String version;
   short flagOfQuality;
 
-  /**
-   * 
-   */
-  public AwxFileFirstHeader() {
-    // TODO Auto-generated constructor stub
-  }
-
 
   public void fillHeader(EndianByteBuffer ebb) {
     // char[] fileName = new char[12];

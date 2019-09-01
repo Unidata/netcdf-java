@@ -57,17 +57,17 @@ public class GridVariable {
   /**
    * time coord system
    */
-  protected GridTimeCoord tcs = null;
+  protected GridTimeCoord tcs;
 
   /**
    * ensemble coord system
    */
-  protected GridEnsembleCoord ecs = null;
+  protected GridEnsembleCoord ecs;
 
   /**
    * vertical coordinate
    */
-  protected GridVertCoord vc = null;
+  protected GridVertCoord vc;
 
   /**
    * list of records that make up this variable
@@ -97,7 +97,7 @@ public class GridVariable {
   /**
    * flag for having a vertical coordinate
    */
-  private boolean hasVert = false;
+  private boolean hasVert;
 
   /**
    * Create a new GridVariable
@@ -366,7 +366,7 @@ public class GridVariable {
    * @return the netcdf variable
    */
   Variable makeVariable(NetcdfFile ncfile, Group g, String useName, RandomAccessFile raf) {
-    assert records.size() > 0 : "no records for this variable";
+    assert !records.isEmpty() : "no records for this variable";
 
     this.nlevels = getVertNlevels();
     this.ntimes = tcs.getNTimes();
@@ -596,7 +596,7 @@ public class GridVariable {
   /**
    * hash code
    */
-  private volatile int hashCode = 0;
+  private volatile int hashCode;
 
   @Override
   public String toString() {
@@ -635,7 +635,7 @@ public class GridVariable {
     f.format("%s", param.getDescription());
 
     String levelName = makeLevelName(firstRecord, lookup);
-    if (levelName.length() != 0)
+    if (!levelName.isEmpty())
       f.format(" @ %s", levelName);
 
     return f.toString();

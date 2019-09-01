@@ -41,16 +41,16 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   protected static IndexExtendMode indexFileModeOnOpen = IndexExtendMode.rewrite; // default is to rewrite
   protected static IndexExtendMode indexFileModeOnSync = IndexExtendMode.extendwrite; // default is to extend
 
-  protected static boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance LOOK should not be
+  protected static boolean addLatLon; // add lat/lon coordinates for strict CF compliance LOOK should not be
                                               // static !
-  protected static boolean forceNewIndex = false; // force that a new index file is written - for debugging
-  protected static boolean alwaysInCache = false;
+  protected static boolean forceNewIndex; // force that a new index file is written - for debugging
+  protected static boolean alwaysInCache;
 
   /**
    * debug flags
    */
-  public static boolean debugOpen = false, debugMissing = false, debugMissingDetails = false, debugProj = false,
-      debugTiming = false, debugVert = false;
+  public static boolean debugOpen, debugMissing, debugMissingDetails, debugProj,
+      debugTiming, debugVert;
 
   /**
    * Set whether to force new index or not

@@ -302,7 +302,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
       builder.append("\n");
     }
     builder.append("\n");
-    System.out.println(builder.toString());
+    System.out.println(builder);
   }
 
   /**

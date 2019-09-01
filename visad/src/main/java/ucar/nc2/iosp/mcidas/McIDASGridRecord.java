@@ -33,7 +33,7 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
   /**
    * decimal scale
    */
-  private int decimalScale = 0;
+  private int decimalScale;
 
   /**
    * Create a grid header from the integer bits
@@ -189,7 +189,7 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
 
     if (useLevel) {
       String levelName = lookup.getLevelName(this);
-      if (levelName.length() != 0) {
+      if (!levelName.isEmpty()) {
         if (lookup.isLayer(this))
           f.format("_%s_layer", lookup.getLevelName(this));
         else

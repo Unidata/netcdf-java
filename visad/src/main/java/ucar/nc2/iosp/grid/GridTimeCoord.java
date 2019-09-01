@@ -19,12 +19,12 @@ import java.util.*;
 public class GridTimeCoord implements Comparable<GridTimeCoord> {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
 
-  protected int seq = 0; // for getting a unique name
+  protected int seq; // for getting a unique name
   protected String timeUdunit;
   protected int timeUnit;
 
   protected Date baseDate; // earliest base date
-  protected boolean refDateDiffers = false;
+  protected boolean refDateDiffers;
   protected List<Date> times;
   protected List<TimeCoordWithInterval> timeIntvs; // only if interval coord
   protected int constantInterval = -1;
@@ -186,7 +186,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
         intervalName.format("(mixed intervals)");
       else
         intervalName.format("(%d %s intervals)", constantInterval, this.timeUdunit);
-      v.addAttribute(new Attribute("long_name", "forecast time for " + intervalName.toString()));
+      v.addAttribute(new Attribute("long_name", "forecast time for " + intervalName));
       v.addAttribute(new Attribute("units", timeUdunit + " since " + refDate));
       v.addAttribute(new Attribute("bounds", getName() + "_bounds"));
 

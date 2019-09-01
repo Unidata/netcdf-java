@@ -79,12 +79,12 @@ public class AreaReader {
   /**
    * The calibrator
    */
-  Calibrator calibrator = null;
+  Calibrator calibrator;
 
   /**
    * list of bands
    */
-  int[] bandMap = null;
+  int[] bandMap;
 
   /**
    * calibration scale
@@ -95,11 +95,6 @@ public class AreaReader {
    * calibration scale
    */
   private String calUnit;
-
-  /**
-   * Default ctor
-   */
-  public AreaReader() {}
 
 
   /**

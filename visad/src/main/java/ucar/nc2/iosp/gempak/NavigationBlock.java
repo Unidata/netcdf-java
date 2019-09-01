@@ -123,7 +123,7 @@ import ucar.nc2.iosp.grid.GridDefRecord;
 public class NavigationBlock extends GridDefRecord {
 
   /** raw values */
-  float[] vals = null;
+  float[] vals;
 
   /** projection type */
   private String proj;

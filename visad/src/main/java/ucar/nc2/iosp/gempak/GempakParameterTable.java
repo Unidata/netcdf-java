@@ -45,11 +45,6 @@ public class GempakParameterTable {
    */
   private static int[] lengths = {4, 33, 21, 13, 7, 11, 6, 6};
 
-  /**
-   * Create a new table.
-   */
-  public GempakParameterTable() {}
-
   /*
    * ID# NAME UNITS GNAM SCALE MISSING HZREMAP DIRECTION
    */
@@ -72,7 +67,7 @@ public class GempakParameterTable {
       for (String line : lines) {
         // String line = (String) lines.get(i);
         String tline = line.trim();
-        if (tline.length() == 0) {
+        if (tline.isEmpty()) {
           continue;
         }
         if (tline.startsWith("!")) {

@@ -9,10 +9,6 @@ import ucar.nc2.iosp.fysat.util.EndianByteBuffer;
  */
 public class AwxFileSecondHeader {
 
-  public AwxFileSecondHeader() {
-    // TODO Auto-generated constructor stub
-  }
-
   public void fillHeader(EndianByteBuffer byteBuffer) {
 
   }

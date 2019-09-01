@@ -19,11 +19,6 @@ public class GempakGridParameterTable {
   private static GempakParameterTable paramTable = new GempakParameterTable();
 
   /**
-   * Default ctor
-   */
-  public GempakGridParameterTable() {}
-
-  /**
    * Add parameters from the table
    *
    * @param tbl table location

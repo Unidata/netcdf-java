@@ -71,7 +71,7 @@ public class GridHorizCoordSys {
   /**
    * flags
    */
-  private boolean isLatLon, isGaussian = false;
+  private boolean isLatLon, isGaussian;
 
   /**
    * starting. incr values of prjection coordinates, used to generate the projection coordinate axis values
@@ -203,7 +203,7 @@ public class GridHorizCoordSys {
     String gridUnit = gds.getParam(GridDefRecord.GRID_UNITS);
     SimpleUnit unit;
 
-    if (gridUnit == null || gridUnit.length() == 0) {
+    if (gridUnit == null || gridUnit.isEmpty()) {
       unit = SimpleUnit.meterUnit;
     } else {
       unit = SimpleUnit.factory(gridUnit);
@@ -527,7 +527,7 @@ public class GridHorizCoordSys {
     Variable v = new Variable(ncfile, g, null, grid_name);
     v.setDataType(DataType.CHAR);
     v.setDimensions(""); // scalar
-    char[] data = new char[] {'d'};
+    char[] data = {'d'};
     Array dataArray = Array.factory(DataType.CHAR, new int[0], data);
     v.setCachedData(dataArray, false);
 
@@ -663,7 +663,7 @@ public class GridHorizCoordSys {
     if (gds.getDouble(GridDefRecord.LATIN1) == gds.getDouble(GridDefRecord.LATIN2)) {
       attributes.add(new Attribute(GridCF.STANDARD_PARALLEL, gds.getDouble(GridDefRecord.LATIN1)));
     } else {
-      double[] data = new double[] {gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LATIN2)};
+      double[] data = {gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LATIN2)};
       attributes.add(new Attribute(GridCF.STANDARD_PARALLEL, Array.factory(DataType.DOUBLE, new int[] {2}, data)));
     }
     // attributes.add(new Attribute("longitude_of_central_meridian",

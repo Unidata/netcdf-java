@@ -45,7 +45,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
   /**
    * Area navigation
    */
-  private AREAnav anav = null;
+  private AREAnav anav;
 
   /**
    * number of lines
@@ -417,7 +417,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    * @return wordy String
    */
   public String toString() {
-    return "Image (" + anav.toString() + ") Projection";
+    return "Image (" + anav + ") Projection";
   }
 
   /**
@@ -426,7 +426,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    * @return the parameters as a String
    */
   public String paramsToString() {
-    return " nav " + anav.toString();
+    return " nav " + anav;
   }
 
   /**

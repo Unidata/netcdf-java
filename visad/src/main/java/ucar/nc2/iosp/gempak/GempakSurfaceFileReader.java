@@ -165,7 +165,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
     GempakStation station = getStations().get(stnIndex - 1);
     StringBuilder builder = new StringBuilder();
     builder.append("\nStation:\n");
-    builder.append(station.toString());
+    builder.append(station);
     builder.append("\nObs\n\t");
     List<GempakParameter> params = getParameters(SFDT);
     for (GempakParameter parm : params) {
@@ -195,7 +195,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
         builder.append(header[0]);
       }
     }
-    System.out.println(builder.toString());
+    System.out.println(builder);
   }
 
 

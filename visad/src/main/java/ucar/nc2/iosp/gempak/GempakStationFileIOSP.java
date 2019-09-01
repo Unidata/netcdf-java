@@ -300,7 +300,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     if ((dim != null) && (numStations > 0)) {
       for (Variable v : vars) {
         Array varArray;
-        if (v.getDataType().equals(DataType.CHAR)) {
+        if (v.getDataType() == DataType.CHAR) {
           int[] shape = v.getShape();
           varArray = new ArrayChar.D2(shape[0], shape[1]);
         } else {
@@ -367,11 +367,11 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    */
   private Array get1DArray(DataType type, int len) {
     Array varArray = null;
-    if (type.equals(DataType.FLOAT)) {
+    if (type == DataType.FLOAT) {
       varArray = new ArrayFloat.D1(len);
-    } else if (type.equals(DataType.DOUBLE)) {
+    } else if (type == DataType.DOUBLE) {
       varArray = new ArrayDouble.D1(len);
-    } else if (type.equals(DataType.INT)) {
+    } else if (type == DataType.INT) {
       varArray = new ArrayInt.D1(len, false);
     }
     return varArray;
@@ -454,9 +454,9 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     if (unit != null) {
       v.addAttribute(new Attribute(CDM.UNITS, unit));
     }
-    if (type.equals(DataType.FLOAT)) {
+    if (type == DataType.FLOAT) {
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, RMISS));
-    } else if (type.equals(DataType.INT)) {
+    } else if (type == DataType.INT) {
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, IMISS));
     }
     if (!attrs.isEmpty()) {

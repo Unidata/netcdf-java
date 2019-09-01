@@ -39,7 +39,7 @@ public class McIDASGridReader {
   /**
    * swap flag
    */
-  protected boolean needToSwap = false;
+  protected boolean needToSwap;
 
   /**
    * hashMap of GridDefRecords

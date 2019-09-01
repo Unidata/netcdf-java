@@ -63,17 +63,17 @@ public class GempakFileReader implements GempakConstants {
   /**
    * swap flag
    */
-  protected boolean mvmst = false;
+  protected boolean mvmst;
 
   /**
    * swap flag
    */
-  protected boolean needToSwap = false;
+  protected boolean needToSwap;
 
   /**
    * file size
    */
-  protected long fileSize = 0;
+  protected long fileSize;
 
   /**
    * masking pattern
@@ -765,7 +765,7 @@ public class GempakFileReader implements GempakConstants {
     /**
      * packing info
      */
-    public PackingInfo packInfo = null;
+    public PackingInfo packInfo;
 
     /**
      * Default ctor
@@ -1014,12 +1014,12 @@ public class GempakFileReader implements GempakConstants {
     /**
      * last valid row
      */
-    public int lstrw = 0;
+    public int lstrw;
 
     /**
      * last valid column
      */
-    public int lstcl = 0;
+    public int lstcl;
 
     /**
      * row keys

@@ -47,7 +47,7 @@ public class ImageFactoryRandom {
   File nextFile = null;
 
   public BufferedImage getNextImage() {
-    if (holdList.size() == 0)
+    if (holdList.isEmpty())
       holdList = new ArrayList<>(fileList);
 
     int next = random.nextInt(holdList.size());

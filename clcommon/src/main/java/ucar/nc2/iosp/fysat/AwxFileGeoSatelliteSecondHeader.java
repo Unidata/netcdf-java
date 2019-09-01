@@ -38,14 +38,6 @@ public class AwxFileGeoSatelliteSecondHeader extends AwxFileSecondHeader {
   short dataLengthOfGeolocation;
   short reserved;
 
-  /**
-   * 
-   */
-  public AwxFileGeoSatelliteSecondHeader() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-
   public void fillHeader(EndianByteBuffer byteBuffer) {
     satelliteName = byteBuffer.getString(8).trim();
     year = byteBuffer.getShort();
