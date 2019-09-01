@@ -28,7 +28,7 @@ import java.util.Map;
  * @since 9/14/2014
  */
 public class GempakLocalTables extends LocalTables {
-  private static boolean debug = false;
+  private static boolean debug;
 
   GempakLocalTables(Grib2TableConfig config) {
     super(config);

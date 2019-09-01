@@ -83,7 +83,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
     for (ucar.nc2.grib.collection.GribCollectionProto.Partition partProto : partList)
       makePartition(partProto);
 
-    return partList.size() > 0;
+    return !partList.isEmpty();
   }
 
   /*

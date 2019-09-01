@@ -199,7 +199,7 @@ public abstract class Grib2Gds {
     return result;
   }
 
-  protected int hashCode = 0;
+  protected int hashCode;
 
   //////////////// thin grids
   /*

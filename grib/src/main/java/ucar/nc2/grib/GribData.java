@@ -139,7 +139,7 @@ public class GribData {
 
     private float DD, EE;
     private int missing_value;
-    private boolean init = false;
+    private boolean init;
 
     public float convert(int val) {
       if (!init) {

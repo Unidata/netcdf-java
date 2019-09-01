@@ -33,7 +33,7 @@ public class Grib2Record {
   private Grib2SectionBitMap bms;
   private Grib2SectionData dataSection;
 
-  private Grib2Pds pds2 = null;
+  private Grib2Pds pds2;
 
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset

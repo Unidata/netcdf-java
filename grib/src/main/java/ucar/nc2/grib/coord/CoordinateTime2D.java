@@ -408,7 +408,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     // are they the same length ?
     String firstValue = null;
     for (Coordinate timeCoord : times) {
-      if (times.size() == 0)
+      if (times.isEmpty())
         continue; // skip empties
       CoordinateTimeIntv timeCoordi = (CoordinateTimeIntv) timeCoord;
       String value = timeCoordi.getTimeIntervalName();

@@ -75,7 +75,7 @@ public class Grib2Iosp extends GribIosp {
 
       if (vindex.getEnsDerivedType() >= 0) {
         f.format("_%s", cust.getProbabilityNameShort(vindex.getEnsDerivedType()));
-      } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+      } else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty()) {
         String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
         f.format("_probability_%s", s);
       } else if (vindex.isEnsemble()) {
@@ -89,7 +89,7 @@ public class Grib2Iosp extends GribIosp {
       boolean useGenType) {
 
     try (Formatter f = new Formatter()) {
-      boolean isProb = (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0);
+      boolean isProb = (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty());
       if (isProb) {
         f.format("Probability ");
       }
@@ -163,7 +163,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   static String makeVariableUnits(Grib2Tables tables, GribCollectionImmutable.VariableIndex vindex) {
-    if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0)
+    if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty())
       return "%";
     return getVindexUnits(tables, vindex);
   }

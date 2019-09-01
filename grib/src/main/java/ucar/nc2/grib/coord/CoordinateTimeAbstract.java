@@ -38,7 +38,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
     CalendarPeriod.Field cf = timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar " + cf.toString();
+      this.periodName = "calendar " + cf;
     else
       this.periodName = cf.toString();
   }

@@ -320,7 +320,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       atts.addAttribute(new Attribute(_Coordinate.Stagger, CDM.CurvilinearOrthogonal));
       atts.addAttribute(new Attribute(CDM.StaggerType, ll2d.toString()));
 
-      int[] shape = new int[] {hcs.ny, hcs.nx};
+      int[] shape = {hcs.ny, hcs.nx};
       int npts = hcs.ny * hcs.nx;
 
       // deffered read
@@ -763,7 +763,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   // create an independent runtime axis
   private CoverageCoordAxis1D makeRuntimeCoord(CoordinateRuntime runtime) {
-    String units = runtime.getPeriodName() + " since " + gribCollection.getMasterFirstDate().toString();
+    String units = runtime.getPeriodName() + " since " + gribCollection.getMasterFirstDate();
 
     List<Double> offsets = runtime.getOffsetsInTimeUnits();
     int n = offsets.size();

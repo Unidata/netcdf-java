@@ -355,7 +355,7 @@ abstract class GribCollectionBuilderFromIndex {
     Coordinate.Type type = convertAxisType(pc.getAxisType());
     int code = pc.getCode();
     String unit = pc.getUnit();
-    if (unit.length() == 0)
+    if (unit.isEmpty())
       unit = null; // LOOK may be null
 
     switch (type) {

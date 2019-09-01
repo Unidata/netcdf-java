@@ -464,7 +464,7 @@ public final class Grib2IndexProto {
       if (((bitField0_ & 0x00000010) != 0)) {
         output.writeUInt32(5, significanceOfRT_);
       }
-      if (getRefDateList().size() > 0) {
+      if (!getRefDateList().isEmpty()) {
         output.writeUInt32NoTag(50);
         output.writeUInt32NoTag(refDateMemoizedSerializedSize);
       }

@@ -554,10 +554,10 @@ public class GribCdmIndex implements IndexReader {
    * @param updateType always, test, nocheck, never
    * @return true if partition was rewritten, exception on failure
    */
-  private static boolean updateFilePartition(final boolean isGrib1, final FeatureCollectionConfig config,
-      final CollectionUpdateType updateType, boolean isTop, final Logger logger, Path dirPath) throws IOException {
+  private static boolean updateFilePartition(boolean isGrib1, FeatureCollectionConfig config,
+      CollectionUpdateType updateType, boolean isTop, Logger logger, Path dirPath) throws IOException {
     long start = System.currentTimeMillis();
-    final Formatter errlog = new Formatter();
+    Formatter errlog = new Formatter();
     CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
 
     try (FilePartition partition = new FilePartition(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
@@ -570,7 +570,7 @@ public class GribCdmIndex implements IndexReader {
           (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger))
         return false;
 
-      final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
+      AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
 
       // redo the children here
       if (updateType != CollectionUpdateType.testIndexOnly) { // skip children on testIndexOnly
@@ -1099,7 +1099,7 @@ public class GribCdmIndex implements IndexReader {
       } catch (Exception e) {
         System.out.printf("%s = %s %n", e.getClass().getName(), e.getMessage());
         String err = errlog.toString();
-        if (err.length() > 0)
+        if (!err.isEmpty())
           System.out.printf(" errlog=%s", err);
         e.printStackTrace();
       }

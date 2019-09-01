@@ -84,13 +84,13 @@ public class Grib2RecordScanner {
   private final ucar.unidata.io.RandomAccessFile raf;
 
   private byte[] header;
-  private int badEndings = 0;
+  private int badEndings;
   private long lastPos; // start scanning from here
 
   // deal with repeating sections - each becomes a Grib2Record
   private long repeatPos = -1; // if > 0, we are in middle of repeating record
-  private Grib2Record repeatRecord = null; // current repeating record
-  private Grib2SectionBitMap repeatBms = null; // current repeating bms
+  private Grib2Record repeatRecord; // current repeating record
+  private Grib2SectionBitMap repeatBms; // current repeating bms
 
   public Grib2RecordScanner(RandomAccessFile raf) throws IOException {
     this.raf = raf;

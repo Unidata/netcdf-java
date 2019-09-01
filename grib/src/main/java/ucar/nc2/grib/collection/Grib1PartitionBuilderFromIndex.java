@@ -82,7 +82,7 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
     for (ucar.nc2.grib.collection.GribCollectionProto.Partition partProto : proto.getPartitionsList())
       makePartition(partProto);
 
-    return partList.size() > 0;
+    return !partList.isEmpty();
   }
 
   /*

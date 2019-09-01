@@ -251,7 +251,7 @@ public class Grib1ParamTableReader {
         if (line == null) {
           break; // done with the file
         }
-        if ((line.length() == 0) || line.startsWith("#")) {
+        if ((line.isEmpty()) || line.startsWith("#")) {
           continue;
         }
 
@@ -348,7 +348,7 @@ public class Grib1ParamTableReader {
         if (line == null) {
           break; // done with the file
         }
-        if ((line.length() == 0) || line.startsWith("#")) {
+        if ((line.isEmpty()) || line.startsWith("#")) {
           continue;
         }
         if (line.startsWith("...")) { // ... may have already been read
@@ -368,7 +368,7 @@ public class Grib1ParamTableReader {
         // optional notes
         line = br.readLine();
         String notes = (line == null || line.startsWith("...")) ? null : line.trim();
-        if (desc != null && desc.equalsIgnoreCase("undefined")) {
+        if ("undefined".equalsIgnoreCase(desc)) {
           continue; // skip
         }
 
@@ -435,7 +435,7 @@ public class Grib1ParamTableReader {
         if (line == null) {
           break; // done with the file
         }
-        if ((line.length() == 0) || line.startsWith("#")) {
+        if ((line.isEmpty()) || line.startsWith("#")) {
           continue;
         }
 
@@ -601,7 +601,7 @@ public class Grib1ParamTableReader {
         if (line == null) {
           break;
         }
-        if ((line.length() == 0) || line.startsWith("#")) {
+        if ((line.isEmpty()) || line.startsWith("#")) {
           continue;
         }
         String[] flds = line.split(regexp);
@@ -634,7 +634,7 @@ public class Grib1ParamTableReader {
           if (line == null) {
             break;
           }
-          if ((line.length() == 0) || line.startsWith("#")) {
+          if ((line.isEmpty()) || line.startsWith("#")) {
             continue;
           }
           String[] tableDefArr = line.split(":");

@@ -306,7 +306,7 @@ public abstract class Grib1Gds {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("Grib1Gds{");
+    StringBuilder sb = new StringBuilder("Grib1Gds{");
     sb.append(" template=").append(template);
     sb.append(", nx=").append(nx);
     sb.append(", ny=").append(ny);
@@ -351,7 +351,7 @@ public abstract class Grib1Gds {
     return result;
   }
 
-  protected int hashCode = 0;
+  protected int hashCode;
 
   /*
    * Grid definition – latitude/longitude grid (or equidistant cylindrical, or Plate Carrée)

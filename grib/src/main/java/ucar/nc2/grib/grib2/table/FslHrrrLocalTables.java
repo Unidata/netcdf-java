@@ -143,7 +143,7 @@ public class FslHrrrLocalTables extends NcepLocalTables {
           if (line == null) {
             break;
           }
-          if ((line.length() == 0) || line.startsWith("#")) {
+          if ((line.isEmpty()) || line.startsWith("#")) {
             continue;
           }
           String[] flds = line.split(",");

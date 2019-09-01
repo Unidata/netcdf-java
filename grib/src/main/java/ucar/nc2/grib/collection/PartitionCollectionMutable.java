@@ -226,7 +226,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
               isPartitionOfPartitions ? new File(currentParentWithDir, filename) : new File(currentParent, filename); // JMJ
           path = nestedIndex.getPath();
         } else {
-          throw new FileNotFoundException("No index filename for partition= " + this.toString());
+          throw new FileNotFoundException("No index filename for partition= " + this);
         }
       }
 

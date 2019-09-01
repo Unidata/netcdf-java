@@ -70,7 +70,7 @@ public class WmoTemplateTables {
     }
   }
 
-  private static WmoTemplateTables instance = null;
+  private static WmoTemplateTables instance;
 
   public static WmoTemplateTables getInstance() {
     if (instance == null) {

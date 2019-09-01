@@ -32,7 +32,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
     if (!builder.readIndex(raf))
       return null;
 
-    if (builder.gc.getFiles().size() == 0) {
+    if (builder.gc.getFiles().isEmpty()) {
       logger.warn("Grib2CollectionBuilderFromIndex {}: has no files, force recreate ", builder.gc.getName());
       return null;
     }
@@ -50,7 +50,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
     if (!builder.readIndex(raf))
       return null;
 
-    if (builder.gc.getFiles().size() == 0) {
+    if (builder.gc.getFiles().isEmpty()) {
       logger.warn("Grib2CollectionBuilderFromIndex {}: has no files, force recreate ", builder.gc.getName());
       return null;
     }

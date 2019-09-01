@@ -57,7 +57,7 @@ public abstract class GribDataReader {
   public static GribCollectionImmutable.Record currentDataRecord;
   public static GribDataValidator validator;
   public static String currentDataRafFilename;
-  static boolean show = false; // debug
+  private static final boolean show = false; // debug
 
   protected final GribCollectionImmutable gribCollection;
   private final GribCollectionImmutable.VariableIndex vindex;

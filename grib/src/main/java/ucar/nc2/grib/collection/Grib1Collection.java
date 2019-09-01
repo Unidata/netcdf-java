@@ -179,14 +179,14 @@ public class Grib1Collection extends GribCollectionImmutable {
 
 
     String timeTypeName = cust1.getTimeTypeName(vindex.getIntvType());
-    if (timeTypeName != null && timeTypeName.length() != 0) {
+    if (timeTypeName != null && !timeTypeName.isEmpty()) {
       v.addAttribute(new Attribute("Grib1_Interval_Type", vindex.getIntvType()));
       v.addAttribute(new Attribute("Grib1_Interval_Name", timeTypeName));
     }
 
     if (vindex.getEnsDerivedType() >= 0)
       v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.getEnsDerivedType()));
-    else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0)
+    else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty())
       v.addAttribute(new Attribute("Grib1_Probability_Type", vindex.getProbabilityName()));
   }
 
