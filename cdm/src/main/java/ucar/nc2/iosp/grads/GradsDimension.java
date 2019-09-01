@@ -195,8 +195,8 @@ public class GradsDimension {
   public String toString() {
 
     String buf = "Dimension: " + name.toUpperCase() + "\n" + "\tSize: " + size + "\n" + "\tLevels Size: "
-        + levels.size() + "\n" + "\tMappingType: " + mapping.toUpperCase() + "\n" + "\tLevels: " + levels
-        + "\n" + "\tUnits: " + unitName + "\n";
+        + levels.size() + "\n" + "\tMappingType: " + mapping.toUpperCase() + "\n" + "\tLevels: " + levels + "\n"
+        + "\tUnits: " + unitName + "\n";
     return buf;
   }
 }

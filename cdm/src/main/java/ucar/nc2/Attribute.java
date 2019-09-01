@@ -30,8 +30,8 @@ import java.util.Map;
 public class Attribute extends CDMNode {
 
   static final String SPECIALPREFIX = "_";
-  static final String[] SPECIALS = {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION,
-      CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
+  static final String[] SPECIALS =
+      {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
 
   /**
    * Turn a list into a map

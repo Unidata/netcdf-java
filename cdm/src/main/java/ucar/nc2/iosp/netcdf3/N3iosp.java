@@ -894,8 +894,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
     } else if (classType == char.class) {
       char[] storageP = new char[1];
-      storageP[0] =
-          (att != null) && (!att.getStringValue().isEmpty()) ? att.getStringValue().charAt(0) : NC_FILL_CHAR;
+      storageP[0] = (att != null) && (!att.getStringValue().isEmpty()) ? att.getStringValue().charAt(0) : NC_FILL_CHAR;
       storage = storageP;
     }
 

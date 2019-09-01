@@ -26,7 +26,7 @@ public class N3header extends NCheader {
   private static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
   static final byte[] MAGIC_LONG = {0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the
-                                                                        // variable offset value
+                                                             // variable offset value
   static final int MAGIC_DIM = 10;
   static final int MAGIC_VAR = 11;
   static final int MAGIC_ATT = 12;

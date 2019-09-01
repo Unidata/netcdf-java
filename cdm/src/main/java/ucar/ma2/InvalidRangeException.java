@@ -12,8 +12,7 @@ package ucar.ma2;
  */
 
 public class InvalidRangeException extends Exception {
-  public InvalidRangeException() {
-  }
+  public InvalidRangeException() {}
 
   public InvalidRangeException(String s) {
     super(s);

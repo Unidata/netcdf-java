@@ -49,8 +49,7 @@ public class PointStream {
   }
 
   private static final byte[] MAGIC_StationList = {(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
-  private static final byte[] MAGIC_PointFeatureCollection =
-      {(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
+  private static final byte[] MAGIC_PointFeatureCollection = {(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
   private static final byte[] MAGIC_PointFeature = {(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
 
   private static final boolean debug = false;

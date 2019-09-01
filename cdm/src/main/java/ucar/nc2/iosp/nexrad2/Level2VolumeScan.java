@@ -89,8 +89,7 @@ public class Level2VolumeScan {
   private List<List<Level2Record>> diffPhaseHighResGroups;
   private List<List<Level2Record>> coefficientHighResGroups;
 
-  private boolean showMessages, showData, debugScans, debugGroups2,
-      debugRadials;
+  private boolean showMessages, showData, debugScans, debugGroups2, debugRadials;
   private boolean runCheck;
 
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {

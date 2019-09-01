@@ -19,8 +19,7 @@ public class BZip2ReadException extends RuntimeException {
   /**
    * Create a new BZip2ReadException with no message
    */
-  public BZip2ReadException() {
-  }
+  public BZip2ReadException() {}
 
   /**
    * Create a new BZip2ReadException with the message

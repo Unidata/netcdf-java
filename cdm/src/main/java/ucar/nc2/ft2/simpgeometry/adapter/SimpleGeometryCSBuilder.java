@@ -125,8 +125,7 @@ public class SimpleGeometryCSBuilder {
     boolean sgtype = false;
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       if (axis.getAxisType() == AxisType.SimpleGeometryID || axis.getAxisType() == AxisType.SimpleGeometryX
-          || axis.getAxisType() == AxisType.SimpleGeometryY
-          || axis.getAxisType() == AxisType.SimpleGeometryZ) {
+          || axis.getAxisType() == AxisType.SimpleGeometryY || axis.getAxisType() == AxisType.SimpleGeometryZ) {
         sgAxes.add(axis);
         sgtype = true;
       }

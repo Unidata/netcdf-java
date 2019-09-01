@@ -130,8 +130,7 @@ public abstract class Aggregation {
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
-  protected static boolean debug, debugOpenFile, debugSyncDetail, debugProxy,
-      debugRead, debugDateParse, debugConvert;
+  protected static boolean debug, debugOpenFile, debugSyncDetail, debugProxy, debugRead, debugDateParse, debugConvert;
 
   //////////////////////////////////////////////////////////////////////////////////////////
 

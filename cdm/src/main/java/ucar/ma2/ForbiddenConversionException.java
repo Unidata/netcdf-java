@@ -12,8 +12,7 @@ package ucar.ma2;
  */
 
 public final class ForbiddenConversionException extends RuntimeException {
-  public ForbiddenConversionException() {
-  }
+  public ForbiddenConversionException() {}
 
   public ForbiddenConversionException(String s) {
     super(s);
