@@ -325,7 +325,7 @@ public class MessageUncompressedDataReader {
       assert seq != null;
 
       // for the obs structure
-      int[] shape = new int[] {count};
+      int[] shape = {count};
 
       // allocate ArrayStructureBB for outer structure
       // LOOK why is this different from ArrayStructureBB.setOffsets() ?

@@ -69,7 +69,7 @@ class Construct2 {
     centerId = proto.ids.getCenterId();
 
     String header = proto.getHeader();
-    if (header != null && header.length() > 0)
+    if (header != null && !header.isEmpty())
       ncfile.addAttribute(null, new Attribute("WMO Header", header));
 
     makeObsRecord(bufrConfig);

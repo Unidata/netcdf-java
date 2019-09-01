@@ -237,7 +237,7 @@ public class DataDescriptor {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
-  private int total_nbytesCDM = 0;
+  private int total_nbytesCDM;
 
   /**
    * count the bits used by the data in this dd and its children

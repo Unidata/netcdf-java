@@ -268,7 +268,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
         // iterates once over all the records
         public class BufrRecordIterator extends PointIteratorFromStructureData {
-          int countHere = 0;
+          int countHere;
 
           public BufrRecordIterator(StructureDataIterator structIter, PointFeatureIterator.Filter filter) {
             super(structIter, filter);

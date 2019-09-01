@@ -46,12 +46,12 @@ public class BufrConfig {
   private String filename;
   private StandardFields.StandardFieldsFromMessage standardFields;
   private FieldConverter rootConverter;
-  private int messHash = 0;
+  private int messHash;
   private FeatureType featureType;
   private Map<String, BufrStation> map;
   private long start = Long.MAX_VALUE;
   private long end = Long.MIN_VALUE;
-  private boolean debug = false;
+  private boolean debug;
 
   /*
    * Open file as a stream of BUFR messages, create config file.
@@ -195,9 +195,9 @@ public class BufrConfig {
 
   ////////////////////////////////////////////////////////////////////////////
   private StandardFields.StandardFieldsFromStructure extract;
-  private boolean hasStations = false;
-  private boolean hasDate = false;
-  private int countObs = 0;
+  private boolean hasStations;
+  private boolean hasDate;
+  private int countObs;
 
   private void scanBufrFile(RandomAccessFile raf) throws Exception {
     NetcdfFile ncd = null;
@@ -433,7 +433,7 @@ public class BufrConfig {
     BufrCdmIndexProto.FldType type;
     BufrCdmIndexProto.FldAction action;
     int min = Integer.MAX_VALUE;
-    int max = 0;
+    int max;
     boolean isSeq;
 
     private FieldConverter(int center, DataDescriptor dds) {

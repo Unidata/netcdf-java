@@ -27,9 +27,9 @@ public class BitCounterUncompressed implements BitCounter {
   private Map<DataDescriptor, BitCounterUncompressed[]> subCounters; // nested tables; null for regular fields
   private int[] startBit; // from start of data section, for each row
   private int countBits; // total nbits in this table
-  private int bitOffset = 0; // count bits
+  private int bitOffset; // count bits
 
-  private static boolean debug = false;
+  private static boolean debug;
 
   /**
    * This counts the size of an array of Structures or Sequences, ie Structure(n)

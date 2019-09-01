@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class NcepTable {
     }
   }
 
-  private static List<TableEntry> entries = null;
+  private static List<TableEntry> entries;
 
   private static class TableEntry {
     public int cat, subcat;

@@ -209,7 +209,7 @@ public class StandardFields {
       int value = -1;
       double valueD = Double.NaN;
       double scale = 1.0;
-      double offset = 0.0;
+      double offset;
       boolean hasScale;
 
       private Field(TypeAndOrder tao, Variable v) {

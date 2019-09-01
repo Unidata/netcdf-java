@@ -464,7 +464,7 @@ public class MessageCompressedDataReader {
     HashMap<DataDescriptor, StructureMembers.Member> nmap = null;
     if (req.map != null) {
       Sequence seq = (Sequence) seqdd.refersTo;
-      int[] shape = new int[] {ndatasets, count}; // seems unlikely this can handle recursion
+      int[] shape = {ndatasets, count}; // seems unlikely this can handle recursion
       ama = ArrayStructureMA.factoryMA(seq, shape);
       setIterators(ama);
 
@@ -505,7 +505,7 @@ public class MessageCompressedDataReader {
   private static class DpiTracker {
     DataDescriptorTreeConstructor.DataPresentIndicator dpi;
     boolean[] isPresent;
-    List<DataDescriptor> dpiDD = null;
+    List<DataDescriptor> dpiDD;
 
     DpiTracker(DataDescriptorTreeConstructor.DataPresentIndicator dpi, int nPresentFlags) {
       this.dpi = dpi;

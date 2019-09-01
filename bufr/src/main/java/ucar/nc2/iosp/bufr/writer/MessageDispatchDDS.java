@@ -34,27 +34,27 @@ public class MessageDispatchDDS {
   private Map<String, MessageWriter> writers = new HashMap<>(100);
   private List<Message> bufrTableMessages = new ArrayList<>();
 
-  int total_msgs = 0;
-  int match = 0;
-  int badCount = 0;
-  long badBytes = 0;
-  int failWrite = 0;
-  int ignored = 0;
+  int total_msgs;
+  int match;
+  int badCount;
+  long badBytes;
+  int failWrite;
+  int ignored;
 
   long total_bytes;
   int total_obs;
 
   // boolean checkBad = true;
-  boolean showMatch = false;
-  boolean showBad = false;
-  boolean showConfig = false;
+  boolean showMatch;
+  boolean showBad;
+  boolean showConfig;
 
   boolean dayRollover = true;
   boolean useCatSubdirs = true;
-  boolean useHeader = false;
+  boolean useHeader;
 
-  boolean writeIndex = false;
-  boolean writeSamples = false;
+  boolean writeIndex;
+  boolean writeSamples;
 
   WritableByteChannel badWbc;
   WritableByteChannel sampleWbc;
@@ -98,7 +98,7 @@ public class MessageDispatchDDS {
             if (line == null)
               break;
             line = line.trim();
-            if (line.length() == 0)
+            if (line.isEmpty())
               break;
             if (line.charAt(0) == '#')
               continue;
@@ -285,13 +285,13 @@ public class MessageDispatchDDS {
     String fileout;
     String index;
     // Indexer indexer;
-    short fileno = 0;
+    short fileno;
 
     Message proto;
     int count, countObs, nbad;
     float countBytes;
-    boolean ignore = false; // completely ignore
-    boolean checkBad = false; // default is to check for bad bits
+    boolean ignore; // completely ignore
+    boolean checkBad; // default is to check for bad bits
 
     MessType(int hash, String filename, String name, String index, String bitsOk) {
       this.hash = hash;

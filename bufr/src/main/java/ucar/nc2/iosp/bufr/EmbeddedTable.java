@@ -32,7 +32,7 @@ public class EmbeddedTable {
   private final BufrIdentificationSection ids;
 
   private List<Message> messages = new ArrayList<>();
-  private boolean tableRead = false;
+  private boolean tableRead;
   private TableB b;
   private TableD d;
   private Structure seq2, seq3, seq4;
