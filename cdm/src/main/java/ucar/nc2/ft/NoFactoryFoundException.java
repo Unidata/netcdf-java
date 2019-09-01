@@ -10,7 +10,6 @@ public class NoFactoryFoundException extends Exception {
    * initialized, and may subsequently be initialized by a call to {@link #initCause}.
    */
   public NoFactoryFoundException() {
-    super();
   }
 
   /**

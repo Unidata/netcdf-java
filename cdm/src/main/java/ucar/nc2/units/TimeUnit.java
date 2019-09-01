@@ -26,7 +26,6 @@ public class TimeUnit extends SimpleUnit {
   private double value;
   private double factor = 1.0;
   private String unitString;
-  // private Unit uu;
 
   /**
    * Constructor from a String.
@@ -35,8 +34,6 @@ public class TimeUnit extends SimpleUnit {
    * @throws UnitException is bad format
    */
   public TimeUnit(String text) throws UnitException {
-    super();
-
     if (text == null) {
       this.value = 1.0;
       this.unitString = "secs";

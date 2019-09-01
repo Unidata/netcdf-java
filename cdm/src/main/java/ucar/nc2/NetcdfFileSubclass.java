@@ -20,11 +20,9 @@ import java.io.IOException;
 public class NetcdfFileSubclass extends NetcdfFile {
 
   public NetcdfFileSubclass() {
-    super();
   }
 
   public NetcdfFileSubclass(IOServiceProvider iosp, String location) {
-    super();
     spi = iosp;
     this.location = location;
   }
