@@ -21,7 +21,8 @@ public final class TimeScaleUnit extends UnitImpl {
   private static final long serialVersionUID = 1L;
 
   private static final ZoneId utcZone = ZoneId.of("UTC");
-  private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZone(utcZone);
+  private static final DateTimeFormatter dtf =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZone(utcZone);
 
   /**
    * The second unit.
