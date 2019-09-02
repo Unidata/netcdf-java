@@ -4,6 +4,7 @@
  */
 package ucar.units;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import javax.annotation.concurrent.Immutable;
 import java.util.Date;
@@ -19,12 +20,8 @@ import java.util.Date;
 public final class TimeScaleUnit extends UnitImpl {
   private static final long serialVersionUID = 1L;
 
-  /**
-   * The date formatter.
-   *
-   * @serial
-   */
-  private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
+  private static final ZoneId utcZone = ZoneId.of("UTC");
+  private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZone(utcZone);
 
   /**
    * The second unit.
