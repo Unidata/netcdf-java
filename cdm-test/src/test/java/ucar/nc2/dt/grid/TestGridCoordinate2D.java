@@ -31,27 +31,6 @@ public class TestGridCoordinate2D {
   }
 
   @Test
-  public void testStuff1() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "asaScience/EGM200_3.ncml";
-    GridDataset gds = GridDataset.open(filename);
-    GeoGrid grid = gds.findGridByName("U");
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    CoordinateAxis lonAxis = gcs.getXHorizAxis();
-    assert lonAxis instanceof CoordinateAxis2D;
-    CoordinateAxis latAxis = gcs.getYHorizAxis();
-    assert latAxis instanceof CoordinateAxis2D;
-
-    GridCoordinate2D g2d = new GridCoordinate2D((CoordinateAxis2D) latAxis, (CoordinateAxis2D) lonAxis);
-    doOne(g2d, 35.0, -6.0);
-    doOne(g2d, 34.667302, -5.008376); // FAIL
-    doOne(g2d, 34.667303, -6.394240);
-    doOne(g2d, 36.6346, -5.0084);
-    doOne(g2d, 36.6346, -6.394240);
-
-    gds.close();
-  }
-
-  @Test
   public void testStuff2() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/fmrc/apex_fmrc/Run_20091025_0000.nc";
     GridDataset gds = GridDataset.open(filename);
