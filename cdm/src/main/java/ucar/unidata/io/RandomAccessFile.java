@@ -65,7 +65,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   protected static Set<String> allFiles = null;
   protected static List<String> openFiles = Collections.synchronizedList(new ArrayList<>()); // could keep map on file
                                                                                              // hashcode
-                                                                                             private static AtomicLong count_openFiles = new AtomicLong();
+  private static AtomicLong count_openFiles = new AtomicLong();
   private static AtomicInteger maxOpenFiles = new AtomicInteger();
   private static AtomicInteger debug_nseeks = new AtomicInteger();
   private static AtomicLong debug_nbytes = new AtomicLong();

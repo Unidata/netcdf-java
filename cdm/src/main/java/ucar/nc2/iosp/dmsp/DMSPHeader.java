@@ -694,10 +694,10 @@ public class DMSPHeader {
     public static final HeaderInfoTitle NUM_RECORDS = new HeaderInfoTitle("number of records"); // 692
     public static final HeaderInfoTitle SUBORBIT_HISTORY = new HeaderInfoTitle("suborbit history"); // F14200307192230.OIS
                                                                                                     // (1,691)
-                                                                                                    public static final HeaderInfoTitle PROCESSING_SYSTEM = new HeaderInfoTitle("processing system"); // v2.1b
+    public static final HeaderInfoTitle PROCESSING_SYSTEM = new HeaderInfoTitle("processing system"); // v2.1b
     public static final HeaderInfoTitle PROCESSING_DATE = new HeaderInfoTitle("processing date"); // Sat Jul 19 19:33:23
                                                                                                   // 2003
-                                                                                                  public static final HeaderInfoTitle SPACECRAFT_ID = new HeaderInfoTitle("spacecraft ID"); // F14
+    public static final HeaderInfoTitle SPACECRAFT_ID = new HeaderInfoTitle("spacecraft ID"); // F14
     public static final HeaderInfoTitle NORAD_ID = new HeaderInfoTitle("NORAD ID"); // 24753
     public static final HeaderInfoTitle START_DATE_UTC = new HeaderInfoTitle("start date UTC"); // 2003-07-19
     public static final HeaderInfoTitle START_TIME_UTC = new HeaderInfoTitle("start time UTC"); // 22:30:31.37112
@@ -709,7 +709,7 @@ public class DMSPHeader {
     public static final HeaderInfoTitle END_LAT_LON = new HeaderInfoTitle("end lat,lon"); // 16.99 316.69
     public static final HeaderInfoTitle START_SUBSOLAR_COORD = new HeaderInfoTitle("start sub-solar coord"); // 20.87
                                                                                                              // 202.37
-                                                                                                             public static final HeaderInfoTitle END_SUBSOLAR_COORD = new HeaderInfoTitle("end sub-solar coord"); // 20.87 201.16
+    public static final HeaderInfoTitle END_SUBSOLAR_COORD = new HeaderInfoTitle("end sub-solar coord"); // 20.87 201.16
     public static final HeaderInfoTitle START_LUNAR_COORD = new HeaderInfoTitle("start lunar coord"); // UNKNOWN
     public static final HeaderInfoTitle END_LUNAR_COORD = new HeaderInfoTitle("end lunar coord"); // UNKNOWN
     public static final HeaderInfoTitle START_DIRECTION = new HeaderInfoTitle("start direction");
@@ -741,7 +741,7 @@ public class DMSPHeader {
     public static final HeaderInfoTitle THERMAL_SCALE = new HeaderInfoTitle("thermal scale"); // 0.47
     public static final HeaderInfoTitle QC_FLAGS = new HeaderInfoTitle("QC flags"); // 0=not QC'ed 1=artificial 2=bad
                                                                                     // vis
-                                                                                    public static final HeaderInfoTitle PERCENT_DAYLIGHT = new HeaderInfoTitle("% daylight"); // 0.0
+    public static final HeaderInfoTitle PERCENT_DAYLIGHT = new HeaderInfoTitle("% daylight"); // 0.0
     public static final HeaderInfoTitle PERCENT_FULL_MOON = new HeaderInfoTitle("% full moon"); // 57.8
     public static final HeaderInfoTitle PERCENT_TERMINATOR_EVIDENT = new HeaderInfoTitle("% terminator evident"); // 0.0
     public static final HeaderInfoTitle END_HEADER = new HeaderInfoTitle("end header");
