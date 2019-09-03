@@ -6,6 +6,7 @@ package ucar.nc2.iosp.nids;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
@@ -196,7 +197,7 @@ class Nidsheader {
     }
     // Get product message header into a string for processing
 
-    String pib = new String(b, CDM.utf8Charset);
+    String pib = new String(b, StandardCharsets.UTF_8);
     if (pib.contains("SDUS")) {
       noHeader = false;
       return 1;
@@ -278,7 +279,7 @@ class Nidsheader {
 
     if (!noHeader) {
       // Get product message header into a string for processing
-      String pib = new String(b, 0, 100, CDM.utf8Charset);
+      String pib = new String(b, 0, 100, StandardCharsets.UTF_8);
       type = 0;
       pos = pib.indexOf("\r\r\n");
       while (pos != -1) {
@@ -314,7 +315,7 @@ class Nidsheader {
         case 3:
         case 4:
           System.arraycopy(b, hoff - 6, b3, 0, 3);
-          stationId = new String(b3, CDM.utf8Charset);
+          stationId = new String(b3, StandardCharsets.UTF_8);
           try {
             NexradStationDB.init(); // make sure database is initialized
             NexradStationDB.Station station = NexradStationDB.get("K" + stationId);
@@ -3301,7 +3302,7 @@ class Nidsheader {
     /*
      ** These tests were deduced from inspection from encrypted NOAAPORT files.
      */
-    String b = new String(buf, CDM.utf8Charset);
+    String b = new String(buf, StandardCharsets.UTF_8);
     if (b.startsWith("R3")) {
       return 1;
     }

@@ -5,12 +5,12 @@
 
 package thredds.catalog;
 
+import java.nio.charset.StandardCharsets;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
@@ -598,7 +598,7 @@ public class InvCatalogFactory {
   public String writeXML(InvCatalogImpl catalog) throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     writeXML(catalog, os, false);
-    return new String(os.toByteArray(), CDM.utf8Charset);
+    return new String(os.toByteArray(), StandardCharsets.UTF_8);
   }
 
   /*

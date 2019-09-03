@@ -8,7 +8,6 @@ package ucar.nc2.dt.point;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
-import ucar.nc2.StructurePseudo;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;

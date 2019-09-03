@@ -5,7 +5,7 @@
 
 package ucar.nc2.iosp.bufr.writer;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.MessageScanner;
@@ -73,7 +73,7 @@ public class BufrDataProcess {
   }
 
   int processOneFile(String filename, OutputStream os, Counter gtotal) throws IOException {
-    out = new PrintStream(os, false, CDM.utf8Charset.name());
+    out = new PrintStream(os, false, StandardCharsets.UTF_8.name());
     if (showFile)
       out.format("Process %s%n", filename);
     indent.setIndentLevel(0);

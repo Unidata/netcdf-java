@@ -6,9 +6,9 @@ package ucar.nc2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
+import java.nio.charset.StandardCharsets;
 import org.jdom2.Element;
 import ucar.ma2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
@@ -735,7 +735,7 @@ public class NCdumpW {
     }
 
     try {
-      Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
+      Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
       NCdumpW.print(sbuff.toString(), writer, null);
 
     } catch (IOException ioe) {

@@ -151,14 +151,6 @@ public class DatasetHtmlWriter {
               if (catalogUrl != null && datasetId != null) {
                 if (catalogUrl.indexOf('#') > 0)
                   catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
-                /*
-                 * try {
-                 * catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
-                 * datasetId = URLEncoder.encode(datasetId, "UTF-8");
-                 * } catch (UnsupportedEncodingException e) {
-                 * e.printStackTrace();
-                 * }
-                 */
                 queryString =
                     "catalog=" + urlParamEscaper.escape(catalogUrl) + "&dataset=" + urlParamEscaper.escape(datasetId);
               }

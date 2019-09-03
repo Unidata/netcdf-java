@@ -4,7 +4,7 @@
  */
 package ucar.ma2;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.util.Indent;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -404,7 +404,7 @@ public class ArrayStructureBB extends ArrayStructure {
         if (0 == pa[i])
           break;
       }
-      return new String(pa, 0, i, CDM.utf8Charset);
+      return new String(pa, 0, i, StandardCharsets.UTF_8);
     }
 
     throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");
@@ -449,7 +449,7 @@ public class ArrayStructureBB extends ArrayStructure {
         byte[] bytes = new byte[strlen];
         for (int j = 0; j < bytes.length; j++)
           bytes[j] = bbuffer.get(offset + i * strlen + j);
-        result[i] = new String(bytes, CDM.utf8Charset);
+        result[i] = new String(bytes, StandardCharsets.UTF_8);
       }
       return result;
     }

@@ -1,6 +1,5 @@
 package ucar.nc2.thredds;
 
-import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDocumentation;
 import thredds.catalog.ThreddsMetadata;

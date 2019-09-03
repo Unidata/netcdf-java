@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import java.nio.charset.StandardCharsets;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jsoup.Jsoup;
@@ -150,7 +151,7 @@ public class NcepHtmlScraper {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename + ".xml")) {
-      fout.write(x.getBytes(CDM.utf8Charset));
+      fout.write(x.getBytes(StandardCharsets.UTF_8));
     }
 
     if (show)
@@ -290,7 +291,7 @@ public class NcepHtmlScraper {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename + ".xml")) {
-      fout.write(x.getBytes(CDM.utf8Charset));
+      fout.write(x.getBytes(StandardCharsets.UTF_8));
     }
 
     if (show)
@@ -305,7 +306,7 @@ public class NcepHtmlScraper {
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-      fout.write(f.toString().getBytes(CDM.utf8Charset));
+      fout.write(f.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     if (show)

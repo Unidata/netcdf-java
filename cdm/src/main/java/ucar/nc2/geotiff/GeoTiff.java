@@ -14,11 +14,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
 
 /**
@@ -370,7 +370,7 @@ public class GeoTiff implements Closeable {
   }
 
   private int writeSValue(ByteBuffer buffer, IFDEntry ifd) {
-    buffer.put(ifd.valueS.getBytes(CDM.utf8Charset));
+    buffer.put(ifd.valueS.getBytes(StandardCharsets.UTF_8));
     int size = ifd.valueS.length();
     if ((size & 1) != 0)
       size++; // check if odd
@@ -565,7 +565,7 @@ public class GeoTiff implements Closeable {
   private String readSValue(ByteBuffer buffer, IFDEntry ifd) {
     byte[] dst = new byte[ifd.count];
     buffer.get(dst);
-    return new String(dst, CDM.utf8Charset);
+    return new String(dst, StandardCharsets.UTF_8);
   }
 
   private void printBytes(PrintStream ps, String head, ByteBuffer buffer, int n) {

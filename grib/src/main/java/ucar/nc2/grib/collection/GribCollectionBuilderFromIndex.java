@@ -5,10 +5,10 @@
 
 package ucar.nc2.grib.collection;
 
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateEns;
@@ -70,9 +70,9 @@ abstract class GribCollectionBuilderFromIndex {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, getMagicStart().getBytes(CDM.utf8Charset))) {
+      if (!NcStream.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8))) {
         raf.seek(0);
-        NcStream.readAndTest(raf, getMagicStart().getBytes(CDM.utf8Charset)); // debug
+        NcStream.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8)); // debug
         logger.warn("GribCollectionBuilderFromIndex {}: invalid index raf={}", gc.getName(), raf.getLocation());
         throw new IllegalStateException(); // temp debug
         // return false;

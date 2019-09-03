@@ -4,12 +4,12 @@
  */
 package ucar.nc2.iosp.nids;
 
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateUnit;
 import java.io.*;
@@ -478,7 +478,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
 
       byte[] b = new byte[llen];
       bos.get(b);
-      String sl = new String(b, CDM.utf8Charset) + "\n";
+      String sl = new String(b, StandardCharsets.UTF_8) + "\n";
       sbuf.append(sl);
       icnt = icnt + llen + 2;
     }
@@ -1057,7 +1057,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
           if (0 == pa[i])
             break;
         }
-        return new String(pa, 0, i, CDM.utf8Charset);
+        return new String(pa, 0, i, StandardCharsets.UTF_8);
       }
 
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");

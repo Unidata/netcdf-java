@@ -4,6 +4,7 @@ package ucar.nc2.util;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import java.net.*;
 import java.util.ArrayList;
@@ -71,8 +72,8 @@ public class EscapeStrings {
       if (in == null) {
         return null;
       }
-      byte[] utf8 = in.getBytes(CDM.utf8Charset);
-      byte[] allow8 = allowable.getBytes(CDM.utf8Charset);
+      byte[] utf8 = in.getBytes(StandardCharsets.UTF_8);
+      byte[] allow8 = allowable.getBytes(StandardCharsets.UTF_8);
       for (byte b : utf8) {
         if (b == blank && spaceplus) {
           out.append('+');
@@ -128,7 +129,7 @@ public class EscapeStrings {
         return null;
       }
 
-      byte[] utf8 = in.getBytes(CDM.utf8Charset);
+      byte[] utf8 = in.getBytes(StandardCharsets.UTF_8);
       byte escape8 = (byte) escape;
       byte[] out = new byte[utf8.length]; // Should be max we need
 
@@ -146,7 +147,7 @@ public class EscapeStrings {
         }
         out[index8++] = b;
       }
-      return new String(out, 0, index8, CDM.utf8Charset);
+      return new String(out, 0, index8, StandardCharsets.UTF_8);
     } catch (Exception e) {
       return in;
     }
@@ -310,7 +311,7 @@ public class EscapeStrings {
   public static String urlDecode(String s) {
     try {
       // s = unescapeString(s, _URIEscape, "", false);
-      s = URLDecoder.decode(s, "UTF-8");
+      s = URLDecoder.decode(s, CDM.UTF8);
     } catch (Exception e) {
       s = null;
     }

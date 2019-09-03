@@ -4,7 +4,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.KMPMatch;
 import java.io.*;
@@ -20,7 +20,7 @@ public class MessageScanner {
   // static public final int MAX_MESSAGE_SIZE = 500 * 1000; // GTS allows up to 500 Kb messages (ref?)
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MessageScanner.class);
 
-  private static final KMPMatch matcher = new KMPMatch("BUFR".getBytes(CDM.utf8Charset));
+  private static final KMPMatch matcher = new KMPMatch("BUFR".getBytes(StandardCharsets.UTF_8));
 
   /**
    * is this a valid BUFR file.
@@ -237,7 +237,7 @@ public class MessageScanner {
       if (b >= 32 && b < 127)
         bb[count++] = b;
     }
-    return new String(bb, 0, count, CDM.utf8Charset);
+    return new String(bb, 0, count, StandardCharsets.UTF_8);
   }
 
   public long writeCurrentMessage(WritableByteChannel out) throws IOException {

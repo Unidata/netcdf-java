@@ -7,8 +7,8 @@
 
 package ucar.nc2.iosp.netcdf3;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -302,7 +302,7 @@ public abstract class N3streamWriter {
 
   // write a string then pad to 4 byte boundary
   private int writeString(DataOutputStream stream, String s) throws IOException {
-    byte[] b = s.getBytes(CDM.utf8Charset);
+    byte[] b = s.getBytes(StandardCharsets.UTF_8);
     if (null != stream) {
       stream.writeInt(b.length);
       stream.write(b);

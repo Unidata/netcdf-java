@@ -7,6 +7,7 @@
 
 package thredds.util;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.MutableAttributeSet;
@@ -92,7 +93,7 @@ public class DodsURLExtractor {
       if (lline.contains("<meta ")) // skip meta tags
         continue;
       // System.out.println("--"+line);
-      bos.write(line.getBytes(CDM.utf8Charset));
+      bos.write(line.getBytes(StandardCharsets.UTF_8));
       line = buffIn.readLine();
     }
     buffIn.close();

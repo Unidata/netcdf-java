@@ -6,7 +6,7 @@
 package ucar.nc2.iosp.grads;
 
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
@@ -190,10 +190,10 @@ public class GradsDataDescriptorFile {
    */
   public static final int ENS_TIME_TEMPLATE = 3;
 
-  private static final KMPMatch matchDSET = new KMPMatch("DSET".getBytes(CDM.utf8Charset));
-  private static final KMPMatch matchdset = new KMPMatch("dset".getBytes(CDM.utf8Charset));
-  private static final KMPMatch matchENDVARS = new KMPMatch("ENDVARS".getBytes(CDM.utf8Charset));
-  private static final KMPMatch matchendvars = new KMPMatch("endvars".getBytes(CDM.utf8Charset));
+  private static final KMPMatch matchDSET = new KMPMatch("DSET".getBytes(StandardCharsets.UTF_8));
+  private static final KMPMatch matchdset = new KMPMatch("dset".getBytes(StandardCharsets.UTF_8));
+  private static final KMPMatch matchENDVARS = new KMPMatch("ENDVARS".getBytes(StandardCharsets.UTF_8));
+  private static final KMPMatch matchendvars = new KMPMatch("endvars".getBytes(StandardCharsets.UTF_8));
 
   public static boolean failFast(RandomAccessFile raf) throws IOException {
     raf.seek(0);
@@ -387,7 +387,8 @@ public class GradsDataDescriptorFile {
 
     // LOOK not using raf - opened file again
     int count = 0;
-    try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(ddFile), CDM.utf8Charset))) {
+    try (BufferedReader r =
+        new BufferedReader(new InputStreamReader(new FileInputStream(ddFile), StandardCharsets.UTF_8))) {
       boolean inVarSection = false;
       boolean inEnsSection = false;
       String line;

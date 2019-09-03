@@ -5,8 +5,6 @@
 package ucar.nc2.dods;
 
 import opendap.dap.*;
-import opendap.dap.Attribute;
-import opendap.dap.parsers.ParseException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -15,7 +13,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 
 /**

@@ -6,13 +6,13 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.coord.CalendarDateFactory;
 import ucar.nc2.grib.coord.Coordinate;
@@ -505,7 +505,7 @@ abstract class GribPartitionBuilder {
       raf.order(RandomAccessFile.BIG_ENDIAN);
 
       //// header message
-      raf.write(getMagicStart().getBytes(CDM.utf8Charset));
+      raf.write(getMagicStart().getBytes(StandardCharsets.UTF_8));
       raf.writeInt(getVersion());
       raf.writeLong(0); // no record section
 

@@ -10,7 +10,6 @@ import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.cataloggen.InvCrawlablePair;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-import java.io.IOException;
 import java.util.*;
 
 /**

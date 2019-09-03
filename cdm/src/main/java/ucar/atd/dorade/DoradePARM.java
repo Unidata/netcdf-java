@@ -5,8 +5,8 @@
 
 package ucar.atd.dorade;
 
-import ucar.nc2.constants.CDM;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 
 /* $Id:DoradePARM.java 51 2006-07-12 17:13:13Z caron $ */
 
@@ -67,9 +67,9 @@ public class DoradePARM extends DoradeDescriptor {
     //
     // unpack
     //
-    paramName = new String(data, 8, 8, CDM.utf8Charset).trim();
-    paramDescription = new String(data, 16, 40, CDM.utf8Charset).trim();
-    unitName = new String(data, 56, 8, CDM.utf8Charset).trim();
+    paramName = new String(data, 8, 8, StandardCharsets.UTF_8).trim();
+    paramDescription = new String(data, 16, 40, StandardCharsets.UTF_8).trim();
+    unitName = new String(data, 56, 8, StandardCharsets.UTF_8).trim();
     usedPRTs = grabShort(data, 64);
     usedFrequencies = grabShort(data, 66);
     rcvrBandwidth = grabFloat(data, 68);
@@ -77,7 +77,7 @@ public class DoradePARM extends DoradeDescriptor {
     polarization = grabShort(data, 74);
     nSamples = grabShort(data, 76);
     binaryFormat = grabShort(data, 78);
-    thresholdParamName = new String(data, 80, 8, CDM.utf8Charset).trim();
+    thresholdParamName = new String(data, 80, 8, StandardCharsets.UTF_8).trim();
     thresholdValue = grabFloat(data, 88);
     scale = grabFloat(data, 92);
     bias = grabFloat(data, 96);

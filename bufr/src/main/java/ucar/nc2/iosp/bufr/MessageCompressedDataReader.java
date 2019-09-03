@@ -5,10 +5,10 @@
 
 package ucar.nc2.iosp.bufr;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Sequence;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
@@ -338,7 +338,7 @@ public class MessageCompressedDataReader {
 
         if (null != out)
           out.f.format("%s read %d %s (%s) bitWidth=%d defValue=%s dataWidth=%d n=%d bitOffset=%d %n", out.indent(),
-              out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, CDM.utf8Charset),
+              out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, StandardCharsets.UTF_8),
               dataWidth, ndatasets, bitOffset);
 
         if (iter != null) {
@@ -364,7 +364,7 @@ public class MessageCompressedDataReader {
                   iter.setCharNext((char) cval); // ??
                 }
               if (out != null)
-                out.f.format(" %s,", new String(incValue, CDM.utf8Charset));
+                out.f.format(" %s,", new String(incValue, StandardCharsets.UTF_8));
             }
           }
         }

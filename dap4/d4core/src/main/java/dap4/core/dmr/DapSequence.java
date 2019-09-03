@@ -5,8 +5,6 @@
 
 package dap4.core.dmr;
 
-import java.util.Map;
-
 public class DapSequence extends DapStructure {
 
   //////////////////////////////////////////////////

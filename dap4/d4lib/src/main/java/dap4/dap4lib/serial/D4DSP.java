@@ -5,16 +5,10 @@
 
 package dap4.dap4lib.serial;
 
-import dap4.core.dmr.DapAttribute;
 import dap4.core.dmr.DapDataset;
 import dap4.core.util.DapDump;
 import dap4.core.util.DapException;
-import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
-import dap4.dap4lib.DMRPrinter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 

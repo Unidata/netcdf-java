@@ -38,7 +38,6 @@
 
 package opendap.dap.parsers;
 
-import static opendap.dap.parsers.Dap2Parser.*;
 import java.io.*;
 
 class Dap2Lex implements Dap2Parser.Lexer {

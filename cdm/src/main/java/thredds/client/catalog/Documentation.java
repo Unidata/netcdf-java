@@ -4,8 +4,8 @@
  */
 package thredds.client.catalog;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import ucar.nc2.constants.CDM;
 import javax.annotation.concurrent.Immutable;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -106,7 +106,7 @@ public class Documentation {
           break;
         os.write(buffer, 0, bytesRead);
       }
-      return new String(os.toByteArray(), CDM.utf8Charset);
+      return new String(os.toByteArray(), StandardCharsets.UTF_8);
     }
   }
 

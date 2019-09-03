@@ -7,7 +7,7 @@
 
 package thredds.catalog.dl;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -41,7 +41,7 @@ public class Grib1toDIF implements VocabTranslator {
     if (ios == null)
       throw new IOException("Cant find resource= " + resourceName);
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     int count = 0;
     while (count < maxLines) {
       String line = dataIS.readLine();

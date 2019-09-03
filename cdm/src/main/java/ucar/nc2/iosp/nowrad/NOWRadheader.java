@@ -9,6 +9,7 @@ package ucar.nc2.iosp.nowrad;
 
 // ~--- non-JDK imports --------------------------------------------------------
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -120,7 +121,7 @@ public class NOWRadheader {
       return 0;
     }
 
-    String pidd = new String(b, 15, 5, CDM.utf8Charset);
+    String pidd = new String(b, 15, 5, StandardCharsets.UTF_8);
 
     if (pidd.contains("NOWRA") || pidd.contains("USRAD") || pidd.contains("NEX")) {
       return 1;
@@ -172,7 +173,7 @@ public class NOWRadheader {
     }
 
     int hsize = b[3];
-    String product = new String(b, 15, 8, CDM.utf8Charset);
+    String product = new String(b, 15, 8, StandardCharsets.UTF_8);
 
     // image lines
     // byte[] bt = new byte[] { (byte) 0xF0, (byte) 0x0A };
@@ -190,11 +191,11 @@ public class NOWRadheader {
     // if(convertunsignedByte2Short(b[6+hsize]) != 0xF0 ||
     // convertunsignedByte2Short(b[7+hsize]) != 0x0A )
     // return;
-    String lstr = trim(new String(b, t1 + 2, 4, CDM.utf8Charset));
+    String lstr = trim(new String(b, t1 + 2, 4, StandardCharsets.UTF_8));
 
     numY = Integer.parseInt(lstr);
 
-    String estr = trim(new String(b, t1 + 6, 5, CDM.utf8Charset));
+    String estr = trim(new String(b, t1 + 6, 5, StandardCharsets.UTF_8));
 
     numX = Integer.parseInt(estr);
     // bt = new byte[] { (byte) 0xF0, (byte) 0x03 };
@@ -222,23 +223,23 @@ public class NOWRadheader {
     }
 
     // Image time, HHMMSS. The time will be in the form HH:MM, so look :
-    String ts = new String(b, t1 + 22 + off, 2, CDM.utf8Charset);
+    String ts = new String(b, t1 + 22 + off, 2, StandardCharsets.UTF_8);
     int hr = Integer.parseInt(ts);
 
-    ts = new String(b, t1 + 25 + off, 2, CDM.utf8Charset);
+    ts = new String(b, t1 + 25 + off, 2, StandardCharsets.UTF_8);
 
     int min = Integer.parseInt(ts);
 
-    ts = new String(b, t1 + 28 + off, 2, CDM.utf8Charset);
+    ts = new String(b, t1 + 28 + off, 2, StandardCharsets.UTF_8);
 
     int dd = Integer.parseInt(ts);
 
-    ts = new String(b, t1 + 31 + off, 3, CDM.utf8Charset);
+    ts = new String(b, t1 + 31 + off, 3, StandardCharsets.UTF_8);
 
     String mon = ts;
     int month = getMonth(mon);
 
-    ts = new String(b, t1 + 35 + off, 2, CDM.utf8Charset);
+    ts = new String(b, t1 + 35 + off, 2, StandardCharsets.UTF_8);
 
     int year = Integer.parseInt(ts);
     SimpleDateFormat sdf = new SimpleDateFormat();
@@ -263,7 +264,7 @@ public class NOWRadheader {
     // convertunsignedByte2Short(b[102 + hsize]) != 0x0b )
     // return;
     if (product.contains("NOWRAD")) {
-      String ot = new String(b, t1 + 2, 68, CDM.utf8Charset);
+      String ot = new String(b, t1 + 2, 68, StandardCharsets.UTF_8);
 
       // List<String> toks = StringUtil.split(ot, " ", true, true);
       String[] toks = StringUtil2.splitString(ot);
@@ -297,7 +298,7 @@ public class NOWRadheader {
       // data struct
       nowrad(hoffset, rlat1, rlon1, rlat2, rlon2, (float) nav4, (float) nav5, date);
     } else if (product.contains("USRADHF")) {
-      String ot = new String(b, t1 + 2, 107, CDM.utf8Charset);
+      String ot = new String(b, t1 + 2, 107, StandardCharsets.UTF_8);
 
       String[] toks = StringUtil2.splitString(ot);
       double nav1 = Math.toDegrees(Double.parseDouble(toks[1])); // standard lat 1

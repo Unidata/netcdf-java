@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import com.beust.jcommander.*;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
@@ -149,7 +149,7 @@ public class GribCdmIndex implements IndexReader {
     String magic;
 
     raf.seek(0);
-    magic = raf.readString(Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length);
+    magic = raf.readString(Grib2CollectionWriter.MAGIC_START.getBytes(StandardCharsets.UTF_8).length);
 
     switch (magic) {
       case Grib2CollectionWriter.MAGIC_START:
@@ -648,7 +648,7 @@ public class GribCdmIndex implements IndexReader {
      * raf.seek(0);
      * byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.getBytes().length]; // they are all the same
      * raf.read(b);
-     * String magic = new String(b, CDM.utf8Charset);
+     * String magic = new String(b, StandardCharsets.UTF_8);
      * 
      * GribCdmIndex gci = new GribCdmIndex();
      * 
@@ -945,8 +945,9 @@ public class GribCdmIndex implements IndexReader {
       indexRaf.seek(0);
 
       //// header message
-      byte[] magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length]; // they are all the
-                                                                                                   // same
+      byte[] magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(StandardCharsets.UTF_8).length]; // they are
+                                                                                                          // all the
+      // same
       indexRaf.readFully(magic);
 
       int version = indexRaf.readInt();

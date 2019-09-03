@@ -6,7 +6,6 @@
 package ucar.nc2.dt.point;
 
 import ucar.ma2.DataType;
-import ucar.ma2.Section;
 import ucar.nc2.VariableSimpleIF;
 
 /**

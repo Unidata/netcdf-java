@@ -40,10 +40,9 @@
 
 package opendap.servlet;
 
+import java.nio.charset.StandardCharsets;
 import opendap.dap.Util;
 import opendap.dap.parsers.ParseException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
 /**
@@ -78,7 +77,8 @@ public class GetDirHandler {
 
     try {
 
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
+      PrintWriter pw =
+          new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), StandardCharsets.UTF_8));
 
       // ignore String ddxCacheDir = rs.getDDXCache(rs.getRootPath());
       String ddsCacheDir = rs.getDDSCache(rs.getRootPath());

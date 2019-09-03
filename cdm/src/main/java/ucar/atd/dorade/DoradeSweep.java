@@ -5,8 +5,8 @@
 
 package ucar.atd.dorade;
 
+import java.nio.charset.StandardCharsets;
 import ucar.atd.dorade.DoradeDescriptor.DescriptorException;
-import ucar.nc2.constants.CDM;
 import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.Date;
@@ -505,7 +505,7 @@ public class DoradeSweep {
     // throw new IOException();
     // }
 
-    return expectedName.equals(new String(nameBytes, CDM.utf8Charset));
+    return expectedName.equals(new String(nameBytes, StandardCharsets.UTF_8));
   }
 
   // unidata added

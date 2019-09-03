@@ -3,6 +3,7 @@
  */
 package ucar.nc2.dods;
 
+import java.nio.charset.StandardCharsets;
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
 import ucar.nc2.constants.CF;
@@ -2301,12 +2302,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
     f.format("DDS = %n");
     ByteArrayOutputStream buffOS = new ByteArrayOutputStream(8000);
     dds.print(buffOS);
-    f.format("%s%n", new String(buffOS.toByteArray(), Util.UTF8));
+    f.format("%s%n", new String(buffOS.toByteArray(), StandardCharsets.UTF_8));
 
     f.format("%nDAS = %n");
     buffOS = new ByteArrayOutputStream(8000);
     das.print(buffOS);
-    f.format("%s%n", new String(buffOS.toByteArray(), Util.UTF8));
+    f.format("%s%n", new String(buffOS.toByteArray(), StandardCharsets.UTF_8));
   }
 
   public String getFileTypeId() {

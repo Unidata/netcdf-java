@@ -6,7 +6,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import java.io.BufferedReader;
@@ -125,7 +125,7 @@ public class FslHrrrLocalTables extends NcepLocalTables {
     try (InputStream is = cl.getResourceAsStream(resourcePath)) {
       if (is == null)
         throw new IllegalStateException("Cant find " + resourcePath);
-      try (BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
         HashMap<String, Grib2Parameter> names = new HashMap<>(200);
 
         while (true) {

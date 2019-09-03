@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
@@ -618,7 +619,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   public String getDetailInfo() {
     Formatter f = new Formatter();
     ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, CDM.utf8Charset));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
 
     try {
       NetcdfFile ncfile = new NetcdfFileSubclass();

@@ -6,6 +6,7 @@ package ucar.nc2.iosp.bufr;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
@@ -182,7 +183,7 @@ public class ScannerPqact extends Scanner {
     pqactList = new ArrayList<>();
 
     try (FileInputStream fin = new FileInputStream(filename)) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(fin, CDM.utf8Charset));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(fin, StandardCharsets.UTF_8));
       int count = 0;
       while (true) {
         String line = dataIS.readLine();

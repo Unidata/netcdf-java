@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.util.Misc;
@@ -82,7 +83,7 @@ public class H5header extends NCheader {
   }
 
   private static final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
-  private static final String hdf5magic = new String(head, CDM.utf8Charset);
+  private static final String hdf5magic = new String(head, StandardCharsets.UTF_8);
   private static final long maxHeaderPos = 50000; // header's gotta be within this
   private static final boolean transformReference = true;
 
@@ -138,7 +139,7 @@ public class H5header extends NCheader {
     } else if (debug1 || debugContinueMessage || debugCreationOrder || debugDetail || debugDimensionScales
         || debugGroupBtree || debugHardLink || debugHeap || debugPos || debugReference || debugTracker || debugV
         || debugSoftLink || warnings) {
-      debugOut = new PrintWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
+      debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
       mustClose = true;
     }
 
@@ -1217,7 +1218,7 @@ public class H5header extends NCheader {
         break;
       count++;
     }
-    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
+    return new String(b, 0, count, StandardCharsets.UTF_8); // all strings are considered to be UTF-8 unicode
   }
 
   private String convertString(byte[] b, int start, int len) {
@@ -1228,7 +1229,8 @@ public class H5header extends NCheader {
         break;
       count++;
     }
-    return new String(b, start, count - start, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
+    return new String(b, start, count - start, StandardCharsets.UTF_8); // all strings are considered to be UTF-8
+                                                                        // unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {
@@ -4992,7 +4994,7 @@ public class H5header extends NCheader {
       int count = 0;
       while (heap[offset + count] != 0)
         count++;
-      return new String(heap, offset, count, CDM.utf8Charset);
+      return new String(heap, offset, count, StandardCharsets.UTF_8);
     }
 
   } // LocalHeap
@@ -5053,7 +5055,7 @@ public class H5header extends NCheader {
     count += padding(count, 8);
     raf.seek(filePos + count);
 
-    return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
+    return new String(s, StandardCharsets.UTF_8); // all Strings are UTF-8 unicode
   }
 
   /**

@@ -5,9 +5,9 @@
 
 package ucar.nc2.util;
 
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
 import java.util.*;
@@ -164,7 +164,7 @@ public class TableParser {
 
     List<Record> records = new ArrayList<>();
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     int count = 0;
     while ((maxLines < 0) || (count < maxLines)) {
       String line = dataIS.readLine();

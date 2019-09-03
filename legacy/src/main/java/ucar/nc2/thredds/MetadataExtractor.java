@@ -12,7 +12,6 @@ import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.DataFormatType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;

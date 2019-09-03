@@ -5,8 +5,6 @@
 package ucar.nc2.dods;
 
 import ucar.nc2.*;
-import ucar.nc2.Attribute;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import java.util.*;
 import java.io.IOException;

@@ -39,6 +39,7 @@
 
 package opendap.dap;
 
+import java.nio.charset.StandardCharsets;
 import opendap.dap.parsers.DDSXMLParser;
 import ucar.nc2.util.EscapeStrings;
 import java.io.BufferedWriter;
@@ -787,7 +788,7 @@ public class Attribute extends DAPNode {
    * @param pad the number of spaces to indent each line.
    */
   public final void print(OutputStream os, String pad) {
-    print(new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, Util.UTF8))), pad);
+    print(new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))), pad);
   }
 
   /**
@@ -826,7 +827,7 @@ public class Attribute extends DAPNode {
    * @opendap.ddx.experimental
    */
   public void printXML(OutputStream os, String pad) {
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, Util.UTF8)));
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)));
     printXML(pw, pad);
     pw.flush();
   }

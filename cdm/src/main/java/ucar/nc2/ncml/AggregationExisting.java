@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -195,7 +196,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     // Get a file channel for the file
     try (FileOutputStream fos = new FileOutputStream(cacheFile);
         FileChannel channel = fos.getChannel();
-        PrintWriter out = new PrintWriter(new OutputStreamWriter(fos, CDM.utf8Charset))) {
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8))) {
 
       // Try acquiring the lock without blocking. This method returns
       // null or throws an exception if the file is already locked.

@@ -41,7 +41,7 @@
 package opendap.servlet;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import opendap.dap.*;
 import opendap.util.dasTools;
@@ -58,8 +58,6 @@ import opendap.dap.parsers.ParseException;
  */
 
 public class GetInfoHandler {
-
-  static final Charset UTF8 = Charset.forName("UTF-8");
 
   private static final boolean _Debug = false;
 
@@ -187,7 +185,8 @@ public class GetInfoHandler {
     // Try to open and read the override file for this dataset.
     try {
       File fin = new File(infoDir + overrideFile);
-      try (BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin), Util.UTF8));) {
+      try (BufferedReader svIn =
+          new BufferedReader(new InputStreamReader(new FileInputStream(fin), StandardCharsets.UTF_8));) {
         boolean done = false;
         while (!done) {
           String line = svIn.readLine();
@@ -223,7 +222,7 @@ public class GetInfoHandler {
     try {
       File fin = new File(infoDir + dataSet + ".html");
       try (FileInputStream fis = new FileInputStream(fin);
-          BufferedReader svIn = new BufferedReader(new InputStreamReader(fis, UTF8));) {
+          BufferedReader svIn = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));) {
         boolean done = false;
         while (!done) {
           String line = svIn.readLine();
@@ -249,7 +248,8 @@ public class GetInfoHandler {
       if (_Debug)
         System.out.println("Server Info File: " + serverFile);
       File fin = new File(serverFile);
-      try (BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin), UTF8));) {
+      try (BufferedReader svIn =
+          new BufferedReader(new InputStreamReader(new FileInputStream(fin), StandardCharsets.UTF_8));) {
 
         boolean done = false;
 

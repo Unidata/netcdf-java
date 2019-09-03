@@ -8,7 +8,7 @@ package ucar.nc2.iosp.bufr.writer;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
@@ -185,7 +185,7 @@ public class BufrSplitter {
         if (b >= 32 && b < 127) // ascii only
           bb[count++] = b;
       }
-      header = new String(bb, 0, count, CDM.utf8Charset);
+      header = new String(bb, 0, count, StandardCharsets.UTF_8);
     }
 
   }

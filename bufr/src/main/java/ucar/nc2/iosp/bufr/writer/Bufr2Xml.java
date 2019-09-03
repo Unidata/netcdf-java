@@ -41,9 +41,9 @@ public class Bufr2Xml {
 
     try {
       XMLOutputFactory fac = XMLOutputFactory.newInstance();
-      staxWriter = fac.createXMLStreamWriter(os, "UTF-8");
+      staxWriter = fac.createXMLStreamWriter(os, CDM.UTF8);
 
-      staxWriter.writeStartDocument("UTF-8", "1.0");
+      staxWriter.writeStartDocument(CDM.UTF8, "1.0");
       // staxWriter.writeCharacters("\n");
       // staxWriter.writeStartElement("bufrMessage");
 

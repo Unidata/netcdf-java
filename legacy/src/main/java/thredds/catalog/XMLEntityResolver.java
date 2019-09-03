@@ -5,6 +5,7 @@
 
 package thredds.catalog;
 
+import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,6 @@ import org.jdom2.Namespace;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 /**
@@ -287,7 +287,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
       ByteArrayOutputStream sbuff = new ByteArrayOutputStream(3000);
       if (is != null) {
         IO.copy(is, sbuff);
-        entity = new String(sbuff.toByteArray(), CDM.utf8Charset);
+        entity = new String(sbuff.toByteArray(), StandardCharsets.UTF_8);
         logger.debug(" *** entity " + entityName + " mapped to local resource at " + resourceName);
 
       } else if (urlName != null) { // otherwise, get from network

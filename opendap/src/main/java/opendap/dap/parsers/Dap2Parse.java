@@ -7,7 +7,6 @@
 
 package opendap.dap.parsers;
 
-import java.io.InputStream;
 import java.util.*;
 import opendap.dap.*;
 import ucar.nc2.util.EscapeStrings;

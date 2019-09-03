@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -260,7 +261,7 @@ public class TestN4reading {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("d");
       String attValue = ncfile.findAttValueIgnoreCase(v, "c", null);
-      String s = Misc.showBytes(attValue.getBytes(CDM.utf8Charset));
+      String s = Misc.showBytes(attValue.getBytes(StandardCharsets.UTF_8));
       logger.debug(" d:c = ({}) = {}", attValue, s);
       // Array data = v.read();
       // NCdumpW.printArray(data, "cr", System.out, null);

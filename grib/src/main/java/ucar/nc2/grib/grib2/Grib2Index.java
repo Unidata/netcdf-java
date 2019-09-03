@@ -6,8 +6,8 @@
 package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
+import java.nio.charset.StandardCharsets;
 import thredds.inventory.CollectionUpdateType;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
@@ -101,7 +101,7 @@ public class Grib2Index extends GribIndex {
 
     try (FileInputStream fin = new FileInputStream(idxFile)) {
       //// check header is ok
-      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset))) {
+      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
         logger.info("Bad magic number of grib index on file= {}", idxFile);
         return false;
       }
@@ -210,7 +210,7 @@ public class Grib2Index extends GribIndex {
 
     try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
       //// header message
-      fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
+      fout.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));
       NcStream.writeVInt(fout, version);
 
       Map<Long, Integer> gdsMap = new HashMap<>();

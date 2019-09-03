@@ -5,8 +5,8 @@
 
 package ucar.atd.dorade;
 
-import ucar.nc2.constants.CDM;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -35,7 +35,7 @@ class DoradeVOLD extends DoradeDescriptor {
     volNumber = grabShort(data, 10);
     maxRecLen = grabInt(data, 12);
 
-    projectName = new String(data, 16, 20, CDM.utf8Charset).trim();
+    projectName = new String(data, 16, 20, StandardCharsets.UTF_8).trim();
 
     Calendar calendar = Calendar.getInstance(TZ_UTC);
 
@@ -49,8 +49,8 @@ class DoradeVOLD extends DoradeDescriptor {
     calendar.set(year, month - 1, day, hour, minute, second);
     dataTime = calendar.getTime();
 
-    flightId = new String(data, 48, 8, CDM.utf8Charset).trim();
-    facilityName = new String(data, 56, 8, CDM.utf8Charset).trim();
+    flightId = new String(data, 48, 8, StandardCharsets.UTF_8).trim();
+    facilityName = new String(data, 56, 8, StandardCharsets.UTF_8).trim();
 
     year = grabShort(data, 64);
     month = grabShort(data, 66);

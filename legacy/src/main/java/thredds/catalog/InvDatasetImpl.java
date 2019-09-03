@@ -7,6 +7,7 @@ package thredds.catalog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -1085,8 +1086,8 @@ public class InvDatasetImpl extends InvDataset {
             if (catalogUrl.indexOf('#') > 0)
               catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
             try {
-              catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
-              datasetId = URLEncoder.encode(datasetId, "UTF-8");
+              catalogUrl = URLEncoder.encode(catalogUrl, CDM.UTF8);
+              datasetId = URLEncoder.encode(datasetId, CDM.UTF8);
             } catch (UnsupportedEncodingException e) {
               e.printStackTrace();
             }

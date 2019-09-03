@@ -6,9 +6,9 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
+import java.nio.charset.StandardCharsets;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateEns;
 import ucar.nc2.grib.coord.CoordinateRuntime;
@@ -107,7 +107,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       raf.order(RandomAccessFile.BIG_ENDIAN);
 
       //// header message
-      raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
+      raf.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));
       raf.writeInt(version);
       long lenPos = raf.getFilePointer();
       raf.writeLong(0); // save space to write the length of the record section

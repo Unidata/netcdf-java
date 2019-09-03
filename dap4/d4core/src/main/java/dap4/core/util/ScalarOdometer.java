@@ -5,10 +5,6 @@
 
 package dap4.core.util;
 
-import dap4.core.dmr.DapDimension;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**

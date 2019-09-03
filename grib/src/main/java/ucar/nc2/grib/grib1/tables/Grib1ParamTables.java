@@ -5,8 +5,8 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -281,7 +281,7 @@ public class Grib1ParamTables {
         return false;
 
       File parent = new File(lookupFile).getParentFile();
-      try (InputStreamReader isr = new InputStreamReader(is, CDM.utf8Charset);
+      try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
           BufferedReader br = new BufferedReader(isr)) {
 
         String line;

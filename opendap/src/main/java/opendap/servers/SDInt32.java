@@ -44,7 +44,6 @@ package opendap.servers;
 import opendap.dap.*;
 import java.io.*;
 import opendap.servers.parsers.ExprParserConstants;
-import opendap.dap.NoSuchVariableException;
 
 /**
  * Holds a OPeNDAP Server <code>Int32</code> value.

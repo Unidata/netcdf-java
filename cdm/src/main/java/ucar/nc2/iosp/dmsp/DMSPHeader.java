@@ -5,9 +5,9 @@
 // $Id: DMSPHeader.java 63 2006-07-12 21:50:51Z edavis $
 package ucar.nc2.iosp.dmsp;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import java.io.IOException;
 import java.util.*;
@@ -347,7 +347,7 @@ public class DMSPHeader {
     byte[] b = new byte[this.headerSizeInBytes];
     if (raFile.read(b) != this.headerSizeInBytes)
       throw new IOException("Invalid DMSP file: could not read first " + this.headerSizeInBytes + " bytes.");
-    String fullHeader = new String(b, CDM.utf8Charset);
+    String fullHeader = new String(b, StandardCharsets.UTF_8);
     // Make sure header starts with the proper item.
     if (!fullHeader.startsWith(HeaderInfoTitle.FILE_ID.toString())) {
       throw new IOException("Invalid DMSP file: header does not start with \"" + HeaderInfoTitle.FILE_ID + "\".");

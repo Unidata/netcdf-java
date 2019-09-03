@@ -9,6 +9,7 @@ import org.apache.http.Header;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.entity.StringEntity;
 import ucar.httpservices.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
 import java.io.*;
@@ -92,7 +93,7 @@ public class HttpClientManager {
   public static int putContent(String urlencoded, String content) throws IOException {
     try (HTTPMethod m = HTTPFactory.Put(urlencoded)) {
 
-      m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
+      m.setRequestContent(new StringEntity(content, "application/text", CDM.UTF8));
       m.execute();
 
       int resultCode = m.getStatusCode();
@@ -135,7 +136,7 @@ public class HttpClientManager {
 
         String charset = m.getResponseCharSet();
         if (charset == null)
-          charset = "UTF-8";
+          charset = CDM.UTF8;
 
         // check for deflate and gzip compression
         Header h = m.getResponseHeader("content-encoding");

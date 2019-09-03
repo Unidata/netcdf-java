@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.hdf4;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
@@ -25,7 +26,7 @@ public class H4header extends NCheader {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   private static final byte[] head = {0x0e, 0x03, 0x13, 0x01};
-  private static final String shead = new String(head, CDM.utf8Charset);
+  private static final String shead = new String(head, StandardCharsets.UTF_8);
   private static final long maxHeaderPos = 500000; // header's gotta be within this
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -84,7 +85,7 @@ public class H4header extends NCheader {
   private Map<Short, Vinfo> refnoMap = new HashMap<>();
 
   private MemTracker memTracker;
-  private java.io.PrintWriter debugOut = new PrintWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
+  private java.io.PrintWriter debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
 
   public boolean isEos() {
     return isEos;
@@ -1781,7 +1782,7 @@ public class H4header extends NCheader {
       int start = 0;
       for (int i = 0; i < length; i++) {
         if (b[i] == 0) {
-          text[count] = new String(b, start, i - start, CDM.utf8Charset);
+          text[count] = new String(b, start, i - start, StandardCharsets.UTF_8);
           count++;
           if (count == n)
             break;
@@ -2033,7 +2034,7 @@ public class H4header extends NCheader {
    * for (count = 0; count < len; count++)
    * if (b[count] == 0)
    * break;
-   * return new String(b, 0, count, CDM.utf8Charset);
+   * return new String(b, 0, count, StandardCharsets.UTF_8);
    * }
    */
 

@@ -5,7 +5,7 @@
 
 package ucar.nc2.iosp.hdf5;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class BTree2 {
     // header
     byte[] heapname = new byte[4];
     raf.readFully(heapname);
-    String magic = new String(heapname, CDM.utf8Charset);
+    String magic = new String(heapname, StandardCharsets.UTF_8);
     if (!magic.equals("BTHD"))
       throw new IllegalStateException(magic + " should equal BTHD");
 
@@ -120,7 +120,7 @@ public class BTree2 {
       // header
       byte[] sig = new byte[4];
       raf.readFully(sig);
-      String magic = new String(sig, CDM.utf8Charset);
+      String magic = new String(sig, StandardCharsets.UTF_8);
       if (!magic.equals("BTIN"))
         throw new IllegalStateException(magic + " should equal BTIN");
 
@@ -185,7 +185,7 @@ public class BTree2 {
       // header
       byte[] sig = new byte[4];
       raf.readFully(sig);
-      String magic = new String(sig, CDM.utf8Charset);
+      String magic = new String(sig, StandardCharsets.UTF_8);
       if (!magic.equals("BTLF"))
         throw new IllegalStateException(magic + " should equal BTLF");
 

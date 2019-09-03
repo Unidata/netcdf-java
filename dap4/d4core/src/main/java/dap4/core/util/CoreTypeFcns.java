@@ -9,7 +9,6 @@ import dap4.core.dmr.DapEnumConst;
 import dap4.core.dmr.DapEnumeration;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.TypeSort;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 public abstract class CoreTypeFcns {

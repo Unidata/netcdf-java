@@ -6,19 +6,14 @@
 package dap4.cdm.nc2;
 
 import dap4.cdm.CDMTypeFcns;
-import dap4.cdm.CDMUtil;
 import dap4.cdm.NodeMap;
 import dap4.core.data.DSP;
 import dap4.core.dmr.*;
 import dap4.core.util.Convert;
-import dap4.core.util.CoreTypeFcns;
 import dap4.core.util.DapException;
-import dap4.core.util.DapSort;
-import dap4.dap4lib.LibTypeFcns;
 import ucar.ma2.DataType;
 import ucar.ma2.ForbiddenConversionException;
 import ucar.nc2.*;
-import ucar.nc2.stream.NcStreamProto;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

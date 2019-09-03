@@ -12,7 +12,6 @@ import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import java.util.*;

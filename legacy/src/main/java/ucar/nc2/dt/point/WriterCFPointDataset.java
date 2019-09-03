@@ -37,7 +37,6 @@ import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;

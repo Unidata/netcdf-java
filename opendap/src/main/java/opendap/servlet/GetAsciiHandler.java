@@ -42,6 +42,7 @@ package opendap.servlet;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import opendap.dap.*;
 import opendap.servlet.ascii.asciiFactory;
@@ -112,8 +113,9 @@ public class GetAsciiHandler {
       if (_Debug)
         dds.print(System.out);
 
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
-      PrintWriter pwDebug = new PrintWriter(new OutputStreamWriter(System.out, Util.UTF8));
+      PrintWriter pw =
+          new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), StandardCharsets.UTF_8));
+      PrintWriter pwDebug = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
 
       if (dds != null) {
         dds.print(pw);
