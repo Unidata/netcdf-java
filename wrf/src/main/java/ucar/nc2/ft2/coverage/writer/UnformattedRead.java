@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 public class UnformattedRead {
     static final int FLOAT_AND_INT_SIZE = 4;
@@ -186,25 +187,28 @@ public class UnformattedRead {
 
     }
 
-    public static void readRecordLine5(DataInputStream dataStream) throws IOException {
+    public static float[][] readRecordLine5(DataInputStream dataStream) throws IOException {
         // read record header
         byte[] inputBuffer = new byte[FLOAT_AND_INT_SIZE];
         dataStream.read(inputBuffer);
         int header = ByteBuffer.wrap(inputBuffer).order(ByteOrder.BIG_ENDIAN).getInt();
         // get data from slab array
-        int numOfData = (header - 8)/4;
-        float[] data = new float[numOfData];
-        for (int i = 0; i < numOfData; i++){
-            dataStream.read(inputBuffer);
-            data[i] = ByteBuffer.wrap(inputBuffer).order(ByteOrder.BIG_ENDIAN).getFloat();
+        int numOfData = (header)/4;
+        float[][] data = new float[721][1440];
+        for (int i = 0; i < 721; i++){
+            for(int j = 0; j< 1440; j++) {
+                dataStream.read(inputBuffer);
+                data[i][j] = ByteBuffer.wrap(inputBuffer).order(ByteOrder.BIG_ENDIAN).getFloat();
+            }
         }
         // read trailer
         dataStream.read(inputBuffer);
         int trailer = ByteBuffer.wrap(inputBuffer).order(ByteOrder.BIG_ENDIAN).getInt();
 
         System.out.println("header = " + header);
-       // System.out.println("data= "+ Arrays.toString(data));
+        System.out.println("data= "+ Arrays.deepToString(data));
         System.out.println("trailer =" + trailer);
+        return data;
 
     }
 
