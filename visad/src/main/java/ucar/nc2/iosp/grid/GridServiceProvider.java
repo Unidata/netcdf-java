@@ -43,7 +43,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
 
   protected static boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance LOOK should not be
                                               // static !
-                                              protected static boolean forceNewIndex = false; // force that a new index file is written - for debugging
+  protected static boolean forceNewIndex = false; // force that a new index file is written - for debugging
   protected static boolean alwaysInCache = false;
 
   /**
