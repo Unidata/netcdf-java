@@ -12,7 +12,6 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.StringUtil2;

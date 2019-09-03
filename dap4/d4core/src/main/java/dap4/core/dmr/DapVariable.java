@@ -6,7 +6,6 @@
 package dap4.core.dmr;
 
 import dap4.core.util.DapException;
-import dap4.core.util.DapSort;
 import dap4.core.util.DapUtil;
 import java.util.ArrayList;
 import java.util.List;

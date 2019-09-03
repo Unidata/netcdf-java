@@ -5,7 +5,7 @@
 
 package ucar.nc2.iosp.bufr.writer;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.iosp.bufr.BufrTableLookup;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.time.CalendarDate;
@@ -92,7 +92,7 @@ public class MessageDispatchDDS {
       File inputFile = new File(configFilename);
       if (inputFile.exists()) {
         try (BufferedReader dataIS =
-            new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), CDM.utf8Charset))) {
+            new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), StandardCharsets.UTF_8))) {
           while (true) {
             String line = dataIS.readLine();
             if (line == null)
@@ -184,7 +184,7 @@ public class MessageDispatchDDS {
       if (!badHashSet.contains(m.hashCode())) { // only write one kind of each bad message
         badHashSet.add(m.hashCode());
         try {
-          badWbc.write(ByteBuffer.wrap(m.getHeader().getBytes(CDM.utf8Charset)));
+          badWbc.write(ByteBuffer.wrap(m.getHeader().getBytes(StandardCharsets.UTF_8)));
           badWbc.write(ByteBuffer.wrap(m.getRawBytes()));
 
         } catch (IOException e) {
@@ -206,7 +206,7 @@ public class MessageDispatchDDS {
 
     try {
       if (m.getHeader() != null)
-        wbc.write(ByteBuffer.wrap(m.getHeader().getBytes(CDM.utf8Charset)));
+        wbc.write(ByteBuffer.wrap(m.getHeader().getBytes(StandardCharsets.UTF_8)));
       wbc.write(ByteBuffer.wrap(m.getRawBytes()));
     } catch (IOException e) {
       e.printStackTrace();
@@ -247,7 +247,7 @@ public class MessageDispatchDDS {
 
     if ((inputFilenameOut != null)) {
       try (FileOutputStream cout = new FileOutputStream(inputFilenameOut)) {
-        Formatter cfg = new Formatter(cout, CDM.utf8Charset.name());
+        Formatter cfg = new Formatter(cout, StandardCharsets.UTF_8.name());
         cfg.format(
             "#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
         List<MessType> mtypes = new ArrayList<>(typeMap.values());

@@ -9,7 +9,6 @@ import thredds.catalog.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.CrawlableDatasetFactory;
 import java.io.IOException;
 import org.jdom2.Document;
 

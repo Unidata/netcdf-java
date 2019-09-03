@@ -7,6 +7,7 @@
 
 package thredds.catalog.dl;
 
+import java.nio.charset.StandardCharsets;
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
 import ucar.nc2.constants.CDM;
@@ -54,11 +55,11 @@ public class ADNWriter {
     };
 
     ByteArrayOutputStream bis = new ByteArrayOutputStream();
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(bis, CDM.utf8Charset));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(bis, StandardCharsets.UTF_8));
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL, true, listener);
     crawler.crawl(cat, null, pw, null);
     mess.append("\n*********************\n");
-    mess.append(new String(bis.toByteArray(), CDM.utf8Charset));
+    mess.append(new String(bis.toByteArray(), StandardCharsets.UTF_8));
   }
 
   private void doOneDataset(InvDataset ds) {

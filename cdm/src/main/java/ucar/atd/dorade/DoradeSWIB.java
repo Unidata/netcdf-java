@@ -5,8 +5,8 @@
 
 package ucar.atd.dorade;
 
-import ucar.nc2.constants.CDM;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 class DoradeSWIB extends DoradeDescriptor {
@@ -33,7 +33,7 @@ class DoradeSWIB extends DoradeDescriptor {
     //
     // unpack
     //
-    comment = new String(data, 8, 8, CDM.utf8Charset).trim();
+    comment = new String(data, 8, 8, StandardCharsets.UTF_8).trim();
     sweepNumber = grabInt(data, 16);
     nRays = grabInt(data, 20);
     startAngle = grabFloat(data, 24);

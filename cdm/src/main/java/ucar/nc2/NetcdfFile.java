@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 import org.jdom2.Element;
 import ucar.ma2.Array;
@@ -11,7 +12,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -1451,7 +1451,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param strict if true, make it stricly CDL, otherwise, add a little extra info
    */
   public void writeCDL(OutputStream out, boolean strict) {
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
     toStringStart(pw, strict);
     toStringEnd(pw);
     pw.flush();

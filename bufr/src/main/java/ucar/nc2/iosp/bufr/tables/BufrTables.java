@@ -6,10 +6,10 @@ package ucar.nc2.iosp.bufr.tables;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import java.nio.charset.StandardCharsets;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.TableLookup;
@@ -160,7 +160,7 @@ public class BufrTables {
   private static void readLookupTable(String filename) {
 
     try (InputStream ios = openStream(filename)) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
       int count = 0;
       while (true) {
         String line = dataIS.readLine();
@@ -489,7 +489,7 @@ public class BufrTables {
   }
 
   private static void readWmoCsvTableB(InputStream ios, TableB b) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     int count = 0;
     while (true) {
       String line = dataIS.readLine();
@@ -571,7 +571,7 @@ public class BufrTables {
   // tables are in mel-bufr format
   private static TableB readMelbufrTableB(InputStream ios, TableB b) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
     // read table B looking for descriptors
     while (true) {
@@ -608,7 +608,7 @@ public class BufrTables {
 
   private static TableB readCypherTableB(InputStream ios, TableB b) throws IOException {
     boolean startMode = false;
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     while (true) {
       String line = dataIS.readLine();
       if (line == null)
@@ -662,7 +662,7 @@ public class BufrTables {
   // 0 0 1 0 0 24 CCITT_IA5 Table A: entry
   private static TableB readMeltabTableB(InputStream ios, TableB b) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
     // read table B looking for descriptors
     while (true) {
@@ -692,7 +692,7 @@ public class BufrTables {
   // F-XX-YYY |SCALE| REFERENCE | BIT | UNIT | MNEMONIC ;DESC ; ELEMENT NAME
   private static TableB readNcepTableB(InputStream ios, TableB b) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
     dataIS.readLine(); // throw first line away
 
@@ -742,7 +742,7 @@ public class BufrTables {
    * 0;21;036;Radar rainfall intensity;mm*h-1;2;0;16
    */
   private static void readOperaTableB(InputStream ios, TableB b) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     int count = 0;
     while (true) {
       String line = dataIS.readLine();
@@ -971,7 +971,7 @@ public class BufrTables {
     TableD.Descriptor currDesc = null;
     boolean startMode = false;
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     while (true) {
       String line = dataIS.readLine();
       if (line == null)
@@ -1044,7 +1044,7 @@ public class BufrTables {
    */
   private static void readOperaTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
     TableD.Descriptor currDesc = null;
 
@@ -1087,7 +1087,7 @@ public class BufrTables {
 
 
   private static void readWmoCsvTableD(InputStream ios, TableD tableD) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     int count = 0;
     int currSeqno = -1;
     TableD.Descriptor currDesc = null;
@@ -1168,7 +1168,7 @@ public class BufrTables {
 
   private static void readMelbufrTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
     int count = 0;
 
     // read table D to store sequences and their descriptors
@@ -1252,7 +1252,7 @@ public class BufrTables {
    */
   private static void readNcepTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
     dataIS.readLine(); // throw first line away
 
@@ -1305,7 +1305,7 @@ public class BufrTables {
    */
   private static void readEcmwfTableD(InputStream ios, TableD t) throws IOException {
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
     TableD.Descriptor currDesc = null;
 

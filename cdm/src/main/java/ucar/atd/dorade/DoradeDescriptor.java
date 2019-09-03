@@ -5,7 +5,7 @@
 
 package ucar.atd.dorade;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.time.CalendarDateFormatter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -66,7 +66,7 @@ abstract class DoradeDescriptor {
       // get the name and descriptor size
       byte[] header = new byte[8];
       file.readFully(header);
-      descName = new String(header, 0, 4, CDM.utf8Charset);
+      descName = new String(header, 0, 4, StandardCharsets.UTF_8);
       int size = grabInt(header, 4);
 
       // now back up to the start of the descriptor and read the entire thing into a byte array
@@ -123,7 +123,7 @@ abstract class DoradeDescriptor {
       if (file.read(nameBytes) == -1)
         return null; // EOF
       file.seek(filepos);
-      return new String(nameBytes, CDM.utf8Charset);
+      return new String(nameBytes, StandardCharsets.UTF_8);
 
     } catch (IOException ex) {
       throw new DescriptorException(ex);

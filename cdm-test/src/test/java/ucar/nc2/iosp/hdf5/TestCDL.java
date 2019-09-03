@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NCdumpW;
@@ -46,7 +47,7 @@ public class TestCDL {
     System.out.println("File " + filename);
 
     ByteArrayOutputStream bout = new ByteArrayOutputStream(30 * 1000);
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(bout, CDM.utf8Charset));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(bout, StandardCharsets.UTF_8));
     NCdumpW.print(ncfile, pw, false, false, false, true, null, null);
     String njCDL = bout.toString();
     if (show)

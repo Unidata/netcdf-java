@@ -12,9 +12,9 @@ package ucar.nc2.iosp.vis5d;
 
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.constants.CDM;
 import visad.data.BadFormException;
 // original V5DStruct uses ucar.unidata.netcdf.RandomAccessFile
 import ucar.unidata.io.RandomAccessFile;
@@ -521,8 +521,8 @@ public class V5DStruct {
         while (varunits[m2] != 0) {
           m2++;
         }
-        var_names[i] = new String(varnames, k, m - k, CDM.utf8Charset);
-        var_units[i] = new String(varunits, k2, m2 - k2, CDM.utf8Charset);
+        var_names[i] = new String(varnames, k, m - k, StandardCharsets.UTF_8);
+        var_units[i] = new String(varunits, k2, m2 - k2, StandardCharsets.UTF_8);
       }
 
 
@@ -1853,7 +1853,7 @@ public class V5DStruct {
               break;
             }
           }
-          FileVersion = new String(b, 0, index, CDM.utf8Charset);
+          FileVersion = new String(b, 0, index, StandardCharsets.UTF_8);
           // Check if reading a file made by a future version of Vis5D
           if (FileVersion.compareTo(FILE_VERSION) > 0) {
             logger.warn("Warning: Trying to read a version " + FileVersion + " file, you should upgrade Vis5D.");
@@ -2314,7 +2314,7 @@ public class V5DStruct {
     // File Version
     if (!write_tag(TAG_VERSION, 10, newfile))
       return false;
-    f.write(FILE_VERSION.getBytes(CDM.utf8Charset), 0, 10);
+    f.write(FILE_VERSION.getBytes(StandardCharsets.UTF_8), 0, 10);
 
     // Number of timesteps
     if (!write_tag(TAG_NUMTIMES, 4, newfile))

@@ -6,11 +6,6 @@
 package dap4.dap4lib.netcdf;
 
 import dap4.core.dmr.*;
-import dap4.core.util.DapException;
-import java.util.HashMap;
-import java.util.Map;
-import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
-import static dap4.dap4lib.netcdf.Nc4Notes.*;
 
 public abstract class Nc4DMR {
   //////////////////////////////////////////////////

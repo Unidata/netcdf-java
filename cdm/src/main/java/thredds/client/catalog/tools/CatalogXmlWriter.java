@@ -4,12 +4,12 @@
  */
 package thredds.client.catalog.tools;
 
+import java.nio.charset.StandardCharsets;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
@@ -56,7 +56,7 @@ public class CatalogXmlWriter {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(100 * 1000);
     writeXML(catalog, bos);
     this.raw = false;
-    return new String(bos.toByteArray(), CDM.utf8Charset);
+    return new String(bos.toByteArray(), StandardCharsets.UTF_8);
   }
 
   /**

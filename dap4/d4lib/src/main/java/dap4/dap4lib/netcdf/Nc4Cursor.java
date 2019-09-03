@@ -6,7 +6,6 @@
 package dap4.dap4lib.netcdf;
 
 import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import dap4.core.data.DataCursor;
 import dap4.core.dmr.*;
 import dap4.core.util.*;

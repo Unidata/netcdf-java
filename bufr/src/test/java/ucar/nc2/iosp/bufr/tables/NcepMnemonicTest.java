@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Formatter;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
-import ucar.unidata.util.test.TestDir;
 
 public class NcepMnemonicTest {
   /**
@@ -23,7 +23,7 @@ public class NcepMnemonicTest {
   private static void readSubCategories(String fileIn, PrintStream out, String token) throws IOException {
     System.out.printf("%s%n", fileIn);
     try (FileInputStream in = new FileInputStream(fileIn)) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(in, CDM.utf8Charset));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
       while (true) {
         String line = dataIS.readLine();
         if (line == null)

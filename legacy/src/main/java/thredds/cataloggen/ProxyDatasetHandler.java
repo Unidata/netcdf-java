@@ -7,7 +7,6 @@ package thredds.cataloggen;
 
 import thredds.catalog.InvService;
 import thredds.crawlabledataset.CrawlableDataset;
-import thredds.crawlabledataset.CrawlableDatasetFilter;
 import java.util.List;
 
 /**

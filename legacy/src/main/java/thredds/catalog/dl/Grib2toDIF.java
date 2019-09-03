@@ -7,7 +7,7 @@
 
 package thredds.catalog.dl;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.io.*;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class Grib2toDIF implements VocabTranslator {
         throw new IOException("Cant find resource= " + resourceName);
     }
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
     String discipline = null, category = null, param = null;
     int maxTokens = 8;

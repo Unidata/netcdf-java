@@ -5,6 +5,7 @@
 
 package ucar.nc2.ncml;
 
+import java.nio.charset.StandardCharsets;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -12,7 +13,6 @@ import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.Catalog;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class NcmlConstructor {
   }
 
   public boolean populate(String ncml, NetcdfFile target) throws IOException {
-    return populate(new ByteArrayInputStream(ncml.getBytes(CDM.utf8Charset)), target);
+    return populate(new ByteArrayInputStream(ncml.getBytes(StandardCharsets.UTF_8)), target);
   }
 
   public boolean populate(InputStream ncml, NetcdfFile target) throws IOException {

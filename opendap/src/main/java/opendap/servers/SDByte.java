@@ -43,7 +43,6 @@ package opendap.servers;
 
 import opendap.dap.*;
 import java.io.*;
-import opendap.dap.NoSuchVariableException;
 
 /**
  * Holds a OPeNDAP Server <code>Byte</code> value.

@@ -7,7 +7,6 @@ package dap4.cdm.nc2;
 
 import dap4.core.dmr.*;
 import dap4.core.data.DSP;
-import dap4.core.data.DSP;
 
 /**
  * Since we can't use AbstractCDMArray,

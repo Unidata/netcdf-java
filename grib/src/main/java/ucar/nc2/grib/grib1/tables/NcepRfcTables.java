@@ -5,8 +5,8 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
 import java.io.BufferedReader;
@@ -102,7 +102,7 @@ public class NcepRfcTables extends NcepTables {
     Map<Integer, String> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
       while (true) {
         String line = br.readLine();
         if (line == null) {

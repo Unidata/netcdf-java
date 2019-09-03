@@ -46,8 +46,6 @@ package opendap.servers.parsers;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
-import java.io.*;
-import java.util.*;
 
 /* "CeParser.java":49 */ /* lalr1.java:93 */
 

@@ -4,7 +4,7 @@
  */
 package ucar.nc2.iosp.uf;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Range;
 import ucar.ma2.IndexIterator;
@@ -63,7 +63,7 @@ public class Ray {
     for (int i = 0; i < numberOfFields; i++) {
       bos.get(b2);
       // int type = getShort(b2, 0);
-      String type = new String(b2, CDM.utf8Charset);
+      String type = new String(b2, StandardCharsets.UTF_8);
       bos.get(b2);
       int offs = getShort(b2, 0);
       int position0 = bos.position();
@@ -317,7 +317,7 @@ public class Ray {
 
     UF_mandatory_header2(byte[] data) {
       // data is of length 90 bytes
-      textUF = new String(data, 0, 2, CDM.utf8Charset);
+      textUF = new String(data, 0, 2, StandardCharsets.UTF_8);
       if (debug) {
         System.out.println(textUF);
       }
@@ -330,8 +330,8 @@ public class Ray {
       rayNumber = getShort(data, 14);
       recordNumber1 = getShort(data, 16);
       sweepNumber = getShort(data, 18);
-      radarName = new String(data, 20, 8, CDM.utf8Charset).trim();
-      siteName = new String(data, 28, 8, CDM.utf8Charset).trim();
+      radarName = new String(data, 20, 8, StandardCharsets.UTF_8).trim();
+      siteName = new String(data, 28, 8, StandardCharsets.UTF_8).trim();
       latitudeD = getShort(data, 36);
       latitudeM = getShort(data, 38);
       latitudeS = getShort(data, 40);
@@ -346,7 +346,7 @@ public class Ray {
       hour = getShort(data, 56);
       minute = getShort(data, 58);
       second = getShort(data, 60);
-      timeZone = new String(data, 62, 2, CDM.utf8Charset);
+      timeZone = new String(data, 62, 2, StandardCharsets.UTF_8);
       azimuth = getShort(data, 64);
       elevation = getShort(data, 66);
       sweepMode = getShort(data, 68);
@@ -355,7 +355,7 @@ public class Ray {
       year1 = getShort(data, 74); // (generation data of UF format)
       month1 = getShort(data, 76);
       day1 = getShort(data, 78);
-      nameOfUFGeneratorProgram = new String(data, 80, 8, CDM.utf8Charset); // char[8]
+      nameOfUFGeneratorProgram = new String(data, 80, 8, StandardCharsets.UTF_8); // char[8]
       missing = getShort(data, 88); // Value stored for deleted or missing data (0x8000)
 
     }
@@ -375,13 +375,13 @@ public class Ray {
     short iFlag;
 
     UF_optional_header(byte[] data) {
-      sProjectName = new String(data, 0, 8, CDM.utf8Charset);
+      sProjectName = new String(data, 0, 8, StandardCharsets.UTF_8);
       iBaselineAzimuth = getShort(data, 8);
       iBaselineelevation = getShort(data, 10);
       iVolumeScanHour = getShort(data, 12);
       iVolumeScanMinute = getShort(data, 14);
       iVolumeScanSecond = getShort(data, 16);
-      sFieldTapeName = new String(data, 18, 8, CDM.utf8Charset);
+      sFieldTapeName = new String(data, 18, 8, StandardCharsets.UTF_8);
       iFlag = getShort(data, 26);
     }
 
@@ -425,10 +425,10 @@ public class Ray {
       polarization = getShort(data, 20);
       waveLength = getShort(data, 22);
       sampleSize = getShort(data, 24);
-      typeOfData = new String(data, 26, 2, CDM.utf8Charset);
+      typeOfData = new String(data, 26, 2, StandardCharsets.UTF_8);
       thresholdValue = getShort(data, 28);
       scale = getShort(data, 30);
-      editCode = new String(data, 32, 2, CDM.utf8Charset);
+      editCode = new String(data, 32, 2, StandardCharsets.UTF_8);
       prt = getShort(data, 34);
       bits = getShort(data, 36);
     }

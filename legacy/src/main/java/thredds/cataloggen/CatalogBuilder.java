@@ -5,11 +5,9 @@
 // $Id: CatalogBuilder.java 58 2006-07-12 20:21:43Z edavis $
 package thredds.cataloggen;
 
-import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogImpl;
 import thredds.crawlabledataset.CrawlableDataset;
 import java.io.IOException;
-import java.util.List;
 import org.jdom2.Document;
 
 /**

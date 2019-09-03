@@ -6,13 +6,7 @@
 package dap4.core.dmr.parser;
 
 import dap4.core.dmr.*;
-import dap4.core.util.DapException;
-import dap4.core.util.DapSort;
-import dap4.core.util.DapUtil;
-import dap4.core.util.Escape;
 import org.xml.sax.SAXException;
-import java.math.BigInteger;
-import java.util.*;
 
 public interface Dap4Parser {
   public ErrorResponse getErrorResponse();

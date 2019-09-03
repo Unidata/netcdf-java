@@ -5,11 +5,11 @@
 
 package thredds.catalog;
 
-import ucar.nc2.constants.CDM;
 import java.io.*;
 import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A documentation object: text, HTML or an Xlink.
@@ -125,7 +125,7 @@ public class InvDocumentation {
     }
     is.close();
 
-    content = new String(os.toByteArray(), CDM.utf8Charset);
+    content = new String(os.toByteArray(), StandardCharsets.UTF_8);
     return content;
   }
 

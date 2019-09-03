@@ -10,8 +10,6 @@ import thredds.catalog.MetadataConverterIF;
 import thredds.catalog.InvDataset;
 import thredds.catalog.ServiceType;
 import org.jdom2.*;
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.jdom2.input.*;
 import org.jdom2.output.*;
 import java.util.ArrayList;

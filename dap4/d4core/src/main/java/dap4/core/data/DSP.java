@@ -9,11 +9,8 @@ import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.DapVariable;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
-import dap4.core.util.Slice;
 import java.io.IOException;
 import java.nio.ByteOrder;
-import java.util.List;
-import java.util.Map;
 
 public interface DSP {
   /*

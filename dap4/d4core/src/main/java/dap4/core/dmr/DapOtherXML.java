@@ -10,9 +10,6 @@
 
 package dap4.core.dmr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DapOtherXML extends DapAttribute {
 
   //////////////////////////////////////////////////

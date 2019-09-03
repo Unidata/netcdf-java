@@ -44,9 +44,7 @@ package opendap.dap.parsers;
 /* "dap2.y":18 */ /* lalr1.java:93 */
 
 import opendap.dap.*;
-import opendap.dap.BaseTypeFactory;
 import opendap.dap.parsers.ParseException;
-import java.io.*;
 import static opendap.dap.parsers.Dap2Parser.Lexer.*;
 
 /* "Dap2Parser.java":49 */ /* lalr1.java:93 */

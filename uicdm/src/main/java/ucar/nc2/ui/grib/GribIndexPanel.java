@@ -5,8 +5,8 @@
 
 package ucar.nc2.ui.grib;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.DataType;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -170,7 +170,7 @@ public class GribIndexPanel extends JPanel {
 
     try (RandomAccessFile raf = new RandomAccessFile(indexFile, "r")) {
       raf.seek(0);
-      String magic = raf.readString(Grib2Index.MAGIC_START.getBytes(CDM.utf8Charset).length);
+      String magic = raf.readString(Grib2Index.MAGIC_START.getBytes(StandardCharsets.UTF_8).length);
       if (magic.equals(Grib2Index.MAGIC_START)) {
         readIndex2(indexFile);
       } else if (magic.equals(Grib1Index.MAGIC_START)) {

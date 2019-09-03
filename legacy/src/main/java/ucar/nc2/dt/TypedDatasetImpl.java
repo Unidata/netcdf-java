@@ -6,7 +6,6 @@
 package ucar.nc2.dt;
 
 import ucar.nc2.*;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;

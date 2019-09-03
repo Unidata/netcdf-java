@@ -3,6 +3,7 @@
  */
 package ucar.nc2.iosp.gini;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.units.DateFormatter;
@@ -82,7 +83,7 @@ class Giniheader {
     byte[] head = new byte[GINI_PDB_LEN];
 
     raf.readFully(b);
-    String pib = new String(b, CDM.utf8Charset);
+    String pib = new String(b, StandardCharsets.UTF_8);
 
     pos = findWMOHeader(pib);
     dataStart = pos + GINI_PDB_LEN;
@@ -108,7 +109,7 @@ class Giniheader {
 
       int inflatedLen = GINI_HED_LEN - inflater.getRemaining();
 
-      String inf = new String(buf, CDM.utf8Charset);
+      String inf = new String(buf, StandardCharsets.UTF_8);
       pos1 = findWMOHeader(inf);
 
       System.arraycopy(buf, pos1, head, 0, GINI_PDB_LEN);

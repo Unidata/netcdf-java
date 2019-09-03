@@ -5,8 +5,8 @@
 
 package ucar.atd.dorade;
 
-import ucar.nc2.constants.CDM;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 
 class DoradeRDAT extends DoradeDescriptor {
 
@@ -19,7 +19,7 @@ class DoradeRDAT extends DoradeDescriptor {
     //
     // unpack
     //
-    paramName = new String(data, 8, 8, CDM.utf8Charset).trim();
+    paramName = new String(data, 8, 8, StandardCharsets.UTF_8).trim();
     paramData = new byte[data.length - 16];
     System.arraycopy(data, 16, paramData, 0, data.length - 16);
   }
@@ -58,7 +58,7 @@ class DoradeRDAT extends DoradeDescriptor {
       if (file.read(nameBytes) == -1)
         throw new DescriptorException("unexpected EOF");
       file.seek(filepos);
-      return new String(nameBytes, CDM.utf8Charset).trim();
+      return new String(nameBytes, StandardCharsets.UTF_8).trim();
 
     } catch (Exception ex) {
       throw new DescriptorException(ex);

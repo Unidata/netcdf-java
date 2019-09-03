@@ -42,16 +42,17 @@
 package opendap.servlet;
 
 
+import java.nio.charset.StandardCharsets;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DDS;
-import opendap.dap.Util;
 import opendap.dap.parsers.ParseException;
 import opendap.servers.ServerDDS;
 import opendap.servlet.www.jscriptCore;
 import opendap.servlet.www.wwwFactory;
 import opendap.servlet.www.wwwOutPut;
 import java.io.*;
+import ucar.nc2.constants.CDM;
 
 /**
  * Default handler for OPeNDAP .html requests. This class is used
@@ -119,7 +120,7 @@ public class GetHTMLInterfaceHandler {
       if (false) {
         pw = new PrintWriter(new FileOutputStream(new File("debug.html")));
       } else
-        pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
+        pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), StandardCharsets.UTF_8));
 
 
       wwwOutPut wOut = new wwwOutPut(pw);
@@ -213,7 +214,7 @@ public class GetHTMLInterfaceHandler {
 
     ByteArrayInputStream bai = null;
     try {
-      bai = new ByteArrayInputStream(ddsSW.toString().getBytes("UTF-8"));
+      bai = new ByteArrayInputStream(ddsSW.toString().getBytes(CDM.UTF8));
     } catch (UnsupportedEncodingException uee) {
       throw new DAP2Exception("UTF-8 encoding not supported");
     }

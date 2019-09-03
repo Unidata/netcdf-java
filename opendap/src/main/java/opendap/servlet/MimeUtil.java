@@ -39,9 +39,8 @@
 
 package opendap.servlet;
 
-import opendap.dap.Util;
+import java.nio.charset.StandardCharsets;
 import java.io.*;
-import java.nio.charset.Charset;
 
 /**
  * Writes MIME type headers to the passed streams.
@@ -75,7 +74,7 @@ public class MimeUtil {
 
 
   public static void setMimeText(OutputStream os, int desc, String version, int enc) {
-    PrintWriter ps = new PrintWriter(new OutputStreamWriter(os, Charset.forName("UTF-8")));
+    PrintWriter ps = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
 
     setMimeText(ps, desc, version, enc);
   }
@@ -93,7 +92,7 @@ public class MimeUtil {
   }
 
   public static void setMimeBinary(OutputStream os, int desc, String version, int enc) {
-    PrintWriter ps = new PrintWriter(new OutputStreamWriter(os, Util.UTF8));
+    PrintWriter ps = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
     setMimeBinary(ps, desc, version, enc);
   }
 
@@ -110,7 +109,7 @@ public class MimeUtil {
   }
 
   public static void setMimeError(OutputStream os, int code, String reason, String version) {
-    PrintWriter ps = new PrintWriter(new OutputStreamWriter(os, Charset.forName("UTF-8")));
+    PrintWriter ps = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
     setMimeError(ps, code, reason, version);
   }
 

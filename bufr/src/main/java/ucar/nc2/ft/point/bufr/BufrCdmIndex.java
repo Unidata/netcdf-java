@@ -5,7 +5,7 @@
 
 package ucar.nc2.ft.point.bufr;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
@@ -77,7 +77,7 @@ public class BufrCdmIndex {
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       //// header message
-      raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
+      raf.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));
       raf.writeInt(version);
 
       // build it
@@ -119,7 +119,7 @@ public class BufrCdmIndex {
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.getPath(), "rw")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       //// header message
-      raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
+      raf.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));
       raf.writeInt(version);
 
       // build it
@@ -218,7 +218,7 @@ public class BufrCdmIndex {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes(CDM.utf8Charset))) {
+      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
         log.error("BufrCdmIndex {}: invalid index", raf.getLocation());
         return false;
       }

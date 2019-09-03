@@ -7,6 +7,7 @@
 package ucar.nc2.iosp.gempak;
 
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -296,7 +297,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
               break;
           }
           if (temp != null) {
-            buf.put(temp.getBytes(CDM.utf8Charset));
+            buf.put(temp.getBytes(StandardCharsets.UTF_8));
           }
         }
         if (members.findMember(TIME_VAR) != null) {

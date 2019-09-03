@@ -40,17 +40,15 @@
 
 package opendap.servlet;
 
-import opendap.dap.Util;
+import java.nio.charset.StandardCharsets;
 import java.io.*;
-import java.nio.charset.Charset;
+import ucar.nc2.constants.CDM;
 
 /**
  * A minimal implementation of a logging facility.
  */
 
 public class Logx {
-
-  static final Charset UTF8 = Charset.forName("UTF-8");
 
   private static PrintWriter logger = null;
   private static ByteArrayOutputStream buff = null;
@@ -76,7 +74,7 @@ public class Logx {
 
   public static void reset() {
     buff = new ByteArrayOutputStream();
-    logger = new PrintWriter(new OutputStreamWriter(buff, Util.UTF8));
+    logger = new PrintWriter(new OutputStreamWriter(buff, StandardCharsets.UTF_8));
   }
 
   public static boolean isOn() {
@@ -94,7 +92,7 @@ public class Logx {
     else
       try {
         logger.flush();
-        return buff.toString("UTF-8");
+        return buff.toString(CDM.UTF8);
       } catch (UnsupportedEncodingException nee) {
         throw new IllegalStateException(nee);
       }

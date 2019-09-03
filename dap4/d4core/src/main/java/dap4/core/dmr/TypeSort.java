@@ -5,12 +5,7 @@
 
 package dap4.core.dmr;
 
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 import static dap4.core.dmr.TypeConstants.*;
 
 /*

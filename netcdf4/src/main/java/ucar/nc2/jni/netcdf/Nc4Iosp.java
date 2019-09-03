@@ -508,7 +508,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       System.arraycopy(b, 0, bb, 0, count);
       b = bb;
     }
-    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode.
+    return new String(b, 0, count, StandardCharsets.UTF_8); // all strings are considered to be UTF-8 unicode.
   }
 
   // follow what happens in the Java side
@@ -520,7 +520,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
       count++; // dont include the terminating 0
     }
-    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode.
+    return new String(b, 0, count, StandardCharsets.UTF_8); // all strings are considered to be UTF-8 unicode.
   }
 
   private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable v) throws IOException {
@@ -2902,7 +2902,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         if (v != null && att.getShortName().equals(CDM.FILL_VALUE) && att.getLength() == 1
             && v.getDataType() == DataType.CHAR) {
           // special handling of _FillValue if v.getDataType() == CHAR
-          byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
+          byte[] svalb = att.getStringValue().getBytes(StandardCharsets.UTF_8);
           // if svalb is a zero length array, force it to be the null char
           if (svalb.length == 0)
             svalb = new byte[] {0};
@@ -2914,7 +2914,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             // Concatenate all the attribute strings
             for (int i = 0; i < att.getLength(); i++)
               text.append(att.getStringValue(i));
-            byte[] svalb = text.toString().getBytes(CDM.utf8Charset);
+            byte[] svalb = text.toString().getBytes(StandardCharsets.UTF_8);
             if (svalb.length == 0)
               svalb = new byte[] {0};
             ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);

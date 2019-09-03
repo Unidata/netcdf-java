@@ -40,7 +40,6 @@
 
 package opendap.dap;
 
-import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -51,9 +50,6 @@ import java.util.Vector;
  * @version $Revision: 15901 $
  */
 public class Util {
-
-
-  public static Charset UTF8 = Charset.forName("UTF-8");
 
   /**
    * Compares elements in a <code>Vector</code> of <code>BaseType</code>s and

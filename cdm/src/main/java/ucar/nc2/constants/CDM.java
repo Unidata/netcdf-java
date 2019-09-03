@@ -5,9 +5,6 @@
 
 package ucar.nc2.constants;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
 /**
  * CDM constants.
  *
@@ -16,7 +13,6 @@ import java.nio.charset.StandardCharsets;
  */
 public class CDM {
   public static final String UTF8 = "UTF-8";
-  public static final Charset utf8Charset = StandardCharsets.UTF_8;
 
   // structural
   public static final String CHUNK_SIZES = "_ChunkSizes";

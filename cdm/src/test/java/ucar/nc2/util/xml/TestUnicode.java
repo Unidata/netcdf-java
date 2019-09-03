@@ -5,6 +5,7 @@
 
 package ucar.nc2.util.xml;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,7 @@ public class TestUnicode {
 
     System.out.println(line);
     System.out.println(showBytes(b));
-    System.out.println(showBytes(line.getBytes(CDM.utf8Charset)));
+    System.out.println(showBytes(line.getBytes(StandardCharsets.UTF_8)));
   }
 
   static void write(String s, String charset) throws IOException {
@@ -177,7 +178,7 @@ public class TestUnicode {
     while (null != (line = in.readLine())) {
       System.out.println("Line " + count++);
       System.out.println(line);
-      System.out.println(showBytes(line.getBytes(CDM.utf8Charset)));
+      System.out.println(showBytes(line.getBytes(StandardCharsets.UTF_8)));
     }
     in.close();
   }
@@ -190,7 +191,7 @@ public class TestUnicode {
     while (null != (line = in.readLine())) {
       System.out.println("ULine " + count++);
       System.out.println(line);
-      System.out.println(showBytes(line.getBytes(CDM.utf8Charset)));
+      System.out.println(showBytes(line.getBytes(StandardCharsets.UTF_8)));
     }
     in.close();
   }

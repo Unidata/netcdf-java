@@ -4,7 +4,6 @@
  */
 package ucar.nc2.dt;
 
-import ucar.unidata.geoloc.Station;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;

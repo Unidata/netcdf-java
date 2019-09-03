@@ -10,9 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Message;
 
 /**
@@ -45,7 +45,7 @@ public class MessageWriter { // implements Callable<IndexerTask> {
 
 
   public void write(Message m) throws IOException {
-    wbc.write(ByteBuffer.wrap(m.getHeader().getBytes(CDM.utf8Charset)));
+    wbc.write(ByteBuffer.wrap(m.getHeader().getBytes(StandardCharsets.UTF_8)));
     wbc.write(ByteBuffer.wrap(m.getRawBytes()));
     lastModified = System.currentTimeMillis();
     isScheduled.getAndSet(false);

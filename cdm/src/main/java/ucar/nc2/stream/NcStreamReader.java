@@ -4,6 +4,7 @@
  */
 package ucar.nc2.stream;
 
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.zip.InflaterInputStream;
-import ucar.nc2.constants.CDM;
 
 /**
  * Read an ncStream InputStream into a NetcdfFile.
@@ -141,7 +141,7 @@ public class NcStreamReader {
         int slen = NcStream.readVInt(is);
         byte[] sb = new byte[slen];
         NcStream.readFully(is, sb);
-        ii.setObjectNext(new String(sb, CDM.utf8Charset));
+        ii.setObjectNext(new String(sb, StandardCharsets.UTF_8));
       }
       return new DataResult(dproto.getVarName(), data);
 

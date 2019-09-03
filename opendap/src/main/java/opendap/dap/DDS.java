@@ -40,12 +40,11 @@
 
 package opendap.dap;
 
-import ucar.nc2.util.EscapeStrings;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Stack;
 import java.io.*;
-import opendap.dap.parsers.DDSXMLParser;
 import opendap.dap.parsers.*;
 import opendap.util.Debug;
 import org.jdom2.Document;
@@ -807,7 +806,7 @@ public class DDS extends DStructure {
    * @param os The <code>OutputStream</code> to print to.
    */
   public void printDAS(OutputStream os) {
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, Util.UTF8)));
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)));
     printDAS(pw);
     pw.flush();
   }
@@ -1225,7 +1224,7 @@ public class DDS extends DStructure {
    * @see DDS#print(PrintWriter)
    */
   public final void print(OutputStream os) {
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, Util.UTF8)));
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)));
     print(pw);
     pw.flush();
   }

@@ -40,6 +40,7 @@
 
 package opendap.dap;
 
+import java.nio.charset.StandardCharsets;
 import opendap.dap.parsers.ParseException;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
@@ -51,7 +52,6 @@ import ucar.httpservices.HTTPSession;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -73,8 +73,6 @@ public class DConnect2 implements Closeable {
 
   private static boolean allowSessions = false;
   private static boolean showCompress = false;
-
-  static final Charset UTF8 = Charset.forName("UTF-8");
 
   public static synchronized void setAllowSessions(boolean b) {
     allowSessions = b;
@@ -357,13 +355,13 @@ public class DConnect2 implements Closeable {
     while ((b = is.read()) >= 0) {
       text.write(b);
     }
-    return new String(text.toByteArray(), UTF8);
+    return new String(text.toByteArray(), StandardCharsets.UTF_8);
   }
 
   // Extract the leading DDS from a DataDDS stream
 
-  static final byte[] tag1 = "\nData:\n".getBytes(UTF8);
-  static final byte[] tag2 = "\nData:\r\n".getBytes(UTF8);
+  static final byte[] tag1 = "\nData:\n".getBytes(StandardCharsets.UTF_8);
+  static final byte[] tag2 = "\nData:\r\n".getBytes(StandardCharsets.UTF_8);
 
   public static String captureDataDDS(InputStream is) throws IOException {
     byte[] text = new byte[4096];
@@ -390,7 +388,7 @@ public class DConnect2 implements Closeable {
     }
     if (eof)
       throw new IOException("DatDDS has no 'Data:' marker");
-    return new String(text, 0, pos, UTF8);
+    return new String(text, 0, pos, StandardCharsets.UTF_8);
   }
 
   private static boolean endswith(byte[] tag, int pos, byte[] text) {

@@ -14,7 +14,7 @@ package ucar.nc2.iosp.bufr.tables;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.iosp.bufr.*;
 import java.io.*;
 import java.lang.Integer;
@@ -62,7 +62,7 @@ public class NcepMnemonic {
     HashMap<String, String> mnseq = new HashMap<>();
 
     try {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
 
       // read mnemonic table
       Matcher m;

@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.io.IOException;
 import org.jdom2.Element;
-import ucar.nc2.ncml.NcMLReader;
 
 /**
  * A CrawlableDataset from a THREDDS catalog.

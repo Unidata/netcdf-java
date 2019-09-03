@@ -7,7 +7,6 @@ package ucar.unidata.util.test;
 import org.junit.Assert;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * Static utilities for testing

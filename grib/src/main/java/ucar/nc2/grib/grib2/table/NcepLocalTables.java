@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.tables.NcepTables;
@@ -68,7 +69,7 @@ class NcepLocalTables extends LocalTables {
       /* A JAR path */
       String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); // strip out only the JAR file
       Enumeration<JarEntry> entries;
-      try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+      try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, CDM.UTF8))) {
         // gives ALL entries in jar
         entries = jar.entries();
       }

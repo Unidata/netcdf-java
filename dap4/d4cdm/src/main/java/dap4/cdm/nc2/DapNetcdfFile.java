@@ -6,13 +6,10 @@
 package dap4.cdm.nc2;
 
 import dap4.cdm.CDMUtil;
-import dap4.cdm.NodeMap;
 import dap4.core.data.DSP;
 import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapContext;
-import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.FileDSP;
 import dap4.dap4lib.HttpDSP;
 import dap4.dap4lib.XURI;

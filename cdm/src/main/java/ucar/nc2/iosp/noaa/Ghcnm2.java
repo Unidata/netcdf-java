@@ -7,11 +7,11 @@ package ucar.nc2.iosp.noaa;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcmlConstructor;
 import ucar.nc2.stream.NcStream;
@@ -775,7 +775,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
   private void readIndex(String indexFilename) throws IOException {
     try (FileInputStream fin = new FileInputStream(indexFilename)) {
 
-      if (!NcStream.readAndTest(fin, MAGIC_START_IDX.getBytes(CDM.utf8Charset)))
+      if (!NcStream.readAndTest(fin, MAGIC_START_IDX.getBytes(StandardCharsets.UTF_8)))
         throw new IllegalStateException("bad index file");
       int version = fin.read();
       if (version != 1)
@@ -870,7 +870,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       long size = 0;
 
       //// header message
-      fout.write(MAGIC_START_IDX.getBytes(CDM.utf8Charset));
+      fout.write(MAGIC_START_IDX.getBytes(StandardCharsets.UTF_8));
       fout.write(version);
       size += NcStream.writeVInt(fout, stnCount);
 

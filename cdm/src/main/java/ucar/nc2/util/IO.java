@@ -5,6 +5,7 @@
 
 package ucar.nc2.util;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -241,7 +242,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   public static String readContents(InputStream is) throws IOException {
-    return readContents(is, "UTF-8");
+    return readContents(is, CDM.UTF8);
   }
 
   /**
@@ -280,7 +281,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   public static void writeContents(String contents, OutputStream os) throws IOException {
-    ByteArrayInputStream bin = new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset));
+    ByteArrayInputStream bin = new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8));
     IO.copy(bin, os);
   }
 
@@ -486,7 +487,7 @@ public class IO {
    */
   public static String readFile(String filename) throws IOException {
     try (FileInputStream fin = new FileInputStream(filename)) {
-      InputStreamReader reader = new InputStreamReader(fin, CDM.utf8Charset);
+      InputStreamReader reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
       StringWriter swriter = new StringWriter(50000);
       UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(swriter);
       writer.write(reader);
@@ -503,7 +504,7 @@ public class IO {
    */
   public static void writeToFile(String contents, File file) throws IOException {
     try (FileOutputStream fout = new FileOutputStream(file)) {
-      OutputStreamWriter fw = new OutputStreamWriter(fout, CDM.utf8Charset);
+      OutputStreamWriter fw = new OutputStreamWriter(fout, StandardCharsets.UTF_8);
       UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
       writer.write(contents);
       writer.flush();
@@ -883,7 +884,7 @@ public class IO {
       // write it
       try (OutputStream out = c.getOutputStream()) {
         BufferedOutputStream bout = new BufferedOutputStream(out);
-        IO.copy(new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset)), bout);
+        IO.copy(new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)), bout);
       }
 
       int code = c.getResponseCode();

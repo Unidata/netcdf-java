@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.hdf4;
 
+import java.nio.charset.StandardCharsets;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 /**
@@ -66,7 +66,7 @@ public class ODLparser {
   }
 
   void parseFile(String filename) throws IOException {
-    String text = new String(IO.readFileToByteArray(filename), CDM.utf8Charset);
+    String text = new String(IO.readFileToByteArray(filename), StandardCharsets.UTF_8);
     parseFromString(text);
   }
 
@@ -108,7 +108,7 @@ public class ODLparser {
     }
 
     if (show)
-      showDoc(new PrintWriter(new OutputStreamWriter(System.out, CDM.utf8Charset)));
+      showDoc(new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
     return rootElem;
   }
 

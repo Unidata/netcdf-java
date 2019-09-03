@@ -4,9 +4,9 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
 import java.util.*;
@@ -529,7 +529,7 @@ public class N3header extends NCheader {
       count++;
     }
 
-    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode.
+    return new String(b, 0, count, StandardCharsets.UTF_8); // all strings are considered to be UTF-8 unicode.
   }
 
   // skip to a 4 byte boundary in the file
@@ -960,7 +960,7 @@ public class N3header extends NCheader {
 
   // write a string then pad to 4 byte boundary
   private void writeString(String s) throws IOException {
-    byte[] b = s.getBytes(CDM.utf8Charset); // all strings are encoded in UTF-8 Unicode.
+    byte[] b = s.getBytes(StandardCharsets.UTF_8); // all strings are encoded in UTF-8 Unicode.
     raf.writeInt(b.length);
     raf.write(b);
     pad(b.length, (byte) 0);

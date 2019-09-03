@@ -5,7 +5,6 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.dt.PointObsDatatype;
-import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Abstract superclass for implemenation of PointObsDatatype.

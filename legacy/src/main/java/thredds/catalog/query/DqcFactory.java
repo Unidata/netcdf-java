@@ -8,8 +8,8 @@
 
 package thredds.catalog.query;
 
+import java.nio.charset.StandardCharsets;
 import thredds.catalog.XMLEntityResolver;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.*;
@@ -295,7 +295,7 @@ public class DqcFactory {
   public String writeXML(QueryCapability dqc) throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     writeXML(dqc, os);
-    return os.toString(CDM.utf8Charset.name());
+    return os.toString(StandardCharsets.UTF_8.name());
   }
 
   /**

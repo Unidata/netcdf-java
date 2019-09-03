@@ -4,8 +4,8 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.IospHelper;
 import java.nio.channels.WritableByteChannel;
@@ -97,7 +97,7 @@ public class N3raf extends N3iosp {
         for (int k = 0; k < chunk.getNelems(); k++) {
           String val = (String) ii.getObjectNext();
           if (val != null)
-            raf.write(val.getBytes(CDM.utf8Charset)); // LOOK ??
+            raf.write(val.getBytes(StandardCharsets.UTF_8)); // LOOK ??
         }
       }
       return;

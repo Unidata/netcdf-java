@@ -5,8 +5,8 @@
 
 package ucar.unidata.io;
 
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
@@ -1518,7 +1518,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   public String readString(int nbytes) throws IOException {
     byte[] data = new byte[nbytes];
     readFully(data);
-    return new String(data, CDM.utf8Charset);
+    return new String(data, StandardCharsets.UTF_8);
   }
 
   /**
@@ -1535,7 +1535,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     for (count = 0; count < nbytes; count++)
       if (b[count] == 0)
         break;
-    return new String(b, 0, count, CDM.utf8Charset);
+    return new String(b, 0, count, StandardCharsets.UTF_8);
   }
 
   //

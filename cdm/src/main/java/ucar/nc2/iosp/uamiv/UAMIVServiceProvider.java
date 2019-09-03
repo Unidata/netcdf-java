@@ -482,7 +482,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       if (log.isDebugEnabled())
         log.debug("UAMIVServiceProvider: adding projection file");
       try (FileOutputStream out = new FileOutputStream(paramFile)) {
-        OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+        OutputStreamWriter fout = new OutputStreamWriter(out, StandardCharsets.UTF_8);
         BufferedWriter bw = new BufferedWriter(fout);
 
         bw.write(

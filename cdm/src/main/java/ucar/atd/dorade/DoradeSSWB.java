@@ -5,9 +5,9 @@
 
 package ucar.atd.dorade;
 
-import ucar.nc2.constants.CDM;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 class DoradeSSWB extends DoradeDescriptor {
@@ -90,7 +90,7 @@ class DoradeSSWB extends DoradeDescriptor {
       nKeyTables = 0;
       keyTables = null;
     } else {
-      radarName = new String(data, 36, 8, CDM.utf8Charset).trim();
+      radarName = new String(data, 36, 8, StandardCharsets.UTF_8).trim();
 
       //
       // AUUGGGGGHHHHHH! Everything after this is sometimes offset
