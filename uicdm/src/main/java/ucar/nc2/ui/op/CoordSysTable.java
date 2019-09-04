@@ -601,7 +601,7 @@ public class CoordSysTable extends JPanel {
 
   private void setSelectedCoordinateAxes(CoordinateSystem cs) {
     List axesList = cs.getCoordinateAxes();
-    if (axesList.size() == 0)
+    if (axesList.isEmpty())
       return;
     CoordinateAxis axis = (CoordinateAxis) axesList.get(0);
 
@@ -619,7 +619,7 @@ public class CoordSysTable extends JPanel {
     Formatter buff = new Formatter();
     buff.format("%s:", v.getFullName());
     List<CoordinateSystem> csList = v.getCoordinateSystems();
-    if (csList.size() == 0)
+    if (csList.isEmpty())
       buff.format(" No Coord System found");
     else {
       for (CoordinateSystem cs : csList) {
@@ -638,7 +638,7 @@ public class CoordSysTable extends JPanel {
     Formatter buff = new Formatter();
     buff.format("%s%n", v);
     List<CoordinateSystem> csList = v.getCoordinateSystems();
-    if (csList.size() == 0)
+    if (csList.isEmpty())
       buff.format(" No Coord System found");
     else {
       for (CoordinateSystem cs : csList) {
@@ -702,7 +702,7 @@ public class CoordSysTable extends JPanel {
       shape = lens.toString();
 
       // sort by largest size first
-      if (v.getCoordinateSystems().size() > 0) {
+      if (!v.getCoordinateSystems().isEmpty()) {
         List<CoordinateSystem> css = new ArrayList<>(v.getCoordinateSystems());
         css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
         CoordinateSystem cs = css.get(0);
@@ -916,7 +916,7 @@ public class CoordSysTable extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateAxis axis;
-    CoordinateSystem firstCoordSys = null;
+    CoordinateSystem firstCoordSys;
     String name, desc, units, axisType = "", positive = "", incr = "";
     String dims, shape;
     boolean isIndCoord;

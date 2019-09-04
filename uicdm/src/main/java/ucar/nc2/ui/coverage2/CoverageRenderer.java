@@ -33,15 +33,15 @@ public class CoverageRenderer {
   // draw state
   private boolean drawGrid = true;
   private boolean drawGridLines = true;
-  private boolean drawContours = false;
-  private boolean drawContourLabels = false;
-  private boolean drawBB = false;
+  private boolean drawContours;
+  private boolean drawContourLabels;
+  private boolean drawBB;
   private boolean isNewField = true;
 
-  private ColorScale colorScale = null;
+  private ColorScale colorScale;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
-  private ProjectionImpl drawProjection = null; // current drawing Projection
-  private ProjectionImpl dataProjection = null; // current data Projection
+  private ProjectionImpl drawProjection; // current drawing Projection
+  private ProjectionImpl dataProjection; // current data Projection
 
   // data stuff
   private DataState dataState;
@@ -52,15 +52,15 @@ public class CoverageRenderer {
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastStride = -1; // last data read
   private int lastRunTime = -1, lastEnsemble = -1; // last data read
-  private Coverage lastGrid = null;
+  private Coverage lastGrid;
 
   // drawing optimization
-  private boolean useModeForProjections = false; // use colorMode optimization for different projections
+  private boolean useModeForProjections; // use colorMode optimization for different projections
   private boolean sameProjection = true;
   private LatLonProjection projectll; // special handling for LatLonProjection
 
   private static final boolean debugHorizDraw = false, debugMiss = false;
-  private boolean debugPts = false, debugPathShape = true;
+  private boolean debugPts, debugPathShape = true;
 
   /**
    * constructor

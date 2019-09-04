@@ -260,7 +260,7 @@ public class ContourGrid {
      * include some supplied to the constructor.
      * If any contour values were supplied:
      */
-    if (allContourValues.size() > 0) {
+    if (!allContourValues.isEmpty()) {
       // boolean spanBottom=false, spanTop=false;
 
       if (Debug.isSet("contour/debugContours"))

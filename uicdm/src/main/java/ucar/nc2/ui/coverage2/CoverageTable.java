@@ -454,8 +454,8 @@ public class CoverageTable extends JPanel {
   public static class CoordSysBean {
     private CoverageCoordSys gcs;
     private String coordTrans, runtimeName, timeName, ensName, vertName;
-    private int nIndAxis = 0;
-    private int nCov = 0;
+    private int nIndAxis;
+    private int nCov;
 
     // no-arg constructor
     public CoordSysBean() {}

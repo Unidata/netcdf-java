@@ -23,33 +23,33 @@ public class SystemMenu extends JMenu {
   private ToolsUI toolsui;
   private static boolean isCacheInit;
 
-  public SystemMenu(final ToolsUI tui) {
+  public SystemMenu(ToolsUI tui) {
     super("System");
     setMnemonic('S');
 
     this.toolsui = tui;
 
-    final AbstractAction clearHttpStateAction = new AbstractAction() {
-      public void actionPerformed(final ActionEvent e) {
+    AbstractAction clearHttpStateAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
         // IGNORE HttpClientManager.clearState();
       }
     };
     BAMutil.setActionProperties(clearHttpStateAction, null, "Clear Http State", false, 'S', -1);
     BAMutil.addActionToMenu(this, clearHttpStateAction);
 
-    final AbstractAction showCacheAction = new AbstractAction() {
+    AbstractAction showCacheAction = new AbstractAction() {
       @Override
-      public void actionPerformed(final ActionEvent e) {
-        final Formatter f = new Formatter();
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
         f.format("RandomAccessFileCache contents%n");
 
-        final FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
+        FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
         if (null != rafCache) {
           rafCache.showCache(f);
         }
         f.format("%nNetcdfFileCache contents%n");
 
-        final FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+        FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (null != cache) {
           cache.showCache(f);
         }
@@ -60,9 +60,9 @@ public class SystemMenu extends JMenu {
     BAMutil.setActionProperties(showCacheAction, null, "Show Caches", false, 'S', -1);
     BAMutil.addActionToMenu(this, showCacheAction);
 
-    final AbstractAction clearRafCacheAction = new AbstractAction() {
+    AbstractAction clearRafCacheAction = new AbstractAction() {
       @Override
-      public void actionPerformed(final ActionEvent e) {
+      public void actionPerformed(ActionEvent e) {
         FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
         if (rafCache != null) {
           rafCache.clearCache(true);
@@ -72,9 +72,9 @@ public class SystemMenu extends JMenu {
     BAMutil.setActionProperties(clearRafCacheAction, null, "Clear RandomAccessFileCache", false, 'C', -1);
     BAMutil.addActionToMenu(this, clearRafCacheAction);
 
-    final AbstractAction clearCacheAction = new AbstractAction() {
+    AbstractAction clearCacheAction = new AbstractAction() {
       @Override
-      public void actionPerformed(final ActionEvent e) {
+      public void actionPerformed(ActionEvent e) {
         FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (cache != null)
           cache.clearCache(true);
@@ -83,10 +83,10 @@ public class SystemMenu extends JMenu {
     BAMutil.setActionProperties(clearCacheAction, null, "Clear NetcdfDatasetCache", false, 'C', -1);
     BAMutil.addActionToMenu(this, clearCacheAction);
 
-    final AbstractAction enableCache = new AbstractAction() {
+    AbstractAction enableCache = new AbstractAction() {
       @Override
-      public void actionPerformed(final ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+      public void actionPerformed(ActionEvent e) {
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         if (state == isCacheInit) {
           return;
         }
@@ -109,17 +109,17 @@ public class SystemMenu extends JMenu {
     BAMutil.setActionPropertiesToggle(enableCache, null, "Enable NetcdfDatasetCache", isCacheInit, 'N', -1);
     BAMutil.addActionToMenu(this, enableCache);
 
-    final AbstractAction showPropertiesAction = new AbstractAction() {
+    AbstractAction showPropertiesAction = new AbstractAction() {
       @Override
-      public void actionPerformed(final ActionEvent e) {
+      public void actionPerformed(ActionEvent e) {
         toolsui.getDatasetViewerPanel().setText("System Properties\n");
-        final Properties sysp = System.getProperties();
-        final Set<String> eprops = sysp.stringPropertyNames();
-        final ImmutableList<String> list = ImmutableList.copyOf(eprops);
+        Properties sysp = System.getProperties();
+        Set<String> eprops = sysp.stringPropertyNames();
+        ImmutableList<String> list = ImmutableList.copyOf(eprops);
 
         for (Object aList : list) {
-          final String name = (String) aList;
-          final String value = System.getProperty(name);
+          String name = (String) aList;
+          String value = System.getProperty(name);
           toolsui.getDatasetViewerPanel().appendLine("  " + name + " = " + value);
         }
         toolsui.getDatasetViewerPanel().getDetailWindow().show();
@@ -130,9 +130,9 @@ public class SystemMenu extends JMenu {
 
     addPlafSubmenu();
 
-    final AbstractAction exitAction = new AbstractAction() {
+    AbstractAction exitAction = new AbstractAction() {
       @Override
-      public void actionPerformed(final ActionEvent e) {
+      public void actionPerformed(ActionEvent e) {
         ToolsUI.exit();
       }
     };
@@ -141,10 +141,10 @@ public class SystemMenu extends JMenu {
   }
 
   private void addPlafSubmenu() {
-    final JMenu plafMenu = new JMenu("Look and Feel");
+    JMenu plafMenu = new JMenu("Look and Feel");
     plafMenu.setMnemonic('L');
 
-    final PLAF plaf = new PLAF(toolsui);
+    PLAF plaf = new PLAF(toolsui);
     plaf.addToMenu(plafMenu);
 
     add(plafMenu);

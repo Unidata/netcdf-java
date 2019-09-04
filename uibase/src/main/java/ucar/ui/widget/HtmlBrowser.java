@@ -46,7 +46,7 @@ import ucar.ui.prefs.Debug;
 public class HtmlBrowser extends JPanel {
   private static EditorKit kit = JEditorPane.createEditorKitForContentType("text/html");
   private PreferencesExt prefs;
-  private RootPaneContainer parent = null;
+  private RootPaneContainer parent;
 
   private boolean eventsOK = true;
 
@@ -60,7 +60,7 @@ public class HtmlBrowser extends JPanel {
   private ArrayList nav = new ArrayList(); // list of Page objetcs
   private int currentPage = -1;
 
-  private boolean debug = false, debugDoc = false, showEvent = false;
+  private boolean debug, debugDoc, showEvent;
 
   /*
    * Implementation notes:

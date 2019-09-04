@@ -118,7 +118,7 @@ public class PopupMenu extends JPopupMenu {
   }
 
   public abstract static class PopupTriggerListener extends MouseAdapter {
-    private boolean anyButton = false;
+    private boolean anyButton;
 
     PopupTriggerListener(boolean anyButton) {
       this.anyButton = anyButton;

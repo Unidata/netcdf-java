@@ -69,8 +69,8 @@ public class CatalogTreeView extends JPanel {
   private JTree tree;
   private InvCatalogTreeModel model;
 
-  private boolean debugRef = false;
-  private boolean debugTree = false;
+  private boolean debugRef;
+  private boolean debugTree;
 
   /**
    * Constructor.
@@ -416,8 +416,8 @@ public class CatalogTreeView extends JPanel {
   private class InvCatalogTreeNode implements javax.swing.tree.TreeNode {
     DatasetNode ds;
     private InvCatalogTreeNode parent;
-    private ArrayList<InvCatalogTreeNode> children = null;
-    private boolean isReading = false;
+    private ArrayList<InvCatalogTreeNode> children;
+    private boolean isReading;
 
     InvCatalogTreeNode(InvCatalogTreeNode parent, DatasetNode ds) {
       this.parent = parent;

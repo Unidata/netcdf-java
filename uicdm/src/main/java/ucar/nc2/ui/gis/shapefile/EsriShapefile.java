@@ -39,10 +39,10 @@ public class EsriShapefile {
 
   private BeLeDataInputStream bdis; // the shapefile data stream
   private int fileBytes; // bytes in file, according to header
-  private int bytesSeen = 0; // so far, in bytes.
+  private int bytesSeen; // so far, in bytes.
   private int version; // of shapefile format (currently 1000)
   private Type type;
-  private boolean debug = false;
+  private boolean debug;
 
   private List<EsriFeature> features; // EsriFeatures in List
   private Rectangle2D listBounds; // bounds from shapefile

@@ -33,9 +33,9 @@ public class Grib1CollectionOpPanel extends OpPanel {
     gribTable = new Grib1CollectionPanel(buttPanel, prefs);
     add(gribTable, BorderLayout.CENTER);
 
-    final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+    AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
     showButt.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.showCollection(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -43,9 +43,9 @@ public class Grib1CollectionOpPanel extends OpPanel {
     });
     buttPanel.add(showButt);
 
-    final AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
+    AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
     writeButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       try {
         if (!gribTable.writeIndex(f)) {
           return;
@@ -82,7 +82,7 @@ public class Grib1CollectionOpPanel extends OpPanel {
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

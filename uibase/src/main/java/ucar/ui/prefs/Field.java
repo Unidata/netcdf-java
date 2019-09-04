@@ -67,7 +67,7 @@ import java.util.prefs.PreferenceChangeListener;
 public abstract class Field {
   protected String name;
   protected PersistenceManager storeData;
-  protected javax.swing.event.EventListenerList listenerList = null;
+  protected javax.swing.event.EventListenerList listenerList;
 
   protected String label;
   protected Object validValue; // the current valid value
@@ -436,7 +436,7 @@ public abstract class Field {
     // get current value from editComponent
     protected Object getEditValue() {
       String editValue = tf.getText().trim();
-      if (editValue.length() == 0)
+      if (editValue.isEmpty())
         return null; // empty ok
       return normalize(editValue);
     }
@@ -488,7 +488,7 @@ public abstract class Field {
       if (s == null)
         return null;
       String trimValue = s.trim();
-      return (trimValue.length() > 0) ? trimValue : s;
+      return (!trimValue.isEmpty()) ? trimValue : s;
     }
 
   }
@@ -588,7 +588,7 @@ public abstract class Field {
     /** See if edit value is valid, put error message in buff. */
     protected boolean _validate(StringBuffer buff) {
       String editValue = tf.getText().trim();
-      if (editValue.length() == 0)
+      if (editValue.isEmpty())
         return true; // empty ok
       try {
         new java.lang.Double(editValue);
@@ -608,7 +608,7 @@ public abstract class Field {
     // get current value from editComponent
     protected Object getEditValue() {
       String editValue = tf.getText().trim();
-      if (editValue.length() == 0)
+      if (editValue.isEmpty())
         return null; // empty ok
       try {
         return new java.lang.Double(editValue);
@@ -688,7 +688,7 @@ public abstract class Field {
     /** See if edit value is valid, put error message in buff. */
     protected boolean _validate(StringBuffer buff) {
       String editValue = tf.getText().trim();
-      if (editValue.length() == 0)
+      if (editValue.isEmpty())
         return true; // empty ok
       try {
         java.lang.Integer.parseInt(tf.getText());
@@ -707,7 +707,7 @@ public abstract class Field {
     // get current value from editComponent
     protected Object getEditValue() {
       String editValue = tf.getText().trim();
-      if (editValue.length() == 0)
+      if (editValue.isEmpty())
         return null; // empty ok
       try {
         return new java.lang.Integer(tf.getText());
@@ -803,7 +803,7 @@ public abstract class Field {
     // get current value from editComponent
     protected Object getEditValue() {
       String editValue = tf.getText().trim();
-      if (editValue.length() == 0)
+      if (editValue.isEmpty())
         return null; // empty ok
       return tf.getValue();
     }

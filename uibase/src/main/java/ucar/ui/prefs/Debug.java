@@ -74,8 +74,8 @@ import javax.swing.JCheckBoxMenuItem;
  */
 
 public class Debug {
-  private static Preferences store = null;
-  private static boolean debug = false, debugEvents = false;
+  private static Preferences store;
+  private static boolean debug, debugEvents;
 
   /** Set the persistent data. You must call this before any other call. */
   public static void setStore(Preferences debugStore) {
@@ -93,7 +93,7 @@ public class Debug {
     NamePart np = partit(flagName);
     if (debug) {
       try {
-        if ((np.storeName.length() > 0) && !store.nodeExists(np.storeName))
+        if ((!np.storeName.isEmpty()) && !store.nodeExists(np.storeName))
           System.out.println("Debug.isSet create node = " + flagName + " " + np);
         else if (null == store.node(np.storeName).get(np.keyName, null))
           System.out.println("Debug.isSet create flag = " + flagName + " " + np);
@@ -114,7 +114,7 @@ public class Debug {
     NamePart np = partit(flagName);
     if (debug) {
       try {
-        if ((np.storeName.length() > 0) && !store.nodeExists(np.storeName))
+        if ((!np.storeName.isEmpty()) && !store.nodeExists(np.storeName))
           System.out.println("Debug.set create node = " + flagName + " " + np);
         else if (null == store.node(np.storeName).get(np.keyName, null))
           System.out.println("Debug.set create flag = " + flagName + " " + np);

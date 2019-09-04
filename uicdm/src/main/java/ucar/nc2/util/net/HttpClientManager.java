@@ -22,8 +22,8 @@ import java.util.zip.InflaterInputStream;
  * @author caron
  */
 public class HttpClientManager {
-  private static boolean debug = false;
-  private static int timeout = 0;
+  private static boolean debug;
+  private static int timeout;
 
   /**
    * initialize the HttpClient layer.
@@ -142,7 +142,7 @@ public class HttpClientManager {
         Header h = m.getResponseHeader("content-encoding");
         String encoding = (h == null) ? null : h.getValue();
 
-        if (encoding != null && encoding.equals("deflate")) {
+        if ("deflate".equals(encoding)) {
           byte[] body = m.getResponseAsBytes();
           if (body == null)
             throw new IOException("empty body");
@@ -151,7 +151,7 @@ public class HttpClientManager {
             useSession.close();
           return readContents(is, charset, maxKbytes);
 
-        } else if (encoding != null && encoding.equals("gzip")) {
+        } else if ("gzip".equals(encoding)) {
           byte[] body = m.getResponseAsBytes();
           if (body == null)
             throw new IOException("empty body");
@@ -205,11 +205,11 @@ public class HttpClientManager {
       Header h = m.getResponseHeader("content-encoding");
       String encoding = (h == null) ? null : h.getValue();
 
-      if (encoding != null && encoding.equals("deflate")) {
+      if ("deflate".equals(encoding)) {
         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
         IO.writeToFile(is, file.getPath());
 
-      } else if (encoding != null && encoding.equals("gzip")) {
+      } else if ("gzip".equals(encoding)) {
         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
         IO.writeToFile(is, file.getPath());
 
@@ -251,10 +251,10 @@ public class HttpClientManager {
         Header h = m.getResponseHeader("content-encoding");
         String encoding = (h == null) ? null : h.getValue();
 
-        if (encoding != null && encoding.equals("deflate")) {
+        if ("deflate".equals(encoding)) {
           InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
           nbytes = IO.appendToFile(is, file.getPath());
-        } else if (encoding != null && encoding.equals("gzip")) {
+        } else if ("gzip".equals(encoding)) {
           InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
           nbytes = IO.appendToFile(is, file.getPath());
         } else {

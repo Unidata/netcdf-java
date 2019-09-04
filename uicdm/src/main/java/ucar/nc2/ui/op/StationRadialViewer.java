@@ -43,7 +43,7 @@ public class StationRadialViewer extends JPanel {
   private IndependentDialog infoWindow;
 
   private boolean eventsOK = true;
-  private boolean debugStationRegionSelect = false, debugStationDatsets = false, debugQuery = false;
+  private boolean debugStationRegionSelect, debugStationDatsets, debugQuery;
 
 
   public StationRadialViewer(PreferencesExt prefs) {

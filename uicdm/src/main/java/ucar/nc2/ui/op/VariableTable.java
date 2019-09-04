@@ -270,7 +270,7 @@ public class VariableTable extends JPanel {
     table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
     // Create the scroll pane and add the table to it.
-    final JScrollPane scrollPane = new JScrollPane(table);
+    JScrollPane scrollPane = new JScrollPane(table);
 
     // Add the scroll pane to this panel.
     this.removeAll();
@@ -280,10 +280,10 @@ public class VariableTable extends JPanel {
 
     includeGlobals = new JCheckBox("Export Attributes");
 
-    final JButton export = new JButton("Export");
+    JButton export = new JButton("Export");
     export.addActionListener(e -> export());
 
-    final JPanel holderPanel = new JPanel(new BorderLayout());
+    JPanel holderPanel = new JPanel(new BorderLayout());
     holderPanel.add(export, BorderLayout.EAST);
     holderPanel.add(includeGlobals, BorderLayout.CENTER);
     add(holderPanel, BorderLayout.PAGE_END);
@@ -293,17 +293,17 @@ public class VariableTable extends JPanel {
    *
    */
   private void export() {
-    final String filename = fileChooser.chooseFilename();
+    String filename = fileChooser.chooseFilename();
 
     if (filename == null) {
       return;
     }
 
-    final CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
+    CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
 
-    try (final FileOutputStream fos = new FileOutputStream(filename);
-        final OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-        final PrintWriter pw = new PrintWriter(osw)) {
+    try (FileOutputStream fos = new FileOutputStream(filename);
+        OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+        PrintWriter pw = new PrintWriter(osw)) {
 
       pw.println("; file name : " + fds.getLocation());
 
@@ -316,7 +316,7 @@ public class VariableTable extends JPanel {
 
       pw.println("; this file written : " + new Date());
 
-      final TableModel model = dataModel;
+      TableModel model = dataModel;
       for (int col = 0; col < model.getColumnCount(); col++) {
         if (col > 0) {
           pw.print(",");
@@ -330,12 +330,12 @@ public class VariableTable extends JPanel {
           if (col > 0) {
             pw.print(",");
           }
-          final Object o = model.getValueAt(row, col);
+          Object o = model.getValueAt(row, col);
           if (o instanceof CalendarDate) {
-            final CalendarDate d = (CalendarDate) o;
+            CalendarDate d = (CalendarDate) o;
             pw.print(printForm.toString(d));
           } else {
-            pw.print(o.toString());
+            pw.print(o);
           }
 
         }
@@ -362,7 +362,6 @@ public class VariableTable extends JPanel {
      *
      */
     DateRenderer() {
-      super();
 
       oldForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
       newForm = new CalendarDateFormatter("dd MMM HH:mm:ss", CalendarTimeZone.UTC);
@@ -378,7 +377,7 @@ public class VariableTable extends JPanel {
       if (value == null) {
         setText("");
       } else {
-        final CalendarDate date = (CalendarDate) value;
+        CalendarDate date = (CalendarDate) value;
         if (date.isBefore(cutoff)) {
           setText(oldForm.toString(date));
         } else {

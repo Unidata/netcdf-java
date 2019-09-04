@@ -64,7 +64,7 @@ public class VariablePlot extends JPanel {
 
     chart = createChart();
 
-    final ChartPanel chartPanel = new ChartPanel(chart);
+    ChartPanel chartPanel = new ChartPanel(chart);
     chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
     chartPanel.setMouseZoomable(true, false);
 
@@ -159,7 +159,7 @@ public class VariablePlot extends JPanel {
         p.getDomainAxis().setLabel(dimName);
 
       if (xAxis != null) {
-        log.info("X axis type " + xAxis.getDataType() + " value " + xAxis.toString() + " is Time " + xIsTime);
+        log.info("X axis type " + xAxis.getDataType() + " value " + xAxis + " is Time " + xIsTime);
       }
     }
 
@@ -176,16 +176,16 @@ public class VariablePlot extends JPanel {
     }
     log.info("axis number " + ax);
 
-    final XYItemRenderer renderer = p.getRenderer();
+    XYItemRenderer renderer = p.getRenderer();
     if (xIsTime) {
-      final StandardXYToolTipGenerator g =
+      StandardXYToolTipGenerator g =
           new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
               new SimpleDateFormat("d-MMM-yyyy"), new DecimalFormat("0.00"));
       renderer.setBaseToolTipGenerator(g);
 
       dataset = new TimeSeriesCollection();
     } else {
-      final StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
+      StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
           StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT, new DecimalFormat("0.00"), new DecimalFormat("0.00"));
       renderer.setBaseToolTipGenerator(g);
 
@@ -269,7 +269,7 @@ public class VariablePlot extends JPanel {
       if (dataset instanceof XYSeriesCollection)
         ((XYSeriesCollection) dataset).addSeries((XYSeries) s1);
     }
-    final XYLineAndShapeRenderer renderer1 = new XYLineAndShapeRenderer(true, false);
+    XYLineAndShapeRenderer renderer1 = new XYLineAndShapeRenderer(true, false);
     p.setRenderer(ax, renderer1);
 
     log.info("dataset " + ax + " max " + max + " min " + min + " : " + dataset);

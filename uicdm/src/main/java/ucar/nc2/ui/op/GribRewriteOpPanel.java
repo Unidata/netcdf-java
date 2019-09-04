@@ -33,7 +33,7 @@ public class GribRewriteOpPanel extends OpPanel {
   /**
    *
    */
-  public GribRewriteOpPanel(final PreferencesExt prefs) {
+  public GribRewriteOpPanel(PreferencesExt prefs) {
     super(prefs, "dir:", false, false);
     dirChooser =
         new FileManager(ToolsUI.getToolsFrame(), null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
@@ -46,9 +46,9 @@ public class GribRewriteOpPanel extends OpPanel {
         if (!(e.getNewValue() instanceof String))
           return;
 
-        final String pname = e.getPropertyName();
+        String pname = e.getPropertyName();
 
-        final String datasetName = (String) e.getNewValue();
+        String datasetName = (String) e.getNewValue();
 
         if ("openNetcdfFile".equals(pname)) {
           ToolsUI.getToolsUI().openNetcdfFile(datasetName);
@@ -66,10 +66,10 @@ public class GribRewriteOpPanel extends OpPanel {
 
     dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     dirChooser.setCurrentDirectory(prefs.get("currDir", "."));
-    final AbstractAction fileAction = new AbstractAction() {
+    AbstractAction fileAction = new AbstractAction() {
       @Override
-      public void actionPerformed(final ActionEvent e) {
-        final String filename = dirChooser.chooseFilename();
+      public void actionPerformed(ActionEvent e) {
+        String filename = dirChooser.chooseFilename();
         if (filename == null) {
           return;
         }

@@ -78,7 +78,7 @@ public class Grib1CollectionPanel extends JPanel {
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
-  private Grib1Customizer cust = null;
+  private Grib1Customizer cust;
   private FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
 
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
@@ -483,7 +483,7 @@ public class Grib1CollectionPanel extends JPanel {
     Formatter f = new Formatter();
     this.dcm = scanCollection(spec, f);
     if (dcm == null) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f.toString());
+      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f);
       return;
     }
 

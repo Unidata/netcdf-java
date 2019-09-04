@@ -28,13 +28,13 @@ public class CollectionSpecPanel extends OpPanel {
     table = new CollectionSpecTable(prefs);
     add(table, BorderLayout.CENTER);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(e -> {
       Formatter f = new Formatter();
       try {
         table.showCollection(f);
       } catch (Exception e1) {
-        final StringWriter sw = new StringWriter(5000);
+        StringWriter sw = new StringWriter(5000);
         e1.printStackTrace(new PrintWriter(sw));
         f.format("%s", sw.toString());
       }
@@ -48,7 +48,7 @@ public class CollectionSpecPanel extends OpPanel {
   /** */
   @Override
   public boolean process(Object o) {
-    final String command = (String) o;
+    String command = (String) o;
     if (command == null) {
       return false;
     }
@@ -57,7 +57,7 @@ public class CollectionSpecPanel extends OpPanel {
       table.setCollection(command);
       return true;
     } catch (Exception ioe) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailTA.gotoTop();

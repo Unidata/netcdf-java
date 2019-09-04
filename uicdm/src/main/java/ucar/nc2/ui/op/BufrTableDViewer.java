@@ -38,9 +38,9 @@ public class BufrTableDViewer extends JPanel {
 
   private TableD currTable;
 
-  private HashMap<Short, List<String>> usedDds = null;
+  private HashMap<Short, List<String>> usedDds;
 
-  public BufrTableDViewer(final PreferencesExt prefs, JPanel buttPanel) {
+  public BufrTableDViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
@@ -275,9 +275,9 @@ public class BufrTableDViewer extends JPanel {
    */
 
   //////////////////////////////////////////////////////
-  private HashMap<Short, List<DdsBean>> allVariants = null;
-  private Set<String> variantKeys = null;
-  private boolean standardVariantsLoaded = false;
+  private HashMap<Short, List<DdsBean>> allVariants;
+  private Set<String> variantKeys;
+  private boolean standardVariantsLoaded;
 
   private void loadStandardVariants() {
     for (BufrTables.TableConfig tc : BufrTables.getTables()) {

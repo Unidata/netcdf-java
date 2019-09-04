@@ -298,7 +298,7 @@ public class Fmrc2Panel extends JPanel {
     return true;
   }
 
-  private Fmrc2Dialog dialog = null;
+  private Fmrc2Dialog dialog;
 
   public void showDataset() throws IOException {
     if (fmrcInv == null)
@@ -806,8 +806,6 @@ public class Fmrc2Panel extends JPanel {
   }
 
   public abstract static class CoordBean {
-    // no-arg constructor
-    public CoordBean() {}
 
     public abstract String getType();
 

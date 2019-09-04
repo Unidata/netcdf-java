@@ -9,8 +9,8 @@ import java.util.Set;
 import javax.swing.tree.TreePath;
 
 public class TreeTableModelSorted extends TreeTableModelAbstract {
-  private boolean treeSort = false;
-  private RowSorter rowSorter = null;
+  private boolean treeSort;
+  private RowSorter rowSorter;
   private ThreadSorter threadSorter;
 
   private String[] colName; // column names
@@ -18,13 +18,13 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
   private ArrayList treeList; // divided into tree
 
   private boolean useThreads; // are we in "thread mode"?
-  private boolean threadsOn = false; // are threads currently toggled on ?
+  private boolean threadsOn; // are threads currently toggled on ?
   private int threadCol = -1; // thread column
   private int indentCol = -1; // column to indent, to indicate child
 
-  private int sortCol = 0; // column to sort on
-  private boolean reverse = false; // reverse sort
-  private boolean debug = false, debugTM = false, debugSort = false, showNodeName = false;
+  private int sortCol; // column to sort on
+  private boolean reverse; // reverse sort
+  private boolean debug, debugTM, debugSort, showNodeName;
 
   /**
    * This uses the mode where the selected column becomes the root of the tree.
@@ -431,7 +431,7 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
       this.count = count;
       row = (TableRow) rowList.get(start);
       if (debug)
-        System.out.println("new sort node " + toString());
+        System.out.println("new sort node " + this);
     }
 
     public int compareTo(Object o) {

@@ -221,7 +221,7 @@ public class Grib1DataTable extends JPanel {
     varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List beans = record1BeanTable.getSelectedBeans();
-        if (beans.size() > 0)
+        if (!beans.isEmpty())
           extractToFile(beans);
       }
     });
@@ -310,7 +310,7 @@ public class Grib1DataTable extends JPanel {
     Formatter f = new Formatter();
     this.dcm = scanCollection(spec, f);
     if (dcm == null) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f.toString());
+      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f);
       return;
     }
 
@@ -563,7 +563,7 @@ public class Grib1DataTable extends JPanel {
         int size = (int) (is.getMessageLength());
         long startPos = is.getStartPos();
         if (startPos < 0) {
-          JOptionPane.showMessageDialog(Grib1DataTable.this,
+          JOptionPane.showMessageDialog(this,
               "Old index does not have message start - record not written");
         }
 
@@ -574,11 +574,11 @@ public class Grib1DataTable extends JPanel {
         n++;
       }
 
-      JOptionPane.showMessageDialog(Grib1DataTable.this,
+      JOptionPane.showMessageDialog(this,
           filename + ": " + n + " records successfully written, append=" + append);
 
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(Grib1DataTable.this, "ERROR: " + ex.getMessage());
+      JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage());
       ex.printStackTrace();
 
     } finally {
@@ -631,7 +631,7 @@ public class Grib1DataTable extends JPanel {
       }
 
     } else {
-      int[] shape = new int[] {bean.gdss.getNy(), bean.gdss.getNx()};
+      int[] shape = {bean.gdss.getNy(), bean.gdss.getNx()};
       Array dataA = Array.factory(DataType.FLOAT, shape, data);
       f.format("%s%n", NCdumpW.toString(dataA));
     }

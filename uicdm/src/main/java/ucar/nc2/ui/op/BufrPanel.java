@@ -49,7 +49,7 @@ public class BufrPanel extends OpPanel {
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

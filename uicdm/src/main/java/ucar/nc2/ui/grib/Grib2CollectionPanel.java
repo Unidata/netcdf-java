@@ -86,7 +86,7 @@ public class Grib2CollectionPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
 
-  public Grib2CollectionPanel(final PreferencesExt prefs, JPanel buttPanel) {
+  public Grib2CollectionPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     PopupMenu varPopup;
@@ -161,7 +161,7 @@ public class Grib2CollectionPanel extends JPanel {
           Grib2ParameterBean param = (Grib2ParameterBean) bean;
           allRecords.addAll(param.records);
         }
-        if (allRecords.size() > 0)
+        if (!allRecords.isEmpty())
           writeToFile(allRecords);
       }
     });
@@ -409,7 +409,7 @@ public class Grib2CollectionPanel extends JPanel {
     varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List beans = record2BeanTable.getSelectedBeans();
-        if (beans.size() > 0)
+        if (!beans.isEmpty())
           writeToFile(beans);
       }
     });
@@ -488,7 +488,7 @@ public class Grib2CollectionPanel extends JPanel {
     Formatter f = new Formatter();
     this.dcm = getCollection(spec, f);
     if (dcm == null) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f.toString());
+      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f);
       return;
     }
 
@@ -819,7 +819,7 @@ public class Grib2CollectionPanel extends JPanel {
         int size = (int) (is.getMessageLength());
         long startPos = is.getStartPos();
         if (startPos < 0) {
-          JOptionPane.showMessageDialog(Grib2CollectionPanel.this,
+          JOptionPane.showMessageDialog(this,
               "Old index does not have message start - record not written");
         }
 
@@ -830,11 +830,11 @@ public class Grib2CollectionPanel extends JPanel {
         n++;
       }
 
-      JOptionPane.showMessageDialog(Grib2CollectionPanel.this,
+      JOptionPane.showMessageDialog(this,
           filename + ": " + n + " records successfully written, append=" + append);
 
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(Grib2CollectionPanel.this, "ERROR: " + ex.getMessage());
+      JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage());
       ex.printStackTrace();
 
     } finally {
@@ -954,7 +954,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
     Grib2Gds gds = bean1.gr.getGDS();
 
-    int[] shape = new int[] {gds.getNy(), gds.getNx()};
+    int[] shape = {gds.getNy(), gds.getNx()};
     Array arr = Array.factory(DataType.FLOAT, shape, data);
     f.format("%s", NCdumpW.toString(arr));
   }

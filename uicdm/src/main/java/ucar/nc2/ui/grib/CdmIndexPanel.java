@@ -807,7 +807,7 @@ public class CdmIndexPanel extends JPanel {
       for (GribCollectionImmutable.GroupGC g : ds.getGroups())
         groups.add(new GroupBean(g, ds.getType().toString()));
 
-    if (groups.size() > 0)
+    if (!groups.isEmpty())
       setGroup(groups.get(0));
     else {
       varTable.clearBeans();

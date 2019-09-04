@@ -47,7 +47,7 @@ public class DatasetViewerPanel extends OpPanel {
     dsViewer = new DatasetViewer(dbPrefs, fileChooser);
     add(dsViewer, BorderLayout.CENTER);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(e -> {
       if (ncfile != null) {
         detailTA.setText(ncfile.getDetailInfo());
@@ -57,10 +57,10 @@ public class DatasetViewerPanel extends OpPanel {
     });
     buttPanel.add(infoButton);
 
-    final AbstractAction dumpAction = new AbstractAction() {
+    AbstractAction dumpAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final NetcdfFile ds = dsViewer.getDataset();
+        NetcdfFile ds = dsViewer.getDataset();
         if (ds != null) {
           logger.debug("setNCdumpPanel");
           ToolsUI.setNCdumpPanel(ds);
@@ -101,7 +101,7 @@ public class DatasetViewerPanel extends OpPanel {
         setDataset(ncnew);
       }
     } catch (Exception ioe) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();
@@ -124,7 +124,7 @@ public class DatasetViewerPanel extends OpPanel {
   /**
    *
    */
-  public void setDataset(final NetcdfFile nc) {
+  public void setDataset(NetcdfFile nc) {
     try {
       if (ncfile != null) {
         ncfile.close();

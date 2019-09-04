@@ -38,15 +38,15 @@ public class GribFilesOpPanel extends OpPanel {
       @Override
       public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("openGrib1Collection")) {
-          final String filename = (String) e.getNewValue();
+          String filename = (String) e.getNewValue();
           ToolsUI.getToolsUI().openGrib1Collection(filename);
         }
       }
     });
 
-    final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+    AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
     showButt.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.showCollection(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -68,7 +68,7 @@ public class GribFilesOpPanel extends OpPanel {
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

@@ -33,15 +33,15 @@ public class Hdf4Panel extends OpPanel {
     hdf4Table = new Hdf4Table(prefs);
     add(hdf4Table, BorderLayout.CENTER);
 
-    final AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
+    AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
     eosdump.addActionListener(e -> {
       try {
-        final Formatter f = new Formatter();
+        Formatter f = new Formatter();
         hdf4Table.getEosInfo(f);
         detailTA.setText(f.toString());
         detailWindow.show();
-      } catch (final IOException ioe) {
-        final StringWriter sw = new StringWriter(5000);
+      } catch (IOException ioe) {
+        StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
         detailWindow.show();
@@ -67,7 +67,7 @@ public class Hdf4Panel extends OpPanel {
       JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());
       err = true;
     } catch (Exception e) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

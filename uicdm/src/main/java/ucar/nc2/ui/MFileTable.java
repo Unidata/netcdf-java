@@ -59,7 +59,7 @@ public class MFileTable extends JPanel {
     varPopup.addAction("Add Files to Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List<FileBean> beans = (List<FileBean>) fileTable.getSelectedBeans();
-        if (beans == null || beans.size() == 0)
+        if (beans == null || beans.isEmpty())
           return;
         for (FileBean bean : beans)
           gribCollectionFiles.add(bean.getPath());
@@ -72,7 +72,7 @@ public class MFileTable extends JPanel {
     });
     varPopup.addAction("Open Collection in Grib2Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        if (gribCollectionFiles.size() == 0)
+        if (gribCollectionFiles.isEmpty())
           return;
         if (MFileTable.this.isPopup)
           fileWindow.setVisible(false);

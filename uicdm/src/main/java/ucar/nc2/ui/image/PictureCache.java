@@ -124,7 +124,7 @@ public class PictureCache {
    * @param sp The picture to be stored
    */
   public static synchronized void add(URL url, SourcePicture sp) {
-    Tools.log("PictureCache.add: " + url.toString());
+    Tools.log("PictureCache.add: " + url);
     if (sp.getSourceBufferedImage() == null) {
       Tools.log("PictureCache.add: invoked with a null picture! Not cached!");
       return;
@@ -136,7 +136,7 @@ public class PictureCache {
     }
 
     if (isInCache(url)) {
-      Tools.log("Picture " + url.toString() + " is already in the cache. Not adding again.");
+      Tools.log("Picture " + url + " is already in the cache. Not adding again.");
       return;
     }
 

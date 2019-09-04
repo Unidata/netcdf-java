@@ -32,12 +32,12 @@ public abstract class UnitTestCommon {
 
   public static final Charset UTF8 = StandardCharsets.UTF_8;
 
-  protected static final int[] OKCODES = new int[] {200, 404};
+  protected static final int[] OKCODES = {200, 404};
 
   protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnitTestCommon.class);
 
   // Look for these to verify we have found the thredds root
-  static final String[] DEFAULTSUBDIRS = new String[] {"httpservices", "cdm", "opendap", "dap4"};
+  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm", "opendap", "dap4"};
 
   // NetcdfDataset enhancement to use: need only coord systems
   static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);

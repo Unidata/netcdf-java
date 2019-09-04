@@ -42,7 +42,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
 
   private PreferencesExt parent;
   private HashMap keyValues, children;
-  private PreferencesExt storedDefaults = null;
+  private PreferencesExt storedDefaults;
 
   /**
    * Constructor. Usually you get a PreferencesExt object from XMLStore.getPrefs(),
@@ -323,7 +323,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
     try {
       System.out.println("---" + what + ":");
       for (Object o : c) {
-        System.out.println("  " + o.toString() + " " + o.getClass().getName());
+        System.out.println("  " + o + " " + o.getClass().getName());
       }
     } catch (Exception e) {
       e.printStackTrace();

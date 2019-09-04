@@ -24,8 +24,8 @@ import javax.swing.JOptionPane;
 public class ReportOpPanel extends OpPanel {
   private ReportPanel reportPanel;
   private boolean useIndex = true;
-  private boolean eachFile = false;
-  private boolean extra = false;
+  private boolean eachFile;
+  private boolean extra;
   private JComboBox reports;
 
   /**
@@ -50,7 +50,7 @@ public class ReportOpPanel extends OpPanel {
     BAMutil.setActionProperties(useIndexButt, "nj22/Doit", "use Index", true, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, useIndexButt);
 
-    final AbstractAction eachFileButt = new AbstractAction() {
+    AbstractAction eachFileButt = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         eachFile = (Boolean) getValue(BAMutil.STATE);
@@ -60,7 +60,7 @@ public class ReportOpPanel extends OpPanel {
     BAMutil.setActionProperties(eachFileButt, "nj22/Doit", "report on each file", true, 'E', -1);
     BAMutil.addActionToContainer(buttPanel, eachFileButt);
 
-    final AbstractAction extraButt = new AbstractAction() {
+    AbstractAction extraButt = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         extra = (Boolean) getValue(BAMutil.STATE);
@@ -70,7 +70,7 @@ public class ReportOpPanel extends OpPanel {
     BAMutil.setActionProperties(extraButt, "nj22/Doit", "extra info", true, 'X', -1);
     BAMutil.addActionToContainer(buttPanel, extraButt);
 
-    final AbstractAction doitButt = new AbstractAction() {
+    AbstractAction doitButt = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         process();

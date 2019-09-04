@@ -52,7 +52,7 @@ public class TdsDownloader {
   }
 
   // copy remote files to localDir
-  public void getRemoteFiles(final CancelTask _cancel) {
+  public void getRemoteFiles(CancelTask _cancel) {
     this.cancel = _cancel;
 
     String urls = config.getServerPrefix() + "/thredds/admin/log/" + type + "/";
@@ -64,7 +64,7 @@ public class TdsDownloader {
       if (statusCode == 200)
         contents = method.getResponseAsString();
 
-      if ((contents == null) || (contents.length() == 0)) {
+      if ((contents == null) || (contents.isEmpty())) {
         ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
         return;
       } else {
@@ -77,7 +77,7 @@ public class TdsDownloader {
     }
 
     // update text area in background http://technobuz.com/2009/05/update-jtextarea-dynamically/
-    final String list = contents;
+    String list = contents;
     SwingWorker worker = new SwingWorker<String, Void>() {
 
       @Override

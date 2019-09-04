@@ -27,7 +27,7 @@ public class SpatialGrid {
   private double scaleOverlap = 1.0;
   private Rectangle2D result = new Rectangle2D.Double();
 
-  private boolean debug = false, debugMark = false, debugClosest = false;
+  private boolean debug, debugMark, debugClosest;
 
   /**
    * Constructor
@@ -274,9 +274,9 @@ public class SpatialGrid {
 
   // inner class
   private static class GridCell {
-    boolean used = false;
-    Rectangle2D objectBB = null;
-    Object o = null;
+    boolean used;
+    Rectangle2D objectBB;
+    Object o;
   }
 }
 

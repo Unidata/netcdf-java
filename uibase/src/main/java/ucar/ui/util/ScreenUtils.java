@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.JFrame;
 
 public class ScreenUtils {
-  private static Rectangle virtualBounds = null;
+  private static Rectangle virtualBounds;
 
   public static Rectangle getScreenVirtualSize() {
     if (virtualBounds == null) {

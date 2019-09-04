@@ -38,11 +38,11 @@ public class FeatureScanOpPanel extends OpPanel {
 
     ftTable.addPropertyChangeListener(new PropertyChangeListener() {
       @Override
-      public void propertyChange(final PropertyChangeEvent e) {
+      public void propertyChange(PropertyChangeEvent e) {
         if (!(e.getNewValue() instanceof String))
           return;
 
-        final String datasetName = (String) e.getNewValue();
+        String datasetName = (String) e.getNewValue();
 
         switch (e.getPropertyName()) {
           case "openPointFeatureDataset":
@@ -72,7 +72,7 @@ public class FeatureScanOpPanel extends OpPanel {
 
     dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     dirChooser.setCurrentDirectory(prefs.get("currDir", "."));
-    final AbstractAction fileAction = new AbstractAction() {
+    AbstractAction fileAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         String filename = dirChooser.chooseFilename();

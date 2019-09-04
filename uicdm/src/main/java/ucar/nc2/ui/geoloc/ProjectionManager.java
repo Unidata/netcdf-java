@@ -35,7 +35,7 @@ import ucar.unidata.geoloc.*;
 public class ProjectionManager {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionManager.class);
   private static final int min_sigfig = 6;
-  private static final Object[] voidObjectArg = new Object[] {};
+  private static final Object[] voidObjectArg = {};
 
   // the current list of projection classes: be nice to do this dynamically
   // what about reading all classes in ucar.unidata.gis/projection ? (glenn doesnt like)
@@ -69,7 +69,7 @@ public class ProjectionManager {
   private ListenerManager lm;
 
   // misc
-  private boolean debug = false, debugBeans = false;
+  private boolean debug, debugBeans;
 
   /**
    * default constructor
@@ -417,8 +417,8 @@ public class ProjectionManager {
         return;
       }
 
-      Class[] voidClassArg = new Class[] {};
-      Object[] voidObjectArg = new Object[] {};
+      Class[] voidClassArg = {};
+      Object[] voidObjectArg = {};
 
       // invoke the toClassName method
       try {
@@ -438,8 +438,8 @@ public class ProjectionManager {
     }
 
     ProjectionImpl makeDefaultProjection() {
-      Class[] voidClassArg = new Class[] {};
-      Object[] voidObjectArg = new Object[] {};
+      Class[] voidClassArg = {};
+      Object[] voidObjectArg = {};
 
       // the default constructor
       try {

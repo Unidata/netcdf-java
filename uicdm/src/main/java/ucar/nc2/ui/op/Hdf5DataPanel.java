@@ -33,13 +33,13 @@ public class Hdf5DataPanel extends OpPanel {
     hdf5Table = new Hdf5DataTable(prefs, buttPanel);
     add(hdf5Table, BorderLayout.CENTER);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       try {
         hdf5Table.showInfo(f);
       } catch (IOException ioe) {
-        final StringWriter sw = new StringWriter(5000);
+        StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
         detailWindow.show();
@@ -71,7 +71,7 @@ public class Hdf5DataPanel extends OpPanel {
       err = true;
 
     } catch (Exception e) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

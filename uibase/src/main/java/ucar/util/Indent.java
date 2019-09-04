@@ -12,7 +12,7 @@ package ucar.util;
 public class Indent {
   private int nspaces;
 
-  private int level = 0;
+  private int level;
   private final StringBuilder blanks = new StringBuilder();
   private String indent = "";
 

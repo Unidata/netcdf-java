@@ -25,7 +25,7 @@ public class UnitsPanel extends JPanel {
   /**
    *
    */
-  public UnitsPanel(final PreferencesExt prefs) {
+  public UnitsPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     unitDataset = new UnitDatasetCheck((PreferencesExt) prefs.node("unitDataset"));

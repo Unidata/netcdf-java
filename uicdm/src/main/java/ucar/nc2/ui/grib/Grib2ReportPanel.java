@@ -511,7 +511,7 @@ public class Grib2ReportPanel extends ReportPanel {
     }
 
     MFile f;
-    int countRecords = 0;
+    int countRecords;
   }
 
   ///////////////////////////////////////////////
@@ -553,8 +553,8 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   ///////////////////////////////////////////////
-  int total = 0;
-  int prob = 0;
+  int total;
+  int prob;
 
   private void doPdsProblems(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Check Grib-2 PDS probability and statistical variables%n");

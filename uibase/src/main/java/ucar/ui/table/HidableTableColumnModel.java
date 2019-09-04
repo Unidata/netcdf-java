@@ -85,7 +85,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
    * @return visibility of specified column (false if there is no such column at all. [It's not visible, right?])
    */
   public boolean isColumnVisible(TableColumn aColumn) {
-    return (tableColumns.indexOf(aColumn) >= 0);
+    return tableColumns.contains(aColumn);
   }
 
   /**

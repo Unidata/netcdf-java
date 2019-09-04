@@ -19,7 +19,7 @@ import java.util.List;
  * @author John Caron
  */
 public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
-  private static boolean useDiscretization = false;
+  private static boolean useDiscretization;
   private static double pixelMatch = 2.0;
 
   public static void setDiscretization(boolean b) {
@@ -30,7 +30,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     pixelMatch = d;
   }
 
-  private ArrayList featSetList = null; // list of fetaureSets for progressive disclosure
+  private ArrayList featSetList; // list of fetaureSets for progressive disclosure
 
   ////// this is what the subclasses have to implement (besides the constructor)
   public abstract LatLonRect getPreferredArea();
@@ -197,8 +197,8 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   private class FeatureSet {
     List featureList;
     double minDist;
-    ProjectionImpl project = null;
-    ArrayList shapeList = null;
+    ProjectionImpl project;
+    ArrayList shapeList;
     boolean newProjection = true;
 
     FeatureSet(List featureList, double minDist) {
@@ -273,7 +273,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   // these are derived Features based on a mimimum distance between points
   static class FeatureMD extends AbstractGisFeature {
     private ArrayList parts = new ArrayList();
-    private int total_pts = 0;
+    private int total_pts;
     private double minDist;
     private double minDist2;
 

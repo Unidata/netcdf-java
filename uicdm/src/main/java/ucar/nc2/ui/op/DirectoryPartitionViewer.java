@@ -362,7 +362,7 @@ public class DirectoryPartitionViewer extends JPanel {
    */
 
 
-  private void cmdSummarizePartitions(final NodeInfo node) {
+  private void cmdSummarizePartitions(NodeInfo node) {
     // long running task in background thread
     Thread background = new Thread() {
       public void run() {
@@ -382,7 +382,7 @@ public class DirectoryPartitionViewer extends JPanel {
               tp.addPartition(dcmp);
             }
 
-            final List<GribCollectionMutable> gclist = new ArrayList<>();
+            List<GribCollectionMutable> gclist = new ArrayList<>();
             for (PartitionCollectionMutable.Partition tpp : tp.getPartitions()) {
               try (GribCollectionMutable gc = tpp.makeGribCollection()) { // use index if it exists
                 if (gc != null)
@@ -486,7 +486,7 @@ public class DirectoryPartitionViewer extends JPanel {
         for (DirectoryBuilder child : part.constructChildrenFromIndex(new GribCdmIndex(logger), true))
           result.add(new NodeInfo(child));
 
-        isPartition = (result.size() > 0);
+        isPartition = (!result.isEmpty());
 
       } catch (IOException e) {
         e.printStackTrace();
@@ -501,7 +501,7 @@ public class DirectoryPartitionViewer extends JPanel {
         for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex(logger), CollectionUpdateType.test))
           result.add(new NodeInfo(child));
 
-        isPartition = (result.size() > 0);
+        isPartition = (!result.isEmpty());
 
       } catch (IOException e) {
         e.printStackTrace();
@@ -792,12 +792,12 @@ public class DirectoryPartitionViewer extends JPanel {
      * Add the files that are contained within the directory of this node.
      * Thanks to Hovercraft Full Of Eels for the SwingWorker fix.
      */
-    private void showChildren(final DefaultMutableTreeNode node) {
+    private void showChildren(DefaultMutableTreeNode node) {
       tree.setEnabled(false);
       progressBar.setVisible(true);
       progressBar.setIndeterminate(true);
 
-      final List<NodeInfo> result = new ArrayList<>(100);
+      List<NodeInfo> result = new ArrayList<>(100);
       NodeInfo uobj = (NodeInfo) node.getUserObject();
       if (uobj.hasIndex && uobj.isPartition) {
         result.addAll(uobj.getChildren());
@@ -813,7 +813,7 @@ public class DirectoryPartitionViewer extends JPanel {
         }
       }
 
-      if (result.size() == 0) {
+      if (result.isEmpty()) {
         progressBar.setIndeterminate(false);
         tree.setEnabled(true);
         return;

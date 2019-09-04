@@ -145,7 +145,7 @@ public class GribIndexPanel extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  Object gc = null;
+  Object gc;
 
   public void save() {
     recordTable.saveState(false);

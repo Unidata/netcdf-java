@@ -64,13 +64,13 @@ public class FmrcPanel extends OpPanel {
     });
     add(table, BorderLayout.CENTER);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       try {
         table.showInfo(f);
-      } catch (final IOException e1) {
-        final StringWriter sw = new StringWriter(5000);
+      } catch (IOException e1) {
+        StringWriter sw = new StringWriter(5000);
         e1.printStackTrace(new PrintWriter(sw));
         f.format("%s", sw.toString());
       }
@@ -80,16 +80,16 @@ public class FmrcPanel extends OpPanel {
     });
     buttPanel.add(infoButton);
 
-    final AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
+    AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
     collectionButton.addActionListener(e -> table.showCollectionInfo(true));
     buttPanel.add(collectionButton);
 
-    final AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show Dataset", false);
+    AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show Dataset", false);
     viewButton.addActionListener(e -> {
       try {
         table.showDataset();
-      } catch (final IOException e1) {
-        final StringWriter sw = new StringWriter(5000);
+      } catch (IOException e1) {
+        StringWriter sw = new StringWriter(5000);
         e1.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
         detailTA.gotoTop();
@@ -120,7 +120,7 @@ public class FmrcPanel extends OpPanel {
       table.setFmrc(command);
       return true;
     } catch (Exception ioe) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailTA.gotoTop();

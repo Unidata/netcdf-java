@@ -93,17 +93,17 @@ public class PrefPanel extends JPanel {
   private Preferences prefs;
   private PersistenceManager storeData;
 
-  private boolean finished = false;
+  private boolean finished;
   private HashMap<String, Field> flds = new HashMap<>(40);
   private List<LayoutComponent> layoutComponents; // use with form layout
-  private int cursorRow = 0, cursorCol = 0; // current row and column
+  private int cursorRow, cursorCol; // current row and column
 
   private List<JComponent> auxButtons = new ArrayList<>();
 
   // event handling
   private EventListenerList listenerList = new EventListenerList();
 
-  private boolean debugLayout = false;
+  private boolean debugLayout;
 
   /**
    * Constructor.
@@ -823,7 +823,7 @@ public class PrefPanel extends JPanel {
    */
   public static class Dialog extends JDialog {
     private PrefPanel pp;
-    private PreferencesExt substore = null;
+    private PreferencesExt substore;
 
     /**
      * constructor

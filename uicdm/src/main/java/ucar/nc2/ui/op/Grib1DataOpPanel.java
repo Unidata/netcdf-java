@@ -44,9 +44,9 @@ public class Grib1DataOpPanel extends OpPanel {
       }
     });
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
     infoButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.checkProblems(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -77,7 +77,7 @@ public class Grib1DataOpPanel extends OpPanel {
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

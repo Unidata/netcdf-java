@@ -51,7 +51,7 @@ public abstract class NcCollectionType {
   public static StationTimeSeriesFeatureCollection getStationFeatures(FeatureDatasetPoint fdPoint) {
     String datasetFileName = new File(fdPoint.getNetcdfFile().getLocation()).getName();
 
-    if (!fdPoint.getFeatureType().equals(FeatureType.STATION)) {
+    if (fdPoint.getFeatureType() != FeatureType.STATION) {
       throw new IllegalArgumentException(String.format("In %s, expected feature type to be STATION, not %s.",
           datasetFileName, fdPoint.getFeatureType()));
     }

@@ -69,10 +69,9 @@ public class JTreeTable extends JTable {
   protected TreeTableModelAbstract treeModel;
   protected ListToTreeSelectionModelWrapper selectionModel;
 
-  private boolean debug = false, debugSelection = false;
+  private boolean debug, debugSelection;
 
   public JTreeTable(TreeTableModelAbstract treeTableModel) {
-    super();
     treeModel = treeTableModel;
 
     // Create the tree. It will be used as a renderer and editor.
@@ -350,7 +349,6 @@ public class JTreeTable extends JTable {
     protected boolean updatingListSelectionModel;
 
     public ListToTreeSelectionModelWrapper() {
-      super();
       getListSelectionModel().addListSelectionListener(createListSelectionListener());
     }
 

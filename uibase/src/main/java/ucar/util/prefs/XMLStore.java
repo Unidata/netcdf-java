@@ -141,10 +141,10 @@ public class XMLStore {
     return new XMLStore(primIS, objIS, storedDefaults);
   }
 
-  private static boolean debugConvert = false, debugWhichStore = false;
-  private static boolean debugWriteNested = false, debugWriteBean = false;
+  private static boolean debugConvert, debugWhichStore;
+  private static boolean debugWriteNested, debugWriteBean;
 
-  private File prefsFile = null;
+  private File prefsFile;
   private PreferencesExt rootPrefs = new PreferencesExt(null, ""); // root node
   private boolean showDecoderExceptions = true; // debugging
 
@@ -306,12 +306,11 @@ public class XMLStore {
 
   // SAX callback handler
   private class MySaxHandler extends org.xml.sax.helpers.DefaultHandler {
-    private boolean debug = false, debugDetail = false;
+    private boolean debug, debugDetail;
     private InputStream objIS;
-    private XMLDecoder beanDecoder = null; // handles <beanObject> - arbitrary beans
+    private XMLDecoder beanDecoder; // handles <beanObject> - arbitrary beans
 
     MySaxHandler(InputStream objIS) throws IOException {
-      super();
       this.objIS = objIS;
     }
 
@@ -343,7 +342,7 @@ public class XMLStore {
         System.out.println(" unprocessed endElement = " + qName);
     }
 
-    private Bean.Collection currentBeanCollection = null;
+    private Bean.Collection currentBeanCollection;
     private Stack<PreferencesExt> stack;
     private PreferencesExt current;
 
@@ -642,9 +641,9 @@ public class XMLStore {
 
   // private final int DIE = 0; // 97;
   private static class OutputMunger extends java.io.BufferedOutputStream {
-    boolean done = false;
-    boolean bean = false;
-    int countNL = 0;
+    boolean done;
+    boolean bean;
+    int countNL;
 
     OutputMunger(OutputStream out) {
       super(out, 1024);

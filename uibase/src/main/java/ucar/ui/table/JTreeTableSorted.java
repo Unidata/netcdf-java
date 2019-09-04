@@ -41,7 +41,7 @@ public class JTreeTableSorted extends JPanel {
   private JTreeTable table;
   private TreeTableModelSorted model;
 
-  private ThreadHeaderRenderer threadHeaderRenderer = null;
+  private ThreadHeaderRenderer threadHeaderRenderer;
   private int threadCol = -1;
   private TableRow selectedRow;
 
@@ -53,12 +53,12 @@ public class JTreeTableSorted extends JPanel {
   private boolean useThreads;
 
   private ListenerManager lm;
-  private ListSelectionEvent listSelectionEvent = null;
+  private ListSelectionEvent listSelectionEvent;
 
   private MouseAdapter allowSortColChangeMouseListener;
-  private boolean allowSortColChange = false;
+  private boolean allowSortColChange;
 
-  private boolean debug = false, debugSetPath = false, debugEvent = false;
+  private boolean debug, debugSetPath, debugEvent;
 
   /**
    * Constructor.
@@ -473,7 +473,7 @@ public class JTreeTableSorted extends JPanel {
 
   private class PopupAction extends AbstractAction {
     private String id;
-    private TableColumn tc = null;
+    private TableColumn tc;
 
     PopupAction(String id) {
       this.id = id;
@@ -523,8 +523,8 @@ public class JTreeTableSorted extends JPanel {
 
     JPanel compPanel;
     JLabel upLabel, downLabel;
-    boolean hasSortIndicator = false;
-    boolean reverse = false;
+    boolean hasSortIndicator;
+    boolean reverse;
 
     protected SortedHeaderRenderer(int modelCol) {
       this.modelCol = modelCol;
@@ -570,7 +570,7 @@ public class JTreeTableSorted extends JPanel {
 
   private class ThreadHeaderRenderer extends SortedHeaderRenderer {
     JPanel sort, unsort;
-    boolean isOn = false;
+    boolean isOn;
 
     ThreadHeaderRenderer(int modelCol) {
       super(modelCol);

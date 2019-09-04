@@ -160,7 +160,7 @@ public class GribRewritePanel extends JPanel {
     // repaint();
     Formatter errlog = new Formatter();
     List<FileBean> beans = scan(dirName, errlog);
-    if (beans.size() == 0) {
+    if (beans.isEmpty()) {
       dumpTA.setText(errlog.toString());
       return false;
     }
@@ -271,7 +271,7 @@ public class GribRewritePanel extends JPanel {
 
     // eliminate redundant files
     // ".Z", ".zip", ".gzip", ".gz", or ".bz2"
-    if (files.size() > 0) {
+    if (!files.isEmpty()) {
       Collections.sort(files);
       List<File> files2 = new ArrayList<>(files);
 

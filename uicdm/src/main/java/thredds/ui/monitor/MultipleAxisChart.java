@@ -75,7 +75,7 @@ public class MultipleAxisChart extends JPanel {
     axisNum++;
   }
 
-  private static final Color[] colors = new Color[] {Color.black, Color.red, Color.blue, Color.green};
+  private static final Color[] colors = {Color.black, Color.red, Color.blue, Color.green};
 
   public void finish(java.awt.Dimension preferredSize) {
     ChartUtilities.applyCurrentTheme(chart);

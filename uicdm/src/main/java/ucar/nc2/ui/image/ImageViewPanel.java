@@ -25,20 +25,20 @@ import java.util.Random;
  * @author caron
  */
 public class ImageViewPanel extends JPanel {
-  private static boolean debug = false;
+  private static boolean debug;
 
   private ImageDatasetFactory imageDatasetFactory = new ImageDatasetFactory();
   private ImageFactoryRandom imageFactoryRandom;
   private String location;
 
-  private boolean movieIsPlaying = false;
+  private boolean movieIsPlaying;
   private javax.swing.Timer timer;
   private int delay = 4000; // millisescs
   private JSpinner spinner;
   private Random random = new Random(System.currentTimeMillis());
-  private long start = 0;
+  private long start;
 
-  private boolean fullscreenMode = false;
+  private boolean fullscreenMode;
 
   private PicturePane pixPane;
 

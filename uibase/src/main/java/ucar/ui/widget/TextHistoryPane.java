@@ -49,7 +49,7 @@ public class TextHistoryPane extends JPanel {
 
   protected JTextArea ta;
   private FontUtil.StandardFont fontu;
-  private int nlines, removeIncr, count = 0;
+  private int nlines, removeIncr, count;
   private int ptSize;
 
   protected FileManager fileChooser;
@@ -168,7 +168,6 @@ public class TextHistoryPane extends JPanel {
     private int incrY;
 
     MyPopupMenu() {
-      super();
 
       // the popup menu
       JPanel nlPan = new JPanel();

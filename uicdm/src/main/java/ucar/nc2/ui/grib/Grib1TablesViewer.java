@@ -46,7 +46,7 @@ public class Grib1TablesViewer extends JPanel {
   private Grib1TableDialog showTableDialog;
   private Grib1TableCompareDialog compareTableDialog;
 
-  public Grib1TablesViewer(final PreferencesExt prefs, JPanel buttPanel) {
+  public Grib1TablesViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     codeTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);

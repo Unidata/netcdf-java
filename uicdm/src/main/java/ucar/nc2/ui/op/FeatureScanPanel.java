@@ -158,7 +158,7 @@ public class FeatureScanPanel extends JPanel {
     FeatureScan scanner = new FeatureScan(dirName, true);
     Formatter errlog = new Formatter();
     List<FeatureScan.Bean> beans = scanner.scan(errlog);
-    if (beans.size() == 0) {
+    if (beans.isEmpty()) {
       dumpTA.setText(errlog.toString());
       return false;
     }

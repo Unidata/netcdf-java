@@ -46,7 +46,7 @@ public class TextGetPutPane extends TextHistoryPane {
   private JPanel buttPanel;
 
   private boolean addFileButton = true;
-  private AbstractAction fileAction = null;
+  private AbstractAction fileAction;
   private FileManager fileChooserReader;
 
   private GetContentsTask task;

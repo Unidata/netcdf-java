@@ -62,7 +62,7 @@ public class CatalogChooser extends JPanel {
   private static final String FILECHOOSER_DEFAULTDIR = "FileChooserDefaultDir";
   private PreferencesExt prefs;
 
-  private String eventType = null;
+  private String eventType;
 
   // ui
   private ComboBox<String> catListBox;
@@ -74,18 +74,18 @@ public class CatalogChooser extends JPanel {
   private JLabel statusLabel;
   private JPanel buttPanel;
   private JLabel sourceText;
-  private RootPaneContainer parent = null;
+  private RootPaneContainer parent;
 
   private boolean datasetEvents = true;
-  private boolean catrefEvents = false;
+  private boolean catrefEvents;
   private String currentURL = "";
 
   // private boolean catgenShow = true;
   private FileManager catgenFileChooser;
 
-  private boolean debugEvents = false;
+  private boolean debugEvents;
   // private boolean debugTree = false;
-  private boolean showHTML = false;
+  private boolean showHTML;
 
   /**
    * Constructor, with control over whether a comboBox of previous catalogs is shown.
@@ -125,7 +125,7 @@ public class CatalogChooser extends JPanel {
       if (showFileChooser) {
         // add a file chooser
         PreferencesExt fcPrefs = (PreferencesExt) prefs.node("FileManager");
-        FileFilter[] filters = new FileFilter[] {new FileManager.XMLExtFilter()};
+        FileFilter[] filters = {new FileManager.XMLExtFilter()};
         fileChooser = new FileManager(null, null, filters, fcPrefs);
 
         AbstractAction fileAction = new AbstractAction() {
@@ -251,7 +251,7 @@ public class CatalogChooser extends JPanel {
         tree.acceptSelected();
       } catch (Throwable t) {
         t.printStackTrace();
-        JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR " + t.getMessage());
+        JOptionPane.showMessageDialog(this, "ERROR " + t.getMessage());
       } finally {
         eventType = null;
       }
@@ -265,7 +265,7 @@ public class CatalogChooser extends JPanel {
         tree.acceptSelected();
       } catch (Throwable t) {
         t.printStackTrace();
-        JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR " + t.getMessage());
+        JOptionPane.showMessageDialog(this, "ERROR " + t.getMessage());
       } finally {
         eventType = null;
       }
@@ -279,7 +279,7 @@ public class CatalogChooser extends JPanel {
         tree.acceptSelected();
       } catch (Throwable t) {
         t.printStackTrace();
-        JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR " + t.getMessage());
+        JOptionPane.showMessageDialog(this, "ERROR " + t.getMessage());
       } finally {
         eventType = null;
       }

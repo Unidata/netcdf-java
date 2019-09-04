@@ -52,7 +52,7 @@ public class RangeSelector extends JPanel {
   // state
   private int currentIdx = -1;
 
-  private static boolean debugEvent = false, debugSliderSize = false;
+  private static boolean debugEvent, debugSliderSize;
 
   public RangeSelector(String title, String min, String max, String resolutionS, String units, boolean acceptButton,
       String help, boolean pointOnly) {

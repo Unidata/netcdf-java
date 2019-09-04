@@ -41,8 +41,8 @@ public class GeoGridTable extends JPanel {
   private PreferencesExt prefs;
   private GridDataset gridDataset;
 
-  private BeanTable varTable, csTable = null, axisTable = null;
-  private JSplitPane split = null, split2 = null;
+  private BeanTable varTable, csTable, axisTable;
+  private JSplitPane split, split2;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
   private NetcdfOutputChooser outChooser;
@@ -136,7 +136,7 @@ public class GeoGridTable extends JPanel {
     add(comp, BorderLayout.CENTER);
   }
 
-  public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
+  public void addExtra(JPanel buttPanel, FileManager fileChooser) {
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(e -> {
@@ -205,7 +205,7 @@ public class GeoGridTable extends JPanel {
         if (gridDataset == null)
           return;
         List<String> gridList = getSelectedGrids();
-        if (gridList.size() == 0) {
+        if (gridList.isEmpty()) {
           JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
           return;
         }
@@ -388,7 +388,7 @@ public class GeoGridTable extends JPanel {
     GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
     if (vb == null) {
       List grids = gridDataset.getGrids();
-      if (grids.size() > 0)
+      if (!grids.isEmpty())
         return (GridDatatype) grids.get(0);
       else
         return null;
@@ -632,7 +632,7 @@ public class GeoGridTable extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateAxis axis;
-    CoordinateSystem firstCoordSys = null;
+    CoordinateSystem firstCoordSys;
     String name, desc, units, axisType = "", positive = "", incr = "";
     String dims, shape, csNames;
     boolean isCoordVar;

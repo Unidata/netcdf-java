@@ -4,11 +4,20 @@
  */
 package ucar.nc2.iosp.nexrad2;
 
+import static ucar.nc2.iosp.nexrad2.Level2Record.BELOW_THRESHOLD;
+import static ucar.nc2.iosp.nexrad2.Level2Record.DIFF_PHASE;
+import static ucar.nc2.iosp.nexrad2.Level2Record.HORIZONTAL_BEAM_WIDTH;
+import static ucar.nc2.iosp.nexrad2.Level2Record.MISSING_DATA;
+import static ucar.nc2.iosp.nexrad2.Level2Record.REFLECTIVITY_HIGH;
+import static ucar.nc2.iosp.nexrad2.Level2Record.VELOCITY_HIGH;
+import static ucar.nc2.iosp.nexrad2.Level2Record.getDatatypeUnits;
+import static ucar.nc2.iosp.nexrad2.Level2Record.getDate;
+import static ucar.nc2.iosp.nexrad2.Level2Record.getVolumeCoveragePatternName;
+
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import static ucar.nc2.iosp.nexrad2.Level2Record.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
@@ -61,9 +70,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     if (volScan.hasHighResolutions(0)) {
 
       if (volScan.getHighResReflectivityGroups() != null)
-        makeVariable2(ncfile, Level2Record.REFLECTIVITY_HIGH, "Reflectivity", "Reflectivity", "R", volScan);
+        makeVariable2(ncfile, REFLECTIVITY_HIGH, "Reflectivity", "Reflectivity", "R", volScan);
       if (volScan.getHighResVelocityGroups() != null)
-        makeVariable2(ncfile, Level2Record.VELOCITY_HIGH, "RadialVelocity", "Radial Velocity", "V", volScan);
+        makeVariable2(ncfile, VELOCITY_HIGH, "RadialVelocity", "Radial Velocity", "V", volScan);
 
       if (volScan.getHighResSpectrumGroups() != null) {
         List<List<Level2Record>> gps = volScan.getHighResSpectrumGroups();
@@ -92,7 +101,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     gps = volScan.getHighResDiffPhaseGroups();
     if (gps != null) {
-      makeVariable2(ncfile, Level2Record.DIFF_PHASE, "DifferentialPhase", "Differential Phase", "P", volScan);
+      makeVariable2(ncfile, DIFF_PHASE, "DifferentialPhase", "Differential Phase", "P", volScan);
     }
 
     gps = volScan.getReflectivityGroups();

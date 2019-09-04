@@ -27,11 +27,11 @@ public abstract class RowSorterAbstract implements ucar.ui.table.RowSorter {
   protected ArrayList rowList = new ArrayList();
 
   // sorting
-  private int startSort = 0;
+  private int startSort;
   protected int[] sortNext;
   private int[] sortBreak;
 
-  private boolean debug = false;
+  private boolean debug;
 
   protected RowSorterAbstract(String[] colNames) {
     columnNames = colNames;

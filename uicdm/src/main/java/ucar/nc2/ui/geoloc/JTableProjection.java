@@ -26,8 +26,8 @@ public class JTableProjection extends JTable {
   private PreferencesExt store;
   private ProjectionTableModel model;
   private ArrayList list;
-  private boolean debug = false;
-  private int selectedRow = 0; // JTable doesnt handle selections correctly
+  private boolean debug;
+  private int selectedRow; // JTable doesnt handle selections correctly
   private ListenerManager lm;
 
   private static final String STORE_NAME = "ProjectionTableModel";

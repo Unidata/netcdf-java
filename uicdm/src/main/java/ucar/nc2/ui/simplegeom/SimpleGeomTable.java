@@ -41,8 +41,8 @@ public class SimpleGeomTable extends JPanel {
   private PreferencesExt prefs;
   private GridDataset gridDataset;
 
-  private BeanTable varTable, csTable = null, axisTable = null, simpleGeomTable = null;
-  private JSplitPane split = null, split2 = null, split3 = null;
+  private BeanTable varTable, csTable, axisTable, simpleGeomTable;
+  private JSplitPane split, split2, split3;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
   private NetcdfOutputChooser outChooser;
@@ -111,7 +111,7 @@ public class SimpleGeomTable extends JPanel {
     add(comp, BorderLayout.CENTER);
   }
 
-  public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
+  public void addExtra(JPanel buttPanel, FileManager fileChooser) {
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(e -> {
@@ -145,7 +145,7 @@ public class SimpleGeomTable extends JPanel {
         if (gridDataset == null)
           return;
         List<String> gridList = getSelectedGrids();
-        if (gridList.size() == 0) {
+        if (gridList.isEmpty()) {
           JOptionPane.showMessageDialog(SimpleGeomTable.this, "No Simple Geometries are selected");
           return;
         }
@@ -335,7 +335,7 @@ public class SimpleGeomTable extends JPanel {
     GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
     if (vb == null) {
       List grids = gridDataset.getGrids();
-      if (grids.size() > 0)
+      if (!grids.isEmpty())
         return (GridDatatype) grids.get(0);
       else
         return null;
@@ -579,7 +579,7 @@ public class SimpleGeomTable extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateAxis axis;
-    CoordinateSystem firstCoordSys = null;
+    CoordinateSystem firstCoordSys;
     String name, desc, units, axisType = "", positive = "", incr = "";
     String dims, shape, csNames;
     boolean isCoordVar;

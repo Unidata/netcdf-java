@@ -51,7 +51,7 @@ public class Hdf4Table extends JPanel {
 
     tagTable = new BeanTable(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
     tagTable.addListSelectionListener(e -> {
-      final TagBean bean = (TagBean) tagTable.getSelectedBean();
+      TagBean bean = (TagBean) tagTable.getSelectedBean();
       dumpTA.setText("Tag=\n ");
       dumpTA.appendLine(bean.tag.detail());
       dumpTA.appendLine("\nVinfo=");
@@ -138,15 +138,15 @@ public class Hdf4Table extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    final List<TagBean> beanList = new ArrayList<>();
+    List<TagBean> beanList = new ArrayList<>();
 
     iosp = new H4iosp();
-    final NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
 
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
-      final StringWriter sw = new StringWriter(20000);
+      StringWriter sw = new StringWriter(20000);
       t.printStackTrace(new PrintWriter(sw));
       dumpTA.setText(sw.toString());
     }

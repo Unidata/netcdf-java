@@ -31,7 +31,7 @@ public class VertScaleSlider extends JPanel {
   private double min, max, scale = 1.0;
   private CoordinateAxis1D zAxis;
 
-  private static boolean debugEvent = false, debugLevels = false;
+  private static boolean debugEvent, debugLevels;
 
   public VertScaleSlider() {
 

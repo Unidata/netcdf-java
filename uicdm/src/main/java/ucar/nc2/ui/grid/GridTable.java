@@ -27,11 +27,11 @@ import java.util.Formatter;
 
 public class GridTable {
   private JTableSorted table;
-  private ArrayList<Row> list = null;
+  private ArrayList<Row> list;
   private ActionSourceListener actionSource;
 
   private boolean eventOK = true;
-  private boolean debug = false;
+  private boolean debug;
 
   public GridTable(String actionName) {
     // the main delegate

@@ -48,10 +48,10 @@ public class JTableSorted extends JPanel {
   private JTable jtable;
   private JScrollPane scrollPane;
   private TableRowModel model;
-  private PopupMenu popupMenu = null;
+  private PopupMenu popupMenu;
   private PopupAction[] acts;
 
-  private boolean debug = false;
+  private boolean debug;
   private boolean sortOK = true;
   private ThreadSorter threadSorter;
   private int threadCol = -1;
@@ -280,7 +280,7 @@ public class JTableSorted extends JPanel {
    */
   public void setList(ArrayList rowList) {
     this.list = rowList;
-    if (list.size() > 0)
+    if (!list.isEmpty())
       jtable.setRowSelectionInterval(0, 0);
     else
       jtable.clearSelection();
@@ -342,7 +342,7 @@ public class JTableSorted extends JPanel {
    * @return selected TableRow
    */
   public TableRow getSelected() {
-    if (list.size() == 0)
+    if (list.isEmpty())
       return null;
     int sel = jtable.getSelectedRow();
     if (sel >= 0)
@@ -371,7 +371,7 @@ public class JTableSorted extends JPanel {
    * @param increment true=increment, false=decrement
    */
   public void incrSelected(boolean increment) {
-    if (list.size() == 0)
+    if (list.isEmpty())
       return;
     int curr = jtable.getSelectedRow();
     if (increment && (curr < list.size() - 1))
@@ -430,7 +430,7 @@ public class JTableSorted extends JPanel {
 
   private class PopupAction extends AbstractAction {
     private String id;
-    private TableColumn tc = null;
+    private TableColumn tc;
 
     PopupAction(String id) {
       this.id = id;
@@ -457,7 +457,7 @@ public class JTableSorted extends JPanel {
   }
 
   private class TableRowModel extends AbstractTableModel {
-    private boolean reverse = false;
+    private boolean reverse;
     private int sortCol = -1;
 
     // AbstractTableModel methods
@@ -590,8 +590,8 @@ public class JTableSorted extends JPanel {
 
     JPanel compPanel;
     JLabel upLabel, downLabel;
-    boolean hasSortIndicator = false;
-    boolean reverse = false;
+    boolean hasSortIndicator;
+    boolean reverse;
 
     protected SortedHeaderRenderer(int modelCol) {
       this.modelCol = modelCol;

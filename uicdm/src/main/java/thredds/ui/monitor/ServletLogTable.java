@@ -240,7 +240,7 @@ public class ServletLogTable extends JPanel {
 
   private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private LogLocalManager manager;
-  private java.util.List<LogLocalManager.FileDateRange> logFiles = null;
+  private java.util.List<LogLocalManager.FileDateRange> logFiles;
 
   public void setLocalManager(LogLocalManager manager) {
     this.manager = manager;
@@ -253,7 +253,7 @@ public class ServletLogTable extends JPanel {
       endDateField.setText(df.format(endDate));
   }
 
-  private MergeFilter currFilter = null;
+  private MergeFilter currFilter;
 
   public void showLogs(MergeFilter filter) {
     Date start = null, end = null;

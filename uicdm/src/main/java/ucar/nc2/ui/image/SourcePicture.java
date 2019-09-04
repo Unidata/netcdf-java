@@ -102,12 +102,12 @@ public class SourcePicture implements Cloneable {
   /**
    * the Buffered Image that this class protects and provides features for.
    */
-  public BufferedImage sourcePictureBufferedImage = null;
+  public BufferedImage sourcePictureBufferedImage;
 
   /**
    * the URL of the picture
    */
-  private URL imageUrl = null;
+  private URL imageUrl;
 
   /**
    * variable to track the status of the picture
@@ -129,7 +129,7 @@ public class SourcePicture implements Cloneable {
   /**
    * variable that records how much has been loaded
    */
-  private int percentLoaded = 0;
+  private int percentLoaded;
 
   /**
    * reference to the inner class that listens to the image loading progress
@@ -144,12 +144,12 @@ public class SourcePicture implements Cloneable {
   /**
    * Indicator to tell us if the loading was aborted.
    */
-  private boolean abortFlag = false;
+  private boolean abortFlag;
 
   /**
    * Rotation 0-360 that the image is subjected to after loading
    */
-  private double rotation = 0;
+  private double rotation;
 
   /**
    * Constructor
@@ -198,10 +198,10 @@ public class SourcePicture implements Cloneable {
    */
   public void loadPicture() {
     Tools.log(
-        "SourcePicture.loadPicture: " + imageUrl.toString() + " loaded into SourcePicture object: " + this.hashCode());
+        "SourcePicture.loadPicture: " + imageUrl + " loaded into SourcePicture object: " + this.hashCode());
     // Tools.freeMem();
 
-    setStatus(LOADING, "Loading: " + imageUrl.toString());
+    setStatus(LOADING, "Loading: " + imageUrl);
     abortFlag = false;
 
     try {
@@ -252,7 +252,7 @@ public class SourcePicture implements Cloneable {
       if (!abortFlag) {
 
         if (rotation != 0) {
-          setStatus(ROTATING, "Rotating: " + imageUrl.toString());
+          setStatus(ROTATING, "Rotating: " + imageUrl);
           int xRot = sourcePictureBufferedImage.getWidth() / 2;
           int yRot = sourcePictureBufferedImage.getHeight() / 2;
           AffineTransform rotateAf = AffineTransform.getRotateInstance(Math.toRadians(rotation), xRot, yRot);
@@ -277,14 +277,14 @@ public class SourcePicture implements Cloneable {
           sourcePictureBufferedImage = op.filter(sourcePictureBufferedImage, targetImage);
         }
 
-        setStatus(READY, "Loaded: " + imageUrl.toString());
+        setStatus(READY, "Loaded: " + imageUrl);
         PictureCache.add(imageUrl, (SourcePicture) this.clone());
       } else {
-        setStatus(ERROR, "Aborted: " + imageUrl.toString());
+        setStatus(ERROR, "Aborted: " + imageUrl);
         sourcePictureBufferedImage = null;
       }
     } catch (IOException e) {
-      setStatus(ERROR, "Error while reading " + imageUrl.toString());
+      setStatus(ERROR, "Error while reading " + imageUrl);
       sourcePictureBufferedImage = null;
     }
 
@@ -321,13 +321,13 @@ public class SourcePicture implements Cloneable {
 
     if (pictureStatusCode != LOADING) {
       Tools.log(
-          "SourcePicture.stopLoadingExcept: called but pointless since image is not LOADING: " + imageUrl.toString());
+          "SourcePicture.stopLoadingExcept: called but pointless since image is not LOADING: " + imageUrl);
       return false;
     }
 
     if (!exemptionURL.toString().equals(imageUrl.toString())) {
-      Tools.log("SourcePicture.stopLoadingExcept: called with Url " + exemptionURL.toString()
-          + " --> stopping loading of " + imageUrl.toString());
+      Tools.log("SourcePicture.stopLoadingExcept: called with Url " + exemptionURL
+          + " --> stopping loading of " + imageUrl);
       stopLoading();
       return true;
     } else
@@ -396,7 +396,7 @@ public class SourcePicture implements Cloneable {
    */
   public void addListener(SourcePictureListener listener) {
     Tools.log("SourcePicture.addListener: listener added on SourcePicture " + this.hashCode() + " of class: "
-        + listener.getClass().toString());
+        + listener.getClass());
     sourcePictureListeners.add(listener);
     // showListeners();
   }
@@ -407,7 +407,7 @@ public class SourcePicture implements Cloneable {
    */
   public void removeListener(SourcePictureListener listener) {
     Tools.log("SourcePicture.removeListener: listener removed from SourcePicture " + this.hashCode() + " of class: "
-        + listener.getClass().toString());
+        + listener.getClass());
     sourcePictureListeners.remove(listener);
     // showListeners();
   }
@@ -418,7 +418,7 @@ public class SourcePicture implements Cloneable {
     Enumeration en = sourcePictureListeners.elements();
     while (en.hasMoreElements()) {
       Object obj = en.nextElement();
-      Tools.log("    reports to Listener: " + obj.hashCode() + " of class " + obj.getClass().toString());
+      Tools.log("    reports to Listener: " + obj.hashCode() + " of class " + obj.getClass());
     }
     Tools.log("    --------");
   }
@@ -451,7 +451,7 @@ public class SourcePicture implements Cloneable {
       SourcePictureListener spl = ((SourcePictureListener) e.nextElement());
       spl.sourceStatusChange(pictureStatusCode, pictureStatusMessage, this);
 
-      Tools.log("\nSourcePicture.setStatus: sending status: " + statusMessage + " to " + spl.getClass().toString());
+      Tools.log("\nSourcePicture.setStatus: sending status: " + statusMessage + " to " + spl.getClass());
     }
   }
 

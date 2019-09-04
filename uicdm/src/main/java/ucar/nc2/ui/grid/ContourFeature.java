@@ -34,7 +34,7 @@ public class ContourFeature extends AbstractGisFeature {
     lines = new ArrayList<>(conLines);
 
     // save the single contour value for all lines here as member data
-    if (conLines.size() > 0)
+    if (!conLines.isEmpty())
       contourValue = lines.get(0).getContourLevel();
     else
       contourValue = 0.0;

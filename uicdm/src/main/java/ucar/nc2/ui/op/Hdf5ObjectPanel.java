@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
  *
  */
 public class Hdf5ObjectPanel extends OpPanel {
-  RandomAccessFile raf = null;
+  RandomAccessFile raf;
   Hdf5ObjectTable hdf5Table;
 
   public Hdf5ObjectPanel(PreferencesExt p) {
@@ -30,13 +30,13 @@ public class Hdf5ObjectPanel extends OpPanel {
     hdf5Table = new Hdf5ObjectTable(prefs);
     add(hdf5Table, BorderLayout.CENTER);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
     infoButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       try {
         hdf5Table.showInfo(f);
       } catch (IOException ioe) {
-        final StringWriter sw = new StringWriter(5000);
+        StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
         detailWindow.show();
@@ -48,13 +48,13 @@ public class Hdf5ObjectPanel extends OpPanel {
     });
     buttPanel.add(infoButton);
 
-    final AbstractButton infoButton2 = BAMutil.makeButtcon("Information", "Detail Info", false);
+    AbstractButton infoButton2 = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton2.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       try {
         hdf5Table.showInfo2(f);
-      } catch (final IOException ioe) {
-        final StringWriter sw = new StringWriter(5000);
+      } catch (IOException ioe) {
+        StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
         detailWindow.show();
@@ -66,15 +66,15 @@ public class Hdf5ObjectPanel extends OpPanel {
     });
     buttPanel.add(infoButton2);
 
-    final AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
+    AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
     eosdump.addActionListener(e -> {
       try {
-        final Formatter f = new Formatter();
+        Formatter f = new Formatter();
         hdf5Table.getEosInfo(f);
         detailTA.setText(f.toString());
         detailWindow.show();
       } catch (IOException ioe) {
-        final StringWriter sw = new StringWriter(5000);
+        StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
         detailWindow.show();
@@ -101,7 +101,7 @@ public class Hdf5ObjectPanel extends OpPanel {
       JOptionPane.showMessageDialog(null, "Hdf5ObjectTable cannot open " + command + "\n" + ioe.getMessage());
       err = true;
     } catch (Exception e) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

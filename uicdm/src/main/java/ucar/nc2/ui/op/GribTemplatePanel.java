@@ -21,7 +21,7 @@ public class GribTemplatePanel extends OpPanel {
   public GribTemplatePanel(PreferencesExt p) {
     super(p, "table:", false, false, false);
 
-    final JComboBox<WmoTemplateTables.Version> modes = new JComboBox<>(WmoTemplateTables.Version.values());
+    JComboBox<WmoTemplateTables.Version> modes = new JComboBox<>(WmoTemplateTables.Version.values());
     modes.setSelectedItem(WmoTemplateTables.standard);
     topPanel.add(modes, BorderLayout.CENTER);
     modes.addActionListener(e -> codeTable.setTable((WmoTemplateTables.Version) modes.getSelectedItem()));

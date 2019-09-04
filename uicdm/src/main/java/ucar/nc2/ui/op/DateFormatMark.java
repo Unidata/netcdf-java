@@ -37,7 +37,7 @@ public class DateFormatMark extends OpPanel {
     testCB = new ComboBox<>(prefs);
     buttPanel.add(testCB);
 
-    final JButton compareButton = new JButton("Apply");
+    JButton compareButton = new JButton("Apply");
     compareButton.addActionListener(e -> apply(cb.getSelectedItem(), testCB.getSelectedItem()));
     buttPanel.add(compareButton);
   }

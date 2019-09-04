@@ -13,9 +13,9 @@ import javax.swing.*;
 class LayoutM implements LayoutManager2 {
   private String name;
   private Map<Component, Object> constraintMap = new HashMap<>();
-  private Rectangle globalBounds = null;
+  private Rectangle globalBounds;
 
-  private boolean debug = false, debugLayout = false;
+  private boolean debug, debugLayout;
 
   /**
    * Constructs a new <code>SpringLayout</code>.
@@ -279,7 +279,7 @@ class LayoutM implements LayoutManager2 {
   static class Constraint {
     Component c;
     int xspace, yspace;
-    boolean laidout = false;
+    boolean laidout;
 
     public Constraint(Component c, int xspace, int yspace) {
       this.c = c;

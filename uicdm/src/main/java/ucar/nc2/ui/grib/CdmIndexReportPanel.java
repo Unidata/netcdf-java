@@ -121,7 +121,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     }
   }
 
-  String lastFilename = null;
+  String lastFilename;
 
   void showIfNonZero(Formatter f, GribCollectionImmutable.VariableIndex v, String filename) {
     if ((v.getNdups() != 0) || (v.getNmissing() != 0)) {
@@ -229,7 +229,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
   private static class VarInfo implements Comparable<VarInfo> {
     String name;
-    int count = 0;
+    int count;
     boolean ok;
 
     private VarInfo(String name) {
@@ -251,7 +251,7 @@ public class CdmIndexReportPanel extends ReportPanel {
         throw new IOException(indexFile + " not a grib collection index file");
 
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-        if (!ds.getType().equals(GribCollectionImmutable.Type.TwoD))
+        if (ds.getType() != GribCollectionImmutable.Type.TwoD)
           continue;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           f.format(" Group %s%n", g.getDescription());
@@ -294,7 +294,7 @@ public class CdmIndexReportPanel extends ReportPanel {
       // see if it has any misplaced
       int countMisplaced = 0;
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-        if (ds.getType().equals(GribCollectionImmutable.Type.Best))
+        if (ds.getType() == GribCollectionImmutable.Type.Best)
           continue;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
@@ -346,7 +346,7 @@ public class CdmIndexReportPanel extends ReportPanel {
         indent.incr();
 
         for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-          if (ds.getType().equals(GribCollectionImmutable.Type.Best))
+          if (ds.getType() == GribCollectionImmutable.Type.Best)
             continue;
           for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
             for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {

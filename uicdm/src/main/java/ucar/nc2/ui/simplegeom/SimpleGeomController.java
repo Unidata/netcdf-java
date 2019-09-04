@@ -86,15 +86,15 @@ public class SimpleGeomController {
   private int currentTime;
   private int currentEnsemble;
   private int currentRunTime;
-  boolean drawHorizOn = true, drawVertOn = false;
-  private boolean hasDependentTimeAxis = false;
+  boolean drawHorizOn = true, drawVertOn;
+  private boolean hasDependentTimeAxis;
 
   // rendering
   private AffineTransform atI = new AffineTransform(); // identity transform
   // private MyImageObserver imageObs = new MyImageObserver();
   // private MyPrintable printer = null;
 
-  private Renderer renderMap = null;
+  private Renderer renderMap;
   public GridRenderer renderGrid;
   // private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
@@ -111,7 +111,7 @@ public class SimpleGeomController {
 
   private ActionSourceListener levelSource;
   private boolean eventsOK = true;
-  private boolean startOK = false;
+  private boolean startOK;
 
   // optimize GC
   private ProjectionPointImpl projPoint = new ProjectionPointImpl();
@@ -686,7 +686,7 @@ public class SimpleGeomController {
 
     // temp kludge for initialization
     java.util.List grids = gridDataset.getGrids();
-    if ((grids == null) || grids.size() == 0) {
+    if ((grids == null) || grids.isEmpty()) {
       javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file " + gridDataset.getTitle());
       return false;
     }
@@ -753,12 +753,12 @@ public class SimpleGeomController {
     // set ensembles
     CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
     ensembleNames = (eaxis == null) ? new ArrayList() : eaxis.getNames();
-    currentEnsemble = ensembleNames.size() > 0 ? 0 : -1;
+    currentEnsemble = !ensembleNames.isEmpty() ? 0 : -1;
 
     // set runtimes
     CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
     runtimeNames = (rtaxis == null) ? new ArrayList() : rtaxis.getNames();
-    currentRunTime = runtimeNames.size() > 0 ? 0 : -1;
+    currentRunTime = !runtimeNames.isEmpty() ? 0 : -1;
 
     ui.setField(gg);
     return true;

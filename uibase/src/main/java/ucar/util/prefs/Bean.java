@@ -17,7 +17,7 @@ import java.util.*;
 class Bean {
 
   private Object o; // the wrapped object
-  private BeanParser p = null; // the bean parser (shared for all beans of same class)
+  private BeanParser p; // the bean parser (shared for all beans of same class)
 
   // wrap an object in a Bean
   public Bean(Object o) {
@@ -55,7 +55,7 @@ class Bean {
   static class Collection {
     private java.util.Collection<Object> collect; // the underlying collection
     private Class<?> beanClass; // the class of the beans in the collection
-    private BeanParser p = null; // the bean parser (shared for all beans of same class)
+    private BeanParser p; // the bean parser (shared for all beans of same class)
 
     // wrap a collection in a bean
     Collection(java.util.Collection<Object> collect) {
@@ -101,7 +101,7 @@ class Bean {
   }
 
   private static class BeanParser {
-    private static boolean debugBean = false;
+    private static boolean debugBean;
     private static Map<Class<?>, BeanParser> parsers = new HashMap<>();
 
     static BeanParser getParser(Class<?> beanClass) {

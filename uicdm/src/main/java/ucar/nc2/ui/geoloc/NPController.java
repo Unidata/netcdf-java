@@ -31,7 +31,7 @@ public class NPController extends JPanel {
   protected JPanel toolPanel;
 
   // debugging
-  private boolean debug = false;
+  private boolean debug;
 
   public NPController() {
     // here's where the map will be drawn:

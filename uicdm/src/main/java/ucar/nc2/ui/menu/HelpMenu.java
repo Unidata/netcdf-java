@@ -25,17 +25,17 @@ public class HelpMenu extends JMenu {
   /**
    *
    */
-  public HelpMenu(final ToolsUI tui) {
+  public HelpMenu(ToolsUI tui) {
     super("Help");
     setMnemonic('H');
 
     this.toolsui = tui;
 
-    final AbstractAction aboutAction = new AbstractAction() {
+    AbstractAction aboutAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent evt) {
         if (aboutWindow == null) {
-          final JFrame parentFrame = (JFrame) toolsui.getTopLevelAncestor();
+          JFrame parentFrame = (JFrame) toolsui.getTopLevelAncestor();
 
           aboutWindow = new ToolsAboutWindow(parentFrame);
         }
@@ -45,7 +45,7 @@ public class HelpMenu extends JMenu {
     BAMutil.setActionProperties(aboutAction, null, "About", false, 'A', 0);
     BAMutil.addActionToMenu(this, aboutAction);
 
-    final AbstractAction logoAction = new AbstractAction() {
+    AbstractAction logoAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent evt) {
         ToolsSplashScreen.getSharedInstance().setVisible(true);

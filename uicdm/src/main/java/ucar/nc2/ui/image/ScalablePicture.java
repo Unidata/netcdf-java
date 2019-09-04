@@ -63,7 +63,7 @@ public class ScalablePicture implements SourcePictureListener {
   /**
    * The scaled version of the image
    */
-  public BufferedImage scaledPicture = null;
+  public BufferedImage scaledPicture;
 
   /**
    * The scaling factor
@@ -73,7 +73,7 @@ public class ScalablePicture implements SourcePictureListener {
   /**
    * the URL of the picture
    */
-  public URL imageUrl = null;
+  public URL imageUrl;
 
   /**
    * variable to track the status of the picture
@@ -158,7 +158,7 @@ public class ScalablePicture implements SourcePictureListener {
    * a status message is received from the SourcePicture that the
    * picture was loaded.
    */
-  public boolean scaleAfterLoad = false;
+  public boolean scaleAfterLoad;
 
 
   /**
@@ -234,19 +234,19 @@ public class ScalablePicture implements SourcePictureListener {
         case SourcePicture.LOADING:
           Tools.log("ScalablePicture.loadAndScalePictureInThread: pictureStatus was: LOADING");
           sourcePicture.addListener(this);
-          setStatus(LOADING, "Loading: " + imageUrl.toString());
+          setStatus(LOADING, "Loading: " + imageUrl);
           sourceLoadProgressNotification(SourcePicture.LOADING_PROGRESS, sourcePicture.getPercentLoaded());
           scaleAfterLoad = true;
           break;
         case SourcePicture.ROTATING:
           Tools.log("ScalablePicture.loadAndScalePictureInThread: pictureStatus was: ROTATING");
-          setStatus(LOADING, "Rotating: " + imageUrl.toString());
+          setStatus(LOADING, "Rotating: " + imageUrl);
           sourceLoadProgressNotification(SourcePicture.LOADING_PROGRESS, sourcePicture.getPercentLoaded());
           scaleAfterLoad = true;
           break;
         case SourcePicture.READY:
           Tools.log("ScalablePicture.loadAndScalePictureInThread: pictureStatus was: READY. Sending SCALING status.");
-          setStatus(SCALING, "Scaling: " + imageUrl.toString());
+          setStatus(SCALING, "Scaling: " + imageUrl);
           createScaledPictureInThread(priority);
           break;
         default:
@@ -263,7 +263,7 @@ public class ScalablePicture implements SourcePictureListener {
         sourcePicture.removeListener(this);
       sourcePicture = new SourcePicture();
       sourcePicture.addListener(this);
-      setStatus(LOADING, "Loading: " + imageUrl.toString());
+      setStatus(LOADING, "Loading: " + imageUrl);
       scaleAfterLoad = true;
       sourcePicture.loadPictureInThread(imageUrl, priority, rotation);
       // when the thread is done it sends a sourceStatusChange message to us
@@ -280,12 +280,12 @@ public class ScalablePicture implements SourcePictureListener {
    * @param rotation The angle by which it is to be roated upon loading.
    */
   public void loadPictureImd(URL imageUrl, double rotation) {
-    Tools.log("loadPictureImd invoked with URL: " + imageUrl.toString());
+    Tools.log("loadPictureImd invoked with URL: " + imageUrl);
     if (sourcePicture != null)
       sourcePicture.removeListener(this);
     sourcePicture = new SourcePicture();
     sourcePicture.addListener(this);
-    setStatus(LOADING, "Loading: " + imageUrl.toString());
+    setStatus(LOADING, "Loading: " + imageUrl);
     scaleAfterLoad = true;
     sourcePicture.loadPicture(imageUrl, rotation);
   }

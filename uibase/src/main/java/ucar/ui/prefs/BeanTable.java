@@ -86,7 +86,7 @@ public class BeanTable<T> extends JPanel {
   protected ArrayList<T> beans;
   protected TableBeanModel model;
 
-  protected boolean debug = false, debugStore = false, debugBean = false, debugSelected = false;
+  protected boolean debug, debugStore, debugBean, debugSelected;
 
   public BeanTable(Class<T> bc, PreferencesExt pstore, boolean canAddDelete) {
     this(bc, pstore, canAddDelete, null, null, null);
@@ -157,7 +157,7 @@ public class BeanTable<T> extends JPanel {
     headerLabel.setText(header);
   }
 
-  private JLabel headerLabel = null;
+  private JLabel headerLabel;
 
   private void init(String header, String tooltip) {
     TableColumnModel tcm = new HidableTableColumnModel(model);
@@ -537,8 +537,6 @@ public class BeanTable<T> extends JPanel {
     private int width;
     private boolean visible = true;
 
-    public PropertyCol() {}
-
     public String getName() {
       return name;
     }
@@ -852,7 +850,7 @@ public class BeanTable<T> extends JPanel {
       return properties.get(idx);
     }
 
-    private ArrayList<String> editP = null;
+    private ArrayList<String> editP;
 
     private void setEditable(PropertyDescriptor pd, String editableProperties) {
       if (editP == null) {
@@ -865,7 +863,7 @@ public class BeanTable<T> extends JPanel {
       pd.setPreferred(editP.contains(pd.getName()));
     }
 
-    private ArrayList<String> hiddenP = null;
+    private ArrayList<String> hiddenP;
 
     private boolean isHidden(PropertyDescriptor pd, String hiddenProperties) {
       if (hiddenP == null) {
