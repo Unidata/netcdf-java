@@ -41,8 +41,8 @@ public class MultilineTooltip extends JToolTip {
     return fixedwidth;
   }
 
-  protected int columns = 0;
-  protected int fixedwidth = 0;
+  protected int columns;
+  protected int fixedwidth;
 }
 
 
@@ -58,7 +58,6 @@ class MultiLineToolTipUI extends BasicToolTipUI {
   }
 
   public MultiLineToolTipUI() {
-    super();
   }
 
   public void installUI(JComponent c) {

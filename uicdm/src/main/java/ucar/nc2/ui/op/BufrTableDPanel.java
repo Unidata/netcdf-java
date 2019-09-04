@@ -35,12 +35,12 @@ public class BufrTableDPanel extends OpPanel {
   public BufrTableDPanel(PreferencesExt p) {
     super(p, "tableD:", false, false);
 
-    final AbstractAction fileAction = new AbstractAction() {
+    AbstractAction fileAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final FileManager bufrFileChooser = ToolsUI.getBufrFileChooser();
+        FileManager bufrFileChooser = ToolsUI.getBufrFileChooser();
 
-        final String filename = bufrFileChooser.chooseFilename();
+        String filename = bufrFileChooser.chooseFilename();
         if (filename == null) {
           return;
         }
@@ -53,7 +53,7 @@ public class BufrTableDPanel extends OpPanel {
     modes = new JComboBox<>(BufrTables.Format.values());
     buttPanel.add(modes);
 
-    final JButton acceptButton = new JButton("Accept");
+    JButton acceptButton = new JButton("Accept");
     buttPanel.add(acceptButton);
     acceptButton.addActionListener(e -> accept());
 
@@ -67,7 +67,7 @@ public class BufrTableDPanel extends OpPanel {
 
   /** */
   @Override
-  public boolean process(final Object command) {
+  public boolean process(Object command) {
     return true;
   }
 
@@ -79,7 +79,7 @@ public class BufrTableDPanel extends OpPanel {
    *
    */
   private void accept() {
-    final String command = (String) cb.getSelectedItem();
+    String command = (String) cb.getSelectedItem();
     if (command == null) {
       return;
     }
@@ -93,7 +93,7 @@ public class BufrTableDPanel extends OpPanel {
       detailTA.setVisible(true);
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailTA.setVisible(true);
@@ -112,7 +112,7 @@ public class BufrTableDPanel extends OpPanel {
       detailTA.setVisible(true);
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailTA.setVisible(true);

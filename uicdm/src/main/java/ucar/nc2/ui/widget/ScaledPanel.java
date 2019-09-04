@@ -35,12 +35,12 @@ public class ScaledPanel extends JPanel {
   private Point2D worldPt = new Point2D.Double();
 
   private AffineTransform transform = new AffineTransform();
-  private BufferedImage bImage = null;
+  private BufferedImage bImage;
   private MyImageObserver imageObs = new MyImageObserver();
 
   private ListenerManager lmPick, lmMove;
 
-  private boolean debugDraw = false, debugTransform = false, debugBounds = false;
+  private boolean debugDraw, debugTransform, debugBounds;
 
   public ScaledPanel() {
     setDoubleBuffered(false);

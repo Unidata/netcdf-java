@@ -31,7 +31,7 @@ public class DirectoryPartitionPanel extends OpPanel {
     table.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("openGrib2Collection")) {
-          final String collectionName = (String) e.getNewValue();
+          String collectionName = (String) e.getNewValue();
           ToolsUI.getToolsUI().openGrib2Collection(collectionName);
         }
       }
@@ -51,7 +51,7 @@ public class DirectoryPartitionPanel extends OpPanel {
       return true;
     } catch (Exception ioe) {
       ioe.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailTA.gotoTop();

@@ -115,7 +115,7 @@ public class TdsMonitor extends JPanel {
   ////////////////////////////////////////////////////////////////////////////////////
 
   private static TdsMonitor ui;
-  private static boolean done = false;
+  private static boolean done;
 
   private static File ehLocation = LogLocalManager.getDirectory("cache", "dns");
 

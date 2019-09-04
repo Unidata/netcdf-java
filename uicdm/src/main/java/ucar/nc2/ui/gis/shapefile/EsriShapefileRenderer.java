@@ -22,7 +22,7 @@ import java.util.HashMap;
  */
 public class EsriShapefileRenderer extends GisFeatureRendererMulti {
   private static java.util.Map<String, EsriShapefileRenderer> sfileHash;
-  private static double defaultCoarseness = 0.0; // expose later?
+  private static double defaultCoarseness; // expose later?
 
   /**
    * Use factory to obtain a EsriShapefileRenderer. This caches the EsriShapefile for reuse.

@@ -29,7 +29,7 @@ public class AggPanel extends OpPanel {
   /**
    *
    */
-  public AggPanel(final PreferencesExt p) {
+  public AggPanel(PreferencesExt p) {
     super(p, "file:", true, false);
     aggTable = new AggTable(prefs, buttPanel);
     aggTable.addPropertyChangeListener(new PropertyChangeListener() {
@@ -37,19 +37,19 @@ public class AggPanel extends OpPanel {
       public void propertyChange(PropertyChangeEvent e) {
         switch (e.getPropertyName()) {
           case "openNetcdfFile": {
-            final NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
             if (ncfile != null) {
               ToolsUI.getToolsUI().openNetcdfFile(ncfile);
             }
             break;
           }
           case "openCoordSystems": {
-            final NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
             if (ncfile == null) {
               return;
             }
             try {
-              final NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+              NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
               ToolsUI.getToolsUI().openCoordSystems(ncd);
             } catch (IOException e1) {
               e1.printStackTrace();
@@ -97,7 +97,7 @@ public class AggPanel extends OpPanel {
       err = true;
     } catch (Throwable e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailTA.gotoTop();

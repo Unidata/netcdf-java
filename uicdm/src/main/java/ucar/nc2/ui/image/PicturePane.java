@@ -67,7 +67,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
   /**
    * Flag that lets the object know if the mouse is in dragging mode.
    */
-  private boolean Dragging = false;
+  private boolean Dragging;
 
 
   /**
@@ -93,7 +93,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
   /**
    * The legend of the picture. Is sent to the listener when the image is ready.
    */
-  private String legend = null;
+  private String legend;
 
 
   /**
@@ -118,7 +118,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
   /**
    * Flag to tell if we want to show info over the picture.
    */
-  private boolean showInfo = false;
+  private boolean showInfo;
 
 
   /**

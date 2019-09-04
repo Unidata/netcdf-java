@@ -29,12 +29,12 @@ public class VertPanel extends JPanel {
   private VertScaleSlider vslider;
   private JLabel leftScale, midScale, rightScale, vertUnitsLabel;
 
-  private double yleft = 0.0, ymid = 0.0, yright = 0.0;
+  private double yleft, ymid, yright;
   private boolean isLatLon = true;
-  private Projection proj = null;
-  private CoordinateAxis xaxis = null;
+  private Projection proj;
+  private CoordinateAxis xaxis;
 
-  private static boolean debugBounds = false, debugLevels = false;
+  private static boolean debugBounds, debugLevels;
 
   public VertPanel() {
     setLayout(new BorderLayout());

@@ -23,8 +23,8 @@ import java.util.List;
  */
 public abstract class GisFeatureRenderer implements Renderer {
   private Color color = Color.blue; // default color of polylines
-  protected ProjectionImpl displayProject = null; // the current display Projection
-  protected ArrayList shapeList = null;
+  protected ProjectionImpl displayProject; // the current display Projection
+  protected ArrayList shapeList;
 
   ////// this is what the subclasses have to implement (besides the constructor)
   /**

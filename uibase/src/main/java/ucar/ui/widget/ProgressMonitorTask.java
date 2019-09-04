@@ -31,11 +31,11 @@ package ucar.ui.widget;
  * @see ProgressMonitor
  */
 public abstract class ProgressMonitorTask implements Runnable {
-  protected boolean done = false;
-  protected boolean success = false;
-  protected boolean cancel = false;
-  protected String error = null;
-  protected String note = null;
+  protected boolean done;
+  protected boolean success;
+  protected boolean cancel;
+  protected String error;
+  protected String note;
   protected int progress;
 
   /** Here is where the work gets done. */

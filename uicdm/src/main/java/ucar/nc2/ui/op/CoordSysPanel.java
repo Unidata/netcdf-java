@@ -40,7 +40,7 @@ public class CoordSysPanel extends OpPanel {
     coordSysTable = new CoordSysTable(prefs, buttPanel);
     add(coordSysTable, BorderLayout.CENTER);
 
-    final AbstractButton summaryButton = BAMutil.makeButtcon("Information", "Summary Info", false);
+    AbstractButton summaryButton = BAMutil.makeButtcon("Information", "Summary Info", false);
     summaryButton.addActionListener(e -> {
       Formatter f = new Formatter();
       coordSysTable.summaryInfo(f);
@@ -49,7 +49,7 @@ public class CoordSysPanel extends OpPanel {
     });
     buttPanel.add(summaryButton);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
     infoButton.addActionListener(e -> {
       if (ds != null) {
         try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ds)) {

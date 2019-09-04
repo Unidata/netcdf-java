@@ -44,31 +44,31 @@ public class ToolsSplashScreen extends JWindow {
    *
    */
   private ToolsSplashScreen() {
-    final Image image = Resource.getImage("/resources/ui/pix/ring2.jpg");
+    Image image = Resource.getImage("/resources/ui/pix/ring2.jpg");
 
     if (image != null) {
-      final ImageIcon icon = new ImageIcon(image);
-      final JLabel iconLabel = new JLabel(icon);
+      ImageIcon icon = new ImageIcon(image);
+      JLabel iconLabel = new JLabel(icon);
 
       getContentPane().add(iconLabel);
 
       pack();
 
-      final int width = icon.getIconWidth();
-      final int height = icon.getIconHeight();
+      int width = icon.getIconWidth();
+      int height = icon.getIconHeight();
 
-      final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-      final GraphicsDevice gd = ge.getDefaultScreenDevice();
-      final GraphicsConfiguration gc = gd.getDefaultConfiguration();
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      GraphicsDevice gd = ge.getDefaultScreenDevice();
+      GraphicsConfiguration gc = gd.getDefaultConfiguration();
 
       Point location;
 
       if (gc != null) {
-        final Rectangle gcrect = gc.getBounds();
+        Rectangle gcrect = gc.getBounds();
 
         location = new Point(gcrect.x + gcrect.width / 2 - (width / 2), gcrect.y + gcrect.height / 2 - (height / 2));
       } else {
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         location = new Point(screenSize.width / 2 - (width / 2), screenSize.height / 2 - (height / 2));
       }

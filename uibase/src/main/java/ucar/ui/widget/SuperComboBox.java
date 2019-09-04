@@ -76,12 +76,12 @@ public class SuperComboBox extends JPanel {
 
   private ActionSourceListener actionSource;
 
-  private boolean isNamedObject = false;
+  private boolean isNamedObject;
   private boolean eventOK = true; // disallow events to prevent infinite loop
   private boolean sendExternalEvent = true; // disallow events to prevent infinite loop
-  private boolean immediateMode = false; // used for looping
+  private boolean immediateMode; // used for looping
 
-  private boolean debug = false, debugEvent = false;
+  private boolean debug, debugEvent;
 
   private int height = 222;
   private int width = 100;
@@ -261,7 +261,7 @@ public class SuperComboBox extends JPanel {
     if (debugEvent)
       System.out.println(" New collection set = ");
     table.setList(list);
-    if (list.size() == 0)
+    if (list.isEmpty())
       setLabel("none");
     else {
       int currIndex = getSelectedIndex();
@@ -329,7 +329,7 @@ public class SuperComboBox extends JPanel {
     if ((index >= 0) && (index < list.size())) {
       table.setSelected(index);
       setSelection();
-    } else if (list.size() > 0) {
+    } else if (!list.isEmpty()) {
       table.setSelected(0);
       setSelection();
     } else
@@ -487,10 +487,10 @@ public class SuperComboBox extends JPanel {
 
   private class MyTextField extends JLabel {
     private int arrow_size = 4;
-    private boolean wasDragged = false;
+    private boolean wasDragged;
     private Rectangle b;
-    private int nitems = 0;
-    private int currentItem = 0;
+    private int nitems;
+    private int currentItem;
 
     MyTextField(String name) {
       super(name);
@@ -752,7 +752,7 @@ public class SuperComboBox extends JPanel {
 
       start = -1;
       String startName = startIF.getText();
-      if ((startName != null) && (startName.length() > 0)) {
+      if ((startName != null) && (!startName.isEmpty())) {
         start = setSelectedByName(startName);
       }
       if (debug)

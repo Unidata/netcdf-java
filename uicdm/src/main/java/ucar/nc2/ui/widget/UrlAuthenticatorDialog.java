@@ -32,10 +32,10 @@ import ucar.ui.widget.IndependentDialog;
 public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider {
 
   private IndependentDialog dialog;
-  private UsernamePasswordCredentials pwa = null;
+  private UsernamePasswordCredentials pwa;
   private Field.Text serverF, realmF, userF;
   private Field.Password passwF;
-  private boolean debug = false;
+  private boolean debug;
 
   /**
    * constructor

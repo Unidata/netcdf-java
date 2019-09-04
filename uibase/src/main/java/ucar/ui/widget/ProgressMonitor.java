@@ -51,7 +51,7 @@ public class ProgressMonitor {
   private javax.swing.ProgressMonitor pm;
   private ProgressMonitorTask task;
   private javax.swing.Timer timer;
-  private int secs = 0;
+  private int secs;
 
   // event handling
   private EventListenerList listenerList = new EventListenerList();

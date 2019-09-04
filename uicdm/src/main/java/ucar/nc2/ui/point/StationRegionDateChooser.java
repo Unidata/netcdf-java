@@ -61,13 +61,13 @@ public class StationRegionDateChooser extends NPController {
   private boolean regionSelect, stationSelect, dateSelect;
 
   // station
-  private StationRenderer stnRender = null;
+  private StationRenderer stnRender;
   private Station selectedStation;
 
   // region
   private ProjectionRect geoBounds;
   private ProjectionRect geoSelection;
-  private boolean geoSelectionMode = false;
+  private boolean geoSelectionMode;
   private Color outlineColor = Color.black;
   private int nfracDig = 3;
 
@@ -88,7 +88,7 @@ public class StationRegionDateChooser extends NPController {
   private StringBuffer sbuff = new StringBuffer();
 
   // debugging
-  private boolean debugEvent = false;
+  private boolean debugEvent;
 
   /**
    * Default Contructor, allow both region and station selection.
@@ -105,7 +105,6 @@ public class StationRegionDateChooser extends NPController {
    * @param dateSelect allow selecting a date range
    */
   public StationRegionDateChooser(boolean stationSelect, boolean regionSelect, boolean dateSelect) {
-    super();
 
     this.regionSelect = regionSelect;
     this.stationSelect = stationSelect;
@@ -471,7 +470,7 @@ public class StationRegionDateChooser extends NPController {
     g.draw(rect);
   }
 
-  private boolean debug = false;
+  private boolean debug;
 
   public void setGeoBounds(LatLonRect llbb) {
     np.setMapArea(llbb);

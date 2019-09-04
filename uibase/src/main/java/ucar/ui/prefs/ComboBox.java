@@ -52,7 +52,7 @@ import ucar.util.prefs.PreferencesExt;
  */
 public class ComboBox<E> extends JComboBox<E> {
   private static final String LIST = "ComboBoxList";
-  private boolean deleting = false;
+  private boolean deleting;
 
   private PersistenceManager prefs;
   private int nkeep;
@@ -77,7 +77,6 @@ public class ComboBox<E> extends JComboBox<E> {
    * @param nkeep keep this many when you save.
    */
   public ComboBox(PersistenceManager prefs, int nkeep) {
-    super();
     this.prefs = prefs;
     this.nkeep = nkeep;
     setEditable(true);
@@ -118,7 +117,7 @@ public class ComboBox<E> extends JComboBox<E> {
 
     AbstractAction deleteAction = new AbstractAction() {
       public void actionPerformed(java.awt.event.ActionEvent e) {
-        final JList<E> delComp = new JList<>();
+        JList<E> delComp = new JList<>();
         delComp.setModel(getModel());
         delComp.addListSelectionListener(e2 -> {
           int index = delComp.getSelectedIndex();

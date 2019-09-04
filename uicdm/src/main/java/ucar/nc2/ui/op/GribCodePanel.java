@@ -18,7 +18,7 @@ public class GribCodePanel extends OpPanel {
   public GribCodePanel(PreferencesExt p) {
     super(p, "table:", false, false, false);
 
-    final JComboBox<WmoCodeFlagTables.Version> modes = new JComboBox<>(WmoCodeFlagTables.Version.values());
+    JComboBox<WmoCodeFlagTables.Version> modes = new JComboBox<>(WmoCodeFlagTables.Version.values());
     modes.setSelectedItem(WmoCodeFlagTables.standard);
     topPanel.add(modes, BorderLayout.CENTER);
     modes.addActionListener(e -> codeTable.setTable((WmoCodeFlagTables.Version) modes.getSelectedItem()));

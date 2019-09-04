@@ -47,7 +47,7 @@ import ucar.ui.widget.BAMutil;
  */
 public class PointController extends NPController {
   private PointRenderer pointRenderer;
-  private boolean drawConnectingLine = false;
+  private boolean drawConnectingLine;
 
   public PointController() {
     pointRenderer = new PointRenderer();

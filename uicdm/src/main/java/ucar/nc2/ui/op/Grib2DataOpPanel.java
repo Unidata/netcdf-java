@@ -41,9 +41,9 @@ public class Grib2DataOpPanel extends OpPanel {
       }
     });
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.showInfo(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -51,9 +51,9 @@ public class Grib2DataOpPanel extends OpPanel {
     });
     buttPanel.add(infoButton);
 
-    final AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+    AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
     checkButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.checkProblems(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -84,7 +84,7 @@ public class Grib2DataOpPanel extends OpPanel {
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

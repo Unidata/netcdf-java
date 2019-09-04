@@ -43,7 +43,7 @@ public class Grib2TableViewer2 extends JPanel {
 
   private Grib2Tables current;
 
-  public Grib2TableViewer2(final PreferencesExt prefs, JPanel buttPanel) {
+  public Grib2TableViewer2(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     gribTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
@@ -136,7 +136,7 @@ public class Grib2TableViewer2 extends JPanel {
       GribTables.Parameter p = ((EntryBean) t).param;
       if (p.getUnit() == null)
         continue;
-      if (p.getUnit().length() == 0)
+      if (p.getUnit().isEmpty())
         continue;
       try {
         SimpleUnit su = SimpleUnit.factoryWithExceptions(p.getUnit());

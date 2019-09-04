@@ -24,16 +24,16 @@ class FieldResizable extends Field {
   private Field delegate;
   private JComponent parent;
   private JPanel comp;
-  private ResizeButton resizeButt = null;
+  private ResizeButton resizeButt;
 
   // resize dragging
-  private ResizeButton dragButt = null;
-  private JComponent glassPane = null;
+  private ResizeButton dragButt;
+  private JComponent glassPane;
   private RubberbandRectangle rb;
-  private boolean resizeMode = false;
+  private boolean resizeMode;
   private int startx, starty;
 
-  private boolean debug = false;
+  private boolean debug;
 
   /**
    * Constructor.
@@ -258,7 +258,7 @@ class FieldResizable extends Field {
 
   private static class RubberbandRectangle {
 
-    private boolean debugRB = false;
+    private boolean debugRB;
     private Point anchorPt = new Point(0, 0);
     private Point stretchedPt = new Point(0, 0);
     private Point lastPt = new Point(0, 0);
@@ -266,7 +266,7 @@ class FieldResizable extends Field {
 
     private Component component;
     private boolean firstStretch = true;
-    private boolean active = false;
+    private boolean active;
 
     public RubberbandRectangle(Component c) {
       component = c;

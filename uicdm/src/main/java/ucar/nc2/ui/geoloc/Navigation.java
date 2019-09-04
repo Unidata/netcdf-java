@@ -21,20 +21,20 @@ public class Navigation {
   private NavigatedPanel np;
 
   // fundamental quantities
-  private double pwidth = 0, pheight = 0; // current display size
+  private double pwidth, pheight; // current display size
   private double pix_per_world = 1.0; // scale always the same in both directions
-  private double pix_x0 = 0.0, pix_y0 = 0.0; // offset from world origin, in pixels
+  private double pix_x0, pix_y0; // offset from world origin, in pixels
 
   // derived
   private ProjectionRect bb; // current world bounding box
   private AffineTransform at; // affine transform for graphics2D
   // misc
-  private boolean mapAreaIsSet = false; // cant initialize until screen size is known
-  private boolean screenSizeIsSet = false; // and initial bounding box is known
+  private boolean mapAreaIsSet; // cant initialize until screen size is known
+  private boolean screenSizeIsSet; // and initial bounding box is known
   private ZoomStack zoom = new ZoomStack();
 
-  private static boolean debug = false, debugZoom = false, debugTransform = false;
-  private static boolean debugRecalc = false;
+  private static boolean debug, debugZoom, debugTransform;
+  private static boolean debugRecalc;
 
   Navigation(NavigatedPanel np) {
     this.np = np;

@@ -16,10 +16,10 @@ import java.io.*;
  */
 public final class SocketMessage {
   private static final boolean debug = false, throwAway = false;
-  private boolean raw = false;
+  private boolean raw;
 
   private ServerSocket server;
-  private boolean isAlreadyRunning = false;
+  private boolean isAlreadyRunning;
   private ListenerManager lm;
 
   /**

@@ -53,7 +53,7 @@ import ucar.ui.widget.FontUtil;
 public class PointRenderer implements Renderer {
 
   private java.util.List<ObservationUI> obsUIlist = new ArrayList<>(); // ObservationUI objects
-  private ProjectionImpl project = null; // display projection
+  private ProjectionImpl project; // display projection
 
   // drawing parameters
   private Color color = Color.black;
@@ -62,16 +62,16 @@ public class PointRenderer implements Renderer {
   private Rectangle2D circleBB =
       new Rectangle2D.Double(-circleRadius, -circleRadius, 2 * circleRadius, 2 * circleRadius);
   private FontUtil.StandardFont textFont;
-  private boolean drawConnectingLine = false;
+  private boolean drawConnectingLine;
 
   // working objects to minimize excessive gc
   // private Point2D.Double ptN = new Point2D.Double();
 
-  private ObservationUI selected = null;
+  private ObservationUI selected;
 
   // misc state
   private boolean declutter = true;
-  private boolean posWasCalc = false;
+  private boolean posWasCalc;
   // private boolean debug = false;
 
   /** constructor */

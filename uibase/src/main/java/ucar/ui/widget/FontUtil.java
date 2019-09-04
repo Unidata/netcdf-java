@@ -34,8 +34,8 @@ public class FontUtil {
   private static Font[] monoFont = new Font[MAX_FONTS]; // list of fonts to use to make text bigger/smaller
   private static FontMetrics[] monoMetrics = new FontMetrics[MAX_FONTS]; // fontMetric for each font
 
-  private static boolean debug = false;
-  private static boolean isInit = false;
+  private static boolean debug;
+  private static boolean isInit;
 
   private static void init() {
     if (isInit)

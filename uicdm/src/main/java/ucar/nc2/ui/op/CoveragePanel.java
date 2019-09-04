@@ -53,9 +53,9 @@ public class CoveragePanel extends OpPanel {
     dsTable = new CoverageTable(buttPanel, prefs);
     add(dsTable, BorderLayout.CENTER);
 
-    final AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
+    AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
     viewButton.addActionListener(e -> {
-      final CoverageCollection gridDataset = dsTable.getCoverageDataset();
+      CoverageCollection gridDataset = dsTable.getCoverageDataset();
       if (gridDataset == null) {
         return;
       }
@@ -67,9 +67,9 @@ public class CoveragePanel extends OpPanel {
     });
     buttPanel.add(viewButton);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       dsTable.showInfo(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -93,7 +93,7 @@ public class CoveragePanel extends OpPanel {
     display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
     viewerWindow.setComponent(display);
-    final Rectangle bounds =
+    Rectangle bounds =
         (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
     if (bounds.x < 0) {
       bounds.x = 0;
@@ -135,7 +135,7 @@ public class CoveragePanel extends OpPanel {
           String.format("CdmrFeatureDataset2.open cant open %s err=%s", command, e.getMessage()));
     } catch (Throwable ioe) {
       ioe.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

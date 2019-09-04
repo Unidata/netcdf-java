@@ -24,7 +24,7 @@ public class DebugMenu extends JMenu {
   /**
    *
    */
-  public DebugMenu(final ToolsUI tui) {
+  public DebugMenu(ToolsUI tui) {
     super("Debug");
     setMnemonic('D');
 
@@ -32,7 +32,7 @@ public class DebugMenu extends JMenu {
 
     // the list of debug flags are in a submenu
     // they are dynamically discovered, and persisted
-    final JMenu flagsMenu = new JMenu("Debug Flags");
+    JMenu flagsMenu = new JMenu("Debug Flags");
 
     flagsMenu.addMenuListener(new MenuListener() {
       @Override
@@ -53,7 +53,7 @@ public class DebugMenu extends JMenu {
     add(flagsMenu);
 
     // this deletes all the flags, then they start accumulating again
-    final AbstractAction clearDebugFlagsAction = new AbstractAction() {
+    AbstractAction clearDebugFlagsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Debug.removeAll();
       }

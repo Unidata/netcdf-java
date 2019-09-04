@@ -54,7 +54,7 @@ public class GeoGridPanel extends OpPanel {
     dsTable = new GeoGridTable(prefs, true);
     add(dsTable, BorderLayout.CENTER);
 
-    final AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
+    AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
     viewButton.addActionListener(e -> {
       if (ds != null) {
         GridDataset gridDataset = dsTable.getGridDataset();
@@ -67,7 +67,7 @@ public class GeoGridPanel extends OpPanel {
     });
     buttPanel.add(viewButton);
 
-    final AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
+    AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
     imageButton.addActionListener(e -> {
       if (ds != null) {
         GridDatatype grid = dsTable.getGrid();
@@ -141,7 +141,7 @@ public class GeoGridPanel extends OpPanel {
       err = true;
     } catch (Throwable ioe) {
       ioe.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();
@@ -167,7 +167,7 @@ public class GeoGridPanel extends OpPanel {
   /**
    *
    */
-  public void setDataset(final NetcdfDataset newds) {
+  public void setDataset(NetcdfDataset newds) {
     if (newds == null) {
       return;
     }
@@ -179,13 +179,13 @@ public class GeoGridPanel extends OpPanel {
       logger.warn("close failed");
     }
 
-    final Formatter parseInfo = new Formatter();
+    Formatter parseInfo = new Formatter();
     this.ds = newds;
     try {
       dsTable.setDataset(newds, parseInfo);
     } catch (IOException e) {
-      final String info = parseInfo.toString();
-      if (info.length() > 0) {
+      String info = parseInfo.toString();
+      if (!info.isEmpty()) {
         detailTA.setText(info);
         detailWindow.show();
       }
@@ -198,7 +198,7 @@ public class GeoGridPanel extends OpPanel {
   /**
    *
    */
-  public void setDataset(final GridDataset gds) {
+  public void setDataset(GridDataset gds) {
     if (gds == null) {
       return;
     }

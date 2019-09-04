@@ -100,10 +100,10 @@ public class CoverageViewer extends JPanel {
   // the various managers and dialog boxes
   private ProjectionManager projManager;
   // private ColorScaleManager csManager;
-  private IndependentWindow infoWindow = null;
-  private IndependentWindow ncmlWindow = null;
-  private IndependentWindow gtWindow = null;
-  private JDialog dsDialog = null;
+  private IndependentWindow infoWindow;
+  private IndependentWindow ncmlWindow;
+  private IndependentWindow gtWindow;
+  private JDialog dsDialog;
   private FileManager geotiffFileChooser;
 
   // toolbars
@@ -139,24 +139,24 @@ public class CoverageViewer extends JPanel {
   private int currentTime;
   private int currentEnsemble;
   private int currentRunTime;
-  private boolean drawHorizOn = true, drawVertOn = false;
+  private boolean drawHorizOn = true, drawVertOn;
   private boolean eventsOK = true;
   private Color mapColor = Color.black;
-  private boolean drawWinds = false;
-  private boolean hasDependentTimeAxis = false;
-  private boolean selected = false;
-  private int mapBeanCount = 0;
+  private boolean drawWinds;
+  private boolean hasDependentTimeAxis;
+  private boolean selected;
+  private int mapBeanCount;
 
   // rendering
   private AffineTransform atI = new AffineTransform(); // identity transform
-  private ucar.nc2.ui.util.Renderer mapRenderer = null;
+  private ucar.nc2.ui.util.Renderer mapRenderer;
   private CoverageRenderer coverageRenderer;
   // private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
 
   // debugging
-  private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
-  private boolean debugTask = false, debugThread = false;
+  private boolean debugBeans, debugChooser, debugPrint, debugHelp;
+  private boolean debugTask, debugThread;
 
   public CoverageViewer(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
     this.store = pstore;
@@ -1082,7 +1082,7 @@ public class CoverageViewer extends JPanel {
     // set runtimes
     if (this.dataState.rtaxis != null) {
       runtimeNames = this.dataState.rtaxis.getCoordValueNames();
-      currentRunTime = runtimeNames.size() > 0 ? 0 : -1;
+      currentRunTime = !runtimeNames.isEmpty() ? 0 : -1;
       if ((currentRunTime < 0) || (currentRunTime >= runtimeNames.size()))
         currentRunTime = 0;
 
@@ -1123,7 +1123,7 @@ public class CoverageViewer extends JPanel {
     // set ensembles
     if (this.dataState.ensaxis != null) {
       ensembleNames = this.dataState.ensaxis.getCoordValueNames();
-      currentEnsemble = ensembleNames.size() > 0 ? 0 : -1;
+      currentEnsemble = !ensembleNames.isEmpty() ? 0 : -1;
       if ((currentEnsemble < 0) || (currentEnsemble >= ensembleNames.size()))
         currentEnsemble = 0;
 

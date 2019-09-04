@@ -61,7 +61,7 @@ public class DurationField extends ucar.ui.prefs.Field {
   /** See if edit value is valid, put error message in buff. */
   protected boolean _validate(StringBuffer buff) {
     String editValue = tf.getText().trim();
-    if (editValue.length() == 0)
+    if (editValue.isEmpty())
       return true; // empty ok
 
     try {
@@ -76,7 +76,7 @@ public class DurationField extends ucar.ui.prefs.Field {
   // get current value from editComponent
   protected Object getEditValue() {
     String editValue = tf.getText().trim();
-    if (editValue.length() == 0)
+    if (editValue.isEmpty())
       return null; // empty ok
 
     try {

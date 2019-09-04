@@ -41,7 +41,7 @@ public class ImagePanel extends OpPanel {
       }
     } catch (Exception ioe) {
       ioe.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();
@@ -54,7 +54,7 @@ public class ImagePanel extends OpPanel {
   /**
    *
    */
-  public void setImageLocation(final String location) {
+  public void setImageLocation(String location) {
     imagePanel.setImageFromUrl(location);
     setSelectedItem(location);
   }

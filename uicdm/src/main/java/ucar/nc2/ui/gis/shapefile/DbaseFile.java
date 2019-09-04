@@ -15,7 +15,7 @@ import java.net.URL;
  */
 public class DbaseFile {
 
-  public static int DBASEIII = 0;
+  public static int DBASEIII;
   public static int DBASEIV = 1;
   public static int DBASE5DOS = 2;
   public static int DBASE5WIN = 3;
@@ -28,10 +28,10 @@ public class DbaseFile {
   DbaseFieldDesc[] FieldDesc;
   DbaseData[] data;
   byte[] Header;
-  private boolean headerLoaded = false;
-  private boolean dataLoaded = false;
+  private boolean headerLoaded;
+  private boolean dataLoaded;
   InputStream stream;
-  DataInputStream ds = null;
+  DataInputStream ds;
 
   /**
    * @param url URL to the *.dbf file

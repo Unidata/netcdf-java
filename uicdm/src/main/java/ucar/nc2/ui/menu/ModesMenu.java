@@ -30,7 +30,7 @@ public class ModesMenu extends JMenu {
   /**
    *
    */
-  public ModesMenu(final ToolsUI tui) {
+  public ModesMenu(ToolsUI tui) {
     super("Modes");
     setMnemonic('M');
 
@@ -47,14 +47,14 @@ public class ModesMenu extends JMenu {
    *
    */
   private void addNetcdfFileSubmenu() {
-    final JMenu ncMenu = new JMenu("NetcdfFile");
+    JMenu ncMenu = new JMenu("NetcdfFile");
 
     AbstractAction a;
 
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         toolsui.setUseRecordStructure(state);
       }
     };
@@ -70,14 +70,14 @@ public class ModesMenu extends JMenu {
    */
   private void addNetcdfDatasetSubmenu() {
 
-    final JMenu dsMenu = new JMenu("NetcdfDataset");
+    JMenu dsMenu = new JMenu("NetcdfDataset");
 
     AbstractAction a;
 
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         CoordSysBuilder.setUseMaximalCoordSys(state);
       }
     };
@@ -88,7 +88,7 @@ public class ModesMenu extends JMenu {
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         NetcdfDataset.setFillValueIsMissing(state);
       }
     };
@@ -99,7 +99,7 @@ public class ModesMenu extends JMenu {
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         NetcdfDataset.setInvalidDataIsMissing(state);
       }
     };
@@ -110,7 +110,7 @@ public class ModesMenu extends JMenu {
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         NetcdfDataset.setMissingDataIsMissing(state);
       }
     };
@@ -126,14 +126,14 @@ public class ModesMenu extends JMenu {
    *
    */
   private void addHdfeosSubmenu() {
-    final JMenu subMenu = new JMenu("HDF-EOS");
+    JMenu subMenu = new JMenu("HDF-EOS");
 
     AbstractAction a;
 
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         H5iosp.useHdfEos(state);
       }
     };
@@ -144,7 +144,7 @@ public class ModesMenu extends JMenu {
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         H4header.useHdfEos(state);
       }
     };
@@ -155,7 +155,7 @@ public class ModesMenu extends JMenu {
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         Nc4Iosp.useHdfEos(state);
       }
     };
@@ -171,7 +171,7 @@ public class ModesMenu extends JMenu {
    *
    */
   private void addGribSubmenu() {
-    final JMenu subMenu = new JMenu("GRIB");
+    JMenu subMenu = new JMenu("GRIB");
 
     AbstractAction a;
 
@@ -187,7 +187,7 @@ public class ModesMenu extends JMenu {
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         Grib1ParamTables.setStrict(state);
       }
     };
@@ -199,7 +199,7 @@ public class ModesMenu extends JMenu {
     a = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final boolean state = (Boolean) getValue(BAMutil.STATE);
+        boolean state = (Boolean) getValue(BAMutil.STATE);
         GribData
             .setInterpolationMethod(state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
       }

@@ -29,12 +29,12 @@ import java.util.ArrayList;
 public class WorldMap extends GisFeatureRenderer {
   private static final String WORLD_MAP = "/resources/ui/maps/cil_100km.mapr";
   private static final double SECS_PER_DEG = 3600.0;
-  private static boolean debug = false, debugTime = false;
+  private static boolean debug, debugTime;
 
-  private static WorldMapFeature worldMapFeature = null;
+  private static WorldMapFeature worldMapFeature;
   private static ArrayList<GisFeature> gisList;
-  private static ArrayList<GisPart> partList = null;
-  private static int total_pts = 0;
+  private static ArrayList<GisPart> partList;
+  private static int total_pts;
 
   // read in lat/lon points one time for this class
   private static boolean readWorldMap() {

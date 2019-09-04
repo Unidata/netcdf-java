@@ -54,7 +54,7 @@ public class SimpleGeomPanel extends OpPanel {
     sgTable = new SimpleGeomTable(prefs, true);
     add(sgTable, BorderLayout.CENTER);
 
-    final AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
+    AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
     viewButton.addActionListener(e -> {
       if (ds != null) {
         GridDataset gridDataset = sgTable.getGridDataset();
@@ -67,7 +67,7 @@ public class SimpleGeomPanel extends OpPanel {
     });
     buttPanel.add(viewButton);
 
-    final AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
+    AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
     imageButton.addActionListener(e -> {
       if (ds != null) {
         GridDatatype grid = sgTable.getGrid();
@@ -136,14 +136,14 @@ public class SimpleGeomPanel extends OpPanel {
       }
       setDataset(newds);
 
-    } catch (final FileNotFoundException ioe) {
+    } catch (FileNotFoundException ioe) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command + "\n" + ioe.getMessage());
       // ioe.printStackTrace();
       err = true;
 
-    } catch (final Throwable ioe) {
+    } catch (Throwable ioe) {
       ioe.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();
@@ -177,17 +177,17 @@ public class SimpleGeomPanel extends OpPanel {
       if (ds != null) {
         ds.close();
       }
-    } catch (final IOException ioe) {
+    } catch (IOException ioe) {
       logger.warn("close failed");
     }
 
-    final Formatter parseInfo = new Formatter();
+    Formatter parseInfo = new Formatter();
     this.ds = newds;
     try {
       sgTable.setDataset(newds, parseInfo);
-    } catch (final IOException e) {
-      final String info = parseInfo.toString();
-      if (info.length() > 0) {
+    } catch (IOException e) {
+      String info = parseInfo.toString();
+      if (!info.isEmpty()) {
         detailTA.setText(info);
         detailWindow.show();
       }

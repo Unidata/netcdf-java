@@ -34,7 +34,7 @@ public class ThreddsUI extends JPanel {
   private Component parent;
 
   // the main components
-  private ThreddsDatasetChooser datasetChooser = null;
+  private ThreddsDatasetChooser datasetChooser;
 
   // UI components that need global scope
   private TextGetPutPane sourcePane;
@@ -42,8 +42,8 @@ public class ThreddsUI extends JPanel {
   // private JMenu debugMenu;
 
   private TextHistoryPane xmlPane;
-  private IndependentDialog xmlWindow = null;
-  private IndependentWindow sourceWindow = null;
+  private IndependentDialog xmlWindow;
+  private IndependentWindow sourceWindow;
 
   // the various managers and dialog boxes
   FileManager fileChooser; // shared with component viewers
@@ -53,8 +53,8 @@ public class ThreddsUI extends JPanel {
 
   // debugging
   // private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
-  private boolean debugSelection = false;
-  private boolean debugTab = false;
+  private boolean debugSelection;
+  private boolean debugTab;
 
   public ThreddsUI(JFrame parent, PreferencesExt store) {
     this.store = store;
@@ -81,7 +81,7 @@ public class ThreddsUI extends JPanel {
 
     // other components
     PreferencesExt fcPrefs = (PreferencesExt) store.node("FileManager");
-    FileFilter[] filters = new FileFilter[] {new FileManager.NetcdfExtFilter()};
+    FileFilter[] filters = {new FileManager.NetcdfExtFilter()};
     fileChooser = new FileManager(parent, null, filters, fcPrefs);
   }
 

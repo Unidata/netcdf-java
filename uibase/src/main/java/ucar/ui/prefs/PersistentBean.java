@@ -18,7 +18,7 @@ import java.util.*;
 
 public class PersistentBean implements PersistenceManager {
   private BeanMap beanMap;
-  private boolean debugBean = false;
+  private boolean debugBean;
 
   public PersistentBean(Object bean) {
     beanMap = new BeanMap(bean);
@@ -221,7 +221,7 @@ public class PersistentBean implements PersistenceManager {
 
   // one for each class
   private static class PropertyMap {
-    private static boolean debugBeanParser = false, debugBeanParserDetail = false;
+    private static boolean debugBeanParser, debugBeanParserDetail;
     private static Map<Class, PropertyMap> parsers = new HashMap<>();
 
     static PropertyMap getParser(Class beanClass) {

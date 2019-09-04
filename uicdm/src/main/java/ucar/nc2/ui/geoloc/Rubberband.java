@@ -22,7 +22,7 @@ public abstract class Rubberband implements Serializable {
 
   protected Component component;
   protected boolean firstStretch = true;
-  private boolean active = false;
+  private boolean active;
 
   // actual drawing done by subclass.
   public abstract void drawLast(Graphics2D g);

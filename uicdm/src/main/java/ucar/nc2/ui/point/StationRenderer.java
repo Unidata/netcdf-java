@@ -23,7 +23,7 @@ class StationRenderer implements Renderer {
   private List<StationUI> stations = new ArrayList<>(); // StationUI objects
   private HashMap<String, StationUI> stationHash = new HashMap<>();
   private SpatialGrid stationGrid; // for "decluttering" and closest point
-  private ProjectionImpl project = null; // display projection
+  private ProjectionImpl project; // display projection
   private AffineTransform world2Normal;
 
   // drawing parameters
@@ -35,15 +35,15 @@ class StationRenderer implements Renderer {
   private FontUtil.StandardFont textFont;
 
   // pick stuff
-  private StationUI selected = null;
+  private StationUI selected;
 
   // working objects to minimize excessive gc
   private Point2D.Double ptN = new Point2D.Double();
 
   // misc state
   private boolean declutter = true;
-  private boolean posWasCalc = false;
-  private boolean debug = false;
+  private boolean posWasCalc;
+  private boolean debug;
 
   /** constructor */
   public StationRenderer() {
@@ -257,7 +257,7 @@ class StationRenderer implements Renderer {
 
     private Rectangle2D bb; // bounding box, in normalized screen coords, loc = 0, 0
     private Rectangle2D bbPos = new Rectangle2D.Double(); // bounding box, translated to current drawing pos
-    private boolean selected = false;
+    private boolean selected;
 
     StationUI(ucar.unidata.geoloc.Station stn) {
       ddStation = stn;

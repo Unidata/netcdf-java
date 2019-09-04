@@ -28,7 +28,7 @@ public class StopButton extends JButton {
     icon[0] = BAMutil.getIcon("Stop24", true);
     icon[1] = BAMutil.getIcon("Stop16", true);
   }
-  private static boolean debug = false;
+  private static boolean debug;
 
   private ProgressMonitorTask task;
   private Timer myTimer;

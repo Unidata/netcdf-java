@@ -77,7 +77,7 @@ public class RubberbandRectangleHandles extends Rubberband {
     return true;
   }
 
-  private int minDiff = 0;
+  private int minDiff;
 
   private void testDiff(Point p, int x, int y, int anchor_x, int anchor_y) {
     int dx = p.x - x;

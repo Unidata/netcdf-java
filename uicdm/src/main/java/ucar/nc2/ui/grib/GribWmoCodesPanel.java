@@ -34,7 +34,7 @@ public class GribWmoCodesPanel extends JPanel {
   private TextHistoryPane compareTA;
   private IndependentWindow infoWindow;
 
-  public GribWmoCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
+  public GribWmoCodesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     wmoTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
@@ -75,7 +75,7 @@ public class GribWmoCodesPanel extends JPanel {
     setTable(WmoCodeFlagTables.standard);
   }
 
-  private WmoCodeFlagTables.Version currTable = null;
+  private WmoCodeFlagTables.Version currTable;
 
   public void setTable(WmoCodeFlagTables.Version v) {
     try {
@@ -165,7 +165,7 @@ public class GribWmoCodesPanel extends JPanel {
     public String getUdunit() {
       if (entry.getUnit() == null)
         return "";
-      if (entry.getUnit().length() == 0)
+      if (entry.getUnit().isEmpty())
         return "";
 
       try {
@@ -252,7 +252,7 @@ public class GribWmoCodesPanel extends JPanel {
         for (WmoTable.WmoEntry p : gt.getEntries()) {
           if (p.getUnit() == null)
             continue;
-          if (p.getUnit().length() == 0)
+          if (p.getUnit().isEmpty())
             continue;
           try {
             SimpleUnit su = SimpleUnit.factoryWithExceptions(p.getUnit());

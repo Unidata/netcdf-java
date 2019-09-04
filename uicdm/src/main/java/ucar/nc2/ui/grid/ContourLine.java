@@ -26,7 +26,7 @@ import java.util.*; // for Iterator and ArrayList
 
 public class ContourLine implements GisPart {
   private double contourLevel; // the contour's level or value
-  private boolean newLineFlag = false; // true if this line is new or edited
+  private boolean newLineFlag; // true if this line is new or edited
   int npts;
   double[] wx; // contour line positions found in ContourGrid class
   double[] wy;

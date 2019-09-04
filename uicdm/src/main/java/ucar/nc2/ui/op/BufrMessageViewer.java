@@ -57,9 +57,9 @@ public class BufrMessageViewer extends JPanel {
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
-  private boolean seperateWindow = false;
+  private boolean seperateWindow;
 
-  public BufrMessageViewer(final PreferencesExt prefs, JPanel buttPanel) {
+  public BufrMessageViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     AbstractButton tableButt = BAMutil.makeButtcon("Structure", "Data Table", false);
@@ -74,7 +74,7 @@ public class BufrMessageViewer extends JPanel {
           dataWindow.show();
         }
       } catch (Exception ex) {
-        JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
+        JOptionPane.showMessageDialog(this, ex.getMessage());
         ex.printStackTrace();
       }
     });
@@ -163,7 +163,7 @@ public class BufrMessageViewer extends JPanel {
         setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
         setObs(mb.m);
       } catch (Exception e1) {
-        JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
+        JOptionPane.showMessageDialog(this, e1.getMessage());
         e1.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
       }
       ddsTable.setBeans(beanList);
@@ -476,10 +476,10 @@ public class BufrMessageViewer extends JPanel {
         }
         count++;
       }
-      JOptionPane.showMessageDialog(BufrMessageViewer.this, count + " successfully written to " + dirName);
+      JOptionPane.showMessageDialog(this, count + " successfully written to " + dirName);
 
     } catch (IOException e1) {
-      JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
+      JOptionPane.showMessageDialog(this, e1.getMessage());
       e1.printStackTrace();
     }
   }
@@ -530,10 +530,10 @@ public class BufrMessageViewer extends JPanel {
         f.flush();
         count++;
       }
-      JOptionPane.showMessageDialog(BufrMessageViewer.this, count + " successfully written to " + filename);
+      JOptionPane.showMessageDialog(this, count + " successfully written to " + filename);
 
     } catch (IOException e1) {
-      JOptionPane.showMessageDialog(BufrMessageViewer.this, e1.getMessage());
+      JOptionPane.showMessageDialog(this, e1.getMessage());
       e1.printStackTrace();
     }
   }
@@ -672,7 +672,7 @@ public class BufrMessageViewer extends JPanel {
         }
       }
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
+      JOptionPane.showMessageDialog(this, ex.getMessage());
       ex.printStackTrace();
     }
     obsTable.setBeans(beanList);
@@ -680,8 +680,8 @@ public class BufrMessageViewer extends JPanel {
 
   public class MessageBean {
     Message m;
-    int readOk = 0;
-    int bitsOk = 0;
+    int readOk;
+    int bitsOk;
 
     // no-arg constructor
 
@@ -873,7 +873,7 @@ public class BufrMessageViewer extends JPanel {
     int year = -1, month = -1, day = -1, hour = -1, minute = -1, sec = -1, doy = -1;
     CalendarDate date;
     int wmo_block = -1, wmo_id = -1;
-    String stn = null;
+    String stn;
 
     // no-arg constructor
 

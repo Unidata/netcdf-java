@@ -54,7 +54,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   private double[] edge;
   private int[] hist;
   private double min, max, interval;
-  private boolean hasMissingData = false;
+  private boolean hasMissingData;
   private Color missingDataColor = Color.white;
 
   // kludge to make life easier
@@ -437,7 +437,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     private JLabel unitLabel = new JLabel("unit", SwingConstants.CENTER);
     private JPanel lpanel;
 
-    private boolean editable = false;
+    private boolean editable;
     private int selected = -1;
 
     private int nColorInterval;
@@ -446,18 +446,18 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     private FontUtil.StandardFont sf = FontUtil.getStandardFont(10);
 
     public Panel(Component parent) {
-      this(parent, ColorScale.VERTICAL, null);
+      this(parent, VERTICAL, null);
     }
 
     public Panel(Component parent, ColorScale cscale) {
-      this(parent, ColorScale.VERTICAL, cscale);
+      this(parent, VERTICAL, cscale);
     }
 
     public Panel(Component parent, int type, ColorScale cscale) {
       this.cs = (cscale == null) ? new ColorScale("default") : cscale;
       this.type = type;
 
-      if (type == ColorScale.VERTICAL) {
+      if (type == VERTICAL) {
         setPreferredSize(new Dimension(size, 400));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
       } else {
@@ -475,7 +475,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       lpanel = new JPanel();
       lpanel.add(unitLabel);
       // unitLabel.setBorder( new javax.swing.border.EtchedBorder());
-      if (type == ColorScale.VERTICAL)
+      if (type == VERTICAL)
         lpanel.setPreferredSize(new Dimension(size, 0));
       else
         lpanel.setPreferredSize(new Dimension(0, size));
@@ -613,13 +613,13 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
     public void print(Graphics2D g, double x, double y, double width, double height) {
       int n = cs.getNumColors();
-      double size = (type == ColorScale.VERTICAL) ? height / n : width / n;
+      double size = (type == VERTICAL) ? height / n : width / n;
       int count = 0;
       for (int i = 0; i < getComponentCount(); i++) {
         Component c = getComponent(i);
         if (c instanceof ColorInterval) {
           ColorInterval intv = (ColorInterval) c;
-          if (type == ColorScale.VERTICAL)
+          if (type == VERTICAL)
             intv.printV(g, (int) x, (int) (y + count * size), (int) width, (int) size);
           else {
             double xpos = x + width - (count + 1) * size;

@@ -38,7 +38,7 @@ public class WmsPanel extends OpPanel {
     types.addItem("1.0.0");
     buttPanel.add(types);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(e -> {
       detailTA.setText(wmsViewer.getDetailInfo());
       detailTA.gotoTop();

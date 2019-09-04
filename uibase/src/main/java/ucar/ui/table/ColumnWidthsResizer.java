@@ -51,7 +51,7 @@ public class ColumnWidthsResizer implements TableModelListener, TableColumnModel
   //////////////////////////////////////////////// TableModelListener ////////////////////////////////////////////////
 
   @Override
-  public void tableChanged(final TableModelEvent e) {
+  public void tableChanged(TableModelEvent e) {
     if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
       return; // Do not respond to changes in the number of columns here, only row and data changes.
     }

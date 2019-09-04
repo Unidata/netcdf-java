@@ -71,10 +71,10 @@ public class GridUI extends JPanel {
   // the various managers and dialog boxes
   private ProjectionManager projManager;
   // private ColorScaleManager csManager;
-  private IndependentWindow infoWindow = null;
-  private IndependentWindow ncmlWindow = null;
-  private IndependentWindow gtWindow = null;
-  private JDialog dsDialog = null;
+  private IndependentWindow infoWindow;
+  private IndependentWindow ncmlWindow;
+  private IndependentWindow gtWindow;
+  private JDialog dsDialog;
   private FileManager geotiffFileChooser;
 
   // toolbars
@@ -95,12 +95,12 @@ public class GridUI extends JPanel {
   private AbstractAction chooseProjectionAction, saveCurrentProjectionAction;
 
   // state
-  private boolean selected = false;
-  private int mapBeanCount = 0;
+  private boolean selected;
+  private int mapBeanCount;
 
   // debugging
-  private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
-  private boolean debugTask = false;
+  private boolean debugBeans, debugChooser, debugPrint, debugHelp;
+  private boolean debugTask;
 
   public GridUI(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
     // this.topUI = topUI;

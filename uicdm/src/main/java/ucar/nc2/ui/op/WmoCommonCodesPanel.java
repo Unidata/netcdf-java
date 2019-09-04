@@ -31,7 +31,7 @@ public class WmoCommonCodesPanel extends JPanel {
   private TextHistoryPane compareTA;
   private IndependentWindow infoWindow;
 
-  public WmoCommonCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
+  public WmoCommonCodesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     codeTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);

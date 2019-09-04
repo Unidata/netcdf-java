@@ -340,10 +340,10 @@ public class GribFilesPanel extends JPanel {
 
     MFile m;
     Grib2Index index;
-    int nRecords, localCount = 0, gdsCount = 0;
+    int nRecords, localCount, gdsCount;
     Grib2Record first;
     Grib2Tables tables;
-    boolean bad = false;
+    boolean bad;
 
     public Grib2Bean() {}
 

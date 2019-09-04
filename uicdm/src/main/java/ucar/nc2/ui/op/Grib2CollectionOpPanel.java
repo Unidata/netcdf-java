@@ -44,9 +44,9 @@ public class Grib2CollectionOpPanel extends OpPanel {
       }
     });
 
-    final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+    AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
     showButt.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.showCollection(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -54,9 +54,9 @@ public class Grib2CollectionOpPanel extends OpPanel {
     });
     buttPanel.add(showButt);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
     infoButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.checkProblems(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -64,9 +64,9 @@ public class Grib2CollectionOpPanel extends OpPanel {
     });
     buttPanel.add(infoButton);
 
-    final AbstractButton gdsButton = BAMutil.makeButtcon("Information", "Show GDS use", false);
+    AbstractButton gdsButton = BAMutil.makeButtcon("Information", "Show GDS use", false);
     gdsButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       gribTable.showGDSuse(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -74,9 +74,9 @@ public class Grib2CollectionOpPanel extends OpPanel {
     });
     buttPanel.add(gdsButton);
 
-    final AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
+    AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
     writeButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       try {
         if (!gribTable.writeIndex(f)) {
           return;
@@ -114,7 +114,7 @@ public class Grib2CollectionOpPanel extends OpPanel {
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

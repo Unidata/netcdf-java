@@ -43,10 +43,10 @@ public class RadialPanel extends OpPanel {
     dsTable = new RadialDatasetTable(prefs);
     add(dsTable, BorderLayout.CENTER);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
     infoButton.addActionListener(e -> {
       try (RadialDatasetSweep radialDataset = dsTable.getRadialDataset()) {
-        final Formatter info = new Formatter();
+        Formatter info = new Formatter();
         radialDataset.getDetailInfo(info);
         detailTA.setText(info.toString());
         detailTA.gotoTop();
@@ -79,7 +79,7 @@ public class RadialPanel extends OpPanel {
           (RadialDatasetSweep) FeatureDatasetFactoryManager.wrap(FeatureType.RADIAL, newds, null, errlog);
       if (rds == null) {
         JOptionPane.showMessageDialog(null,
-            "FeatureDatasetFactoryManager cannot open " + command + "as RADIAL dataset\n" + errlog.toString());
+            "FeatureDatasetFactoryManager cannot open " + command + "as RADIAL dataset\n" + errlog);
         err = true;
       } else {
         setDataset(rds);
@@ -89,7 +89,7 @@ public class RadialPanel extends OpPanel {
       ioe.printStackTrace();
       err = true;
     } catch (IOException ioe) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

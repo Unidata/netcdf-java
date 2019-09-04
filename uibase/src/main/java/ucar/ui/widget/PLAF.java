@@ -27,7 +27,7 @@ public class PLAF {
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private JComponent jc;
-  private boolean debug = false;
+  private boolean debug;
 
   /*
    * Constructor.
@@ -51,25 +51,25 @@ public class PLAF {
    * Add a set of MenuItems to the given JMenu, one for each possible L&F.
    * if this platform doesnt support the L&F, disable the MenuItem.
    */
-  public void addToMenu(final JMenu menu) {
-    final UIManager.LookAndFeelInfo[] plafInfo = UIManager.getInstalledLookAndFeels();
+  public void addToMenu(JMenu menu) {
+    UIManager.LookAndFeelInfo[] plafInfo = UIManager.getInstalledLookAndFeels();
     for (UIManager.LookAndFeelInfo aPlafInfo : plafInfo) {
       addToMenu(aPlafInfo.getName(), aPlafInfo.getClassName(), menu);
     }
 
-    final LookAndFeel current = UIManager.getLookAndFeel();
+    LookAndFeel current = UIManager.getLookAndFeel();
     System.out.printf("current L&F=%s%n", current.getName());
   }
 
   /**
    *
    */
-  private void addToMenu(final String name, final String className, final JMenu menu) {
+  private void addToMenu(String name, String className, JMenu menu) {
     logger.debug("PLAF LookAndFeelInfo  {}", className);
     boolean isSupported = true;
     try {
-      final Class cl = Class.forName(className);
-      final LookAndFeel lf = (LookAndFeel) cl.newInstance();
+      Class cl = Class.forName(className);
+      LookAndFeel lf = (LookAndFeel) cl.newInstance();
       if (!lf.isSupportedLookAndFeel()) {
         isSupported = false;
       }
@@ -77,8 +77,8 @@ public class PLAF {
       isSupported = false;
     }
 
-    final AbstractAction act = new PLAFAction(name, className);
-    final JMenuItem mi = menu.add(act);
+    AbstractAction act = new PLAFAction(name, className);
+    JMenuItem mi = menu.add(act);
     if (!isSupported) {
       mi.setEnabled(false);
     }
@@ -90,14 +90,14 @@ public class PLAF {
   private class PLAFAction extends AbstractAction {
     final String plafClassName;
 
-    PLAFAction(final String name, final String plafClassName) {
+    PLAFAction(String name, String plafClassName) {
       this.plafClassName = plafClassName;
       putValue(Action.NAME, name);
     }
 
     /** */
     @Override
-    public void actionPerformed(final ActionEvent evt) {
+    public void actionPerformed(ActionEvent evt) {
       try {
         UIManager.setLookAndFeel(plafClassName);
       } catch (Exception ex) {
@@ -109,7 +109,7 @@ public class PLAF {
       // Dialog boxes must listen fo L&F PropertyChangeEvents
 
 
-      final JFrame parentFrame = (JFrame) jc.getTopLevelAncestor();
+      JFrame parentFrame = (JFrame) jc.getTopLevelAncestor();
 
       SwingUtilities.updateComponentTreeUI(parentFrame);
     }

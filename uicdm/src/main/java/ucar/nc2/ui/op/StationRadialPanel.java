@@ -42,10 +42,10 @@ public class StationRadialPanel extends OpPanel {
     radialViewer = new StationRadialViewer(dbPrefs);
     add(radialViewer, BorderLayout.CENTER);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
     infoButton.addActionListener(e -> {
       if (radarCollectionDataset != null) {
-        final Formatter info = new Formatter();
+        Formatter info = new Formatter();
         radarCollectionDataset.getDetailInfo(info);
         detailTA.setText(info.toString());
         detailTA.gotoTop();
@@ -97,7 +97,7 @@ public class StationRadialPanel extends OpPanel {
     try {
       result = ToolsUI.getThreddsDataFactory().openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
       if (result.fatalError) {
-        JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog.toString());
+        JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog);
         result.close();
         return false;
       }
@@ -106,7 +106,7 @@ public class StationRadialPanel extends OpPanel {
       setStationRadialDataset(result.featureDataset);
       return true;
     } catch (Exception e) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();
@@ -126,7 +126,7 @@ public class StationRadialPanel extends OpPanel {
   /**
    *
    */
-  public boolean setStationRadialDataset(final FeatureDataset dataset) {
+  public boolean setStationRadialDataset(FeatureDataset dataset) {
     if (dataset == null) {
       return false;
     }

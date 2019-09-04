@@ -56,7 +56,7 @@ public class ImprovedFileChooser extends JFileChooser {
 
   // This is a reference to the JDialog created by JFileChooser.createDialog().
   // JFileChooser also has this data member, but it's private. We need our own.
-  private JDialog dialog = null;
+  private JDialog dialog;
 
   public ImprovedFileChooser() {
     this(null, null);
@@ -84,7 +84,7 @@ public class ImprovedFileChooser extends JFileChooser {
     detailsViewButton.doClick(); // Programmatically switch to the Details View.
 
     List<JTable> tables = SwingUtils.getDescendantsOfType(JTable.class, this);
-    final JTable detailsTable;
+    JTable detailsTable;
 
     if (tables.size() != 1) {
       logger.warn("Expected to find 1 JTable in the file chooser, but found " + tables.size());

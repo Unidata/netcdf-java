@@ -13,8 +13,6 @@ import ucar.ui.widget.BAMutil;
 public class WorldMapBean extends MapBean {
   private Renderer rend;
 
-  public WorldMapBean() {}
-
   public Renderer getRenderer() {
     if (rend == null)
       rend = new WorldMap();

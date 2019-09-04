@@ -83,16 +83,16 @@ public class NcmlEditor extends JPanel {
     this.prefs = prefs;
     fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
-    final AbstractAction coordAction = new AbstractAction() {
+    AbstractAction coordAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         addCoords = (Boolean) getValue(BAMutil.STATE);
-        final String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+        String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
         coordButt.setToolTipText(tooltip);
       }
     };
     addCoords = prefs.getBoolean("coordState", false);
-    final String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+    String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
     BAMutil.setActionProperties(coordAction, "nj22/AddCoords", tooltip2, true, 'C', -1);
     coordAction.putValue(BAMutil.STATE, addCoords);
     coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
@@ -111,7 +111,7 @@ public class NcmlEditor extends JPanel {
     editor = new JEditorPane();
 
     // Instantiate a XMLEditorKit with wrapping enabled.
-    final XMLEditorKit kit = new XMLEditorKit(false);
+    XMLEditorKit kit = new XMLEditorKit(false);
 
     // Set the wrapping style.
     kit.setWrapStyleWord(true);
@@ -137,17 +137,17 @@ public class NcmlEditor extends JPanel {
     kit.setStyle(XMLStyleConstants.ATTRIBUTE_NAME, Color.RED, Font.BOLD);
 
     // Put the editor in a panel that will force it to resize, when a different view is choosen.
-    final ScrollableEditorPanel editorPanel = new ScrollableEditorPanel(editor);
+    ScrollableEditorPanel editorPanel = new ScrollableEditorPanel(editor);
 
-    final JScrollPane scroller = new JScrollPane(editorPanel);
+    JScrollPane scroller = new JScrollPane(editorPanel);
 
     // Add the number margin as a Row Header View
     scroller.setRowHeaderView(new LineNumberMargin(editor));
 
-    final AbstractAction wrapAction = new AbstractAction() {
+    AbstractAction wrapAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final XMLEditorKit kit = (XMLEditorKit) editor.getEditorKit();
+        XMLEditorKit kit = (XMLEditorKit) editor.getEditorKit();
         kit.setLineWrappingEnabled(!kit.isLineWrapping());
         editor.updateUI();
       }
@@ -155,7 +155,7 @@ public class NcmlEditor extends JPanel {
     BAMutil.setActionProperties(wrapAction, "nj22/Wrap", "Toggle Wrapping", false, 'W', -1);
     BAMutil.addActionToContainer(buttPanel, wrapAction);
 
-    final AbstractAction saveAction = new AbstractAction() {
+    AbstractAction saveAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         String location = (ds == null) ? ncmlLocation : ds.getLocation();
@@ -180,7 +180,7 @@ public class NcmlEditor extends JPanel {
     BAMutil.setActionProperties(saveAction, "Save", "Save NcML", false, 'S', -1);
     BAMutil.addActionToContainer(buttPanel, saveAction);
 
-    final AbstractAction netcdfAction = new AbstractAction() {
+    AbstractAction netcdfAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (outChooser == null) {
@@ -208,7 +208,7 @@ public class NcmlEditor extends JPanel {
     BAMutil.setActionProperties(netcdfAction, "nj22/Netcdf", "Write netCDF file", false, 'N', -1);
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
-    final AbstractAction transAction = new AbstractAction() {
+    AbstractAction transAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         doTransform(editor.getText());
@@ -218,7 +218,7 @@ public class NcmlEditor extends JPanel {
         "read textArea through NcMLReader\n write NcML back out via resulting dataset", false, 'T', -1);
     BAMutil.addActionToContainer(buttPanel, transAction);
 
-    final AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check NcML", false);
+    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check NcML", false);
     compareButton.addActionListener(e -> {
       Formatter f = new Formatter();
       checkNcml(f);
@@ -269,7 +269,7 @@ public class NcmlEditor extends JPanel {
         cmd = "file:" + cmd;
       }
       ncmlLocation = cmd;
-      final String text = IO.readURLcontents(cmd);
+      String text = IO.readURLcontents(cmd);
       editor.setText(text);
     } else {
       writeNcml(cmd);
@@ -286,20 +286,20 @@ public class NcmlEditor extends JPanel {
     closeOpenFiles();
 
     try {
-      final String result;
+      String result;
       ds = openDataset(location, addCoords, null);
       if (ds == null) {
         editor.setText("Failed to open <" + location + ">");
       } else {
-        final NcMLWriter ncmlWriter = new NcMLWriter();
-        final Element netcdfElem = ncmlWriter.makeNetcdfElement(ds, null);
+        NcMLWriter ncmlWriter = new NcMLWriter();
+        Element netcdfElem = ncmlWriter.makeNetcdfElement(ds, null);
         result = ncmlWriter.writeToString(netcdfElem);
 
         editor.setText(result);
         editor.setCaretPosition(0);
       }
     } catch (Exception e) {
-      final StringWriter sw = new StringWriter(10000);
+      StringWriter sw = new StringWriter(10000);
       e.printStackTrace();
       e.printStackTrace(new PrintWriter(sw));
       editor.setText(sw.toString());
@@ -354,9 +354,9 @@ public class NcmlEditor extends JPanel {
    * then write it back out via resulting dataset
    */
   void doTransform(String text) {
-    try (final StringReader reader = new StringReader(text);
-        final NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
-        final StringWriter sw = new StringWriter(10000)) {
+    try (StringReader reader = new StringReader(text);
+        NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
+        StringWriter sw = new StringWriter(10000)) {
       ncd.writeNcML(sw, null);
       editor.setText(sw.toString());
       editor.setCaretPosition(0);

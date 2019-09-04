@@ -51,7 +51,7 @@ public class BufrTableBViewer extends JPanel {
 
   private FileManager fileChooser;
 
-  public BufrTableBViewer(final PreferencesExt prefs, JPanel buttPanel) {
+  public BufrTableBViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
@@ -293,8 +293,8 @@ public class BufrTableBViewer extends JPanel {
     out.flush();
   }
 
-  private char[] remove = new char[] {'(', ')', ' ', '"', ',', '*', '-'};
-  private String[] replace = new String[] {"", "", "", "", "", "", ""};
+  private char[] remove = {'(', ')', ' ', '"', ',', '*', '-'};
+  private String[] replace = {"", "", "", "", "", "", ""};
 
   private boolean equiv(String org1, String org2) {
     String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
@@ -324,7 +324,7 @@ public class BufrTableBViewer extends JPanel {
 
   //////////////////////////////////////////////////////////
 
-  private BufrBCompare dialog = null;
+  private BufrBCompare dialog;
 
   public void compareToStandard() {
     if (dialog == null) {
@@ -404,7 +404,7 @@ public class BufrTableBViewer extends JPanel {
 
   ///////////////////////
 
-  private HashMap<Short, List<Message>> usedDds = null;
+  private HashMap<Short, List<Message>> usedDds;
 
   private void showUsed(String filename) throws IOException {
     usedDds = new HashMap<>(3000);
@@ -468,9 +468,9 @@ public class BufrTableBViewer extends JPanel {
    */
 
   //////////////////////////////////////////////////////
-  private HashMap<Short, List<DdsBean>> allVariants = null;
-  private Set<String> varKeys = null;
-  private boolean standardVariantsLoaded = false;
+  private HashMap<Short, List<DdsBean>> allVariants;
+  private Set<String> varKeys;
+  private boolean standardVariantsLoaded;
 
   private void loadStandardVariants() {
     for (BufrTables.TableConfig tc : BufrTables.getTables()) {

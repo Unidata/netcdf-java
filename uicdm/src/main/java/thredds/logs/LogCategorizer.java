@@ -14,7 +14,7 @@ import ucar.unidata.util.StringUtil2;
  * @since Mar 23, 2009
  */
 public class LogCategorizer {
-  static boolean showRoots = false;
+  static boolean showRoots;
 
   /*
    * default roots
@@ -178,7 +178,7 @@ public class LogCategorizer {
     return pathMatcher;
   }
 
-  private static PathMatcher pathMatcher = null;
+  private static PathMatcher pathMatcher;
 
   public static String getDataroot(String path, int status) {
     if (pathMatcher == null)
@@ -265,7 +265,7 @@ public class LogCategorizer {
     return service;
   }
 
-  public static String[] services = new String[] {"admin", "cataloggen", "catalog", "cdmremote", "cdmrfeature", "dodsC",
+  public static String[] services = {"admin", "cataloggen", "catalog", "cdmremote", "cdmrfeature", "dodsC",
       "dqc", "fileServer", "godiva2", "ncss", "ncstream", "radarServer", "remoteCatalogService", "view", "wcs", "wms"};
 
   public static String findService(String path) {

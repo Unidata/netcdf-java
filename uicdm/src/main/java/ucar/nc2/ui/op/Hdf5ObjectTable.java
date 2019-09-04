@@ -198,22 +198,22 @@ public class Hdf5ObjectTable extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    final List<ObjectBean> beanList = new ArrayList<>();
+    List<ObjectBean> beanList = new ArrayList<>();
 
     iosp = new H5iosp();
-    final NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     ncfile.sendIospMessage(H5iosp.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
 
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
-      final StringWriter sw = new StringWriter(20000);
-      final PrintWriter s = new PrintWriter(sw);
+      StringWriter sw = new StringWriter(20000);
+      PrintWriter s = new PrintWriter(sw);
       t.printStackTrace(s);
       dumpTA.setText(sw.toString());
     }
 
-    final H5header header = (H5header) iosp.sendIospMessage("header");
+    H5header header = (H5header) iosp.sendIospMessage("header");
     for (H5header.DataObject dataObj : header.getDataObjects()) {
       beanList.add(new ObjectBean(dataObj));
     }
@@ -229,9 +229,9 @@ public class Hdf5ObjectTable extends JPanel {
       return;
     }
 
-    final List<Object> objs = objectTable.getBeans();
+    List<Object> objs = objectTable.getBeans();
     for (Object obj : objs) {
-      final ObjectBean bean = (ObjectBean) obj;
+      ObjectBean bean = (ObjectBean) obj;
       bean.m.show(f);
     }
   }
@@ -288,7 +288,7 @@ public class Hdf5ObjectTable extends JPanel {
       // }
 
       for (H5header.MessageAttribute mess : m.getAttributes()) {
-        final Attribute att = mess.getNcAttribute();
+        Attribute att = mess.getNcAttribute();
         f.format("  %s%n", att);
       }
     }

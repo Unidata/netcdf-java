@@ -41,7 +41,6 @@
 package opendap.servlet;
 
 import java.nio.charset.StandardCharsets;
-import opendap.dap.Util;
 import opendap.dap.parsers.ParseException;
 import java.io.*;
 

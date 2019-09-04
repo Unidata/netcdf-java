@@ -58,7 +58,7 @@ public class DatasetWriterPanel extends OpPanel {
         setDataset(ncnew);
       }
     } catch (Exception ioe) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       ioe.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

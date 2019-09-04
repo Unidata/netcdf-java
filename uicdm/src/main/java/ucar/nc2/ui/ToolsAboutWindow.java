@@ -38,7 +38,7 @@ public class ToolsAboutWindow extends JWindow {
   /**
    *
    */
-  public ToolsAboutWindow(final JFrame parent) {
+  public ToolsAboutWindow(JFrame parent) {
     super(parent);
 
     JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>"
@@ -84,21 +84,21 @@ public class ToolsAboutWindow extends JWindow {
     pack();
 
     // show();
-    final Dimension labelSize = getPreferredSize();
+    Dimension labelSize = getPreferredSize();
 
-    final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    final GraphicsDevice gd = ge.getDefaultScreenDevice();
-    final GraphicsConfiguration gc = gd.getDefaultConfiguration();
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice gd = ge.getDefaultScreenDevice();
+    GraphicsConfiguration gc = gd.getDefaultConfiguration();
 
     Point location;
 
     if (gc != null) {
-      final Rectangle gcrect = gc.getBounds();
+      Rectangle gcrect = gc.getBounds();
 
       location = new Point(gcrect.x + gcrect.width / 2 - (labelSize.width / 2),
           gcrect.y + gcrect.height / 2 - (labelSize.height / 2));
     } else {
-      final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
       location =
           new Point(screenSize.width / 2 - (labelSize.width / 2), screenSize.height / 2 - (labelSize.height / 2));

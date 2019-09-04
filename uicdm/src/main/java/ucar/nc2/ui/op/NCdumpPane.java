@@ -65,15 +65,15 @@ public class NCdumpPane extends TextHistoryPane {
 
     cb = new ComboBox<>(prefs);
 
-    final JButton getButton = new JButton("NCdump");
+    JButton getButton = new JButton("NCdump");
     getButton.setToolTipText("show selected data values");
     getButton.addActionListener(e -> ncdump((String) cb.getSelectedItem()));
 
-    final JButton imageButton = new JButton("Image");
+    JButton imageButton = new JButton("Image");
     imageButton.setToolTipText("view selected data as Image");
     imageButton.addActionListener(e -> showImage((String) cb.getSelectedItem()));
 
-    final JButton binButton = new JButton("Write");
+    JButton binButton = new JButton("Write");
     binButton.setToolTipText("write binary data to file");
     binButton.addActionListener(e -> {
       String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
@@ -94,13 +94,13 @@ public class NCdumpPane extends TextHistoryPane {
       }
     });
 
-    final JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+    JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     buttPanel.add(getButton);
     buttPanel.add(imageButton);
     buttPanel.add(binButton);
     buttPanel.add(stopButton);
 
-    final JPanel topPanel = new JPanel(new BorderLayout());
+    JPanel topPanel = new JPanel(new BorderLayout());
     topPanel.add(new JLabel("Variable:"), BorderLayout.WEST);
     topPanel.add(cb, BorderLayout.CENTER);
     topPanel.add(buttPanel, BorderLayout.EAST);
@@ -175,7 +175,7 @@ public class NCdumpPane extends TextHistoryPane {
     }
 
     try (FileOutputStream stream = new FileOutputStream(name)) {
-      final WritableByteChannel channel = stream.getChannel();
+      WritableByteChannel channel = stream.getChannel();
       cer.v.readToByteChannel(cer.section, channel);
       System.out.printf("Write ok to %s%n", name);
     } catch (InvalidRangeException | IOException e) {
@@ -191,7 +191,7 @@ public class NCdumpPane extends TextHistoryPane {
     imageView = new ImageViewPanel(null);
     imageWindow.setComponent(new JScrollPane(imageView));
     // imageWindow.setComponent( imageView);
-    final Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
+    Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
     // logger.debu("bounds in = {}", b);
     imageWindow.setBounds(b);
   }

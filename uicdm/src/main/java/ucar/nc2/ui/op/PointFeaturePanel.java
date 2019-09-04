@@ -53,12 +53,12 @@ public class PointFeaturePanel extends OpPanel {
     types.getModel().setSelectedItem(FeatureType.ANY_POINT);
     buttPanel.add(types);
 
-    final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
     infoButton.addActionListener(e -> {
       if (pfDataset == null) {
         return;
       }
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       pfDataset.getDetailInfo(f);
       detailTA.setText(f.toString());
       detailTA.appendLine("-----------------------------");
@@ -68,12 +68,12 @@ public class PointFeaturePanel extends OpPanel {
     });
     buttPanel.add(infoButton);
 
-    final AbstractButton calcButton = BAMutil.makeButtcon("nj22/V3", "Calculate the latlon/dateRange", false);
+    AbstractButton calcButton = BAMutil.makeButtcon("nj22/V3", "Calculate the latlon/dateRange", false);
     calcButton.addActionListener(e -> {
       if (pfDataset == null) {
         return;
       }
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       pfDataset.calcBounds(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
@@ -81,12 +81,12 @@ public class PointFeaturePanel extends OpPanel {
     });
     buttPanel.add(calcButton);
 
-    final AbstractButton xmlButton = BAMutil.makeButtcon("nj22/XML", "pointConfig.xml", false);
+    AbstractButton xmlButton = BAMutil.makeButtcon("nj22/XML", "pointConfig.xml", false);
     xmlButton.addActionListener(e -> {
       if (pfDataset == null) {
         return;
       }
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       PointConfigXML.writeConfigXML(pfDataset, f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();

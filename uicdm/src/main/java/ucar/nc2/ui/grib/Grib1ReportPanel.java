@@ -42,7 +42,7 @@ public class Grib1ReportPanel extends ReportPanel {
     checkTables, showLocalParams, summary, rename, showEncoding, gribIndex, gds
   }
 
-  private Grib1Customizer cust = null;
+  private Grib1Customizer cust;
 
   public Grib1ReportPanel(PreferencesExt prefs) {
     super(prefs);
@@ -904,7 +904,7 @@ public class Grib1ReportPanel extends ReportPanel {
     }
 
     MFile f;
-    int countRecords = 0;
+    int countRecords;
   }
 
   ///////////////////////////////////////////////

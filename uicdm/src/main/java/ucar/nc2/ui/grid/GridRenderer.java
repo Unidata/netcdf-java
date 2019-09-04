@@ -34,16 +34,16 @@ public class GridRenderer {
   // draw state
   private boolean drawGrid = true;
   private boolean drawGridLines = true;
-  private boolean drawContours = false;
-  private boolean drawContourLabels = false;
+  private boolean drawContours;
+  private boolean drawContourLabels;
   private boolean isNewField = true;
 
-  private ColorScale cs = null;
+  private ColorScale cs;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
-  private ProjectionImpl drawProjection = null; // current drawing Projection
-  private ProjectionImpl dataProjection = null; // current GridDatatype Projection
-  private GridDatatype orgGrid = null;
-  private GridDatatype stridedGrid = null;
+  private ProjectionImpl drawProjection; // current drawing Projection
+  private ProjectionImpl dataProjection; // current GridDatatype Projection
+  private GridDatatype orgGrid;
+  private GridDatatype stridedGrid;
 
   // data stuff
   private Array dataH, dataV;
@@ -51,18 +51,18 @@ public class GridRenderer {
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1; // last data read
   private int lastRunTime = -1, lastEnsemble = -1; // last data read
-  private GridDatatype lastGrid = null;
+  private GridDatatype lastGrid;
 
   // drawing optimization
-  private boolean useModeForProjections = false; // use colorMode optimization for different projections
-  private boolean sameProjection = false;
+  private boolean useModeForProjections; // use colorMode optimization for different projections
+  private boolean sameProjection;
   private LatLonProjection projectll; // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
 
   private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
-  private static boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
+  private static boolean debugPathShape, debugArrayShape, debugPts;
 
 
   ///// bean properties
@@ -420,7 +420,7 @@ public class GridRenderer {
       else
         lpt = dataProjection.projToLatLon(xaxis.getCoordValue(wantx), yaxis.getCoordValue(wanty));
 
-      sbuff.append(lpt.toString());
+      sbuff.append(lpt);
       if (Debug.isSet("pick/showDataProjectionCoords")) {
         sbuff.append("(").append(Format.d(xaxis.getCoordValue(wantx), 3));
         sbuff.append(" ").append(Format.d(yaxis.getCoordValue(wanty), 3));
@@ -729,7 +729,7 @@ public class GridRenderer {
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
     String stag = geocs.getHorizStaggerType();
-    if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
+    if (CDM.ARAKAWA_E.equals(stag)) {
       drawGridHorizRotated(g, data, xaxis2D, yaxis2D);
       return;
     }

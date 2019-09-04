@@ -252,7 +252,7 @@ public class AccessLogTable extends JPanel {
 
   private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private LogLocalManager manager;
-  private java.util.List<LogLocalManager.FileDateRange> accessLogFiles = null;
+  private java.util.List<LogLocalManager.FileDateRange> accessLogFiles;
 
   public void setLocalManager(LogLocalManager manager) {
     this.manager = manager;
@@ -452,7 +452,6 @@ public class AccessLogTable extends JPanel {
     }
 
     public User() {
-      super();
     }
 
     User(String ip) {
@@ -477,7 +476,6 @@ public class AccessLogTable extends JPanel {
   public class Client extends Accum {
 
     public Client() {
-      super();
     }
 
     Client(String client) {
@@ -510,7 +508,7 @@ public class AccessLogTable extends JPanel {
     calcClient = false;
   }
 
-  private boolean showDNStime = false;
+  private boolean showDNStime;
 
   void initUserLogs(ArrayList<LogReader.Log> logs) {
     if (!calcUser)
@@ -533,7 +531,7 @@ public class AccessLogTable extends JPanel {
     calcUser = false;
   }
 
-  private ExecutorService executor = null;
+  private ExecutorService executor;
 
   void showDNS() {
 
@@ -560,7 +558,6 @@ public class AccessLogTable extends JPanel {
 
   public class Dataroot extends Accum {
     public Dataroot() {
-      super();
     }
 
     Dataroot(String name) {
@@ -599,7 +596,6 @@ public class AccessLogTable extends JPanel {
   public class Service extends Accum {
 
     public Service() {
-      super();
     }
 
     Service(String name) {

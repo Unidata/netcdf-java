@@ -72,7 +72,7 @@ public class BAMutil {
 
   private static final int META_KEY = (isMacOs) ? InputEvent.META_MASK : InputEvent.CTRL_MASK;
 
-  private static boolean debug = false, debugToggle = false;
+  private static boolean debug, debugToggle;
 
   /**
    * Get the named Icon from the default resource (jar file).

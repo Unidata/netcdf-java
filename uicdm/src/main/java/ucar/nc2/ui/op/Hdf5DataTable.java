@@ -58,12 +58,12 @@ public class Hdf5DataTable extends JPanel {
     objectTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject",
         "Level 2A data object header", null);
     objectTable.addListSelectionListener(e -> {
-      final VarBean vb = (VarBean) objectTable.getSelectedBean();
+      VarBean vb = (VarBean) objectTable.getSelectedBean();
       vb.count(true);
       vb.show();
     });
 
-    final AbstractAction calcAction = new AbstractAction() {
+    AbstractAction calcAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         calcStorage();
       }
@@ -74,13 +74,13 @@ public class Hdf5DataTable extends JPanel {
     varPopup = new PopupMenu(objectTable.getJTable(), "Options");
     varPopup.addAction("deflate", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        final VarBean mb = (VarBean) objectTable.getSelectedBean();
+        VarBean mb = (VarBean) objectTable.getSelectedBean();
         if (mb == null) {
           return;
         }
         infoTA.clear();
 
-        final Formatter f = new Formatter();
+        Formatter f = new Formatter();
         deflate(f, mb);
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
@@ -89,13 +89,13 @@ public class Hdf5DataTable extends JPanel {
 
     varPopup.addAction("show storage", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        final VarBean mb = (VarBean) objectTable.getSelectedBean();
+        VarBean mb = (VarBean) objectTable.getSelectedBean();
         if (mb == null) {
           return;
         }
         infoTA.clear();
 
-        final Formatter f = new Formatter();
+        Formatter f = new Formatter();
         showStorage(f, mb);
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
@@ -165,10 +165,10 @@ public class Hdf5DataTable extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    final List<VarBean> beanList = new ArrayList<>();
+    List<VarBean> beanList = new ArrayList<>();
 
     iosp = new H5iosp();
-    final NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -191,7 +191,7 @@ public class Hdf5DataTable extends JPanel {
     if (iosp == null) {
       return;
     }
-    final H5diag header = new H5diag(iosp);
+    H5diag header = new H5diag(iosp);
     header.showCompress(f);
   }
 
@@ -207,9 +207,9 @@ public class Hdf5DataTable extends JPanel {
     long totalStorage = 0;
     long totalCount = 0;
 
-    final Formatter f = new Formatter();
+    Formatter f = new Formatter();
     for (Object obean : objectTable.getBeans()) {
-      final VarBean bean = (VarBean) obean;
+      VarBean bean = (VarBean) obean;
       bean.count(false);
       totalStorage += bean.getStorage();
       totalCount += bean.getNchunks();
@@ -220,7 +220,7 @@ public class Hdf5DataTable extends JPanel {
     f.format(" total uncompressed  = %,d%n", totalVars);
     f.format(" total data storage  = %,d%n", totalStorage);
 
-    final File raf = new File(location);
+    File raf = new File(location);
     f.format("        file size    = %,d%n", raf.length());
 
     float ratio = (totalStorage == 0) ? 0 : ((float) raf.length()) / totalStorage;
@@ -268,12 +268,12 @@ public class Hdf5DataTable extends JPanel {
     try {
       int countRows = 0;
       long countElems = 0;
-      final Array result = bean.v.read();
+      Array result = bean.v.read();
       f.format("class = %s%n", result.getClass().getName());
       while (result.hasNext()) {
-        final Array line = (Array) result.next();
+        Array line = (Array) result.next();
         countRows++;
-        final long size = line.getSize();
+        long size = line.getSize();
         countElems += size;
         f.format("  row %d size=%d%n", countRows, size);
       }
@@ -321,7 +321,7 @@ public class Hdf5DataTable extends JPanel {
     }
 
     public String getDims() {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       for (ucar.nc2.Dimension d : v.getDimensions()) {
         f.format("%d ", d.getLength());
       }
@@ -333,7 +333,7 @@ public class Hdf5DataTable extends JPanel {
         return "";
       }
       int[] chunk = vinfo.getChunking();
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       for (int i : chunk) {
         f.format("%d ", i);
       }
@@ -411,7 +411,7 @@ public class Hdf5DataTable extends JPanel {
     }
 
     void show() {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       f.format("vinfo = %s%n%n", vinfo.toString());
       f.format("      = %s%n", vinfo.extraInfo());
       infoTA.setText(f.toString());

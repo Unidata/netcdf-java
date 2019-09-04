@@ -17,7 +17,7 @@ import ucar.ui.widget.BAMutil;
 
 public class ShapeFileBean extends MapBean {
   private String name, desc, iconName, shapefileName;
-  private Renderer rend = null;
+  private Renderer rend;
 
   /**
    * contructor for a specific shapefile

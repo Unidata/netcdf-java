@@ -309,7 +309,7 @@ public class StructureTable extends JPanel {
         for (int col = 0; col < model.getColumnCount(); col++) {
           if (col > 0)
             pw.print(",");
-          pw.print(model.getValueAt(row, col).toString());
+          pw.print(model.getValueAt(row, col));
         }
         pw.println();
       }
@@ -383,7 +383,7 @@ public class StructureTable extends JPanel {
   private abstract static class StructureTableModel extends AbstractTableModel {
     protected HashMapLRU rowHash = new HashMapLRU(500, 500); // cache 500 rows
     protected StructureMembers members;
-    protected boolean wantDate = false;
+    protected boolean wantDate;
     protected List<Structure> subtables = new ArrayList<>();
 
     // subclasses implement these
@@ -599,7 +599,7 @@ public class StructureTable extends JPanel {
 
     StructureDataModel(List<StructureData> structureData) {
       this.structureData = structureData;
-      if (structureData.size() > 0) {
+      if (!structureData.isEmpty()) {
         StructureData sd = structureData.get(0);
         this.members = sd.getStructureMembers();
       }
@@ -778,7 +778,7 @@ public class StructureTable extends JPanel {
       wantDate = true;
 
       this.obsData = obsData;
-      if (obsData.size() > 0) {
+      if (!obsData.isEmpty()) {
         StructureData sd;
         try {
           sd = getStructureData(0);
@@ -866,7 +866,6 @@ public class StructureTable extends JPanel {
     private CalendarDate cutoff;
 
     DateRenderer() {
-      super();
 
       oldForm = new CalendarDateFormatter("yyyy MMM dd HH:mm", CalendarTimeZone.UTC);
       newForm = new CalendarDateFormatter("MMM dd, HH:mm", CalendarTimeZone.UTC);

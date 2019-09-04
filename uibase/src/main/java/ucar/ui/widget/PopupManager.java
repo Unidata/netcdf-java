@@ -23,7 +23,7 @@ public class PopupManager {
 
   private JPanel main;
   private JLabel info;
-  private boolean isShowing = false;
+  private boolean isShowing;
   private Object showing;
   private StringBuffer sbuff = new StringBuffer();
 

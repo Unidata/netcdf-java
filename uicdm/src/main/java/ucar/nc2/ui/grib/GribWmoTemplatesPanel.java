@@ -33,7 +33,7 @@ public class GribWmoTemplatesPanel extends JPanel {
   private TextHistoryPane compareTA;
   private IndependentWindow infoWindow;
 
-  public GribWmoTemplatesPanel(final PreferencesExt prefs, JPanel buttPanel) {
+  public GribWmoTemplatesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     codeTable = new BeanTable(TemplateBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);

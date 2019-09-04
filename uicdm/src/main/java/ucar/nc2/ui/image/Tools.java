@@ -9,7 +9,7 @@ package ucar.nc2.ui.image;
  * @author caron
  */
 public class Tools {
-  private static boolean debug = false;
+  private static boolean debug;
 
   static void log(String s) {
     if (debug)

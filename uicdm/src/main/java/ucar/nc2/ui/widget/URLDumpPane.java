@@ -52,7 +52,7 @@ public class URLDumpPane extends TextHistoryPane {
 
   private ComboBox<String> cb;
   private JComboBox<Library> implCB;
-  private HttpURLConnection currentConnection = null;
+  private HttpURLConnection currentConnection;
 
   public URLDumpPane(PreferencesExt prefs) {
     super(true);
@@ -321,7 +321,7 @@ public class URLDumpPane extends TextHistoryPane {
         Header h = m.getResponseHeader("content-encoding");
         String encoding = (h == null) ? null : h.getValue();
 
-        if (encoding != null && encoding.equals("deflate")) {
+        if ("deflate".equals(encoding)) {
           byte[] body = m.getResponseAsBytes();
           if (body != null) {
             InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
@@ -330,7 +330,7 @@ public class URLDumpPane extends TextHistoryPane {
             appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
           }
 
-        } else if (encoding != null && encoding.equals("gzip")) {
+        } else if ("gzip".equals(encoding)) {
           byte[] body = m.getResponseAsBytes();
           if (body != null) {
             InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
@@ -365,7 +365,7 @@ public class URLDumpPane extends TextHistoryPane {
       return;
     appendLine(title);
     for (Header head : heads) {
-      append("  " + head.toString() + "\n");
+      append("  " + head + "\n");
     }
   }
 

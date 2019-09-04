@@ -66,7 +66,7 @@ public class LogLocalManager {
   }
 
   public String getRoots() {
-    File localDir = LogLocalManager.getDirectory(server, "");
+    File localDir = getDirectory(server, "");
     File file = new File(localDir, "roots.txt");
     if (!file.exists())
       return null;
@@ -157,7 +157,7 @@ public class LogLocalManager {
   Date getStartDate() {
     if (localFiles == null)
       return null;
-    if (localFiles.size() == 0)
+    if (localFiles.isEmpty())
       return null;
     FileDateRange f = localFiles.get(0);
     return f.start;
@@ -166,7 +166,7 @@ public class LogLocalManager {
   Date getEndDate() {
     if (localFiles == null)
       return null;
-    if (localFiles.size() == 0)
+    if (localFiles.isEmpty())
       return null;
     FileDateRange f = localFiles.get(localFiles.size() - 1);
     return f.end;

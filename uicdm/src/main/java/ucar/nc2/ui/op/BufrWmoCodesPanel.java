@@ -35,7 +35,7 @@ public class BufrWmoCodesPanel extends JPanel {
   private TextHistoryPane compareTA;
   private IndependentWindow infoWindow;
 
-  public BufrWmoCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
+  public BufrWmoCodesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     codeTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);

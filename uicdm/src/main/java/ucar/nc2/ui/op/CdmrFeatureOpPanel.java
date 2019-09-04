@@ -32,14 +32,14 @@ public class CdmrFeatureOpPanel extends OpPanel {
     panel = new CdmrFeaturePanel(prefs);
     add(panel, BorderLayout.CENTER);
 
-    final AbstractAction infoAction = new AbstractAction() {
+    AbstractAction infoAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final Formatter f = new Formatter();
+        Formatter f = new Formatter();
         try {
           panel.showInfo(f);
-        } catch (final Exception ioe) {
-          final StringWriter sw = new StringWriter(5000);
+        } catch (Exception ioe) {
+          StringWriter sw = new StringWriter(5000);
           ioe.printStackTrace(new PrintWriter(sw));
           detailTA.setText(sw.toString());
           detailWindow.show();
@@ -66,7 +66,7 @@ public class CdmrFeatureOpPanel extends OpPanel {
       JOptionPane.showMessageDialog(null, "CdmremotePanel cannot open " + command + "\n" + ioe.getMessage());
       err = true;
     } catch (Exception e) {
-      final StringWriter sw = new StringWriter(5000);
+      StringWriter sw = new StringWriter(5000);
       e.printStackTrace(new PrintWriter(sw));
       detailTA.setText(sw.toString());
       detailWindow.show();

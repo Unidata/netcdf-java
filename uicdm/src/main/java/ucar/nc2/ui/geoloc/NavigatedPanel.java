@@ -86,14 +86,14 @@ public class NavigatedPanel extends JPanel {
   private ProjectionImpl project;
 
   // ui stuff
-  private BufferedImage bImage = null;
+  private BufferedImage bImage;
   private Color backColor = Color.white;
-  private JLabel statusLabel = null;
+  private JLabel statusLabel;
   private myImageObserver imageObs = new myImageObserver();
-  private NToolBar toolbar = null;
+  private NToolBar toolbar;
 
   // scheduled redraw
-  private javax.swing.Timer redrawTimer = null;
+  private javax.swing.Timer redrawTimer;
 
   // state flags
   private boolean changedSinceDraw = true;
@@ -101,22 +101,22 @@ public class NavigatedPanel extends JPanel {
 
   // dragging and zooming state
   private int startx, starty, deltax, deltay;
-  private boolean panningMode = false;
-  private boolean zoomingMode = false;
+  private boolean panningMode;
+  private boolean zoomingMode;
   private Rubberband zoomRB;
 
   // track reference point
-  private boolean isReferenceMode = false, hasReference = false;
+  private boolean isReferenceMode, hasReference;
   private ProjectionPointImpl refWorld = new ProjectionPointImpl();
   private LatLonPointImpl refLatLon = new LatLonPointImpl();
   private Point2D refScreen = new Point2D.Double();
   private int referenceSize = 12;
-  private Cursor referenceCursor = null;
+  private Cursor referenceCursor;
   private static final int REFERENCE_CURSOR = -100;
 
   // selecting geo area state
-  private ProjectionRect geoSelection = null;
-  private boolean geoSelectionMode = false, moveSelectionMode = false;
+  private ProjectionRect geoSelection;
+  private boolean geoSelectionMode, moveSelectionMode;
   private RubberbandRectangleHandles selectionRB;
 
   // event management
@@ -139,7 +139,7 @@ public class NavigatedPanel extends JPanel {
   private DropTarget dropTarget;
 
   // debug
-  private int repaintCount = 0;
+  private int repaintCount;
   private static final boolean debugDraw = false, debugEvent = false, debugThread = false, debugStatus = false;
   private static final boolean debugTime = false, debugPrinting = false, debugBB = false, debugZoom = false;
   private static final boolean debugBounds = false, debugSelection = false, debugNewProjection = false;

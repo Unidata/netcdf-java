@@ -31,7 +31,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
   /**
    *
    */
-  public NCdumpPanel(final PreferencesExt prefs) {
+  public NCdumpPanel(PreferencesExt prefs) {
     super(prefs, "command:");
 
     ta = new TextHistoryPane(true);
@@ -102,7 +102,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
         ncfile = NetcdfDataset.openFile(filename, null);
       }
 
-      final StringWriter sw = new StringWriter(50000);
+      StringWriter sw = new StringWriter(50000);
       NCdumpW.print(ncfile, command, sw, task);
       result = sw.toString();
     } finally {
@@ -124,9 +124,9 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
     this.ncfile = ncf;
     this.filename = ncf.getLocation();
 
-    final GetDataRunnable runner = new GetDataRunnable() {
+    GetDataRunnable runner = new GetDataRunnable() {
       public void run(Object o) throws IOException {
-        final StringWriter sw = new StringWriter(50000);
+        StringWriter sw = new StringWriter(50000);
         NCdumpW.print(ncfile, command, sw, task);
         result = sw.toString();
       }

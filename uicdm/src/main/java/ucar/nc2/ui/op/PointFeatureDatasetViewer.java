@@ -105,7 +105,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     stationMap.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
-          final StationBean selectedStation = (StationBean) e.getNewValue();
+          StationBean selectedStation = (StationBean) e.getNewValue();
 
           log.debug("selectedStation= {}", selectedStation.getName());
 
@@ -117,7 +117,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     });
 
     // do the query
-    final AbstractAction queryAction = new AbstractAction() {
+    AbstractAction queryAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (selectedCollection == null) {
@@ -157,7 +157,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     stationMap.addToolbarAction(queryAction); // */
 
     // get all data
-    final AbstractAction getallAction = new AbstractAction() {
+    AbstractAction getallAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (selectedCollection == null) {
@@ -174,7 +174,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     stationMap.addToolbarAction(getallAction);
     stationMap.addToolbarAction(new WaterMLConverterAction());
 
-    final AbstractAction netcdfAction = new AbstractAction() {
+    AbstractAction netcdfAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (pfDataset == null) {
@@ -288,7 +288,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
       addAction("Show Fields", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          final FeatureBean bean = (FeatureBean) beanTable2.getSelectedBean();
+          FeatureBean bean = (FeatureBean) beanTable2.getSelectedBean();
           if (bean == null) {
             return;
           }
@@ -327,12 +327,12 @@ public class PointFeatureDatasetViewer extends JPanel {
         return;
       }
 
-      if (!pfDataset.getFeatureType().equals(FeatureType.STATION)) {
-        final Component parentComponent = PointFeatureDatasetViewer.this;
-        final Object message =
+      if (pfDataset.getFeatureType() != FeatureType.STATION) {
+        Component parentComponent = PointFeatureDatasetViewer.this;
+        Object message =
             "Currently, only the STATION feature type is supported, not " + pfDataset.getFeatureType();
-        final String title = "Invalid feature type";
-        final int messageType = JOptionPane.ERROR_MESSAGE;
+        String title = "Invalid feature type";
+        int messageType = JOptionPane.ERROR_MESSAGE;
 
         JOptionPane.showMessageDialog(parentComponent, message, title, messageType);
         return;
@@ -418,7 +418,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     for (DsgFeatureCollection fc : dataset.getPointFeatureCollectionList()) {
       fcBeans.add(new FeatureCollectionBean(fc));
     }
-    if (fcBeans.size() == 0) {
+    if (fcBeans.isEmpty()) {
       JOptionPane.showMessageDialog(null, "No PointFeatureCollections found that could be displayed");
     }
 
@@ -861,7 +861,7 @@ public class PointFeatureDatasetViewer extends JPanel {
    *
    */
   private void setObservations(List<PointFeature> obsList) throws IOException {
-    if (obsList.size() == 0) {
+    if (obsList.isEmpty()) {
       obsTable.clear();
       JOptionPane.showMessageDialog(null, "There are no observations for this selection");
       return;

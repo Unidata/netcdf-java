@@ -63,11 +63,11 @@ public class AggTable extends JPanel {
      * });
      */
 
-    final PopupMenu varPopup = new PopupMenu(datasetTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(datasetTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final DatasetBean dsb = (DatasetBean) datasetTable.getSelectedBean();
+        DatasetBean dsb = (DatasetBean) datasetTable.getSelectedBean();
         if (dsb == null) {
           return;
         }
@@ -78,7 +78,7 @@ public class AggTable extends JPanel {
     varPopup.addAction("Check CoordSystems", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final DatasetBean dsb = (DatasetBean) datasetTable.getSelectedBean();
+        DatasetBean dsb = (DatasetBean) datasetTable.getSelectedBean();
         if (dsb == null) {
           return;
         }
@@ -89,7 +89,7 @@ public class AggTable extends JPanel {
     varPopup.addAction("Open as GridDataset", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        final DatasetBean dsb = (DatasetBean) datasetTable.getSelectedBean();
+        DatasetBean dsb = (DatasetBean) datasetTable.getSelectedBean();
         if (dsb == null) {
           return;
         }
@@ -97,9 +97,9 @@ public class AggTable extends JPanel {
       }
     });
 
-    final AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check files", false);
+    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check files", false);
     compareButton.addActionListener(e -> {
-      final Formatter f = new Formatter();
+      Formatter f = new Formatter();
       compare(f);
       checkAggCoordinate(f);
 
@@ -146,7 +146,7 @@ public class AggTable extends JPanel {
   public void setAggDataset(NetcdfDataset ncd) throws IOException {
     current = ncd;
 
-    final Aggregation agg = ncd.getAggregation();
+    Aggregation agg = ncd.getAggregation();
     List<DatasetBean> beanList = new ArrayList<>();
     for (Aggregation.Dataset dataset : agg.getDatasets()) {
       beanList.add(new DatasetBean(dataset));
@@ -168,9 +168,9 @@ public class AggTable extends JPanel {
     }
 
     try {
-      final Aggregation agg = current.getAggregation();
-      final String aggDimName = agg.getDimensionName();
-      final Variable aggCoord = current.findVariable(aggDimName);
+      Aggregation agg = current.getAggregation();
+      String aggDimName = agg.getDimensionName();
+      Variable aggCoord = current.findVariable(aggDimName);
 
       Array data = aggCoord.read();
 
@@ -183,7 +183,7 @@ public class AggTable extends JPanel {
 
         try (NetcdfFile aggFile = ads.acquireFile(null)) {
           f.format("   Component file %s%n", aggFile.getLocation());
-          final Variable aggCoordp = aggFile.findVariable(aggDimName);
+          Variable aggCoordp = aggFile.findVariable(aggDimName);
           if (aggCoordp == null) {
             f.format("   doesnt have coordinate variable%n");
           } else {
@@ -194,7 +194,7 @@ public class AggTable extends JPanel {
         }
       }
     } catch (Throwable t) {
-      final StringWriter sw = new StringWriter(10000);
+      StringWriter sw = new StringWriter(10000);
       t.printStackTrace(new PrintWriter(sw));
       f.format(sw.toString());
     }
@@ -207,14 +207,14 @@ public class AggTable extends JPanel {
     try {
       NetcdfFile org = null;
       for (Object bean : datasetTable.getBeans()) {
-        final DatasetBean dbean = (DatasetBean) bean;
-        final Aggregation.Dataset ads = dbean.ds;
+        DatasetBean dbean = (DatasetBean) bean;
+        Aggregation.Dataset ads = dbean.ds;
 
-        final NetcdfFile ncd = ads.acquireFile(null);
+        NetcdfFile ncd = ads.acquireFile(null);
         if (org == null) {
           org = ncd;
         } else {
-          final CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, false);
+          CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, false);
           cn.compareVariables(org, ncd);
           ncd.close();
           f.format("--------------------------------%n");
@@ -224,7 +224,7 @@ public class AggTable extends JPanel {
         org.close();
       }
     } catch (Throwable t) {
-      final StringWriter sw = new StringWriter(10000);
+      StringWriter sw = new StringWriter(10000);
       t.printStackTrace(new PrintWriter(sw));
       f.format(sw.toString());
     }

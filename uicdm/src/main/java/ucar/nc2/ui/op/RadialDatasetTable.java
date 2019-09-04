@@ -331,8 +331,8 @@ public class RadialDatasetTable extends JPanel {
 
   // show image
   private static final String ImageViewer_WindowSize = "RadialImageViewer_WindowSize";
-  private IndependentWindow imageWindow = null;
-  private ImageViewPanel imageView = null;
+  private IndependentWindow imageWindow;
+  private ImageViewPanel imageView;
 
   private void showImage(SweepBean bean) {
     if (bean == null)
@@ -351,7 +351,7 @@ public class RadialDatasetTable extends JPanel {
     float[] data;
     try {
       data = bean.sweep.readData();
-      int[] shape = new int[] {bean.getNumRadial(), bean.getNumGates()};
+      int[] shape = {bean.getNumRadial(), bean.getNumGates()};
       Array arrData = Array.factory(DataType.FLOAT, shape, data);
 
       imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(arrData, null));

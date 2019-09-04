@@ -59,7 +59,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   private String actionName = "rangeDateSelection";
   private boolean eventOK = true;
 
-  private static boolean debugEvent = false, debugEvent2 = false;
+  private static boolean debugEvent, debugEvent2;
 
   /**
    * Constructor using info from thredds DQC.

@@ -215,7 +215,7 @@ public class DatasetViewer extends JPanel {
     }
   }
 
-  private CompareDialog dialog = null;
+  private CompareDialog dialog;
 
   public void compareDataset() {
     if (ds == null)
@@ -395,9 +395,9 @@ public class DatasetViewer extends JPanel {
     PreferencesExt myPrefs;
 
     BeanTable table; // always the left component
-    JSplitPane split = null; // right component (if exists) is the nested dataset.
+    JSplitPane split; // right component (if exists) is the nested dataset.
     int splitPos = 100;
-    boolean isShowing = false;
+    boolean isShowing;
 
     NestedTable(int level) {
       this.level = level;
@@ -452,11 +452,11 @@ public class DatasetViewer extends JPanel {
       table.addListSelectionListener(e -> {
         Variable v = getCurrentVariable(table);
         if (v instanceof Structure) {
-          hideNestedTable(NestedTable.this.level + 2);
-          setNestedTable(NestedTable.this.level + 1, (Structure) v);
+          hideNestedTable(this.level + 2);
+          setNestedTable(this.level + 1, (Structure) v);
 
         } else {
-          hideNestedTable(NestedTable.this.level + 1);
+          hideNestedTable(this.level + 1);
         }
         if (eventsOK) {
           datasetTree.setSelected(v);

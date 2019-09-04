@@ -54,15 +54,15 @@ public class FileManager {
   private PreferencesExt prefs;
   private IndependentDialog w;
   private ucar.ui.prefs.ComboBox<String> dirComboBox;
-  private JFileChooser chooser = null;
+  private JFileChooser chooser;
 
   // for override
   protected JPanel main;
   // protected boolean selectedURL = false;
   // protected ComboBox urlComboBox;
 
-  private boolean readOk = true, selectedFile = false;
-  private static boolean debug = false;
+  private boolean readOk = true, selectedFile;
+  private static boolean debug;
 
   public FileManager(JFrame parent) {
     this(parent, null, null, null);

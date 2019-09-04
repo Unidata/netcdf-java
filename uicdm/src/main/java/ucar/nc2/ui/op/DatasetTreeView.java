@@ -126,7 +126,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     // construct chain of variables
-    final List<VariableIF> vchain = new ArrayList<>();
+    List<VariableIF> vchain = new ArrayList<>();
     vchain.add(v);
 
     VariableIF vp = v;
@@ -136,7 +136,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     // construct chain of groups
-    final List<Group> gchain = new ArrayList<>();
+    List<Group> gchain = new ArrayList<>();
     Group gp = vp.getParentGroup();
 
     gchain.add(gp);
@@ -145,7 +145,7 @@ public class DatasetTreeView extends JPanel {
       gchain.add(0, gp); // reverse
     }
 
-    final List<Object> pathList = new ArrayList<>();
+    List<Object> pathList = new ArrayList<>();
 
     // start at root, work down through the nested groups, if any
     GroupNode gnode = (GroupNode) model.getRoot();
@@ -176,8 +176,8 @@ public class DatasetTreeView extends JPanel {
     }
 
     // convert to TreePath, and select it
-    final Object[] paths = pathList.toArray();
-    final TreePath treePath = new TreePath(paths);
+    Object[] paths = pathList.toArray();
+    TreePath treePath = new TreePath(paths);
     tree.setSelectionPath(treePath);
     tree.scrollPathToVisible(treePath);
   }
@@ -197,7 +197,7 @@ public class DatasetTreeView extends JPanel {
   private class GroupNode implements TreeNode {
     private Group group;
     private GroupNode parent;
-    private List<Object> children = null;
+    private List<Object> children;
 
     /**
      *
@@ -286,7 +286,7 @@ public class DatasetTreeView extends JPanel {
       }
       for (Object child : children) {
         if (child instanceof GroupNode) {
-          final GroupNode elem = (GroupNode) child;
+          GroupNode elem = (GroupNode) child;
           if (elem.group == g) {
             return elem;
           }
@@ -301,9 +301,9 @@ public class DatasetTreeView extends JPanel {
         makeChildren();
       }
       for (Object child : children) {
-        final TreeNode node = (TreeNode) child;
+        TreeNode node = (TreeNode) child;
         if (node instanceof VariableNode) {
-          final VariableNode vnode = (VariableNode) node;
+          VariableNode vnode = (VariableNode) node;
           if (vnode.var == v) {
             return vnode;
           }
@@ -324,7 +324,7 @@ public class DatasetTreeView extends JPanel {
   private static class VariableNode implements TreeNode {
     private VariableIF var;
     private TreeNode parent;
-    private List<Object> children = null;
+    private List<Object> children;
 
     /**
      *
@@ -367,8 +367,8 @@ public class DatasetTreeView extends JPanel {
       children = new ArrayList<>();
 
       if (var instanceof Structure) {
-        final Structure s = (Structure) var;
-        final List vars = s.getVariables();
+        Structure s = (Structure) var;
+        List vars = s.getVariables();
         for (Object var1 : vars) {
           children.add(new VariableNode(this, (VariableIF) var1));
         }
@@ -399,7 +399,7 @@ public class DatasetTreeView extends JPanel {
         makeChildren();
       }
       for (Object child : children) {
-        final VariableNode elem = (VariableNode) child;
+        VariableNode elem = (VariableNode) child;
         if (elem.var == v) {
           return elem;
         }
@@ -487,21 +487,21 @@ public class DatasetTreeView extends JPanel {
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
         boolean leaf, int row, boolean hasFocus) {
 
-      final Component c = super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+      Component c = super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
       if (value instanceof VariableNode) {
-        final VariableNode node = (VariableNode) value;
+        VariableNode node = (VariableNode) value;
         tooltipText = node.getToolTipText();
 
         if (node.var instanceof Structure) {
-          final Structure s = (Structure) node.var;
+          Structure s = (Structure) node.var;
           setIcon(structIcon);
           tooltipText = s.getNameAndAttributes();
         } else {
           tooltipText = node.getToolTipText();
         }
       } else if (value instanceof DimensionNode) {
-        final DimensionNode node = (DimensionNode) value;
+        DimensionNode node = (DimensionNode) value;
         tooltipText = node.getToolTipText();
         setIcon(dimIcon);
       } else if (value instanceof GroupNode) {
