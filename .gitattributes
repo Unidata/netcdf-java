@@ -4,6 +4,10 @@
 # https://git-scm.com/docs/gitattributes
 * text=auto
 
-# Override default behavior: BAT files always have CRLF line endings.
+# Override default behavior: BAT, PowerShell files always have CRLF line endings.
 *.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Treat the git hook for windows special, too.
+hooks/pre-commit-windows eol=crlf
 
