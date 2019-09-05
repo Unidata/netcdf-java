@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# pre-commit hook based on that used by the Uber project NullAway
+# https://github.com/uber/NullAway/blob/a5cdecba0e33eed5c8dd86f43bc2cc6408e6fd37/config/hooks/pre-commit
+
+set -e
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+FILES=$((git diff --cached --name-only --diff-filter=ACMR | grep -Ei "\.java$") || true )
+if [ ! -z "${FILES}" ]; then
+    echo "Check and apply (if needed) the code style to these staged java files:"
+    for FILE in $FILES; do
+        echo "    $FILE"
+    done
+    COMMA_SEP_FILES=$(echo "$FILES" | paste -s -d "," -)
+    "${REPO_ROOT_DIR}/gradlew" spotlessApply -Pfiles="$COMMA_SEP_FILES" &>/dev/null
+    echo "...the code is spotless! :-)"
+    git add $(echo "$FILES" | paste -s -d " " -)
+fi
