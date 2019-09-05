@@ -93,8 +93,7 @@ public class CoveragePanel extends OpPanel {
     display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
     viewerWindow.setComponent(display);
-    Rectangle bounds =
-        (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
+    Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
     if (bounds.x < 0) {
       bounds.x = 0;
     }

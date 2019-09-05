@@ -13,7 +13,6 @@ import static ucar.nc2.iosp.nexrad2.Level2Record.VELOCITY_HIGH;
 import static ucar.nc2.iosp.nexrad2.Level2Record.getDatatypeUnits;
 import static ucar.nc2.iosp.nexrad2.Level2Record.getDate;
 import static ucar.nc2.iosp.nexrad2.Level2Record.getVolumeCoveragePatternName;
-
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;

@@ -57,8 +57,7 @@ class MultiLineToolTipUI extends BasicToolTipUI {
     return sharedInstance;
   }
 
-  public MultiLineToolTipUI() {
-  }
+  public MultiLineToolTipUI() {}
 
   public void installUI(JComponent c) {
     super.installUI(c);

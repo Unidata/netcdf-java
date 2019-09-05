@@ -588,8 +588,7 @@ public class Grib2DataPanel extends JPanel {
         int size = (int) (is.getMessageLength());
         long startPos = is.getStartPos();
         if (startPos < 0) {
-          JOptionPane.showMessageDialog(this,
-              "Old index does not have message start - record not written");
+          JOptionPane.showMessageDialog(this, "Old index does not have message start - record not written");
         }
 
         byte[] rb = new byte[size];
@@ -599,8 +598,7 @@ public class Grib2DataPanel extends JPanel {
         n++;
       }
 
-      JOptionPane.showMessageDialog(this,
-          filename + ": " + n + " records successfully written, append=" + append);
+      JOptionPane.showMessageDialog(this, filename + ": " + n + " records successfully written, append=" + append);
 
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ex.getMessage());

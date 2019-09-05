@@ -178,15 +178,14 @@ public class VariablePlot extends JPanel {
 
     XYItemRenderer renderer = p.getRenderer();
     if (xIsTime) {
-      StandardXYToolTipGenerator g =
-          new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
-              new SimpleDateFormat("d-MMM-yyyy"), new DecimalFormat("0.00"));
+      StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
+          new SimpleDateFormat("d-MMM-yyyy"), new DecimalFormat("0.00"));
       renderer.setBaseToolTipGenerator(g);
 
       dataset = new TimeSeriesCollection();
     } else {
-      StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
-          StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT, new DecimalFormat("0.00"), new DecimalFormat("0.00"));
+      StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
+          new DecimalFormat("0.00"), new DecimalFormat("0.00"));
       renderer.setBaseToolTipGenerator(g);
 
       dataset = new XYSeriesCollection();

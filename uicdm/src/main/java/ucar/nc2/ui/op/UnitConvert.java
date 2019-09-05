@@ -102,8 +102,8 @@ public class UnitConvert extends OpPanel {
       String unitS2 = list.get(1);
       SimpleUnit su1 = SimpleUnit.factoryWithExceptions(unitS1);
       SimpleUnit su2 = SimpleUnit.factoryWithExceptions(unitS2);
-      ta.setText("<" + su1 + "> isConvertable to <" + su2 + ">="
-          + SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
+      ta.setText(
+          "<" + su1 + "> isConvertable to <" + su2 + ">=" + SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
 
     } catch (Exception e) {
       if (Debug.isSet("Xdeveloper")) {
