@@ -1,0 +1,4 @@
+#!/bin/sh
+echo
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\hooks\pre-commit.ps1"
+exit
