@@ -1439,7 +1439,8 @@ public class ToolsUI extends JPanel {
       Toolkit tk = Toolkit.getDefaultToolkit();
       Font f = new Font("SansSerif", Font.PLAIN, 12);
 
-      @SuppressWarnings("deprecation") FontMetrics fm = tk.getFontMetrics(f);
+      @SuppressWarnings("deprecation")
+      FontMetrics fm = tk.getFontMetrics(f);
     });
   }
 

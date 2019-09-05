@@ -329,8 +329,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
       if (pfDataset.getFeatureType() != FeatureType.STATION) {
         Component parentComponent = PointFeatureDatasetViewer.this;
-        Object message =
-            "Currently, only the STATION feature type is supported, not " + pfDataset.getFeatureType();
+        Object message = "Currently, only the STATION feature type is supported, not " + pfDataset.getFeatureType();
         String title = "Invalid feature type";
         int messageType = JOptionPane.ERROR_MESSAGE;
 

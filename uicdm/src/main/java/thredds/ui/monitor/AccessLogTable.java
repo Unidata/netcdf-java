@@ -451,8 +451,7 @@ public class AccessLogTable extends JPanel {
       return namer;
     }
 
-    public User() {
-    }
+    public User() {}
 
     User(String ip) {
       this.ip = ip;
@@ -475,8 +474,7 @@ public class AccessLogTable extends JPanel {
 
   public class Client extends Accum {
 
-    public Client() {
-    }
+    public Client() {}
 
     Client(String client) {
       super(client);
@@ -557,8 +555,7 @@ public class AccessLogTable extends JPanel {
   ////////////////////////////////////////////////
 
   public class Dataroot extends Accum {
-    public Dataroot() {
-    }
+    public Dataroot() {}
 
     Dataroot(String name) {
       super(name);
@@ -595,8 +592,7 @@ public class AccessLogTable extends JPanel {
 
   public class Service extends Accum {
 
-    public Service() {
-    }
+    public Service() {}
 
     Service(String name) {
       super(name);

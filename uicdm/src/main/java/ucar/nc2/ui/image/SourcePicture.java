@@ -197,8 +197,7 @@ public class SourcePicture implements Cloneable {
    * object and updates the status when done or failed.
    */
   public void loadPicture() {
-    Tools.log(
-        "SourcePicture.loadPicture: " + imageUrl + " loaded into SourcePicture object: " + this.hashCode());
+    Tools.log("SourcePicture.loadPicture: " + imageUrl + " loaded into SourcePicture object: " + this.hashCode());
     // Tools.freeMem();
 
     setStatus(LOADING, "Loading: " + imageUrl);
@@ -320,14 +319,13 @@ public class SourcePicture implements Cloneable {
       return false; // has never been used yet
 
     if (pictureStatusCode != LOADING) {
-      Tools.log(
-          "SourcePicture.stopLoadingExcept: called but pointless since image is not LOADING: " + imageUrl);
+      Tools.log("SourcePicture.stopLoadingExcept: called but pointless since image is not LOADING: " + imageUrl);
       return false;
     }
 
     if (!exemptionURL.toString().equals(imageUrl.toString())) {
-      Tools.log("SourcePicture.stopLoadingExcept: called with Url " + exemptionURL
-          + " --> stopping loading of " + imageUrl);
+      Tools.log(
+          "SourcePicture.stopLoadingExcept: called with Url " + exemptionURL + " --> stopping loading of " + imageUrl);
       stopLoading();
       return true;
     } else
