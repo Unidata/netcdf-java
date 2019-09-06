@@ -3,25 +3,27 @@ package ucar.nc2.ft2.coverage.writer;
  * Copyright (c) 2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-    import java.io.File;
-    import java.io.FileNotFoundException;
-    import java.io.IOException;
-    import java.util.List;
-    import java.util.Comparator;
-    import java.util.Arrays;
-    import java.util.ArrayList;
-    import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Comparator;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-    import com.beust.jcommander.JCommander;
-    import com.beust.jcommander.Parameter;
-    import com.beust.jcommander.ParameterDescription;
-    import com.beust.jcommander.ParameterException;
-    import ucar.nc2.Attribute;
-    import ucar.nc2.ft2.coverage.Coverage;
-    import ucar.nc2.ft2.coverage.CoverageCollection;
-    import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-    import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-    import ucar.nc2.util.Optional;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterDescription;
+import com.beust.jcommander.ParameterException;
+import ucar.nc2.Attribute;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.util.Optional;
+
+import ucar.nc2.ft2.coverage.writer.WRFProcessingUtils;
 
 /**
  * Utility to create WRF intermediate files from netCDF files using Coverages.
@@ -76,7 +78,6 @@ class NcWRFWriter {
 
         return Integer.compare(index0, index1);
       }
-
     }
 
     private final JCommander jc;
@@ -86,10 +87,9 @@ class NcWRFWriter {
       this.jc = new JCommander(this, null,args);  // Parses args and uses them to initialize *this*.
       jc.setProgramName(progName);           // Displayed in the usage information.
 
-      // Set the ordering of of parameters in the usage information.
+      // Set the ordering of parameters in the usage information.
       jc.setParameterDescriptionComparator(new NcWRFWriter.CommandLine.ParameterDescriptionComparator());
     }
-
 
     public void printUsage() {
       jc.usage();
@@ -111,23 +111,7 @@ class NcWRFWriter {
       //     if( res != 1)
       //         throw new ParameterException("Incorrect number of optional arguments, use one and only one.");
     }
-  }
-
-  // returns a list of vars not found in the input dataset or provided on the command line
-  // the requestedVars are subset of the Coverage collection
-  private static List<String> validateRequestedVars(CoverageCollection cc, List<String>requestedVars) {
-    List<String> notFound = new ArrayList<>();
-    for( String s : requestedVars ) {
-      System.out.println("requestedVar is: " + s);
-      Coverage grid = cc.findCoverage(s);
-
-      if (grid == null) {
-        System.out.println("grid is null");
-        notFound.add(s);
-      }
-    }
-    return notFound;
-  }
+  }  // end class CommandLine
 
   private static void displayVtable(ArrayList<VtableEntry> entries){
 
@@ -136,6 +120,7 @@ class NcWRFWriter {
   }
 
   private static void displayCoverages(ArrayList<Coverage> cov) {
+
     System.out.println("\nCoverages found:");
     cov.forEach( e ->System.out.println(e));
   }
@@ -173,95 +158,15 @@ class NcWRFWriter {
     return entries;
   }
 
-  private static boolean hasAllRequired( CoverageCollection cv ){
-
-    boolean requirementsMet = false;
-
-
-    /**
-    Temperature
-    U	and	V	components	of	wind
-    Geopotential Height
-    Relative	Humidity/Specific	Humidity
-• 2D	Data
-    Surface	pressure
-    Mean	sea-level	pressure
-    Skin	temperature/SST
-    2	meter	temperature	and	relative	humidity
-    10	meter	U	and	V	components	of	wind
-    Soil	data	(temperature	and	moisture)	and	soil	height
-*/
-    return requirementsMet;
-  }
-
-  private static ArrayList<Coverage> createCoverageListGrib1(CoverageCollection cv, ArrayList<VtableEntry> vt){
-
-    final String GRIB1_PARAMETER = "Grib1_Parameter";
-    final String GRIB1_LEVEL_TYPE = "Grib1_Level_Type";
-
-    ArrayList<Coverage> theCoverages = new ArrayList<>();
-
-    for (VtableEntry v : vt) {
-
-      int i = Integer.parseInt(v.getParam());
-      int j = Integer.parseInt(v.getLevelType());
-
-      for(Coverage c: cv.getCoverages()) {
-
-        Attribute ab = c.findAttributeIgnoreCase(GRIB1_PARAMETER);
-        if (ab != null) {
-          Number num = ab.getNumericValue();
-          int n = num.intValue();
-          if (n == i) {
-            Attribute level = c.findAttributeIgnoreCase(GRIB1_LEVEL_TYPE);
-            if (level != null) {
-              Number nLevel = level.getNumericValue();
-              int iLevel = nLevel.intValue();
-              if (iLevel == j) {
-                c.getAttributes().add(new Attribute(METGRID_NAME, v.getMetgridName()));
-                c.getAttributes().add(new Attribute(METGRID_UNIT, v.getMetgridUnits()));
-                c.getAttributes().add(new Attribute(METGRID_DESC, v.getMetgridDesc()));
-                theCoverages.add(c);
-              }
-            }
-          }
-        }
-      }
-    }
-    return theCoverages;
-  }
-
-  private static ArrayList<Coverage> createCoverageListGrib2(CoverageCollection cv, ArrayList<VtableEntry> vt) {
-    final String GRIB_VAR_ID =  "Grib_Variable_Id";
-
-    ArrayList<Coverage> theCoverages = new ArrayList<>();
-
-    for (VtableEntry v : vt) {
-
-      String varId = v.getGRIB2Var();
-      Coverage cov = cv.findCoverageByAttribute(GRIB_VAR_ID, varId);
-      if(cov !=null ) {
-        cov.getAttributes().add(new Attribute(METGRID_NAME, v.getMetgridName()));
-        cov.getAttributes().add(new Attribute(METGRID_UNIT, v.getMetgridUnits()));
-        cov.getAttributes().add(new Attribute(METGRID_DESC,v.getMetgridDesc()));
-      }
-      theCoverages.add(cov);
-    }
-    return theCoverages;
-  }
-
   public static void main(String[] args) throws Exception {
 
-    final String GRIB_1_FILE_VER = "GRIB-1";
-    final String GRIB_2_FILE_VER = "GRIB-2";
     final String FILE_TYPE_ATTR = "file_format";
     final String GRIB1_GENERATING_PROCESS = "Generating_process_or_model";
     final String ORIGINATOR = "Originating_or_generating_Center";
     final String GRIB2_GENERATING_PROCESS = "Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre";
 
-    String mapSource;
-
     String progName = NcWRFWriter.class.getName();
+    String errors;
 
     try {
       NcWRFWriter.CommandLine cmdLine = new NcWRFWriter.CommandLine(progName, args);
@@ -288,26 +193,38 @@ class NcWRFWriter {
           String vtble = cmdLine.vtableFile.getAbsolutePath();
           ArrayList<VtableEntry> table = readVtable(vtble);
           displayVtable(table);
-          // validate the required vtable items against the coverages in the collection
-          //
-          List<Attribute> atts = covColl.getGlobalAttributes();
           Attribute fileVersion = covColl.findAttribute(FILE_TYPE_ATTR);
 
-          if( fileVersion.getStringValue().equals(GRIB_1_FILE_VER)){
+          if( fileVersion.getStringValue().equals(WRFProcessingUtils.GRIB_1_FILE_VER)){
 
             String genProc = covColl.findAttribute(GRIB1_GENERATING_PROCESS).getStringValue();
-            mapSource = genProc + "," + covColl.findAttribute(ORIGINATOR).getStringValue();
-            // do the coverages
-            ArrayList<Coverage> theCoverages = createCoverageListGrib1(covColl, table);
+            String mapSource = genProc + "," + covColl.findAttribute(ORIGINATOR).getStringValue();
+
+            ArrayList<Coverage> theCoverages = WRFProcessingUtils.createCoverageListGrib1(covColl, table);
+
+            errors = WRFProcessingUtils.validateRequiredElements(theCoverages);
             displayCoverages(theCoverages);
+
+            if( !errors.isEmpty()){
+              System.out.println(errors);
+            } else {
+               // write the file
+            }
           }
           else{
             String genProc = covColl.findAttribute(GRIB2_GENERATING_PROCESS).getStringValue();
-            mapSource = genProc + "," + covColl.findAttribute(ORIGINATOR).getStringValue();
-            ArrayList<Coverage> theCoverages = createCoverageListGrib2(covColl, table);
+            String mapSource = genProc + "," + covColl.findAttribute(ORIGINATOR).getStringValue();
+
+            ArrayList<Coverage> theCoverages = WRFProcessingUtils.createCoverageListGrib2(covColl, table);
+            errors = WRFProcessingUtils.validateRequiredElements(theCoverages);
             displayCoverages(theCoverages);
+
+            if( !errors.isEmpty()){
+              System.out.println(errors);
+            } else {
+              // write the file
+            }
           }
-          // WRFWriter.write(theCoverages, String mapSource, boolean isWindEarthRel, output file);
         }
       }  // if !datasetIn
     } catch (ParameterException | IOException e) {
