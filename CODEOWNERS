@@ -22,9 +22,9 @@
 httpservices/** @DennisHeimbigner
 netcdf4/** @DennisHeimbigner
 
-waterml/** @cwardgar
-gradle/** @cwardgar
-travis/* @cwardgar
+waterml/** @lesserwhirls
+gradle/** @lesserwhirls
+travis/* @lesserwhirls
 
 grib/** @lesserwhirls
 idv/** @lesserwhirls
@@ -34,20 +34,16 @@ idv/** @lesserwhirls
 ###########################################
 
 **/iosp/nids/** @dopplershift
-**/thredds/server/radarServer2/** @dopplershift
 
 **/opendap/** @DennisHeimbigner
 **/dap4/** @DennisHeimbigner
-
-**/webapp/godiva2/** @lesserwhirls
-**/webapp/godiva2/** @lesserwhirls
 
 ######################
 # general file types #
 ######################
 
-*.gradle @cwardgar
-gradle* @cwardgar
+*.gradle @lesserwhirls
+gradle* @lesserwhirls
 
 *.py @lesserwhirls @dopplershift
 
@@ -55,9 +51,8 @@ gradle* @cwardgar
 # individual files #
 ####################
 
-gradle/any/dependencies.gradle @cwardgar @DennisHeimbigner @lesserwhirls
+gradle/any/dependencies.gradle @DennisHeimbigner @lesserwhirls
 
-docs/internal/release.md @cwardgar
+docs/internal/release.md @lesserwhirls
 
-idv/build.gradle @cwardgar @lesserwhirls
-tds/src/main/webapp/Godiva.html @lesserwhirls
+idv/build.gradle @lesserwhirls
