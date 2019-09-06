@@ -21,8 +21,7 @@ public class TestBufr2Xml {
     int size = 0;
     int count = 0;
 
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r");
-        OutputStream out = new ByteArrayOutputStream()) {
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r"); OutputStream out = new ByteArrayOutputStream()) {
       MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
         Message message = scan.next();
