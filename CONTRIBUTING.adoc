@@ -137,6 +137,13 @@ and you can apply the style using:
 ./gradlew spotlessApply
 ```
 
+It can be easy to forget to run this command before pushing your changes to github. For that,
+we have created git pre-commit hook scripts for you to use. The pre-commit hook will run
+the spotlessApply task before the commit is made, ensuring that you have the proper code
+format. To install the pre-commit hook in a *nix environment (linux, *BSD, MacOS, Cygwin, etc.),
+copy the file `hooks/pre-commit-nix` to `.git/hooks/pre-commit` and make it executable.
+On windows, copy the file `hooks/pre-commit-windows` to `.git/hooks/pre-commit`.
+
 [[gh-history-cleanup]]
 === Clean up your git commit history
 
