@@ -12,15 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Read standard WMO Table A (data categories)
- *
- * @author John
- * @since 8/12/11
- */
+/** Read standard WMO Table A (data categories). */
 public class TableA {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableA.class);
-  private static final String TABLEA_FILENAME = "wmo/BUFR_25_0_0_TableA_en.xml";
+  private static final String TABLEA_FILENAME = "wmo/BUFR_32_0_0_TableA_en.xml";
   private static Map<Integer, String> tableA;
 
   /*

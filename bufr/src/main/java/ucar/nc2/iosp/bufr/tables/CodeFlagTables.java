@@ -15,15 +15,10 @@ import java.util.HashMap;
 import java.io.InputStream;
 import java.io.IOException;
 
-/**
- * Read BUFR Code / Flag tables.
- *
- * @author caron
- * @since Jul 12, 2008
- */
+/** Read BUFR Code / Flag tables. */
 public class CodeFlagTables {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
-  private static final String CodeFlagFilename = "wmo/BUFRCREX_25_0_0_CodeFlag_en.xml";
+  private static final String CodeFlagFilename = "wmo/BUFRCREX_32_0_0_CodeFlag_en.xml";
   static Map<Short, CodeFlagTables> tableMap;
 
   public static CodeFlagTables getTable(short id) {

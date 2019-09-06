@@ -5,3 +5,11 @@
   - unzip and put BUFR_22_0_1_Table(A|C|D)_en.xml, BUFRCREX_22_0_1_(CodeFlag|TableB)_en.xml  into resources/bufrTables/wmo
   - modify resources/bufrTables/local/tablelookup.csv
   - modify ucar.nc2.iosp.bufr.tables.CodeFlagTables, ucar.nc2.iosp.bufr.tables.WmoXmlReader, ucar.nc2.iosp.bufr.tables.TableA
+
+
+09/05/2019 caron
+  download from http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/BUFRCREX_32_0_0.zip
+   - put BUFRCREX_32_0_0.zip file into src/main/sources/wmo/
+   - unzip and put BUFR_32_0_0_Table(A|C|D)_en.xml, BUFRCREX_32_0_0_(CodeFlag|TableB)_en.xml into resources/bufrTables/wmo
+   - modify resources/bufrTables/local/tablelookup.csv
+   - modify ucar.nc2.iosp.bufr.tables.CodeFlagTables, ucar.nc2.iosp.bufr.tables.WmoXmlReader, ucar.nc2.iosp.bufr.tables.TableA
