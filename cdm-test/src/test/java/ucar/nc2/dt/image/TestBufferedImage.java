@@ -1,5 +1,7 @@
 package ucar.nc2.dt.image;
 
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -15,19 +17,18 @@ import java.awt.image.IndexColorModel;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
- * Describe
- *
- * @author caron
- * @since 6/13/13
+ * Precursor to using ImageDatasetFactory I think.
  */
-public class TestImage {
+@Category(NeedsCdmUnitTest.class)
+public class TestBufferedImage {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public static byte[] convert(String srcPath, double a, double b) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(srcPath);
-    try {
+  public byte[] convert(String srcPath, double a, double b) throws IOException {
+    try (NetcdfFile ncfile = NetcdfFile.open(srcPath)) {
       Variable v = ncfile.findVariable("image1/image_data");
       Array array = v.read();
 
@@ -65,14 +66,12 @@ public class TestImage {
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       ImageIO.write(bi, "png", os);
       return os.toByteArray();
-
-    } finally {
-      ncfile.close();
     }
   }
 
-  public static void main(String args[]) throws IOException {
-    convert("C:/data/test/RAD_NL25_PCP_NA_200808070810.h5", 1.0, 0.0);
+  @Test
+  public void testStuff() throws IOException {
+    convert(TestDir.cdmUnitTestDir + "formats/hdf5/exclude/RAD_NL25_PCP_NA_200804110600.h5", 1.0, 0.0);
   }
 
 }

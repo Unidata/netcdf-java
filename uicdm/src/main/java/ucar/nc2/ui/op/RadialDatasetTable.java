@@ -14,7 +14,7 @@ import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.dt.image.image.ImageArrayAdapter;
+import ucar.nc2.dt.image.ImageArrayAdapter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import java.awt.BorderLayout;

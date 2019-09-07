@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.dt.image.image;
+package ucar.nc2.dt.image;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
