@@ -15,13 +15,11 @@ dependencies {
     compile libraries["jsr305"]
     compile libraries["protobuf-java"]
     compile libraries["guava"]
-    compile libraries["jcommander"]
     compile libraries["jgoodies-forms"]
     compile libraries["jsr305"]  // Nonnull
 
     compile libraries["slf4j-api"]
     testRuntime libraries["logback-classic"]
-    testCompile libraries["truth"]
 
     // These are for Spock.
     testCompile libraries["groovy-all"]
@@ -29,4 +27,5 @@ dependencies {
 
     testCompile libraries["commons-io"]
     testCompile libraries["mockito"]
+    testCompile libraries["truth"]
 }
