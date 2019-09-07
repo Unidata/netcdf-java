@@ -5,8 +5,8 @@
 package ucar.nc2.ui.image;
 
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.image.image.ImageDatasetFactory;
-import ucar.nc2.dt.image.image.ImageFactoryRandom;
+import ucar.nc2.dt.image.ImageDatasetFactory;
+import ucar.nc2.dt.image.ImageFactoryRandom;
 import ucar.ui.widget.BAMutil;
 import javax.swing.*;
 import java.awt.*;

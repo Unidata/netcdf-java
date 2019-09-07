@@ -12,7 +12,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
-import ucar.nc2.dt.image.image.ImageArrayAdapter;
+import ucar.nc2.dt.image.ImageArrayAdapter;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;

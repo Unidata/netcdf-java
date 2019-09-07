@@ -4,7 +4,7 @@
  */
 package ucar.nc2.dt.radial;
 
-import junit.framework.*;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,21 +25,19 @@ import java.util.Formatter;
 
 /** Test radial datasets in the JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
-public class TestRadialDataset extends TestCase {
+public class TestRadialDataset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
   private String topDir = TestDir.cdmUnitTestDir + "formats/";
-  private boolean show = false, showTime = false, doQuick = true;
+  private boolean show, showTime, doQuick = true;
 
-  public TestRadialDataset(String name) {
-    super(name);
-  }
-
+  @Test
   public void testNexrad2Dataset() throws IOException {
     testAllMethods(topDir + "nexrad/level2/Level2_KYUX_20060527_2335.ar2v");
   }
 
+  @Test
   public void testReadDirectory() throws IOException {
     long start = System.currentTimeMillis();
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.dt.image.image;
+package ucar.nc2.dt.image;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
