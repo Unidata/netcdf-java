@@ -151,7 +151,7 @@ libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.11"
 libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.9"
 
 //// command line parser
-libraries["jcommander"] = "com.beust:jcommander:1.48"
+libraries["jcommander"] = "com.beust:jcommander:1.78"
 
 libraries["jdom2"] = "org.jdom:jdom2:2.0.6"
 
@@ -171,9 +171,6 @@ libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.9.1"
 libraries["re2j"] = "com.google.re2j:re2j:1.3"
 
 libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
-
-// replace ??
-libraries["commons-lang3"] = "org.apache.commons:commons-lang3:3.4"
 
 //// GRIB
 libraries["jj2000"] = "edu.ucar:jj2000:5.4"
@@ -211,19 +208,15 @@ libraries["taglibs-standard-impl"] = "org.apache.taglibs:taglibs-standard-impl:$
 
 //////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 //
-// What the hell is this? Google search turns up nothing.
-libraries["bounce"] = "org.bounce:bounce:0.14"
+// Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
+// https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/
+libraries["bounce"] = "org.bounce:bounce:0.18"
 
-//// Old and crufty. Only used by TdsMonitor in :ui. Can we switch to Guava caches?
-//// libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
-
-libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
-
+// http://www.jfree.org/
 libraries["jcommon"] = "org.jfree:jcommon:1.0.23"
-
 libraries["jfreechart"] = "org.jfree:jfreechart:1.0.19"
 
-//// Latest version is 1.9.0, but there is breakage when we try to upgrade.
+// http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
 libraries["jgoodies-forms"] = "com.jgoodies:jgoodies-forms:1.6.0"
 
 /////////////////////////////// Servlets to run tests against ////////////////////////////////

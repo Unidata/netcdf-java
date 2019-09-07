@@ -28,9 +28,6 @@ dependencies {
     compile libraries["httpclient"]
     compile libraries["httpcore"]
     compile libraries["bounce"]
-    compile libraries["imgscalr-lib"]
-    compile libraries["commons-lang3"]
-    compile libraries["commons-lang3"]
     compile libraries["re2j"]
 
     compile libraries["slf4j-api"]

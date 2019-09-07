@@ -46,10 +46,6 @@ import java.util.Vector;
  * of the image. This translated using the {@link ScalablePicture#setScaleFactor( double )} to the coordinate
  * space of the JComponent
  * <p>
- *
- * <img src=../Mathematics.png border=0>
- * <p>
- *
  * 
  * The {@link #showInfo} flag controls whether information about the picture is overlayed
  * on the image.
@@ -155,32 +151,6 @@ class PicturePane extends JComponent implements ScalablePictureListener {
     // twoDecimalFormatter = new DecimalFormat("###0.00");
     setFont(infoFont);
   }
-
-
-
-  /*
-   * brings up the indicated picture on the display.
-   * 
-   * @param pi The PicutreInfo object that should be displayed
-   *
-   * public void setPicture( PictureInfo pi ) {
-   * URL pictureURL;
-   * String description;
-   * double rotation = 0;
-   * try {
-   * pictureURL = pi.getHighresURL();
-   * description = pi.getDescription();
-   * rotation = pi.getRotation();
-   * } catch ( MalformedURLException x ) {
-   * Tools.log("PicturePane.changePicture: MarformedURLException trapped on: " + pi.getHighresLocation() + "\nReason: "
-   * + x.getMessage());
-   * return;
-   * }
-   * setPicture( pictureURL, description, rotation );
-   * }
-   */
-
-
 
   /**
    * brings up the indicated picture on the display.
@@ -457,21 +427,6 @@ class PicturePane extends JComponent implements ScalablePictureListener {
         g2d.drawString("Size: " + sclPic.getOriginalWidth() + " x " + sclPic.getOriginalHeight() + " Offset: "
             + X_Offset + " x " + Y_Offset + " Mid: " + focusPoint.x + " x " + focusPoint.y + " Scale: "
             + twoDecimalFormatter.format(sclPic.getScaleFactor()), infoPoint.x, infoPoint.y + lineSpacing);
-        /*
-         * g2d.drawString("File: " + sclPic.getFilename()
-         * , infoPoint.x
-         * , infoPoint.y + (2 * lineSpacing) );
-         * g2d.drawString("Loaded in: "
-         * + twoDecimalFormatter.format( sclPic.getSourcePicture().loadTime / 1000F )
-         * + " Seconds"
-         * , infoPoint.x
-         * , infoPoint.y + (3 * lineSpacing) );
-         * g2d.drawString("Free memory: "
-         * + Long.toString( Runtime.getRuntime().freeMemory( )/1024/1024, 0 )
-         * + " MB"
-         * , infoPoint.x
-         * , infoPoint.y + (4 * lineSpacing) );
-         */
       }
     } else {
       // paint a black square
@@ -484,8 +439,6 @@ class PicturePane extends JComponent implements ScalablePictureListener {
       setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
   }
-
-
 
   /**
    * class that deals with the mouse events. Is built so that the picture can be dragged if

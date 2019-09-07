@@ -15,7 +15,6 @@
  */
 package ucar.nc2.ui.image;
 
-import org.imgscalr.Scalr;
 import javax.imageio.*;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
@@ -388,8 +387,6 @@ public class ScalablePicture implements SourcePictureListener {
     calcScale();
     scaledPicture = Scalr.resize(org, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, (int) (ScaleFactor * w),
         (int) (ScaleFactor * h), Scalr.OP_ANTIALIAS);
-
-    // System.out.printf("scaled=%d,%d%n", scaledPicture.getWidth(), scaledPicture.getHeight());
     setStatus(READY, "Scaled Picture is ready.");
   }
 
@@ -412,10 +409,6 @@ public class ScalablePicture implements SourcePictureListener {
       // Horizontal scaling
       ScaleFactor = PictureWidth == 0 ? 0 : ((double) WindowWidth / PictureWidth);
     }
-
-    // System.out.printf("pix=%d,%d%n", sourcePicture.getWidth(), sourcePicture.getHeight());
-    // System.out.printf("target=%d,%d%n", TargetSize.width, TargetSize.height);
-    // System.out.printf("ScaleFactor=%f%n", ScaleFactor);
   }
 
 
