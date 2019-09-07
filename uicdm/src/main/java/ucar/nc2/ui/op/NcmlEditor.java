@@ -8,7 +8,6 @@ package ucar.nc2.ui.op;
 import java.nio.charset.StandardCharsets;
 import org.bounce.text.LineNumberMargin;
 import org.bounce.text.ScrollableEditorPanel;
-import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
 import org.jdom2.Element;
@@ -52,7 +51,7 @@ import javax.swing.JScrollPane;
 import javax.swing.text.PlainDocument;
 
 /**
- * Describe
+ * An Editor for NcML files.
  *
  * @author caron
  * @since 3/13/13
@@ -76,9 +75,7 @@ public class NcmlEditor extends JPanel {
 
   private PreferencesExt prefs;
 
-  /**
-   *
-   */
+
   public NcmlEditor(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
     fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -111,10 +108,16 @@ public class NcmlEditor extends JPanel {
     editor = new JEditorPane();
 
     // Instantiate a XMLEditorKit with wrapping enabled.
-    XMLEditorKit kit = new XMLEditorKit(false);
+    XMLEditorKit kit = new XMLEditorKit();
 
-    // Set the wrapping style.
-    kit.setWrapStyleWord(true);
+    // Enable auto indentation.
+    kit.setAutoIndentation(true);
+
+    // Enable tag completion.
+    kit.setTagCompletion(true);
+
+    // Set a style
+    kit.setStyle(XMLStyleConstants.ATTRIBUTE_NAME, Color.RED, Font.BOLD);
 
     editor.setEditorKit(kit);
 
@@ -124,18 +127,6 @@ public class NcmlEditor extends JPanel {
     // Set the tab size
     editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, 2);
 
-    // Enable auto indentation.
-    editor.getDocument().putProperty(XMLDocument.AUTO_INDENTATION_ATTRIBUTE, true);
-
-    // Enable tag completion.
-    editor.getDocument().putProperty(XMLDocument.TAG_COMPLETION_ATTRIBUTE, true);
-
-    // Initialise the folding
-    kit.setFolding(true);
-
-    // Set a style
-    kit.setStyle(XMLStyleConstants.ATTRIBUTE_NAME, Color.RED, Font.BOLD);
-
     // Put the editor in a panel that will force it to resize, when a different view is choosen.
     ScrollableEditorPanel editorPanel = new ScrollableEditorPanel(editor);
 
@@ -143,17 +134,6 @@ public class NcmlEditor extends JPanel {
 
     // Add the number margin as a Row Header View
     scroller.setRowHeaderView(new LineNumberMargin(editor));
-
-    AbstractAction wrapAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        XMLEditorKit kit = (XMLEditorKit) editor.getEditorKit();
-        kit.setLineWrappingEnabled(!kit.isLineWrapping());
-        editor.updateUI();
-      }
-    };
-    BAMutil.setActionProperties(wrapAction, "nj22/Wrap", "Toggle Wrapping", false, 'W', -1);
-    BAMutil.addActionToContainer(buttPanel, wrapAction);
 
     AbstractAction saveAction = new AbstractAction() {
       @Override
@@ -238,17 +218,11 @@ public class NcmlEditor extends JPanel {
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
   }
 
-  /**
-   *
-   */
   public void save() {
     fileChooser.save();
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
   }
 
-  /**
-   *
-   */
   public void closeOpenFiles() {
     try {
       if (ds != null) {
@@ -260,9 +234,6 @@ public class NcmlEditor extends JPanel {
     ds = null;
   }
 
-  /**
-   *
-   */
   public boolean setNcml(String cmd) {
     if (cmd.endsWith(".xml") || cmd.endsWith(".ncml")) {
       if (!cmd.startsWith("http:") && !cmd.startsWith("file:")) {
@@ -309,9 +280,6 @@ public class NcmlEditor extends JPanel {
     return !err;
   }
 
-  /**
-   *
-   */
   private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
     try {
       return NetcdfDataset.openDataset(location, addCoords, task);
@@ -327,14 +295,7 @@ public class NcmlEditor extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   void writeNetcdf(NetcdfOutputChooser.Data data) {
-    // if (debugNcmlWrite) {
-    // System.out.printf("choices=%s%n", choice);
-    // }
-
     String text = editor.getText();
 
     try {
@@ -384,9 +345,6 @@ public class NcmlEditor extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   boolean doSaveNcml(String text, String filename) {
     if (debugNcmlWrite) {
       System.out.println("filename=" + filename);
@@ -414,9 +372,6 @@ public class NcmlEditor extends JPanel {
     // saveNcmlDialog.setVisible(false);
   }
 
-  /**
-   *
-   */
   void addProtoChoices() {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
