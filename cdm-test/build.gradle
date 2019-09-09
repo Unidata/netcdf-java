@@ -16,7 +16,7 @@ dependencies {
     testRuntime project(":opendap")
     testCompile project(":httpservices")
     testCompile project(":visadCdm")
-    testRuntime project(":clcommon")
+    testCompile project(":clcommon")
 
     testCompile libraries["visad"]
     testCompile libraries["httpclient"]
