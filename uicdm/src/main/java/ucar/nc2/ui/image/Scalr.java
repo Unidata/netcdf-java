@@ -599,7 +599,7 @@ public class Scalr {
    *         with all the given operations applied to it.
    *
    * @throws IllegalArgumentException
-`   *         if <code>src</code> is <code>null</code>.
+   *         ` * if <code>src</code> is <code>null</code>.
    * @throws IllegalArgumentException
    *         if <code>ops</code> is <code>null</code> or empty.
    * @throws ImagingOpException
