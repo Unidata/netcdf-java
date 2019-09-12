@@ -1,6 +1,6 @@
 ---
 title: Upgrading to netCDF-Java version 5.x
-last_updated: 2019-08-20
+last_updated: 2019-09-12
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: upgrade_to_50.html
@@ -246,3 +246,11 @@ For example, the `buildFrom*` methods from `thredds.client.catalog.builder.Catal
                                        SubsetParams subset, boolean tryToAddLatLon2D,
                                        NetcdfFileWriter writer)
     ~~~
+
+### ucar.nc2.constants.CDM.utf8Charset Removed
+
+`ucar.nc2.constants.CDM.utf8Charset` has been removed in favor of `java.nio.charset.StandardCharsets.UTF_8`
+
+### Limit use of org.joda.time
+
+Remove usages of `org.joda.time` outside of `ucar.nc2.time`.
