@@ -65,6 +65,9 @@ If so, you can skip to step 4.
       * `git commit -m "Begin work on 5.0.1-SNAPSHOT"`
     - If moving directly to new minor version (i.e. `5.0.0` to `5.1.0`), revisit step 1 and update with new minor version.
 
+1. Update README.md to point to correct documentation
+    - Should point to the latest release, not current snapshot.
+
 1. Push the new commits upstream.
     - `git push origin ${releaseVersion}`
 
