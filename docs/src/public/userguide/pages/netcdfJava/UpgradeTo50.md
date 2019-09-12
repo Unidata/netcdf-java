@@ -23,6 +23,7 @@ As such, we no longer utilize WebStart.
 ## Quick Navigation
 * [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
+* [Summary of changes for v5.2.x](#netcdf-java-api-changes-52x)
 
 ## netCDF-Java API Changes (5.0.x)
 
@@ -254,3 +255,7 @@ For example, the `buildFrom*` methods from `thredds.client.catalog.builder.Catal
 ### Limit use of org.joda.time
 
 Remove usages of `org.joda.time` outside of `ucar.nc2.time`.
+
+## netCDF-Java API Changes (5.2.x)
+
+None yet.
