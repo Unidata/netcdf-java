@@ -6,7 +6,7 @@ First, ensure the last run of master on Jenkins looks good:
 
 `${releaseVersion}` refers to the full, 3-part version, e.g. `5.0.0`.
 
-`origin` refers to the remote Unidata github repository (i.e. https://github.com/Unidata/netcdf-java.git).
+`origin` refers to the remote Unidata GitHub repository (i.e. https://github.com/Unidata/netcdf-java.git).
 If you have renamed the Unidata remote repository, make sure to use that name in place of `origin`.
 If you are unsure, check `git remote -v`.
 
@@ -20,6 +20,8 @@ If so, you can skip to step 4.
        - Update version referenced in sidebar `version` attribute (near the top of the file).
    - `docs/src/public/userguide/pages/netcdfJava/UpgradeTo50.md`
        - make sure changes for minor version are documented.
+   - Note: this is a safety check.
+     This should have been done as soon as the version in `build.gradle` was changed to a new major or minor version.
 
 1. Ensure that there are no uncommitted changes, e.g.
    - `git checkout master`
@@ -41,11 +43,11 @@ If so, you can skip to step 4.
     - `git commit -m "Release ${releaseVersion}"`
 
 1. Push branch to Unidata/netcdf-java
-    - `gith push -u origin ${releaseVersion}`
+    - `git push -u origin ${releaseVersion}`
 
 1. Log into Jenkins and perform release
     - Go to netcdf-java-release project
-    - Edit the settings to point to the ${releaseVersion} branch on github
+    - Edit the settings to point to the ${releaseVersion} branch on GitHub
     - Run project
     - Check artifacts at https://artifacts.unidata.ucar.edu/#browse/browse:unidata-all
     - As long as we don't make it to the artifact publishing step, we can always fix any issues by squashing new commits and pushing to the branch on Unidata/netcdf-java
@@ -61,6 +63,7 @@ If so, you can skip to step 4.
     - Commit the change.
       * `git add ...`
       * `git commit -m "Begin work on 5.0.1-SNAPSHOT"`
+    - If moving directly to new minor version (i.e. `5.0.0` to `5.1.0`), revisit step 1 and update with new minor version.
 
 1. Push the new commits upstream.
     - `git push origin ${releaseVersion}`
@@ -85,7 +88,7 @@ If so, you can skip to step 4.
 1. Push the release tag upstream.
     -  `git push origin v${releaseVersion}`
 
-1. In the github interface, delete the branch used to hold the release PR. Let's keep things tidy.
+1. In the GitHub interface, delete the branch used to hold the release PR. Let's keep things tidy.
     - If we need to do a security update on a previous minor release, we'll create a new branch from the committed tag and work from that, ultimately following the instructions above when we're done.
 
 1. Create a release on GitHub using the tag you just pushed.
