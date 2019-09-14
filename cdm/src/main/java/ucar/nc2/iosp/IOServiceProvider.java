@@ -17,6 +17,8 @@ import java.nio.channels.WritableByteChannel;
  * This is the service provider interface for the low-level I/O access classes (read only).
  * This is only used by service implementors.
  *
+ * An implementation must have a no-argument constructor.
+ *
  * The NetcdfFile class manages all registered IOServiceProvider classes.
  * When NetcdfFile.open() is called:
  * <ol>
