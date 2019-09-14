@@ -111,8 +111,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   private static StringLocker stringLocker = new StringLocker();
 
   // IOSPs are loaded by reflection.
-  // TODO: Replace this using the ServiceLoader mechanism. One problem that comes up is that we no longer
-  // control the order whic IOSPs try to open. So its harder to avoid mos-behaving and slow IOSPs from
+  // TODO: Replace these using the ServiceLoader mechanism. One problem with this is that we no longer
+  // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
   // making open() slow.
   static {
     // Make sure RC gets loaded
