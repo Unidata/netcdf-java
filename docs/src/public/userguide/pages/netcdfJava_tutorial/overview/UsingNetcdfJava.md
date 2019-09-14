@@ -65,7 +65,8 @@ There are optional modules add support for reading (and sometimes writing) vario
 The formats associated with each module are:
 
 * `bufr`: BUFR
-* `clcommon`: GINI and FYSAT
+* `cdm:image`: GINI and FYSAT
+* `cdm:radial`: radial (eg radar) datasets
 * `grib`: GRIB-1 and GRIB-2
 * `netcdf4`: NetCDF-4. Writing requires the NetCDF-4 C library to be installed.
 * `opendap`: OPeNDAP
@@ -85,7 +86,7 @@ To do so in Maven and Gradle:
 
 <dependency>
   <groupId>edu.ucar</groupId>
-  <artifactId>clcommon</artifactId>
+  <artifactId>cdmImage</artifactId>
   <version>${netcdfJavaVersion}</version>
   <scope>runtime</scope>
 </dependency>
@@ -123,7 +124,7 @@ To do so in Maven and Gradle:
 // In Gradle
 dependencies {
   runtime "edu.ucar:bufr:${netcdfJavaVersion}"
-  runtime "edu.ucar:clcommon:${netcdfJavaVersion}"
+  runtime "edu.ucar:cdm:image:${netcdfJavaVersion}"
   runtime "edu.ucar:grib:${netcdfJavaVersion}"
   runtime "edu.ucar:netcdf4:${netcdfJavaVersion}"
   runtime "edu.ucar:opendap:${netcdfJavaVersion}"

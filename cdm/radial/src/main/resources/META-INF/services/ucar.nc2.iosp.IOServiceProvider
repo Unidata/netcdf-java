@@ -1,0 +1,8 @@
+ucar.nc2.iosp.dorade.Doradeiosp
+ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider
+ucar.nc2.iosp.nids.Nidsiosp
+ucar.nc2.iosp.nowrad.NOWRadiosp
+ucar.nc2.iosp.sigmet.SigmetIOServiceProvider
+ucar.nc2.iosp.uamiv.UAMIVServiceProvider
+ucar.nc2.iosp.uf.UFiosp
+ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider

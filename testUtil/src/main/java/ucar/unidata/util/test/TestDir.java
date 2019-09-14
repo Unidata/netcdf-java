@@ -87,7 +87,7 @@ public class TestDir {
   /**
    * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
    */
-  public static String cdmLocalTestDataDir = "../cdm/src/test/data/";
+  public static String cdmLocalTestDataDir = "../cdm/core/src/test/data/";
 
   /**
    * cdm-test data directory (distributed with code but depends on data not in github)
