@@ -242,7 +242,7 @@ abstract public class DapTestCommon extends UnitTestCommon {
     try {
       // Always prefer Nc4Iosp over HDF5
       NetcdfFile.iospDeRegister(NC4IOSP);
-      NetcdfFile.registerIOProviderPreferred(NC4IOSP, ucar.nc2.iosp.hdf5.H5iosp.class);
+      NetcdfFile.registerIOProvider(NC4IOSP);
       // Print out the library version
       System.err.printf("Netcdf-c library version: %s%n", getCLibraryVersion());
       System.err.flush();
