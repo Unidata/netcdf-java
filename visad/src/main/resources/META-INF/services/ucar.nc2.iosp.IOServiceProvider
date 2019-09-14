@@ -1,0 +1,5 @@
+ucar.nc2.iosp.gempak.GempakSoundingIOSP
+ucar.nc2.iosp.gempak.GempakSurfaceIOSP
+ucar.nc2.iosp.gempak.GempakGridServiceProvider
+ucar.nc2.iosp.mcidas.AreaServiceProvider
+ucar.nc2.iosp.mcidas.McIDASGridServiceProvider

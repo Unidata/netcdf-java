@@ -22,7 +22,7 @@ import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 /**
- * Read Runtime Configuration
+ * Read Runtime Configuration.
  * <p/>
  * 
  * <pre>
