@@ -7,7 +7,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4lib')
-    compile project(':cdm')
+    compile project(':cdm:core')
     compile project(':netcdf4')
     
     compileOnly libraries["javax.servlet-api"]

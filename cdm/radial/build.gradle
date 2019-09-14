@@ -1,5 +1,5 @@
-description = "Decoder for the GRIB format."
-ext.title = "GRIB IOSP and Feature Collection"
+description = "The Common Data Model (CDM) radial data IOSPs."
+ext.title = "CDM radial library"
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
@@ -8,17 +8,23 @@ apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 
+apply plugin: 'groovy'  // For Spock tests.
+
 dependencies {
+    compile project(':udunits')
     compile project(':cdm:core')
-    compile libraries["protobuf-java"]
-    compile libraries["jdom2"]
+
+    compile libraries["joda-time"]
     compile libraries["jsr305"]
-    compile libraries["jj2000"]
     compile libraries["guava"]
-    compile libraries["jcommander"]
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
+    
+    // These are for Spock.
+    testCompile libraries["groovy-all"]
+    testCompile libraries["spock-core"]
+
+    testCompile libraries["commons-io"]
+    testCompile libraries["mockito"]
     testCompile libraries["truth"]
-    testCompile libraries["jsoup"]
-    testRuntime libraries["logback-classic"]
 }

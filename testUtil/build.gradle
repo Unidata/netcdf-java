@@ -7,7 +7,7 @@ apply from: "$rootDir/gradle/any/java.gradle"
 // testUtil is not published
 
 dependencies {
-    compile project(":cdm")
+    compile project(":cdm:core")
     compile project(":httpservices")
     
     compile libraries["junit"]

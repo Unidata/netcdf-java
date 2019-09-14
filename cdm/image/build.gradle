@@ -1,14 +1,13 @@
-description = "A collection of utilities needed client-side, including java.awt dependencies and assorted IOSPs."
-ext.title = "Client-side common library"
+description = "A collection of utilities needed client-side, including IOSP's requiring java.awt."
+ext.title = "Client-side CDM image library"
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
-// clcommon has no tests
+// cdm-image has no tests
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 
 dependencies {
-    compile project(':cdm')
-    compile libraries["jdom2"]
+    compile project(':cdm:core')
     compile libraries["slf4j-api"]
 }

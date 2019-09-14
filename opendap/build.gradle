@@ -14,7 +14,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
-    compile project(':cdm')
+    compile project(':cdm:core')
     compile project(':httpservices')
 
     compile libraries["jdom2"]
