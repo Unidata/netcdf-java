@@ -130,25 +130,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       if (loadWarnings)
         log.info("Cant load class H4iosp", e);
     }
-
-    try {
-      registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Nexrad2IOServiceProvider", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.nids.Nidsiosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Nidsiosp", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.nowrad.NOWRadiosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class NOWRadiosp", e);
-    }
     try {
       registerIOProvider("ucar.nc2.iosp.misc.GtopoIosp");
     } catch (Throwable e) {
@@ -162,18 +143,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         log.info("Cant load class NmcObsLegacy", e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.sigmet.SigmetIOServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class SigmetIOServiceProvider", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.uf.UFiosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class UFiosp", e);
-    }
-    try {
       registerIOProvider("ucar.nc2.iosp.misc.Uspln");
     } catch (Throwable e) {
       if (loadWarnings)
@@ -184,12 +153,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class Nldn", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.uamiv.UAMIVServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class UAMIVServiceProvider", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.noaa.Ghcnm2");
@@ -214,25 +177,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         log.info("Cant load class", e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.dorade.Doradeiosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Doradeiosp", e);
-    }
-    try {
       registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class GradsBinaryGridServiceProvider", e);
-    }
-
-    ////////////////////////////////
-    // may have false positives
-    try {
-      registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Cinrad2IOServiceProvider", e);
     }
 
     userLoads = true;

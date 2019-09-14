@@ -24,8 +24,9 @@ configurations {
 }
 
 dependencies {
-    ncIdv project(':cdm')
-    ncIdv project(':clcommon')
+    ncIdv project(':cdm:core')
+    ncIdv project(':cdm:image')
+    ncIdv project(':cdm:radial')
     ncIdv project(':bufr')
     ncIdv project(':grib')
     ncIdv project(':netcdf4')
@@ -34,8 +35,9 @@ dependencies {
     ncIdv project(':httpservices')
     ncIdv project(':legacy')
 
-    netcdfAll project(":cdm")
-    netcdfAll project(":clcommon")
+    netcdfAll project(":cdm:core")
+    netcdfAll project(":cdm:image")
+    netcdfAll project(":cdm:radial")
     netcdfAll project(":bufr")
     netcdfAll project(":grib")
     netcdfAll project(":netcdf4")
@@ -77,7 +79,7 @@ fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
     configurations = [project.configurations.netcdfAll]
     
     doFirst {
-        manifest.attributes project(':cdm').tasks.jar.manifest.attributes
+        manifest.attributes project(':cdm:core').tasks.jar.manifest.attributes
     }
 }
 
