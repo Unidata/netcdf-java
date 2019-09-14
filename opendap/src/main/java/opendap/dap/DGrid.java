@@ -40,7 +40,6 @@
 
 package opendap.dap;
 
-import opendap.servers.SDArray;
 import opendap.dap.parsers.DDSXMLParser;
 import java.io.*;
 import java.util.Vector;
@@ -275,7 +274,7 @@ public class DGrid extends DConstructor implements ClientIO {
     }
 
     public boolean hasMoreElements() {
-      return (array == false) || e.hasMoreElements();
+      return (!array) || e.hasMoreElements();
     }
 
     public Object nextElement() {
@@ -524,7 +523,7 @@ public class DGrid extends DConstructor implements ClientIO {
     int comp;
 
     if (constrained) {
-      comp = ((DArray) arrayVar).isProject() ? 1 : 0;
+      comp = arrayVar.isProject() ? 1 : 0;
 
       Enumeration e = mapVars.elements();
 
@@ -559,7 +558,7 @@ public class DGrid extends DConstructor implements ClientIO {
     boolean valid = true;
 
     // Don't bother checking if the Array component is not included.
-    if (!((SDArray) arrayVar).isProject())
+    if (!arrayVar.isProject())
       return false;
 
     int nadims = arrayVar.numDimensions();
@@ -575,7 +574,7 @@ public class DGrid extends DConstructor implements ClientIO {
         try {
 
           DArrayDimension thisDim = arrayVar.getDimension(d); // (DArrayDimension) aDims.nextElement();
-          SDArray mapArray = (SDArray) getVar(d + 1); // e.nextElement();
+          DArray mapArray = (DArray) getVar(d + 1); // e.nextElement();
           DArrayDimension mapDim = mapArray.getFirstDimension();
 
           if (thisDim.getSize() > 0) {

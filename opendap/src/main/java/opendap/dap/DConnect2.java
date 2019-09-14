@@ -44,7 +44,6 @@ import java.nio.charset.StandardCharsets;
 import opendap.dap.parsers.ParseException;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.InvalidCredentialsException;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -107,15 +106,11 @@ public class DConnect2 implements Closeable {
 
   private ServerVersion ver; // The OPeNDAP server version.
 
-  private boolean debugHeaders = false, debugStream = false;
+  private boolean debugHeaders = false;
 
 
   public void setServerVersion(int major, int minor) {
-    // LogStream.out.println("ServerVersion made with int,int: " + major + "," + minor);
-
     ver = new ServerVersion(major, minor);
-    // LogStream.out.println("ServerVersion.getMajor(): " + ver.getMajor());
-    // LogStream.out.println("ServerVersion.getMinor(): " + ver.getMinor());
   }
 
   /**
@@ -269,15 +264,8 @@ public class DConnect2 implements Closeable {
           System.err.println("Service Unavailable");
         }
 
-        // debug
-        // if (debugHeaders) ucar.httpservices.HttpClientManager.showHttpRequestInfo(f, method);
-
         if (statusCode == HttpStatus.SC_NOT_FOUND) {
           throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
-        }
-
-        if (statusCode == HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN) {
-          throw new InvalidCredentialsException(method.getStatusText());
         }
 
         if (statusCode != HttpStatus.SC_OK) {
@@ -512,12 +500,7 @@ public class DConnect2 implements Closeable {
     } else if (stream != null) {
       command.process(stream);
     } else { // assume url is remote
-      try {
-        openConnection(urlString + ".das" + getCompleteCE(projString, selString), command);
-      } catch (DAP2Exception de) {
-        // if(de.getErrorCode() != DAP2Exception.NO_SUCH_FILE)
-        // throw de; // rethrow
-      }
+      openConnection(urlString + ".das" + getCompleteCE(projString, selString), command);
     }
     return command.das;
   }
@@ -913,241 +896,6 @@ public class DConnect2 implements Closeable {
    * the entire DDS (but without any data) while this method returns
    * only those variables listed in the projection part of the constraint
    * expression.
-   * <p/>
-   * Note that if CE is an empty String then the entire dataset will be
-   * returned, unless a "sticky" CE has been specified in the constructor.
-   * <p/>
-   * <p/>
-   * This method uses the 2 step method for aquiring data from a server using
-   * a DDX and a BLOB. First, a DDX (an XML representation of a DDS) is requested.
-   * The DDX is parsed and a DataDDS is created.
-   * The DDX contains a URL that points to the servers BLOB service. The BLOB
-   * service returns only the serialized binary content of the DataDDS. The DataDDS
-   * then deserializes the BLOB and fills itself with data.
-   *
-   * @param CE The constraint expression to be applied to this request by the
-   *        server. This is combined with any CE given in the constructor.
-   * @param statusUI the <code>StatusUI</code> object to use for GUI updates
-   *        and user cancellation notification (may be null).
-   * @return The <code>DataDDS</code> object that results from applying the
-   *         given CE, combined with this object's sticky CE, on the referenced
-   *         dataset.
-   * @throws MalformedURLException if the URL given to the constructor
-   *         has an error
-   * @throws IOException if any error connecting to the remote server
-   * @throws ParseException if the DDS parser returned an error
-   * @throws DDSException on an error constructing the DDS
-   * @throws DAP2Exception if any error returned by the remote server
-   * @opendap.ddx.experimental
-   *
-   *                           public DataDDS getDDXData(String CE, StatusUI statusUI, BaseTypeFactory btf) throws
-   *                           MalformedURLException, IOException,
-   *                           ParseException, DDSException, DAP2Exception {
-   * 
-   *                           String urls = urlString + ".ddx" + getCompleteCE(CE);
-   * 
-   *                           DataDDS dds = new DataDDS(ver, btf);
-   *                           DataDDXCommand command = new DataDDXCommand(dds, statusUI);
-   *                           openConnection(urls, command);
-   * 
-   *                           return command.dds;
-   *                           }
-   * 
-   *                           private class DataDDXCommand implements Command {
-   *                           DataDDS dds;
-   *                           StatusUI statusUI;
-   * 
-   *                           DataDDXCommand(DataDDS dds, StatusUI statusUI) {
-   *                           this.dds = dds;
-   *                           this.statusUI = statusUI;
-   *                           }
-   * 
-   *                           /*
-   *                           Returns the `Data object' from the dataset referenced by this object's
-   *                           URL given the constraint expression CE. Note that the Data object is
-   *                           really just a DDS object with data bound to the variables. The DDS will
-   *                           probably contain fewer variables (and those might have different
-   *                           types) than in the DDS returned by getDDS() because that method returns
-   *                           the entire DDS (but without any data) while this method returns
-   *                           only those variables listed in the projection part of the constraint
-   *                           expression.
-   *                           <p/>
-   *                           Note that if CE is an empty String then the entire dataset will be
-   *                           returned, unless a "sticky" CE has been specified in the constructor.
-   *                           <p/>
-   *                           <p/>
-   *                           This method uses the 2 step method for aquiring data from a server using
-   *                           a DDX and a BLOB. First, a DDX (an XML representation of a DDS) is requested.
-   *                           The DDX is parsed and a DataDDS is created.
-   *                           The DDX contains a URL that points to the servers BLOB service. The BLOB
-   *                           service returns only the serialized binary content of the DataDDS. The DataDDS
-   *                           then deserializes the BLOB and fills itself with data.
-   * 
-   *                           public void process(InputStream is) throws DAP2Exception, ParseException, IOException {
-   *                           dds.parseXML(is, false); // read the DDX
-   *                           getBlobData(dds, statusUI);
-   *                           }
-   *                           }
-   */
-
-  /**
-   * Opens the BLOB uRL in the DDS supplied and deserializes that binary content
-   * sent from the server cooresponding to the DDS.
-   * <p/>
-   * <p/>
-   * This method is the 2nd step in the 2 step process for aquiring data from a server using
-   * a DDX and a BLOB. First, a DDX (an XML representation of a DDS) is requested.
-   * The DDX is parsed and a DataDDS is created.
-   * The DDX contains a URL that points to the servers BLOB service. The BLOB
-   * service returns only the serialized binary content of the DataDDS. The DataDDS
-   * then deserializes the BLOB and fills itself with data.
-   *
-   * @param dds The DDS containing the BLOB URL and into which the BLOB
-   *        (serialized binary content) will be deserialized.
-   * @param statusUI the <code>StatusUI</code> object to use for GUI updates
-   *        and user cancellation notification (may be null).
-   * @throws MalformedURLException if the URL given to the constructor
-   *         has an error
-   * @throws IOException if any error connecting to the remote server
-   * @throws ParseException if the DDS parser returned an error
-   * @throws DDSException on an error constructing the DDS
-   * @throws DAP2Exception if any error returned by the remote server
-   *
-   *         private void getBlobData(DataDDS dds, StatusUI statusUI)
-   *         throws MalformedURLException, IOException,
-   *         ParseException, DDSException, DAP2Exception {
-   * 
-   * 
-   *         /* boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
-   * 
-   *         DAPNode.debug("dds.getBlobURL(): " + dds.getBlobContentID());
-   *         LogStream.dbg.logflush();
-   * 
-   *         if (dds.getBlobContentID() == null) {
-   *         throw new MalformedURLException("Blob URL was 'null'. " +
-   *         "This may indicate that this OPeNDAP Server does not support the full use of DDX.");
-   *         }
-   * 
-   * 
-   *         URL blobURL = new URL(dds.getBlobContentID());
-   * 
-   *         DAPNode.debug("Opening BLOB URL: " + blobURL);
-   *         LogStream.dbg.logflush();
-   * 
-   *         InputStream is = openConnection(blobURL);
-   * 
-   * 
-   *         try {
-   * 
-   *         dds.readData(is, statusUI); // read the data!
-   * 
-   *         } catch (Throwable e) {
-   *         LogStream.err.println("DConnect dds.readData problem with: " + blobURL + "\nStack Trace:");
-   *         e.printStackTrace(LogStream.err);
-   *         LogStream.err.logflush();
-   * 
-   *         throw new DAP2Exception("Connection problem when reading: " + blobURL + "\n" +
-   *         "Error Message - " + e.toString());
-   * 
-   *         } finally {
-   *         is.close(); // stream is always closed even if parse() throws exception
-   *         if (connection instanceof HttpURLConnection)
-   *         ((HttpURLConnection) connection).disconnect();
-   *         }
-   * 
-   * 
-   *         }
-   */
-
-  /**
-   * Returns the `Data object' from the dataset referenced by this object's
-   * URL given the constraint expression CE. Note that the Data object is
-   * really just a DDS object with data bound to the variables. The DDS will
-   * probably contain fewer variables (and those might have different
-   * types) than in the DDS returned by getDDS() because that method returns
-   * the entire DDS (but without any data) while this method returns
-   * only those variables listed in the projection part of the constraint
-   * expression.
-   * <p/>
-   * Note that if CE is an empty String then the entire dataset will be
-   * returned, unless a "sticky" CE has been specified in the constructor.
-   * <p/>
-   * <p/>
-   * This method uses the 2 step method for aquiring data from a server using
-   * a DDX and a BLOB. First, a DDX (an XML representation of a DDS) is requested.
-   * The DDX is parsed and a DataDDS is created.
-   * The DDX contains a URL that points to the servers BLOB service. The BLOB
-   * service returns only the serialized binary content of the DataDDS. The DataDDS
-   * then deserializes the BLOB and fills itself with data.
-   *
-   * @param url The complete URL of the dataset. Constraint Expression included.
-   * @param statusUI the <code>StatusUI</code> object to use for GUI updates
-   *        and user cancellation notification (may be null).
-   * @param btf The <code>BaseTypeFactory</code> to build the member
-   *        variables in the DDS with.
-   * @return The <code>DataDDS</code> object that results from applying the
-   *         given CE, combined with this object's sticky CE, on the referenced
-   *         dataset.
-   * @throws MalformedURLException if the URL given to the constructor
-   *         has an error
-   * @throws IOException if any error connecting to the remote server
-   * @throws ParseException if the DDS parser returned an error
-   * @throws DDSException on an error constructing the DDS
-   * @throws DAP2Exception if any error returned by the remote server
-   * @opendap.ddx.experimental
-   *
-   *                           public DataDDS getDDXDataFromURL(URL url, StatusUI statusUI, BaseTypeFactory btf)
-   *                           throws IOException,
-   *                           ParseException, DDSException, DAP2Exception {
-   * 
-   *                           DAPNode.debug("Opening DDX URL: " + url);
-   *                           LogStream.dbg.logflush();
-   * 
-   *                           InputStream is = openConnection(url);
-   *                           DataDDS dds = new DataDDS(ver, btf);
-   * 
-   *                           boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
-   * 
-   * 
-   *                           try {
-   * 
-   * 
-   *                           dds.parseXML(is, false); // read the DDX
-   * 
-   *                           //dds.parse(new HeaderInputStream(is)); // read the DDS header
-   *                           // NOTE: the HeaderInputStream will have skipped over "Data:" line
-   * 
-   *                           } catch (Throwable e) {
-   *                           LogStream.err.println("DConnect ddx.parse problem with: " + url + "\nStack Trace:");
-   *                           e.printStackTrace(LogStream.err);
-   *                           LogStream.err.logflush();
-   * 
-   *                           throw new DAP2Exception("Connection problem when reading: " + url + "\n" +
-   *                           "Error Message - " + e.toString());
-   * 
-   *                           } finally {
-   *                           is.close(); // stream is always closed even if parse() throws exception
-   *                           if (connection instanceof HttpURLConnection)
-   *                           ((HttpURLConnection) connection).disconnect();
-   *                           }
-   * 
-   * 
-   *                           getBlobData(dds, statusUI);
-   * 
-   * 
-   *                           return dds;
-   *                           }
-   */
-
-  /**
-   * Returns the `Data object' from the dataset referenced by this object's
-   * URL given the constraint expression CE. Note that the Data object is
-   * really just a DDS object with data bound to the variables. The DDS will
-   * probably contain fewer variables (and those might have different
-   * types) than in the DDS returned by getDDS() because that method returns
-   * the entire DDS (but without any data) while this method returns
-   * only those variables listed in the projection part of the constraint
-   * expression.
    * <p>
    * Note that if CE is an empty String then the entire dataset will be
    * returned, unless a "sticky" CE has been specified in the constructor.
@@ -1173,51 +921,6 @@ public class DConnect2 implements Closeable {
   }
 
   /**
-   * Returns the `Data object' from the dataset referenced by this object's
-   * URL given the constraint expression CE. Note that the Data object is
-   * really just a DDS object with data bound to the variables. The DDS will
-   * probably contain fewer variables (and those might have different
-   * types) than in the DDS returned by getDDS() because that method returns
-   * the entire DDS (but without any data) while this method returns
-   * only those variables listed in the projection part of the constraint
-   * expression.
-   * <p/>
-   * Note that if CE is an empty String then the entire dataset will be
-   * returned, unless a "sticky" CE has been specified in the constructor.
-   * <p/>
-   * <p/>
-   * This method uses the 2 step method for aquiring data from a server using
-   * a DDX and a BLOB. First, a DDX (an XML representation of a DDS) is requested.
-   * The DDX is parsed and a DataDDS is created.
-   * The DDX contains a URL that points to the servers BLOB service. The BLOB
-   * service returns only the serialized binary content of the DataDDS. The DataDDS
-   * then deserializes the BLOB and fills itself with data.
-   *
-   * @param CE The constraint expression to be applied to this request by the
-   *        server. This is combined with any CE given in the constructor.
-   * @param statusUI the <code>StatusUI</code> object to use for GUI updates
-   *        and user cancellation notification (may be null).
-   * @return The <code>DataDDS</code> object that results from applying the
-   *         given CE, combined with this object's sticky CE, on the referenced
-   *         dataset.
-   * @throws MalformedURLException if the URL given to the constructor
-   *         has an error
-   * @throws IOException if any error connecting to the remote server
-   * @throws ParseException if the DDS parser returned an error
-   * @throws DDSException on an error constructing the DDS
-   * @throws DAP2Exception if any error returned by the remote server
-   * @opendap.ddx.experimental
-   *
-   *                           public DataDDS getDDXData(String CE, StatusUI statusUI) throws MalformedURLException,
-   *                           IOException,
-   *                           ParseException, DDSException, DAP2Exception {
-   * 
-   *                           return getDDXData(CE, statusUI, new DefaultFactory());
-   *                           }
-   */
-
-
-  /**
    * Return the data object with no local constraint expression. Same as
    * <code>getData("", statusUI)</code>.
    *
@@ -1236,49 +939,6 @@ public class DConnect2 implements Closeable {
       throws MalformedURLException, IOException, ParseException, DDSException, DAP2Exception {
     return getData("", statusUI, new DefaultFactory());
   }
-
-  /**
-   * Returns the `Data object' from the dataset referenced by this object's
-   * URL given the constraint expression CE. Note that the Data object is
-   * really just a DDS object with data bound to the variables. The DDS will
-   * probably contain fewer variables (and those might have different
-   * types) than in the DDS returned by getDDS() because that method returns
-   * the entire DDS (but without any data) while this method returns
-   * only those variables listed in the projection part of the constraint
-   * expression.
-   * <p/>
-   * Note that if CE is an empty String then the entire dataset will be
-   * returned, unless a "sticky" CE has been specified in the constructor.
-   * <p/>
-   * <p/>
-   * This method uses the 2 step method for aquiring data from a server using
-   * a DDX and a BLOB. First, a DDX (an XML representation of a DDS) is requested.
-   * The DDX is parsed and a DataDDS is created.
-   * The DDX contains a URL that points to the servers BLOB service. The BLOB
-   * service returns only the serialized binary content of the DataDDS. The DataDDS
-   * then deserializes the BLOB and fills itself with data.
-   *
-   * @param statusUI the <code>StatusUI</code> object to use for GUI updates
-   *        and user cancellation notification (may be null).
-   * @return The <code>DataDDS</code> object that results from applying the
-   *         given CE, combined with this object's sticky CE, on the referenced
-   *         dataset.
-   * @throws MalformedURLException if the URL given to the constructor
-   *         has an error
-   * @throws IOException if any error connecting to the remote server
-   * @throws ParseException if the DDS parser returned an error
-   * @throws DDSException on an error constructing the DDS
-   * @throws DAP2Exception if any error returned by the remote server
-   * @opendap.ddx.experimental
-   *
-   *                           public final DataDDS getDDXData(StatusUI statusUI) throws MalformedURLException,
-   *                           IOException,
-   *                           ParseException, DDSException, DAP2Exception {
-   *                           return getDDXData("", statusUI, new DefaultFactory());
-   *                           }
-   */
-
-
 }
 
 
