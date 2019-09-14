@@ -17,9 +17,7 @@ dependencies {
     compile project(':cdm')
     compile project(':httpservices')
 
-    compileOnly libraries["javax.servlet-api"]
     compile libraries["jdom2"]
-    compile libraries["httpclient"]
     compile libraries["httpcore"]
     compile libraries["jsr305"]
     compile libraries["coverity-escapers"]

@@ -42,8 +42,8 @@ package opendap.dap;
 
 import java.net.URLConnection;
 import com.coverity.security.Escape;
+import org.apache.http.Header;
 import ucar.httpservices.HTTPMethod;
-import org.apache.http.*;
 
 /**
  * Aprses and holds the Server Version information returned by a DAP server.
@@ -131,7 +131,6 @@ public class ServerVersion implements java.io.Serializable {
       versionString = h.getValue();
       processXDAPVersion(versionString);
       return;
-
     }
 
     // Did the Server send an XDODS-Server header?
@@ -149,8 +148,6 @@ public class ServerVersion implements java.io.Serializable {
     // be correctly serialized/deserialized.
     throw new DAP2Exception("Not a valid OPeNDAP server - " + "Missing MIME Header fields! Either \"XDAP\" "
         + "or \"XDODS-Server.\" must be present.");
-
-
   }
 
 
@@ -182,7 +179,6 @@ public class ServerVersion implements java.io.Serializable {
     if (sHeader_server != null) {
       processXDODSServerVersion(sHeader_server);
       return;
-
     }
 
 
@@ -194,8 +190,6 @@ public class ServerVersion implements java.io.Serializable {
 
     throw new DAP2Exception("Not a valid OPeNDAP server - " + "Missing MIME Header fields! Either \"XDAP\" "
         + "or \"XDODS-Server.\" must be present.");
-
-
   }
 
 
@@ -244,11 +238,7 @@ public class ServerVersion implements java.io.Serializable {
 
     this.versionString = ver;
     this.major = this.minor = 0; // set version to default values
-
     this.subminor = -1;
-
-    // LogStream.out.println("Server Version String: " + ver);
-
 
     switch (headerType) {
       case XDAP:
@@ -262,14 +252,10 @@ public class ServerVersion implements java.io.Serializable {
             "Invalid Header Type. Must be one of " + "ServerVersion.XDAP or ServerVersion.XDODS_SERVER");
 
     }
-
-
   }
 
 
   private void processXDODSServerVersion(String ver) throws DAP2Exception {
-
-
     String badVersionMsg = "Invalid XDODS-Server header: " + Escape.html(ver)
         + "  Version must contain an identifying word (ex: opendap or "
         + "DODS followed by a \"/\" and then MV.mv (Where MV = " + "MajorVersionNumber and mv = MinorVersionNumber)";
@@ -301,14 +287,10 @@ public class ServerVersion implements java.io.Serializable {
     } else {
       throw new DAP2Exception(badVersionMsg);
     }
-
-
-
   }
 
 
   private void processXDAPVersion(String ver) {
-
     int dotIndex = ver.indexOf('.');
     if (dotIndex != -1) {
       String majorString = ver.substring(0, dotIndex);
@@ -320,9 +302,7 @@ public class ServerVersion implements java.io.Serializable {
       else
         minor = Integer.parseInt(minorString);
     }
-
   }
-
 
   /**
    * Construct a new ServerVersion, setting major and minor version explicitly.
@@ -380,7 +360,6 @@ public class ServerVersion implements java.io.Serializable {
         + version;
   }
 
-
   /**
    * Returns the full version string.
    *
@@ -390,7 +369,6 @@ public class ServerVersion implements java.io.Serializable {
     return versionString;
 
   }
-
 
 }
 
