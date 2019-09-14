@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile project(':cdm')
+    compile project(':cdm:core')
 
     compile libraries["xmlbeans"]
     compile libraries["52n-xml-waterML-v20"]

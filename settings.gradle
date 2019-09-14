@@ -3,9 +3,10 @@ rootProject.name = 'netcdf-java'
 
 // These all refer to subdirectory names.
 include 'bufr'
-include 'cdm'
+include 'cdm:core'
+include 'cdm:radial'
+include 'cdm:image'
 include 'cdm-test'
-include 'clcommon'
 include 'dap4:d4core'
 include 'dap4:d4lib'
 include 'dap4:d4cdm'
