@@ -15,6 +15,7 @@ import ucar.ma2.StructureDataIterator;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
@@ -109,7 +110,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   private static StringLocker stringLocker = new StringLocker();
 
-  // IOSPs are loaded by reflection
+  // IOSPs are loaded by reflection.
+  // TODO: Replace this using the ServiceLoader mechanism. One problem that comes up is that we no longer
+  // control the order whic IOSPs try to open. So its harder to avoid mos-behaving and slow IOSPs from
+  // making open() slow.
   static {
     // Make sure RC gets loaded
     RC.initialize();
@@ -121,37 +125,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         log.info("Cant load class NcStreamIosp", e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class H5iosp", e);
-    }
-    try {
       registerIOProvider("ucar.nc2.iosp.hdf4.H4iosp");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class H4iosp", e);
-    }
-
-    // LOOK can we just load Grib through the ServiceLoader ??
-    try {
-      registerIOProvider("ucar.nc2.grib.collection.Grib1Iosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Grib1Iosp", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.grib.collection.Grib2Iosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Grib2Iosp", e);
-    }
-    try {
-      Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp2");
-      registerIOProvider(iosp);
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load resource", e);
     }
 
     try {
@@ -185,12 +162,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         log.info("Cant load class NmcObsLegacy", e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.gini.Giniiosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Giniiosp", e);
-    }
-    try {
       registerIOProvider("ucar.nc2.iosp.sigmet.SigmetIOServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings)
@@ -213,12 +184,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class Nldn", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.fysat.Fysatiosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Fysatiosp", e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.uamiv.UAMIVServiceProvider");
@@ -255,39 +220,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         log.info("Cant load class Doradeiosp", e);
     }
     try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
-      registerIOProvider("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
-      registerIOProvider("ucar.nc2.iosp.gempak.GempakSoundingIOSP");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Gempak...", e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
-      registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class GempakGridServiceProvider", e);
-    }
-    try {
       registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class GradsBinaryGridServiceProvider", e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.AreaServiceProvider");
-      registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class AreaServiceProvider", e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
-      registerIOProvider("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class McIDASGridServiceProvider", e);
     }
 
     ////////////////////////////////
@@ -533,6 +469,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     } else {
       for (IOServiceProvider iosp : ServiceLoader.load(IOServiceProvider.class)) {
         log.info("ServiceLoader IOServiceProvider {}", iosp.getClass().getName());
+        System.out.printf("ServiceLoader IOServiceProvider found %s%n", iosp.getClass().getName());
         if (iosp.isValidFile(raf)) {
           return true;
         }
@@ -565,7 +502,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
 
-    // send before iosp is opened
+    // send iospMessage before iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
@@ -861,6 +798,16 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return openInMemory(uri.toString(), contents);
   }
 
+  /**
+   * Open a RandomAccessFile as a NetcdfFile, if possible.
+   *
+   * @param raf  The open raf, is not cloised by this method.
+   * @param location human readable locatoin of this dataset.
+   * @param cancelTask used to monitor user cancellation; may be null.
+   * @param iospMessage send this message to iosp; may be null.
+   * @return NetcdfFile or throw an Exception.
+   * @throws IOException if cannot open as a CDM NetCDF.
+   */
   public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location,
       ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
@@ -868,40 +815,40 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (debugSPI)
       log.info("NetcdfFile try to open = {}", location);
 
-    // avoid opening file more than once, so pass around the raf.
+    // Registered providers override defaults.
+    for (IOServiceProvider registeredSpi : registeredProviders) {
+      if (debugSPI)
+        log.info(" try iosp = {}", registeredSpi.getClass().getName());
+
+      if (registeredSpi.isValidFile(raf)) {
+        // need a new instance for thread safety
+        Class c = registeredSpi.getClass();
+        try {
+          spi = (IOServiceProvider) c.newInstance();
+        } catch (InstantiationException e) {
+          throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt
+          // happen
+        } catch (IllegalAccessException e) {
+          throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt
+          // happen
+        }
+        break;
+      }
+    }
+
     if (N3header.isValidFile(raf)) {
       spi = SPFactory.getServiceProvider();
 
-      // } else if (H5header.isValidFile(raf)) {
-      // spi = new ucar.nc2.iosp.hdf5.H5iosp();
+    } else if (H5header.isValidFile(raf)) {
+      spi = new ucar.nc2.iosp.hdf5.H5iosp();
 
     } else {
 
       // look for dynamically loaded IOSPs
-      for (IOServiceProvider currentSpi : ServiceLoader.load(IOServiceProvider.class)) {
-        if (currentSpi.isValidFile(raf)) {
-          Class c = currentSpi.getClass();
-          try {
-            spi = (IOServiceProvider) c.newInstance();
-          } catch (InstantiationException e) {
-            throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt
-                                                                                                         // happen
-          } catch (IllegalAccessException e) {
-            throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt
-                                                                                                                      // happen
-          }
-          break;
-        }
-      }
-
-      // look for registered providers
-      for (IOServiceProvider registeredSpi : registeredProviders) {
-        if (debugSPI)
-          log.info(" try iosp = {}", registeredSpi.getClass().getName());
-
-        if (registeredSpi.isValidFile(raf)) {
-          // need a new instance for thread safety
-          Class c = registeredSpi.getClass();
+      for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
+        System.out.printf("ServiceLoader IOServiceProvider found %s%n", loadedSpi.getClass().getName());
+        if (loadedSpi.isValidFile(raf)) {
+          Class c = loadedSpi.getClass();
           try {
             spi = (IOServiceProvider) c.newInstance();
           } catch (InstantiationException e) {
