@@ -38,6 +38,12 @@ public class TestNids extends TestCase {
   private static String vadWindProfileFile = TestDir.localTestDataDir + "nids/NVW_20041117_1657";
 
   public void testNidsReadRadial() throws IOException {
+    File cwd = new File(".");
+    System.out.printf("**** CWD = %s%n", cwd.getAbsolutePath());
+
+    File f = new File(basereflectFile);
+    System.out.printf("**** %s = %s%n", f.getAbsolutePath(), f.exists());
+
     NetcdfFile ncfile = null;
     try {
       System.out.println("**** Open " + basereflectFile);
