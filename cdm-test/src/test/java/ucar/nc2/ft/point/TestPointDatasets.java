@@ -289,6 +289,11 @@ public class TestPointDatasets {
     absIn = StringUtil2.replace(absIn, "\\", "/");
 
     System.out.printf("================ TestPointFeatureCollection read %s %n", absIn);
+    File cwd = new File(".");
+    System.out.printf("**** CWD = %s%n", cwd.getAbsolutePath());
+
+    File f = new File(absIn);
+    System.out.printf("**** %s = %s%n", f.getAbsolutePath(), f.exists());
 
     Formatter out = new Formatter();
     try (FeatureDataset fdataset = FeatureDatasetFactoryManager.open(type, location, null, out)) {
