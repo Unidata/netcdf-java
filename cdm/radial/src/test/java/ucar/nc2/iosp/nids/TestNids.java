@@ -7,36 +7,35 @@ package ucar.nc2.iosp.nids;
 import junit.framework.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.StructureData;
 import ucar.nc2.*;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
-
 public class TestNids extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public static String basereflectFile = TestDir.cdmLocalTestDataDir + "nids/N0R_20041119_2147";
-  public static String basereflect1File = TestDir.cdmLocalTestDataDir + "nids/N1R_20050119_1548";
-  public static String basereflect2File = TestDir.cdmLocalTestDataDir + "nids/N2R_20050119_1528";
-  public static String basereflect3File = TestDir.cdmLocalTestDataDir + "nids/N3R_20050119_1548";
-  public static String basereflectCFile = TestDir.cdmLocalTestDataDir + "nids/NCR_20050119_1548";
-  public static String basereflect248File = TestDir.cdmLocalTestDataDir + "nids/N0Z_20050119_1538";
-  public static String radialVelocityFile = TestDir.cdmLocalTestDataDir + "nids/N0V_20041117_1646";
-  public static String radialVelocity1File = TestDir.cdmLocalTestDataDir + "nids/N1V_20050119_1548";
-  public static String echotopFile = TestDir.cdmLocalTestDataDir + "nids/NET_20041123_1648";
-  public static String oneHourPrecipFile = TestDir.cdmLocalTestDataDir + "nids/N1P_20041122_1837";
-  public static String StormRelMeanVel0File = TestDir.cdmLocalTestDataDir + "nids/N0S_20050119_1548";
-  public static String StormRelMeanVel1File = TestDir.cdmLocalTestDataDir + "nids/N1S_20041117_1640";
-  public static String StormRelMeanVel2File = TestDir.cdmLocalTestDataDir + "nids/N2S_20050120_1806";
-  public static String StormRelMeanVel3File = TestDir.cdmLocalTestDataDir + "nids/N3S_20050120_1806";
-  public static String totalPrecipFile = TestDir.cdmLocalTestDataDir + "nids/NTP_20050119_1528";
-  public static String digitPrecipArrayFile = TestDir.cdmLocalTestDataDir + "nids/DPA_20041123_1709";
-  public static String vertIntegLiquidFile = TestDir.cdmLocalTestDataDir + "nids/NVL_20041130_1946";
-  public static String vadWindProfileFile = TestDir.cdmLocalTestDataDir + "nids/NVW_20041117_1657";
-
-  public static boolean dumpFile = false;
+  private static String basereflectFile = TestDir.localTestDataDir + "nids/N0R_20041119_2147";
+  private static String basereflect1File = TestDir.localTestDataDir + "nids/N1R_20050119_1548";
+  private static String basereflect2File = TestDir.localTestDataDir + "nids/N2R_20050119_1528";
+  private static String basereflect3File = TestDir.localTestDataDir + "nids/N3R_20050119_1548";
+  private static String basereflectCFile = TestDir.localTestDataDir + "nids/NCR_20050119_1548";
+  private static String basereflect248File = TestDir.localTestDataDir + "nids/N0Z_20050119_1538";
+  private static String radialVelocityFile = TestDir.localTestDataDir + "nids/N0V_20041117_1646";
+  private static String radialVelocity1File = TestDir.localTestDataDir + "nids/N1V_20050119_1548";
+  private static String echotopFile = TestDir.localTestDataDir + "nids/NET_20041123_1648";
+  private static String oneHourPrecipFile = TestDir.localTestDataDir + "nids/N1P_20041122_1837";
+  private static String StormRelMeanVel0File = TestDir.localTestDataDir + "nids/N0S_20050119_1548";
+  private static String StormRelMeanVel1File = TestDir.localTestDataDir + "nids/N1S_20041117_1640";
+  private static String StormRelMeanVel2File = TestDir.localTestDataDir + "nids/N2S_20050120_1806";
+  private static String StormRelMeanVel3File = TestDir.localTestDataDir + "nids/N3S_20050120_1806";
+  private static String totalPrecipFile = TestDir.localTestDataDir + "nids/NTP_20050119_1528";
+  private static String digitPrecipArrayFile = TestDir.localTestDataDir + "nids/DPA_20041123_1709";
+  private static String vertIntegLiquidFile = TestDir.localTestDataDir + "nids/NVL_20041130_1946";
+  private static String vadWindProfileFile = TestDir.localTestDataDir + "nids/NVW_20041117_1657";
 
   public void testNidsReadRadial() throws IOException {
     NetcdfFile ncfile = null;

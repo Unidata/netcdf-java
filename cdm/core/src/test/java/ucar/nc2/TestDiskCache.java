@@ -4,10 +4,13 @@ import static ucar.nc2.util.DiskCache.cleanCache;
 import static ucar.nc2.util.DiskCache.showCache;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 import org.junit.Test;
 import ucar.nc2.util.DiskCache;
 
+/** Test DiskCache */
 public class TestDiskCache {
 
   static void make(String filename) throws IOException {
@@ -23,8 +26,9 @@ public class TestDiskCache {
   }
 
   @Test
-  public void testStuff() throws IOException {
-    DiskCache.setRootDirectory("C:/temp/chill/");
+  public void testDiskCacheCreateNewFile() throws IOException {
+    Path tempDirWithPrefix = Files.createTempDirectory("TestDiskCache");
+    DiskCache.setRootDirectory(tempDirWithPrefix.toString());
     make("C:/junk.txt");
     make("C:/some/enchanted/evening/joots+3478.txt");
     make("http://www.unidata.ucar.edu/some/enc hanted/eve'ning/nowrite.gibberish");
