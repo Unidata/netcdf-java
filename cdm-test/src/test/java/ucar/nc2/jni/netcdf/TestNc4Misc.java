@@ -294,7 +294,7 @@ public class TestNc4Misc {
 
   @Test
   public void testAttributeChangeNc4() throws IOException {
-    Path source = Paths.get(TestDir.cdmLocalTestDataDir + "dataset/testRename.nc4");
+    Path source = Paths.get(TestDir.cdmLocalFromTestDataDir + "dataset/testRename.nc4");
     Path target = tempFolder.newFile().toPath();
     Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
     doRename(target.toString());
@@ -302,7 +302,7 @@ public class TestNc4Misc {
 
   @Test
   public void testAttributeChangeNc3() throws IOException {
-    Path source = Paths.get(TestDir.cdmLocalTestDataDir + "dataset/testRename.nc3");
+    Path source = Paths.get(TestDir.cdmLocalFromTestDataDir + "dataset/testRename.nc3");
     Path target = tempFolder.newFile().toPath();
     Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
     doRename(target.toString());

@@ -28,7 +28,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestCfDocDsgExamples {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  public static final String cfDocDsgExamplesDir = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/";
+  public static final String cfDocDsgExamplesDir = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/";
 
   public static List<Object[]> getPointDatasets() {
     List<Object[]> result = new ArrayList<>();

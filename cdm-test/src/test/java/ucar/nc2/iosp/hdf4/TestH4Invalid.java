@@ -49,7 +49,7 @@ public class TestH4Invalid {
   @Test
   public void testSmall() throws IOException {
     try (RandomAccessFile raf =
-        new RandomAccessFile(TestDir.cdmLocalTestDataDir + "hdf4/Level3_GYX_N0R_20151012_1441.nids.invalidhdf4", "r")) {
+        new RandomAccessFile(TestDir.cdmLocalFromTestDataDir + "hdf4/Level3_GYX_N0R_20151012_1441.nids.invalidhdf4", "r")) {
       assert !H4header.isValidFile(raf);
 
     } catch (EOFException e) {
