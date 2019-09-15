@@ -16,20 +16,15 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-/**
- * Describe
- *
- * @author caron
- * @since 1/15/2015
- */
+/** Test ClientCatalog inheritence. */
 public class TestClientCatalogInherit {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static final String urlString = "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/TestInherit.1.0.xml";
-  Catalog cat;
+  private Catalog cat;
 
   @Before
-  public void openCatalog() throws IOException {
+  public void openCatalog() {
     CatalogBuilder builder = new CatalogBuilder();
     cat = builder.buildFromLocation(urlString, null);
     if (builder.hasFatalError()) {
@@ -40,7 +35,6 @@ public class TestClientCatalogInherit {
 
   @Test
   public void testPropertyInherit() {
-
     Dataset top = cat.findDatasetByID("top");
     String val = top.findProperty("GoodThing");
     assert val == null : val;
