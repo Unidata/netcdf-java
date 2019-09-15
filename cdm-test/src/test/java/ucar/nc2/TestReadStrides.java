@@ -187,7 +187,7 @@ public class TestReadStrides extends TestCase {
 
   @Category(NeedsCdmUnitTest.class)
   public void testReadStridesAll() throws IOException, InvalidRangeException {
-    testReadStrides(TestDir.cdmLocalTestDataDir + "ncml/nc/time0.nc");
+    testReadStrides(TestDir.cdmLocalFromTestDataDir + "ncml/nc/time0.nc");
     testReadStrides(TestDir.cdmUnitTestDir + "formats/gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
   }
 
