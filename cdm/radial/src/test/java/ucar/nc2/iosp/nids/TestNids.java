@@ -7,12 +7,13 @@ package ucar.nc2.iosp.nids;
 import junit.framework.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.StructureData;
 import ucar.nc2.*;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
-
 
 public class TestNids extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -36,9 +37,13 @@ public class TestNids extends TestCase {
   public static String vertIntegLiquidFile = TestDir.cdmLocalTestDataDir + "nids/NVL_20041130_1946";
   public static String vadWindProfileFile = TestDir.cdmLocalTestDataDir + "nids/NVW_20041117_1657";
 
-  public static boolean dumpFile = false;
-
   public void testNidsReadRadial() throws IOException {
+    File cwd = new File(".");
+    System.out.printf("**** CWD = %s%n", cwd.getAbsolutePath());
+
+    File f = new File(basereflectFile);
+    System.out.printf("**** %s = %s%n", f.getAbsolutePath(), f.exists());
+
     NetcdfFile ncfile = null;
     try {
       System.out.println("**** Open " + basereflectFile);
