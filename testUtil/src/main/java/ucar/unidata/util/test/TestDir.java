@@ -85,13 +85,13 @@ public class TestDir {
   public static String cdmUnitTestDir = null;
 
   /** The cdm-core local test directory, from any cdm submodule. */
-  public static String cdmLocalTestDataDir = "../../core/src/test/data/";
+  public static String cdmLocalTestDataDir = "../core/src/test/data/";
 
   /** The module local test directory. Assumes pwd = top of module. */
   public static String localTestDataDir = "src/test/data/";
 
   /** The cdm-core local test directory, from cdm-test submodule. */
-  public static String cdmLocalFromTestDataDir = "../core/src/test/data/";
+  public static String cdmLocalFromTestDataDir = "../cdm/core/src/test/data/";
 
   /**
    * cdm-test data directory (distributed with code but depends on data not in github)
