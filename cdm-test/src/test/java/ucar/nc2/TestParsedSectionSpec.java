@@ -23,7 +23,7 @@ public class TestParsedSectionSpec extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testVariableSection() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testWrite.nc"); // TestLocalNC2.openFile("testWrite.nc")
+    NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmLocalFromTestDataDir + "testWrite.nc"); // TestLocalNC2.openFile("testWrite.nc")
     Variable v = ncfile.findVariable("temperature");
     assert v != null;
 

@@ -27,7 +27,7 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesCached() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestDir.openFileLocal("ncml/nc/time0.nc");
+    NetcdfFile ncfile = TestDir.open(TestDir.cdmLocalFromTestDataDir + "ncml/nc/time0.nc");
 
     Variable temp = null;
     assert (null != (temp = ncfile.findVariable("T")));
@@ -112,7 +112,7 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesNoCache() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestDir.openFileLocal("ncml/nc/time0.nc");
+    NetcdfFile ncfile = TestDir.open(TestDir.cdmLocalFromTestDataDir + "ncml/nc/time0.nc");
 
     Variable temp = null;
     assert (null != (temp = ncfile.findVariable("T")));
@@ -187,7 +187,7 @@ public class TestReadStrides extends TestCase {
 
   @Category(NeedsCdmUnitTest.class)
   public void testReadStridesAll() throws IOException, InvalidRangeException {
-    testReadStrides(TestDir.cdmLocalTestDataDir + "ncml/nc/time0.nc");
+    testReadStrides(TestDir.cdmLocalFromTestDataDir + "ncml/nc/time0.nc");
     testReadStrides(TestDir.cdmUnitTestDir + "formats/gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
   }
 

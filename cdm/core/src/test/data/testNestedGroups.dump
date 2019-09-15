@@ -1,4 +1,4 @@
-netcdf file:../cdm/src/test/data/testNestedGroups.ncml {
+netcdf file:../core/src/test/data/testNestedGroups.ncml {
   dimensions:
     time = UNLIMITED;   // (2 currently)
   variables:
