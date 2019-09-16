@@ -4,14 +4,15 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.Optional;
 import org.junit.Test;
+import thredds.inventory.TimedCollection.Dataset;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 
 public class TestTimedCollection {
 
-  //////////////////////////////////////////////////////////////////////////
-  // debugging
-  private static void doit(String spec, int count) throws IOException {
+  private static void doit(String spec, int count, String name, String start, String end) throws IOException {
     Formatter errlog = new Formatter();
     MFileCollectionManager dcm = MFileCollectionManager.open("test", spec, null, errlog);
     TimedCollection collection = new TimedCollection(dcm, errlog);
@@ -21,15 +22,22 @@ public class TestTimedCollection {
       System.out.printf("%s%n", err);
     System.out.printf("-----------------------------------%n");
     assertThat(collection.getDatasets()).hasSize(count);
+    if (count == 0) return;
+    Optional<Dataset> opt = collection.getDatasets().stream().filter(d -> d.location.endsWith(name)).findFirst();
+    assertThat(opt.isPresent());
+    opt.ifPresent(d -> {
+      assertThat(d.dateRange.getStart()).isEqualTo(CalendarDate.parseISOformat(null, start));
+      assertThat(d.dateRange.getEnd()).isEqualTo(CalendarDate.parseISOformat(null, end));
+    });
   }
 
   @Test
-  public void testStuff() throws IOException {
-    doit(TestDir.cdmUnitTestDir + "formats/gempak/surface/#yyyyMMdd#_sao.gem", 9);
-    doit(TestDir.cdmUnitTestDir + "formats/gempak/surface/#yyyyMMdd#_sao\\.gem", 9);
-    doit(TestDir.cdmUnitTestDir + "ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", 9);
+  public void testParseDateRange() throws IOException {
+    doit(TestDir.cdmUnitTestDir + "formats/gempak/surface/#yyyyMMdd#_sao.gem", 9,
+        "surface/19580807_sao.gem", "1958-08-07T00:00:00Z", "2009-05-21T00:00:00Z");
+    doit(TestDir.cdmUnitTestDir + "formats/gempak/surface/#yyyyMMdd#_sao\\.gem", 9,
+        "20090528_sao.gem", "2009-05-28T00:00:00Z", "2009-05-29T00:00:00Z");
+    doit(TestDir.cdmUnitTestDir + "ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", 9,
+        "Surface_METAR_20060325_0000.nc", "2006-03-25T00:00:00Z", "2006-03-26T00:00:00Z");
   }
-
-
-
 }
