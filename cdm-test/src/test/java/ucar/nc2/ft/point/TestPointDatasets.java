@@ -57,6 +57,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
+import ucar.unidata.util.test.category.NotTravis;
 
 /**
  * Test PointFeatureTypes.
@@ -65,7 +66,7 @@ import ucar.unidata.util.StringUtil2;
  * @since Dec 16, 2008
  */
 @RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
+@Category({NeedsCdmUnitTest.class, NotTravis.class})
 public class TestPointDatasets {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
