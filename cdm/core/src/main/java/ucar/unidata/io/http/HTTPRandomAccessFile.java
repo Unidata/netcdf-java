@@ -18,9 +18,6 @@ import java.nio.channels.WritableByteChannel;
 
 /**
  * Gives access to files over HTTP, using "Accept-Ranges" HTTP header to do random access.
- * This version uses a single instance of HttpClient, following performance guidelines at
- * http://jakarta.apache.org/commons/httpclient/performance.html
- * Plus other improvements.
  *
  * @author John Caron, based on work by Donald Denbo
  */

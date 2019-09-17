@@ -55,7 +55,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
 /**
- * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
  * Need more robust redirect and authentication.
  * <p>
  * This class provides support for common DODS client-side operations such as

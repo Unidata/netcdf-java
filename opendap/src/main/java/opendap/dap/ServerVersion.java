@@ -117,7 +117,7 @@ public class ServerVersion implements java.io.Serializable {
 
   /**
    * Determines Server (Protocol) Version based on the headers associated
-   * with the passed org.apache.http.methods.GetMethod.
+   * with the passed GetMethod.
    *
    * @param method The GetMethod containing the DAP2 headers.
    * @throws DAP2Exception When bad things happen (like the headers are
