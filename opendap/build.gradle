@@ -17,8 +17,8 @@ dependencies {
     compile project(':cdm:core')
     compile project(':httpservices')
 
-    compile libraries["jdom2"]
     compile libraries["httpcore"]
+    compile libraries["jdom2"]
     compile libraries["jsr305"]
     compile libraries["coverity-escapers"]
 
