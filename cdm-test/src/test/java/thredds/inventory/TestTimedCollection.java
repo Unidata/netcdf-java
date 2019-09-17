@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.inventory.TimedCollection.Dataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestTimedCollection {
 
   private static void doit(String spec, int count, String name, String start, String end) throws IOException {
