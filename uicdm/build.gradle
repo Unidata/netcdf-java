@@ -11,8 +11,9 @@ apply from: "$rootDir/gradle/any/properties.gradle"  // For keystore and Nexus p
 
 dependencies {
     compile project(":cdm:core")
-    compile project(":cdm:image")  // things that depend on java.awt
-    compile project(":cdm:radial")  // things that depend on java.awt
+    compile project(":cdm:image")   // things that depend on java.awt
+    compile project(":cdm:misc")    // misc iosps
+    compile project(":cdm:radial")  // radial data
     compile project(":bufr")
     compile project(":grib")
     compile project(":httpservices")
