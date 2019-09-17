@@ -66,7 +66,7 @@ import ucar.unidata.util.test.category.NotTravis;
  * @since Dec 16, 2008
  */
 @RunWith(Parameterized.class)
-@Category({NeedsCdmUnitTest.class, NotTravis.class})
+@Category(NeedsCdmUnitTest.class)
 public class TestPointDatasets {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
