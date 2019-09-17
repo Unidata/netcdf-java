@@ -12,13 +12,8 @@ apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
     compile project(':udunits')
-    compile project(':httpservices')
     compile project(':cdm:core')
 
-    compile libraries["joda-time"]
-    compile libraries["jdom2"]
-    compile libraries["jsr305"]
-    compile libraries["guava"]
     compile libraries["jsr305"]  // Nonnull
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
