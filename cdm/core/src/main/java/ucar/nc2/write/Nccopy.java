@@ -8,6 +8,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
+import java.util.Optional;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
+import ucar.nc2.util.DiskCache;
 
 /**
  * Utility to implement nccopy
@@ -54,6 +56,17 @@ public class Nccopy {
         + "Only used in NetCDF 4. This option is ignored unless a non-zero deflate level is specified.")
     public boolean shuffle = true;
 
+    @Parameter(names = "--diskCacheRoot",
+        description = "Set the DiskCache root. "
+            + "This parameter controls where temporary files will be stored, if necessary "
+            + "(e.g. intermediate uncompressed NEXRAD files created when reading compressed files). "
+            + "Must be a valid filesystem path. Only used if lacking permission to write to the same "
+            + "location as the input file."
+            + "Note: this directory is not automatically cleaned, so be sure to clean-up as needed")
+    public File diskCacheRoot;
+
+    // todo - add flag to autoclean diskCacheRoot
+
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
     public boolean help;
 
@@ -61,7 +74,7 @@ public class Nccopy {
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
       // Display parameters in this order in the usage information.
       private final List<String> orderedParamNames = Arrays.asList("--input", "--output", "--format", "--isLargeFile",
-          "--strategy", "--deflateLevel", "--shuffle", "--help");
+          "--strategy", "--deflateLevel", "--shuffle", "--diskCacheRoot", "--help");
 
       @Override
       public int compare(ParameterDescription p0, ParameterDescription p1) {
@@ -110,6 +123,11 @@ public class Nccopy {
       CancelTaskImpl cancel = new CancelTaskImpl();
       Formatter errlog = new Formatter();
       System.out.printf("NetcdfDatataset read from %s write %s to %s ", datasetIn, cmdLine.format, datasetOut);
+
+      Optional<File> diskCacheDir = Optional.ofNullable(cmdLine.diskCacheRoot);
+      if (diskCacheDir.isPresent()) {
+        DiskCache.setRootDirectory(diskCacheDir.get().getAbsolutePath());
+      }
 
       try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel)) {
 
