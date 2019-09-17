@@ -11,6 +11,7 @@ apply from: "$rootDir/gradle/any/coverage.gradle"
 dependencies {
     testCompile project(":cdm:core")
     testCompile project(":cdm:image")
+    testCompile project(":cdm:misc")
     testCompile project(":cdm:radial")
     testCompile project(":bufr")
     testCompile project(":grib")
