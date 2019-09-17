@@ -57,12 +57,8 @@ import java.util.zip.ZipInputStream;
  * <li>An instance of an Apache HttpClient.
  * <li>A http session id
  * <li>A RequestContext object; this also includes authentication:
- * specifically a credential and a credentials provider.
+ * specifically a credentials provider.
  * </ul>
- * <p>
- * Currently, it is assumed that only one set of credentials is needed,
- * whether directly for server X or for server Y. This may change in the
- * future.
  * <p>
  * As a rule, if the client gives an HTTPSession object to the "create method"
  * procedures of HTTPFactory (e.g. HTTPFactory.Get or HTTPFactory.Post)
@@ -99,7 +95,7 @@ import java.util.zip.ZipInputStream;
  * <em>Authorization</em>
  * We assume that the session supports two CredentialsProvider instances:
  * one global to all HTTPSession objects and one specific to each
- * HTTPSession object.
+ * HTTPSession object. The global one is used unless a local one was specified.
  * <p>
  * As an aside, authentication is a bit tricky because some
  * authorization schemes use redirection. That is, the initial request
@@ -109,6 +105,19 @@ import java.util.zip.ZipInputStream;
  * <p>
  * <em>SSL</em>
  * TBD.
+ *
+ * Notes:
+ * 
+ * 1. Setting of credentials via HTTPSession is no longer supported.
+ * Instead, the user must use CredentialsProvider.setCredentials
+ * 2. CredentialsProviders are all assumed to be caching (see
+ * the code for BasicCredentialsProvider for the canonical case.
+ * This has consequences for proxy because an attempt
+ * will be made to insert them into the chosen CredentialsProvider.
+ * 3. The new class HTTPAuthCache is used instead of BasicAuthCache
+ * so that when authorization fails, the AuthCache.remove method
+ * is forwarded to the CredentialsProvider.clear or the
+ * HTTPCredentialsProvider.remove method.
  */
 
 @ThreadSafe
@@ -315,6 +324,10 @@ public class HTTPSession implements Closeable {
 
   static HttpRequestRetryHandler globalretryhandler = null;
 
+  // Define a single global (default) credentials provider.
+  // User is responsible for its contents via setCredentials
+  static CredentialsProvider globalprovider = null;
+
   // Define interceptor instances; use copy on write for thread safety
   static List<HttpRequestInterceptor> reqintercepts = new CopyOnWriteArrayList<HttpRequestInterceptor>();
   static List<HttpResponseInterceptor> rspintercepts = new CopyOnWriteArrayList<HttpResponseInterceptor>();
@@ -333,8 +346,6 @@ public class HTTPSession implements Closeable {
   protected static Map<String, InputStreamFactory> contentDecoderMap;
 
   // public final HttpClientBuilder setContentDecoderRegistry(Map<String,InputStreamFactory> contentDecoderMap)
-
-  protected static Map<AuthScope, HTTPProviderFactory> globalcredfactories = new HashMap<>();
 
   // As taken from the command line
   protected static AuthControls authcontrols;
@@ -693,56 +704,20 @@ public class HTTPSession implements Closeable {
 
   //////////////////////////////////////////////////
   // Authorization
+  // global
 
   /**
-   * @param factory the credentials provider factory
-   * @param scope where to use it (i.e. on what host)
+   * @param provider the credentials provider
    * @throws HTTPException
    */
-  public static void setCredentialsProviderFactory(HTTPProviderFactory factory, AuthScope scope) throws HTTPException {
-    if (factory == null)
-      throw new NullPointerException(HTTPSession.class.getName());
-    if (scope == null)
-      scope = AuthScope.ANY;
-    globalcredfactories.put(scope, factory);
+  public static void setGlobalCredentialsProvider(CredentialsProvider provider) throws HTTPException {
+    if (provider == null)
+      throw new NullPointerException("HTTPSession");
+    globalprovider = provider;
   }
 
-  /**
-   * It is convenient to be able to directly set the Credentials
-   * (not the provider) when those credentials are fixed.
-   * Scope defaults to ANY
-   *
-   * @param creds
-   * @throws HTTPException
-   */
-  public static void setGlobalCredentials(Credentials creds) throws HTTPException {
-    setGlobalCredentials(creds, null);
-  }
-
-  /**
-   * It is convenient to be able to directly set the Credentials
-   * (not the provider) when those credentials are fixed.
-   *
-   * @param creds
-   * @param scope where to use it (i.e. on what host)
-   * @throws HTTPException
-   */
-  public static void setGlobalCredentials(Credentials creds, AuthScope scope) throws HTTPException {
-    assert (creds != null);
-    if (scope == null)
-      scope = AuthScope.ANY;
-    CredentialsProvider provider = new BasicCredentialsProvider();
-    provider.setCredentials(scope, creds);
-    setGlobalCredentialsProvider(provider, scope);
-  }
-
-  /**
-   * Remove any global credentials that have been previosly set with the {@link #setGlobalCredentials(Credentials)}
-   * or {@link #setCredentialsProviderFactory} methods.
-   */
-  public static void clearGlobalCredentials() {
-    globalcredfactories.clear();
-  }
+  //////////////////////////////////////////////////
+  // Miscellaneous
 
   public static synchronized void setGlobalRetryCount(int n) {
     if (n < 0) // validate
@@ -761,8 +736,8 @@ public class HTTPSession implements Closeable {
   protected AuthScope scope = null;
   protected boolean closed = false;
 
-  // Since can't access CredentialsProvider map, mimic
-  protected Map<AuthScope, CredentialsProvider> localcreds = new HashMap<>();
+  // Store the per-session credentials provider, if any
+  protected CredentialsProvider sessionprovider = null;
 
   protected ConcurrentSkipListSet<HTTPMethod> methods = new ConcurrentSkipListSet<>();
   protected String identifier = "Session";
@@ -773,9 +748,9 @@ public class HTTPSession implements Closeable {
 
   // This context is re-used over all method executions so that we maintain
   // cookies, credentials, etc.
-  // But we do need a way to clear so that e.g. we can clear credentials cache
+  // In theory this also supports credentials cache clearing.
   protected HttpClientContext sessioncontext = HttpClientContext.create();
-  protected BasicAuthCache sessioncache = new BasicAuthCache();
+  protected HTTPAuthCache sessioncache = new HTTPAuthCache();
 
   protected URI requestURI = null; // full uri from the HTTPMethod call
 
@@ -811,7 +786,7 @@ public class HTTPSession implements Closeable {
     this.scopeURI = HTTPAuthUtil.authscopeToURI(scope);
     this.cachevalid = false; // Force build on first use
     this.sessioncontext.setCookieStore(new BasicCookieStore());
-    this.sessioncache = new BasicAuthCache();
+    this.sessioncache = new HTTPAuthCache();
     this.sessioncontext.setAuthCache(sessioncache);
   }
 
@@ -939,25 +914,6 @@ public class HTTPSession implements Closeable {
     return this;
   }
 
-  public HTTPSession clearCredentialsCache() {
-    if (this.sessioncache != null)
-      this.sessioncache.clear();
-    return this;
-  }
-
-  public HTTPSession clearCredentialsCache(AuthScope template) {
-    if (this.sessioncache != null) {
-      HttpHost h = HTTPAuthUtil.authscopeToHost(template);
-      this.sessioncache.remove(h);
-    }
-    return this;
-  }
-
-  public BasicAuthCache getCredentialsCache() {
-    return this.sessioncache;
-  }
-
-
   // make package specific
 
   HttpClientContext getExecutionContext() {
@@ -1002,64 +958,45 @@ public class HTTPSession implements Closeable {
   // per-session versions of the global accessors
 
   /**
-   * @param provider
+   * @param provider the credentials provider
    * @throws HTTPException
    */
   public HTTPSession setCredentialsProvider(CredentialsProvider provider) throws HTTPException {
-    setCredentialsProvider(provider, null);
-    return this;
-  }
-
-  /**
-   * This is the most general case
-   *
-   * @param provider the credentials provider
-   * @param scope where to use it (i.e. on what host+port)
-   * @throws HTTPException
-   */
-  public HTTPSession setCredentialsProvider(CredentialsProvider provider, AuthScope scope) throws HTTPException {
     if (provider == null)
       throw new NullPointerException(this.getClass().getName());
-    if (scope == null)
-      scope = AuthScope.ANY;
-    localcreds.put(scope, provider);
+    sessionprovider = provider;
     return this;
   }
-
-  /**
-   * It is convenient to be able to directly set the Credentials
-   * (not the provider) when those credentials are fixed.
-   * Scope defaults to ANY
-   *
-   * @param creds
-   * @throws HTTPException
-   */
-  public HTTPSession setCredentials(Credentials creds) throws HTTPException {
-    setCredentials(creds, null);
-    return this;
-  }
-
-  /**
-   * It is convenient to be able to directly set the Credentials
-   * (not the provider) when those credentials are fixed.
-   *
-   * @param creds
-   * @param scope where to use it (i.e. on what host)
-   * @throws HTTPException
-   */
-  public HTTPSession setCredentials(Credentials creds, AuthScope scope) throws HTTPException {
-    assert (creds != null);
-    if (scope == null)
-      scope = AuthScope.ANY;
-    CredentialsProvider provider = new BasicCredentialsProvider();
-    provider.setCredentials(scope, creds);
-    setCredentialsProvider(provider, scope);
-    return this;
-  }
-
 
   //////////////////////////////////////////////////
   // Called only by HTTPMethod.execute to get relevant session state.
+
+  /**
+   * This is used by HTTPMethod to sclear the credentials provider.
+   * in theory, this should be done automatically, but apparently not.
+   */
+  protected synchronized void clearProvider() {
+    if (sessionprovider != null)
+      sessionprovider.clear();
+    else if (globalprovider != null)
+      globalprovider.clear();
+  }
+
+  /**
+   * This is used by HTTPMethod to set the in-url name+pwd into
+   * the credentials provider, if defined.
+   */
+  protected synchronized void setCredentials(URI uri) throws HTTPException {
+    if (sessionprovider != null) {
+      String userinfo = HTTPUtil.nullify(uri.getUserInfo());
+      if (userinfo != null) {
+        // Construct an AuthScope from the uri
+        AuthScope scope = HTTPAuthUtil.uriToAuthScope(uri);
+        // Save the credentials
+        sessionprovider.setCredentials(scope, new UsernamePasswordCredentials(userinfo));
+      }
+    }
+  }
 
   /**
    * Handle authentication and Proxy'ing
@@ -1072,28 +1009,18 @@ public class HTTPSession implements Closeable {
     // First, setup the ssl factory
     cb.setSSLSocketFactory((SSLConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
 
-    // Second, Construct a CredentialsProvider that is
-    // the union of the Proxy credentials plus
-    // either the global or local credentials; local overrides global
-    // Unfortunately, we cannot either clone or extract the contents
-    // of the client supplied provider, so we are forced (for now)
-    // to modify the client supplied provider.
+    // Second, Store the proxy credentials into the current credentials
+    // provider, either the global or local credentials; local overrides global
 
-    // Look in the local credentials first for for best scope match
-    AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope, localcreds.keySet());
-    CredentialsProvider cp = null;
-    if (bestMatch != null) {
-      cp = localcreds.get(bestMatch);
-    } else {
-      bestMatch = HTTPAuthUtil.bestmatch(scope, globalcredfactories.keySet());
-      if (bestMatch != null) {
-        HTTPProviderFactory factory = globalcredfactories.get(bestMatch);
-        cp = factory.getProvider(bestMatch);
-      }
-    }
     // Build the proxy credentials and AuthScope
     Credentials proxycreds = null;
     AuthScope proxyscope = null;
+    CredentialsProvider cp = sessionprovider;
+    if (cp == null)
+      cp = globalprovider;
+    // Notify the AuthCache
+    if (sessioncache != null)
+      sessioncache.addProvider(cp);
     String user = (String) authcontrols.get(AuthProp.PROXYUSER);
     String pwd = (String) authcontrols.get(AuthProp.PROXYPWD);
     HttpHost httpproxy = (HttpHost) authcontrols.get(AuthProp.HTTPPROXY);
@@ -1109,14 +1036,12 @@ public class HTTPSession implements Closeable {
       // If client provider is null and proxycreds are not,
       // then use proxycreds alone
       cp = new BasicCredentialsProvider();
-      cp.setCredentials(proxyscope, proxycreds);
-    } else if (cp != null && proxycreds != null && proxyscope != null) {
-      // If client provider is not null and proxycreds are not,
-      // then add proxycreds to the client provider
+    }
+    // add proxycreds to the client provider
+    if (cp != null && proxycreds != null && proxyscope != null) {
       cp.setCredentials(proxyscope, proxycreds);
     }
-    if (cp != null)
-      this.sessioncontext.setCredentialsProvider(cp);
+    this.sessioncontext.setCredentialsProvider(cp);
   }
 
   /* package */
@@ -1336,44 +1261,22 @@ public class HTTPSession implements Closeable {
 
   @Deprecated
   public static void setGlobalCredentialsProvider(AuthScope scope, CredentialsProvider provider) throws HTTPException {
-    setGlobalCredentialsProvider(provider, scope);
+    setGlobalCredentialsProvider(provider); // ignore scope
   }
 
   @Deprecated
   public static void setGlobalCredentialsProvider(String url, CredentialsProvider provider) throws HTTPException {
-    assert (url != null && provider != null);
-    AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
-    setGlobalCredentialsProvider(provider, scope);
-  }
-
-  @Deprecated
-  public static void setGlobalCredentials(String url, Credentials creds) throws HTTPException {
-    assert (url != null && creds != null);
-    AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
-    CredentialsProvider provider = new BasicCredentialsProvider();
-    provider.setCredentials(scope, creds);
-    setGlobalCredentialsProvider(provider, scope);
-  }
-
-  @Deprecated
-  public HTTPSession setCredentials(String url, Credentials creds) throws HTTPException {
-    assert (creds != null);
-    AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
-    setCredentials(creds, scope);
-    return this;
+    setGlobalCredentialsProvider(provider);
   }
 
   @Deprecated
   public HTTPSession setCredentialsProvider(String url, CredentialsProvider provider) throws HTTPException {
-    assert (url != null && provider != null);
-    AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
-    setCredentialsProvider(provider, scope);
-    return this;
+    return setCredentialsProvider(provider);
   }
 
   @Deprecated
   public HTTPSession setCredentialsProvider(AuthScope scope, CredentialsProvider provider) throws HTTPException {
-    return setCredentialsProvider(provider, scope);
+    return setCredentialsProvider(provider);
   }
 
   @Deprecated
@@ -1412,45 +1315,9 @@ public class HTTPSession implements Closeable {
     return getSessionURI();
   }
 
-
-  //////////////////////////////////////////////////
-  // obsolete
-
-  protected static synchronized void kill() {
-    if (sessionList != null) {
-      for (HTTPSession session : sessionList) {
-        session.close();
-      }
-      sessionList.clear();
-      connmgr.close();
-    }
-  }
-
+  // Obsolete
 
   public static void validatestate() {
     connmgr.validate();
   }
-
-  /**
-   * @param provider
-   * @throws HTTPException
-   */
-  @Deprecated
-  public static void setGlobalCredentialsProvider(CredentialsProvider provider) throws HTTPException {
-    setGlobalCredentialsProvider(provider, (AuthScope) null);
-  }
-
-  /**
-   * This is the most general case
-   *
-   * @param provider the credentials provider
-   * @param scope where to use it (i.e. on what host)
-   * @throws HTTPException
-   */
-  @Deprecated
-  public static void setGlobalCredentialsProvider(CredentialsProvider provider, AuthScope scope) throws HTTPException {
-    HTTPProviderFactory factory = new SingleProviderFactory(provider);
-    setCredentialsProviderFactory(factory, scope);
-  }
-
 }

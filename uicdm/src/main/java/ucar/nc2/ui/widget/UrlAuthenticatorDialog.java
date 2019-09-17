@@ -4,10 +4,14 @@
  */
 package ucar.nc2.ui.widget;
 
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import ucar.httpservices.HTTPAuthUtil;
+import ucar.httpservices.HTTPCredentialsProvider;
+import ucar.httpservices.HTTPSession;
 import ucar.ui.prefs.Field;
 import ucar.ui.prefs.PrefPanel;
 import javax.swing.*;
@@ -16,6 +20,9 @@ import java.awt.event.ActionListener;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import ucar.ui.widget.IndependentDialog;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This can be used both for java.net authentication:
@@ -29,13 +36,62 @@ import ucar.ui.widget.IndependentDialog;
  *         can support multiple AuthScopes to handle e.g. proxies like
  *         BasicCredentialsProvider
  */
-public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider {
+
+/*
+ * 
+ * UrlAuthenticatorDialog was repeatedly prompting for credentials
+ * every time getCredentials() was called. Additionally, it was
+ * locking up if a bad password was provided.
+ * 
+ * The repeated popup problem was occuring because
+ * UrlAuthenticatorDialog had been modified at one time to cache
+ * credentials that it generated so that repeated calls would
+ * return the cached credentials. This caching is required by
+ * Apache httpclient as of at least 4.5.x. It is used, for
+ * example, to store proxy credentials. The canonical code example
+ * is to look at the code for BasicCredendentialsProvider. In any
+ * case, someone removed this code at some point. No idea why.
+ * The caching has been restored.
+ * 
+ * With respect to the problem of a bad username+password,
+ * it turns out that the
+ * AuthCache object in the HttpContext object is notified when authorization
+ * fails. The AuthCache.remove method is called with the HttpHost object
+ * defining the host for which authorization failed. It turns out that
+ * AuthCache does not, by default, notify the CredentialsProvider object
+ * of the failure (a serious flaw IMO).
+ * 
+ * This has been fixed in HTTPSession by using a new class -- HTTPAuthCache --
+ * to forward remove requests to a set of CredentialsProvider objects
+ * using one of two methods:
+ * 
+ * 1. If the CredentialsProvider implements a new Interface --
+ * HTTPCredentialsProvider -- then the remove() method of the
+ * HTTPCredentialsProvider API is called. This provided the
+ * ability to carry out a finer grain removal of bad
+ * credentials.
+ * 2. Otherwise, the clear() method of the CredentialsProvider is
+ * called; this latter case is provide backward compatibility.
+ * 
+ * UrlAuthenticatorDialog has been modified to support
+ * the HTTPCredentialsProvider.remove method.
+ */
+
+public class UrlAuthenticatorDialog extends Authenticator implements HTTPCredentialsProvider {
 
   private IndependentDialog dialog;
-  private UsernamePasswordCredentials pwa;
+  private UsernamePasswordCredentials pwa = null;
   private Field.Text serverF, realmF, userF;
   private Field.Password passwF;
   private boolean debug;
+
+  public HTTPSession session = null;
+
+  // Track credentials stored via setCredentials
+  private Map<AuthScope, Credentials> setcache = new ConcurrentHashMap<>();
+
+  // Track credentials stored via dialog
+  private Map<AuthScope, Credentials> dialogcache = new ConcurrentHashMap<>();
 
   /**
    * constructor
@@ -74,9 +130,25 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     dialog.setLocation(100, 100);
   }
 
-  public void clear() {}
+  public void clear() {
+    this.dialogcache.clear();
+  }
 
-  public void setCredentials(AuthScope scope, Credentials cred) {}
+  // Extra method in HTTPCredentialProvider to provide finer grain
+  // removal vs clear()
+  public void remove(HttpHost host) {
+    // Convert host to an AuthScope
+    AuthScope hostscope = HTTPAuthUtil.hostToAuthScope(host);
+    // Find match in dialogcache
+    AuthScope match = HTTPAuthUtil.bestmatch(hostscope, dialogcache.keySet());
+    // remove
+    if (match != null)
+      dialogcache.remove(match);
+  }
+
+  public void setCredentials(AuthScope scope, Credentials cred) {
+    setcache.put(scope, cred);
+  }
 
   // java.net calls this:
   protected PasswordAuthentication getPasswordAuthentication() {
@@ -105,6 +177,23 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
   // http client calls this:
   public Credentials getCredentials(AuthScope scope) {
+    // Search dialogcache first
+    Credentials creds = null;
+    AuthScope bestMatch = null;
+    bestMatch = HTTPAuthUtil.bestmatch(scope, dialogcache.keySet());
+    if (bestMatch != null) {
+      creds = dialogcache.get(bestMatch);
+    }
+    if (creds == null) {
+      // try the set cache
+      bestMatch = HTTPAuthUtil.bestmatch(scope, setcache.keySet());
+      if (bestMatch != null) {
+        creds = setcache.get(bestMatch);
+      }
+    }
+    if (creds != null)
+      return creds;
+    // No cached creds, so ask user
     serverF.setText(scope.getHost() + ":" + scope.getPort());
     realmF.setText(scope.getRealm());
     dialog.setVisible(true);
@@ -116,6 +205,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     }
     // Is this really necessary?
     UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pwa.getUserName(), pwa.getPassword());
+    dialogcache.put(scope, upc);
     return upc;
   }
 }

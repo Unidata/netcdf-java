@@ -33,9 +33,12 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.Header;
+import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.message.BasicHeader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -43,7 +46,6 @@ import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -54,10 +56,13 @@ public class TestHTTPSession extends UnitTestCommon {
   //////////////////////////////////////////////////
   // Constants
 
-  protected final String TESTURL1 = "http://" + TestDir.dap2TestServer + "/dts/test.01.dds";
+  // static final String TESTURL1 = "http://" + TestDir.dap2TestServer + "/dts/test.01.dds";
+  static final String TESTURL1 = "https://thredds-dev.unidata.ucar.edu";
   static final String GLOBALAGENT = "TestUserAgent123global";
   static final String SESSIONAGENT = "TestUserAgent123session";
 
+  static final String USER = "dmh";
+  static final String PWD = "FakDennisPassword";
   //////////////////////////////////////////////////
   // Define the test sets
 
@@ -92,10 +97,17 @@ public class TestHTTPSession extends UnitTestCommon {
       // Look for the user agent header
       agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
       Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
-      Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
-      Assert.assertTrue(
-          String.format("User-Agent mismatch: expected %s found:%s", GLOBALAGENT, agents.get(0).getValue()),
-          GLOBALAGENT.equals(agents.get(0).getValue()));
+      // It is possible to see multiple same headers, so verify that they have same value
+      String agentvalue = null;
+      for (Header h : agents) {
+        Assert.assertTrue("Bad Agent Header", h.getName().equals("User-Agent"));
+        if (agentvalue == null)
+          agentvalue = h.getValue();
+        else
+          Assert.assertTrue("Bad Agent Value", h.getValue().equals(agentvalue));
+      }
+      Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s", GLOBALAGENT, agentvalue),
+          GLOBALAGENT.equals(agentvalue));
       System.out.println("*** Pass: set global agent");
       // method.close();
 
@@ -107,10 +119,16 @@ public class TestHTTPSession extends UnitTestCommon {
       // Use special interface to access the request
       agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
       Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
-      Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
-      Assert.assertTrue(
-          String.format("User-Agent mismatch: expected %s found:%s", SESSIONAGENT, agents.get(0).getValue()),
-          SESSIONAGENT.equals(agents.get(0).getValue()));
+      agentvalue = null;
+      for (Header h : agents) {
+        Assert.assertTrue("Bad Agent Header", h.getName().equals("User-Agent"));
+        if (agentvalue == null)
+          agentvalue = h.getValue();
+        else
+          Assert.assertTrue("Bad Agent Value", h.getValue().equals(agentvalue));
+      }
+      Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s", SESSIONAGENT, agentvalue),
+          SESSIONAGENT.equals(agentvalue));
       System.out.println("*** Pass: set session agent");
       method.close();
     }
@@ -120,13 +138,14 @@ public class TestHTTPSession extends UnitTestCommon {
   @Test
   public void testConfigure() throws Exception {
     try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
-
       System.out.println("Test: HTTPSession: Configuration");
       session.setSoTimeout(17777);
       session.setConnectionTimeout(37777);
       session.setMaxRedirects(111);
-      Credentials bp = new UsernamePasswordCredentials("anyuser", "password");
-      session.setCredentials(bp);
+      Credentials bp = new UsernamePasswordCredentials(USER, PWD);
+      BasicCredentialsProvider bcp = new BasicCredentialsProvider();
+      bcp.setCredentials(AuthScope.ANY, bp);
+      session.setCredentialsProvider(bcp);
       // session.setAuthorizationPreemptive(true); not implemented
 
       HTTPMethod method = HTTPFactory.Get(session, TESTURL1);

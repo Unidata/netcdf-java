@@ -113,12 +113,20 @@ public abstract class HTTPAuthUtil {
     }
   }
 
-  static HttpHost authscopeToHost(AuthScope scope) {
-    return new HttpHost(scope.getHost(), scope.getPort(), scope.getScheme());
+  // Note that the scheme field of HttpHost is not the same
+  // as the scheme field of AuthScope. The HttpHost schem is
+  // a protocol like http or https. The schem field of AuthScope
+  // is the authorization scheme like Basic or NTLM or Digest.
+  static public HttpHost authscopeToHost(AuthScope scope) {
+    return new HttpHost(scope.getHost(), scope.getPort(), HttpHost.DEFAULT_SCHEME_NAME);
   }
 
-  static AuthScope hostToAuthScope(HttpHost host) {
-    return new AuthScope(host.getHostName(), host.getPort(), AuthScope.ANY_REALM, host.getSchemeName());
+  // Note that the scheme field of HttpHost is not the same
+  // as the scheme field of AuthScope. The HttpHost schem is
+  // a protocol like http or https. The schem field of AuthScope
+  // is the authorization scheme like Basic or NTLM or Digest.
+  static public AuthScope hostToAuthScope(HttpHost host) {
+    return new AuthScope(host.getHostName(), host.getPort(), AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
   }
 
   public static AuthScope bestmatch(AuthScope scope, Set<AuthScope> scopelist) {

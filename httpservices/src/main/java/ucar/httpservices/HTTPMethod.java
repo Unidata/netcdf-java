@@ -215,10 +215,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     this.session = session;
     this.userinfo = HTTPUtil.nullify(this.methodurl.getUserInfo());
     if (this.userinfo != null) {
+      // convert userinfo to credentials
+      this.session.setCredentials(this.methodurl);
       if (!TESTING)
         this.methodurl = HTTPUtil.uriExclude(this.methodurl, HTTPUtil.URIPart.USERINFO);
-      // convert userinfo to credentials
-      this.session.setCredentials(new UsernamePasswordCredentials(this.userinfo));
     }
     this.session.addMethod(this);
     this.methodkind = m;
@@ -678,17 +678,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     this.session.setUseSessions(tf);
     return this;
   }
-
-  public HTTPMethod setCredentials(Credentials creds) throws HTTPException {
-    this.session.setCredentials(creds);
-    return this;
-  }
-
-  public HTTPMethod setCredentials(Credentials creds, AuthScope scope) throws HTTPException {
-    this.session.setCredentials(creds, scope);
-    return this;
-  }
-
 
   //////////////////////////////////////////////////
   // Utilities
