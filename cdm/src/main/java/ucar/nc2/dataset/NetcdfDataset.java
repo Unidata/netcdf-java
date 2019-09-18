@@ -22,8 +22,6 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -728,54 +726,34 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return openOrAcquireFile(netcdfFileCache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
   }
 
-  /*
+  /**
    * Open or acquire a NetcdfFile.
    *
    * @param cache if not null, acquire through this NetcdfFileCache, otherwise simply open
-   * 
    * @param factory if not null, use this factory if the file is not in the cache. If null, use the default factory.
-   * 
    * @param hashKey if not null, use as the cache key, else use the location
-   * 
    * @param orgLocation location of file
-   * 
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
-   * 
    * @param cancelTask allow task to be cancelled; may be null.
-   * 
    * @param spiObject sent to iosp.setSpecial() if not null
-   * 
-   * @return NetcdfFile object
-   * 
-   * @throws java.io.IOException on read error
-   *
-   * static private NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey, String
-   * orgLocation,
-   * int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-   * 
-   * if (orgLocation == null)
-   * throw new IOException("NetcdfDataset.openFile: location is null");
-   * 
-   * String location = StringUtil2.replace(orgLocation.trim(), '\\', "/");
-   * DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-   * return openOrAcquireFile(cache, factory, hashKey, durl, buffer_size, cancelTask, spiObject);
-   * }
+   * @return NetcdfFile or throw an Exception.
    */
-
   private static NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey, DatasetUrl durl,
       int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+
+    // look for dynamically loaded NetcdfFileProvider
+    for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
+      System.out.printf("ServiceLoader NetcdfFileProvider found %s%n", provider.getClass().getName());
+      if (provider.isOwnerOf(durl)) {
+        return provider.open(durl, cancelTask);
+      }
+    }
 
     if (durl.serviceType != null) {
       switch (durl.serviceType) {
 
-        case OPENDAP:
-          return acquireDODS(cache, factory, hashKey, durl.trueurl, buffer_size, cancelTask, spiObject);
-
         case CdmRemote:
           return acquireCdmRemote(cache, factory, hashKey, durl.trueurl, buffer_size, cancelTask, spiObject);
-
-        case DAP4:
-          return acquireDap4(cache, factory, hashKey, durl.trueurl, buffer_size, cancelTask, spiObject);
 
         case NCML:
           return acquireNcml(cache, factory, hashKey, durl.trueurl, buffer_size, cancelTask, spiObject);
@@ -806,117 +784,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // Last resort: try to open as a file or remote file
     return NetcdfFile.open(durl.trueurl, buffer_size, cancelTask, spiObject);
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-  // opendap
-
-
-  /**
-   * Define the dap4 path
-   */
-  private static final String DAP4_PATH = "dap4.cdm.nc2";
-
-  private static NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey, String location,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null) {
-      return openDodsByReflection(location, cancelTask);
-    }
-
-    if (factory == null)
-      factory = new DodsFactory();
-    return (NetcdfFile) cache.acquire(factory, hashKey, new DatasetUrl(ServiceType.OPENDAP, location), buffer_size,
-        cancelTask, spiObject);
-  }
-
-  private static NetcdfFile acquireDap4(FileCache cache, FileFactory factory, Object hashKey, String location,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null) {
-      return openDap4ByReflection(location, cancelTask);
-    }
-
-    if (factory == null)
-      factory = new Dap4Factory();
-    return (NetcdfFile) cache.acquire(factory, hashKey, new DatasetUrl(ServiceType.DAP4, location), buffer_size,
-        cancelTask, spiObject);
-  }
-
-  private static class DodsFactory implements FileFactory {
-    public NetcdfFile open(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-        throws IOException {
-      return openDodsByReflection(location.trueurl, cancelTask);
-    }
-  }
-
-  private static class Dap4Factory implements FileFactory {
-    public NetcdfFile open(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-        throws IOException {
-      return openDap4ByReflection(location.trueurl, cancelTask);
-    }
-  }
-
-  private static NetcdfFile openDodsByReflection(String location, ucar.nc2.util.CancelTask cancelTask)
-      throws IOException {
-    Constructor con;
-    Class c;
-    NetcdfFile file;
-    try {
-      c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
-      con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
-    } catch (ClassNotFoundException e) {
-      log.info("opendap.jar is not on class path or is incorrect version");
-      throw new IOException("opendap.jar is not on classpath or is incorrect version");
-    } catch (Throwable e) {
-      log.error("Error openDodsByReflection: ", e);
-      throw new IOException("opendap.jar is not on classpath or is incorrect version");
-    }
-    try {
-      file = (NetcdfFile) con.newInstance(location, cancelTask);
-      return file;
-    } catch (Exception e) {
-      log.error("Error openDodsByReflection: ", e.getCause());
-      throw new IOException(e.getCause());
-    }
-
-  }
-
-  private static NetcdfFile openDap4ByReflection(String location, ucar.nc2.util.CancelTask cancelTask)
-      throws IOException {
-    Constructor constructormethod;
-    Class dap4class;
-    NetcdfFile file;
-    String target = DAP4_PATH + ".DapNetcdfFile";
-    try {
-      dap4class = NetcdfFile.class.getClassLoader().loadClass(target);
-      constructormethod = dap4class.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
-      file = (NetcdfFile) constructormethod.newInstance(location, cancelTask);
-      return file;
-    } catch (ClassNotFoundException e) {
-      String msg = "DapNetcdfFile is not on class path or is incorrect version: " + target;
-      log.error(msg);
-      throw new IOException(msg);
-    } catch (NoSuchMethodException e) {
-      String msg = "DapNetcdfFile constructor not found";
-      log.error(msg);
-      throw new IOException(msg);
-    } catch (InstantiationException e) {
-      String msg = "DapNetcdfFile constructor cannot be invoked";
-      log.error(msg);
-      throw new IOException(msg);
-    } catch (IllegalAccessException iace) {
-      String msg = "DapNetcdfFile constructor cannot be invoked";
-      log.error(msg);
-      throw new IOException(msg, iace);
-    } catch (IllegalArgumentException iare) {
-      String msg = "DapNetcdfFile constructor: illegal argument";
-      log.error(msg);
-      throw new IOException(msg, iare);
-    } catch (InvocationTargetException ite) {
-      String msg = "DapNetcdfFile constructor failed: " + ite.getCause().getMessage();
-      log.error(msg);
-      throw new IOException(msg, ite);
-    }
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////////

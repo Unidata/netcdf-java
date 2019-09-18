@@ -18,7 +18,6 @@ import ucar.nc2.util.rc.RC;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -31,7 +30,7 @@ import java.util.*;
  * @see ucar.nc2.NetcdfFile
  */
 @NotThreadSafe
-public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
+public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   // temporary flag to control usegroup changes
   static boolean OLDGROUPCODE = false;
 
@@ -175,7 +174,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable {
    * @throws java.net.MalformedURLException
    */
   public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException {
-    super();
     long start = System.currentTimeMillis();
 
     // canonicalize name
