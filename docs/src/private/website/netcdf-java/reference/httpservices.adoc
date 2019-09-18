@@ -4,7 +4,7 @@
 = HTTP Services for netCDF-Java and Thredds
 
 Created: July 20, 2011 +
-Revised: May 11, 2016
+Revised: Sept. 18, 2019
 
 :toc:
 
@@ -21,8 +21,8 @@ In order to provide some API stability and to simplify common use, the
 Apache libraries have been wrapped. The wrapping code is in the
 _ucar.httpservices_ package. The new public classes are:
 __HTTPFactory.java__, __HTTPFormBuilder.java__, __HTTPSession.java__,
-__HTTPMethod.java__, __HTTPMethodStream.java__, and
-__HTTPException.java__. Additionally, the class
+__HTTPMethod.java__, __HTTPMethodStream.java__, __HTTPCredentialsProvider__,
+and __HTTPException.java__. Additionally, the class
 _ucar.nc2.util.net.HttpClientManager_ is closely tied to the
 _ucar.httpservices_ package.
 
@@ -32,7 +32,9 @@ complete description of the API, the javadoc files should be referenced.
 Note that when the code was switched to using httpclient version 4.5,
 the API was changed somewhat to reflect experience with previous
 versions. Some methods exist to support Backward compatibility, but are
-deprecated.
+deprecated. When netcdf-java was split from Thredds, additional
+changes were made. When the switch to the Java httpclient module
+occurs, additional, major, changes can be expected.
 
 === HTTPSession and Session Semantics
 
@@ -44,7 +46,8 @@ operate.
 
 The primary key for an _HTTPsession_ object is an instance of
 __AuthScope__, which consists of a host (an ip address or name such as
-unidata.ucar.edu), a port number, and a scheme (e.g. ''http'' or ''https'').
+unidata.ucar.edu), a port number, and an authorization scheme
+(e.g. ''Basic'' or ''NTLM).
 
 Effectively, an _AuthScope_ is intended to map to a specific server
 somewhere in the internet. Authentication information (credentials) are
@@ -54,7 +57,7 @@ context of an __AuthScope__.
 Notes:
 
 * It is possible to convert a URL to an _AuthScope_ by taking just the
-hostname,port, and scheme part of the URL and ignoring the rest.
+hostname and port of the URL and ignoring the rest.
 * Once set, it is not possible to change the _AuthScope_ for an
 _HTTPSession_ object: it is immutable in this respect.
 * _HTTPSession_ objects do NOT necessarily correspond to the Http notion
@@ -77,16 +80,16 @@ The non authentication related global methods of general interest are as
 follows.
 
 * `static public void setGlobalUserAgent(String userAgent)`
-* `static public void setGlobalCompression(String compressors)` +
-  As a rule, the only allowable compressors are ''gzip'' and ''deflate''.
+* `static public void setGlobalCompression(String compressors)`
+   + As a rule, the only allowable compressors are ''gzip'' and ''deflate''.
 * `static public void setMaxRedirects(int n)`
 * `static public void setFollowRedirects(boolean tf)`
 
 The non authentication related per-instance methods of general instance
 are as follows.
 
-* `public void close()` +
-  _HTTPSession_ is AutoCloseable so try-with-resources can be used.
+* `public void close()`
+   + _HTTPSession_ is AutoCloseable so try-with-resources can be used.
 * `public void setCompression(String compressors)`
 * `public void removeCompression()`
 * `public void setUserAgent(String agent)`
@@ -95,83 +98,62 @@ are as follows.
 * `public void clearCookies()`
 * `public List getCookies()` ``
 
-The global and per-instance deprecated methods are as follows.
-
-* `static public void setGlobalCredentialsProvider(String url, CredentialsProvider provider) throws HTTPException` +
-This is no longer supported because only the host+port part of the URL
-would be used and that was provided at session creation.
-* `static public void setGlobalCredentials(String url, Credentials creds) throws HTTPException` +
-Same reason as immediate prior case.
-* `public void setCredentials(String url, Credentials creds) throws HTTPException` +
-Same reason as immediate prior case.
-* `public void setCredentialsProvider(String url, CredentialsProvider provider) throws HTTPException` +
-Same reason as immediate prior case.
+As of the netcdf-java split, a number of deprecated method
+have been removed. These are no longer detailed here.
 
 ==== Authentication-Related HTTPSession Methods
 
 The key objects for authentication are the classes
 _org.apache.http.client.CredentialsProvider_ and
 __org.apache.http.client.Credentials__. Basically, when an instance of
-__CrendentialsProvider__'s _getCredentials_ method is invoked, it is
+__CredentialsProvider__'s _getCredentials_ method is invoked, it is
 expected to return and instance of __Credentials__. The two are
 distinguished because _Credentials_ is immutable, while
 _CredentialsProvider_ can return a different set of _Credentials_ every
-time it is invoked.
+time it is invoked. 
 
-To see this, consider the case where we want to access a number of
+It is important to understand that a __CredentialsProvider__ object
+_caches_ a set of credentials. The credentials are keyed with an
+__AuthScope__ object, so when _getCredentials_ is called with an
+__AuthScope__ argument, the provider is expected to return the credentials
+that correspond to that __AuthScope__. Note that here, correspondence
+is not equality, but rather the auth scope argument is used to find
+the "closest" auth scope in the cache and that is used to choose
+the credentials. Caching is also important when
+a client repeatedly accesses the same dataset, it will be asked for the
+username+password only once because the corresponding credentials
+were cached. For an example, one can look at
+the file __UrlAuthenticatorDialog.java__.
+
+To elaborate, consider the case where we want to access a number of
 datasets on a server, where each dataset might be protected by some
 combination of username+password. This is often called BASIC
 authentication. When a request is made for one of these datasets, the
 _CredentialsProvider_ is invoked and it may do something like pop up a
 window to ask the user for the needed username+password for this
-dataset. When another dataset is accessed, it may pop up another window.
+dataset. When another dataset is accessed, it may pop up another window
+if the __AuthScope__ argument for that dataset differs.
 Thus the same _CredentialsProvider_ may be used repeatedly. In each
 case, it would return a specific instance of _Credentials_ that contains
-the requisite username+password for that specific dataset.
+the requisite username+password for that specific __AuthScope__.
 
-_HTTPSession_ supports credentials caching so that if the client
-repeatedly accesses the same dataset, it will be asked for the
-username+password only once.
-
-As a rule, it is best to use the methods here that take
-_CredentialsProvider_ argument. The case of a _Credentials_ argument is
-only for convenience when only a specific set of credentials is known
-a-priori.
+As of the netcdf-java split, HTTPSession only takes __CredentialsProvider__
+arguments. It no longer supports __Credentials__ arguments. This means
+that the user may have to use the __CredentialsProvider__._setCredentials_
+method to pre-store specific credentials into a provider.
 
 * ``
 static public void setGlobalCredentialsProvider(CredentialsProvider provider) throws HTTPException ``
 * ``
-static public void setGlobalCredentials(Credentials creds) throws HTTPException ``
-* ``
 public void setCredentialsProvider(CredentialsProvider provider) throws HTTPException ``
-* ``
-public void setCredentials(Credentials creds) throws HTTPException ``
+
 
 ==== SSL HTTPSession Methods
 
-SSL support has changed significantly since Apache httpclient 4.5. The
-following method is exported (public), although using the jvm -D flags
-(see below) is the preferred method.
+SSL support has changed significantly since Apache httpclient 4.5.
+It is expected that this is controlled using the jvm -D flags.
 
-* ``
-static public void setGlobalSSLAuth(String keypath, String keypassword, String trustpath, String trustpassword) ``
-
-This method can be used when a client needs to use what is called
-''client-side'' authentication or ''mutual'' authentication. It is used in
-conjunction with the ''https'' scheme. It means that not only does the
-server provide an authentication certificate to the client, the client
-must also provide an authentication certificate to the server (thus the
-term ''mutual'').
-
-For this case, the client must provide access to a password protected
-''keystore'' in which the client certificate is stored. The first two
-parameters of the above method specify these.
-
-In addition, the client may wish to use a so-called trust store in which
-the set of certificates for trusted servers is stored. the last two
-arguments specify these.
-
-The above method is not strictly necessary since the relevant values can
+Relevant SSL related values can
 be specified on the java VM command line using the following JVM
 parameters.
 
@@ -182,26 +164,17 @@ parameters.
 
 ==== Proxy Support
 
-Proxy support is provided by the following method or (preferably) by the
-jvm -D flags below.
+Proxy support is also expected to be set up using jvm -D flags.
 
-* ``
-static public void setGlobalProxy(String proxyurl) ``
+* ''-Dproxyurl=...''
 
-The url string argument specifies how to access the proxy server.
+This flag is a URL that specifies the proxy.
 
 Notes:
 
 * The path, query, and fragment parts of the URL are ignored.
 * If the proxy needs authentication, then the URL needs to include it in
 the form of ''http(s)://username:password@host:port''.
-
-The equivalent of the above method can be specified on the java VM
-command line using the following JVM parameters.
-
-* ''-Dproxyurl=...''
-
-This flag is a URL that specifies the proxy.
 
 === HTTPMethod
 
@@ -218,20 +191,14 @@ method object is closed, the temporary session object will also be
 closed.
 
 _HTTPMethod_ takes a URL string as its primary argument. Optionally (but
-normally) , it may take an _HTTPSession_ object as an additional
+normally), it may take an _HTTPSession_ object as an additional
 argument. Alternatively, one can give only the session as the sole argument,
 in which case the url of the session is used as the method url.
 
 An important point about the URL argument is that it must be
 *compatible* with the _AuthScope_ of the parent _HTTPSession_ object.
 The term ''compatible'' means the following. The method url is compatible
-if all of the following are true.
-
-1.  the URL's host+port is the same as the session scope's host+port.
-2.  the URL's scheme is compatible with the session scope's scheme,
-where compatible means either that the two schemes are identical or one
-is the same as the other with a trailing 's' character removed — so
-''http'' is compatible with ''https''.
+if the URL's host+port is the same as the session scope's host+port.
 
 === HTTPMethodStream
 
@@ -250,8 +217,8 @@ for reporting errors out of the _ucar.httpservices_ package.
 
 === HTTPFactory
 
-The _HTTPFactory_ class provides the API for obtaining instances of an
-HTTPSession or HTTPMethod object.
+The _HTTPFactory_ conveniance class provides the API for
+obtaining instances of an HTTPSession or HTTPMethod object.
 
 For session creation, the following methods are provided:
 
@@ -260,11 +227,10 @@ static public HTTPSession newSession(String host, int port) throws HTTPException
 * ``
 static public HTTPSession newSession(String url) throws HTTPException ``
 * ``
-static public HTTPSession newSession(AuthScope target) throws HTTPException ``
+static public HTTPSession newSession(HttpHost target) throws HTTPException ``
 
 The idea is that the argument(s) are sufficient to extract a usable
-host+port+scheme. The link:#AuthScope[AuthScope] argument uses a class
-specific to the Apache httpclient (core) library.
+host+port.
 
 For method creation, the supported methods are: GET, HEAD, PUT, POST,
 and OPTIONS. For each method Xxx (e.g. Get, Put, etc), the following
@@ -348,7 +314,9 @@ public class Main
         String userpwd = argv[1];
 
         // Set some parameters at the global level
-        HTTPSession.setGlobalCredentials(new UsernamePasswordCredentials(userpwd));
+        BasicCredentialsProvider bcp = new BasicCredentialsProvider();
+        bcp.setCredentials(new UsernamePasswordCredentials(userpwd));
+        HTTPSession.setGlobalCredentialsProvider(bcp);
         HTTPSession.setGlobalUserAgent("netcdf/java");
         HTTPSession.setMaxConnections(4);
         HTTPSession.setGlobalAuthenticationPreemptive(true);
@@ -372,7 +340,9 @@ public class Main
         String userpwd = argv[1];
 
         try (HTTPSession session = new HTTPSession(url)) {
-            session.setCredentials(new UsernamePasswordCredentials(userpwd));
+            BasicCredentialsProvider bcp = new BasicCredentialsProvider();
+            bcp.setCredentials(new UsernamePasswordCredentials(userpwd));
+            session.setCredentialsProvider(bcp);
             session.setUserAgent("agent")
                    .setConnectionManagerTimeout(475);
                    .setSoTimeout(475);
@@ -392,20 +362,16 @@ public class Main
 The
 https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/auth/AuthScope.html[AuthScope]
 class is used in a number of places in the _ucar.httpservices_ package.
-It has a number of constructors, the primary ones are as follows.
+It has a number of constructors, the only usable one is as follows.
 
 * ``
 AuthScope(String hostname, int port) ``
-* ``
-AuthScope(String hostname, int port, String realm, String scheme) ``
-
-If the scheme is not explicit then the default scheme (usually ''http'').
-The realm argument should always be AuthScope.ANY_REALM.
 
 [[author]]
 Author
 ~~~~~~
 
-Author: Dennis Heimbigner +
- Affiliation: UCAR/Unidata +
- email: dmh@ucar.edu
+Author: Dennis Heimbigner
++ Affiliation: UCAR/Unidata
++  email: dmh@ucar.edu
+
