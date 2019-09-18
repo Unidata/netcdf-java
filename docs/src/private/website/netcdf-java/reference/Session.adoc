@@ -1,7 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-= HTTP Session Control
+= HTTP Session Control (This document is obsolete: see httpservices document.)
 
 == Introduction
 
