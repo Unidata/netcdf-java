@@ -5,17 +5,13 @@
 package ucar.nc2.dataset;
 
 import org.jdom2.Element;
-import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.cache.FileCache;
@@ -557,51 +553,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return acquireDataset(null, location, enhanceMode, -1, cancelTask, null);
   }
 
-  /*
+  /**
    * Same as openDataset, but file is acquired through the File Cache.
    * You must first call initNetcdfFileCache() for caching to actually take place.
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    *
    * @param fac if not null, use this factory if the file is not in the cache. If null, use the default factory.
-   * 
    * @param location location of file, passed to FileFactory
-   * 
    * @param enhanceMode how to enhance. if null, then no enhancement
-   * 
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
-   * 
    * @param cancelTask allow task to be cancelled; may be null.
-   * 
    * @param iospMessage sent to iosp.setSpecial() if not null
    * 
-   * @return NetcdfDataset object
-   * 
-   * @throws java.io.IOException on read error
+   * @return NetcdfDataset or throw Exception
    */
-  /*
-   * static public NetcdfDataset acquireDataset(FileFactory fac, String location, Set<Enhance> enhanceMode, int
-   * buffer_size,
-   * ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
-   * 
-   * // caching not turned on
-   * if (netcdfFileCache == null) {
-   * if (fac == null)
-   * return openDataset(location, enhanceMode, buffer_size, cancelTask, iospMessage);
-   * else
-   * // must use the factory if there is one
-   * return (NetcdfDataset) fac.open(location, buffer_size, cancelTask, iospMessage);
-   * }
-   * 
-   * if (fac != null)
-   * return (NetcdfDataset) openOrAcquireFile(netcdfFileCache, fac, null, location, buffer_size, cancelTask,
-   * iospMessage);
-   * 
-   * fac = new MyNetcdfDatasetFactory(location, enhanceMode);
-   * return (NetcdfDataset) openOrAcquireFile(netcdfFileCache, fac, fac.hashCode(), location, buffer_size, cancelTask,
-   * iospMessage);
-   * }
-   */
-
   public static NetcdfDataset acquireDataset(FileFactory fac, DatasetUrl durl, Set<Enhance> enhanceMode,
       int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
@@ -662,7 +627,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Factory method for opening a NetcdfFile through the netCDF API. May be any kind of file that
    * can be read through the netCDF API, including OpenDAP and NcML.
-   * <p>
    * <p>
    * This does not necessarily return a NetcdfDataset, or enhance the dataset; use NetcdfDataset.openDataset() method
    * for that.
@@ -751,21 +715,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (durl.serviceType != null) {
       switch (durl.serviceType) {
-
-        case CdmRemote:
-          return acquireCdmRemote(cache, factory, hashKey, durl.trueurl, buffer_size, cancelTask, spiObject);
-
-        case NCML:
-          return acquireNcml(cache, factory, hashKey, durl.trueurl, buffer_size, cancelTask, spiObject);
-
-        case THREDDS:
-          Formatter log = new Formatter();
-          DataFactory tdf = new DataFactory();
-          NetcdfFile ncfile = tdf.openDataset(durl.trueurl, false, cancelTask, log); // LOOK acquire ??
-          if (ncfile == null)
-            throw new IOException(log.toString());
-          return ncfile;
-
         case File:
         case HTTPServer:
           break; // fall through
@@ -784,44 +733,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // Last resort: try to open as a file or remote file
     return NetcdfFile.open(durl.trueurl, buffer_size, cancelTask, spiObject);
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////
-
-  private static NetcdfFile acquireNcml(FileCache cache, FileFactory factory, Object hashKey, String location,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null)
-      return NcMLReader.readNcML(location, cancelTask);
-
-    if (factory == null)
-      factory = new NcMLFactory(); // LOOK maybe always should use NcMLFactory ?
-    return (NetcdfFile) cache.acquire(factory, hashKey, DatasetUrl.findDatasetUrl(location), buffer_size, cancelTask,
-        spiObject);
-  }
-
-  private static class NcMLFactory implements FileFactory {
-    public NetcdfFile open(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-        throws IOException {
-      return NcMLReader.readNcML(location.trueurl, cancelTask);
-    }
-  }
-
-  private static NetcdfFile acquireCdmRemote(FileCache cache, FileFactory factory, Object hashKey, String location,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null)
-      return new CdmRemote(location);
-
-    if (factory == null)
-      factory = new RemoteFactory();
-    return (NetcdfFile) cache.acquire(factory, hashKey, new DatasetUrl(ServiceType.CdmRemote, location), buffer_size,
-        cancelTask, spiObject);
-  }
-
-  private static class RemoteFactory implements FileFactory {
-    public NetcdfFile open(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-        throws IOException {
-      return new CdmRemote(location.trueurl);
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -916,16 +827,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     enhanceMode.remove(Enhance.CoordSystems);
   }
-
-  /*
-   * Set whether Coordinate System metadata has been added.
-   *
-   * @param coordSysWereAdded set to this value
-   *
-   * public void setCoordSysWereAdded(boolean coordSysWereAdded) {
-   * this.coordSysWereAdded = coordSysWereAdded;
-   * }
-   */
 
   /**
    * Retrieve the CoordinateAxis with the specified Axis Type.
@@ -1199,26 +1100,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return false;
       }
       memberV.setParentStructure(newStructure); // reparent
-      /*
-       * memberV.createNewCache(); // decouple caching
-       * //orgV = orgStructure.findVariable(v.getShortName());
-       * //if (orgV != null)
-       * // memberV.setOriginalVariable(orgV);
-       * 
-       * // remove record dimension
-       * List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
-       * dims.remove(0);
-       * memberV.setDimensions(dims);
-       */
-
       newStructure.addMemberVariable(memberV);
     }
 
     root.addVariable(newStructure);
     finish();
 
-    // if (isEnhancedScaleOffset())
-    // newStructure.enhance();
     return true;
   }
 
@@ -1283,16 +1170,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   protected String toStringDebug(Object o) {
     return "";
   }
-
-  /*
-   * public boolean isEnhanceProcessed() {
-   * return isEnhanceProcessed;
-   * }
-   * 
-   * public void setEnhanceProcessed(boolean enhanceProcessed) {
-   * isEnhanceProcessed = enhanceProcessed;
-   * }
-   */
 
   ///////////////////////////////////////////////////////////////////////////////////
   // constructor methods
@@ -1373,7 +1250,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     enhance(this, mode, null);
   }
 
-
   /**
    * is this enhancement already done ?
    *
@@ -1450,8 +1326,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   ////////////////////////////////////////////////////////////////////
   // debugging
 
-  // private NetcdfDatasetInfo info = null;
-
   /**
    * Show debug / underlying implementation details
    */
@@ -1481,16 +1355,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       f.format("%s", orgFile.getDetailInfo());
     }
   }
-
-  /*
-   * Debugging: get the information from parsing
-   *
-   * @return NetcdfDatasetInfo object
-   *
-   * public NetcdfDatasetInfo getInfo() {
-   * return new NetcdfDatasetInfo(this);
-   * }
-   */
 
   void dumpClasses(Group g, PrintWriter out) {
 
@@ -1615,7 +1479,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     CancelTaskImpl cancel = new CancelTaskImpl();
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
+    NetcdfFile ncfileIn = openFile(datasetIn, cancel);
     System.out.printf("NetcdfDatataset read from %s write to %s ", datasetIn, datasetOut);
 
     NetcdfFileWriter.Version version = netcdf4 ? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;

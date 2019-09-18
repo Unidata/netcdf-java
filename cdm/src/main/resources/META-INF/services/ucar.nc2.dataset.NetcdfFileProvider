@@ -1,0 +1,3 @@
+thredds.client.catalog.tools.CatalogNetcdfFileProvider
+ucar.nc2.ncml.NcmlNetcdfFileProvider
+ucar.nc2.stream.CdmRemoteNetcdfFileProvider
