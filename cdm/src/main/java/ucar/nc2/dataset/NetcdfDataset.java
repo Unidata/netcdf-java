@@ -227,7 +227,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  protected static boolean fillValueIsMissing = true, invalidDataIsMissing = true, missingDataIsMissing = true;
+  protected static boolean fillValueIsMissing = true;
+  protected static boolean invalidDataIsMissing = true;
+  protected static boolean missingDataIsMissing = true;
 
   /**
    * Set if _FillValue attribute is considered isMissing()
@@ -707,12 +709,19 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // look for dynamically loaded NetcdfFileProvider
     for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
-      System.out.printf("ServiceLoader NetcdfFileProvider found %s%n", provider.getClass().getName());
       if (provider.isOwnerOf(durl)) {
-        return provider.open(durl, cancelTask);
+        return provider.open(durl.trueurl, cancelTask);
       }
     }
 
+    // look for providers who do not have an associated ServiceType.
+    for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
+      if (provider.isOwnerOf(durl.trueurl)) {
+        return provider.open(durl.trueurl, cancelTask);
+      }
+    }
+
+    // Otherwise we are dealing with a file or a remote http file.
     if (durl.serviceType != null) {
       switch (durl.serviceType) {
         case File:

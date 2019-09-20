@@ -13,13 +13,19 @@ public class DapNetcdfFileProvider implements NetcdfFileProvider {
   private static final Logger logger = LoggerFactory.getLogger(DapNetcdfFileProvider.class);
 
   @Override
+  public String getProtocol() {
+    return "dap4";
+  }
+
+  @Override
   public boolean isOwnerOf(DatasetUrl url) {
     return url.serviceType == ServiceType.DAP4;
   }
 
   @Override
-  public NetcdfFile open(DatasetUrl url, CancelTask cancelTask) throws IOException {
-    return new DapNetcdfFile(url.trueurl, cancelTask);
+  public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
+    return new DapNetcdfFile(location, cancelTask);
   }
+
 }
 

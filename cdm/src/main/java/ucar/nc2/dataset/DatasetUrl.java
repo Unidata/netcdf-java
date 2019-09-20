@@ -19,8 +19,7 @@ import java.util.*;
 
 /**
  * Detection of the protocol from a location string.
- * Split out from NetcdfDataset.
- * LOOK should be refactored
+ * TODO: Break this up so that each protocol is responsible for itself. We still need to disambiguate http:
  *
  * @author caron
  * @since 10/20/2015.
@@ -32,7 +31,6 @@ public class DatasetUrl {
   static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
   static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
       ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
-
 
   /**
    * Return the set of leading protocols for a url; may be more than one.
@@ -52,7 +50,7 @@ public class DatasetUrl {
     // This code is quite ugly because of all the confounding cases
     // (e.g. windows path, embedded colons, etc.).
     // Specifically, the 'file:' protocol is a problem because
-    // it has no many non-standard forms such as file:x/y file://x/y file:///x/y.
+    // it has so many non-standard forms such as file:x/y file://x/y file:///x/y.
     StringBuilder buf = new StringBuilder(url);
     // If there are any leading protocols, then they must stop at the first '/'.
     int slashpos = buf.indexOf("/");
@@ -62,29 +60,30 @@ public class DatasetUrl {
     } else if (slashpos >= 0) {
       // Remove everything after the first slash
       buf.delete(slashpos + 1, buf.length());
-      for (;;) {
-        int index = buf.indexOf(":");
-        if (index < 0)
-          break; // no more protocols
+      int index = buf.indexOf(":");
+      while (index > 0) {
         // Validate protocol
-        if (!validateprotocol(url, 0, index))
+        if (!validateProtocol(buf, 0, index))
           break;
         String protocol = buf.substring(0, index); // not including trailing ':'
         allprotocols.add(protocol);
         buf.delete(0, index + 1); // remove the leading protocol
+        index = buf.indexOf(":");
       }
     }
     return allprotocols;
   }
 
-  private static boolean validateprotocol(String url, int startpos, int endpos) {
+  // Eliminate windows drive letters.
+  // "protocol:" must be followed by alpha or "/"
+  private static boolean validateProtocol(StringBuilder buf, int startpos, int endpos) {
     int len = endpos - startpos;
     if (len == 0)
       return false;
-    char cs = url.charAt(startpos);
-    char ce1 = url.charAt(endpos + 1);
-    if (len == 1 // =>|protocol| == 1
-        && alpha.indexOf(cs) >= 0 && "/\\".indexOf(ce1) >= 0)
+    char cs = buf.charAt(startpos);
+    char ce1 = buf.charAt(endpos + 1);
+    String wtf = "/\\";
+    if (len == 1 && alpha.indexOf(cs) >= 0 && (ce1 == '/' || ce1 == '\\'))
       return false; // looks like windows drive letter
     // If trailing colon is not followed by alpha or /, then assume not url
     return slashalpha.indexOf(ce1) >= 0;
@@ -93,18 +92,18 @@ public class DatasetUrl {
   /////////////////////////////////////////////////////////////////////////////////////
 
   public static DatasetUrl findDatasetUrl(String orgLocation) throws IOException {
-    ServiceType svctype = null;
+    ServiceType serviceType = null;
 
     // Canonicalize the location
     String location = StringUtil2.replace(orgLocation.trim(), '\\', "/");
-    List<String> allprotocols = DatasetUrl.getProtocols(location);
+    List<String> allProtocols = getProtocols(location);
 
-    String trueurl = location;
-    String leadprotocol;
-    if (allprotocols.isEmpty()) {
-      leadprotocol = "file"; // The location has no leading protocols, assume file:
+    String trueUrl = location;
+    String leadProtocol;
+    if (allProtocols.isEmpty()) {
+      leadProtocol = "file"; // The location has no leading protocols, assume file:
     } else {
-      leadprotocol = allprotocols.get(0);
+      leadProtocol = allProtocols.get(0);
     }
 
     // Priority in deciding
@@ -117,58 +116,58 @@ public class DatasetUrl {
 
     // temporarily remove any trailing query or fragment
     String fragment = null;
-    int pos = trueurl.lastIndexOf('#');
+    int pos = trueUrl.lastIndexOf('#');
     if (pos >= 0) {
-      fragment = trueurl.substring(pos + 1);
-      trueurl = trueurl.substring(0, pos);
+      fragment = trueUrl.substring(pos + 1);
+      trueUrl = trueUrl.substring(0, pos);
     }
     pos = location.lastIndexOf('?');
     String query = null;
     if (pos >= 0) {
-      query = trueurl.substring(pos + 1);
-      trueurl = trueurl.substring(0, pos);
+      query = trueUrl.substring(pos + 1);
+      trueUrl = trueUrl.substring(0, pos);
     }
     if (fragment != null)
-      svctype = searchFragment(fragment);
+      serviceType = searchFragment(fragment);
 
-    if (svctype == null) // See if leading protocol tells us how to interpret
-      svctype = decodeLeadProtocol(leadprotocol);
+    if (serviceType == null) // See if leading protocol tells us how to interpret
+      serviceType = decodeLeadProtocol(leadProtocol);
 
-    if (svctype == null) // See if path tells us how to interpret
-      svctype = searchPath(trueurl);
+    if (serviceType == null) // See if path tells us how to interpret
+      serviceType = searchPath(trueUrl);
 
-    if (svctype == null) {
+    if (serviceType == null) {
       // There are several possibilities at this point; all of which
       // require further info to disambiguate
       // - we have file://<path> or file:<path>; we need to see if
       // the extension can help, otherwise, start defaulting.
       // - we have a simple url: e.g. http://... ; contact the server
-      if (leadprotocol.equals("file")) {
-        svctype = decodePathExtension(trueurl); // look at the path extension
-        if (svctype == null && checkIfNcml(new File(location))) {
-          svctype = ServiceType.NCML;
+      if (leadProtocol.equals("file")) {
+        serviceType = decodePathExtension(trueUrl); // look at the path extension
+        if (serviceType == null && checkIfNcml(new File(location))) {
+          serviceType = ServiceType.NCML;
         }
       } else {
-        svctype = disambiguateHttp(trueurl);
+        serviceType = disambiguateHttp(trueUrl);
         // special cases
-        if ((svctype == null || svctype == ServiceType.HTTPServer)) {
+        if ((serviceType == null || serviceType == ServiceType.HTTPServer)) {
           // ncml file being served over http?
-          if (checkIfRemoteNcml(trueurl)) {
-            svctype = ServiceType.NCML;
+          if (checkIfRemoteNcml(trueUrl)) {
+            serviceType = ServiceType.NCML;
           }
         }
       }
     }
 
-    if (svctype == ServiceType.NCML) { // ??
-      // If lead protocol was null and then pretend it was a file
+    if (serviceType == ServiceType.NCML) { // ??
+      // If lead protocol was null, then pretend it was a file
       // Note that technically, this should be 'file://'
-      trueurl = (allprotocols.isEmpty() ? "file:" + trueurl : location);
+      trueUrl = (allProtocols.isEmpty() ? "file:" + trueUrl : location);
     }
 
     // Add back the query and fragment (if any)
     if (query != null || fragment != null) {
-      StringBuilder buf = new StringBuilder(trueurl);
+      StringBuilder buf = new StringBuilder(trueUrl);
       if (query != null) {
         buf.append('?');
         buf.append(query);
@@ -177,14 +176,14 @@ public class DatasetUrl {
         buf.append('#');
         buf.append(fragment);
       }
-      trueurl = buf.toString();
+      trueUrl = buf.toString();
     }
-    return new DatasetUrl(svctype, trueurl);
+    return new DatasetUrl(serviceType, trueUrl);
   }
 
   /**
    * Given a location, find markers indicated which protocol to use
-   * LOOK what use case is this handling ?
+   * TODO: what use case is this handling ?
    *
    * @param fragment the fragment is to be examined
    * @return The discovered ServiceType, or null
@@ -196,6 +195,7 @@ public class DatasetUrl {
     if (map == null)
       return null;
     String protocol = map.get("protocol");
+
     if (protocol == null) {
       for (String p : FRAGPROTOCOLS) {
         if (map.get(p) != null) {
@@ -340,7 +340,13 @@ public class DatasetUrl {
    */
   @Urlencoded
   private static ServiceType disambiguateHttp(String location) throws IOException {
-    boolean checkDap2 = false, checkDap4 = false, checkCdmr = false;
+    boolean checkDap2 = false;
+    boolean checkDap4 = false;
+    boolean checkCdmr = false;
+
+    if (!location.startsWith("http")) {
+      return null;
+    }
 
     // some TDS specific tests
     if (location.contains("cdmremote")) {
@@ -384,7 +390,6 @@ public class DatasetUrl {
 
   // cdmremote
   private static ServiceType checkIfCdmr(String location) throws IOException {
-
     try (HTTPMethod method = HTTPFactory.Head(location + "?req=header")) {
       int statusCode = method.execute();
       if (statusCode >= 300) {
@@ -476,6 +481,10 @@ public class DatasetUrl {
   private static int NUM_BYTES_TO_DETERMINE_NCML = 128;
 
   private static boolean checkIfRemoteNcml(String location) throws IOException {
+    if (!location.startsWith("http")) {
+      return false;
+    }
+
     if (decodePathExtension(location) == ServiceType.NCML) {
       // just because location ends with ncml does not mean it's ncml
       // if the ncml file is being served up via http by a remote server,

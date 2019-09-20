@@ -10,13 +10,18 @@ import ucar.nc2.util.CancelTask;
 public class CdmRemoteNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
+  public String getProtocol() {
+    return "cdmremote";
+  }
+
+  @Override
   public boolean isOwnerOf(DatasetUrl url) {
     return url.serviceType == ServiceType.CdmRemote;
   }
 
   @Override
-  public NetcdfFile open(DatasetUrl url, CancelTask cancelTask) throws IOException {
-    return new CdmRemote(url.trueurl);
+  public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
+    return new CdmRemote(location);
   }
 
 }

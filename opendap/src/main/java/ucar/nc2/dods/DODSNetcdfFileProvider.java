@@ -10,12 +10,17 @@ import ucar.nc2.util.CancelTask;
 public class DODSNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
+  public String getProtocol() {
+    return "dods";
+  }
+
+  @Override
   public boolean isOwnerOf(DatasetUrl url) {
     return url.serviceType == ServiceType.OPENDAP;
   }
 
   @Override
-  public NetcdfFile open(DatasetUrl url, CancelTask cancelTask) throws IOException {
-    return new DODSNetcdfFile(url.trueurl, cancelTask);
+  public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
+    return new DODSNetcdfFile(location, cancelTask);
   }
 }

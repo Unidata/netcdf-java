@@ -10,12 +10,23 @@ import ucar.nc2.util.CancelTask;
 public class NcmlNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
+  public String getProtocol() {
+    return "ncml";
+  }
+
+  @Override
+  public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
+    return NcMLReader.readNcML(location, cancelTask);
+  }
+
+  @Override
+  public boolean isOwnerOf(String location) {
+    return location.startsWith("ncml:") || location.endsWith(".ncml");
+  }
+
+  @Override
   public boolean isOwnerOf(DatasetUrl url) {
     return url.serviceType == ServiceType.NCML;
   }
 
-  @Override
-  public NetcdfFile open(DatasetUrl url, CancelTask cancelTask) throws IOException {
-    return NcMLReader.readNcML(url.trueurl, cancelTask);
-  }
 }
