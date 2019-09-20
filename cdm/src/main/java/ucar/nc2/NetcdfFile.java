@@ -801,7 +801,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Open a RandomAccessFile as a NetcdfFile, if possible.
    *
-   * @param raf  The open raf, is not cloised by this method.
+   * @param raf The open raf, is not cloised by this method.
    * @param location human readable locatoin of this dataset.
    * @param cancelTask used to monitor user cancellation; may be null.
    * @param iospMessage send this message to iosp; may be null.
