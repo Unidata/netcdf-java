@@ -6,6 +6,9 @@
 package ucar.nc2.ui.op;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import ucar.httpservices.*;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.event.ActionValueListener;
@@ -41,15 +44,9 @@ import javax.swing.RootPaneContainer;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.apache.http.Header;
 import org.jdom2.input.SAXBuilder;
 
-/**
- * View WMS datasets
- *
- * @author caron
- * @since Feb 17, 2009
- */
+/** View WMS datasets */
 public class WmsViewer extends JPanel {
 
   private Namespace wmsNamespace = Namespace.getNamespace("http://www.opengis.net/wms");
@@ -68,9 +65,6 @@ public class WmsViewer extends JPanel {
 
   private BufferedImage currImage;
 
-  /**
-   *
-   */
   public WmsViewer(PreferencesExt prefs, RootPaneContainer root) {
     this.prefs = prefs;
 
@@ -134,25 +128,16 @@ public class WmsViewer extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public boolean setDataset(String version, String endpoint) {
     this.version = version;
     this.endpoint = endpoint;
     return getCapabilities();
   }
 
-  /**
-   *
-   */
   public String getDetailInfo() {
     return info.toString();
   }
 
-  /**
-   *
-   */
   public void save() {
     ftTable.saveState(false);
     if (split != null) {
@@ -160,9 +145,6 @@ public class WmsViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void showImage(BufferedImage img) {
 
     // BufferedImage img = ImageIO.read(new File("D:/data/images/labyrinth.jpg"));
@@ -179,9 +161,6 @@ public class WmsViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private boolean getCapabilities() {
 
     Formatter f = new Formatter();
@@ -200,7 +179,7 @@ public class WmsViewer extends JPanel {
 
       info.format(" Status = %d %s%n", method.getStatusCode(), method.getStatusText());
       info.format(" Status Line = %s%n", method.getStatusLine());
-      printHeaders(" Response Headers", method.getResponseHeaders());
+      printHeaders(" Response Headers", method.getResponseHeaders().entries());
       info.format("GetCapabilities:%n%n");
 
       if (statusCode == 404) {
@@ -223,9 +202,6 @@ public class WmsViewer extends JPanel {
     return true;
   }
 
-  /**
-   *
-   */
   private void parseGetCapabilities(Element root) {
     Element capElem = root.getChild("Capability", wmsNamespace);
     Element layer1Elem = capElem.getChild("Layer", wmsNamespace);
@@ -256,9 +232,6 @@ public class WmsViewer extends JPanel {
     ftTable.refresh();
   }
 
-  /**
-   *
-   */
   private boolean getMap(LayerBean layer) {
     Formatter f = new Formatter();
     f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
@@ -282,7 +255,7 @@ public class WmsViewer extends JPanel {
 
         info.format(" Status = %d %s%n", method.getStatusCode(), method.getStatusText());
         info.format(" Status Line = %s%n", method.getStatusLine());
-        printHeaders(" Response Headers", method.getResponseHeaders());
+        printHeaders(" Response Headers", method.getResponseHeaders().entries());
 
         if (statusCode == 404) {
           throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
@@ -292,9 +265,12 @@ public class WmsViewer extends JPanel {
           throw new IOException(method.getPath() + " " + method.getStatusLine());
         }
 
-        Header h = method.getResponseHeader("Content-Type");
-        String mimeType = (h == null) ? "" : h.getValue();
-        info.format(" mimeType = %s%n", mimeType);
+        String mimeType = "";
+        Optional<String> contentTypeOpt = method.getResponseHeaderValue("Content-Type");
+        if (contentTypeOpt.isPresent()) {
+          mimeType = contentTypeOpt.get();
+          info.format(" mimeType = %s%n", mimeType);
+        }
 
         try (InputStream isFromHttp = method.getResponseBodyAsStream()) {
           byte[] contents = IO.readContentsToByteArray(isFromHttp);
@@ -342,20 +318,16 @@ public class WmsViewer extends JPanel {
     return true;
   }
 
-  /**
-   *
-   */
-  private void printHeaders(String title, Header[] heads) {
+  private void printHeaders(String title, Collection<Map.Entry<String, String>> headers) {
+    if (headers.isEmpty())
+      return;
     info.format("%s%n", title);
-    for (Header head : heads) {
-      info.format("%s ", head.toString());
+    for (Map.Entry<String, String> entry : headers) {
+      info.format("  %s = %s" + entry.getKey(), entry.getValue());
     }
     info.format("%n");
   }
 
-  /**
-   *
-   */
   public class LayerBean {
 
     String name;
@@ -378,9 +350,6 @@ public class WmsViewer extends JPanel {
      */
     public LayerBean() {}
 
-    /**
-     *
-     */
     LayerBean(Element layer3Elem) {
       this.name = getVal(layer3Elem, "Name");
       this.title = getVal(layer3Elem, "Title");
@@ -416,17 +385,11 @@ public class WmsViewer extends JPanel {
       }
     }
 
-    /**
-     *
-     */
     String getVal(Element parent, String name) {
       Element elem = parent.getChild(name, wmsNamespace);
       return (name == null) ? "" : elem.getText();
     }
 
-    /**
-     *
-     */
     List<String> getVals(Element parent, String name) {
       List<String> result = new ArrayList<>(10);
       for (Element elem : parent.getChildren(name, wmsNamespace)) {
@@ -435,9 +398,6 @@ public class WmsViewer extends JPanel {
       return result;
     }
 
-    /**
-     *
-     */
     public String getName() {
       return name;
     }

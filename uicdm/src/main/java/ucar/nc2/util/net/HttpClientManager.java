@@ -5,7 +5,7 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.http.Header;
+import java.util.Optional;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.entity.StringEntity;
 import ucar.httpservices.*;
@@ -101,9 +101,9 @@ public class HttpClientManager {
       // followRedirect wont work for PUT
       if (resultCode == 302) {
         String redirectLocation;
-        Header locationHeader = m.getResponseHeader("location");
-        if (locationHeader != null) {
-          redirectLocation = locationHeader.getValue();
+        Optional<String> locationOpt = m.getResponseHeaderValue("location");
+        if (locationOpt.isPresent()) {
+          redirectLocation = locationOpt.get();
           resultCode = putContent(redirectLocation, content);
         }
       }
@@ -139,37 +139,34 @@ public class HttpClientManager {
           charset = CDM.UTF8;
 
         // check for deflate and gzip compression
-        Header h = m.getResponseHeader("content-encoding");
-        String encoding = (h == null) ? null : h.getValue();
+        Optional<String> encodingOpt = m.getResponseHeaderValue("content-encoding");
+        if (encodingOpt.isPresent()) {
+          String encoding = encodingOpt.get();
 
-        if ("deflate".equals(encoding)) {
-          byte[] body = m.getResponseAsBytes();
-          if (body == null)
-            throw new IOException("empty body");
-          InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
-          if (useSession != null)
-            useSession.close();
-          return readContents(is, charset, maxKbytes);
+          if ("deflate".equals(encoding)) {
+            byte[] body = m.getResponseAsBytes();
+            if (body == null)
+              throw new IOException("empty body");
+            InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+            return readContents(is, charset, maxKbytes);
 
-        } else if ("gzip".equals(encoding)) {
-          byte[] body = m.getResponseAsBytes();
-          if (body == null)
-            throw new IOException("empty body");
-          InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
-          if (useSession != null)
-            useSession.close();
-          return readContents(is, charset, maxKbytes);
-
-        } else {
-          byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
-          if (body == null)
-            throw new IOException("empty body");
-          if (useSession != null)
-            useSession.close();
-          return new String(body, charset);
+          } else if ("gzip".equals(encoding)) {
+            byte[] body = m.getResponseAsBytes();
+            if (body == null)
+              throw new IOException("empty body");
+            InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+            return readContents(is, charset, maxKbytes);
+          }
         }
+
+        byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
+        if (body == null)
+          throw new IOException("empty body");
+        return new String(body, charset);
       }
+
     } finally {
+      // close use session if we created it inside this method
       if ((session == null) && (useSession != null))
         useSession.close();
     }
@@ -202,22 +199,26 @@ public class HttpClientManager {
       }
 
       // check for deflate and gzip compression
-      Header h = m.getResponseHeader("content-encoding");
-      String encoding = (h == null) ? null : h.getValue();
+      Optional<String> encodingOpt = m.getResponseHeaderValue("content-encoding");
+      if (encodingOpt.isPresent()) {
+        String encoding = encodingOpt.get();
+        if ("deflate".equals(encoding)) {
+          InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
+          IO.writeToFile(is, file.getPath());
+          return;
 
-      if ("deflate".equals(encoding)) {
-        InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
-        IO.writeToFile(is, file.getPath());
-
-      } else if ("gzip".equals(encoding)) {
-        InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
-        IO.writeToFile(is, file.getPath());
-
-      } else {
-        IO.writeToFile(m.getResponseAsStream(), file.getPath());
+        } else if ("gzip".equals(encoding)) {
+          InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
+          IO.writeToFile(is, file.getPath());
+          return;
+        }
       }
 
+      // no encoding
+      IO.writeToFile(m.getResponseAsStream(), file.getPath());
+
     } finally {
+      // close use session if we created it inside this method
       if ((session == null) && (useSession != null))
         useSession.close();
     }
@@ -248,22 +249,26 @@ public class HttpClientManager {
         }
 
         // check for deflate and gzip compression
-        Header h = m.getResponseHeader("content-encoding");
-        String encoding = (h == null) ? null : h.getValue();
+        Optional<String> encodingOpt = m.getResponseHeaderValue("content-encoding");
+        if (encodingOpt.isPresent()) {
+          String encoding = encodingOpt.get();
 
-        if ("deflate".equals(encoding)) {
-          InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
-          nbytes = IO.appendToFile(is, file.getPath());
-        } else if ("gzip".equals(encoding)) {
-          InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
-          nbytes = IO.appendToFile(is, file.getPath());
-        } else {
-          nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
+          if ("deflate".equals(encoding)) {
+            InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
+            nbytes = IO.appendToFile(is, file.getPath());
+          } else if ("gzip".equals(encoding)) {
+            InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
+            nbytes = IO.appendToFile(is, file.getPath());
+          }
         }
+
+        // no encoding
+        nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
       }
+
     } finally {
+      // close use session if we created it inside this method
       if (session == null && useSession != null) {
-        // close use session if we created it inside this method
         useSession.close();
       }
     }

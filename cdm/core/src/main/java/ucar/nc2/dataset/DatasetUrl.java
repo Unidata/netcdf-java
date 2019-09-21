@@ -4,8 +4,10 @@
  */
 package ucar.nc2.dataset;
 
-import org.apache.http.Header;
-import org.apache.http.HttpStatus;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_NOT_ACCEPTABLE;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
@@ -388,20 +390,15 @@ public class DatasetUrl {
     try (HTTPMethod method = HTTPFactory.Head(location + "?req=header")) {
       int statusCode = method.execute();
       if (statusCode >= 300) {
-        if (statusCode == HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN)
+        if (statusCode == HTTP_UNAUTHORIZED || statusCode == HTTP_FORBIDDEN)
           throw new IOException("Unauthorized to open dataset " + location);
         else
           throw new IOException(location + " is not a valid URL, return status=" + statusCode);
       }
 
-      Header h = method.getResponseHeader("Content-Description");
-      if ((h != null) && (h.getValue() != null)) {
-        String v = h.getValue();
-        if (v.equalsIgnoreCase("ncstream"))
-          return ServiceType.CdmRemote;
-      }
+      Optional<String> value = method.getResponseHeaderValue("Content-Description");
+      return value.map(v -> v.equalsIgnoreCase("ncstream") ? ServiceType.CdmRemote : null).orElse(null);
     }
-    return null;
   }
 
   // not sure what other opendap servers do, so fall back on check for dds
@@ -422,17 +419,17 @@ public class DatasetUrl {
         HTTPMethod method = HTTPFactory.Get(location + ".dds")) {
 
       int status = method.execute();
-      if (status == 200) {
-        Header h = method.getResponseHeader("Content-Description");
-        if ((h != null) && (h.getValue() != null)) {
-          String v = h.getValue();
+      if (status == HTTP_OK) {
+        Optional<String> value = method.getResponseHeaderValue("Content-Description");
+        if (value.isPresent()) {
+          String v = value.get();
           if (v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds"))
             return ServiceType.OPENDAP;
           else
             throw new IOException("OPeNDAP Server Error= " + method.getResponseAsString());
         }
       }
-      if (status == HttpStatus.SC_UNAUTHORIZED || status == HttpStatus.SC_FORBIDDEN)
+      if (status == HTTP_UNAUTHORIZED || status == HTTP_FORBIDDEN)
         throw new IOException("Unauthorized to open dataset " + location);
 
       // not dods
@@ -453,15 +450,14 @@ public class DatasetUrl {
       location = location.substring(0, location.length() - ".dsr".length());
     try (HTTPMethod method = HTTPFactory.Get(location + ".dmr.xml")) {
       int status = method.execute();
-      if (status == 200) {
-        Header h = method.getResponseHeader("Content-Type");
-        if ((h != null) && (h.getValue() != null)) {
-          String v = h.getValue();
-          if (v.startsWith("application/vnd.opendap.org"))
+      if (status == HTTP_OK) {
+        Optional<String> value = method.getResponseHeaderValue("Content-Type");
+        if (value.isPresent()) {
+          if (value.get().startsWith("application/vnd.opendap.org"))
             return ServiceType.DAP4;
         }
       }
-      if (status == HttpStatus.SC_UNAUTHORIZED || status == HttpStatus.SC_FORBIDDEN)
+      if (status == HTTP_UNAUTHORIZED || status == HTTP_FORBIDDEN)
         throw new IOException("Unauthorized to open dataset " + location);
 
       // not dods
@@ -486,9 +482,9 @@ public class DatasetUrl {
         method.setRequestHeader("accept-encoding", "identity");
         int statusCode = method.execute();
         if (statusCode >= 300) {
-          if (statusCode == 401) {
+          if (statusCode == HTTP_UNAUTHORIZED) {
             throw new IOException("Unauthorized to open dataset " + location);
-          } else if (statusCode == 406) {
+          } else if (statusCode == HTTP_NOT_ACCEPTABLE) {
             String msg = location + " - this server does not support returning content without any encoding.";
             msg = msg + " Please download the file locally. Return status=" + statusCode;
             throw new IOException(msg);

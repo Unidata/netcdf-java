@@ -10,10 +10,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.InflaterInputStream;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
-import org.apache.http.Header;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -82,10 +82,9 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
         throw new IOException(getErrorMessage(method));
 
       int readLen = 0;
-      Header h = method.getResponseHeader("Content-Length");
-      if (h != null) {
-        String s = h.getValue();
-        readLen = Integer.parseInt(s);
+      Optional<String> value = method.getResponseHeaderValue("Content-Length");
+      if (value.isPresent()) {
+        readLen = Integer.parseInt(value.get());
       }
 
       CdmrfReader cdmrfReader = new CdmrfReader(endpoint);

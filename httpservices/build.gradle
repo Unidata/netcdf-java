@@ -9,6 +9,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
+    compile libraries["guava"]
     compile libraries["jsr305"]
     compile libraries["httpclient"]
     compile libraries["httpcore"]

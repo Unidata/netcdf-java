@@ -42,7 +42,7 @@ package opendap.dap;
 
 import java.net.URLConnection;
 import com.coverity.security.Escape;
-import org.apache.http.Header;
+import java.util.Optional;
 import ucar.httpservices.HTTPMethod;
 
 /**
@@ -126,19 +126,17 @@ public class ServerVersion implements java.io.Serializable {
   public ServerVersion(HTTPMethod method) throws DAP2Exception {
 
     // Did the Server send an XDAP header?
-    Header h = method.getResponseHeader("XDAP");
-    if (h != null) {
-      versionString = h.getValue();
+    Optional<String> xdapOpt = method.getResponseHeaderValue("XDAP");
+    xdapOpt.ifPresent(xdap -> {
+      versionString = xdap;
       processXDAPVersion(versionString);
-      return;
-    }
+    });
 
     // Did the Server send an XDODS-Server header?
-    h = method.getResponseHeader("XDODS-Server");
-    if (h != null) {
-      versionString = h.getValue();
+    Optional<String> xdodsOpt = method.getResponseHeaderValue("XDODS-Server");
+    if (xdodsOpt.isPresent()) {
+      versionString = xdodsOpt.get();
       processXDODSServerVersion(versionString);
-      return;
     }
 
     // This is important! If neither of these headers (XDAP or
@@ -254,7 +252,6 @@ public class ServerVersion implements java.io.Serializable {
     }
   }
 
-
   private void processXDODSServerVersion(String ver) throws DAP2Exception {
     String badVersionMsg = "Invalid XDODS-Server header: " + Escape.html(ver)
         + "  Version must contain an identifying word (ex: opendap or "
@@ -288,7 +285,6 @@ public class ServerVersion implements java.io.Serializable {
       throw new DAP2Exception(badVersionMsg);
     }
   }
-
 
   private void processXDAPVersion(String ver) {
     int dotIndex = ver.indexOf('.');

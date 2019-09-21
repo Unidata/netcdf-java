@@ -6,8 +6,8 @@ package ucar.nc2.stream;
 
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import java.util.Optional;
 import ucar.httpservices.*;
-import org.apache.http.Header;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -157,10 +157,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (statusCode >= 300)
         throw new IOException(getErrorMessage(method));
 
-      Header h = method.getResponseHeader("Content-Length");
-      if (h != null) {
-        String s = h.getValue();
-        int readLen = Integer.parseInt(s);
+      Optional<String> contentLength = method.getResponseHeaderValue("Content-Length");
+      if (contentLength.isPresent()) {
+        int readLen = Integer.parseInt(contentLength.get());
         if (showRequest)
           System.out.printf(" content-length = %d%n", readLen);
         if (v.getDataType() != DataType.SEQUENCE) {
@@ -285,10 +284,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
             throw new IOException(getErrorMessage(method));
 
           int wantSize = (int) (v.getSize());
-          Header h = method.getResponseHeader("Content-Length");
-          if (h != null) {
-            String s = h.getValue();
-            int readLen = Integer.parseInt(s);
+
+          Optional<String> contentLength = method.getResponseHeaderValue("Content-Length");
+          if (contentLength != null) {
+            int readLen = Integer.parseInt(contentLength.get());
             if (readLen != wantSize)
               throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);
           }
