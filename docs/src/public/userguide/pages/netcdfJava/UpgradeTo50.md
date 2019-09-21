@@ -258,4 +258,19 @@ Remove usages of `org.joda.time` outside of `ucar.nc2.time`.
 
 ## netCDF-Java API Changes (5.2.x)
 
-None yet.
+### netcdf-java artifact changes
+
+The following artifacts have changed:
+* The `cdm` artifact has been split into:
+  * `cdm-core`
+  * `cdm-radial`
+  * `cdm-misc`
+* The `visadCdm` artifact has been split into:
+ * `cdm-mcidas`
+ * `cdm-vis5d`
+* The `clcommon` artifact has been renamed to `cdm-image`
+
+None of these moves resulted in an API break.
+This move is a stepping stone towards supporting the Java Platform Module System in future releases of netCDF-Java.
+At this very least, this change will require updating your build scripts to use `cdm-core` over `cdm`.
+For information on what is included in the new modules, please visit the [Using netCDF-Java Maven Artifacts](using_netcdf_java_artifacts.html) documentation.
