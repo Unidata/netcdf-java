@@ -1,0 +1,17 @@
+description = "Mcidas and Gempak IOSPs."
+ext.title = "Mcidas and Gempak IOSPs"
+
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
+dependencies {
+    compile project(':cdm:core')
+    compile project(':grib')
+
+    compile libraries["guava"]
+    compile libraries["re2j"]
+
+    compile libraries["slf4j-api"]
+}

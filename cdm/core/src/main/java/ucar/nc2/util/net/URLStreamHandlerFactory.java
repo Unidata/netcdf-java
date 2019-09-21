@@ -60,27 +60,3 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
   }
 
 }
-
-/*
- * // load protocol for ADDE URLs
- * // See java.net.URL for explanation of URL handling
- * static
- * {
- * try
- * {
- * String handlers = System.getProperty("java.protocol.handler.pkgs");
- * String newProperty = null;
- * if (handlers == null)
- * newProperty = "edu.wisc.ssec.mcidas";
- * else if (handlers.indexOf("edu.wisc.ssec.mcidas") < 0)
- * newProperty = "edu.wisc.ssec.mcidas | " + handlers;
- * if (newProperty != null) // was set above
- * System.setProperty("java.protocol.handler.pkgs", newProperty);
- * }
- * catch (Exception e)
- * {
- * LogStream.out.println(
- * "Unable to set System Property: java.protocol.handler.pkgs");
- * }
- * }
- */

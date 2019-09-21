@@ -20,7 +20,7 @@ dependencies {
     compile project(":netcdf4")
     compile project(":opendap")
     compile project(":uibase")
-    compile project(":visadCdm")        // For Gempak IOSPs.
+    compile project(":visad:mcidas")        // For Gempak IOSPs.
     compile project(":waterml")         
     
     compile libraries["jdom2"]

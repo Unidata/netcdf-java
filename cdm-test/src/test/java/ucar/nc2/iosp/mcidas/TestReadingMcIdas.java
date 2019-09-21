@@ -5,8 +5,8 @@
 
 package ucar.nc2.iosp.mcidas;
 
-import edu.wisc.ssec.mcidas.AreaFile;
-import edu.wisc.ssec.mcidas.AreaFileException;
+import ucar.mcidas.AreaFile;
+import ucar.mcidas.AreaFileException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;

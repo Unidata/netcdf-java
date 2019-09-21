@@ -22,9 +22,10 @@ include 'testUtil'
 include 'udunits'
 include 'uibase'
 include 'uicdm'
-include 'visad'
+include 'visad:mcidas'
+include 'visad:vis5d'
 include 'waterml'
 
 // However, the subdirectory name is not always the name we want for the project.
 // TODO: Once Maven is out of the picture, can't we just rename the subdirectory?
-project(':visad').name = 'visadCdm'  // Change name of project in visad/ directory from "visad" to "visadCdm".
+// project(':visad').name = 'visadCdm'  // Change name of project in visad/ directory from "visad" to "visadCdm".
