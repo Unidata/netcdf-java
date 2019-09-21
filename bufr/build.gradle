@@ -8,7 +8,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 
 dependencies {
-    compile project(":cdm:core")
+    compile project(":cdm:cdm-core")
     compile libraries["jdom2"]
     compile libraries["jsr305"]
     compile libraries["jcommander"]

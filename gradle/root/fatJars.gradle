@@ -24,29 +24,29 @@ configurations {
 }
 
 dependencies {
-    ncIdv project(':cdm:core')
-    ncIdv project(':cdm:image')
-    ncIdv project(':cdm:misc')
-    ncIdv project(':cdm:radial')
+    ncIdv project(':cdm:cdm-core')
+    ncIdv project(':cdm:cdm-image')
+    ncIdv project(':cdm:cdm-radial')
+    ncIdv project(':cdm:cdm-misc')
     ncIdv project(':bufr')
     ncIdv project(':grib')
     ncIdv project(':netcdf4')
     ncIdv project(':opendap')
-    ncIdv project(':visad:mcidas')
-    ncIdv project(':visad:vis5d')
+    ncIdv project(':visad:cdm-mcidas')
+    ncIdv project(':visad:cdm-vis5d')
     ncIdv project(':httpservices')
     ncIdv project(':legacy')
 
-    netcdfAll project(":cdm:core")
-    netcdfAll project(":cdm:image")
-    netcdfAll project(":cdm:misc")
-    netcdfAll project(":cdm:radial")
+    netcdfAll project(":cdm:cdm-core")
+    netcdfAll project(":cdm:cdm-image")
+    netcdfAll project(":cdm:cdm-radial")
+    netcdfAll project(":cdm:cdm-misc")
     netcdfAll project(":bufr")
     netcdfAll project(":grib")
     netcdfAll project(":netcdf4")
     netcdfAll project(":opendap")
     netcdfAll project(":httpservices")
-    netcdfAll project(':visad:mcidas')
+    netcdfAll project(':visad:cdm-mcidas')
 
     toolsUI project(':uicdm')
     
@@ -82,7 +82,7 @@ fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
     configurations = [project.configurations.netcdfAll]
     
     doFirst {
-        manifest.attributes project(':cdm:core').tasks.jar.manifest.attributes
+        manifest.attributes project(':cdm:cdm-core').tasks.jar.manifest.attributes
     }
 }
 

@@ -9,15 +9,15 @@ apply from: "$rootDir/gradle/any/coverage.gradle"
 // cdm-test is not published
 
 dependencies {
-    testCompile project(":cdm:core")
-    testCompile project(":cdm:image")
-    testCompile project(":cdm:misc")
-    testCompile project(":cdm:radial")
+    testCompile project(":cdm:cdm-core")
+    testCompile project(":cdm:cdm-image")
+    testCompile project(":cdm:cdm-radial")
+    testCompile project(":cdm:cdm-misc")
     testCompile project(":bufr")
     testCompile project(":grib")
     testCompile project(":netcdf4")
     testRuntime project(":opendap")
-    testCompile project(":visad:mcidas")
+    testCompile project(":visad:cdm-mcidas")
 
     testCompile libraries["httpcore"]
     testCompile libraries["commons-io"]

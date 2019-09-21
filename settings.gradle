@@ -26,6 +26,10 @@ include 'visad:mcidas'
 include 'visad:vis5d'
 include 'waterml'
 
-// However, the subdirectory name is not always the name we want for the project.
-// TODO: Once Maven is out of the picture, can't we just rename the subdirectory?
-// project(':visad').name = 'visadCdm'  // Change name of project in visad/ directory from "visad" to "visadCdm".
+// Set name of cdm submodules
+project(':cdm:core').name = 'cdm-core'
+project(':cdm:radial').name = 'cdm-radial'
+project(':cdm:image').name = 'cdm-image'
+project(':cdm:misc').name = 'cdm-misc'
+project(':visad:mcidas').name = 'cdm-mcidas'
+project(':visad:vis5d').name = 'cdm-vis5d'

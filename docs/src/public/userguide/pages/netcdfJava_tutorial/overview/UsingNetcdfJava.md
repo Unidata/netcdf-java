@@ -32,7 +32,7 @@ repositories {
 ~~~
 
 Next, select modules based on the functionality you need.
-In the minimal case, you’ll just want `cdm` and a logger.
+In the minimal case, you’ll just want `cdm-core` and a logger.
 `cdm` implements the CDM data model and allows you to read NetCD-3 files (and a number of other file types).
 An example using JDK14 logging:
 
@@ -40,7 +40,7 @@ An example using JDK14 logging:
 <!-- In Maven -->
 <dependency>
   <groupId>edu.ucar</groupId>
-  <artifactId>cdm</artifactId>
+  <artifactId>cdm-core</artifactId>
   <version>${netcdfJavaVersion}</version>
   <scope>compile</scope>
 </dependency>
@@ -56,7 +56,7 @@ An example using JDK14 logging:
 ~~~groovy
 // In Gradle
 dependencies {
-  compile "edu.ucar:cdm:${netcdfJavaVersion}"
+  compile "edu.ucar:cdm-core:${netcdfJavaVersion}"
   runtime "org.slf4j:slf4j-jdk14:${slf4jVersion}"
 }
 ~~~
@@ -65,8 +65,8 @@ There are optional modules add support for reading (and sometimes writing) vario
 The formats associated with each module are:
 
 * `bufr`: BUFR
-* `cdm:image`: GINI and FYSAT
-* `cdm:radial`: radial (eg radar) datasets
+* `cdm-image`: GINI and FYSAT
+* `cdm-radial`: radial (eg radar) datasets
 * `grib`: GRIB-1 and GRIB-2
 * `netcdf4`: NetCDF-4. Writing requires the NetCDF-4 C library to be installed.
 * `opendap`: OPeNDAP
@@ -86,7 +86,7 @@ To do so in Maven and Gradle:
 
 <dependency>
   <groupId>edu.ucar</groupId>
-  <artifactId>cdmImage</artifactId>
+  <artifactId>cdm-image</artifactId>
   <version>${netcdfJavaVersion}</version>
   <scope>runtime</scope>
 </dependency>
@@ -124,7 +124,7 @@ To do so in Maven and Gradle:
 // In Gradle
 dependencies {
   runtime "edu.ucar:bufr:${netcdfJavaVersion}"
-  runtime "edu.ucar:cdm:image:${netcdfJavaVersion}"
+  runtime "edu.ucar:cdm-image:${netcdfJavaVersion}"
   runtime "edu.ucar:grib:${netcdfJavaVersion}"
   runtime "edu.ucar:netcdf4:${netcdfJavaVersion}"
   runtime "edu.ucar:opendap:${netcdfJavaVersion}"
