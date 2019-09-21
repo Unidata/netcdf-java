@@ -9,7 +9,7 @@ apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 
 dependencies {
-    compile project(':cdm:core')
+    compile project(':cdm:cdm-core')
     compile libraries["protobuf-java"]
     compile libraries["jdom2"]
     compile libraries["jsr305"]

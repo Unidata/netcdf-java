@@ -10,17 +10,17 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 apply from: "$rootDir/gradle/any/properties.gradle"  // For keystore and Nexus properties.
 
 dependencies {
-    compile project(":cdm:core")
-    compile project(":cdm:image")   // things that depend on java.awt
-    compile project(":cdm:misc")    // misc iosps
-    compile project(":cdm:radial")  // radial data
+    compile project(":cdm:cdm-core")
+    compile project(":cdm:cdm-image")    // things that depend on java.awt
+    compile project(":cdm:cdm-misc")     // misc iosps
+    compile project(":cdm:cdm-radial")   // radial data
     compile project(":bufr")
     compile project(":grib")
     compile project(":httpservices")
     compile project(":netcdf4")
     compile project(":opendap")
     compile project(":uibase")
-    compile project(":visad:mcidas")        // For Gempak IOSPs.
+    compile project(":visad:cdm-mcidas") // For Gempak IOSPs.
     compile project(":waterml")         
     
     compile libraries["jdom2"]

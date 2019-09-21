@@ -7,7 +7,7 @@ apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 
 dependencies {
-    compile project(':cdm:core')
+    compile project(':cdm:cdm-core')
     compile project(':grib')
 
     compile libraries["guava"]
