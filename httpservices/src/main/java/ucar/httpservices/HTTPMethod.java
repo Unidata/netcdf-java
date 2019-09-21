@@ -5,10 +5,14 @@
 
 package ucar.httpservices;
 
+import static ucar.httpservices.HTTPSession.Prop;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMultimap;
+import java.util.Optional;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -28,7 +32,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static ucar.httpservices.HTTPSession.Prop;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -320,7 +323,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
    *
    * @return statuscode
    */
-  // debug only
+  @VisibleForTesting
   public HttpResponse executeRaw() throws HTTPException {
     if (this.closed)
       throw new IllegalStateException("HTTPMethod: attempt to execute closed method");
@@ -549,35 +552,69 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     return getResponseAsString("UTF-8");
   }
 
-  public Header getRequestHeader(String name) {
-    Header[] hdrs = getRequestHeaders();
-    if (hdrs != null)
-      for (Header h : hdrs) {
-        if (h.getName().equals(name))
-          return h;
+  public Optional<String> getRequestHeaderValue(String name) {
+    if (this.lastrequest == null) {
+      return Optional.empty();
+    }
+
+    Header header = this.lastrequest.getFirstHeader(name);
+    if (header != null && !header.getValue().isEmpty()) {
+      return Optional.of(header.getValue());
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Get all Request headers as a map of name to list of values.
+   * A value may be null.
+   *
+   * @return Map, may be empty but not null.
+   */
+  public ImmutableMultimap<String, String> getRequestHeaders() {
+    if (this.lastrequest == null)
+      return ImmutableMultimap.of();
+
+    ImmutableMultimap.Builder<String, String> builder = ImmutableListMultimap.builder();
+    for (Header header : this.lastrequest.getAllHeaders()) {
+      for (HeaderElement element : header.getElements()) {
+        builder.put(element.getName(), element.getValue());
       }
-    return null;
-  }
-
-  public Header getResponseHeader(String name) {
-    try {
-      return this.lastresponse == null ? null : this.lastresponse.getFirstHeader(name);
-    } catch (Exception e) {
-      return null;
     }
+    return builder.build();
   }
 
-  public Header[] getResponseHeaders() {
-    try {
-      if (this.lastresponse == null)
-        return null;
-      Header[] hs = this.lastresponse.getAllHeaders();
-      return hs;
-    } catch (Exception e) {
-      return null;
+  public Optional<String> getResponseHeaderValue(String name) {
+    if (this.lastresponse == null) {
+      return Optional.empty();
     }
+
+    Header header = this.lastresponse.getFirstHeader(name);
+    if (header != null && !header.getValue().isEmpty()) {
+      return Optional.of(header.getValue());
+    }
+    return Optional.empty();
   }
 
+  /**
+   * Get all Response headers as a map of name to list of values.
+   * A value may be null.
+   *
+   * @return Map, may be empty but not null.
+   */
+  public ImmutableMultimap<String, String> getResponseHeaders() {
+    if (this.lastresponse == null)
+      return ImmutableMultimap.of();
+
+    ImmutableMultimap.Builder<String, String> builder = ImmutableListMultimap.builder();
+    for (Header header : this.lastresponse.getAllHeaders()) {
+      for (HeaderElement element : header.getElements()) {
+        builder.put(element.getName(), element.getValue());
+      }
+    }
+    return builder.build();
+  }
+
+  @VisibleForTesting
   public HTTPMethod setRequestContent(HttpEntity content) {
     if (DEBUG)
       try {
@@ -640,10 +677,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
   public HTTPMethod setRange(long lo, long hi) {
     range = new long[] {lo, hi};
     return this;
-  }
-
-  public Header[] getRequestHeaders() {
-    return this.lastrequest == null ? null : this.lastrequest.getAllHeaders();
   }
 
   //////////////////////////////////////////////////
@@ -709,18 +742,21 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
   //////////////////////////////////////////////////
   // debug interface
 
+  @VisibleForTesting
   public RequestConfig getDebugConfig() {
     if (!TESTING)
       throw new UnsupportedOperationException();
     return this.debugconfig;
   }
 
+  @VisibleForTesting
   public HttpRequestBase debugRequest() {
     if (!TESTING)
       throw new UnsupportedOperationException();
     return (this.lastrequest);
   }
 
+  @VisibleForTesting
   public HttpResponse debugResponse() {
     if (!TESTING)
       throw new UnsupportedOperationException();

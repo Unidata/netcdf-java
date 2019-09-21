@@ -5,35 +5,16 @@
 
 package dap4.test;
 
-import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.dap4lib.FileDSP;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicHttpResponse;
-import org.junit.Test;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPUtil;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-import javax.servlet.ServletException;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 
 abstract public class DapTestCommon extends UnitTestCommon {

@@ -5,7 +5,9 @@
 
 package ucar.unidata.io.http;
 
-import org.apache.http.Header;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -55,35 +57,34 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
       doConnect(method);
 
-      Header head = method.getResponseHeader("Accept-Ranges");
-      if (head == null) {
+      Optional<String> acceptRangesOpt = method.getResponseHeaderValue("Accept-Ranges");
+      if (!acceptRangesOpt.isPresent()) {
         needtest = true; // header is optional - need more testing
 
-      } else if (head.getValue().equalsIgnoreCase("bytes")) {
-        needtest = false;
+      } else {
+        String acceptRanges = acceptRangesOpt.get();
+        if (acceptRanges.equalsIgnoreCase("bytes")) {
+          needtest = false;
 
-      } else if (head.getValue().equalsIgnoreCase("none")) {
-        throw new IOException("Server does not support byte Ranges");
-      }
-
-      head = method.getResponseHeader("Content-Length");
-      if (head == null) {
-        throw new IOException("Server does not support Content-Length");
+        } else if (acceptRanges.equalsIgnoreCase("none")) {
+          throw new IOException("Server does not support byte Ranges");
+        }
       }
 
       try {
-        total_length = Long.parseLong(head.getValue());
-        /*
-         * Some HTTP server report 0 bytes length.
-         * Do the Range bytes test if the server is reporting 0 bytes length
-         */
-        if (total_length == 0)
-          needtest = true;
+        this.total_length = method.getResponseHeaderValue("Content-Length").map(Long::parseLong)
+            .orElseThrow(() -> new IOException("Server does not support Content-Length"));
       } catch (NumberFormatException e) {
         throw new IOException("Server has malformed Content-Length header");
       }
-
     }
+
+    /*
+     * Some HTTP server report 0 bytes length.
+     * Do the Range bytes test if the server is reporting 0 bytes length
+     */
+    if (total_length == 0)
+      needtest = true;
 
     if (needtest && !rangeOk(url))
       throw new IOException("Server does not support byte Ranges");
@@ -110,20 +111,18 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   private boolean rangeOk(String url) {
-    try {
-      try (HTTPMethod method = HTTPFactory.Get(session, url)) {
-        method.setRange(0, 0);
-        doConnect(method);
+    try (HTTPMethod method = HTTPFactory.Get(session, url)) {
+      method.setRange(0, 0);
+      doConnect(method);
+      int code = method.getStatusCode();
+      if (code != 206)
+        throw new IOException("Server does not support Range requests, code= " + code);
 
-        int code = method.getStatusCode();
-        if (code != 206)
-          throw new IOException("Server does not support Range requests, code= " + code);
-        Header head = method.getResponseHeader("Content-Range");
-        total_length = Long.parseLong(head.getValue().substring(head.getValue().lastIndexOf("/") + 1));
-        // clear stream
-        method.close();
-        return true;
-      }
+      this.total_length =
+          method.getResponseHeaderValue("Content-Range").map(r -> Long.parseLong(r.substring(r.lastIndexOf("/") + 1)))
+              .orElseThrow(() -> new IOException("Server did not return a Content-Range"));
+      return true;
+
     } catch (IOException e) {
       return false;
     }
@@ -142,17 +141,18 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (debugDetails) {
       // request headers dont seem to be available until after execute()
-      printHeaders("Request: " + method.getURI(), method.getRequestHeaders());
-      printHeaders("Response: " + method.getStatusCode(), method.getResponseHeaders());
+      printHeaders("Request: " + method.getURI(), method.getRequestHeaders().entries());
+      printHeaders("Response: " + method.getStatusCode(), method.getResponseHeaders().entries());
     }
   }
 
-  private void printHeaders(String title, Header[] heads) {
+  private void printHeaders(String title, Collection<Map.Entry<String, String>> headers) {
+    if (headers.isEmpty())
+      return;
     System.out.println(title);
-    for (Header head : heads) {
-      System.out.print("  " + head);
+    for (Map.Entry<String, String> entry : headers) {
+      System.out.println(String.format("  %s = %s" + entry.getKey(), entry.getValue()));
     }
-    System.out.println();
   }
 
   /**
@@ -184,11 +184,9 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       if (code != 206)
         throw new IOException("Server does not support Range requests, code= " + code);
 
-      String s = method.getResponseHeader("Content-Length").getValue();
-      if (s == null)
-        throw new IOException("Server does not send Content-Length header");
+      int readLen = method.getResponseHeaderValue("Content-Length").map(Integer::parseInt)
+          .orElseThrow(() -> new IOException("Server did not return a Content-Length"));
 
-      int readLen = Integer.parseInt(s);
       readLen = Math.min(len, readLen);
 
       InputStream is = method.getResponseAsStream();

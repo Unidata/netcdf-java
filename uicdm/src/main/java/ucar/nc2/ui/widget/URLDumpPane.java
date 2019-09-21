@@ -6,7 +6,8 @@
 package ucar.nc2.ui.widget;
 
 import java.nio.charset.StandardCharsets;
-import org.apache.http.Header;
+import java.util.Collection;
+import java.util.Optional;
 import org.apache.http.entity.StringEntity;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
@@ -298,17 +299,17 @@ public class URLDumpPane extends TextHistoryPane {
        * appendLine("   timeout (msecs)= " + p.getSoTimeout());
        * appendLine("   virtual host= " + p.getVirtualHost());
        */
-      printHeaders("Request Headers = ", m.getRequestHeaders());
+      printHeaders("Request Headers = ", m.getRequestHeaders().entries());
       appendLine(" ");
 
       m.execute();
 
-      printHeaders("Request Headers2 = ", m.getRequestHeaders());
+      printHeaders("Request Headers2 = ", m.getRequestHeaders().entries());
       appendLine(" ");
 
       appendLine("Status = " + m.getStatusCode() + " " + m.getStatusText());
       appendLine("Status Line = " + m.getStatusLine());
-      printHeaders("Response Headers = ", m.getResponseHeaders());
+      printHeaders("Response Headers = ", m.getResponseHeaders().entries());
       if (cmd == Command.GET) {
         appendLine("\nResponseBody---------------");
 
@@ -318,30 +319,32 @@ public class URLDumpPane extends TextHistoryPane {
         String contents = null;
 
         // check for deflate and gzip compression
-        Header h = m.getResponseHeader("content-encoding");
-        String encoding = (h == null) ? null : h.getValue();
+        Optional<String> encodingOpt = m.getResponseHeaderValue("content-encoding");
+        if (encodingOpt.isPresent()) {
+          String encoding = encodingOpt.get();
 
-        if ("deflate".equals(encoding)) {
-          byte[] body = m.getResponseAsBytes();
-          if (body != null) {
-            InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
-            contents = IO.readContents(is, charset);
-            double ratio = (double) contents.length() / body.length;
-            appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+          if ("deflate".equals(encoding)) {
+            byte[] body = m.getResponseAsBytes();
+            if (body != null) {
+              InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+              contents = IO.readContents(is, charset);
+              double ratio = (double) contents.length() / body.length;
+              appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+            }
+
+          } else if ("gzip".equals(encoding)) {
+            byte[] body = m.getResponseAsBytes();
+            if (body != null) {
+              InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+              contents = IO.readContents(is, charset);
+              double ratio = (double) contents.length() / body.length;
+              appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+            }
+
+          } else {
+            byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
+            contents = (body == null) ? "" : new String(body, charset);
           }
-
-        } else if ("gzip".equals(encoding)) {
-          byte[] body = m.getResponseAsBytes();
-          if (body != null) {
-            InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
-            contents = IO.readContents(is, charset);
-            double ratio = (double) contents.length() / body.length;
-            appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
-          }
-
-        } else {
-          byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
-          contents = (body == null) ? "" : new String(body, charset);
         }
 
         if (contents != null) {
@@ -360,12 +363,12 @@ public class URLDumpPane extends TextHistoryPane {
     }
   }
 
-  private void printHeaders(String title, Header[] heads) {
-    if (heads == null)
+  private void printHeaders(String title, Collection<Map.Entry<String, String>> headers) {
+    if (headers.isEmpty())
       return;
     appendLine(title);
-    for (Header head : heads) {
-      append("  " + head + "\n");
+    for (Map.Entry<String, String> entry : headers) {
+      appendLine(String.format("  %s = %s" + entry.getKey(), entry.getValue()));
     }
   }
 

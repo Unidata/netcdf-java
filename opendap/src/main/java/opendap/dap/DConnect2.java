@@ -40,10 +40,14 @@
 
 package opendap.dap;
 
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import opendap.dap.parsers.ParseException;
-import org.apache.http.Header;
-import org.apache.http.HttpStatus;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -257,17 +261,17 @@ public class DConnect2 implements Closeable {
         int statusCode;
         for (;;) {
           statusCode = method.execute();
-          if (statusCode != HttpStatus.SC_SERVICE_UNAVAILABLE)
+          if (statusCode != HTTP_UNAVAILABLE)
             break;
           Thread.sleep(5000);
           System.err.println("Service Unavailable");
         }
 
-        if (statusCode == HttpStatus.SC_NOT_FOUND) {
+        if (statusCode == HTTP_NOT_FOUND) {
           throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
         }
 
-        if (statusCode != HttpStatus.SC_OK) {
+        if (statusCode != HttpURLConnection.HTTP_OK) {
           throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
         }
 
@@ -275,13 +279,15 @@ public class DConnect2 implements Closeable {
         is = method.getResponseAsStream();
 
         // check if its an error
-        Header header = method.getResponseHeader("Content-Description");
-        if (header != null && (header.getValue().equals("dods-error") || header.getValue().equals("dods_error"))) {
-          // create server exception object
-          DAP2Exception ds = new DAP2Exception();
-          // parse the Error object from stream and throw it
-          ds.parse(is);
-          throw ds;
+        Optional<String> value = method.getResponseHeaderValue("Content-Description");
+        if (value.isPresent()) {
+          String v = value.get();
+          if (v.equals("dods-error") || v.equals("dods_error")) {
+            // parse the Error object from stream and throw it
+            DAP2Exception ds = new DAP2Exception();
+            ds.parse(is);
+            throw ds;
+          }
         }
 
         ver = new ServerVersion(method);
@@ -289,22 +295,16 @@ public class DConnect2 implements Closeable {
         checkHeaders(method);
 
         // check for deflator
-        Header h = method.getResponseHeader("content-encoding");
-        String encoding = (h == null) ? null : h.getValue();
-        // if (encoding != null) LogStream.out.println("encoding= " + encoding);
-
-        if (encoding != null && encoding.equals("deflate")) {
-          is = new BufferedInputStream(new InflaterInputStream(is), 1000);
+        Optional<String> encodingOpt = method.getResponseHeaderValue("content-encoding");
+        if (encodingOpt.isPresent()) {
+          String encoding = encodingOpt.get();
+          if (encoding.equals("deflate")) {
+            is = new BufferedInputStream(new InflaterInputStream(is), 1000);
+          } else if (encoding.equals("gzip")) {
+            is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+          }
           if (showCompress)
-            System.out.printf("deflate %s%n", urlString);
-
-        } else if (encoding != null && encoding.equals("gzip")) {
-          is = new BufferedInputStream(new GZIPInputStream(is), 1000);
-          if (showCompress)
-            System.out.printf("gzip %s%n", urlString);
-        } else {
-          if (showCompress)
-            System.out.printf("none %s%n", urlString);
+            System.out.printf("%s %s%n", encoding, urlString);
         }
 
         command.process(is);
@@ -435,39 +435,23 @@ public class DConnect2 implements Closeable {
   }
 
   private void checkHeaders(HTTPMethod method) {
-    if (debugHeaders) {
-      DAPNode.log.debug("\nOpenConnection Headers for " + method.getPath());
-      DAPNode.log.debug("Status Line: " + method.getStatusLine());
-    }
+    for (Map.Entry<String, String> entry : method.getResponseHeaders().entries()) {
+      String name = entry.getKey();
+      String value = entry.getValue();
 
-    Header[] responseHeaders = method.getResponseHeaders();
-    for (int i1 = 0; i1 < responseHeaders.length; i1++) {
-      Header responseHeader = responseHeaders[i1];
-      if (debugHeaders)
-        DAPNode.log.debug("  " + responseHeader);
-      String key = responseHeader.getName();
-      String value = responseHeader.getValue();
+      switch (name) {
+        case "Last-Modified":
+          lastModified = value;
+          break;
 
-      if (key.equals("Last-Modified")) {
-        lastModified = value;
-        if (debugHeaders)
-          DAPNode.log.debug(" **found lastModified = " + lastModified);
+        case "X-Last-Extended":
+          lastExtended = value;
+          break;
 
-      } else if (key.equals("X-Last-Extended")) {
-        lastExtended = value;
-        if (debugHeaders)
-          DAPNode.log.debug(" **found lastExtended = " + lastExtended);
-
-      } else if (key.equals("X-Last-Modified-Invalid")) {
-        lastModifiedInvalid = value;
-        if (debugHeaders)
-          DAPNode.log.debug(" **found lastModifiedInvalid = " + lastModifiedInvalid);
+        case "X-Last-Modified-Invalid":
+          lastModifiedInvalid = value;
       }
     }
-
-    if (debugHeaders)
-      DAPNode.log.debug("OpenConnection Headers for " + method.getPath());
-
   }
 
   private interface Command {
