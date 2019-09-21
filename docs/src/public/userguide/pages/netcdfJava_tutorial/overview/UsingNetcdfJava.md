@@ -66,14 +66,16 @@ The formats associated with each module are:
 
 * `bufr`: BUFR
 * `cdm-image`: GINI and FYSAT
-* `cdm-radial`: radial (eg radar) datasets
+* `cdm-radial`: Radial (eg radar) datasets
+* `cdm-misc` : Miscellaneous formats (see [here](#cdm-misc-module) for a list)
 * `grib`: GRIB-1 and GRIB-2
 * `netcdf4`: NetCDF-4. Writing requires the NetCDF-4 C library to be installed.
 * `opendap`: OPeNDAP
-* `visadCdm`: GEMPAK grid, station, and sounding; McIDAS grid; and ADDE image and station
+* `cdm-mcidas`: GEMPAK grid, station, and sounding; McIDAS grid; and ADDE image and station
+* `cdm-vis5d` : Vis5d grids
 
 You can include any number of the above components.
-To do so in Maven and Gradle:
+For example, in Maven and Gradle:
 
 ~~~xml
 <!-- In Maven -->
@@ -114,7 +116,7 @@ To do so in Maven and Gradle:
 
 <dependency>
   <groupId>edu.ucar</groupId>
-  <artifactId>visadCdm</artifactId>
+  <artifactId>cdm-mcidas</artifactId>
   <version>${netcdfJavaVersion}</version>
   <scope>runtime</scope>
 </dependency>
@@ -128,9 +130,27 @@ dependencies {
   runtime "edu.ucar:grib:${netcdfJavaVersion}"
   runtime "edu.ucar:netcdf4:${netcdfJavaVersion}"
   runtime "edu.ucar:opendap:${netcdfJavaVersion}"
-  runtime "edu.ucar:visadCdm:${netcdfJavaVersion}"
+  runtime "edu.ucar:cdm-mcidas:${netcdfJavaVersion}"
 }
 ~~~
+
+## cdm-misc module
+
+The `cdm-misc` module contains the following miscellaneous IOSPs:
+
+ * Defense Meteorological Satellite Program (DMSP) format
+ * GrADS:
+   * raw lat/lon binary grid files (DTYPE not defined)
+   * ensembles defined by NAMES in one file or as a template
+   * time templates
+   * gaussian latitudes
+ * GTOPO Topograpic data
+ * NLDN Lightning
+ * NMC legacy (pre-BUFR) obs data
+ * USPLN Lightning
+ * NCEI
+   * Global Historical Climatology Network Monthly (GHCNM)
+   * Integrated Global Radiosonde Archive
 
 ## Building with netcdfAll
 

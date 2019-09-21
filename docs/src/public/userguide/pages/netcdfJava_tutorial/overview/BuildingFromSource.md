@@ -41,7 +41,7 @@ Next, use the Gradle wrapper to execute the assemble task:
 ~~~
 
 There will be various artifacts within the `<subproject>/build/libs/` subdirectories.
-For example, the `cdm.jar` file will be in `cdm/build/libs/`.
+For example, the `cdm-core.jar` file will be in `cdm/core/build/libs/`.
 The uber jars, such as `toolsUI.jar` and `netcdfAll.jar`, will be found in `build/libs/`.
 
 ## Publishing
