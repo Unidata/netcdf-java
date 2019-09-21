@@ -32,7 +32,8 @@ dependencies {
     ncIdv project(':grib')
     ncIdv project(':netcdf4')
     ncIdv project(':opendap')
-    ncIdv project(':visadCdm')
+    ncIdv project(':visad:mcidas')
+    ncIdv project(':visad:vis5d')
     ncIdv project(':httpservices')
     ncIdv project(':legacy')
 
@@ -45,7 +46,7 @@ dependencies {
     netcdfAll project(":netcdf4")
     netcdfAll project(":opendap")
     netcdfAll project(":httpservices")
-    netcdfAll project(':visadCdm')  // For Gempak IOSPs.
+    netcdfAll project(':visad:mcidas')
 
     toolsUI project(':uicdm')
     

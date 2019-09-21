@@ -17,9 +17,8 @@ dependencies {
     testCompile project(":grib")
     testCompile project(":netcdf4")
     testRuntime project(":opendap")
-    testCompile project(":visadCdm")
+    testCompile project(":visad:mcidas")
 
-    testCompile libraries["visad"]
     testCompile libraries["httpcore"]
     testCompile libraries["commons-io"]
     testCompile libraries["commons-compress"]
