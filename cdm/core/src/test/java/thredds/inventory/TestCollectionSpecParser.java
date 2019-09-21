@@ -25,11 +25,14 @@ public class TestCollectionSpecParser {
     doit("/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\\.grib1$",
         "GFS_Alaska_191km_.............\\.grib1$");
     doit("Q:/grid/grib/grib1/data/agg/.*\\.grb", ".*\\.grb");
-    doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#\\.nc", "Surface_METAR_.............\\.nc");
-    doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc", "Surface_METAR_..............nc");
+    doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#\\.nc",
+        "Surface_METAR_.............\\.nc");
+    doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc",
+        "Surface_METAR_..............nc");
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm", "Surface_METAR_*");
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm", "Surface_METAR_*");
-    doit("/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", "Surface_METAR_..............nc");
+    doit("/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc",
+        "Surface_METAR_..............nc");
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_yyyyMMdd_HHmm.nc", "Surface_METAR_yyyyMMdd_HHmm.nc");
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/", "null");
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/", "null");

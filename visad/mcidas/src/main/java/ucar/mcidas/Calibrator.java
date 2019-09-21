@@ -3,26 +3,26 @@
 //
 
 /*
-This source file is part of the edu.wisc.ssec.mcidas package and is
-Copyright (C) 1998 - 2011 by Tom Whittaker, Tommy Jasmin, Tom Rink,
-Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
-and others.
- 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
-License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
-
-You should have received a copy of the GNU Library General Public
-License along with this library; if not, write to the Free
-Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-MA 02111-1307, USA
-*/
+ * This source file is part of the edu.wisc.ssec.mcidas package and is
+ * Copyright (C) 1998 - 2011 by Tom Whittaker, Tommy Jasmin, Tom Rink,
+ * Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
+ * and others.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Library General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA 02111-1307, USA
+ */
 
 package ucar.mcidas;
 
@@ -36,21 +36,21 @@ package ucar.mcidas;
 public interface Calibrator {
 
   /**
-	 * @author tommyj
-	 *
-	 */
-	public class CalibratorFY2 {
+   * @author tommyj
+   *
+   */
+  public class CalibratorFY2 {
 
-	}
+  }
 
-public static final int CAL_NONE = -1;
-  public static final int CAL_MIN  = 1;
-  public static final int CAL_RAW  = 1;
-  public static final int CAL_RAD  = 2;
-  public static final int CAL_ALB  = 3;
+  public static final int CAL_NONE = -1;
+  public static final int CAL_MIN = 1;
+  public static final int CAL_RAW = 1;
+  public static final int CAL_RAD = 2;
+  public static final int CAL_ALB = 3;
   public static final int CAL_TEMP = 4;
   public static final int CAL_BRIT = 5;
-  public static final int CAL_MAX  = 5;
+  public static final int CAL_MAX = 5;
 
   /** FY-2D */
   public static final int SENSOR_FY2D = 36;
@@ -84,21 +84,11 @@ public static final int CAL_NONE = -1;
   public static final int SENSOR_GOES13_IMGR = 180;
   /** GOES 13 sounder. */
   public static final int SENSOR_GOES13_SNDR = 181;
-  
-  public int setCalType(
-      int calType
-  );
 
-  public float[] calibrate(
-      float[] inputData,
-      int band,
-      int calTypeOut
-  );
+  public int setCalType(int calType);
 
-  public float calibrate(
-      float inputPixel,
-      int band,
-      int calTypeOut
-  );
+  public float[] calibrate(float[] inputData, int band, int calTypeOut);
+
+  public float calibrate(float inputPixel, int band, int calTypeOut);
 
 }
