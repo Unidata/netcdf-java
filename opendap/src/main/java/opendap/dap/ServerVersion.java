@@ -127,16 +127,18 @@ public class ServerVersion implements java.io.Serializable {
 
     // Did the Server send an XDAP header?
     Optional<String> xdapOpt = method.getResponseHeaderValue("XDAP");
-    xdapOpt.ifPresent(xdap -> {
-      versionString = xdap;
+    if (xdapOpt.isPresent()) {
+      versionString = xdapOpt.get();
       processXDAPVersion(versionString);
-    });
+      return;
+    }
 
     // Did the Server send an XDODS-Server header?
     Optional<String> xdodsOpt = method.getResponseHeaderValue("XDODS-Server");
     if (xdodsOpt.isPresent()) {
       versionString = xdodsOpt.get();
       processXDODSServerVersion(versionString);
+      return;
     }
 
     // This is important! If neither of these headers (XDAP or

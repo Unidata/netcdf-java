@@ -6,7 +6,6 @@
 package ucar.httpservices;
 
 import static ucar.httpservices.HTTPSession.Prop;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
