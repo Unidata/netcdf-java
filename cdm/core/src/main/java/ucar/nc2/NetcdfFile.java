@@ -4,7 +4,17 @@
  */
 package ucar.nc2;
 
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
 import org.jdom2.Element;
 import ucar.ma2.Array;
@@ -30,16 +40,6 @@ import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.util.StringUtil2;
-import java.io.*;
-import java.net.URI;
-import java.net.URL;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
-import java.nio.channels.WritableByteChannel;
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * <p>
@@ -129,58 +129,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class H4iosp", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.misc.GtopoIosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class GtopoIosp", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.misc.NmcObsLegacy");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class NmcObsLegacy", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.misc.Uspln");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Uspln", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.misc.Nldn");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Nldn", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.noaa.Ghcnm2");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class Ghcnm2", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.noaa.IgraPor");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class IgraPor", e);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // iosps below here are possibly slow in isValidFile() eg needing an exception thrown
-    // so they are relegated to the end
-    try {
-      registerIOProvider("ucar.nc2.iosp.dmsp.DMSPiosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class", e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class GradsBinaryGridServiceProvider", e);
     }
 
     userLoads = true;
@@ -794,7 +742,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
       // look for dynamically loaded IOSPs
       for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
-        System.out.printf("ServiceLoader IOServiceProvider found %s%n", loadedSpi.getClass().getName());
         if (loadedSpi.isValidFile(raf)) {
           Class c = loadedSpi.getClass();
           try {
