@@ -7,8 +7,10 @@ package ucar.httpservices;
 
 import static ucar.httpservices.HTTPSession.Prop;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import java.util.Optional;
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
@@ -569,17 +571,17 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
    *
    * @return Map, may be empty but not null.
    */
-  public ImmutableMultimap<String, String> getRequestHeaders() {
+  public Multimap<String, String> getRequestHeaders() {
     if (this.lastrequest == null)
       return ImmutableMultimap.of();
 
-    ImmutableMultimap.Builder<String, String> builder = ImmutableListMultimap.builder();
+    ArrayListMultimap<String, String> multimap = ArrayListMultimap.create();
     for (Header header : this.lastrequest.getAllHeaders()) {
       for (HeaderElement element : header.getElements()) {
-        builder.put(element.getName(), element.getValue());
+        multimap.put(element.getName(), element.getValue());
       }
     }
-    return builder.build();
+    return multimap;
   }
 
   public Optional<String> getResponseHeaderValue(String name) {
@@ -600,17 +602,17 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
    *
    * @return Map, may be empty but not null.
    */
-  public ImmutableMultimap<String, String> getResponseHeaders() {
+  public Multimap<String, String> getResponseHeaders() {
     if (this.lastresponse == null)
       return ImmutableMultimap.of();
 
-    ImmutableMultimap.Builder<String, String> builder = ImmutableListMultimap.builder();
+    ArrayListMultimap<String, String> multimap = ArrayListMultimap.create();
     for (Header header : this.lastresponse.getAllHeaders()) {
       for (HeaderElement element : header.getElements()) {
-        builder.put(element.getName(), element.getValue());
+        multimap.put(element.getName(), element.getValue());
       }
     }
-    return builder.build();
+    return multimap;
   }
 
   @VisibleForTesting
