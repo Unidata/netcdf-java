@@ -727,8 +727,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param spiObject sent to iosp.setSpecial() if not null
    * @return NetcdfFile or throw an Exception.
    */
-  private static NetcdfFile openProtocolOrFile(DatasetUrl durl,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+  private static NetcdfFile openProtocolOrFile(DatasetUrl durl, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
+      Object spiObject) throws IOException {
 
     // look for dynamically loaded NetcdfFileProvider
     for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {

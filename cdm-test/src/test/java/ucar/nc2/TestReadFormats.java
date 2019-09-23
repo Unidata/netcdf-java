@@ -119,9 +119,11 @@ public class TestReadFormats {
       if (f.isDirectory())
         continue;
       if ((ff == null) || ff.accept(f)) {
-        if (verbose) System.out.printf("  Open %s%n", name);
+        if (verbose)
+          System.out.printf("  Open %s%n", name);
         try (NetcdfFile ncfile = NetcdfDataset.openFile(name, null)) {
-          if (verbose) System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
+          if (verbose)
+            System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
           countGood++;
         } catch (Throwable t) {
           System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());

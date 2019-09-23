@@ -3876,6 +3876,7 @@ public class H5header extends NCheader {
 
   private static final String[] filterName = {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
   private static final int KNOWN_FILTERS = 3;
+
   class Filter {
     short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
     short flags;
