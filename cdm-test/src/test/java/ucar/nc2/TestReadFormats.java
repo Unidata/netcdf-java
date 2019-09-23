@@ -16,24 +16,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Just Open all the files in the formats directory.
- *
- * @author caron
- * @since 2/28/11
- */
-@Category(NeedsCdmUnitTest.class)
+/** Just open all the files in the formats directory. */
+// @Category(NeedsCdmUnitTest.class)
 public class TestReadFormats {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static int countGood = 0;
-  static int countFail = 0;
-  static int countTotal = 0;
-  static boolean verbose = true;
+  private static int countGood = 0;
+  private static int countFail = 0;
+  private static int countTotal = 0;
+  private static boolean verbose = true;
 
-  List<String> failFiles = new ArrayList<String>();
+  private List<String> failFiles = new ArrayList<>();
 
-  class MyFileFilter implements java.io.FileFilter {
+  static class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
       countTotal++;
       String name = pathname.getName();
@@ -65,7 +60,7 @@ public class TestReadFormats {
   }
 
   @Test
-  public void testAllFormat() throws IOException {
+  public void testAllFormat() {
     openAllInDir(TestDir.cdmUnitTestDir + "/formats", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
@@ -75,7 +70,7 @@ public class TestReadFormats {
   }
 
   @Test
-  public void problem() throws IOException {
+  public void problem() {
     openAllInDir(TestDir.cdmUnitTestDir + "/formats/grib1", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
@@ -85,35 +80,29 @@ public class TestReadFormats {
   }
 
   // these are fairly complete hdf4 files from nsidc
-  public void utestHdf4() throws IOException {
+  public void utestHdf4() {
     openAllInDir("F:/data/formats/hdf4", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
   }
 
   @Test
-  public void readCinrad() throws IOException {
+  public void readCinrad() {
     doOne(TestDir.cdmUnitTestDir + "formats/cinrad/CHGZ_2006071512.0300");
   }
 
-  private void doOne(String name) throws IOException {
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = NetcdfDataset.openFile(name, null);
+  private void doOne(String name) {
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(name, null)) {
       if (verbose)
         System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
       countGood++;
     } catch (Throwable t) {
       System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
       t.printStackTrace();
-    } finally {
-      if (ncfile != null)
-        ncfile.close();
     }
-
   }
 
-  public void openAllInDir(String dirName, FileFilter ff) throws IOException {
+  private void openAllInDir(String dirName, FileFilter ff) {
     if (verbose)
       System.out.println("---------------Reading directory " + dirName);
     File allDir = new File(dirName);
@@ -130,20 +119,15 @@ public class TestReadFormats {
       if (f.isDirectory())
         continue;
       if ((ff == null) || ff.accept(f)) {
-        NetcdfFile ncfile = null;
-        try {
-          ncfile = NetcdfDataset.openFile(name, null);
-          if (verbose)
-            System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
+        if (verbose) System.out.printf("  Open %s%n", name);
+        try (NetcdfFile ncfile = NetcdfDataset.openFile(name, null)) {
+          if (verbose) System.out.printf("  GOOD on %s == %s%n", name, ncfile.getFileTypeId());
           countGood++;
         } catch (Throwable t) {
           System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
           t.printStackTrace();
           failFiles.add(name);
           countFail++;
-        } finally {
-          if (ncfile != null)
-            ncfile.close();
         }
       }
     }
