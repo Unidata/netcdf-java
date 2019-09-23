@@ -19,8 +19,9 @@ import java.util.Map;
  * Also move various common fields and methods to here.
  *
  * @author Heimbigner
+ * @deprecated
  */
-
+@Deprecated
 public abstract class CDMNode {
 
   protected CDMSort sort;

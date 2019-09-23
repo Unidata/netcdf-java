@@ -267,6 +267,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     N3iosp.setProperty(name, value);
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Open an existing netcdf file (read only).
    *
@@ -471,14 +473,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
       String uncompressedFileName = null;
       try {
-        stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by one
+        //stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by one
                                          // thread while another is decompressing it
         uncompressedFileName = makeUncompressed(uriString);
       } catch (Exception e) {
         log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
         // allow to fall through to open the "compressed" file directly - may be a misnamed suffix
       } finally {
-        stringLocker.release(uriString);
+        //stringLocker.release(uriString);
       }
 
       if (uncompressedFileName != null) {
@@ -777,6 +779,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       spi.sendIospMessage(iospMessage);
 
     return result;
+  }
+
+  public static NetcdfFile.Builder builder() {
+    return new Builder();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1285,6 +1291,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   ///////////////////////////////////////////////////////////////////
   // old stuff for backwards compatilibilty, esp with NCdumpW
+  // TODO: Move to helper class.
 
   /**
    * Write CDL representation to OutputStream.
@@ -1601,7 +1608,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param parent add to this group. If group is null, use root group
    * @param att add this attribute
    * @return the attribute that was added
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Attribute addAttribute(Group parent, Attribute att) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1618,7 +1627,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param name attribute name, may not be null
    * @param value attribute value, may be null, in which case, do not addd
    * @return the attribute that was added
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Attribute addAttribute(Group parent, String name, String value) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1637,7 +1648,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param parent add to this group. If group is null, use root group
    * @param g add this group
    * @return the group that was added
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Group addGroup(Group parent, Group g) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1653,7 +1666,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param parent add to this group. If group is null, use root group
    * @param d add this Dimension
    * @return the dimension that was added
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Dimension addDimension(Group parent, Dimension d) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1669,7 +1684,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param g remove from this group. If group is null, use root group
    * @param dimName name of Dimension to remove.
    * @return true if found and removed.
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public boolean removeDimension(Group g, String dimName) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1684,7 +1701,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param g add to this group. If group is null, use root group
    * @param v add this Variable
    * @return the variable that was added
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Variable addVariable(Group g, Variable v) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1703,7 +1722,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param dtype data type of the Variable
    * @param dims list of dimension names
    * @return the new Variable
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Variable addVariable(Group g, String shortName, DataType dtype, String dims) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1724,14 +1745,16 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param dims list of dimension names
    * @param strlen dimension length of the inner (fastest changing) dimension
    * @return the new Variable
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Variable addStringVariable(Group g, String shortName, String dims, int strlen) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
     if (g == null)
       g = rootGroup;
     String dimName = shortName + "_strlen";
-    addDimension(g, new Dimension(dimName, strlen));
+    addDimension(g, Dimension.builder().setName(dimName).setLength(strlen).build());
     Variable v = new Variable(this, g, null, shortName);
     v.setDataType(DataType.CHAR);
     v.setDimensions(dims + " " + dimName);
@@ -1745,7 +1768,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param g remove from this group. If group is null, use root group
    * @param varName name of variable to remove.
    * @return true is variable found and removed
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public boolean removeVariable(Group g, String varName) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1760,24 +1785,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param v add to this Variable.
    * @param att add this attribute
    * @return the added Attribute
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public Attribute addVariableAttribute(Variable v, Attribute att) {
     return v.addAttribute(att);
   }
-
-  /*
-   * Add a Variable to the given structure.
-   * 
-   * @param s add to this Structure
-   * 
-   * @param v add this Variable.
-   * 
-   * @deprecated use Structure.addMemberVariable(StructureMember)
-   *
-   * public void addMemberVariable(Structure s, Variable v) {
-   * if (v != null) s.addMemberVariable(v);
-   * }
-   */
 
   /**
    * Generic way to send a "message" to the underlying IOSP.
@@ -1853,7 +1866,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Set the globally unique dataset identifier.
    *
    * @param id the id
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public void setId(String id) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1864,7 +1879,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Set the dataset "human readable" title.
    *
    * @param title the title
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public void setTitle(String title) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1875,7 +1892,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Set the location, a URL or local filename.
    *
    * @param location the location
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public void setLocation(String location) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1886,7 +1905,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Make this immutable.
    *
    * @return this
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public NetcdfFile setImmutable() {
     if (immutable)
       return this;
@@ -1914,7 +1935,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Completely empty the objects in the netcdf file.
    * Used for rereading the file on a sync().
+   * @deprecated ???
    */
+  @Deprecated
   public void empty() {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1925,7 +1948,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     // addedRecordStructure = false;
   }
 
-  protected Group makeRootGroup() {
+  protected Group makeRootGroupOld() {
     Group root = new Group(this, null, "");
 
     // The value of rootGroup will be queried during the course of setParentGroup.
@@ -1937,11 +1960,17 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return root;
   }
 
+  protected Group makeRootGroup() {
+    return Group.builder().setNcfile(this).setName("").build();
+  }
+
   /**
    * Finish constructing the object model.
    * This construsts the "global" variables, attributes and dimensions.
    * It also looks for coordinate variables.
+   * @deprecated Use NetcdfJava.builder()
    */
+  @Deprecated
   public void finish() {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1972,7 +2001,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
           dimensions.add(oldDim);
         } else {
           String newName = makeFullNameWithString(g, oldDim.getShortName()); // LOOK fishy
-          dimensions.add(new Dimension(newName, oldDim));
+          dimensions.add(oldDim.toBuilder().setName(newName).build());
+
         }
       }
     }
@@ -2096,36 +2126,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return spi.getStructureIterator(s, bufferSize);
   }
-
-  /*
-   * public long readToByteChannel(ucar.nc2.Variable v, WritableByteChannel wbc) throws java.io.IOException {
-   * try {
-   * return readToByteChannel(v, v.getShapeAsSection(), wbc);
-   * } catch (InvalidRangeException e) {
-   * throw new IllegalStateException(e);
-   * }
-   * }
-   */
-
-  /*
-   * Read using a section specification and send data to a WritableByteChannel. Experimental.
-   *
-   * @param variableSection the constraint expression.
-   * 
-   * @param wbc write data to this WritableByteChannel
-   * 
-   * @return the number of bytes written to the channel
-   * 
-   * @throws java.io.IOException if read error
-   * 
-   * @throws ucar.ma2.InvalidRangeException if invalid section
-   *
-   * public long readToByteChannel(String variableSection, WritableByteChannel wbc) throws IOException,
-   * InvalidRangeException {
-   * ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-   * return readToByteChannel(cer.v, cer.section, wbc);
-   * }
-   */
 
   ///////////////////////////////////////////////////////////////////////////////////
 
@@ -2322,18 +2322,19 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   ///////////////////////////////////////////////////////////////////////
   // All CDM naming convention enforcement should be here.
   // DAP conventions should be in DODSNetcdfFile
+  // TODO move this elsewhere.
 
   // reservedFullName defines the characters that must be escaped
   // when a short name is inserted into a full name
-  public static final String reservedFullName = ".\\";
+  private static final String reservedFullName = ".\\";
 
   // reservedSectionSpec defines the characters that must be escaped
   // when a short name is inserted into a section specification.
-  public static final String reservedSectionSpec = "();,.\\";
+  private static final String reservedSectionSpec = "();,.\\";
 
   // reservedSectionCdl defines the characters that must be escaped
   // when what?
-  public static final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~\\";
+  private static final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~\\";
 
   /**
    * Create a valid CDM object name.
@@ -2466,6 +2467,177 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     appendGroupName(sbuff, parent, null);
     sbuff.append(name);
     return sbuff.toString();
+  }
+
+  public static class Builder {
+    private Group rootGroup;
+    private String id;
+    private String title;
+    private String location;
+    private List<Variable.Builder> variableBuilders = new ArrayList<>();
+
+    /**
+     * Add an attribute to a group.
+     *
+     * @param parent add to this group. If group is null, use root group
+     * @param att add this attribute
+     * @return the attribute that was added
+     */
+    public Attribute addAttribute(Group parent, Attribute att) {
+      if (parent == null)
+        parent = rootGroup;
+      parent.addAttribute(att);
+      return att;
+    }
+
+    /**
+     * Add optional String attribute to a group.
+     *
+     * @param parent add to this group. If group is null, use root group
+     * @param name attribute name, may not be null
+     * @param value attribute value, may be null, in which case, do not addd
+     * @return the attribute that was added
+     */
+    public Attribute addAttribute(Group parent, String name, String value) {
+      if (value == null)
+        return null;
+      if (parent == null)
+        parent = rootGroup;
+      Attribute att = new Attribute(name, value);
+      parent.addAttribute(att);
+      return att;
+    }
+
+    /**
+     * Add a group to the parent group.
+     *
+     * @param parent add to this group. If group is null, use root group
+     * @param g add this group
+     * @return the group that was added
+     */
+    public Group addGroup(Group parent, Group g) {
+      if (parent == null)
+        parent = rootGroup;
+      parent.addGroup(g);
+      return g;
+    }
+
+    /**
+     * Add a shared Dimension to a Group.
+     *
+     * @param parent add to this group. If group is null, use root group
+     * @param d add this Dimension
+     * @return the dimension that was added
+     */
+    public Dimension addDimension(Group parent, Dimension d) {
+      if (parent == null)
+        parent = rootGroup;
+      parent.addDimension(d);
+      return d;
+    }
+
+    /**
+     * Remove a shared Dimension from a Group by name.
+     *
+     * @param g remove from this group. If group is null, use root group
+     * @param dimName name of Dimension to remove.
+     * @return true if found and removed.
+     */
+    public boolean removeDimension(Group g, String dimName) {
+      if (g == null)
+        g = rootGroup;
+      return g.removeDimension(dimName);
+    }
+
+    /**
+     * Add a Variable to the given group.
+     *
+     * @param g add to this group. If group is null, use root group
+     * @param v add this Variable
+     * @return the variable that was added
+     */
+    public Variable addVariable(Group g, Variable v) {
+      if (g == null)
+        g = rootGroup;
+      if (v != null)
+        g.addVariable(v);
+      return v;
+    }
+
+    /**
+     * Create a new Variable, and add to the given group.
+     *
+     * @param g add to this group. If group is null, use root group
+     * @param shortName short name of the Variable
+     * @param dtype data type of the Variable
+     * @param dims list of dimension names
+     * @return the new Variable
+     */
+    public Builder addVariable(Group g, String shortName, DataType dtype, String dims) {
+      if (g == null) g = rootGroup;
+      variableBuilders.add(Variable.builder()
+          .setParent(g)
+          .setName(shortName)
+          .setDataType(dtype)
+          .setDimensions(dims));
+      return this;
+    }
+
+    /**
+     * Create a new Variable of type Datatype.CHAR, and add to the given group.
+     *
+     * @param g add to this group. If group is null, use root group
+     * @param shortName short name of the Variable
+     * @param dims list of dimension names
+     * @param strlen dimension length of the inner (fastest changing) dimension
+     * @return the new Variable
+     */
+    public Builder addStringVariable(Group g, String shortName, String dims, int strlen) {
+      if (g == null) g = rootGroup;
+      String dimName = shortName + "_strlen";
+      addDimension(g, Dimension.builder().setName(dimName).setLength(strlen).build());
+      variableBuilders.add(Variable.builder()
+          .setParent(g)
+          .setName(shortName)
+          .setDataType(DataType.CHAR)
+          .setDimensions(dims + " " + dimName));
+      return this;
+    }
+
+    /**
+     * Remove a Variable from the given group by name.
+     *
+     * @param g remove from this group. If group is null, use root group
+     * @param varName name of variable to remove.
+     * @return true is variable found and removed
+     */
+    public boolean removeVariable(Group g, String varName) {
+      if (g == null)
+        g = rootGroup;
+      return g.removeVariable(varName);
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Set the dataset "human readable" title.
+     *
+     * @param title the title
+     */
+    public void setTitle(String title) {
+      this.title = title;
+    }
+
+    /**
+     * Set the location, a URL or local filename.
+     *
+     * @param location the location
+     */
+    public void setLocation(String location) {
+      this.location = location;
+    }
   }
 
 }

@@ -8,7 +8,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * manages Collections of Attributes.
+ * Manages Collections of Attributes.
  *
  * @author caron
  * @since 5/5/2015

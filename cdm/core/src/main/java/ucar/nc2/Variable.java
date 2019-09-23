@@ -68,26 +68,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return Variable.getDAPName(v.getShortName(), v);
   }
 
-  //////////////////////////////////////////////////
-  // Instance data and methods
-
-  protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable
-                               // is self contained.
-  protected int[] shape = new int[0];
-  protected Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
-
-  protected DataType dataType;
-  protected int elementSize;
-  protected List<Dimension> dimensions = new ArrayList<>(5);
-  protected AttributeContainerHelper attributes;
-
-  protected boolean isVariableLength;
-  protected boolean isMetadata;
-
-  protected Cache cache = new Cache(); // cache cannot be null
-  protected int sizeToCache = -1; // bytes
-
-  protected ProxyReader proxyReader = this;
+  public static Builder builder() { return new Builder(); }
 
   /**
    * Get the data type of the Variable.
@@ -107,13 +88,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     int[] result = new int[shape.length]; // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
     return result;
-  }
-
-  // if scalar, return int[1], else return getShape()
-  public int[] getShapeNotScalar() {
-    if (isScalar())
-      return new int[] {1};
-    return getShape();
   }
 
   /**
@@ -521,7 +495,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Public by accident.
    *
    * @param enumTypedef set the EnumTypedef, only use if getDataType.isEnum()
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setEnumTypedef(EnumTypedef enumTypedef) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1106,7 +1082,72 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /////////////////////////////////////////////////////////////////////////////
 
+  // TODO make private final in 6
+  // Physical container for this Variable where the I/O happens. may be null if Variable is self contained.
+  protected NetcdfFile ncfile;
+
+  protected DataType dataType;
+  protected List<Dimension> dimensions = new ArrayList<>(5);
+  protected AttributeContainerHelper attributes;
+
+  // computed
+  private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
+  protected int[] shape = new int[0];
+  protected boolean isVariableLength;
+  protected int elementSize;
+
+  // TODO do we need this? breaks immutability
+  protected Cache cache = new Cache(); // cache cannot be null
+  protected int sizeToCache = -1; // bytes
+  protected boolean isMetadata;
+  protected ProxyReader proxyReader = this;
+
+   /** @deprecated Use Variable.builder() */
+  @Deprecated
   protected Variable() {}
+
+  private Variable(Builder builder) {
+    super(builder.shortName);
+    this.group = builder.parent;
+    this.ncfile = builder.ncfile;
+    this.dataType = builder.dataType;
+    this.dimensions = builder.dimensions;
+    this.attributes = builder.attributes;
+
+    this.elementSize = getDataType().getSize();
+    this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
+
+    try {
+      List<Range> list = new ArrayList<>();
+      for (Dimension d : dimensions) {
+        int len = d.getLength();
+        if (len > 0)
+          list.add(new Range(d.getShortName(), 0, len - 1));
+        else if (len == 0)
+          list.add(Range.EMPTY); // LOOK empty not named
+        else {
+          assert d.isVariableLength();
+          list.add(Range.VLEN); // LOOK vlen not named
+        }
+      }
+      this.shapeAsSection = new Section(list).makeImmutable();
+      this.shape = shapeAsSection.getShape();
+
+    } catch (InvalidRangeException e) {
+      log.error("Bad shape in variable " + getFullName(), e);
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  public Builder toBuilder() {
+    return builder()
+        .setName(this.shortName)
+        .setParent(this.getGroup())
+        .setNcfile(this.ncfile)
+        .setDataType(this.dataType)
+        .addDimensions(this.dimensions)
+        .addAttributes(this.attributes.atts);
+  }
 
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
@@ -1115,7 +1156,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param group the containing group; if null, use rootGroup
    * @param parent parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     super(shortName);
     this.ncfile = ncfile;
@@ -1135,7 +1178,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param shortName variable shortName, must be unique within the Group
    * @param dtype the Variable's DataType
    * @param dims space delimited list of dimension names. may be null or "" for scalars.
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
     this(ncfile, group, parent, shortName, dtype, (List<Dimension>) null);
     if (group == null)
@@ -1152,7 +1197,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param shortName variable shortName, must be unique within the Group
    * @param dtype the Variable's DataType
    * @param dims dimension names.
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype,
       List<Dimension> dims) {
     this(ncfile, group, parent, shortName);
@@ -1169,7 +1216,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Use for section, slice, "logical views" of original variable.
    *
    * @param from copy from this Variable.
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public Variable(Variable from) {
     super(from.getShortName());
     this.attributes = new AttributeContainerHelper(from.getShortName(), from.getAttributes());
@@ -1188,40 +1237,18 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     this.spiObject = from.spiObject;
   }
 
-
-  ///////////////////////////////////////////////////
-  // the following make this mutable
-
   /**
    * Set the data type
    *
    * @param dataType set to this value
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setDataType(DataType dataType) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
-
-    /*
-     * why is this needed ??
-     * EnumTypedef etd = getEnumTypedef();
-     * if (etd != null) {
-     * DataType etdtype = etd.getBaseType();
-     * if (dataType != etdtype)
-     * log.error("Variable.setDataType: enum basetype mismatch: {} != {}", etdtype, dataType);
-     * 
-     * /* DataType basetype = null;
-     * if (dataType == DataType.ENUM1) basetype = DataType.BYTE;
-     * else if (dataType == DataType.ENUM2) basetype = DataType.SHORT;
-     * else if (dataType == DataType.ENUM4) basetype = DataType.INT;
-     * else basetype = etdtype;
-     * 
-     * if (etdtype != null && dataType != etdtype)
-     * else
-     * etd.setBaseType(basetype);
-     * }
-     */
   }
 
   /**
@@ -1229,7 +1256,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @param shortName set to this value
    * @return valid CDM object name
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public String setName(String shortName) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1241,20 +1270,23 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Set the parent group.
    *
    * @param group set to this value
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setParentGroup(Group group) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
     super.setParentGroup(group);
   }
 
-
   /**
    * Set the element size. Usually elementSize is determined by the dataType,
    * use this only for exceptional cases.
    *
    * @param elementSize set to this value
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setElementSize(int elementSize) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1284,22 +1316,32 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public Attribute addAttribute(Attribute att) {
     return attributes.addAttribute(att);
   }
 
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public void addAll(Iterable<Attribute> atts) {
     attributes.addAll(atts);
   }
 
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public boolean remove(Attribute a) {
     return attributes.remove(a);
   }
 
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public boolean removeAttribute(String attName) {
     return attributes.removeAttribute(attName);
   }
 
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public boolean removeAttributeIgnoreCase(String attName) {
     return attributes.removeAttributeIgnoreCase(attName);
   }
@@ -1313,7 +1355,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Dimensions contained in the Variable's parent groups.
    *
    * @param dims list of type ucar.nc2.Dimension
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setDimensions(List<Dimension> dims) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1324,7 +1368,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /**
    * Use when dimensions have changed, to recalculate the shape.
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void resetShape() {
     // if (immutable) throw new IllegalStateException("Cant modify"); LOOK allow this for unlimited dimension updating
     this.shape = new int[dimensions.size()];
@@ -1349,7 +1395,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
    *        dimension. null or empty String is a scalar.
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setDimensions(String dimString) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1366,7 +1414,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Reset the dimension array. Anonymous dimensions are left alone.
    * Shared dimensions are searched for recursively in the parent groups.
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void resetDimensions() {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1392,7 +1442,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
    * @throws ucar.ma2.InvalidRangeException if any shape < 1
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1415,7 +1467,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /**
    * Set this Variable to be a scalar
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setIsScalar() {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1428,7 +1482,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @param idx index into dimension array
    * @param dim to set
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setDimension(int idx, Dimension dim) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -1440,7 +1496,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Make this immutable.
    *
    * @return this
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public Variable setImmutable() {
     super.setImmutable();
     dimensions = Collections.unmodifiableList(dimensions);
@@ -1474,7 +1532,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Should not be public.
    *
    * @param spiObject the IOSP object
+   * @deprecated Do not use.
    */
+  @Deprecated
   public void setSPobject(Object spiObject) {
     this.spiObject = spiObject;
   }
@@ -1497,7 +1557,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Set the sizeToCache. If not set, use defaults
    *
    * @param sizeToCache size at which caching happens. < 0 means use defaults
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setSizeToCache(int sizeToCache) {
     this.sizeToCache = sizeToCache;
   }
@@ -1507,7 +1569,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Normally this is set automatically based on size of data.
    *
    * @param caching set if caching.
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setCaching(boolean caching) {
     this.cache.isCaching = caching;
     this.cache.cachingSet = true;
@@ -1536,27 +1600,26 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return cache.isCaching;
   }
 
-  /**
-   * Invalidate the data cache
-   */
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public void invalidateCache() {
     cache.data = null;
   }
 
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public void setCachedData(Array cacheData) {
     setCachedData(cacheData, false);
   }
-
-  // public Array getCachedData() {
-  // return (cache == null) ? null : cache.data;
-  // }
 
   /**
    * Set the data cache
    *
    * @param cacheData cache this Array
    * @param isMetadata : synthesized data, set true if must be saved in NcML output (ie data not actually in the file).
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setCachedData(Array cacheData, boolean isMetadata) {
     if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType()))
       throw new IllegalArgumentException(
@@ -1608,7 +1671,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param npts number of values, must = v.getSize()
    * @param start starting value
    * @param incr increment
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setValues(int npts, double start, double incr) {
     if (npts != getSize())
       throw new IllegalArgumentException("bad npts = " + npts + " should be " + getSize());
@@ -1623,7 +1688,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    *
    * @param values list of Strings
    * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public void setValues(List<String> values) throws IllegalArgumentException {
     Array data = Array.makeArray(getDataType(), values);
 
@@ -1669,138 +1736,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return shapeAll;
   }
 
-
-  /*
-   * Read data in all structures for this Variable, using a string sectionSpec to specify the section.
-   * See readAllStructures(Section section, boolean flatten) method for details.
-   *
-   * @param sectionSpec specification string, eg "1:2,10,:,1:100:10"
-   * 
-   * @param flatten if true, remove enclosing StructureData.
-   * 
-   * @return the requested data which has the shape of the request.
-   * 
-   * @see #readAllStructures
-   * 
-   * @deprecated
-   *
-   * public Array readAllStructuresSpec(String sectionSpec, boolean flatten) throws IOException, InvalidRangeException {
-   * return readAllStructures(new Section(sectionSpec), flatten);
-   * }
-   * 
-   * /*
-   * Read data from all structures for this Variable.
-   * This is used for member variables whose parent Structure(s) is not a scalar.
-   * You must specify a Range for each dimension in the enclosing parent Structure(s).
-   * The returned Array will have the same shape as the requested section.
-   * <p/>
-   * <p>If flatten is false, return nested Arrays of StructureData that correspond to the nested Structures.
-   * The innermost Array(s) will match the rank and type of the Variable, but they will be inside Arrays of
-   * StructureData.
-   * <p/>
-   * <p>If flatten is true, remove the Arrays of StructureData that wrap the data, and return an Array of the
-   * same type as the Variable. The shape of the returned Array will be an accumulation of all the shapes of the
-   * Structures containing the variable.
-   *
-   * @param sectionAll an array of Range objects, one for each Dimension of the enclosing Structures, as well as
-   * for the Variable itself. If the list is null, use the full shape for everything.
-   * If an individual Range is null, use the full shape for that dimension.
-   * 
-   * @param flatten if true, remove enclosing StructureData. Otherwise, each parent Structure will create a
-   * StructureData container for the returned data array.
-   * 
-   * @return the requested data which has the shape of the request.
-   * 
-   * @deprecated
-   *
-   * public Array readAllStructures(ucar.ma2.Section sectionAll, boolean flatten) throws java.io.IOException,
-   * ucar.ma2.InvalidRangeException {
-   * Section resolved; // resolve all nulls
-   * if (sectionAll == null)
-   * resolved = makeSectionAddParents(null, false); // everything
-   * else {
-   * ArrayList<Range> resultAll = new ArrayList<Range>();
-   * makeSectionWithParents(resultAll, sectionAll.getRanges(), this);
-   * resolved = new Section(resultAll);
-   * }
-   * 
-   * return _readMemberData(resolved, flatten);
-   * }
-   * 
-   * // recursively create the section (list of Range) array
-   * private List<Range> makeSectionWithParents(List<Range> result, List<Range> orgSection, Variable v) throws
-   * InvalidRangeException {
-   * List<Range> section = orgSection;
-   * 
-   * // do parent stuctures(s) first
-   * if (v.isMemberOfStructure())
-   * section = makeSectionWithParents(result, orgSection, v.getParentStructure());
-   * 
-   * // process just this variable's subList
-   * List<Range> myList = section.subList(0, v.getRank());
-   * Section mySection = new Section(myList, v.getShape());
-   * result.addAll(mySection.getRanges());
-   * 
-   * // return section with this variable's sublist removed
-   * return section.subList(v.getRank(), section.size());
-   * }
-   */
-
-  /*
-   * Composes this variable's ranges with another list of ranges, adding parent ranges; resolves nulls.
-   *
-   * @param section Section of this Variable, same rank as v, may have nulls or be null.
-   * 
-   * @param firstOnly if true, get first parent, else get all parrents.
-   * 
-   * @return Section, rank of v plus parents, no nulls
-   * 
-   * @throws InvalidRangeException if bad
-   *
-   * private Section makeSectionAddParents(Section section, boolean firstOnly) throws InvalidRangeException {
-   * Section result;
-   * if (section == null)
-   * result = new Section(getRanges());
-   * else
-   * result = new Section(section.getRanges(), getShape());
-   * 
-   * // add parents
-   * Structure p = getParentStructure();
-   * while (p != null) {
-   * Section parentSection = p.getShapeAsSection();
-   * for (int i = parentSection.getRank() - 1; i >= 0; i--) { // reverse
-   * Range r = parentSection.getRange(i);
-   * result.insertRange(0, firstOnly ? new Range(0, 0) : r);
-   * }
-   * p = p.getParentStructure();
-   * }
-   * 
-   * return result;
-   * }
-   */
-
-  /*
-   * private Array readMemberOfStructureFlatten(Section section) throws InvalidRangeException, IOException {
-   * // get through first parents element
-   * Section sectionAll = makeSectionAddParents(section, true);
-   * Array data = _readMemberData(sectionAll, true); // flatten
-   * 
-   * // remove parent dimensions.
-   * int n = data.getRank() - getRank();
-   * for (int i = 0; i < n; i++)
-   * if (data.getShape()[0] == 1) data = data.reduce(0);
-   * return data;
-   * }
-   * 
-   * /* structure-member Variable; section has a Range for each array in the parent
-   * // stuctures(s) and for the Variable.
-   * protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException {
-   * return ncfile.readMemberData(this, section, flatten);
-   * }
-   */
-
-  ////////////////////////////////
-
   /**
    * Calculate if this is a classic coordinate variable: has same name as its first dimension.
    * If type char, must be 2D, else must be 1D.
@@ -1829,20 +1764,127 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return false;
   }
 
-  /*
-   * public Object clone() throws CloneNotSupportedException {
-   * Variable clone = (Variable) super.clone();
-   * 
-   * // Do we need to clone these?
-   * // protected Cache cache = new Cache();
-   * // protected int sizeToCache = -1; // bytes
-   * 
-   * clone.setParentGroup(group);
-   * clone.setParentStructure(getParentStructure());
-   * clone.setProxyReader(clone);
-   * return clone;
-   * }
-   */
+  public static class Builder {
+    private NetcdfFile ncfile;
+    private DataType dataType;
+    private List<Dimension> dimensions = new ArrayList<>();
+    private AttributeContainerHelper attributes = new AttributeContainerHelper("");
+    private Group parent;
+    private String shortName;
+
+    public Builder addAttribute(Attribute att) {
+      attributes.addAttribute(att);
+      return this;
+    }
+
+    public Builder addAttributes(Iterable<Attribute> atts) {
+      attributes.addAll(atts);
+      return this;
+    }
+
+    public boolean remove(Attribute a) {
+      return attributes.remove(a);
+    }
+
+    public boolean removeAttribute(String attName) {
+      return attributes.removeAttribute(attName);
+    }
+
+    public boolean removeAttributeIgnoreCase(String attName) {
+      return attributes.removeAttributeIgnoreCase(attName);
+    }
+
+    public Builder addDimension(Dimension dim) {
+      dimensions.add(dim);
+      return this;
+    }
+
+    public Builder addDimensions(Collection<Dimension> dims) {
+      dimensions.addAll(dims);
+      return this;
+    }
+
+    /**
+     * Reset the dimension array. Anonymous dimensions are left alone.
+     * Shared dimensions are searched for recursively in the parent groups.
+     */
+    public void resetDimensions() {
+      ArrayList<Dimension> newDimensions = new ArrayList<>();
+      for (Dimension dim : dimensions) {
+        if (dim.isShared()) {
+          Dimension newD = parent.findDimension(dim.getShortName());
+          if (newD == null)
+            throw new IllegalArgumentException(
+                "Variable " + this.shortName + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
+          newDimensions.add(newD);
+        } else {
+          newDimensions.add(dim);
+        }
+      }
+      this.dimensions = newDimensions;
+    }
+
+    /**
+     * Set the dimensions using all anonymous (unshared) dimensions
+     *
+     * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
+     * @throws ucar.ma2.InvalidRangeException if any shape < 1
+     */
+    public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
+      this.dimensions = new ArrayList<>();
+      for (int i = 0; i < shape.length; i++) {
+        if ((shape[i] < 1) && (shape[i] != -1))
+          throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
+        Dimension anon;
+        if (shape[i] == -1) {
+          anon = Dimension.VLEN;
+        } else {
+          anon = new Dimension(null, shape[i], false, false, false);
+        }
+        dimensions.add(anon);
+      }
+    }
+
+    public Builder setDimensions(String dimString) {
+      this.dimensions = Dimension.makeDimensionsList(this.parent, dimString);
+      return this;
+    }
+
+    /**
+     * Replace a dimension at a specific index.
+     *
+     * @param idx index into dimension array
+     * @param dim to set
+     */
+    public Builder replaceDimensionAtIndex(int idx, Dimension dim) {
+      dimensions.set(idx, dim);
+      return this;
+    }
+
+    public Builder setDataType(DataType dataType) {
+      this.dataType = dataType;
+      return this;
+    }
+
+    public Builder setNcfile(NetcdfFile ncfile) {
+      this.ncfile = ncfile;
+      return this;
+    }
+
+    public Builder setName(String shortName) {
+      this.shortName = shortName;
+      return this;
+    }
+
+    public Builder setParent(Group parent) {
+      this.parent = parent;
+      return this;
+    }
+
+    public Variable build() {
+      return new Variable(this);
+    }
+  }
 
 
   ///////////////////////////////////////////////////////////////////////
