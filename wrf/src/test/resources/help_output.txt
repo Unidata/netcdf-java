@@ -1,0 +1,21 @@
+Usage: ucar.nc2.ft2.coverage.writer.NcWRFWriter [options]
+  Options:
+  * -i, --input
+       Input dataset.
+  * -o, --output
+       Output file.
+  * -v, --vtable
+       Generate the output from variables found in this vtable.
+    -a, --variablefile
+       Generate the output from this list of variables from the input dataset.
+    -f, --vfile
+       Generate the output from an xml file containing a list of variables (a
+       varset).
+    -s, --showvars
+       Display a list of variables from the input dataset.
+       Default: false
+    -h, --help
+       You must provide an input dataset name, an output file name, and ONE
+       option: -v (--vtable), -a (--variablefile), -f (--vfile), or -s(--showvars).
+       Default: false
+
