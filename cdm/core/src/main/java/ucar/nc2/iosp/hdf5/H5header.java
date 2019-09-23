@@ -1529,8 +1529,13 @@ public class H5header extends NCheader {
     if ((vinfo.typeInfo.hdfType == 7) && warnings) {
       log.warn("  Variable " + facade.name + " is a Reference type");
     }
-    if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) && warnings) {
-      log.warn("  Variable " + facade.name + " has a Filter = " + vinfo.mfp);
+    if ((vinfo.mfp != null) && warnings) {
+      for (Filter f : vinfo.mfp.getFilters()) {
+        if (f.id > KNOWN_FILTERS) {
+          log.warn("  Variable " + facade.name + " has unknown Filter(s) = " + vinfo.mfp);
+          break;
+        }
+      }
     }
     if (debug1) {
       log.debug("makeVariable " + v.getFullName() + "; vinfo= " + vinfo);
@@ -3870,7 +3875,7 @@ public class H5header extends NCheader {
   }
 
   private static final String[] filterName = {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
-
+  private static final int KNOWN_FILTERS = 3;
   class Filter {
     short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
     short flags;
