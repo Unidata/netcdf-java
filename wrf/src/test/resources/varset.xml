@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<varset name="wrfinit">
+  <variable name=" Temperature" />
+  <variable name="v-component of wind @ Isobaric surface" />
+  <variable name="u-component of wind @ Isobaric surfacea" />
+  <variable name="Geopotential height @ Isobaric surface" />
+  <variable name="Relative humidity @ Specified height level above ground" />
+ </varset>

@@ -4,14 +4,14 @@ package ucar.nc2.ft2.coverage.writer;
  * See LICENSE for license information.
  */
 
-    import java.io.File;
-    import java.util.ArrayList;
-    import ucar.nc2.ft2.coverage.Coverage;
+import java.io.File;
+import java.util.ArrayList;
+import ucar.nc2.ft2.coverage.Coverage;
 
 public interface IWRFWriter {
 
-  java.io.OutputStream write(ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel);
+  java.io.OutputStream writeStream(ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel);
 
-  void write( ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel, File output);
+  void writeFile( ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel, File outputFileName);
 
 }

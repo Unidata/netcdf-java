@@ -72,6 +72,8 @@ class VtableEntry {
   public String getParameter() { return parameter;}
   public String getLevel() { return level;}
 
+  public void setMetgridName(String name) { metgridName = name;}
+
   public String getGRIB2Var(){
     return "VAR_" + discipline + '-' + category + '-' + parameter + "_L" + level;
   }

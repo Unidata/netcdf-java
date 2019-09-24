@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DOCTYPE varsetConfig SYSTEM "http://www.unidata.ucar.edu/schemas/thredds/dtd/varsetConfig.dtd"-->
+<!--
+TDS location for WRF varset definitions.  This file will contain lists of dataset variables
+-->
+<varsets>
+<varset name="wrf1">
+  <variable name=" Temperature" />
+  <variable name="Temperature_isobaric" />
+  <variable name="v-component_of_wind_isobaric" />
+  <variable name="v-component_of_wind_potential_vorticity_surface" />
+  <variable name="Relative_humidity_zeroDegC_isotherm" />
+ </varset>
+<varset name="wrf2">
+  <variable name=" Temperature" />
+  <variable name="Pressure_surface" />
+  <variable name="u-component_of_wind_height_above_ground" />
+  <variable name="Relative_humidity_height_above_ground" />
+  <variable name="Pressure_of_level_from_which_parcel_was_lifted_pressure_difference_layer" />
+ </varset>
+</varsets>
