@@ -60,7 +60,7 @@ public class TestWRFWriter {
 
     Assert.assertEquals(data, getOutput());
   }
-
+/*****************
   @Test
   public void testShowvars() throws IOException {
 
@@ -74,6 +74,8 @@ public class TestWRFWriter {
 
     Assert.assertEquals(data, getOutput());
   }
+
+  ******************/
 
   /***************
   @Test

@@ -1,11 +1,22 @@
+/*
+ * Copyright (c) 2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ft2.coverage.writer;
 
-import java.util.AbstractMap;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import java.util.Scanner;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+
 import ucar.nc2.Attribute;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCollection;
@@ -14,28 +25,39 @@ public class WRFProcessingUtils {
 
   private WRFProcessingUtils(){};
 
-  // Processing Constants
-  static final String METGRID_NAME     = "Metgrid_Name";
-  static final String METGRID_UNIT     = "Metgrid_Unit";
-  static final String METGRID_DESC     = "Metgrid_Desc";
+  public static final String METGRID_NAME     = "Metgrid_Name";
+  public static final String METGRID_UNIT     = "Metgrid_Unit";
+  public static final String METGRID_DESC     = "Metgrid_Desc";
+
   static final String GRIB_1_FILE_VER  = "GRIB-1";
   static final String GRIB1_PARAMETER  = "Grib1_Parameter";
   static final String GRIB1_LEVEL_TYPE = "Grib1_Level_Type";
   static final String GRIB_2_FILE_VER  = "GRIB-2";
+  static final String GRIB2_PARAMETER_NAME = "Grib2_Parameter_Name";
+
+
+  static final String GRIB_VAR_ID = "Grib_Variable_Id";
 
   /**
-   *   Required Field Names,  these fields are taken from:
-   *   http://www2.mmm.ucar.edu/wrf/users/docs/user_guide_V3/users_guide_chap3.htm#_Required_Meteorological_Fields
+   *  Required Field Names,  these fields are taken from:
+   *  http://www2.mmm.ucar.edu/wrf/users/docs/user_guide_V3/users_guide_chap3.htm#_Required_Meteorological_Fields
    *
-   *   The first 5 in this list are required twice, once for 3-d and once for 2-meter data.
-   *   We do not have invariants to determine which is which, but we assume that
-   *   "Level Type" (GRIB1) and "GRIB2 Level" for GRIB2 datasets is different for both
-   *   of these so we use these values to differentiate between 3-d and 2 meter
+   *  Rules per the WRF documentation:
    *
-   *   Caveats:
-   *   Only one of RH or SPECHUMD is required
-   *   Pressure is only requried for non-isobaric datasets, we could only determine this by looking for special
-   *   a normalized pressure level.
+   *  0.  The first 5 in this list are required twice, once for 3-d and once for 2-meter data.  Two sets of TT,RH (or SPECHUMD),
+   *      UU and VV are required, with different Discipline|Category|Param|Level components.
+   *      We do not have invariants to determine which is which, but we assume that
+   *      "Level Type" (GRIB1) and "GRIB2 Level" for GRIB2 datasets is different for both
+   *      of these so we use these values to differentiate between 3-d and 2 meter
+   *  1.  Either RH or SPECHUMD is required, NOT BOTH.
+   *  2.  For the SMtttbbb, STtttbbb SOILMmmm, and SOILTmmm fields:
+   *      ttt represents layer top depth and bbb bottom depth, mm is the level depth.  This layer information is found in a Coverage,
+   *
+   *      so this code will strip off any data after the "SM" or "ST".
+   *  3.  If an SM record exists, SOILM is not required
+   *  4.  If an ST record exists, SOILT is not required
+   *  5.  Pressure is only requried for non-isobaric datasets, we could only determine this by looking for special
+   *      a normalized pressure level.
    *
    */
   public static final String TEMPERATURE      = "TT";
@@ -56,6 +78,74 @@ public class WRFProcessingUtils {
   public static final String SOIL_MOIST_LEVEL = "SOILM";
   public static final String SOIL_TEMP_LEVEL  = "SOILT";
 
+
+  public static ArrayList<String> readSingleVarsetXMLFile( File f) throws Exception{
+
+    ArrayList<String> varset = new ArrayList<>();
+    org.jdom2.Document doc;
+
+    try {
+      SAXBuilder builder = new SAXBuilder();
+
+      doc = builder.build(f);
+      Element rootNode = doc.getRootElement();
+      List<Element> nodes = rootNode.getChildren("variable");
+
+      for( Element e : nodes ){
+        varset.add(e.getAttributeValue("name"));
+      }
+
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+    return varset;
+  }
+
+  public static HashMap<String,ArrayList<String>> readTDSVarsetXMLFile( File f) throws Exception{
+
+    HashMap<String,ArrayList<String>> varset = new HashMap<>();
+    org.jdom2.Document doc;
+
+    try {
+      SAXBuilder builder = new SAXBuilder();
+
+      doc = builder.build(f);
+      Element rootNode = doc.getRootElement();
+      List<Element> varsetNodes = rootNode.getChildren("varset");
+
+        for( int i = 0; i < varsetNodes.size(); i ++){
+
+          Element e = varsetNodes.get(i);
+          String name = e.getAttributeValue("name");
+          ArrayList<String> theVars = new ArrayList<>();
+          List<Element> variableElements = e.getChildren("variable");
+
+          for ( Element var : variableElements ) {
+            theVars.add(var.getAttributeValue("name"));
+          }
+          varset.put(name, theVars);
+      }
+
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+    return varset;
+  }
+
+  public static ArrayList<String> readVariablesFromfile( File f) throws Exception{
+
+    ArrayList<String> varset = new ArrayList<>();
+    try {
+      Scanner sc = new Scanner(f);
+
+      while (sc.hasNextLine())
+        varset.add(sc.nextLine());
+
+    } catch (Exception e) {
+      throw new IOException(e.getMessage());
+      }
+    return varset;
+  }
 
   public static String validateRequiredElements(ArrayList<Coverage> cov){
 
@@ -120,7 +210,6 @@ public class WRFProcessingUtils {
         }
       }
     }
-
     // testing phase
     for (Map.Entry<String, Integer> entry : required.entrySet()) {
       if( entry.getValue() != 0) {
@@ -133,6 +222,53 @@ public class WRFProcessingUtils {
     }
   return s.toString();
 
+  }
+
+  private static String cropSOILField(String metname){
+    if (metname.startsWith("SM") || metname.startsWith("ST"))
+      return metname.substring(0,2);
+    else
+      return metname;
+  }
+
+  public static ArrayList<Coverage> filterCoverageListWithVarset( ArrayList<Coverage> cv, ArrayList<String> varset){
+
+    ArrayList<Coverage> theCoverages = new ArrayList<>();
+
+    cv.forEach( c -> {
+
+//    for(Coverage cov: cv.getCoverages()) {
+      String name = c.getFullName();
+      //    Attribute ab = cov.findAttributeIgnoreCase(GRIB2_PARAMETER_NAME);
+
+      if (varset.contains(name)){
+        theCoverages.add(c);
+        //     varset.remove(name);
+      }
+    });
+
+    return theCoverages;
+  }
+
+  public static ArrayList<Coverage> createCoverageListFromVarset( CoverageCollection cv, ArrayList<String> varset){
+
+    ArrayList<Coverage> theCoverages = new ArrayList<>();
+
+    for(Coverage cov: cv.getCoverages()) {
+      String name = cov.getFullName();
+  //    Attribute ab = cov.findAttributeIgnoreCase(GRIB2_PARAMETER_NAME);
+
+      if (varset.contains(name)){
+        theCoverages.add(cov);
+        Attribute att = cov.findAttributeIgnoreCase(GRIB2_PARAMETER_NAME);
+        if ( att != null ){
+
+        }
+   //     varset.remove(name);
+      }
+    }
+
+    return theCoverages;
   }
 
   public static ArrayList<Coverage> createCoverageListGrib1(CoverageCollection cv, ArrayList<VtableEntry> vt){
@@ -156,7 +292,7 @@ public class WRFProcessingUtils {
               Number nLevel = level.getNumericValue();
               int covLevel = nLevel.intValue();
               if (covLevel == levelType) {
-                cov.getAttributes().add(new Attribute(METGRID_NAME, v.getMetgridName()));
+                cov.getAttributes().add(new Attribute(METGRID_NAME, cropSOILField(v.getMetgridName())));
                 cov.getAttributes().add(new Attribute(METGRID_UNIT, v.getMetgridUnits()));
                 cov.getAttributes().add(new Attribute(METGRID_DESC, v.getMetgridDesc()));
                 theCoverages.add(cov);
@@ -171,45 +307,32 @@ public class WRFProcessingUtils {
 
   public static ArrayList<Coverage> createCoverageListGrib2(CoverageCollection cv, ArrayList<VtableEntry> vt) {
 
-    final String GRIB_VAR_ID = "Grib_Variable_Id";
     ArrayList<Coverage> theCoverages = new ArrayList<>();
+    boolean variableFound = false;
 
     for (VtableEntry v : vt) {
 
       String varId = v.getGRIB2Var();
-//      Coverage cov = cv.findCoverageByAttribute(GRIB_VAR_ID, varId);
 
-//      public Coverage findCoverageByAttribute(String attName, String attValue) {
-        for (Coverage cov : cv.getCoverages()) {
-          boolean found = false;
-          for (Attribute att : cov.getAttributes()) {
-            // if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
-            String nm = att.getShortName();
-            String value = att.getStringValue();
+      for (Coverage cov : cv.getCoverages()) {
+        variableFound = false;
+        for (Attribute att : cov.getAttributes()) {
 
-            if (GRIB_VAR_ID.equals(att.getShortName()) && (att.getStringValue().startsWith(varId))) {
-              found = true;
-              break;
-            }
+          if (GRIB_VAR_ID.equals(att.getShortName()) && (att.getStringValue().startsWith(varId))) {
+            variableFound = true;
+            break;
           }
-          if( found ){
-            cov.getAttributes().add(new Attribute(METGRID_NAME, v.getMetgridName()));
-            cov.getAttributes().add(new Attribute(METGRID_UNIT, v.getMetgridUnits()));
-            cov.getAttributes().add(new Attribute(METGRID_DESC, v.getMetgridDesc()));
-            theCoverages.add(cov);
-          }
-        //return null;
+        }
+        if( variableFound ){
+
+          cov.getAttributes().add(new Attribute(METGRID_NAME, cropSOILField(v.getMetgridName())));
+          cov.getAttributes().add(new Attribute(METGRID_UNIT, v.getMetgridUnits()));
+          cov.getAttributes().add(new Attribute(METGRID_DESC, v.getMetgridDesc()));
+          theCoverages.add(cov);
+
+        }
       }
-/******
-      if (cov != null) {
-        cov.getAttributes().add(new Attribute(METGRID_NAME, v.getMetgridName()));
-        cov.getAttributes().add(new Attribute(METGRID_UNIT, v.getMetgridUnits()));
-        cov.getAttributes().add(new Attribute(METGRID_DESC, v.getMetgridDesc()));
-        theCoverages.add(cov);
-      }
- *********/
     }
     return theCoverages;
   }
-
 }

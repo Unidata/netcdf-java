@@ -5,10 +5,12 @@
 
 package ucar.nc2.ft2.coverage.writer;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+
 import ucar.nc2.ft2.coverage.Coverage;
 
 public class WRFWriterImpl implements IWRFWriter {
@@ -22,16 +24,17 @@ public class WRFWriterImpl implements IWRFWriter {
    *
    * This method is designed for use with TDS, where the returned file is packaged within an http response.
    */
-  public java.io.OutputStream write(ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel) {
+  @Override
+  public java.io.OutputStream writeStream(ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel) {
 
-  OutputStream out = new OutputStream() {
-    @Override
-    public void write(int b) throws IOException {
+    OutputStream out = new OutputStream() {
+      @Override
+      public void write(int b) throws IOException {
 
-    }
-  };
-    return out;}
-
+      }
+    };
+    return out;
+  }
   /**
    *
    * @param coverages Selected coverages (variables) from a GRIB dataset, written in the same format at that produced by the UNGRIB program.
@@ -41,7 +44,8 @@ public class WRFWriterImpl implements IWRFWriter {
    *
    * This method is designed for use with the NcWRFWriter command line tool.
    */
-  public void write( ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel, String outputFileName) {
+//  @Override
+  public void writeFile(ArrayList<Coverage> coverages, String mapSource, boolean isWindEarthRel, File outputFileName) {
 
     StringBuilder testString = new StringBuilder("**** WRF WRITER COMMAND LINE TEST ****\n The map source info is:\n");
     testString.append(mapSource);
