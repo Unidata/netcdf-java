@@ -116,7 +116,6 @@ public class H5header extends NCheader {
   private java.text.SimpleDateFormat hdfDateParser;
 
   private java.io.PrintWriter debugOut;
-  private boolean mustClose;
   private MemTracker memTracker;
 
   H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) {
@@ -140,7 +139,6 @@ public class H5header extends NCheader {
         || debugGroupBtree || debugHardLink || debugHeap || debugPos || debugReference || debugTracker || debugV
         || debugSoftLink || warnings) {
       debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
-      mustClose = true;
     }
 
     long actualSize = raf.length();
@@ -200,10 +198,7 @@ public class H5header extends NCheader {
       log.debug(f.toString());
     }
 
-    if (mustClose) {
-      debugOut.close();
-      debugOut = null;
-    }
+    debugOut = null;
   }
 
   private void readSuperBlock1(long superblockStart, byte versionSB) throws IOException {
