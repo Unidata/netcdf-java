@@ -24,10 +24,7 @@ import java.util.Collections;
  */
 public class Group extends CDMNode implements AttributeContainer {
 
-  public static Builder builder() {
-    return new Builder();
-  }
-
+  @Deprecated
   static List<Group> collectPath(Group g) {
     List<Group> list = new ArrayList<>();
     while (g != null) {
@@ -80,23 +77,6 @@ public class Group extends CDMNode implements AttributeContainer {
     }
     return null;
   }
-
-  /*
-   * Find the Variable with the specified escaped (short) name in this group.
-   * 
-   * @param varShortNameEscaped escaped short name of Variable within this group.
-   * 
-   * @return the Variable, or null if not found
-   * 
-   * @see NetcdfFile#escapeName
-   * 
-   * @see NetcdfFile#unescapeName
-   *
-   * public Variable findVariableEscaped(String varShortNameEscaped) {
-   * if (varShortNameEscaped == null) return null;
-   * return findVariable( NetcdfFile.makeNameUnescaped(varShortNameEscaped));
-   * }
-   */
 
   /**
    * Find the Variable with the specified (short) name in this group or a parent group.
@@ -781,6 +761,11 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   ////////////////////////////////////////////////////////////////
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
   public static class Builder {
     private NetcdfFile ncfile;
     private List<Variable> variables = new ArrayList<>();

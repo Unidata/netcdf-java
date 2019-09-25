@@ -17,12 +17,26 @@ import java.io.IOException;
  * @author caron
  * @since Oct 21, 2009
  */
-
-
 public class StructurePseudo2Dim extends StructurePseudoDS {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudo2Dim.class);
   private List<Variable> orgVariables = new ArrayList<>();
   private static final boolean debugRecord = false;
+
+  protected StructurePseudo2Dim(Builder<?> builder) {
+    super(builder);
+    // LOOK stuff to do here
+  }
+
+  @Override
+  public Builder<?> toBuilder() {
+    StructurePseudo2Dim.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b.addOriginalVariables(this.orgVariables);
+  }
 
   /**
    * Make a Structure out of named Variables which have var(outer, inner, ...)
@@ -33,7 +47,9 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
    * @param varNames limited to these variables. all must var(outer, inner, ...). If null, then find all such variables.
    * @param outer the outer dimension, may not be null
    * @param inner the inner dimension, may not be null
+   * @deprecated Use StructureDS.builder()
    */
+  @Deprecated
   public StructurePseudo2Dim(NetcdfDataset ncfile, Group group, String shortName, List<String> varNames,
       Dimension outer, Dimension inner) {
     super(ncfile, group, shortName);
@@ -127,5 +143,25 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
     return asma;
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
 
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends StructurePseudoDS.Builder<T> {
+    public StructureDS build() {
+      return new StructurePseudo2Dim(this);
+    }
+  }
 }

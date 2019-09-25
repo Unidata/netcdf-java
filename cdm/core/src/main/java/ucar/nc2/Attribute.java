@@ -23,13 +23,15 @@ import java.util.Map;
  * The value can be a one dimensional array of Strings or numeric values.
  * <p/>
  * Attributes are immutable after setImmutable().
- *
+ * Attributes will become immutable in 6.
+
  * @author caron
  */
-
 public class Attribute extends CDMNode {
-
   private static final String SPECIALPREFIX = "_";
+
+  /** @deprecated */
+  @Deprecated
   static final String[] SPECIALS =
       {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
 
@@ -38,7 +40,9 @@ public class Attribute extends CDMNode {
    *
    * @param atts list of attributes
    * @return map of attributes by name
+   * @deprecated
    */
+  @Deprecated
   public static Map<String, Attribute> makeMap(List<Attribute> atts) {
     int size = (atts == null) ? 1 : atts.size();
     Map<String, Attribute> result = new HashMap<>(size);
@@ -49,6 +53,8 @@ public class Attribute extends CDMNode {
     return result;
   }
 
+  /** @deprecated */
+  @Deprecated
   public static boolean isspecial(Attribute a) {
     String nm = a.getShortName();
     if (nm.startsWith(SPECIALPREFIX)) {
@@ -61,9 +67,6 @@ public class Attribute extends CDMNode {
     return false; /* is not special */
   }
 
-  public static Attribute.Builder builder() {
-    return new Builder();
-  }
   ///////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -252,7 +255,6 @@ public class Attribute extends CDMNode {
 
   /**
    * Write CDL representation into f
-   * TODO: move to helper class?
    *
    * @param f write into this
    * @param strict if true, create strict CDL, escaping names
@@ -726,7 +728,11 @@ public class Attribute extends CDMNode {
   }
 
   ////////////////////////////////////////////////////////////////
-  private static class Builder {
+  public static Attribute.Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
     private String name;
     private DataType dataType;
     private String svalue; // optimization for common case of single String valued attribute
@@ -753,6 +759,7 @@ public class Attribute extends CDMNode {
 
     public Builder setStringValue(String svalue) {
       this.svalue = svalue;
+      this.dataType = DataType.STRING;
       return this;
     }
 
@@ -768,36 +775,43 @@ public class Attribute extends CDMNode {
       Object pa;
 
       if (c == String.class) {
+        this.dataType = DataType.STRING;
         String[] va = new String[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (String) values.get(i);
       } else if (c == Integer.class) {
+        this.dataType = DataType.INT;
         int[] va = new int[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (Integer) values.get(i);
       } else if (c == Double.class) {
+        this.dataType = DataType.DOUBLE;
         double[] va = new double[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (Double) values.get(i);
       } else if (c == Float.class) {
+        this.dataType = DataType.FLOAT;
         float[] va = new float[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (Float) values.get(i);
       } else if (c == Short.class) {
+        this.dataType = DataType.SHORT;
         short[] va = new short[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (Short) values.get(i);
       } else if (c == Byte.class) {
+        this.dataType = DataType.BYTE;
         byte[] va = new byte[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (Byte) values.get(i);
       } else if (c == Long.class) {
+        this.dataType = DataType.LONG;
         long[] va = new long[n];
         pa = va;
         for (int i = 0; i < n; i++)

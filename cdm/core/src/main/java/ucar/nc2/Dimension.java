@@ -31,10 +31,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
   public static Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
 
-  public static Builder builder() {
-    return new Builder();
-  }
-
   /**
    * Make a space-delineated String from a list of Dimension names.
    * Inverse of makeDimensionsList().
@@ -109,8 +105,8 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return newDimensions;
   }
 
+  @Deprecated
   public static List<Dimension> makeDimensionsAnon(int[] shape) {
-
     List<Dimension> newDimensions = new ArrayList<>();
 
     if ((shape == null) || (shape.length == 0)) { // scalar
@@ -462,6 +458,10 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   }
 
   //////////////////////////////////////////////////////////////
+
+  public static Builder builder() {
+    return new Builder();
+  }
 
   public static class Builder {
     private Group parent;

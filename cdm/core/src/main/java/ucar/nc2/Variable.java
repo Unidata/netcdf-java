@@ -68,8 +68,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return Variable.getDAPName(v.getShortName(), v);
   }
 
-  public static Builder builder() { return new Builder(); }
-
   /**
    * Get the data type of the Variable.
    */
@@ -1082,7 +1080,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /////////////////////////////////////////////////////////////////////////////
 
-  // TODO make private final in 6
+  // TODO make private final in release 6.
   // Physical container for this Variable where the I/O happens. may be null if Variable is self contained.
   protected NetcdfFile ncfile;
 
@@ -1106,7 +1104,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   @Deprecated
   protected Variable() {}
 
-  private Variable(Builder builder) {
+  protected Variable(Builder<?> builder) {
     super(builder.shortName);
     this.group = builder.parent;
     this.ncfile = builder.ncfile;
@@ -1139,10 +1137,15 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
   }
 
-  public Builder toBuilder() {
-    return builder()
+  public Builder<?> toBuilder() {
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b
         .setName(this.shortName)
-        .setParent(this.getGroup())
+        .setParent(this.group)
         .setNcfile(this.ncfile)
         .setDataType(this.dataType)
         .addDimensions(this.dimensions)
@@ -1764,7 +1767,22 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return false;
   }
 
-  public static class Builder {
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>>  {
     private NetcdfFile ncfile;
     private DataType dataType;
     private List<Dimension> dimensions = new ArrayList<>();
@@ -1772,120 +1790,84 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     private Group parent;
     private String shortName;
 
-    public Builder addAttribute(Attribute att) {
+    protected abstract T self();
+
+    public T addAttribute(Attribute att) {
       attributes.addAttribute(att);
-      return this;
+      return self();
     }
 
-    public Builder addAttributes(Iterable<Attribute> atts) {
+    public T addAttributes(Iterable<Attribute> atts) {
       attributes.addAll(atts);
-      return this;
+      return self();
     }
 
-    public boolean remove(Attribute a) {
-      return attributes.remove(a);
+    public T removeAttribute(String attName) {
+      attributes.removeAttribute(attName);
+      return self();
     }
 
-    public boolean removeAttribute(String attName) {
-      return attributes.removeAttribute(attName);
-    }
-
-    public boolean removeAttributeIgnoreCase(String attName) {
-      return attributes.removeAttributeIgnoreCase(attName);
-    }
-
-    public Builder addDimension(Dimension dim) {
+    public T addDimension(Dimension dim) {
       dimensions.add(dim);
-      return this;
+      return self();
     }
 
-    public Builder addDimensions(Collection<Dimension> dims) {
+    public T addDimensions(Collection<Dimension> dims) {
       dimensions.addAll(dims);
-      return this;
-    }
-
-    /**
-     * Reset the dimension array. Anonymous dimensions are left alone.
-     * Shared dimensions are searched for recursively in the parent groups.
-     */
-    public void resetDimensions() {
-      ArrayList<Dimension> newDimensions = new ArrayList<>();
-      for (Dimension dim : dimensions) {
-        if (dim.isShared()) {
-          Dimension newD = parent.findDimension(dim.getShortName());
-          if (newD == null)
-            throw new IllegalArgumentException(
-                "Variable " + this.shortName + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
-          newDimensions.add(newD);
-        } else {
-          newDimensions.add(dim);
-        }
-      }
-      this.dimensions = newDimensions;
+      return self();
     }
 
     /**
      * Set the dimensions using all anonymous (unshared) dimensions
      *
      * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
-     * @throws ucar.ma2.InvalidRangeException if any shape < 1
+     * @throws RuntimeException if any shape < 1 and not -1.
      */
-    public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
+    public T setDimensionsAnonymous(int[] shape) {
       this.dimensions = new ArrayList<>();
       for (int i = 0; i < shape.length; i++) {
         if ((shape[i] < 1) && (shape[i] != -1))
-          throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
+          throw new RuntimeException("shape[" + i + "]=" + shape[i] + " must be > 0");
         Dimension anon;
         if (shape[i] == -1) {
           anon = Dimension.VLEN;
         } else {
-          anon = new Dimension(null, shape[i], false, false, false);
+          anon = Dimension.builder().setIsShared(false).setLength(shape[i]).build();
         }
         dimensions.add(anon);
       }
+      return self();
     }
 
-    public Builder setDimensions(String dimString) {
+    public T setDimensions(String dimString) {
       this.dimensions = Dimension.makeDimensionsList(this.parent, dimString);
-      return this;
+      return self();
     }
 
-    /**
-     * Replace a dimension at a specific index.
-     *
-     * @param idx index into dimension array
-     * @param dim to set
-     */
-    public Builder replaceDimensionAtIndex(int idx, Dimension dim) {
-      dimensions.set(idx, dim);
-      return this;
-    }
-
-    public Builder setDataType(DataType dataType) {
+    public T setDataType(DataType dataType) {
       this.dataType = dataType;
-      return this;
+      return self();
     }
 
-    public Builder setNcfile(NetcdfFile ncfile) {
+    public T setNcfile(NetcdfFile ncfile) {
       this.ncfile = ncfile;
-      return this;
+      return self();
     }
 
-    public Builder setName(String shortName) {
+    public T setName(String shortName) {
       this.shortName = shortName;
-      return this;
+      return self();
     }
 
-    public Builder setParent(Group parent) {
+    public T setParent(Group parent) {
       this.parent = parent;
-      return this;
+      return self();
     }
 
     public Variable build() {
       return new Variable(this);
     }
   }
-
 
   ///////////////////////////////////////////////////////////////////////
   // deprecated

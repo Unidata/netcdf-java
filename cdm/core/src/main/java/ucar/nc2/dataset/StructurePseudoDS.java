@@ -38,9 +38,26 @@ public class StructurePseudoDS extends StructureDS {
   protected static final Set<NetcdfDataset.Enhance> enhanceScaleMissing =
       EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset, NetcdfDataset.Enhance.ConvertMissing);
 
-
   private List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
 
+  protected StructurePseudoDS(Builder<?> builder) {
+    super(builder);
+    this.orgVariables = builder.orgVariables;
+  }
+
+  @Override
+  public Builder<?> toBuilder() {
+    StructurePseudoDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b.addOriginalVariables(this.orgVariables);
+  }
+
+  /** @deprecated Use StructurePseudoDS.builder() */
+  @Deprecated
   protected StructurePseudoDS(NetcdfDataset ncfile, Group group, String shortName) {
     super(ncfile, group, shortName);
   }
@@ -55,7 +72,9 @@ public class StructurePseudoDS extends StructureDS {
    * @param varNames limited to these variables, all must have dim as outer dimension. If null, use all Variables
    *        with that outer dimension
    * @param outerDim existing, outer dimension
+   * @deprecated Use StructurePseudoDS.builder()
    */
+  @Deprecated
   public StructurePseudoDS(NetcdfDataset ncfile, Group group, String shortName, List<String> varNames,
       Dimension outerDim) {
     super(ncfile, group, shortName); // cant do this for nested structures
@@ -121,6 +140,8 @@ public class StructurePseudoDS extends StructureDS {
   }
 
   @Override
+  /** @deprecated Use StructurePseudoDS.builder() */
+  @Deprecated
   public boolean removeMemberVariable(Variable v) {
     if (super.removeMemberVariable(v)) {
       java.util.Iterator<Variable> iter = orgVariables.iterator();
@@ -180,5 +201,39 @@ public class StructurePseudoDS extends StructureDS {
     return asma;
   }
 
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends StructureDS.Builder<T> {
+    private List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
+
+    public T addOriginalVariable(Variable orgVar) {
+      orgVariables.add(orgVar);
+      return self();
+    }
+
+    public T addOriginalVariables(List<Variable> orgVars) {
+      orgVariables.addAll(orgVars);
+      return self();
+    }
+
+    public StructureDS build() {
+      return new StructurePseudoDS(this);
+    }
+  }
 
 }

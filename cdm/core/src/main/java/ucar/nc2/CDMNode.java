@@ -19,7 +19,7 @@ import java.util.Map;
  * Also move various common fields and methods to here.
  *
  * @author Heimbigner
- * @deprecated
+ * @deprecated Will move to Dap4 module in version 6.
  */
 @Deprecated
 public abstract class CDMNode {

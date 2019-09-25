@@ -21,7 +21,7 @@ import java.util.List;
  * @author caron
  * @since 12/16/13
  */
-public class ReduceReader implements ProxyReader {
+class ReduceReader implements ProxyReader {
   private Variable orgClient;
   private List<Integer> dims; // dimension index into original
 

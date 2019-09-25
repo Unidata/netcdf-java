@@ -2,9 +2,11 @@ package ucar.nc2;
 
 import com.google.common.base.Preconditions;
 
-/** A dimension whose length can change. */
+/**
+ * A dimension whose length can change, thus mutable.
+ * Only use when writing.
+ */
 public class UnlimitedDimension extends Dimension {
-
   private int ulength;
 
   UnlimitedDimension(Builder builder, int length) {
@@ -24,9 +26,6 @@ public class UnlimitedDimension extends Dimension {
 
   /**
    * Get the length of the Unlimited Dimension.
-   * This is allowed to change.
-   * TODO: maybe it doesnt have to change.
-   *
    * @return length of Dimension
    */
   public int getLength() {

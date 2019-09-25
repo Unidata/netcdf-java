@@ -44,9 +44,8 @@ import java.util.*;
  * <li>ucar.nc2.ft.point.writer.CFPointWriter</li>
  * <li>ucar.nc2.ft2.coverage.grid.CFGridCoverageWriter</li>
  * </ul>
- * 
- * @author caron
- * @since 7/25/12
+ *
+ * @deprecated use ucar.nc2.writer.NetcdfFileWriter
  */
 public class NetcdfFileWriter implements Closeable {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
