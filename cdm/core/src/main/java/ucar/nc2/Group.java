@@ -7,6 +7,7 @@ package ucar.nc2;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
@@ -412,17 +413,17 @@ public class Group extends CDMNode implements AttributeContainer {
     this.ncfile = builder.ncfile;
 
     builder.dimensions.forEach(d -> d.setGroup(this));
-    this.dimensions = ImmutableList.copyOf(builder.dimensions);
+    this.dimensions = new ArrayList<>(builder.dimensions);
 
     builder.gbuilders.forEach(g -> g.setParent(this));
     // Look this cant be right, it will get called recursively for each parent....
-    this.groups = builder.gbuilders.stream().map(Group.Builder::build).collect(ImmutableList.toImmutableList());
+    this.groups = builder.gbuilders.stream().map(Group.Builder::build).collect(Collectors.toList());
 
     builder.vbuilders.forEach(v -> v.setGroup(this));
-    this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(ImmutableList.toImmutableList());
+    this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
 
     this.attributes = builder.attributes;
-    this.enumTypedefs =  ImmutableList.copyOf(builder.enumTypedefs);
+    this.enumTypedefs =  new ArrayList<>(builder.enumTypedefs);
 
     // This needs to go away in 6.
     this.variables.forEach(v -> v.setParentGroup(this));

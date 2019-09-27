@@ -34,7 +34,7 @@ public class TestVariableBuilders {
         .build();
 
     Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT)
-        .setParent(group)
+        .setGroup(group)
         .setDimensions("dim1 dim2").build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");

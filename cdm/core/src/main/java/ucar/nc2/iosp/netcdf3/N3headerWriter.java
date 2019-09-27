@@ -3,7 +3,6 @@ package ucar.nc2.iosp.netcdf3;
 import static ucar.nc2.iosp.netcdf3.N3header.MAGIC_ATT;
 import static ucar.nc2.iosp.netcdf3.N3header.MAGIC_VAR;
 import static ucar.nc2.iosp.netcdf3.N3header.MAX_UNSIGNED_INT;
-import static ucar.nc2.iosp.netcdf3.N3header.getDataType;
 import static ucar.nc2.iosp.netcdf3.N3header.getType;
 import static ucar.nc2.iosp.netcdf3.N3header.padding;
 
@@ -12,19 +11,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.netcdf3.N3header.Vinfo;
-import ucar.unidata.io.RandomAccessFile;
 
+/** The part of N3header needed for writing */
 public class N3headerWriter {
 
-  private N3header n3header;
+  private N3headerNew n3header;
   private ucar.unidata.io.RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
 
@@ -50,7 +47,7 @@ public class N3headerWriter {
    * @param fout debugging output sent to here
    * @throws IOException on write error
    */
-  void create(N3header n3header, int extra, boolean largeFile, Formatter fout) throws IOException {
+  void create(N3headerNew n3header, int extra, boolean largeFile, Formatter fout) throws IOException {
     this.n3header = n3header;
     this.raf = n3header.raf;
     this.ncfile = n3header.ncfile;
@@ -385,7 +382,7 @@ public class N3headerWriter {
       int type = getType(dtype);
       raf.writeInt(type);
 
-      int vsizeWrite = (vsize < MAX_UNSIGNED_INT) ? (int) vsize : -1;
+      int vsizeWrite = (vsize < N3header.MAX_UNSIGNED_INT) ? (int) vsize : -1;
       raf.writeInt(vsizeWrite);
       long pos = raf.getFilePointer();
       if (largeFile)
