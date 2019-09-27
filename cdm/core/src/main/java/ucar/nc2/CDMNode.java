@@ -110,7 +110,9 @@ public abstract class CDMNode {
    * Alias for getParentGroup
    *
    * @return parent Group
+   * @deprecated Do not use.
    */
+  @Deprecated
   public Group getGroup() {
     return getParentGroup();
   }
@@ -119,6 +121,7 @@ public abstract class CDMNode {
    * Set the parent Group
    *
    * @param parent The new parent group
+   * @deprecated Do not use.
    */
   public void setParentGroup(Group parent) {
     if (!immutable)

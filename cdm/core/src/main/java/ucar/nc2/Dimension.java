@@ -188,6 +188,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    * Get the Group that owns this Dimension.
    *
    * @return owning group or null if !isShared
+   * @deprecated Do not use.
    */
   public Group getGroup() {
     return getParentGroup();
@@ -463,6 +464,10 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return new Builder();
   }
 
+  public static Builder builder(String name, int length) {
+    return new Builder(name, length);
+  }
+
   public static class Builder {
     private Group parent;
     private String shortName;
@@ -470,17 +475,26 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     private boolean isVariableLength;
     private boolean isShared = true; // shared means its in a group dimension list.
     private int length;
+    private boolean built;
 
     private Builder() {}
 
-    /** Set is unlimited. */
+    private Builder(String name, int length) {
+      this.shortName = name;
+      this.length = length;
+    }
+
+    /** Set is unlimited.
+     *  Used by netcdf3 for variables whose outer dimension can change
+     */
     public Builder setIsUnlimited(boolean isUnlimited) {
       this.isUnlimited = isUnlimited;
       return this;
     }
 
     /** Set variable length is true.
-     * Implies that its not shared, nor unlimited.
+     *  Implies that its not shared, nor unlimited.
+     *  Used by sequences.
      */
     public Builder setIsVariableLength(boolean isVariableLength) {
       this.isVariableLength = isVariableLength;
@@ -494,7 +508,8 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
 
     /**
      * Set whether this is shared.
-     * Default value is true;
+     * Default value is true.
+     * Implies it is owned by a Group.
      */
     public Builder setIsShared(boolean isShared) {
       this.isShared = isShared;
@@ -526,17 +541,20 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
       return this;
     }
 
-    /** Set the parent group */
+    /**
+     * Set the parent group.
+     * @deprecated Will not use in 6.0
+     */
+    @Deprecated
     public Builder setGroup(Group parent) {
       this.parent = parent;
       return this;
     }
 
     public Dimension build() {
-      if (isUnlimited)
-        return new UnlimitedDimension(this, this.length);
-      else
-        return new Dimension(this);
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new Dimension(this);
     }
 
   }

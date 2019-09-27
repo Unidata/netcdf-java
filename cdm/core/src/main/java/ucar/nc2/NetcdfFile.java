@@ -2576,7 +2576,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     public Builder addVariable(Group g, String shortName, DataType dtype, String dims) {
       if (g == null) g = rootGroup;
       variableBuilders.add(Variable.builder()
-          .setParent(g)
+          .setGroup(g)
           .setName(shortName)
           .setDataType(dtype)
           .setDimensions(dims));
@@ -2597,7 +2597,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       String dimName = shortName + "_strlen";
       addDimension(g, Dimension.builder().setName(dimName).setLength(strlen).build());
       variableBuilders.add(Variable.builder()
-          .setParent(g)
+          .setGroup(g)
           .setName(shortName)
           .setDataType(DataType.CHAR)
           .setDimensions(dims + " " + dimName));

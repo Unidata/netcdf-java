@@ -1111,9 +1111,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     this.dataType = builder.dataType;
     this.dimensions = builder.dimensions;
     this.attributes = builder.attributes;
+    setParentStructure(builder.parentStruct);
 
     this.elementSize = getDataType().getSize();
     this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
+    this.spiObject = builder.spiObject;
 
     try {
       List<Range> list = new ArrayList<>();
@@ -1145,11 +1147,13 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     return b
         .setName(this.shortName)
-        .setParent(this.group)
+        .setGroup(this.group)
         .setNcfile(this.ncfile)
         .setDataType(this.dataType)
         .addDimensions(this.dimensions)
-        .addAttributes(this.attributes.atts);
+        .addAttributes(this.attributes.atts)
+        .setParentStructure(this.getParentStructure())
+        .setSPobject(this.spiObject);
   }
 
   /**
@@ -1788,7 +1792,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     private List<Dimension> dimensions = new ArrayList<>();
     private AttributeContainerHelper attributes = new AttributeContainerHelper("");
     private Group parent;
+    private Structure parentStruct;
     private String shortName;
+    private Object spiObject;
+    private boolean built;
 
     protected abstract T self();
 
@@ -1800,6 +1807,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public T addAttributes(Iterable<Attribute> atts) {
       attributes.addAll(atts);
       return self();
+    }
+
+    public AttributeContainer getAttributeContainer() {
+      return attributes;
     }
 
     public T removeAttribute(String attName) {
@@ -1854,17 +1865,29 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
+    public T setSPobject(Object spiObject) {
+      this.spiObject = spiObject;
+      return self();
+    }
+
     public T setName(String shortName) {
       this.shortName = shortName;
       return self();
     }
 
-    public T setParent(Group parent) {
+    public T setGroup(Group parent) {
       this.parent = parent;
       return self();
     }
 
+    public T setParentStructure(Structure parent) {
+      this.parentStruct = parent;
+      return self();
+    }
+
     public Variable build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
       return new Variable(this);
     }
   }

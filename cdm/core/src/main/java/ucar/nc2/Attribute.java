@@ -341,7 +341,7 @@ public class Attribute extends CDMNode {
   private DataType dataType;
   private EnumTypedef enumtype;
   private int nelems; // can be 0 or greater
-  private Array values;
+  private Array values; // can this be made immutable??
 
   private Attribute(Builder builder) {
     super(builder.name);
@@ -728,8 +728,12 @@ public class Attribute extends CDMNode {
   }
 
   ////////////////////////////////////////////////////////////////
-  public static Attribute.Builder builder() {
+  public static Builder builder() {
     return new Builder();
+  }
+
+  public static Builder builder(String name) {
+    return new Builder(name);
   }
 
   public static class Builder {
@@ -739,8 +743,13 @@ public class Attribute extends CDMNode {
     private Array values;
     private int nelems;
     private EnumTypedef enumtype;
+    private boolean built;
 
     private Builder() {}
+
+    private Builder(String name) {
+      this.name = name;
+    }
 
     public Builder setName(String name) {
       this.name = name;
@@ -878,6 +887,8 @@ public class Attribute extends CDMNode {
     }
 
     public Attribute build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
       return new Attribute(this);
     }
 

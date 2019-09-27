@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -42,16 +43,17 @@ public class Structure extends Variable {
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
   protected static int defaultBufferSize = 500 * 1000; // 500K bytes
 
-  // TODO make private final in release 6.
+  // TODO make private final and Immutable in release 6.
   protected List<Variable> members;
   protected HashMap<String, Variable> memberHash;
   protected boolean isSubset;
 
   protected Structure(Builder<?> builder) {
     super(builder);
-    this.members = builder.members;
+    builder.vbuilders.forEach(v -> v.setParentStructure(this));
+    this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
     memberHash = new HashMap<>();
-    builder.members.forEach(m -> memberHash.put(m.getShortName(), m));
+    this.members.forEach(m -> memberHash.put(m.getShortName(), m));
   }
 
   @Override
@@ -62,7 +64,8 @@ public class Structure extends Variable {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.addMemberVariables(this.members);
+    this.members.forEach(m -> b.addMemberVariable(m.toBuilder()));
+    return b;
   }
 
   /**
@@ -691,19 +694,22 @@ public class Structure extends Variable {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
-    private List<Variable> members = new ArrayList<>();
+    private List<Variable.Builder> vbuilders = new ArrayList<>();
+    private boolean built;
 
-    public T addMemberVariable(Variable v) {
-      members.add(v);
+    public T addMemberVariable(Variable.Builder v) {
+      vbuilders.add(v);
       return self();
     }
 
-    public T addMemberVariables(List<Variable> vars) {
-      members.addAll(vars);
+    public T addMemberVariables(List<Variable.Builder> vars) {
+      vbuilders.addAll(vars);
       return self();
     }
 
     public Structure build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
       this.setDataType(DataType.STRUCTURE);
       return new Structure(this);
     }
