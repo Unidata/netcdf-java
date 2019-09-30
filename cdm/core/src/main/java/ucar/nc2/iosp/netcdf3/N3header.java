@@ -48,6 +48,21 @@ public class N3header extends NCheader {
   private static boolean debugVariablePos;
   private static boolean debugStreaming;
 
+  // variable info for reading/writing
+  static class Vinfo {
+    long vsize; // size of array in bytes. if isRecord, size per record.
+    long begin; // offset of start of data from start of file
+    boolean isRecord; // is it a record variable?
+    long attsPos; // attributes start here - used for update
+
+    Vinfo(long vsize, long begin, boolean isRecord, long attsPos) {
+      this.vsize = vsize;
+      this.begin = begin;
+      this.isRecord = isRecord;
+      this.attsPos = attsPos;
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ucar.unidata.io.RandomAccessFile raf;
@@ -1020,22 +1035,6 @@ public class N3header extends NCheader {
     }
 
     return true;
-  }
-
-
-  // variable info for reading/writing
-  static class Vinfo {
-    long vsize; // size of array in bytes. if isRecord, size per record.
-    long begin; // offset of start of data from start of file
-    boolean isRecord; // is it a record variable?
-    long attsPos; // attributes start here - used for update
-
-    Vinfo(long vsize, long begin, boolean isRecord, long attsPos) {
-      this.vsize = vsize;
-      this.begin = begin;
-      this.isRecord = isRecord;
-      this.attsPos = attsPos;
-    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////

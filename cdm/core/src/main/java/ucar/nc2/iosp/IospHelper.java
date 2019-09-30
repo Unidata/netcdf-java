@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Helper methods for IOSP's
+ * Helper methods for IOSP's for reading data.
  *
  * @author caron
  * @since Jan 3, 2008

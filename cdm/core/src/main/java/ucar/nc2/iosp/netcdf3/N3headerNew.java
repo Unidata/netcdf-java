@@ -14,7 +14,7 @@ import java.io.IOException;
 
 /**
  * Netcdf version 3 file format.
- * New version using new builders for testing agains old version.
+ * Read-only version using Builders for testing against old version.
  */
 public class N3headerNew {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
@@ -32,12 +32,14 @@ public class N3headerNew {
 
   // variable info for reading/writing
   static class Vinfo {
+    String name;
     long vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
     boolean isRecord; // is it a record variable?
     long attsPos; // attributes start here - used for update
 
-    Vinfo(long vsize, long begin, boolean isRecord, long attsPos) {
+    Vinfo(String name, long vsize, long begin, boolean isRecord, long attsPos) {
+      this.name = name;
       this.vsize = vsize;
       this.begin = begin;
       this.isRecord = isRecord;
@@ -48,7 +50,6 @@ public class N3headerNew {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ucar.unidata.io.RandomAccessFile raf;
-  ucar.nc2.NetcdfFile ncfile;
 
   // N3iosp needs access to these
   boolean isStreaming; // is streaming (numrecs = -1)
@@ -59,6 +60,7 @@ public class N3headerNew {
   private boolean useLongOffset;
   private long nonRecordDataSize; // size of non-record variables
   private Dimension udim; // the unlimited dimension
+  private List<Vinfo> vars = new ArrayList<>();
 
   long dataStart = Long.MAX_VALUE; // where the data starts
 
@@ -74,26 +76,11 @@ public class N3headerNew {
    * Read the header and populate the ncfile
    *
    * @param raf read from this file
-   * @param ncfile fill this NetcdfFile object (originally empty)
-   * @param fout optional for debug message, may be null
-   * @throws IOException on read error
-   */
-  void read(RandomAccessFile raf, NetcdfFile ncfile, Formatter fout) throws IOException {
-    this.ncfile = ncfile;
-    Group.Builder root = Group.builder().setNcfile(ncfile);
-    read(raf, root, fout);
-    // LOOK ncfile.setRootGroup(root.build());
-  }
-
-  /**
-   * Read the header and populate the ncfile
-   *
-   * @param raf read from this file
    * @param root the root Group builder to populate.
    * @param debugOut optional for debug message, may be null
    * @throws IOException on read error
    */
-  private void read(ucar.unidata.io.RandomAccessFile raf, Group.Builder root, Formatter debugOut) throws IOException {
+  void read(RandomAccessFile raf, Group.Builder root, Formatter debugOut) throws IOException {
     this.raf = raf;
 
     long actualSize = raf.length();
@@ -150,9 +137,10 @@ public class N3headerNew {
         dim = Dimension.builder(name, numrecs).setIsUnlimited(true).build();
         udim = dim;
       } else {
-        dim = Dimension.builder(name, numrecs).build();
+        dim = Dimension.builder(name, len).build();
       }
       fileDimensions.add(dim);
+      root.addDimension(dim);
       if (debugOut != null)
         debugOut.format(" added dimension %s%n", dim);
     }
@@ -230,7 +218,9 @@ public class N3headerNew {
         vsize = (velems + padding(velems)) * dataType.getSize();
       }
 
-      var.setSPobject(new Vinfo(vsize, begin, isRecord, varAttsPos));
+      Vinfo vinfo = new Vinfo(name, vsize, begin, isRecord, varAttsPos);
+      vars.add(vinfo);
+      var.setSPobject(vinfo);
 
       // track how big each record is
       if (isRecord) {
@@ -256,26 +246,28 @@ public class N3headerNew {
     if (uvars.isEmpty()) // if there are no record variables
       recStart = 0;
 
-    /* LOOK Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
+    // LOOK Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
     // the file contained only one record variable and it was of type byte, char, or short).
+    // Example ~/cdm/core/src/test/data/byteArrayRecordVarPaddingTest-bad.nc
     if (uvars.size() == 1) {
-      Variable uvar = uvars.get(0);
-      DataType dtype = uvar.getDataType();
+      Variable.Builder uvar = uvars.get(0);
+      DataType dtype = uvar.dataType;
       if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
-        long vsize = uvar.getDataType().getSize(); // works for all netcdf-3 data types
-        for (Dimension curDim : uvar.getDimensions()) {
+        long vsize = dtype.getSize(); // works for all netcdf-3 data types
+        List<Dimension> dims = uvar.dimensions;
+        for (Dimension curDim : dims) {
           if (!curDim.isUnlimited())
             vsize *= curDim.getLength();
         }
-        Vinfo vinfo = (Vinfo) uvar.getSPobject();
+        Vinfo vinfo = (Vinfo) uvar.spiObject;
         if (vsize != vinfo.vsize) {
-          // log.info( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52):
-          // fvsize=" + vinfo.vsize+"!= calc size =" + vsize );
+          log.info( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52): fvsize=" +
+              vinfo.vsize+"!= calc size =" + vsize );
           recsize = vsize;
           vinfo.vsize = vsize;
         }
       }
-    } */
+    }
 
     if (N3header.debugHeaderSize) {
       System.out.println("  filePointer = " + pos + " dataStart=" + dataStart);
@@ -318,7 +310,6 @@ public class N3headerNew {
         raf.setExtendMode();
       }
     }
-
   }
 
   long calcFileSize() {
@@ -351,14 +342,12 @@ public class N3headerNew {
       out.format(" actual size larger = %d (%d byte extra) %n", actual, (actual - calcSize));
 
     out.format("%n  %20s____start_____size__unlim%n", "name");
-    for (Variable v : ncfile.getVariables()) {
-      Vinfo vinfo = (Vinfo) v.getSPobject();
-      out.format("  %20s %8d %8d  %s %n", v.getShortName(), vinfo.begin, vinfo.vsize, vinfo.isRecord);
+    for (Vinfo vinfo : this.vars) {
+      out.format("  %20s %8d %8d  %s %n", vinfo.name, vinfo.begin, vinfo.vsize, vinfo.isRecord);
     }
   }
 
-  /* LOOK
-  synchronized boolean removeRecordStructure() {
+  /* synchronized boolean removeRecordStructure() {
     boolean found = false;
     for (Variable v : uvars) {
       if (v.getFullName().equals("record")) {

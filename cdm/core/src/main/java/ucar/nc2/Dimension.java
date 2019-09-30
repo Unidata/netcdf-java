@@ -136,6 +136,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     this.length = builder.length;
   }
 
+  /** Turn into a mutable Builder. Like a copy constructor. */
   public Builder toBuilder() {
     return builder()
         .setName(this.shortName)
@@ -198,10 +199,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return super.getFullName();
   }
 
-  /**
-   * Instances which have same contents are equal.
-   * Careful!! this is not object identity !!
-   */
   @Override
   public boolean equals(Object oo) {
     if (this == oo)

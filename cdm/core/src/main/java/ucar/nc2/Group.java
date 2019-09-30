@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.Collection;
@@ -396,7 +397,6 @@ public class Group extends CDMNode implements AttributeContainer {
     }
   }
 
-
   //////////////////////////////////////////////////////////////////////////////////////
   // TODO make private final and immutable in 6
   protected NetcdfFile ncfile;
@@ -412,14 +412,14 @@ public class Group extends CDMNode implements AttributeContainer {
     this.group = builder.parent;
     this.ncfile = builder.ncfile;
 
-    builder.dimensions.forEach(d -> d.setGroup(this));
+    builder.dimensions.forEach(d -> d.setGroup(this)); // LOOK remove in 6
     this.dimensions = new ArrayList<>(builder.dimensions);
 
     builder.gbuilders.forEach(g -> g.setParent(this));
     // Look this cant be right, it will get called recursively for each parent....
     this.groups = builder.gbuilders.stream().map(Group.Builder::build).collect(Collectors.toList());
 
-    builder.vbuilders.forEach(v -> v.setGroup(this));
+    builder.vbuilders.forEach(v -> v.setGroup(this).setNcfile(this.ncfile));
     this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
 
     this.attributes = builder.attributes;
@@ -872,6 +872,14 @@ public class Group extends CDMNode implements AttributeContainer {
     public Builder setNcfile(NetcdfFile ncfile) {
       this.ncfile = ncfile;
       return this;
+    }
+
+    /**
+     * @deprecated do not use.
+     */
+    @Deprecated
+    public NetcdfFile getNcfile() {
+      return this.ncfile;
     }
 
     public Builder setName(String shortName) {

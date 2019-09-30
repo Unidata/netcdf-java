@@ -1788,13 +1788,13 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   public static abstract class Builder<T extends Builder<T>>  {
     private NetcdfFile ncfile;
-    private DataType dataType;
-    private List<Dimension> dimensions = new ArrayList<>();
+    public DataType dataType;
+    public List<Dimension> dimensions = new ArrayList<>();
     private AttributeContainerHelper attributes = new AttributeContainerHelper("");
     private Group parent;
     private Structure parentStruct;
     private String shortName;
-    private Object spiObject;
+    public Object spiObject;
     private boolean built;
 
     protected abstract T self();

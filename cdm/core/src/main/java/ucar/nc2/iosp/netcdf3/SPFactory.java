@@ -14,7 +14,7 @@ import ucar.nc2.iosp.IOServiceProvider;
  */
 
 public class SPFactory {
-
+  // Current default. Will change to N3iospNew in 6.
   private static Class spClass = N3raf.class;
   private static boolean debug;
 

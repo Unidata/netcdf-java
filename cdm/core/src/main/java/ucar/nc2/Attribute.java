@@ -341,7 +341,7 @@ public class Attribute extends CDMNode {
   private DataType dataType;
   private EnumTypedef enumtype;
   private int nelems; // can be 0 or greater
-  private Array values; // can this be made immutable??
+  private Array values; // can this be made immutable?? Otherwise return a copy.
 
   private Attribute(Builder builder) {
     super(builder.name);
@@ -353,6 +353,7 @@ public class Attribute extends CDMNode {
     this.nelems = (svalue != null) ? 1 : (int) this.values.getSize();
   }
 
+  /** Turn into a mutable Builder. Like a copy constructor. */
   public Builder toBuilder() {
     return builder()
         .setName(this.shortName)

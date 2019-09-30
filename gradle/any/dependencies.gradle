@@ -132,7 +132,6 @@ libraries["cglib-nodep"] = "cglib:cglib-nodep:3.2.4"
 libraries["objenesis"] = "org.objenesis:objenesis:2.4"
 
 //mockito
-libraries["mockito"] = "org.mockito:mockito-core:2.+"
 
 // Fluent assertions for Java
 libraries["truth"] = "com.google.truth:truth:1.0"
