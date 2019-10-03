@@ -25,7 +25,7 @@ public class TestNcMLModifyVars extends TestCase {
   NetcdfFile ncfile = null;
 
   public void setUp() {
-    String filename = "file:" + TestNcML.topDir + "modifyVars.xml";
+    String filename = "file:" + TestNcMLRead.topDir + "modifyVars.xml";
 
     try {
       ncfile = NcMLReader.readNcML(filename, null);

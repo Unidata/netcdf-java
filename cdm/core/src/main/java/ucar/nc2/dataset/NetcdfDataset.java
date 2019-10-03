@@ -190,7 +190,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param enhanceMode a string from the above table.
    * @return the set corresponding to {@code enhanceMode}, or {@code null} if there is no correspondence.
+   * @deprecated this is moving to Ncml package
    */
+  @Deprecated
   public static Set<Enhance> parseEnhanceMode(String enhanceMode) {
     if (enhanceMode == null)
       return null;
@@ -761,24 +763,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
-  private NetcdfFile orgFile;
-
-  private List<CoordinateSystem> coordSys = new ArrayList<>();
-  private List<CoordinateAxis> coordAxes = new ArrayList<>();
-  private List<CoordinateTransform> coordTransforms = new ArrayList<>();
-  private String convUsed;
-
-  private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
-
-  // If its an aggregation
-  private ucar.nc2.ncml.Aggregation agg;
 
   /**
    * If its an NcML aggregation, it has an Aggregation object associated.
    * This is public for use by NcmlWriter.
    *
    * @return Aggregation or null
+   * @deprecated Do not use.
    */
+  @Deprecated
   public ucar.nc2.ncml.Aggregation getAggregation() {
     return agg;
   }
@@ -787,7 +780,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Set the Aggregation object associated with this NcML dataset
    *
    * @param agg the Aggregation object
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public void setAggregation(ucar.nc2.ncml.Aggregation agg) {
     this.agg = agg;
   }
@@ -815,7 +810,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return the current state of dataset enhancement.
    */
-  public EnumSet<Enhance> getEnhanceMode() {
+  public Set<Enhance> getEnhanceMode() {
     return enhanceMode;
   }
 
@@ -839,7 +834,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Clear Coordinate System metadata, to allow them to be redone
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public void clearCoordinateSystems() {
     coordSys = new ArrayList<>();
     coordAxes = new ArrayList<>();
@@ -957,10 +954,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (agg != null) {
       return agg.getLastModified();
     }
-
     return (orgFile != null) ? orgFile.getLastModified() : 0;
   }
 
+  /** @deprecated Use NetcdfDataset.builder() */
+  @Deprecated
   @Override
   public void empty() {
     super.empty();
@@ -970,6 +968,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     convUsed = null;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public boolean syncExtend() throws IOException {
     // unlocked = false;
 
@@ -1021,7 +1021,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param ncfile NetcdfFile to transform.
    * @throws java.io.IOException on read error
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public NetcdfDataset(NetcdfFile ncfile) throws IOException {
     this(ncfile, defaultEnhanceMode);
   }
@@ -1033,7 +1035,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param ncfile NetcdfFile to transform, do not use independently after this.
    * @param enhance if true, enhance with defaultEnhanceMode
    * @throws java.io.IOException on read error
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public NetcdfDataset(NetcdfFile ncfile, boolean enhance) throws IOException {
     this(ncfile, enhance ? defaultEnhanceMode : null);
   }
@@ -1045,7 +1049,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param ncfile NetcdfFile to transform, do not use independently after this.
    * @param mode set of enhance modes. If null, then none
    * @throws java.io.IOException on read error
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public NetcdfDataset(NetcdfFile ncfile, Set<Enhance> mode) throws IOException {
     super(ncfile);
 
@@ -1091,6 +1097,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////
 
+  /** @deprecated Use NetcdfDataset.builder() */
+  @Deprecated
   @Override
   protected Boolean makeRecordStructure() {
     if (this.orgFile == null)
@@ -1136,7 +1144,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Sort Variables, CoordAxes by name.
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public void sort() {
     variables.sort(new VariableComparator());
     coordAxes.sort(new VariableComparator());
@@ -1164,7 +1174,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * No-arg Constructor
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public NetcdfDataset() {}
 
   /**
@@ -1173,7 +1185,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * unsuitable for general use.
    *
    * @return underlying NetcdfFile, or null if none.
+   * @deprecated Do not use
    */
+  @Deprecated
   public NetcdfFile getReferencedFile() {
     return orgFile;
   }
@@ -1187,7 +1201,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Set underlying file. CAUTION - normally only done through the constructor.
    *
    * @param ncfile underlying "referenced file"
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public void setReferencedFile(NetcdfFile ncfile) {
     orgFile = ncfile;
   }
@@ -1203,7 +1219,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Add a CoordinateSystem to the dataset.
    *
    * @param cs add this CoordinateSystem to the dataset
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public void addCoordinateSystem(CoordinateSystem cs) {
     coordSys.add(cs);
   }
@@ -1212,7 +1230,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Add a CoordinateTransform to the dataset.
    *
    * @param ct add this CoordinateTransform to the dataset
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public void addCoordinateTransform(CoordinateTransform ct) {
     if (!coordTransforms.contains(ct))
       coordTransforms.add(ct);
@@ -1224,7 +1244,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param v make this VariableDS into a CoordinateAxis
    * @return the CoordinateAxis
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public CoordinateAxis addCoordinateAxis(VariableDS v) {
     if (v == null)
       return null;
@@ -1248,6 +1270,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return ca;
   }
 
+  /** @deprecated Use NetcdfDataset.builder() */
+  @Deprecated
   @Override
   public Variable addVariable(Group g, Variable v) {
     if (!(v instanceof VariableDS) && !(v instanceof StructureDS))
@@ -1260,7 +1284,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return the CoordSysBuilder used, for debugging. do not modify or retain a reference
    * @throws java.io.IOException on error
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public CoordSysBuilderIF enhance() throws IOException {
     return enhance(this, defaultEnhanceMode, null);
   }
@@ -1270,7 +1296,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param mode how to enhance
    * @throws java.io.IOException on error
+   * @deprecated Use NetcdfDataset.builder()
    */
+  @Deprecated
   public void enhance(Set<Enhance> mode) throws IOException {
     enhance(this, mode, null);
   }
@@ -1280,7 +1308,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param want enhancements wanted
    * @return true if wanted enhancement is not done
+   * @deprecated Do not use.
    */
+  @Deprecated
   public boolean enhanceNeeded(Set<Enhance> want) {
     if (want == null)
       return false;
@@ -1305,6 +1335,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param incr increment
    * @deprecated use Variable.setValues()
    */
+  @Deprecated
   public void setValues(Variable v, int npts, double start, double incr) {
     if (npts != v.getSize())
       throw new IllegalArgumentException("bad npts = " + npts + " should be " + v.getSize());
@@ -1322,6 +1353,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
    * @deprecated use Variable.setValues()
    */
+  @Deprecated
   public void setValues(Variable v, List<String> values) throws IllegalArgumentException {
     Array data = Array.makeArray(v.getDataType(), values);
 
@@ -1344,6 +1376,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws NumberFormatException if string values not parssable to specified data type
    * @deprecated use Array#makeArray directly
    */
+  @Deprecated
   public static Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
     return Array.makeArray(dtype, stringValues);
   }
@@ -1381,7 +1414,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  void dumpClasses(Group g, PrintWriter out) {
+  private void dumpClasses(Group g, PrintWriter out) {
 
     out.println("Dimensions:");
     for (Dimension ds : g.getDimensions()) {
@@ -1462,6 +1495,176 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO make these final and immutable in 6.
+  private NetcdfFile orgFile;
+  private List<CoordinateAxis> coordAxes = new ArrayList<>();
+  private List<CoordinateSystem> coordSys = new ArrayList<>();
+  private List<CoordinateTransform> coordTransforms = new ArrayList<>();
+  private String convUsed;
+  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
+  private ucar.nc2.ncml.Aggregation agg;
+
+  private NetcdfDataset(Builder<?> builder) {
+    super(builder);
+    this.orgFile = builder.orgFile;
+    this.coordAxes = builder.coordAxes;
+    this.coordSys = builder.coordSys;
+    this.coordTransforms = builder.coordTransforms;
+    this.convUsed = builder.convUsed;
+    this.enhanceMode = builder.enhanceMode;
+    this.agg = builder.agg;
+    finish(); // LOOK
+  }
+  public Builder<?> toBuilder() {
+    NetcdfDataset.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (NetcdfDataset.Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b
+        .setOrgFile(this.orgFile)
+        .addCoordinateAxes(this.coordAxes)
+        .addCoordinateSystems(this.coordSys)
+        .addCoordinateTransforms(this.coordTransforms)
+        .setConventionUsed(this.convUsed)
+        .setEnhanceMode(this.enhanceMode)
+        .setAggregation(this.agg);
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
+    private NetcdfFile orgFile;
+    private List<CoordinateAxis> coordAxes = new ArrayList<>();
+    private List<CoordinateSystem> coordSys = new ArrayList<>();
+    private List<CoordinateTransform> coordTransforms = new ArrayList<>();
+    private String convUsed;
+    private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
+    private ucar.nc2.ncml.Aggregation agg; // If its an aggregation
+    private boolean built;
+
+    protected abstract T self();
+
+    public T setOrgFile(NetcdfFile orgFile) {
+      this.orgFile = orgFile;
+      return self();
+    }
+
+    public T addCoordinateAxis(CoordinateAxis axis) {
+      coordAxes.add(axis);
+      return self();
+    }
+
+    public T addCoordinateAxes(Collection<CoordinateAxis> axes) {
+      coordAxes.addAll(axes);
+      return self();
+    }
+
+    public T addCoordinateSystem(CoordinateSystem cs) {
+      coordSys.add(cs);
+      return self();
+    }
+
+    public T addCoordinateSystems(Collection<CoordinateSystem> systems) {
+      coordSys.addAll(systems);
+      return self();
+    }
+
+    public T addCoordinateTransform(CoordinateTransform ct) {
+      if (!coordTransforms.contains(ct))
+        coordTransforms.add(ct);
+      return self();
+    }
+
+    public T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
+      coordTransforms.addAll(transforms);
+      return self();
+    }
+
+    public T setConventionUsed(String convUsed) {
+      this.convUsed = convUsed;
+      return self();
+    }
+
+    public T setEnhanceMode(Set<Enhance> enhanceMode) {
+      this.enhanceMode = enhanceMode;
+      return self();
+    }
+
+    public T setAggregation(ucar.nc2.ncml.Aggregation agg) {
+      this.agg = agg;
+      return self();
+    }
+
+    public NetcdfDataset build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new NetcdfDataset(this);
+    }
+
+    /** Copy metadata from orgFile. Do not copy the coordinates, etc */
+    public T copyFrom(NetcdfFile orgFile) {
+      setLocation(orgFile.getLocation());
+      setId(orgFile.getId());
+      setTitle(orgFile.getTitle());
+
+      Group.Builder root = Group.builder().setName("");
+      convertGroup(root, orgFile.getRootGroup());
+      setRootGroup(root);
+
+      return self();
+    }
+
+    private void convertGroup(Group.Builder g, Group from) {
+      g.setName(from.getShortName());
+
+      g.addEnumTypedefs(from.getEnumTypedefs()); // copy
+
+      for (Dimension d : from.getDimensions())
+        g.addDimension(new Dimension(d.toBuilder())); // can just copy after ver 6.
+
+      g.addAttributes(from.getAttributes()); // copy
+
+      for (Variable v : from.getVariables())
+        g.addVariable(convertVariable(v)); // convert
+
+      for (Group nested : from.getGroups()) {
+        Group.Builder nnested = Group.builder();
+        g.addGroup(nnested);
+        convertGroup(nnested, nested); // convert
+      }
+    }
+
+    private Variable.Builder convertVariable(Variable v) {
+      Variable.Builder newVar;
+      if (v instanceof Sequence) {
+        newVar = SequenceDS.builder().copyFrom((Sequence) v);
+      } else if (v instanceof Structure) {
+        newVar = StructureDS.builder().copyFrom((StructureDS) v);
+      } else {
+        newVar = VariableDS.builder().copyFrom(v);
+      }
+      return newVar;
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   /**
    * Main program - cover to ucar.nc2.FileWriter, for all files that can be read by NetcdfDataset.openFile()
    * <p>

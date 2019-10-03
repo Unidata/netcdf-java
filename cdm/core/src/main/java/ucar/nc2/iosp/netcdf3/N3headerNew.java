@@ -52,7 +52,7 @@ public class N3headerNew {
   ucar.unidata.io.RandomAccessFile raf;
 
   // N3iosp needs access to these
-  boolean isStreaming; // is streaming (numrecs = -1)
+  private boolean isStreaming; // is streaming (numrecs = -1)
   int numrecs; // number of records written
   long recsize; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
@@ -62,7 +62,7 @@ public class N3headerNew {
   private Dimension udim; // the unlimited dimension
   private List<Vinfo> vars = new ArrayList<>();
 
-  long dataStart = Long.MAX_VALUE; // where the data starts
+  private long dataStart = Long.MAX_VALUE; // where the data starts
 
   /*
    * Notes:
@@ -165,7 +165,6 @@ public class N3headerNew {
 
     // loop over variables
     for (int i = 0; i < nvars; i++) {
-      long startPos = raf.getFilePointer();
       String name = readString();
       Variable.Builder var = Variable.builder().setName(name);
 

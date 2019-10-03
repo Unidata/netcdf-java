@@ -13,7 +13,7 @@ import java.io.IOException;
 
 /**
  * Enhance sequence
- *
+ * TODO extend Sequence, not StructureDS?
  * @author caron
  * @since Nov 10, 2009
  */

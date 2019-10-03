@@ -334,35 +334,6 @@ public class Attribute extends CDMNode {
     return StringUtil2.replace(s, org, replace);
   }
 
-  ///////////////////////////////////////////////////////////////////////////////
-
-  // TODO make these final in 6.
-  private String svalue; // optimization for common case of single String valued attribute
-  private DataType dataType;
-  private EnumTypedef enumtype;
-  private int nelems; // can be 0 or greater
-  private Array values; // can this be made immutable?? Otherwise return a copy.
-
-  private Attribute(Builder builder) {
-    super(builder.name);
-    this.svalue = builder.svalue;
-    this.dataType = builder.dataType;
-    this.enumtype = builder.enumtype;
-    this.nelems = builder.nelems;
-    this.values = builder.values;
-    this.nelems = (svalue != null) ? 1 : (int) this.values.getSize();
-  }
-
-  /** Turn into a mutable Builder. Like a copy constructor. */
-  public Builder toBuilder() {
-    return builder()
-        .setName(this.shortName)
-        .setStringValue(this.svalue)
-        .setValues(this.values)
-        .setDataType(this.dataType)
-        .setEnumType(this.enumtype);
-  }
-
   /**
    * Copy constructor
    *
@@ -728,7 +699,35 @@ public class Attribute extends CDMNode {
     return result;
   }
 
-  ////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+
+  // TODO make these final in 6.
+  private String svalue; // optimization for common case of single String valued attribute
+  private DataType dataType;
+  private EnumTypedef enumtype;
+  private int nelems; // can be 0 or greater
+  private Array values; // can this be made immutable?? Otherwise return a copy.
+
+  private Attribute(Builder builder) {
+    super(builder.name);
+    this.svalue = builder.svalue;
+    this.dataType = builder.dataType;
+    this.enumtype = builder.enumtype;
+    this.nelems = builder.nelems;
+    this.values = builder.values;
+    this.nelems = (svalue != null) ? 1 : (int) this.values.getSize();
+  }
+
+  /** Turn into a mutable Builder. Like a copy constructor. */
+  public Builder toBuilder() {
+    return builder()
+        .setName(this.shortName)
+        .setStringValue(this.svalue)
+        .setValues(this.values)
+        .setDataType(this.dataType)
+        .setEnumType(this.enumtype);
+  }
+
   public static Builder builder() {
     return new Builder();
   }

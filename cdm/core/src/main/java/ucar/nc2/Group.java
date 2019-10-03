@@ -8,6 +8,8 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
@@ -146,6 +148,47 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
+   * Create a dimension list using dimension names. The dimension is searched for recursively in the parent groups.
+   *
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
+   *        dimension. null or empty String is a scalar.
+   * @return list of dimensions
+   * @throws IllegalArgumentException if cant find dimension or parse error.
+   */
+  public List<Dimension> makeDimensionsList(String dimString)
+      throws IllegalArgumentException {
+    List<Dimension> newDimensions = new ArrayList<>();
+    if (dimString == null) // scalar
+      return newDimensions; // empty list
+    dimString = dimString.trim();
+    if (dimString.isEmpty()) // scalar
+      return newDimensions; // empty list
+
+    StringTokenizer stoke = new StringTokenizer(dimString);
+    while (stoke.hasMoreTokens()) {
+      String dimName = stoke.nextToken();
+      Dimension d;
+      if (dimName.equals("*"))
+        d = Dimension.VLEN;
+      else
+        d = this.findDimension(dimName);
+      if (d == null) {
+        // if numeric - then its anonymous dimension
+        try {
+          int len = Integer.parseInt(dimName);
+          d = Dimension.builder().setLength(len).setIsShared(false).build();
+        } catch (Exception e) {
+          throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
+        }
+      }
+      newDimensions.add(d);
+    }
+
+    return newDimensions;
+  }
+
+
+  /**
    * Get the enumerations contained directly in this group.
    *
    * @return List of type EnumTypedef; may be empty, not null.
@@ -172,6 +215,28 @@ public class Group extends CDMNode implements AttributeContainer {
     if (parent != null)
       return parent.findDimension(name);
 
+    return null;
+  }
+
+  /**
+   * Find a Dimension in this or a parent Group, using equals.
+   *
+   * @param dim Dimension .
+   * @return the Dimension, or null if not found
+   */
+  public Dimension findDimension(Dimension dim) {
+    if (dim == null) {
+      return null;
+    }
+    for (Dimension d : dimensions) {
+      if (d.equals(dim)) {
+        return d;
+      }
+    }
+    Group parent = getParentGroup();
+    if (parent != null) {
+      return parent.findDimension(dim);
+    }
     return null;
   }
 
@@ -398,54 +463,6 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
-  // TODO make private final and immutable in 6
-  protected NetcdfFile ncfile;
-  protected List<Variable> variables = new ArrayList<>();
-  protected List<Dimension> dimensions = new ArrayList<>();
-  protected List<Group> groups = new ArrayList<>();
-  protected AttributeContainerHelper attributes;
-  protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
-  private int hashCode;
-
-  private Group(Builder builder) {
-    super(builder.shortName);
-    this.group = builder.parent;
-    this.ncfile = builder.ncfile;
-
-    builder.dimensions.forEach(d -> d.setGroup(this)); // LOOK remove in 6
-    this.dimensions = new ArrayList<>(builder.dimensions);
-
-    builder.gbuilders.forEach(g -> g.setParent(this));
-    // Look this cant be right, it will get called recursively for each parent....
-    this.groups = builder.gbuilders.stream().map(Group.Builder::build).collect(Collectors.toList());
-
-    builder.vbuilders.forEach(v -> v.setGroup(this).setNcfile(this.ncfile));
-    this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
-
-    this.attributes = builder.attributes;
-    this.enumTypedefs =  new ArrayList<>(builder.enumTypedefs);
-
-    // This needs to go away in 6.
-    this.variables.forEach(v -> v.setParentGroup(this));
-    this.dimensions.forEach(d -> d.setParentGroup(this));
-    this.groups.forEach(g -> g.setParentGroup(this));
-    this.enumTypedefs.forEach(e -> e.setParentGroup(this));
-  }
-
-  public Builder toBuilder() {
-    Builder builder = builder()
-        .setName(this.shortName)
-        .setParent(this.group)
-        .setNcfile(this.ncfile)
-        .addAttributes(this.attributes.getAttributes())
-        .addDimensions(this.dimensions)
-        .addEnumTypedefs(this.enumTypedefs);
-
-    this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
-    this.variables.forEach(v -> builder.addVariable(v.toBuilder()));
-
-    return builder;
-  }
 
   /**
    * Constructor
@@ -775,6 +792,50 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   ////////////////////////////////////////////////////////////////
+  // TODO make private final and immutable in 6
+  protected NetcdfFile ncfile;
+  protected List<Variable> variables = new ArrayList<>();
+  protected List<Dimension> dimensions = new ArrayList<>();
+  protected List<Group> groups = new ArrayList<>();
+  protected AttributeContainerHelper attributes;
+  protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
+  private int hashCode;
+
+  public Group(Builder builder, Group parent) {
+    super(builder.shortName);
+    this.group = parent;
+    this.ncfile = builder.ncfile;
+
+    builder.dimensions.forEach(d -> d.setGroup(this)); // LOOK remove in 6
+    this.dimensions = new ArrayList<>(builder.dimensions);
+
+    // only the root group build() should be called, the rest get called recursively
+    this.groups = builder.gbuilders.stream().map(g -> g.build(this)).collect(Collectors.toList());
+
+    builder.vbuilders.forEach(v -> v.setGroup(this).setNcfile(this.ncfile));
+    this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
+
+    this.attributes = builder.attributes;
+    this.enumTypedefs =  new ArrayList<>(builder.enumTypedefs);
+
+    // This needs to go away in 6.
+    this.dimensions.forEach(d -> d.setParentGroup(this));
+    this.enumTypedefs.forEach(e -> e.setParentGroup(this));
+  }
+
+  public Builder toBuilder() {
+    Builder builder = builder()
+        .setName(this.shortName)
+        .setNcfile(this.ncfile)
+        .addAttributes(this.attributes.getAttributes())
+        .addDimensions(this.dimensions)
+        .addEnumTypedefs(this.enumTypedefs);
+
+    this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
+    this.variables.forEach(v -> builder.addVariable(v.toBuilder()));
+
+    return builder;
+  }
 
   public static Builder builder() {
     return new Builder();
@@ -787,7 +848,6 @@ public class Group extends CDMNode implements AttributeContainer {
     private List<EnumTypedef> enumTypedefs = new ArrayList<>();
     private List<Group.Builder> gbuilders = new ArrayList<>();
     private List<Variable.Builder> vbuilders = new ArrayList<>();
-    private Group parent;
     private String shortName;
     private boolean built;
 
@@ -807,18 +867,6 @@ public class Group extends CDMNode implements AttributeContainer {
       return attributes;
     }
 
-    public boolean remove(Attribute a) {
-      return attributes.remove(a);
-    }
-
-    public boolean removeAttribute(String attName) {
-      return attributes.removeAttribute(attName);
-    }
-
-    public boolean removeAttributeIgnoreCase(String attName) {
-      return attributes.removeAttributeIgnoreCase(attName);
-    }
-
     public Builder addDimension(Dimension dim) {
       Preconditions.checkNotNull(dim);
       dimensions.add(dim);
@@ -829,6 +877,12 @@ public class Group extends CDMNode implements AttributeContainer {
       Preconditions.checkNotNull(dims);
       dimensions.addAll(dims);
       return this;
+    }
+
+    public boolean removeDimension(String dimName) {
+      Optional<Dimension> want = dimensions.stream().filter(v->v.shortName.equals(dimName)).findFirst();
+      want.ifPresent(d -> dimensions.remove(d));
+      return want.isPresent();
     }
 
     /** Add a nested Group. */
@@ -842,6 +896,12 @@ public class Group extends CDMNode implements AttributeContainer {
       Preconditions.checkNotNull(groups);
       groups.addAll(groups);
       return this;
+    }
+
+    public boolean removeGroup(String name) {
+      Optional<Group.Builder> want = gbuilders.stream().filter(v->v.shortName.equals(name)).findFirst();
+      want.ifPresent(v -> gbuilders.remove(v));
+      return want.isPresent();
     }
 
     /** Add an EnumTypedef. */
@@ -869,17 +929,19 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
+    public boolean removeVariable(String name) {
+      Optional<Variable.Builder> want = vbuilders.stream().filter(v->v.shortName.equals(name)).findFirst();
+      want.ifPresent(v -> vbuilders.remove(v));
+      return want.isPresent();
+    }
+
+    public Optional<Variable.Builder> findVariable(String name) {
+      return vbuilders.stream().filter(v->v.shortName.equals(name)).findFirst();
+    }
+
     public Builder setNcfile(NetcdfFile ncfile) {
       this.ncfile = ncfile;
       return this;
-    }
-
-    /**
-     * @deprecated do not use.
-     */
-    @Deprecated
-    public NetcdfFile getNcfile() {
-      return this.ncfile;
     }
 
     public Builder setName(String shortName) {
@@ -887,16 +949,29 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
-    public Builder setParent(Group parent) {
-      this.parent = parent;
-      return this;
+    public NetcdfFile getNcfile() {
+      return this.ncfile;
     }
 
-    public Group build() {
+    public Optional<Builder> findGroup(String name) {
+      return this.gbuilders.stream().filter(g -> g.shortName.equals(name)).findFirst();
+    }
+
+    public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
+      return Dimension.makeDimensionsList(this.dimensions, dimString);
+    }
+
+    /**
+     * Only call build() on the root group,  when everything is ready.
+     * After that, everything is immutable.
+     */
+    public Group build(Group parent) {
       if (built) throw new IllegalStateException("already built");
       built = true;
-      return new Group(this);
+      return new Group(this, parent);
     }
+
+
 
   }
 }

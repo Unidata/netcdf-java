@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import java.util.Collection;
 import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
@@ -18,20 +19,15 @@ import java.util.List;
 
 @ThreadSafe
 public class CoordinateTransform implements Comparable<CoordinateTransform> {
-
-  protected final String name, authority;
-  protected final TransformType transformType;
-
-  // immutable once these are done adding
-  protected List<Parameter> params;
-
   /**
    * Create a Coordinate Transform.
    *
    * @param name name of transform, must be unique within the NcML.
    * @param authority naming authority
    * @param transformType type of transform.
+   * @deprecated Use CoordinateTransform.builder()
    */
+  @Deprecated
   public CoordinateTransform(String name, String authority, TransformType transformType) {
     this.name = name;
     this.authority = authority;
@@ -43,7 +39,9 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
    * add a parameter
    * 
    * @param param add this Parameter
+   * @deprecated Use CoordinateTransform.builder()
    */
+  @Deprecated
   public void addParameter(Parameter param) {
     params.add(param);
   }
@@ -156,6 +154,89 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   @Override
   public int compareTo(CoordinateTransform oct) {
     return name.compareTo(oct.getName());
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO make these final and immutable in 6.
+
+  protected final String name, authority;
+  protected final TransformType transformType;
+  protected List<Parameter> params;
+
+
+  protected CoordinateTransform(Builder<?> builder) {
+    this.name = builder.name;
+    this.authority = builder.authority;
+    this.transformType = builder.transformType;
+    this.params = builder.params;
+  }
+
+  public Builder<?> toBuilder() {
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b
+        .setName(this.name)
+        .setAuthority(this.authority)
+        .setTransformType(this.transformType)
+        .addParameters(this.params);
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>>  {
+    private String name, authority;
+    private TransformType transformType;
+    private List<Parameter> params = new ArrayList<>();
+    private boolean built;
+
+    protected abstract T self();
+
+    public T setName(String name) {
+      this.name = name;
+      return self();
+    }
+
+    public T setAuthority(String authority) {
+      this.authority = authority;
+      return self();
+    }
+
+    public T setTransformType(TransformType transformType) {
+      this.transformType = transformType;
+      return self();
+    }
+
+    public T addParameter(Parameter p) {
+      params.add(p);
+      return self();
+    }
+
+    public T addParameters(Collection<Parameter> parameters) {
+      params.addAll(parameters);
+      return self();
+    }
+
+    public CoordinateTransform build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new CoordinateTransform(this);
+    }
   }
 
 }

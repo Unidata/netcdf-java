@@ -48,8 +48,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
 
   ////////////////////////////////////////////////////////////////
-  private final CoordinateAxisTimeHelper helper;
-  private List<CalendarDate> cdates;
 
   // for section and slice
   @Override
@@ -57,6 +55,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return new CoordinateAxis1DTime(this.ncd, this);
   }
 
+  /** @deprecated Use CoordinateAxis1DTime.toBuilder() */
+  @Deprecated
   // copy constructor
   private CoordinateAxis1DTime(NetcdfDataset ncd, CoordinateAxis1DTime org) {
     super(ncd, org);
@@ -196,7 +196,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @param dims list of dimensions
    * @throws IOException on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
+   * @deprecated Use CoordinateAxis1DTime.builder()
    */
+  @Deprecated
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims)
       throws IOException {
     super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(),
@@ -276,7 +278,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @param ncd the containing dataset
    * @param org the underlying Variable
    * @throws IOException on read error
+   * @deprecated Use CoordinateAxis1DTime.builder()
    */
+  @Deprecated
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     super(ncd, org);
     this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
@@ -379,5 +383,49 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         return true;
     }
     return false;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  private CoordinateAxisTimeHelper helper;
+  private List<CalendarDate> cdates;
+
+  protected CoordinateAxis1DTime(Builder<?> builder) {
+    super(builder);
+  }
+  public Builder<?> toBuilder() {
+    CoordinateAxis1DTime.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (CoordinateAxis1DTime.Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b;
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends CoordinateAxis1D.Builder<T> {
+    private boolean built;
+
+    protected abstract T self();
+
+    public CoordinateAxis1DTime build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new CoordinateAxis1DTime(this);
+    }
   }
 }

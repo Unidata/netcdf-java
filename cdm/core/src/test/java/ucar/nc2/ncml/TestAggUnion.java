@@ -122,7 +122,7 @@ public class TestAggUnion extends TestCase {
   public void setUp() throws IOException {
     if (ncfile != null)
       return;
-    String filename = "file:./" + TestNcML.topDir + "aggUnion.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggUnion.xml";
     ncfile = NcMLReader.readNcML(filename, null);
   }
 

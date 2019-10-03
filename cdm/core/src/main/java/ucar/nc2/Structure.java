@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
@@ -21,6 +22,7 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.Variable.Builder;
 import ucar.nc2.util.Indent;
 
 /**
@@ -40,34 +42,6 @@ import ucar.nc2.util.Indent;
  */
 
 public class Structure extends Variable {
-  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
-  protected static int defaultBufferSize = 500 * 1000; // 500K bytes
-
-  // TODO make private final and Immutable in release 6.
-  protected List<Variable> members;
-  protected HashMap<String, Variable> memberHash;
-  protected boolean isSubset;
-
-  protected Structure(Builder<?> builder) {
-    super(builder);
-    builder.vbuilders.forEach(v -> v.setParentStructure(this));
-    this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
-    memberHash = new HashMap<>();
-    this.members.forEach(m -> memberHash.put(m.getShortName(), m));
-  }
-
-  @Override
-  public Builder<?> toBuilder() {
-    Structure.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
-  }
-
-  // Add local fields to the passed - in builder.
-  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    this.members.forEach(m -> b.addMemberVariable(m.toBuilder()));
-    return b;
-  }
-
   /**
    * Create a Structure "from scratch". Also must call setDimensions().
    *
@@ -678,6 +652,34 @@ public class Structure extends Variable {
   }
 
   ////////////////////////////////////////////////////////
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
+  protected static int defaultBufferSize = 500 * 1000; // 500K bytes
+
+  // TODO make private final and Immutable in release 6.
+  protected List<Variable> members;
+  protected HashMap<String, Variable> memberHash;
+  protected boolean isSubset;
+
+  protected Structure(Builder<?> builder) {
+    super(builder);
+    builder.vbuilders.forEach(v -> v.setParentStructure(this));
+    this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
+    memberHash = new HashMap<>();
+    this.members.forEach(m -> memberHash.put(m.getShortName(), m));
+  }
+
+  @Override
+  public Builder<?> toBuilder() {
+    Structure.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    this.members.forEach(m -> b.addMemberVariable(m.toBuilder()));
+    return b;
+  }
+
   /**
    * Get Builder for this class that allows subclassing.
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
@@ -705,6 +707,12 @@ public class Structure extends Variable {
     public T addMemberVariables(List<Variable.Builder> vars) {
       vbuilders.addAll(vars);
       return self();
+    }
+
+    public boolean removeMemberVariable(String memberName) {
+      Optional<Variable.Builder> want = vbuilders.stream().filter(v->v.shortName.equals(memberName)).findFirst();
+      want.ifPresent(v -> vbuilders.remove(v));
+      return want.isPresent();
     }
 
     public Structure build() {

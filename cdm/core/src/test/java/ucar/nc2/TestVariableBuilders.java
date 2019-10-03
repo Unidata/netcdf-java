@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
@@ -22,7 +23,7 @@ public class TestVariableBuilders {
   public void testWithDims() {
     try {
       // Must set dimension first
-      Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensions("dim1 dim2").build();
+      Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build();
       fail();
     } catch (Exception e) {
       // ok
@@ -31,11 +32,11 @@ public class TestVariableBuilders {
     Group group = Group.builder()
         .addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
         .addDimension(Dimension.builder().setName("dim2").setLength(27).build())
-        .build();
+        .build(null);
 
     Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT)
         .setGroup(group)
-        .setDimensions("dim1 dim2").build();
+        .setDimensionsByName("dim1 dim2").build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();

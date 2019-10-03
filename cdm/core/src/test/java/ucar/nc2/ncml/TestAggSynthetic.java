@@ -26,7 +26,7 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void test1() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggSynthetic.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggSynthetic.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
     Variable v = ncfile.findVariable("time");
@@ -45,7 +45,7 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void test2() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggSynthetic2.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggSynthetic2.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
     testDimensions(ncfile);
@@ -58,7 +58,7 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void test3() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggSynthetic3.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggSynthetic3.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
     testDimensions(ncfile);
@@ -71,7 +71,7 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testNoCoord() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggSynNoCoord.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggSynNoCoord.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
     testDimensions(ncfile);
@@ -84,7 +84,7 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testNoCoordDir() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggSynNoCoordsDir.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggSynNoCoordsDir.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
     testDimensions(ncfile);
@@ -97,7 +97,7 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testJoinNewScalarCoord() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggJoinNewScalarCoord.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggJoinNewScalarCoord.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
     Variable v = ncfile.findVariable("time");
@@ -123,7 +123,7 @@ public class TestAggSynthetic extends TestCase {
         + "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" + "  </aggregation>\n"
         + "</netcdf>";
 
-    String filename = "file:./" + TestNcML.topDir + "aggSynRename.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggSynRename.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), null);
 
     testDimensions(ncfile);
@@ -145,7 +145,7 @@ public class TestAggSynthetic extends TestCase {
         + "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" + "  </aggregation>\n"
         + "</netcdf>";
 
-    String filename = "file:./" + TestNcML.topDir + "aggSynScan.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggSynScan.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), null);
 
     testDimensions(ncfile);

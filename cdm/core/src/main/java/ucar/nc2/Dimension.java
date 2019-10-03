@@ -4,6 +4,9 @@
  */
 package ucar.nc2;
 
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 import ucar.nc2.util.Indent;
 import java.util.Formatter;
 import java.util.List;
@@ -30,6 +33,27 @@ import java.util.StringTokenizer;
 public class Dimension extends CDMNode implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
   public static Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
+
+  public static Section makeSectionFromDimensions(Iterable<Dimension> dimensions) {
+    try {
+      List<Range> list = new ArrayList<>();
+      for (Dimension d : dimensions) {
+        int len = d.getLength();
+        if (len > 0)
+          list.add(new Range(d.getShortName(), 0, len - 1));
+        else if (len == 0)
+          list.add(Range.EMPTY); // LOOK empty not named
+        else {
+          assert d.isVariableLength();
+          list.add(Range.VLEN); // LOOK vlen not named
+        }
+      }
+      return new Section(list).makeImmutable();
+
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
 
   /**
    * Make a space-delineated String from a list of Dimension names.
@@ -72,7 +96,9 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    *        dimension. null or empty String is a scalar.
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
+   * @deprecated do not use
    */
+  @Deprecated
   public static List<Dimension> makeDimensionsList(Group parentGroup, String dimString)
       throws IllegalArgumentException {
     List<Dimension> newDimensions = new ArrayList<>();
@@ -94,7 +120,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
         // if numeric - then its anonymous dimension
         try {
           int len = Integer.parseInt(dimName);
-          d = new Dimension(null, len, false, false, false);
+          d = Dimension.builder().setLength(len).setIsShared(false).build();
         } catch (Exception e) {
           throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
         }
@@ -105,17 +131,53 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return newDimensions;
   }
 
-  @Deprecated
+  /**
+   * Create a dimension list using the dimensions names.
+   * Inverse of makeDimensionsString().
+   *
+   * @param dimensions list of possible dimensions, may not be null
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
+   *        dimension. null or empty String is a scalar.
+   * @return list of dimensions
+   * @throws IllegalArgumentException if cant find dimension or parse error.
+   */
+  public static List<Dimension> makeDimensionsList(List<Dimension> dimensions, String dimString) {
+    List<Dimension> newDimensions = new ArrayList<>();
+    if (dimString == null) // scalar
+      return newDimensions; // empty list
+    dimString = dimString.trim();
+    if (dimString.isEmpty()) // scalar
+      return newDimensions; // empty list
+
+    StringTokenizer stoke = new StringTokenizer(dimString);
+    while (stoke.hasMoreTokens()) {
+      String dimName = stoke.nextToken();
+      Dimension dim;
+      if (dimName.equals("*"))
+        dim = Dimension.VLEN;
+      else
+        dim = dimensions.stream().filter(d -> d.getShortName().equals(dimName)).findFirst().orElse(null);
+      if (dim == null) {
+        // if numeric - then its anonymous dimension
+        try {
+          int len = Integer.parseInt(dimName);
+          dim = Dimension.builder().setLength(len).setIsShared(false).build();
+        } catch (Exception e) {
+          throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
+        }
+      }
+      newDimensions.add(dim);
+    }
+    return newDimensions;
+  }
+
   public static List<Dimension> makeDimensionsAnon(int[] shape) {
     List<Dimension> newDimensions = new ArrayList<>();
-
     if ((shape == null) || (shape.length == 0)) { // scalar
-      return newDimensions; // empty list
+      return newDimensions;
     }
-
-    for (int s : shape)
-      newDimensions.add(new Dimension(null, s, false, false, false));
-
+    for (int len : shape)
+      newDimensions.add(Dimension.builder().setLength(len).setIsShared(false).build());
     return newDimensions;
   }
 
@@ -127,7 +189,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   private boolean isShared; // shared means its in a group dimension list.
   private int length;
 
-  Dimension(Builder builder) {
+  public Dimension(Builder builder) {
     super(builder.shortName);
     setParentGroup(builder.parent);
     this.isShared = builder.isShared;

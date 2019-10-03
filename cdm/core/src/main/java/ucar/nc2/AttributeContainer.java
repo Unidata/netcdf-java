@@ -6,7 +6,7 @@
 package ucar.nc2;
 
 /**
- * Container of Attributes
+ * A mutable Container of Attributes
  *
  * @author caron
  * @since 3/20/14
@@ -18,9 +18,7 @@ public interface AttributeContainer {
 
   /**
    * Add all; replace old if has same name
-   * @deprecated Use AttributeContainerHelper for mutable version.
    */
-  @Deprecated
   void addAll(Iterable<Attribute> atts);
 
   /**
@@ -28,9 +26,7 @@ public interface AttributeContainer {
    * 
    * @param att add this Attribute
    * @return the added attribute
-   * @deprecated Use AttributeContainerHelper for mutable version.
    */
-  @Deprecated
   Attribute addAttribute(Attribute att);
 
   /**
@@ -50,9 +46,7 @@ public interface AttributeContainer {
    *
    * @param a remove this attribute
    * @return true if was found and removed
-   * @deprecated Use AttributeContainerHelper for mutable version.
    */
-  @Deprecated
   boolean remove(Attribute a);
 
   /**
@@ -60,9 +54,7 @@ public interface AttributeContainer {
    *
    * @param attName if exists, remove this attribute
    * @return true if was found and removed
-   * @deprecated Use AttributeContainerHelper for mutable version.
    */
-  @Deprecated
   boolean removeAttribute(String attName);
 
   /**
@@ -70,9 +62,7 @@ public interface AttributeContainer {
    *
    * @param attName if exists, remove this attribute
    * @return true if was found and removed
-   * @deprecated Use AttributeContainerHelper for mutable version.
    */
-  @Deprecated
   boolean removeAttributeIgnoreCase(String attName);
 
 }

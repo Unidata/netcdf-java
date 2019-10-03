@@ -21,38 +21,6 @@ import java.util.Set;
  * @see NetcdfDataset
  */
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
-  private EnhancementsImpl proxy; // API relies that this cant be null
-
-  protected Structure orgVar; // wrap this Variable
-  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
-
-  protected StructureDS(Builder<?> builder) {
-    super(builder);
-    this.orgVar = builder.orgVar;
-    this.orgName = builder.orgName;
-    this.proxy = new EnhancementsImpl(this);
-
-    // LOOK wrong
-    if (builder.units != null)
-      addAttribute(new Attribute(CDM.UNITS, builder.units));
-    if (builder.desc != null)
-      addAttribute(new Attribute(CDM.LONG_NAME, builder.desc));
-  }
-
-  @Override
-  public Builder<?> toBuilder() {
-    StructureDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
-  }
-
-  // Add local fields to the passed - in builder.
-  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setOriginalVariable(this.orgVar)
-        .setOriginalVariableName(this.orgName)
-        .setUnits(this.getUnitsString())
-        .setDescription(this.getDescription());
-  }
 
   /** @deprecated Use StructureDS.builder() */
   @Deprecated
@@ -641,10 +609,32 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /**
-   * Get Builder for this class that allows subclassing.
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
+  private EnhancementsImpl proxy; // API relies that this cant be null
+  protected Structure orgVar; // wrap this Variable
+  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
+
+  protected StructureDS(Builder<?> builder) {
+    super(builder);
+    this.orgVar = builder.orgVar;
+    this.orgName = builder.orgName;
+    this.proxy = new EnhancementsImpl(this, builder.units, builder.desc);
+  }
+
+  @Override
+  public Builder<?> toBuilder() {
+    StructureDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b
+        .setOriginalVariable(this.orgVar)
+        .setOriginalName(this.orgName)
+        .setUnits(this.proxy.units)
+        .setDesc(this.proxy.desc);
+  }
+
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -661,28 +651,55 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     private String orgName; // in case Variable was renamed, and we need the original name for aggregation
     private String units;
     private String desc;
+    private boolean built;
 
     public T setOriginalVariable(Structure orgVar) {
       this.orgVar = orgVar;
       return self();
     }
 
-    public T setOriginalVariableName(String orgName) {
+    public T setOriginalName(String orgName) {
       this.orgName = orgName;
       return self();
     }
 
     public T setUnits(String units) {
       this.units = units;
+      if (units != null) {
+        addAttribute(Attribute.builder(CDM.UNITS).setStringValue(units).build());
+      }
       return self();
     }
 
-    public T setDescription(String desc) {
+    public T setDesc(String desc) {
       this.desc = desc;
+      if (desc != null) {
+        addAttribute(Attribute.builder(CDM.LONG_NAME).setStringValue(desc).build());
+      }
+      return self();
+    }
+
+    /** Copy metadata from orgVar. */
+    public T copyFrom(Structure orgVar) {
+      super.copyFrom(orgVar);
+      for (Variable v : orgVar.getVariables()) {
+        Variable.Builder newVar;
+        if (v instanceof Sequence) {
+          newVar = SequenceDS.builder().copyFrom((Sequence) v);
+        } else if (v instanceof Structure) {
+          newVar = StructureDS.builder().copyFrom((StructureDS) v);
+        } else {
+          newVar = VariableDS.builder().copyFrom(v);
+        }
+        addMemberVariable(newVar);
+      }
       return self();
     }
 
     public StructureDS build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      this.setDataType(DataType.STRUCTURE);
       return new StructureDS(this);
     }
   }

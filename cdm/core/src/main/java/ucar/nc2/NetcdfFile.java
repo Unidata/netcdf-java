@@ -781,24 +781,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return result;
   }
 
-  public static NetcdfFile.Builder builder() {
-    return new Builder();
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  protected String location, id, title;
-  protected Group rootGroup = makeRootGroup();
-  protected IOServiceProvider spi;
-  private boolean immutable;
-
-  private String cacheName;
-  protected ucar.nc2.util.cache.FileCacheIF cache;
-
-  // "global view" is derived from the group information.
-  // LOOK: Apparently includes all nested groups. Where is this used?
-  protected List<Variable> variables;
-  protected List<Dimension> dimensions;
-  protected List<Attribute> gattributes;
 
   /**
    * Close all resources (files, sockets, etc) associated with this file.
@@ -1591,7 +1574,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * For subclass construction. Call finish() when completed construction.
+   * For subclass construction.
    * Use NetcdfFileSubclass to access this constructor
    */
   protected NetcdfFile() {}
@@ -1977,7 +1960,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   protected Group makeRootGroup() {
-    return Group.builder().setNcfile(this).setName("").build();
+    return Group.builder().setNcfile(this).setName("").build(null);
   }
 
   /**
@@ -2485,36 +2468,105 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return sbuff.toString();
   }
 
-  public static class Builder {
-    private Group rootGroup;
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  // TODO make these final and immutable in 6.
+  protected String location, id, title;
+  protected Group rootGroup = makeRootGroup();
+  protected IOServiceProvider spi;
+  private boolean immutable;
+
+  // LOOK can wee get rid of internal caching
+  private String cacheName;
+  protected ucar.nc2.util.cache.FileCacheIF cache;
+
+  // "global view" is derived from the group information.
+  // LOOK: Apparently includes all nested groups. Where is this used?
+  protected List<Variable> variables;
+  protected List<Dimension> dimensions;
+  protected List<Attribute> gattributes;
+
+  protected NetcdfFile(Builder<?> builder) {
+    this.location = builder.location;
+    this.id = builder.id;
+    this.title = builder.title;
+    this.spi = builder.iosp;
+    if (builder.rootGroup != null) {
+      builder.rootGroup.setNcfile(this);
+      this.rootGroup = builder.rootGroup.build(null);
+    }
+    finish(); // LOOK
+  }
+  public Builder<?> toBuilder() {
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b
+        .setLocation(this.location)
+        .setId(this.id)
+        .setTitle(this.title)
+        .setRootGroup(this.rootGroup.toBuilder())
+        .setIosp(this.spi);
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>>  {
+    public Group.Builder rootGroup;
     private String id;
     private String title;
     private String location;
+    protected IOServiceProvider iosp;
+    private boolean built;
 
-    public void setRootGroup(Group rootGroup) {
+    protected abstract T self();
+
+    public T setRootGroup(Group.Builder rootGroup) {
       this.rootGroup = rootGroup;
+      return self();
     }
 
-    public void setId(String id) {
+    public T setIosp(IOServiceProvider iosp) {
+      this.iosp = iosp;
+      return self();
+    }
+
+    public T setId(String id) {
       this.id = id;
+      return self();
     }
 
-    /**
-     * Set the dataset "human readable" title.
-     *
-     * @param title the title
-     */
-    public void setTitle(String title) {
+    /** Set the dataset "human readable" title. */
+    public T setTitle(String title) {
       this.title = title;
+      return self();
     }
 
-    /**
-     * Set the location, a URL or local filename.
-     *
-     * @param location the location
-     */
-    public void setLocation(String location) {
+    /** Set the location, a URL or local filename. */
+    public T setLocation(String location) {
       this.location = location;
+      return self();
+    }
+
+    public NetcdfFile build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new NetcdfFile(this);
     }
   }
 

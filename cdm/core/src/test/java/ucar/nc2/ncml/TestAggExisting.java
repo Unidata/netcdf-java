@@ -21,7 +21,7 @@ public class TestAggExisting {
 
   @Test
   public void testNcmlDirect() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggExisting.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -37,7 +37,7 @@ public class TestAggExisting {
 
   @Test
   public void testNcmlDataset() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggExisting.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -52,7 +52,7 @@ public class TestAggExisting {
 
   @Test
   public void testNcmlDatasetNoProtocolInFilename() throws IOException, InvalidRangeException {
-    String filename = "./" + TestNcML.topDir + "aggExisting.xml";
+    String filename = "./" + TestNcMLRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -70,7 +70,7 @@ public class TestAggExisting {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
-    String filename = "file:./" + TestNcML.topDir + "aggExisting6.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -88,7 +88,7 @@ public class TestAggExisting {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
-    String filename = "./" + TestNcML.topDir + "aggExisting6.xml";
+    String filename = "./" + TestNcMLRead.topDir + "aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -103,7 +103,7 @@ public class TestAggExisting {
 
   @Test
   public void testNcmlDatasetNoProtocolInNcmlRelPath() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggExisting7.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -118,7 +118,7 @@ public class TestAggExisting {
 
   @Test
   public void testNcmlDatasetNoProtocolInFilenameOrNcmlRelPath() throws IOException, InvalidRangeException {
-    String filename = "./" + TestNcML.topDir + "aggExisting7.xml";
+    String filename = "./" + TestNcMLRead.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -133,7 +133,7 @@ public class TestAggExisting {
 
   @Test
   public void testNcmlDatasetWcoords() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "aggExistingWcoords.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExistingWcoords.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" testNcmlDatasetWcoords.open {}", filename);
@@ -150,7 +150,7 @@ public class TestAggExisting {
   // remove test - now we get a coordinate initialized to missing data, but at least testCoordsAdded works!
   // @Test
   public void testNoCoords() throws IOException {
-    String filename = "file:./" + TestNcML.topDir + "aggExistingNoCoords.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExistingNoCoords.xml";
     logger.debug("{}", filename);
     NetcdfDataset ncd = null;
 
@@ -170,7 +170,7 @@ public class TestAggExisting {
 
   @Test
   public void testNoCoordsDir() throws IOException {
-    String filename = "file:./" + TestNcML.topDir + "aggExistingNoCoordsDir.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExistingNoCoordsDir.xml";
 
     NetcdfDataset ncd = null;
     try {
@@ -189,7 +189,7 @@ public class TestAggExisting {
 
   @Test
   public void testCoordsAdded() throws IOException {
-    String filename = "file:./" + TestNcML.topDir + "aggExistingAddCoord.ncml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggExistingAddCoord.ncml";
     logger.debug("{}", filename);
     NetcdfDataset ncd = null;
 

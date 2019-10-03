@@ -28,18 +28,15 @@ public class TestBuilders {
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
-
     try {
       TestDir.actOnAllParameterized(testDir, new SuffixFileFilter(".nc"), filenames);
     } catch (IOException e) {
       filenames.add(new Object[]{e.getMessage()});
     }
-
     return filenames;
   }
 
   private String filename;
-
   public TestBuilders(String filename) {
     this.filename = filename;
   }

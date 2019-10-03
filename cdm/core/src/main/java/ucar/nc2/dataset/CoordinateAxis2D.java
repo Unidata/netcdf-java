@@ -27,15 +27,14 @@ public class CoordinateAxis2D extends CoordinateAxis {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
   private static final boolean debug = false;
 
-  private ArrayDouble.D2 coords; // LOOK maybe optional for large arrays, or maybe eliminate all together, and
-                                 // read each time ??
-
   /**
    * Create a 2D coordinate axis from an existing VariableDS
    *
    * @param ncd the containing dataset
    * @param vds create it from here
+   * @deprecated Use CoordinateAxis2D.builder()
    */
+  @Deprecated
   public CoordinateAxis2D(NetcdfDataset ncd, VariableDS vds) {
     super(ncd, vds);
     isContiguous = false;
@@ -78,9 +77,6 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (this.axisType == AxisType.Lon)
       makeConnectedLon(coords);
   }
-
-  private boolean isInterval;
-  private boolean intervalWasComputed;
 
   public boolean isInterval() {
     if (!intervalWasComputed)
@@ -442,5 +438,49 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return b1 >= target && target >= b2;
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // These are all calculated, I think?
+  private ArrayDouble.D2 coords;
+  private boolean isInterval;
+  private boolean intervalWasComputed;
 
+  protected CoordinateAxis2D(Builder<?> builder) {
+    super(builder);
+  }
+  public Builder<?> toBuilder() {
+    CoordinateAxis2D.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (CoordinateAxis2D.Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b;
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends CoordinateAxis.Builder<T> {
+    private boolean built;
+
+    protected abstract T self();
+
+    public CoordinateAxis2D build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new CoordinateAxis2D(this);
+    }
+  }
 }

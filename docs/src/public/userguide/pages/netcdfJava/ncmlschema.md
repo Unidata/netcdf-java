@@ -8,7 +8,7 @@ toc: false
 
 _for version 4.4+ of the Netcdf-Java/CDM library_
 
-An _<b>NcML document_</b> is an XML document (aka an _instance_ document) whose contents are described and constrained by _<b>NcML Schema-2.2_</b>. NcML Schema-2.2 combines the earlier _NcML core schema_ which is an XML description of the netCDF-Java / CDM data model, with the earlier _NcML dataset schema_, which allows you to define, redefine, aggregate, and subset existing netCDF files.
+An <b>NcML document</b> is an XML document (aka an _instance_ document) whose contents are described and constrained by <b>NcML Schema-2.2</b>. NcML Schema-2.2 combines the earlier _NcML core schema_ which is an XML description of the netCDF-Java / CDM data model, with the earlier _NcML dataset schema_, which allows you to define, redefine, aggregate, and subset existing netCDF files.
 
 An NcML document represents a generic netCDF dataset, i.e. a container for data conforming to the netCDF data model. For instance, it might represent an existing netCDF file, a netCDF file not yet written, a GRIB file read through the netCDF-Java library, a subset of a netCDF file, an aggregation of netCDF files, or a self-contained dataset (i.e. all the data is included in the NcML document and there is no seperate netCDF file holding the data). An NcML document therefore should not necessarily be thought of as a physical netCDF file, but rather the "public interface" to a set of data conforming to the netCDF data model.
 

@@ -49,11 +49,11 @@ public class TestAggFmrc {
    */
   @Before
   public void prepAggDataset() {
-    String filenameScan = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_SCAN;
-    String filenameExplicit = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_EXPLICIT;
-    String filenameA = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_A;
-    String filenameB = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_B;
-    String filenameC = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_C;
+    String filenameScan = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_SCAN;
+    String filenameExplicit = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_EXPLICIT;
+    String filenameA = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_A;
+    String filenameB = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_B;
+    String filenameC = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_C;
     try {
 
       fmrcScan = Fmrc.open(filenameScan, null);

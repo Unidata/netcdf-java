@@ -27,7 +27,7 @@ public class TestAggExistingPromote extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testWithDateFormatMark() throws Exception {
-    String filename = "file:" + TestNcML.topDir + "aggExistingPromote.ncml";
+    String filename = "file:" + TestNcMLRead.topDir + "aggExistingPromote.ncml";
 
     String aggExistingPromote = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
@@ -143,7 +143,7 @@ public class TestAggExistingPromote extends TestCase {
    * </netcdf>
    */
   public void testNotOne() throws IOException, InvalidRangeException {
-    String filename = "file:" + TestNcML.topDir + "aggExistingPromote2.ncml";
+    String filename = "file:" + TestNcMLRead.topDir + "aggExistingPromote2.ncml";
 
     String aggExistingPromote2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"

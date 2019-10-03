@@ -38,24 +38,6 @@ public class StructurePseudoDS extends StructureDS {
   protected static final Set<NetcdfDataset.Enhance> enhanceScaleMissing =
       EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset, NetcdfDataset.Enhance.ConvertMissing);
 
-  private List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
-
-  protected StructurePseudoDS(Builder<?> builder) {
-    super(builder);
-    this.orgVariables = builder.orgVariables;
-  }
-
-  @Override
-  public Builder<?> toBuilder() {
-    StructurePseudoDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
-  }
-
-  // Add local fields to the passed - in builder.
-  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.addOriginalVariables(this.orgVariables);
-  }
-
   /** @deprecated Use StructurePseudoDS.builder() */
   @Deprecated
   protected StructurePseudoDS(NetcdfDataset ncfile, Group group, String shortName) {
@@ -201,12 +183,25 @@ public class StructurePseudoDS extends StructureDS {
     return asma;
   }
 
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /**
-   * Get Builder for this class that allows subclassing.
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
+  protected List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
+
+  protected StructurePseudoDS(Builder<?> builder) {
+    super(builder);
+    this.orgVariables = builder.orgVariables;
+  }
+
+  @Override
+  public Builder<?> toBuilder() {
+    StructurePseudoDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b.addOriginalVariables(this.orgVariables);
+  }
+
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -231,7 +226,7 @@ public class StructurePseudoDS extends StructureDS {
       return self();
     }
 
-    public StructureDS build() {
+    public StructurePseudoDS build() {
       return new StructurePseudoDS(this);
     }
   }

@@ -123,7 +123,7 @@ public class TestAggUnionSimple extends TestCase {
   public void setUp() throws IOException {
     if (ncfile != null)
       return;
-    String filename = "file:./" + TestNcML.topDir + "aggUnionSimple.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggUnionSimple.xml";
     ncfile = NetcdfDataset.openDataset(filename, false, null);
   }
 
@@ -283,14 +283,14 @@ public class TestAggUnionSimple extends TestCase {
    * </aggregation>
    */
   public void testScan() throws IOException {
-    String filename = "file:./" + TestNcML.topDir + "aggUnionScan.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggUnionScan.xml";
     NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);
     ucar.unidata.util.test.CompareNetcdf.compareFiles(ncfile, scanFile, true, false, false);
     scanFile.close();
   }
 
   public void testRename() throws IOException {
-    String filename = "file:./" + TestNcML.topDir + "aggUnionRename.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggUnionRename.xml";
     NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);
     Variable v = scanFile.findVariable("LavaFlow");
     assert v != null;

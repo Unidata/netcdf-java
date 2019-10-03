@@ -75,9 +75,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   protected N3headerNew header;
   protected long lastModified; // used by sync
-
-  protected boolean debug, debugSize, debugSPIO, debugRecord, debugRead;
-  protected boolean showHeaderBytes;
+  protected boolean debug, debugRecord, debugRead;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -122,7 +120,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
     Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
     header.read(raf, rootGroup, null);
-    ncfile.setRootGroup(rootGroup.build());
+    ncfile.setRootGroup(rootGroup.build(null));
     ncfile.finish();
   }
 
@@ -138,10 +136,8 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = new N3headerNew();
-
-    header.read(raf, rootGroup, null); // read header here
-
-    ncfile.setRootGroup(rootGroup.build());
+    header.read(raf, rootGroup, null);
+    ncfile.setRootGroup(rootGroup.build(null));
     ncfile.finish();
   }
 

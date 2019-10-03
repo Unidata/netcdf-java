@@ -842,6 +842,10 @@ public class Section {
     return list.get(i).stride();
   }
 
+  public long getSize() {
+    return Index.computeSize(getShape());
+  }
+
   /**
    * Get rank - number of Ranges.
    *

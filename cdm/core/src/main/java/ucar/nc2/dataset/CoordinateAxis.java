@@ -46,13 +46,7 @@ import java.util.Formatter;
 
 public class CoordinateAxis extends VariableDS {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
-  public static int axisSizeToCache = 100 * 1000; // bytes
-
-  protected NetcdfDataset ncd; // container dataset
-  protected AxisType axisType;
-  protected String positive;
-  protected String boundaryRef;
-  protected boolean isContiguous = true;
+  private static int axisSizeToCache = 100 * 1000; // bytes
 
   /**
    * Create a coordinate axis from an existing Variable.
@@ -76,7 +70,9 @@ public class CoordinateAxis extends VariableDS {
    *
    * @param ncd the containing dataset
    * @param vds an existing Variable
+   * @deprecated Use CoordinateAxis.builder()
    */
+  @Deprecated
   protected CoordinateAxis(NetcdfDataset ncd, VariableDS vds) {
     super(vds, false);
     this.ncd = ncd;
@@ -101,7 +97,9 @@ public class CoordinateAxis extends VariableDS {
    * @param dims list of dimension names
    * @param units units of coordinates, preferably udunit compatible.
    * @param desc long name.
+   * @deprecated Use CoordinateAxis.builder()
    */
+  @Deprecated
   public CoordinateAxis(NetcdfDataset ds, Group group, String shortName, DataType dataType, String dims, String units,
       String desc) {
     super(ds, group, null, shortName, dataType, dims, units, desc);
@@ -148,7 +146,9 @@ public class CoordinateAxis extends VariableDS {
    * Set type of axis, or null if none. Default is none.
    *
    * @param axisType set to this value
+   * @deprecated Use CoordinateAxis.builder()
    */
+  @Deprecated
   public void setAxisType(AxisType axisType) {
     this.axisType = axisType;
   }
@@ -220,7 +220,9 @@ public class CoordinateAxis extends VariableDS {
    * Set the direction of increasing values, used only for vertical Axes.
    *
    * @param positive POSITIVE_UP, POSITIVE_DOWN, or null if you dont know..
+   * @deprecated Use CoordinateAxis.builder()
    */
+  @Deprecated
   public void setPositive(String positive) {
     this.positive = positive;
   }
@@ -238,7 +240,9 @@ public class CoordinateAxis extends VariableDS {
    * Set a reference to a boundary variable.
    *
    * @param boundaryRef the name of a boundary coordinate variable in the same dataset.
+   * @deprecated Use CoordinateAxis.builder()
    */
+  @Deprecated
   public void setBoundaryRef(String boundaryRef) {
     this.boundaryRef = boundaryRef;
   }
@@ -397,11 +401,92 @@ public class CoordinateAxis extends VariableDS {
     return ucar.nc2.time.Calendar.get(s);
   }
 
-  /*
-   * @Override
-   * public boolean isCoordinateVariable() {
-   * return true;
-   * }
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO make these final and immutable in 6.
+  protected NetcdfDataset ncd; // container dataset
+  protected AxisType axisType;
+  protected String positive;
+  protected String boundaryRef;
+  protected boolean isContiguous = true;
+
+  protected CoordinateAxis(Builder<?> builder) {
+    super(builder);
+    this.ncd = builder.ncd;
+    this.axisType = builder.axisType;
+    this.positive = builder.positive;
+    this.boundaryRef = builder.boundaryRef;
+    this.isContiguous = builder.isContiguous;
+  }
+  public Builder<?> toBuilder() {
+    CoordinateAxis.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (CoordinateAxis.Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b
+        .setNetcdfDataset(this.ncd)
+        .setAxisType(this.axisType)
+        .setPositive(this.positive)
+        .setBoundary(this.boundaryRef)
+        .setIsContiguous(this.isContiguous);
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
+    private NetcdfDataset ncd;
+    protected AxisType axisType;
+    protected String positive;
+    protected String boundaryRef;
+    protected boolean isContiguous = true;
+    private boolean built;
+
+    protected abstract T self();
+
+    public T setNetcdfDataset(NetcdfDataset ncd) {
+      this.ncd = ncd;
+      return self();
+    }
+
+    public T setAxisType(AxisType axisType) {
+      this.axisType = axisType;
+      return self();
+    }
+
+    public T setPositive(String positive) {
+      this.positive = positive;
+      return self();
+    }
+
+    public T setBoundary(String boundaryRef) {
+      this.boundaryRef = boundaryRef;
+      return self();
+    }
+
+    public T setIsContiguous(boolean isContiguous) {
+      this.isContiguous = isContiguous;
+      return self();
+    }
+
+    public CoordinateAxis build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new CoordinateAxis(this);
+    }
+  }
 
 }

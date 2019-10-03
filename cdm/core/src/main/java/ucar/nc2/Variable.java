@@ -160,7 +160,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return true if Variable values need to be included in NcML
    */
   public boolean isMetadata() {
-    return isMetadata;
+    return cache != null && cache.isMetadata;
   }
 
   /**
@@ -313,25 +313,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public Section getShapeAsSection() {
     if (shapeAsSection == null) {
-      try {
-        List<Range> list = new ArrayList<>();
-        for (Dimension d : dimensions) {
-          int len = d.getLength();
-          if (len > 0)
-            list.add(new Range(d.getShortName(), 0, len - 1));
-          else if (len == 0)
-            list.add(Range.EMPTY); // LOOK empty not named
-          else {
-            assert d.isVariableLength();
-            list.add(Range.VLEN); // LOOK vlen not named
-          }
-        }
-        shapeAsSection = new Section(list).makeImmutable();
-
-      } catch (InvalidRangeException e) {
-        log.error("Bad shape in variable " + getFullName(), e);
-        throw new IllegalStateException(e.getMessage());
-      }
+      shapeAsSection = Dimension.makeSectionFromDimensions(this.dimensions);
     }
     return shapeAsSection;
   }
@@ -486,9 +468,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
     return enumTypedef.lookupEnumString(val);
   }
-
-  private EnumTypedef enumTypedef;
-
   /**
    * Public by accident.
    *
@@ -1080,81 +1059,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /////////////////////////////////////////////////////////////////////////////
 
-  // TODO make private final in release 6.
-  // Physical container for this Variable where the I/O happens. may be null if Variable is self contained.
-  protected NetcdfFile ncfile;
-
-  protected DataType dataType;
-  protected List<Dimension> dimensions = new ArrayList<>(5);
-  protected AttributeContainerHelper attributes;
-
-  // computed
-  private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
-  protected int[] shape = new int[0];
-  protected boolean isVariableLength;
-  protected int elementSize;
-
-  // TODO do we need this? breaks immutability
-  protected Cache cache = new Cache(); // cache cannot be null
-  protected int sizeToCache = -1; // bytes
-  protected boolean isMetadata;
-  protected ProxyReader proxyReader = this;
-
    /** @deprecated Use Variable.builder() */
   @Deprecated
   protected Variable() {}
-
-  protected Variable(Builder<?> builder) {
-    super(builder.shortName);
-    this.group = builder.parent;
-    this.ncfile = builder.ncfile;
-    this.dataType = builder.dataType;
-    this.dimensions = builder.dimensions;
-    this.attributes = builder.attributes;
-    setParentStructure(builder.parentStruct);
-
-    this.elementSize = getDataType().getSize();
-    this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
-    this.spiObject = builder.spiObject;
-
-    try {
-      List<Range> list = new ArrayList<>();
-      for (Dimension d : dimensions) {
-        int len = d.getLength();
-        if (len > 0)
-          list.add(new Range(d.getShortName(), 0, len - 1));
-        else if (len == 0)
-          list.add(Range.EMPTY); // LOOK empty not named
-        else {
-          assert d.isVariableLength();
-          list.add(Range.VLEN); // LOOK vlen not named
-        }
-      }
-      this.shapeAsSection = new Section(list).makeImmutable();
-      this.shape = shapeAsSection.getShape();
-
-    } catch (InvalidRangeException e) {
-      log.error("Bad shape in variable " + getFullName(), e);
-      throw new IllegalStateException(e.getMessage());
-    }
-  }
-
-  public Builder<?> toBuilder() {
-    return addLocalFieldsToBuilder(builder());
-  }
-
-  // Add local fields to the passed - in builder.
-  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setName(this.shortName)
-        .setGroup(this.group)
-        .setNcfile(this.ncfile)
-        .setDataType(this.dataType)
-        .addDimensions(this.dimensions)
-        .addAttributes(this.attributes.atts)
-        .setParentStructure(this.getParentStructure())
-        .setSPobject(this.spiObject);
-  }
 
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
@@ -1236,7 +1143,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     this.enumTypedef = from.enumTypedef;
     setParentGroup(from.group);
     setParentStructure(from.getParentStructure());
-    this.isMetadata = from.isMetadata;
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.shape = from.getShape();
@@ -1633,7 +1539,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
           "setCachedData type=" + cacheData.getElementType() + " incompatible with variable type=" + getDataType());
 
     this.cache.data = cacheData;
-    this.isMetadata = isMetadata;
+    this.cache.isMetadata = isMetadata;
     this.cache.cachingSet = true;
     this.cache.isCaching = true;
   }
@@ -1664,6 +1570,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public Array data;
     public boolean isCaching;
     public boolean cachingSet;
+    public boolean isMetadata;
 
     public Cache() {}
   }
@@ -1771,6 +1678,120 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return false;
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  // TODO make private final in release 6.
+  // Physical container for this Variable where the I/O happens. may be null if Variable is self contained.
+  protected NetcdfFile ncfile;
+  protected DataType dataType;
+  private EnumTypedef enumTypedef;
+  protected List<Dimension> dimensions = new ArrayList<>(5);
+  protected AttributeContainerHelper attributes;
+
+  // computed
+  private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
+  protected int[] shape = new int[0];
+  protected boolean isVariableLength;
+  protected int elementSize;
+
+  // TODO do we need these? breaks immutability
+  protected Cache cache = new Cache(); // cache cannot be null
+  protected int sizeToCache = -1; // bytes
+  protected ProxyReader proxyReader = this;
+
+  protected Variable(Builder<?> builder) {
+    super(builder.shortName);
+    this.group = builder.parent;
+    this.ncfile = builder.ncfile;
+    this.dataType = builder.dataType;
+    this.attributes = builder.attributes;
+    setParentStructure(builder.parentStruct);
+    this.spiObject = builder.spiObject;
+    this.cache = builder.cache;
+
+    if (this.dataType == null) {
+      throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
+    }
+
+    if (this.shortName == null || this.shortName.isEmpty()) {
+      throw new IllegalStateException(String.format("Name must be set for Variable"));
+    }
+
+    if (this.dataType.isEnum()) {
+      this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
+      if (this.enumTypedef == null) {
+        throw new IllegalStateException(String.format("EnumTypedef %s does not exist in a parent Group", builder.enumTypeName));
+      }
+    }
+
+    // Convert dimension to shared dimensions that live in a parent group.
+    if (builder.dimString != null) {
+      this.dimensions = this.group.makeDimensionsList(builder.dimString);
+    } else {
+      // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
+      List<Dimension> dims = new ArrayList<>();
+      for (Dimension dim : builder.dimensions) {
+        if (dim.isShared()) {
+          Dimension sharedDim = this.group.findDimension(dim.getShortName());
+          if (sharedDim == null) {
+            throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
+          } else {
+            dims.add(sharedDim);
+          }
+        } else {
+          dims.add(dim);
+        }
+      }
+      this.dimensions = dims;
+    }
+
+    // calculated fields
+    this.elementSize = getDataType().getSize();
+    this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
+    try {
+      List<Range> list = new ArrayList<>();
+      for (Dimension d : dimensions) {
+        int len = d.getLength();
+        if (len > 0)
+          list.add(new Range(d.getShortName(), 0, len - 1));
+        else if (len == 0)
+          list.add(Range.EMPTY); // LOOK empty not named
+        else {
+          assert d.isVariableLength();
+          list.add(Range.VLEN); // LOOK vlen not named
+        }
+      }
+      this.shapeAsSection = new Section(list).makeImmutable();
+      this.shape = shapeAsSection.getShape();
+
+    } catch (InvalidRangeException e) {
+      log.error("Bad shape in variable " + getFullName(), e);
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  public Builder<?> toBuilder() {
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
+    builder
+        .setName(this.shortName)
+        .setGroup(this.group)
+        .setNcfile(this.ncfile)
+        .setDataType(this.dataType)
+        .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
+        .addDimensions(this.dimensions)
+        .addAttributes(this.attributes.atts)
+        .setParentStructure(this.getParentStructure())
+        .setSPobject(this.spiObject);
+
+    if (this.cache.isMetadata) {
+      builder.setCachedData(this.cache.data, true);
+    }
+    return builder;
+  }
+
   /**
    * Get Builder for this class that allows subclassing.
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
@@ -1788,13 +1809,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   public static abstract class Builder<T extends Builder<T>>  {
     private NetcdfFile ncfile;
+    public String shortName;
     public DataType dataType;
+    private String enumTypeName;
     public List<Dimension> dimensions = new ArrayList<>();
+    public String dimString;
     private AttributeContainerHelper attributes = new AttributeContainerHelper("");
     private Group parent;
     private Structure parentStruct;
-    private String shortName;
     public Object spiObject;
+    protected Cache cache = new Cache(); // cache cannot be null
     private boolean built;
 
     protected abstract T self();
@@ -1813,11 +1837,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return attributes;
     }
 
-    public T removeAttribute(String attName) {
-      attributes.removeAttribute(attName);
-      return self();
-    }
-
     public T addDimension(Dimension dim) {
       dimensions.add(dim);
       return self();
@@ -1825,6 +1844,13 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     public T addDimensions(Collection<Dimension> dims) {
       dimensions.addAll(dims);
+      return self();
+    }
+
+    // Set dimensions by name. Note that the List<Dimension> is not created
+    // until Variable is built.
+    public T setDimensionsByName(String dimString) {
+      this.dimString = dimString;
       return self();
     }
 
@@ -1850,13 +1876,13 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
-    public T setDimensions(String dimString) {
-      this.dimensions = Dimension.makeDimensionsList(this.parent, dimString);
+    public T setDataType(DataType dataType) {
+      this.dataType = dataType;
       return self();
     }
 
-    public T setDataType(DataType dataType) {
-      this.dataType = dataType;
+    public T setEnumTypeName(String enumTypeName) {
+      this.enumTypeName = enumTypeName;
       return self();
     }
 
@@ -1883,6 +1909,35 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public T setParentStructure(Structure parent) {
       this.parentStruct = parent;
       return self();
+    }
+
+    public T setCachedData(Array cacheData, boolean isMetadata) {
+      this.cache.data = cacheData;
+      this.cache.isMetadata = isMetadata;
+      this.cache.cachingSet = true;
+      this.cache.isCaching = true;
+      return self();
+    }
+
+    /** Copy metadata from orgVar. */
+    public T copyFrom(Variable orgVar) {
+      setName(orgVar.getShortName());
+      setDataType(orgVar.getDataType());
+      if (orgVar.getEnumTypedef() != null) {
+        setEnumTypeName(orgVar.getEnumTypedef().getShortName());
+      }
+      setSPobject(orgVar.getSPobject());
+
+      for (Dimension d : orgVar.getDimensions())
+        addDimension(new Dimension(d.toBuilder())); // can just copy after ver 6.
+
+      addAttributes(orgVar.getAttributes()); // copy
+
+      return self();
+    }
+
+    public Section getShapeAsSection() {
+      return Dimension.makeSectionFromDimensions(this.dimensions);
     }
 
     public Variable build() {
