@@ -12,21 +12,19 @@ import java.util.ArrayList;
  * Sequence is a one-dimensional Structure with indeterminate length.
  * The only data access is through getStructureIterator().
  * However, read() will read in the entire data and return an ArraySequence.
- *
  * @author caron
  * @since Feb 23, 2008
+ * @deprecated Sequence will possibly not extend Structure or Variable, in 6.
  */
+@Deprecated
 public class Sequence extends Structure {
 
   /*
    * Sequence Constructor
    *
    * @param ncfile the containing NetcdfFile.
-   * 
    * @param group the containing group; if null, use rootGroup
-   * 
    * @param parent parent Structure, may be null
-   * 
    * @param shortName variable shortName, must be unique within the Group
    */
   public Sequence(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
@@ -109,6 +107,48 @@ public class Sequence extends Structure {
   @Override
   public Variable section(Section subsection) {
     throw new UnsupportedOperationException();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  protected Sequence(Builder<?> builder) {
+    super(builder);
+  }
+  public Builder<?> toBuilder() {
+    Sequence.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Sequence.Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b;
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
+    private boolean built;
+
+    protected abstract T self();
+
+    public Sequence build() {
+      if (built) throw new IllegalStateException("already built");
+      built = true;
+      return new Sequence(this);
+    }
   }
 
 }

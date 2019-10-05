@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
  */
-package ucar.nc2.ncml;
+package ucar.nc2.internal.ncml;
 
 import org.jdom2.Element;
 import thredds.filesystem.MFileOS;
@@ -10,17 +10,10 @@ import thredds.inventory.DateExtractor;
 import thredds.inventory.DateExtractorFromName;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileCollectionManager;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ProxyReader;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
@@ -32,64 +25,19 @@ import java.util.*;
 import java.util.concurrent.Executor;
 
 /**
- * Superclass for NcML Aggregation.
- *
+ * Superclass for NcML Aggregation Builder.
  * An Aggregation acts as a ProxyReader for VariableDS. That, is it must implement:
- * 
  * <pre>
  * public Array read(Variable mainv);
- * 
  * public Array read(Variable mainv, Section section);
  * </pre>
  *
  * @author caron
  */
-
-/*
- * May be out of date
- * <h2>Implementation Notes</h2>
- * <h3>Caching</h3>
- * <ul>
- * <li>Case 1. Explicit list / Scan static directories (recheck=null)
- * <ul>
- * <li>A. AggCaching - keep track of ncoords, coordValues for joinExisting. Read on open, write on close.
- * Could skip scan if cache exists.
- * <li>B. NetcdfFileCache - write on close if changed (only first time). On sync, recheck = null means wont be reread.
- * </ul>
- * <li>Case 2. Scan dynamic directories (recheck non-null)
- * <ul>
- * <li>A. AggCaching - keep track of ncoords, coordValues for joinExisting. Read on open, write on close.
- * Could skip scan if cache exists, and recheck time not expired.
- * <li>B. NetcdfFileCache - write on close if changed. On sync, if recheck time, then rescan.
- * </ul>
- * </ul>
- * <h3>Aggregation Coordinate Variable (aggCoord) Processing</h3>
- * Construction:
- * <ol>
- * <li> The aggregation element is processed first.
- * <li> agg.finish() is called.
- * <li> If the user has defined the aggCoord in the NcML, it is then processed, overriding whatever the aggregation has
- * constructed.
- * If values are defined, they are cached in the new variable.
- * </ol>
- * Data Reading:
- * <ol>
- * <li> If values are cached, agg.read() is never called.
- * <li> Each Dataset may have a coordinate value(s) defined in the NcML coordValue attribute.
- * <li> If not, the coordinate value(s) is cached when the dataset is opened.
- * <li> agg.read() uses those if they exist, else reads and caches.
- * </ol>
- * 
- */
-public abstract class Aggregation implements AggregationIF {
+public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
 
   protected enum Type {
-    forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting, joinExistingOne, // joinExisting with a
-                                                                                                 // DateFormatMark makes
-                                                                                                 // it into a
-                                                                                                 // joinExistingOne -
-                                                                                                 // must have only one
-                                                                                                 // coord / file
+    forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting, joinExistingOne,
     joinNew, tiled, union
   }
 
@@ -107,7 +55,7 @@ public abstract class Aggregation implements AggregationIF {
     diskCache2 = dc;
     if (diskCache2 != null)
       diskCache2.setAlwaysUseCache(true); // the persistence cache file has same name as the ncml - must put it into the
-                                          // cache else clobber ncml 7/31/2014
+    // cache else clobber ncml 7/31/2014
   }
 
   // experimental multithreading
@@ -134,19 +82,19 @@ public abstract class Aggregation implements AggregationIF {
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
-  protected NetcdfDataset ncDataset; // the aggregation belongs to this dataset
+  protected NetcdfDataset.Builder ncDataset; // the aggregation belongs to this dataset
   protected Type type; // the aggregation type
-  protected Object spiObject; // pass to NetcdfFile.open()
+  protected Object spiObject = null; // not implemented in nested <netcdf> or <scan>
 
-  protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<>(); // explicitly created Dataset objects from
-                                                                            // netcdf elements
-  protected List<Aggregation.Dataset> datasets = new ArrayList<>(); // all : explicit and scanned
+  protected List<AggDataset> explicitDatasets = new ArrayList<>(); // explicitly created Dataset objects from
+  // netcdf elements
+  protected List<AggDataset> datasets = new ArrayList<>(); // all : explicit and scanned
   protected MFileCollectionManager datasetManager; // manages scanning
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
   protected String dimName; // the aggregation dimension name
 
-  private Element mergeNcml;
+  Element ncmlElem;
 
   // experimental
   protected String dateFormatMark;
@@ -156,18 +104,18 @@ public abstract class Aggregation implements AggregationIF {
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
-   * The following addXXXX methods are called, then finish(), before the object is ready for use.
+   * The following addXXXX methods are called, then build(), before the object is ready for use.
    *
    * @param ncd Aggregation belongs to this NetcdfDataset
    * @param dimName the aggregation dimension name
    * @param type the Aggregation.Type
    * @param recheckS how often to check if files have changes
    */
-  protected Aggregation(NetcdfDataset ncd, String dimName, Type type, String recheckS) {
+  protected Aggregation(NetcdfDataset.Builder ncd, String dimName, Type type, String recheckS) {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
-    String name = ncd.getLocation();
+    String name = ncd.location;
     if (name == null)
       name = "Agg-" + ncd.hashCode();
     datasetManager = MFileCollectionManager.openWithRecheck(name, recheckS);
@@ -188,11 +136,11 @@ public abstract class Aggregation implements AggregationIF {
   public void addExplicitDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
       String sectionSpec, ucar.nc2.util.cache.FileFactory reader) {
 
-    Dataset nested = makeDataset(cacheName, location, id, ncoordS, coordValueS, sectionSpec, null, reader);
+    AggDataset nested = makeDataset(cacheName, location, id, ncoordS, coordValueS, sectionSpec, null, reader);
     explicitDatasets.add(nested);
   }
 
-  public void addDataset(Dataset nested) {
+  public void addDataset(AggDataset nested) {
     explicitDatasets.add(nested);
   }
 
@@ -230,7 +178,7 @@ public abstract class Aggregation implements AggregationIF {
   }
 
   public void setModifications(Element ncmlMods) {
-    this.mergeNcml = ncmlMods;
+    this.ncmlElem = ncmlMods;
   }
 
   /**
@@ -253,12 +201,11 @@ public abstract class Aggregation implements AggregationIF {
 
 
   protected String getLocation() {
-    return ncDataset.getLocation();
+    return ncDataset.location;
   }
 
   /////////////////////////////////////////////////////////////////////
 
-  @Override
   public void close() throws IOException {
     persistWrite();
   }
@@ -272,7 +219,7 @@ public abstract class Aggregation implements AggregationIF {
    */
   @Override
   public synchronized boolean syncExtend() throws IOException {
-    return datasetManager.isScanNeeded() && _sync();
+    return false; // LOOK datasetManager.isScanNeeded() && _sync();
   }
 
   // public synchronized boolean sync() throws IOException {
@@ -290,6 +237,7 @@ public abstract class Aggregation implements AggregationIF {
     return datasetManager.getLastChanged();
   }
 
+  /* LOOK
   private boolean _sync() throws IOException {
     if (!datasetManager.scan(true))
       return false; // nothing changed LOOK what about grib extention ??
@@ -300,18 +248,18 @@ public abstract class Aggregation implements AggregationIF {
     rebuildDataset();
     ncDataset.finish();
     if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the coordinate
-                                                                                   // systems
+      // systems
       ncDataset.clearCoordinateSystems();
       ncDataset.enhance(ncDataset.getEnhanceMode());
       ncDataset.finish();
     }
 
     return true;
-  }
+  } */
 
   @Override
   public String getFileTypeId() { // LOOK - should cache ??
-    Dataset ds = null;
+    AggDataset ds = null;
     NetcdfFile ncfile = null;
     try {
       ds = getTypicalDataset();
@@ -334,7 +282,7 @@ public abstract class Aggregation implements AggregationIF {
 
   @Override
   public String getFileTypeDescription() { // LOOK - should cache ??
-    Dataset ds = null;
+    AggDataset ds = null;
     NetcdfFile ncfile = null;
     try {
       ds = getTypicalDataset();
@@ -373,11 +321,11 @@ public abstract class Aggregation implements AggregationIF {
    *
    * @throws IOException on read error
    */
-  protected abstract void rebuildDataset() throws IOException;
+  // protected abstract void rebuildDataset() throws IOException;
 
 
   /**
-   * Allow information to be make persistent. Overridden in AggregationExisting
+   * Allow information to be made persistent. Overridden in AggregationExisting
    *
    * @throws IOException on error
    */
@@ -394,7 +342,7 @@ public abstract class Aggregation implements AggregationIF {
     f.format("  Type=%s%n", type);
     f.format("  dimName=%s%n", dimName);
     f.format("  Datasets (%d) %n", datasets.size());
-    for (Dataset ds : datasets)
+    for (AggDataset ds : datasets)
       ds.show(f);
   }
 
@@ -402,14 +350,15 @@ public abstract class Aggregation implements AggregationIF {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // all elements are processed, finish construction
-  public void finish(CancelTask cancelTask) throws IOException {
+
+  public void build(CancelTask cancelTask) throws IOException {
     datasetManager.scan(true); // Make the list of Datasets, by scanning if needed.
     cacheDirty = true;
     makeDatasets(cancelTask);
     buildNetcdfDataset(cancelTask);
   }
 
-  public List<Dataset> getDatasets() {
+  public List<AggDataset> getDatasets() {
     return datasets;
   }
 
@@ -428,7 +377,7 @@ public abstract class Aggregation implements AggregationIF {
       datasets.add(makeDataset(cd));
     }
 
-    // sort using Aggregation.Dataset as Comparator.
+    // sort using Dataset as Comparator.
     // Sort by date if it exists, else sort by filename.
     Collections.sort(datasets);
 
@@ -440,8 +389,8 @@ public abstract class Aggregation implements AggregationIF {
     // Remove unreadable files (i.e. due to permissions) from the aggregation.
     // LOOK: Is this logic we should install "upstream", perhaps in MFileCollectionManager?
     // It would affect other collections than just NcML aggregation in that case.
-    for (Iterator<Dataset> datasetsIter = datasets.iterator(); datasetsIter.hasNext();) {
-      Dataset dataset = datasetsIter.next();
+    for (Iterator<AggDataset> datasetsIter = datasets.iterator(); datasetsIter.hasNext();) {
+      AggDataset dataset = datasetsIter.next();
 
       Path datasetPath;
       if (dataset.getMFile() instanceof MFileOS) {
@@ -460,7 +409,7 @@ public abstract class Aggregation implements AggregationIF {
 
     // check for duplicate location
     Set<String> dset = new HashSet<>(2 * datasets.size());
-    for (Aggregation.Dataset dataset : datasets) {
+    for (AggDataset dataset : datasets) {
       if (dset.contains(dataset.cacheLocation))
         logger.warn("Duplicate dataset in aggregation = " + dataset.cacheLocation);
       dset.add(dataset.cacheLocation);
@@ -477,8 +426,8 @@ public abstract class Aggregation implements AggregationIF {
    * @return a typical Dataset
    * @throws IOException if there are no datasets
    */
-  protected Dataset getTypicalDataset() throws IOException {
-    List<Dataset> nestedDatasets = getDatasets();
+  protected AggDataset getTypicalDataset() throws IOException {
+    List<AggDataset> nestedDatasets = getDatasets();
     int n = nestedDatasets.size();
     if (n == 0)
       throw new FileNotFoundException("No datasets in this aggregation");
@@ -515,221 +464,16 @@ public abstract class Aggregation implements AggregationIF {
    * @param sectionSpec attribute "sectionSpec" on the netcdf element
    * @param enhance open dataset in enhance mode NOT USED
    * @param reader factory for reading this netcdf dataset
-   * @return a Aggregation.Dataset
+   * @return a Dataset
    */
-  protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
+  protected AggDataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
       String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
-    return new Dataset(cacheName, location, id, enhance, reader); // overridden in OuterDim, tiled
+    return new AggDataset(cacheName, location, id, enhance, reader, spiObject, ncmlElem); // overridden in OuterDim, tiled
   }
 
-  protected Dataset makeDataset(MFile dset) {
-    return new Dataset(dset);
+  protected AggDataset makeDataset(MFile dset) {
+    return new AggDataset(dset, spiObject, ncmlElem);
   }
-
-  /**
-   * Encapsolates a NetcdfFile that is a component of the aggregation.
-   */
-  public class Dataset implements Comparable<Dataset> {
-    MFile mfile;
-    protected String id; // id attribute on the netcdf element
-
-    // deferred opening
-    protected String cacheLocation;
-    protected ucar.nc2.util.cache.FileFactory reader;
-    protected Set<NetcdfDataset.Enhance> enhance; // used by Fmrc to read enhanced datasets
-    protected DatasetUrl durl;
-
-    /*
-     * For subclasses.
-     *
-     * @param location location attribute on the netcdf element
-     *
-     * protected Dataset(String location) {
-     * this.location = (location == null) ? null : StringUtil2.substitute(location, "\\", "/");
-     * }
-     */
-
-    protected Dataset(MFile mfile) {
-      this.mfile = mfile;
-      this.cacheLocation = mfile.getPath();
-      this.enhance = (Set<NetcdfDataset.Enhance>) mfile.getAuxInfo();
-    }
-
-    /**
-     * Dataset constructor.
-     * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
-     * Used with explicit netcdf elements, and scanned files.
-     *
-     * @param cacheLocation a unique name to use for caching
-     * @param location attribute "location" on the netcdf element
-     * @param id attribute "id" on the netcdf element
-     * @param enhance open dataset in enhance mode, may be null NOT USED
-     * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
-     */
-    protected Dataset(String cacheLocation, String location, String id, EnumSet<NetcdfDataset.Enhance> enhance,
-        ucar.nc2.util.cache.FileFactory reader) {
-      this.mfile = MFileOS.getExistingFile(location);
-      this.cacheLocation = cacheLocation;
-      this.id = id;
-      // this.enhance = enhance; // LOOK why ??
-      this.reader = reader;
-    }
-
-    /**
-     * Get the location of this Dataset
-     *
-     * @return the location of this Dataset
-     */
-    public String getLocation() {
-      return (mfile == null) ? cacheLocation : mfile.getPath();
-    }
-
-    /**
-     *
-     * @return MFile or null
-     */
-    public MFile getMFile() {
-      return mfile;
-    }
-
-    public String getCacheLocation() {
-      return cacheLocation;
-    }
-
-    public String getId() {
-      if (id != null)
-        return id;
-      if (mfile != null)
-        return mfile.getPath();
-      return Integer.toString(this.hashCode());
-    }
-
-    public NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
-      if (debugOpenFile)
-        System.out.println(" try to acquire " + cacheLocation);
-      long start = System.currentTimeMillis();
-
-      if (durl == null)
-        durl = DatasetUrl.findDatasetUrl(cacheLocation); // cache the ServiceType so we dont have to keep figuring it
-                                                         // out
-      NetcdfFile ncfile = NetcdfDataset.acquireFile(reader, null, durl, -1, cancelTask, spiObject);
-
-      // must merge NcML before enhancing
-      if (mergeNcml != null)
-        ncfile = NcMLReader.mergeNcML(ncfile, mergeNcml); // create new dataset
-      if (enhance == null || enhance.isEmpty()) {
-        if (debugOpenFile)
-          System.out
-              .println(" acquire (no enhance) " + cacheLocation + " took " + (System.currentTimeMillis() - start));
-        return ncfile;
-      }
-
-      // must enhance
-      NetcdfDataset ds;
-      if (ncfile instanceof NetcdfDataset) {
-        ds = (NetcdfDataset) ncfile;
-        ds.enhance(enhance); // enhance "in place", ie modify the NetcdfDataset
-      } else {
-        ds = new NetcdfDataset(ncfile, enhance); // enhance when wrapping
-      }
-
-      if (debugOpenFile)
-        System.out.println(" acquire (enhance) " + cacheLocation + " took " + (System.currentTimeMillis() - start));
-      return ds;
-    }
-
-    protected void close(NetcdfFile ncfile) throws IOException {
-      if (ncfile == null)
-        return;
-      cacheVariables(ncfile);
-      ncfile.close();
-    }
-
-    // overridden in DatasetOuterDimension
-    protected void cacheVariables(NetcdfFile ncfile) throws IOException {}
-
-    public void show(Formatter f) {
-      f.format("   %s%n", mfile.getPath());
-    }
-
-    protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-      NetcdfFile ncd = null;
-      try {
-        ncd = acquireFile(cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-
-        Variable v = findVariable(ncd, mainv);
-        if (debugRead)
-          System.out.printf("Agg.read %s from %s in %s%n", mainv.getNameAndDimensions(), v.getNameAndDimensions(),
-              getLocation());
-        return v.read();
-
-      } finally {
-        close(ncd);
-      }
-    }
-
-    /**
-     * Read a section of the local Variable.
-     *
-     * @param mainv aggregated Variable
-     * @param cancelTask let user cancel
-     * @param section reletive to the local Variable
-     * @return the complete Array for mainv
-     * @throws IOException on I/O error
-     * @throws InvalidRangeException on section error
-     */
-    protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section)
-        throws IOException, InvalidRangeException {
-      NetcdfFile ncd = null;
-      try {
-        ncd = acquireFile(cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-
-        Variable v = findVariable(ncd, mainv);
-        if (debugRead) {
-          Section want = new Section(section);
-          System.out.printf("Agg.read(%s) %s from %s in %s%n", want, mainv.getNameAndDimensions(),
-              v.getNameAndDimensions(), getLocation());
-        }
-
-        return v.read(section);
-
-      } finally {
-        close(ncd);
-      }
-    }
-
-    protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
-      Variable v = ncfile.findVariable(mainV.getFullNameEscaped());
-      if (v == null) { // might be renamed
-        VariableEnhanced ve = (VariableEnhanced) mainV;
-        v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped
-      }
-      return v;
-    }
-
-    // Datasets with the same locations are equal
-    public boolean equals(Object oo) {
-      if (this == oo)
-        return true;
-      if (!(oo instanceof Dataset))
-        return false;
-      Dataset other = (Dataset) oo;
-      return getLocation().equals(other.getLocation());
-    }
-
-    public int hashCode() {
-      return getLocation().hashCode();
-    }
-
-    @Override
-    public int compareTo(Dataset o) {
-      return getLocation().compareTo(o.getLocation());
-    }
-  } // class Dataset
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -742,84 +486,35 @@ public abstract class Aggregation implements AggregationIF {
    * @param newds containing dataset
    * @throws IOException on i/o error
    */
-  protected void setDatasetAcquireProxy(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
-    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
-    setDatasetAcquireProxy(proxy, newds.getRootGroup());
+  void setDatasetAcquireProxy(AggDataset typicalDataset, NetcdfDataset.Builder newds) throws IOException {
+    AggProxyReader proxy = new AggProxyReader(typicalDataset);
+    setDatasetAcquireProxy(proxy, newds.rootGroup);
   }
 
-  protected void setDatasetAcquireProxy(DatasetProxyReader proxy, Group g) throws IOException {
+  private void setDatasetAcquireProxy(AggProxyReader proxy, Group.Builder g) throws IOException {
 
     // all normal (non agg) variables must use a proxy to lock the file
-    for (Variable v : g.getVariables()) {
+    for (Variable.Builder v : g.vbuilders) {
 
-      if (v.getProxyReader() != v) {
+      if (v.proxyReader != v && v.proxyReader != null) {
         if (debugProxy)
-          System.out.println(" debugProxy: hasProxyReader " + v.getFullName());
+          System.out.println(" debugProxy: hasProxyReader " + v.shortName);
         continue; // dont mess with agg variables
       }
-
+      /* LOOK no caching
       if (v.isCaching()) { // cache the small ones
         v.setCachedData(v.read()); // cache the variableDS directly
 
-      } else { // put proxy on the rest
-        v.setProxyReader(proxy);
-        if (debugProxy)
-          System.out.println(" debugProxy: set proxy on " + v.getFullName());
-      }
+      } else { // put proxy on the rest */
+      v.setProxyReader(proxy);
+      if (debugProxy)
+        System.out.println(" debugProxy: set proxy on " + v.shortName);
     }
 
     // recurse
-    for (Group nested : g.getGroups()) {
+    for (Group.Builder nested : g.gbuilders) {
       setDatasetAcquireProxy(proxy, nested);
     }
-  }
-
-
-  protected class DatasetProxyReader implements ProxyReader {
-    Dataset dataset;
-
-    DatasetProxyReader(Dataset dataset) {
-      this.dataset = dataset;
-    }
-
-    @Override
-    public Array reallyRead(Variable mainV, CancelTask cancelTask) throws IOException {
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = dataset.acquireFile(cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-        Variable proxyV = findVariable(ncfile, mainV);
-        return proxyV.read();
-      } finally {
-        dataset.close(ncfile);
-      }
-    }
-
-    @Override
-    public Array reallyRead(Variable mainV, Section section, CancelTask cancelTask)
-        throws IOException, InvalidRangeException {
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = dataset.acquireFile(cancelTask);
-        Variable proxyV = findVariable(ncfile, mainV);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-        return proxyV.read(section);
-
-      } finally {
-        dataset.close(ncfile);
-      }
-    }
-  }
-
-  protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
-    Variable v = ncfile.findVariable(mainV.getFullNameEscaped());
-    if (v == null) { // might be renamed
-      VariableEnhanced ve = (VariableEnhanced) mainV;
-      v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped
-    }
-    return v;
   }
 
 }

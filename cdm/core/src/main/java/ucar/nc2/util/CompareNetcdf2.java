@@ -210,7 +210,7 @@ public class CompareNetcdf2 {
 
   private boolean compareGroups(Group org, Group copy, ObjFilter filter) {
     if (showCompare)
-      f.format("compare Group %s to %s %n", org.getShortName(), copy.getShortName());
+      f.format("compare Group '%s' to '%s' %n", org.getShortName(), copy.getShortName());
     boolean ok = true;
 
     if (!org.getShortName().equals(copy.getShortName())) {
@@ -219,8 +219,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions());
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions());
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "file1 group");
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "file2 group");
 
     // attributes
     ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);
@@ -282,8 +282,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions());
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions());
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "file1 var");
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "file2 var");
 
     // attributes
     ok &= checkAttributes(org, org.getAttributes(), copy.getAttributes(), filter);
@@ -387,14 +387,14 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2) {
+  private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2, String where) {
     boolean ok = true;
 
     for (Dimension d1 : list1) {
       if (d1.isShared()) {
         boolean hasit = list2.contains(d1);
         if (!hasit)
-          f.format("  ** Missing dim %s not in file2 %n", d1);
+          f.format("  ** Missing dim %s not in %s %n", d1, where);
         ok &= hasit;
       }
     }

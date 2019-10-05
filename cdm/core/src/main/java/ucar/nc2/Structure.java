@@ -22,7 +22,6 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.Variable.Builder;
 import ucar.nc2.util.Indent;
 
 /**
@@ -42,6 +41,9 @@ import ucar.nc2.util.Indent;
  */
 
 public class Structure extends Variable {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
+  private static final int defaultBufferSize = 500 * 1000; // 500K bytes
+
   /**
    * Create a Structure "from scratch". Also must call setDimensions().
    *
@@ -133,7 +135,7 @@ public class Structure extends Variable {
 
   // for section and slice
   @Override
-  protected Variable copy() {
+  protected Structure copy() {
     return new Structure(this);
   }
 
@@ -652,9 +654,6 @@ public class Structure extends Variable {
   }
 
   ////////////////////////////////////////////////////////
-  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
-  protected static int defaultBufferSize = 500 * 1000; // 500K bytes
-
   // TODO make private final and Immutable in release 6.
   protected List<Variable> members;
   protected HashMap<String, Variable> memberHash;

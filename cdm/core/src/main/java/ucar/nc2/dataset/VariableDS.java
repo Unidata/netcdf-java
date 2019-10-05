@@ -169,7 +169,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   // for section and slice
   @Override
-  protected Variable copy() {
+  protected VariableDS copy() {
     return new VariableDS(this, true);
   }
 
@@ -780,11 +780,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
-    protected Variable orgVar; // wrap this Variable : use it for the I/O
-    protected DataType orgDataType; // keep separate for the case where there is no orgVar.
-    protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
-    protected String units;
-    protected String desc;
+    Variable orgVar; // wrap this Variable : use it for the I/O
+    DataType orgDataType; // keep separate for the case where there is no orgVar.
+    String orgName; // in case Variable was renamed, and we need to keep track of the original name
+    public String units;
+    public String desc;
 
     private boolean built;
 
@@ -829,6 +829,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     /** Copy metadata from orgVar. */
     public T copyFrom(Variable orgVar) {
       super.copyFrom(orgVar);
+      setSPobject(null);
+      // resetCache();
+      setOriginalVariable(orgVar);
+      setOriginalDataType(orgVar.getDataType());
+      setOriginalName(orgVar.getShortName());
       return self();
     }
 

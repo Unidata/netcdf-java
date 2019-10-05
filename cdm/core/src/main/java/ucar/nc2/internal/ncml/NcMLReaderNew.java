@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.ncml;
+package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +27,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.Group;
@@ -39,6 +40,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS.Builder;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.URLnaming;
@@ -174,7 +176,7 @@ public class NcMLReaderNew {
 
   // private static boolean validate = false;
 
-  /**
+  /*
    * Use NCML to modify a dataset, getting the NcML document as a resource stream.
    * Uses ClassLoader.getResourceAsStream(ncmlResourceLocation), so the NcML can be inside of a jar file, for example.
    *
@@ -224,7 +226,7 @@ public class NcMLReaderNew {
   }
 
 
-  /**
+  /*
    * Use NCML to modify the dataset, getting NcML from a URL
    *
    * @param ncDataset modify this dataset
@@ -263,16 +265,18 @@ public class NcMLReaderNew {
    * Used to wrap each dataset of an aggregation before its aggregated
    *
    * @param ref referenced dataset
-   * @param parentElem parent element - usually the aggregation element of the ncml
+   * @param ncmlElem parent element - usually the aggregation element of the ncml
    * @return new dataset with the merged info
    * @throws IOException on read error
-   *
-  public static NetcdfDataset mergeNcML(NetcdfFile ref, Element parentElem) throws IOException {
-    NetcdfDataset targetDS = new NetcdfDataset(ref, null); // no enhance
+   */
+  public static NetcdfDataset.Builder mergeNcML(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
+    NetcdfDataset.Builder targetDS = new NetcdfDataset(ref.toBuilder()).toBuilder(); // no enhance
 
-    NcMLReaderNew reader = new NcMLReaderNew();
-    reader.readGroup(targetDS, targetDS, null, null, parentElem);
-    targetDS.finish();
+
+    if (ncmlElem != null) {
+      NcMLReaderNew reader = new NcMLReaderNew();
+      reader.readGroup(targetDS, null, null, ncmlElem);
+    }
 
     return targetDS;
   }
@@ -562,24 +566,6 @@ public class NcMLReaderNew {
       builder.copyFrom(this.refFile);
     }
 
-    // general idea is that we just modify the referenced dataset
-    // the exception is when explicit is specified, then we keep them seperate.
-    // refds != null refds == null
-    // explicit refds!=new new (ref=new)
-    // readMetadata modify (new=ref) new (ref=new)
-    /* LOOK ignoring this for now...
-    NetcdfDataset targetDS;
-    if (explicit || (refds == null)) {
-      targetDS = new NetcdfDataset();
-      if (refds == null)
-        refds = targetDS;
-      else
-        targetDS.setReferencedFile(refds); // gotta set so it gets closed !!
-
-    } else { // modify the referenced dataset directly
-      targetDS = refds;
-    } */
-
     // Read the Ncml into the builder
     readNetcdf(ncmlLocation, builder, netcdfElem, cancelTask);
 
@@ -621,19 +607,15 @@ public class NcMLReaderNew {
     builder.setId(netcdfElem.getAttributeValue("id"));
     builder.setTitle(netcdfElem.getAttributeValue("title"));
 
-    /* LOOK ignore aggregation for now
     Element aggElem = netcdfElem.getChild("aggregation", ncNS);
     if (aggElem != null) {
-      Aggregation agg = readAgg(aggElem, ncmlLocation, targetDS, cancelTask);
-      if (agg == null)
-        return; // cancel task
-      targetDS.setAggregation(agg);
-      agg.finish(cancelTask);
-    } */
+      Aggregation agg = readAgg(aggElem, ncmlLocation, builder, cancelTask);
+      builder.setAggregation(agg);
+      agg.build(cancelTask);
+    }
 
     // read the root group and recurse
-    Group.Builder rootGroup = readGroup(builder, null, null, netcdfElem);
-    builder.setRootGroup(rootGroup);
+    readGroup(builder, null, null, netcdfElem);
     String errors = errlog.toString();
     if (!errors.isEmpty())
       throw new IllegalArgumentException("NcML had fatal errors:" + errors);
@@ -663,11 +645,7 @@ public class NcMLReaderNew {
 
     if (parent == null) {
       refGroup = this.refFile == null ? null : this.refFile.getRootGroup();
-      if (this.explicit || refGroup == null) { // all metadata is in the ncml, do not copy
-        groupBuilder = Group.builder().setName("");
-      } else { // already been copied
-        groupBuilder = builder.rootGroup;
-      }
+      groupBuilder = builder.rootGroup;
 
     } else {
       String name = groupElem.getAttributeValue("name");
@@ -1117,9 +1095,7 @@ public class NcMLReaderNew {
     String dimNames = varElem.getAttributeValue("shape");
     if (dimNames == null)
       dimNames = "";
-    List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
-
-    VariableDS.Builder v = VariableDS.builder().setName(name).setDataType(dtype).addDimensions(varDims);
+    VariableDS.Builder v = VariableDS.builder().setName(name).setDataType(dtype).setDimensionsByName(dimNames);
     Element valueElem = varElem.getChild("values", ncNS);
     if (valueElem != null) {
       readValues(v, dtype, varElem, valueElem);
@@ -1251,99 +1227,6 @@ public class NcMLReaderNew {
     }
   }
 
-  /*
-   * Read the NcML variable element, and nested elements.
-   *
-   * @param parentS parent Structure
-   * @param refStruct reference dataset structure
-   * @param varElem ncml variable element
-   *
-  private void readVariableNested(StructureDS.Builder parentS, Structure refStruct, Element varElem) {
-    String name = varElem.getAttributeValue("name");
-    if (name == null) {
-      errlog.format("NcML Variable name is required (%s)%n", varElem);
-      return;
-    }
-
-    String nameInFile = varElem.getAttributeValue("orgName");
-    if (nameInFile == null)
-      nameInFile = name;
-
-    // see if it already exists
-    Variable refv = refStruct.findVariable(nameInFile);
-    if (refv == null) { // new
-      Variable.Builder nested = readVariableNew(ds, parentS.getParentGroup(), parentS, varElem);
-      if (nested != null)
-        parentS.addMemberVariable(nested);
-      return;
-    }
-
-    Variable v;
-    if (parentS == refStruct) { // modify
-      v = refv;
-      v.setName(name);
-
-    } else { // explicit
-      if (refv instanceof Structure) {
-        v = new StructureDS(parentS.getParentGroup(), (Structure) refv); // true
-        v.setName(name);
-        v.setParentStructure(parentS);
-      } else {
-        v = new VariableDS(parentS.getParentGroup(), refv, false);
-        v.setName(name);
-        v.setParentStructure(parentS);
-      }
-      parentS.addMemberVariable(v);
-    }
-
-    if (debugConstruct)
-      System.out.println(" modify existing var = " + nameInFile);
-
-    String typeS = varElem.getAttributeValue("type");
-    if (typeS != null) {
-      DataType dtype = DataType.getType(typeS);
-      v.setDataType(dtype);
-    }
-
-    String typedefS = null;
-    if (dtype.isEnum()) {
-      typedefS = varElem.getAttributeValue("typedef");
-    }
-
-    String shape = varElem.getAttributeValue("shape");
-    if (shape != null) {
-      v.setDimensions(shape);
-    }
-
-    java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
-    for (Element attElem : attList) {
-      readAtt(v, refv, attElem);
-    }
-
-    // process remove command
-    java.util.List<Element> removeList = varElem.getChildren("remove", ncNS);
-    for (Element remElem : removeList) {
-      cmdRemove(v, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
-    }
-
-    if ((v.getDataType() == DataType.STRUCTURE) || (v.getDataType() == DataType.SEQUENCE)) {
-      // deal with nested variables
-      StructureDS s = (StructureDS) v;
-      StructureDS refS = (StructureDS) refv;
-      java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
-      for (Element vElem : varList) {
-        readVariableNested(ds, s, refS, vElem);
-      }
-
-    } else {
-
-      // deal with values
-      Element valueElem = varElem.getChild("values", ncNS);
-      if (valueElem != null)
-        readValues(v, dtype, varElem, valueElem);
-    }
-  } */
-
   private void readValues(Variable.Builder v, DataType dtype, Element varElem, Element valuesElem) {
     try {
       // check if values are specified by attribute
@@ -1382,14 +1265,23 @@ public class NcMLReaderNew {
       String startS = valuesElem.getAttributeValue("start");
       String incrS = valuesElem.getAttributeValue("increment");
       String nptsS = valuesElem.getAttributeValue("npts");
-      int npts = (nptsS == null) ? (int) v.getShapeAsSection().getSize() : Integer.parseInt(nptsS);
+      int npts = (nptsS == null) ? 0 : Integer.parseInt(nptsS);
 
-      // either start, increment are specified
+      // start, increment are specified
       if ((startS != null) && (incrS != null)) {
         double start = Double.parseDouble(startS);
         double incr = Double.parseDouble(incrS);
-        Array data = Array.makeArray(dtype, npts, start, incr);
-        v.setCachedData(data, true);
+        if (npts == 0) {
+          // this defers creation until build(), when all dimension sizes are known.
+          // must also set dimensions by name.
+          v.setAutoGen(start, incr);
+          if (!v.dimensions.isEmpty()) {
+            v.setDimensionsByName(Dimensions.makeDimensionsString(v.dimensions));
+          }
+        } else {
+          Array data = Array.makeArray(dtype, npts, start, incr);
+          v.setCachedData(data, true);
+        }
         return;
       }
 
@@ -1420,23 +1312,23 @@ public class NcMLReaderNew {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  private Aggregation readAgg(Element aggElem, String ncmlLocation, NetcdfDataset newds, CancelTask cancelTask) {
+  private Aggregation readAgg(Element aggElem, String ncmlLocation, NetcdfDataset.Builder builder, CancelTask cancelTask) {
     String dimName = aggElem.getAttributeValue("dimName");
     String type = aggElem.getAttributeValue("type");
     String recheck = aggElem.getAttributeValue("recheckEvery");
 
     Aggregation agg;
     if (type.equalsIgnoreCase("joinExisting")) {
-      agg = new AggregationExisting(newds, dimName, recheck);
+      agg = new AggregationExisting(builder, dimName, recheck);
 
     } else if (type.equalsIgnoreCase("joinNew")) {
-      agg = new AggregationNew(newds, dimName, recheck);
-
-    } else if (type.equalsIgnoreCase("tiled")) {
-      agg = new AggregationTiled(newds, dimName, recheck);
+      agg = new AggregationNew(builder, dimName, recheck);
 
     } else if (type.equalsIgnoreCase("union")) {
-      agg = new AggregationUnion(newds, dimName, recheck);
+      agg = new AggregationUnion(builder, dimName, recheck);
+
+    /* } else if (type.equalsIgnoreCase("tiled")) {
+      agg = new AggregationTiled(builder, dimName, recheck);
 
     } else if (type.equalsIgnoreCase("forecastModelRunCollection")
         || type.equalsIgnoreCase("forecastModelRunSingleCollection")) {
@@ -1502,13 +1394,13 @@ public class NcMLReaderNew {
 
       if (!realLocationRunTimeMap.isEmpty()) {
         aggc.addExplicitFilesAndRunTimes(realLocationRunTimeMap);
-      }
+      } */
     } else {
-      throw new IllegalArgumentException("Unknown aggregation type=" + type);
+      throw new IllegalArgumentException("Unsupported aggregation type=" + type);
     }
 
-    if (agg instanceof AggregationOuterDimension) {
-      AggregationOuterDimension aggo = (AggregationOuterDimension) agg;
+    if (agg instanceof AggregationOuter) {
+      AggregationOuter aggo = (AggregationOuter) agg;
 
       String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
       if (timeUnitsChange != null)

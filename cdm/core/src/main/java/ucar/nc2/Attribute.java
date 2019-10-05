@@ -475,10 +475,11 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * set the value as a String, trimming trailing zeroes
-   *
+   * Set the value as a String, trimming trailing zeros
    * @param val value of Attribute
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   private void setStringValue(String val) {
     if (val == null)
       throw new IllegalArgumentException("Attribute value cannot be null");
@@ -766,8 +767,23 @@ public class Attribute extends CDMNode {
       return this;
     }
 
+    /**
+     * Set the value as a String, trimming trailing zeros
+     * @param svalue value of Attribute
+     */
     public Builder setStringValue(String svalue) {
+      if (svalue == null)
+        throw new IllegalArgumentException("Attribute value cannot be null");
+
+      // get rid of trailing nul characters
+      int len = svalue.length();
+      while ((len > 0) && (svalue.charAt(len - 1) == 0))
+        len--;
+      if (len != svalue.length())
+        svalue = svalue.substring(0, len);
+
       this.svalue = svalue;
+      this.nelems = 1;
       this.dataType = DataType.STRING;
       return this;
     }

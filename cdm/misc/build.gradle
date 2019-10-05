@@ -23,6 +23,6 @@ dependencies {
     testCompile libraries["spock-core"]
 
     testCompile libraries["commons-io"]
-    testCompile libraries["mockito"]
+//    testCompile libraries["mockito"]
     testCompile libraries["truth"]
 }

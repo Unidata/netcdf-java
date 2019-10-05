@@ -129,7 +129,7 @@ public class CoordinateAxis extends VariableDS {
   // for section and slice
 
   @Override
-  protected Variable copy() {
+  protected CoordinateAxis copy() {
     return new CoordinateAxis(this.ncd, this);
   }
 

@@ -72,7 +72,7 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode {
 
   // for section and slice
   @Override
-  protected Variable copy() {
+  protected DODSStructure copy() {
     return new DODSStructure(this); // dont need to reparent
   }
 

@@ -112,18 +112,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public static Set<Enhance> getEnhanceAll() {
     return EnhanceAll;
   }
-
   public static Set<Enhance> getEnhanceNone() {
     return EnhanceNone;
   }
-
   public static Set<Enhance> getDefaultEnhanceMode() {
     return defaultEnhanceMode;
   }
 
   /**
    * Set the default set of Enhancements to do for all subsequent dataset opens and acquires.
-   *
    * @param mode the default set of Enhancements for open and acquire factory methods
    */
   public static void setDefaultEnhanceMode(Set<Enhance> mode) {
@@ -308,7 +305,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
    * @param period (secs) do periodic cleanups every this number of seconds. set to < 0 to not cleanup
+   * @deprecated use NetcdfDatasets.initNetcdfFileCache
    */
+  @Deprecated
   public static synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     initNetcdfFileCache(minElementsInMemory, maxElementsInMemory, -1, period);
   }
@@ -322,13 +321,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in
    *        the calling thread.
    * @param period (secs) do periodic cleanups every this number of seconds.
+   * @deprecated use NetcdfDatasets.initNetcdfFileCache
    */
+  @Deprecated
   public static synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit,
       int period) {
     netcdfFileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory,
         hardLimit, period);
   }
 
+  /** @deprecated use NetcdfDatasets.disableNetcdfFileCache */
+  @Deprecated
   public static synchronized void disableNetcdfFileCache() {
     if (null != netcdfFileCache)
       netcdfFileCache.disable();
@@ -338,7 +341,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Call when application exits, if you have previously called initNetcdfFileCache.
    * This shuts down any background threads in order to get a clean process shutdown.
+   * @deprecated use NetcdfDatasets.shutdown
    */
+  @Deprecated
   public static synchronized void shutdown() {
     disableNetcdfFileCache();
     FileCache.shutdown();
@@ -348,7 +353,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Get the File Cache
    *
    * @return File Cache or null if not enabled.
+   * @deprecated use NetcdfDatasets.getNetcdfFileCache
    */
+  @Deprecated
   public static synchronized ucar.nc2.util.cache.FileCacheIF getNetcdfFileCache() {
     return netcdfFileCache;
   }
@@ -362,7 +369,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param mode using this enhance mode (may be null, meaning no enhance)
    * @return NetcdfDataset wrapping the given ncfile
    * @throws IOException on io error
+   * @deprecated use NetcdfDatasets.wrap
    */
+  @Deprecated
   public static NetcdfDataset wrap(NetcdfFile ncfile, Set<Enhance> mode) throws IOException {
     if (ncfile instanceof NetcdfDataset) {
       NetcdfDataset ncd = (NetcdfDataset) ncfile;
@@ -381,7 +390,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param location location of file
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.openDataset
    */
+  @Deprecated
   public static NetcdfDataset openDataset(String location) throws IOException {
     return openDataset(location, true, null);
   }
@@ -394,7 +405,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.openDataset
    */
+  @Deprecated
   public static NetcdfDataset openDataset(String location, boolean enhance, ucar.nc2.util.CancelTask cancelTask)
       throws IOException {
     return openDataset(location, enhance, -1, cancelTask, null);
@@ -410,7 +423,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param spiObject sent to iosp.setSpecial() if not null
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.openDataset
    */
+  @Deprecated
   public static NetcdfDataset openDataset(String location, boolean enhance, int buffer_size,
       ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
@@ -427,7 +442,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param spiObject sent to iosp.setSpecial() if not null
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.openDataset
    */
+  @Deprecated
   public static NetcdfDataset openDataset(DatasetUrl location, Set<Enhance> enhanceMode, int buffer_size,
       ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     NetcdfFile ncfile = openProtocolOrFile(location, buffer_size, cancelTask, spiObject);
@@ -452,7 +469,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * 2) enhance(EnumSet<Enhance> mode) is called.
    *
    * Possible remove all direct access to Variable.enhance
+   * @deprecated use NetcdfDatasets.enhance
    */
+  @Deprecated
   private static CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask)
       throws IOException {
     if (mode == null) {
@@ -516,7 +535,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.acquireDataset
    */
+  @Deprecated
   public static NetcdfDataset acquireDataset(DatasetUrl location, ucar.nc2.util.CancelTask cancelTask)
       throws IOException {
     return acquireDataset(null, location, defaultEnhanceMode, -1, cancelTask, null);
@@ -532,8 +553,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.acquireDataset
    */
-
+  @Deprecated
   public static NetcdfDataset acquireDataset(DatasetUrl location, boolean enhanceMode,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return acquireDataset(null, location, enhanceMode ? defaultEnhanceMode : null, -1, cancelTask, null);
@@ -549,8 +571,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.acquireDataset
    */
-
+  @Deprecated
   public static NetcdfDataset acquireDataset(DatasetUrl location, Set<Enhance> enhanceMode,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return acquireDataset(null, location, enhanceMode, -1, cancelTask, null);
@@ -569,7 +592,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param iospMessage sent to iosp.setSpecial() if not null
    * 
    * @return NetcdfDataset or throw Exception
+   * @deprecated use NetcdfDatasets.acquireDataset
    */
+  @Deprecated
   public static NetcdfDataset acquireDataset(FileFactory fac, DatasetUrl durl, Set<Enhance> enhanceMode,
       int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
@@ -621,7 +646,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param cancelTask use to allow task to be cancelled; may be null.
    * @return NetcdfFile object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.openFile
    */
+  @Deprecated
   public static NetcdfFile openFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
     return openProtocolOrFile(durl, -1, cancelTask, null);
@@ -648,7 +675,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param spiObject sent to iosp.setSpecial() if not null
    * @return NetcdfFile object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.openFile
    */
+  @Deprecated
   public static NetcdfFile openFile(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
       Object spiObject) throws IOException {
     return openProtocolOrFile(location, buffer_size, cancelTask, spiObject);
@@ -663,7 +692,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfFile object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.acquireFile
    */
+  @Deprecated
   public static NetcdfFile acquireFile(DatasetUrl location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return acquireFile(null, null, location, -1, cancelTask, null);
   }
@@ -681,7 +712,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param spiObject sent to iosp.setSpecial(); may be null
    * @return NetcdfFile object
    * @throws java.io.IOException on read error
+   * @deprecated use NetcdfDatasets.acquireFile
    */
+  @Deprecated
   public static NetcdfFile acquireFile(ucar.nc2.util.cache.FileFactory factory, Object hashKey, DatasetUrl location,
       int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
@@ -772,7 +805,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @deprecated Do not use.
    */
   @Deprecated
-  public ucar.nc2.ncml.Aggregation getAggregation() {
+  public ucar.nc2.ncml.AggregationIF getAggregation() {
     return agg;
   }
 
@@ -783,7 +816,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @deprecated Use NetcdfDataset.builder()
    */
   @Deprecated
-  public void setAggregation(ucar.nc2.ncml.Aggregation agg) {
+  public void setAggregation(ucar.nc2.ncml.AggregationIF agg) {
     this.agg = agg;
   }
 
@@ -1056,7 +1089,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     super(ncfile);
 
     this.orgFile = ncfile;
-    this.spi = null; // has a orgFile, not an iosp
+    this.iosp = null; // has a orgFile, not an iosp
     convertGroup(getRootGroup(), ncfile.getRootGroup());
     finish(); // build global lists
 
@@ -1503,7 +1536,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private List<CoordinateTransform> coordTransforms = new ArrayList<>();
   private String convUsed;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
-  private ucar.nc2.ncml.Aggregation agg;
+  private ucar.nc2.ncml.AggregationIF agg;
 
   private NetcdfDataset(Builder<?> builder) {
     super(builder);
@@ -1516,10 +1549,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.agg = builder.agg;
     finish(); // LOOK
   }
+
   public Builder<?> toBuilder() {
     NetcdfDataset.Builder<?> r2 = addLocalFieldsToBuilder(builder());
     return (NetcdfDataset.Builder<?>) super.addLocalFieldsToBuilder(r2);
   }
+
+  public NetcdfDataset(NetcdfFile.Builder<?> builder) {
+    super(builder);
+    // LOOK this.orgFile = builder.orgFile;
+    finish(); // LOOK
+  }
+
 
   // Add local fields to the passed - in builder.
   private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
@@ -1555,7 +1596,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     private List<CoordinateTransform> coordTransforms = new ArrayList<>();
     private String convUsed;
     private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
-    private ucar.nc2.ncml.Aggregation agg; // If its an aggregation
+    private ucar.nc2.ncml.AggregationIF agg; // If its an aggregation
     private boolean built;
 
     protected abstract T self();
@@ -1606,7 +1647,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return self();
     }
 
-    public T setAggregation(ucar.nc2.ncml.Aggregation agg) {
+    public T setAggregation(ucar.nc2.ncml.AggregationIF agg) {
       this.agg = agg;
       return self();
     }

@@ -32,6 +32,7 @@
 
 package thredds.filesystem;
 
+import javax.annotation.Nullable;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.ThreadSafe;
@@ -52,6 +53,7 @@ public class MFileOS implements MFile {
    * @param filename name of the existing file.
    * @return MFileOS or null
    */
+  @Nullable
   public static MFileOS getExistingFile(String filename) {
     if (filename == null)
       return null;

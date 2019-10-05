@@ -13,10 +13,11 @@ import java.io.IOException;
 
 /**
  * Enhance sequence
- * TODO extend Sequence, not StructureDS?
  * @author caron
  * @since Nov 10, 2009
+ * @deprecated SequenceDS will not extend StructureDS in 6.
  */
+@Deprecated
 public class SequenceDS extends StructureDS {
   private ucar.nc2.Sequence orgSeq;
 

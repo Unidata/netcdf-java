@@ -5,19 +5,21 @@
 package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Formatter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.TestDir;
 
@@ -25,7 +27,7 @@ import ucar.unidata.util.test.TestDir;
  * Compare NcmlReader and NcmlReaderNew
  */
 @RunWith(Parameterized.class)
-public class TestNcmlReaders {
+public class TestNcmlReadersCompare {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name = "{0}")
@@ -34,8 +36,8 @@ public class TestNcmlReaders {
     try {
       TestDir.actOnAllParameterized(
           TestNcMLRead.topDir,
-          pathname -> !pathname.getName().startsWith("agg") && pathname.getName().endsWith("ml"),
-          filenames, false);
+          pathname -> pathname.getName().endsWith("ml"),
+          filenames, true);
     } catch (IOException e) {
       filenames.add(new Object[]{e.getMessage()});
     }
@@ -43,33 +45,27 @@ public class TestNcmlReaders {
   }
 
   private String ncmlLocation;
-  public TestNcmlReaders(String filename) {
+  public TestNcmlReadersCompare(String filename) {
     this.ncmlLocation = "file:" + filename;
   }
 
-  // @Test
-  public void compareReaders() throws IOException {
+  @Test
+  public void compareReaders() {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
+    System.out.printf("Compare %s%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
-      TestDir.readAllData(org);
       try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null)) {
-        assertThat(CompareNetcdf.compareFiles(org, withBuilder)).isTrue();
-        TestDir.readAllData(withBuilder);
+        Formatter f = new Formatter();
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        if (!compare.compare(org, withBuilder)) {
+          System.out.printf("Compare %s %s%n", ncmlLocation, f);
+          fail();
+        }
       }
+    } catch(IOException e) {
+      fail();
     }
   }
 
-  @Test
-  public void problem() throws IOException {
-    String ncmlLocation = "file:C:/dev/github/netcdf-java/cdm/core/src/test/data/ncml/notes.xml";
-    logger.info("TestNcmlReaders on {}%n", ncmlLocation);
-    try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
-      TestDir.readAllData(org);
-      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null)) {
-        assertThat(CompareNetcdf.compareFiles(org, withBuilder)).isTrue();
-        TestDir.readAllData(withBuilder);
-      }
-    }
-  }
 }
 

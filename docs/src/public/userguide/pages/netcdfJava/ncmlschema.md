@@ -418,6 +418,7 @@ The aggregation element allows multiple datasets to be combined into a single lo
 <xsd:element name="aggregation">
   <xsd:complexType>
     <xsd:sequence>
+
 (1)  <xsd:choice minOccurs="0" maxOccurs="unbounded">
       <xsd:element ref="group"/>
       <xsd:element ref="dimension"/>
@@ -431,9 +432,11 @@ The aggregation element allows multiple datasets to be combined into a single lo
        <xsd:attribute name="name" type="xsd:string" use="required"/>
       </xsd:complexType>
      </xsd:element>
-(3) <xsd:element ref="promoteGlobalAttribute" minOccurs="0" maxOccurs="unbounded"/>
+
+(3)  <xsd:element ref="promoteGlobalAttribute" minOccurs="0" maxOccurs="unbounded"/>
 (4)  <xsd:element ref="cacheVariable" minOccurs="0" maxOccurs="unbounded"/>
 (5)  <xsd:element ref="netcdf" minOccurs="0" maxOccurs="unbounded"/>
+
 (6)  <xsd:element name="scan" minOccurs="0" maxOccurs="unbounded">
       <xsd:complexType>
 (7)    <xsd:attribute name="location" type="xsd:string" use="required"/>
@@ -453,10 +456,9 @@ The aggregation element allows multiple datasets to be combined into a single lo
 (9)    <xsd:attribute name="suffix" type="xsd:string" />
 (10)   <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
 (11)   <xsd:attribute name="olderThan" type="xsd:string" />
-
 (15)   <xsd:attribute name="runDateMatcher" type="xsd:string" />
-    <xsd:attribute name="forecastDateMatcher" type="xsd:string" />
-    <xsd:attribute name="forecastOffsetMatcher" type="xsd:string" />
+       <xsd:attribute name="forecastDateMatcher" type="xsd:string" />
+       <xsd:attribute name="forecastOffsetMatcher" type="xsd:string" />
       </xsd:complexType>
      </xsd:element>
     </xsd:sequence>
@@ -466,7 +468,6 @@ The aggregation element allows multiple datasets to be combined into a single lo
 (18) <xsd:attribute name="recheckEvery" type="xsd:string" />
 (19) <xsd:attribute name="timeUnitsChange" type="xsd:boolean"/>
 
-
       <!-- fmrc only  -->
 (20) <xsd:attribute name="fmrcDefinition" type="xsd:string" />
 
@@ -474,44 +475,78 @@ The aggregation element allows multiple datasets to be combined into a single lo
 </xsd:element>
 ~~~
 
-1. Elements inside the <aggregation> get applied to each dataset in the aggregation, before it is aggregated. Elements outside the <aggregation> get applied to the aggregated dataset.
-2. For joinNew aggregation types, each variable to be aggregated must be explicitly listed in a variableAgg element.
-3. Optionally specify global attributes to promote to a variable (outer aggregations only) with a promoteGlobalAttribute element.
-4. Specify which variables should be cached (outer aggregation only) with a cacheVariable element.
-5. Nested netcdf datasets can be explicitly listed.
-6. Nested netcdf datasets can be implictly specified with a scan element.
-7. The scan directory location.
-8. If you specify a regExp, only files with whose full pathnames match the regular expression will be included.
-9. If you specify a suffix, only files with that ending will be included. A regExp attribute will override, that is, you cant specify both.
-10. You can optionally specify if the scan should descend into subdirectories (default true).
-11. If olderThan attribute is present, only files whose last modified date are older than this amount of time will be included. This is a way to exclude files that are still being written. This must be a udunit time such as "5 min" or "1 hour".
-12. A dateFormatMark is used on joinNew types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.SimpleDateFormat string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDateFormat string. You can ignore trailing text. For example:
+1. These are the elements inside the \<aggregation> which get applied to each dataset in the aggregation, before it 
+ is aggregated. Elements outside the \<aggregation> get applied to the aggregated dataset.
+2. For joinNew aggregation types, each variable to be aggregated must be explicitly listed in a **variableAgg** element.
+3. Optionally specify global attributes to promote to a variable (outer aggregations only) with a 
+ **promoteGlobalAttribute** element.
+4. Specify which variables should be cached (outer aggregation only) with a **cacheVariable** element.
+5. Nested **netcdf** datasets can be explicitly listed.
+6. Nested netcdf datasets can be implictly specified with a **scan** element.
+7. The scan directory **location**.
+8. If you specify a **regExp**, only files with whose full pathnames match the regular expression will be included.
+9. If you specify a **suffix**, only files with that ending will be included. A regExp attribute will override, that is, 
+ you cant specify both.
+10. You can optionally specify with **subdir** whether the scan should descend into subdirectories (default true).
+11. If **olderThan** attribute is present, only files whose last modified date are older than this amount of time will 
+ be included. This is a way to exclude files that are still being written. This must be a udunit time such as "5 min" 
+ or "1 hour".
+12. A **dateFormatMark** is used on joinNew types to create date coordinate values out of the filename. See more below.
+13. You can optionally specify that the files should be opened in **enhance** mode (default is *None*).
+ Generally you should do this if the ncml needs to operate on the dataset after the CoordSysBuilder has augmented it. 
+ Otherwise, you should not enhance.
+14. A specialized **scanFmrc** element can be used for a forecastModelRunSingleCollection aggregation, where forecast 
+ model run data is stored in multiple files, with one forecast time per file.
+15. For scanFmrc, the run date and the forecast date is extracted from the file pathname using a **runDateMatcher** and 
+ either a **forecastDateMatcher** or a **forecastOffsetMatcher** attribute. See more below.
+16. You must specify an **aggregation type**.
+17. For all types except joinUnion, you must specify the **dimension name** to join.
+18. The **recheckEvery** allows you to rescan periodically to see if the set of files has changed.
+19. Only for *joinExisting* and *forecastModelRunCollection* types: if **timeUnitsChange** is set to true, the units of the 
+ joined coordinate variable may change, so examine them and do any appropriate conversion so that the aggregated 
+ coordinate values have consistent units.
+20. Experimental, do not use.
 
+##### DateFormatMark
+A **dateFormatMark** is used on joinNew types to create date coordinate values out of the filename. It consists of a 
+ section of text, a '#' marking character, then a java.text.SimpleDateFormat string. The number of characters before 
+ the # is skipped in the filename, then the next part of the filename must match the SimpleDateFormat string. You can 
+ ignore trailing text. For example:
+ ````
         Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
  DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm
- 
-<b>_Note that the dateFormatMark works on the name of the file, without the directories!!_</b>
+````
+ **_Note that the dateFormatMark works on the name of the file, without the directories!!_**
+ A dateFormatMark can be used on a *joinExisting* type only if there is a single time in each file of the aggregation,
+ in which case the coordinate values of the time can be created from the filename, instead of having to open each file
+ and read it.
 
-A <b>_dateFormatMark_</b> can be used on a <b>_joinExisting_</b> type only if there is a single time in each file of the aggregation, in which case the coordinate values of the time can be created from the filename, instead of having to open each file and read it.
+##### ScanFmrc
 
-13. You can optionally specify that the files should be opened in enhanced mode (default is NetcdfDataset.EnhanceMode.None). Generally you should do this if the ncml needs to operate on the datset after the CoordSysBuilder has augmented it. Otherwise, you should not enhance.
-14. A specialized scanFmrc element can be used for a forecastModelRunSingleCollection aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.
-15. For scanFmrc, the run date and the forecast date is extracted from the file pathname using a runDateMatcher and either a forecastDateMatcher or a forecastOffsetMatcher attribute. All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The runDateMatcher and forecastDateMatcher has a java.text.SimpleDateFormat string before or after the match, while a forecastOffsetMatcher counts the number of 'H' characters, and extracts an hour offset from the run date. For example:
-     
+The run date and the forecast date is extracted from the file pathname using a **runDateMatcher** and 
+ either a **forecastDateMatcher** or a **forecastOffsetMatcher** attribute. All of these require matching a specific string in 
+ the file's pathname and then matching a date or hour offset immediately before or after the match. The match is 
+ specified by placing it between '#' marking characters. The runDateMatcher and forecastDateMatcher has a 
+ *java.text.SimpleDateFormat* string before or after the match, while a forecastOffsetMatcher counts the number of 
+ 'H' characters, and extracts an hour offset from the run date. For example:
+ ````
              Filename:  gfs_3_20060706_0300_006.grb 
-       runDateMatcher: #gfs_3_#yyyyMMdd_HH
-       
-forecastOffsetMatcher:                     HHH#.grb#
-will extract the run date 2006-07-06T03:00:00Z, and the forecast offset "6 hours".
+       runDateMatcher: #gfs_3_#yyyyMMdd_HH       
+ forecastOffsetMatcher:                     HHH#.grb#
+````
+ will extract the run date 2006-07-06T03:00:00Z, and the forecast offset "6 hours".
+ 
+##### Recheck Scan (LOOK: deprecated ??)
 
-16. You must specify an aggregation type.
-17. For all types except joinUnion, you must specify the dimension name to join.
-17. The recheckEvery attribute only applies when using a scan element. When you are using scan elements on a set of files that may change, and you are using caching, set recheckEvery to a valid udunit time value, like "10 min", "1 hour", "30 days", etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if recheckEvery amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing.
-
- The recheckEvery attribute specifies how out-of-date you are willing to allow your changing datasets to be, not how often the data changes. If you want updates to be seen within 5 min, use 5 minutes here, regardless of the frequency of updating.
-
-19. Only for joinExisting and forecastModelRunCollection types: if timeUnitsChange is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate conversion so that the aggregated coordinate values have consistent units.
-20. Experimental, do not use.
+When you are using scan elements on a set of files that may change, and you are using caching, 
+ set **recheckEvery** to a valid udunit time value, like "10 min", "1 hour", "30 days", etc. 
+ Whenever the dataset is reacquired from the cache, the directories will be rescanned if *recheckEvery*
+ amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the 
+ collection is assumed to be non-changing.
+ 
+ The *recheckEvery* attribute specifies how out-of-date you are willing to allow your changing datasets to be, not how 
+ often the data changes. If you want updates to be seen within 5 min, use 5 minutes here, regardless of the frequency 
+ of updating.
  
 #### AggregationType Type
 

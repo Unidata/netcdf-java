@@ -70,7 +70,7 @@ public class TestAggExisting {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting6.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "exclude/aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -88,7 +88,7 @@ public class TestAggExisting {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
-    String filename = "./" + TestNcMLRead.topDir + "aggExisting6.xml";
+    String filename = "./" + TestNcMLRead.topDir + "exclude/aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -150,7 +150,7 @@ public class TestAggExisting {
   // remove test - now we get a coordinate initialized to missing data, but at least testCoordsAdded works!
   // @Test
   public void testNoCoords() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExistingNoCoords.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "exclude/aggExistingNoCoords.xml";
     logger.debug("{}", filename);
     NetcdfDataset ncd = null;
 

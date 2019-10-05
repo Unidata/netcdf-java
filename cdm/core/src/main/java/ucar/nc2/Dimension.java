@@ -34,33 +34,14 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
   public static Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
 
-  public static Section makeSectionFromDimensions(Iterable<Dimension> dimensions) {
-    try {
-      List<Range> list = new ArrayList<>();
-      for (Dimension d : dimensions) {
-        int len = d.getLength();
-        if (len > 0)
-          list.add(new Range(d.getShortName(), 0, len - 1));
-        else if (len == 0)
-          list.add(Range.EMPTY); // LOOK empty not named
-        else {
-          assert d.isVariableLength();
-          list.add(Range.VLEN); // LOOK vlen not named
-        }
-      }
-      return new Section(list).makeImmutable();
-
-    } catch (InvalidRangeException e) {
-      throw new IllegalStateException(e.getMessage());
-    }
-  }
-
   /**
    * Make a space-delineated String from a list of Dimension names.
    * Inverse of makeDimensionsList().
    *
    * @return space-delineated String of Dimension names.
+   * @deprecated use Dimensions.makeDimensionsString()
    */
+  @Deprecated
   public static String makeDimensionsString(List<Dimension> dimensions) {
     if (dimensions == null)
       return "";
@@ -96,7 +77,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    *        dimension. null or empty String is a scalar.
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
-   * @deprecated do not use
+   * @deprecated use Group.makeDimensionsList()
    */
   @Deprecated
   public static List<Dimension> makeDimensionsList(Group parentGroup, String dimString)
@@ -140,7 +121,9 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    *        dimension. null or empty String is a scalar.
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
+   * @deprecated use Dimensions.makeDimensionsList()
    */
+  @Deprecated
   public static List<Dimension> makeDimensionsList(List<Dimension> dimensions, String dimString) {
     List<Dimension> newDimensions = new ArrayList<>();
     if (dimString == null) // scalar
@@ -171,6 +154,8 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return newDimensions;
   }
 
+  /** @deprecated use Dimensions.makeDimensionsAnon() */
+  @Deprecated
   public static List<Dimension> makeDimensionsAnon(int[] shape) {
     List<Dimension> newDimensions = new ArrayList<>();
     if ((shape == null) || (shape.length == 0)) { // scalar
@@ -253,10 +238,13 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    * @return owning group or null if !isShared
    * @deprecated Do not use.
    */
+  @Deprecated
   public Group getGroup() {
     return getParentGroup();
   }
 
+  /** @deprecated Do not use. */
+  @Deprecated
   public String makeFullName() {
     return super.getFullName();
   }
@@ -269,7 +257,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
       return false;
     Dimension other = (Dimension) oo;
     Group g = getGroup();
-    if ((g != null) && !g.equals(other.getGroup()))
+    if ((g != null) && !g.equals(other.getGroup()))  // TODO remove group in 6
       return false;
     if ((getShortName() == null) && (other.getShortName() != null))
       return false;
@@ -285,7 +273,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   @Override
   public int hashCode() {
     int result = 17;
-    Group g = getGroup();
+    Group g = getGroup();  // TODO remove group in 6
     if (g != null)
       result += 37 * result + g.hashCode();
     if (null != getShortName())

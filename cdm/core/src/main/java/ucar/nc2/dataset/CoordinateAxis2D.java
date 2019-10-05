@@ -42,7 +42,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   // for section and slice
   @Override
-  protected Variable copy() {
+  protected CoordinateAxis2D copy() {
     return new CoordinateAxis2D(this.ncd, this);
   }
 

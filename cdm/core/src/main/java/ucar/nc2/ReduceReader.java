@@ -5,6 +5,7 @@
 
 package ucar.nc2;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -21,9 +22,10 @@ import java.util.List;
  * @author caron
  * @since 12/16/13
  */
+@Immutable
 class ReduceReader implements ProxyReader {
-  private Variable orgClient;
-  private List<Integer> dims; // dimension index into original
+  private final Variable orgClient;
+  private final List<Integer> dims; // dimension index into original
 
   /**
    * Reduce 1 or more dimension of length 1

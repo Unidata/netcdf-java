@@ -2,8 +2,8 @@
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
   <aggregation type="union">
-    <netcdf location="file:src/test/data/ncml/nc/cldc.mean.nc"/>
-    <netcdf location="file:src/test/data/ncml/nc/lflx.mean.nc"/>
+    <netcdf location="nc/cldc.mean.nc"/>
+    <netcdf location="nc/lflx.mean.nc"/>
   </aggregation>
 
   <!-- ================== ->
@@ -25,16 +25,16 @@
 
   <aggregation type="joinNew" coordName="time" coordType="int" units="months since 2000-6-16 6:00" dateFormat="yyyy/M/d:HH:mm:ss">
     <variableAgg name="T"/>
-    <netcdf location="file:src/test/data/ncml/nc/time0.nc" coordValue="0"/>
-    <netcdf location="file:src/test/data/ncml/nc/time1.nc" coordValue="1"/>
-    <netcdf location="file:src/test/data/ncml/nc/time2.nc" coordValue="2"/>
+    <netcdf location="nc/time0.nc" coordValue="0"/>
+    <netcdf location="nc/time1.nc" coordValue="1"/>
+    <netcdf location="nc/time2.nc" coordValue="2"/>
     <fileScan dirLocation="file:test/data/ncml/nc/" filter="*.nc" coordValue="pattern"/>
   </aggregation>
 
     <!-- =================== -->
 
   <aggregation type="StationObsDataset" >
-    <fileScan dirLocation="file:src/test/data/ncml/nc/" filter="*.nc" time="pattern"/>
+    <fileScan dirLocation="nc/" filter="*.nc" time="pattern"/>
   </aggregation>
 
 </netcdf>

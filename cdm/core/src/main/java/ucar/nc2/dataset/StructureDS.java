@@ -128,7 +128,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   // for section and slice and select
 
   @Override
-  protected Variable copy() {
+  protected StructureDS copy() {
     return new StructureDS(getParentGroup(), this);
   }
 
@@ -564,7 +564,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   /**
    * DO NOT USE DIRECTLY. public by accident.
    * recalc any enhancement info
+   * @deprecated do not use
    */
+  @Deprecated
   public void enhance(Set<NetcdfDataset.Enhance> mode) {
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;

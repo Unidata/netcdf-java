@@ -176,7 +176,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   // for section and slice
 
   @Override
-  protected Variable copy() {
+  protected CoordinateAxis1D copy() {
     return new CoordinateAxis1D(this.ncd, this);
   }
 

@@ -109,7 +109,7 @@ public class StructurePseudoDS extends StructureDS {
   }
 
   @Override
-  protected Variable copy() {
+  protected StructureDS copy() {
     throw new UnsupportedOperationException();
   }
 

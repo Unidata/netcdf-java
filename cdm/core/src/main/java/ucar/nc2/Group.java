@@ -4,13 +4,13 @@
  */
 package ucar.nc2;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
@@ -812,7 +812,12 @@ public class Group extends CDMNode implements AttributeContainer {
     // only the root group build() should be called, the rest get called recursively
     this.groups = builder.gbuilders.stream().map(g -> g.build(this)).collect(Collectors.toList());
 
-    builder.vbuilders.forEach(v -> v.setGroup(this).setNcfile(this.ncfile));
+    builder.vbuilders.forEach(v -> {
+      v.setGroup(this);
+      if (v.ncfile == null) {
+        v.setNcfile(this.ncfile);
+      }
+    });
     this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
 
     this.attributes = builder.attributes;
@@ -842,12 +847,14 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   public static class Builder {
+    static private final Logger logger = LoggerFactory.getLogger(Builder.class);
+
     private NetcdfFile ncfile;
     private AttributeContainerHelper attributes = new AttributeContainerHelper("");
     private List<Dimension> dimensions = new ArrayList<>();
     private List<EnumTypedef> enumTypedefs = new ArrayList<>();
-    private List<Group.Builder> gbuilders = new ArrayList<>();
-    private List<Variable.Builder> vbuilders = new ArrayList<>();
+    public List<Group.Builder> gbuilders = new ArrayList<>();
+    public List<Variable.Builder> vbuilders = new ArrayList<>();
     private String shortName;
     private boolean built;
 
@@ -873,6 +880,12 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
+    public Builder addDimension(Dimension.Builder dim) {
+      Preconditions.checkNotNull(dim);
+      dimensions.add(dim.build());
+      return this;
+    }
+
     public Builder addDimensions(Collection<Dimension> dims) {
       Preconditions.checkNotNull(dims);
       dimensions.addAll(dims);
@@ -883,6 +896,19 @@ public class Group extends CDMNode implements AttributeContainer {
       Optional<Dimension> want = dimensions.stream().filter(v->v.shortName.equals(dimName)).findFirst();
       want.ifPresent(d -> dimensions.remove(d));
       return want.isPresent();
+    }
+
+    public Optional<Dimension> findDimension(String name) {
+      return dimensions.stream().filter(d->d.shortName.equals(name)).findFirst();
+    }
+
+    public boolean resetDimensionLength(String dimName, int length) {
+      Optional<Dimension> oldDim = findDimension(dimName);
+      oldDim.ifPresent(d -> {
+        removeDimension(dimName);
+        addDimension(new Dimension(d.toBuilder()).toBuilder().setLength(length));
+      });
+      return oldDim.isPresent();
     }
 
     /** Add a nested Group. */
@@ -917,10 +943,17 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
-    /** Add a Variable. */
+    /** Add a Variable, replacing one of same name if its exists. */
     public Builder addVariable(Variable.Builder variable) {
       Preconditions.checkNotNull(variable);
+      findVariable(variable.shortName).ifPresent(v -> {
+        System.out.printf("HEY %s already exists %n", v.shortName);
+        removeVariable(v.shortName);
+        logger.info("Removed existing variable {}", variable.shortName);
+      });
       vbuilders.add(variable);
+      //if (variable.shortName.equals("time"))
+      //  System.out.printf("HEY%n");
       return this;
     }
 

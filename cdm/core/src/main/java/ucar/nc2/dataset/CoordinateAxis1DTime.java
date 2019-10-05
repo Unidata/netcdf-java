@@ -51,7 +51,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   // for section and slice
   @Override
-  protected Variable copy() {
+  protected CoordinateAxis1DTime copy() {
     return new CoordinateAxis1DTime(this.ncd, this);
   }
 
