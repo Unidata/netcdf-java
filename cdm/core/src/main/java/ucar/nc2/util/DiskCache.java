@@ -236,6 +236,11 @@ public class DiskCache {
     fileLocation = fileLocation.replace('\\', '/'); // LOOK - use better normalization code eg Spring StringUtils
     String cachePath = urlPathEscaper.escape(fileLocation);
 
+    // We need to escape ":" on windows or else our cache file will be something
+    // like root + http, or root + C. We're already using UrlEscapers, so let's
+    // replace ":" with "%3A"
+    cachePath = cachePath.replace(":", "%3A");
+
     return root + cachePath;
   }
 
