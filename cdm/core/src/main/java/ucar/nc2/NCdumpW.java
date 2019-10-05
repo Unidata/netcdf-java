@@ -728,16 +728,25 @@ public class NCdumpW {
       return;
     }
 
-    StringBuilder sbuff = new StringBuilder();
-    for (String arg : args) {
-      sbuff.append(arg);
-      sbuff.append(" ");
-    }
-
     try {
       Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
-      NCdumpW.print(sbuff.toString(), writer, null);
-
+      // pull out the filename from the command
+      String filename = args[0];
+      ucar.nc2.util.CancelTask ct = null;
+      try (NetcdfFile nc = NetcdfDataset.openFile(filename, ct)) {
+        // the rest of the command
+        StringBuilder command = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+          command.append(args[i]);
+          command.append(" ");
+        }
+        print(nc, command.toString(), writer, ct);
+      } catch (java.io.FileNotFoundException e) {
+        writer.write("file not found= ");
+        writer.write(filename);
+      } finally {
+        writer.close();
+      }
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }
