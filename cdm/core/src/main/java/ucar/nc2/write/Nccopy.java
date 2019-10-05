@@ -31,7 +31,7 @@ public class Nccopy {
 
   private static class CommandLine {
     @Parameter(names = {"-i", "--input"}, description = "Input dataset.", required = true)
-    public File inputFile;
+    public String inputFile;
 
     @Parameter(names = {"-o", "--output"}, description = "Output file.", required = true)
     public File outputFile;
@@ -61,7 +61,7 @@ public class Nccopy {
             + "This parameter controls where temporary files will be stored, if necessary "
             + "(e.g. intermediate uncompressed NEXRAD files created when reading compressed files). "
             + "Must be a valid filesystem path. "
-            + "Note: this directory is not automatically cleaned, so be sure to clean-up as needed")
+            + "Note: this directory is not automatically cleaned, so be sure to clean-up as needed.")
     public File diskCacheRoot;
 
     // todo - add flag to autoclean diskCacheRoot
@@ -117,7 +117,7 @@ public class Nccopy {
         return;
       }
 
-      String datasetIn = cmdLine.inputFile.getAbsolutePath();
+      String datasetIn = cmdLine.inputFile;
       String datasetOut = cmdLine.outputFile.getAbsolutePath();
       CancelTaskImpl cancel = new CancelTaskImpl();
       Formatter errlog = new Formatter();
