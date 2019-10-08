@@ -70,7 +70,7 @@ public class AggregationNew extends AggregationOuter {
       cacheList.add(cv);
     } else {
       Variable.Builder joinAggCoordVar = joinAggCoord.get();
-      if (joinAggCoordVar.getRank() == 1) {
+      if (joinAggCoordVar.getRank() == 0) {
         // For an existing variable matching the aggregated dim name, if it's a scalar
         // variable, we can just use it and its values for the aggregation coordinate variable
         // Need to ensure it's included in the list of variables to aggregate

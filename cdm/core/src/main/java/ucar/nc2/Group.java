@@ -808,6 +808,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
     builder.dimensions.forEach(d -> d.setGroup(this)); // LOOK remove in 6
     this.dimensions = new ArrayList<>(builder.dimensions);
+    this.enumTypedefs =  new ArrayList<>(builder.enumTypedefs);
 
     // only the root group build() should be called, the rest get called recursively
     this.groups = builder.gbuilders.stream().map(g -> g.build(this)).collect(Collectors.toList());
@@ -821,7 +822,6 @@ public class Group extends CDMNode implements AttributeContainer {
     this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
 
     this.attributes = builder.attributes;
-    this.enumTypedefs =  new ArrayList<>(builder.enumTypedefs);
 
     // This needs to go away in 6.
     this.dimensions.forEach(d -> d.setParentGroup(this));

@@ -986,7 +986,8 @@ public class NcMLReaderNew {
 
     // see if it already exists
     Variable refv = (refGroup == null) ? null : refGroup.findVariable(nameInFile);
-    if (refv == null) { // new
+    Optional<Variable.Builder> addedFromAgg = groupBuilder.findVariable(nameInFile);
+    if (refv == null && !addedFromAgg.isPresent()) { // new
       if (dtype == null) {
         errlog.format("NcML Variable dtype is required for new variables (%s)%n", varElem);
         return;
@@ -1000,15 +1001,23 @@ public class NcMLReaderNew {
     }
 
     // refv exists
-    if (dtype == null) {
-      dtype = refv.getDataType();
+    if (refv != null) {
+      if (dtype == null) {
+        dtype = refv.getDataType();
+      }
+
+      if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
+        readStructureExisting(groupBuilder, dtype, (Structure) refv, varElem)
+            .ifPresent(groupBuilder::addVariable);
+      } else {
+        readVariableExisting(groupBuilder, dtype, refv, varElem)
+            .ifPresent(groupBuilder::addVariable);
+      }
+      return;
     }
 
-    if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
-      readStructureExisting(groupBuilder, dtype, (Structure) refv, varElem).ifPresent(groupBuilder::addVariable);
-    } else {
-      readVariableExisting(groupBuilder, dtype, refv, varElem).ifPresent(groupBuilder::addVariable);
-    }
+    DataType finalDtype = dtype;
+    addedFromAgg.ifPresent( agg -> augmentVariableNew(agg, finalDtype, varElem));
   }
 
   private Optional<Builder> readVariableExisting(Group.Builder groupBuilder, DataType dtype, Variable refv, Element varElem) {
@@ -1089,13 +1098,13 @@ public class NcMLReaderNew {
    */
   private VariableDS.Builder readVariableNew(Group.Builder groupBuilder, DataType dtype, Element varElem) {
     String name = varElem.getAttributeValue("name");
-    String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
+    VariableDS.Builder v = VariableDS.builder().setName(name).setDataType(dtype);
 
     // list of dimension names
     String dimNames = varElem.getAttributeValue("shape");
-    if (dimNames == null)
-      dimNames = "";
-    VariableDS.Builder v = VariableDS.builder().setName(name).setDataType(dtype).setDimensionsByName(dimNames);
+    if (dimNames != null) {
+      v.setDimensionsByName(dimNames);
+    }
     Element valueElem = varElem.getChild("values", ncNS);
     if (valueElem != null) {
       readValues(v, dtype, varElem, valueElem);
@@ -1106,10 +1115,35 @@ public class NcMLReaderNew {
     for (Element attElem : attList)
       readAtt(v.getAttributeContainer(), null, attElem);
 
+    String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
     if (typedefS != null)
       v.setEnumTypeName(typedefS);
 
     return v;
+  }
+
+  private void augmentVariableNew(Variable.Builder addedFromAgg, DataType dtype, Element varElem) {
+    String name = varElem.getAttributeValue("name");
+    addedFromAgg.setName(name).setDataType(dtype);
+
+    // list of dimension names
+    String dimNames = varElem.getAttributeValue("shape");
+    if (dimNames != null) {
+      addedFromAgg.setDimensionsByName(dimNames);
+    }
+    Element valueElem = varElem.getChild("values", ncNS);
+    if (valueElem != null) {
+      readValues(addedFromAgg, dtype, varElem, valueElem);
+    }
+
+    // look for attributes
+    java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
+    for (Element attElem : attList)
+      readAtt(addedFromAgg.getAttributeContainer(), null, attElem);
+
+    String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
+    if (typedefS != null)
+      addedFromAgg.setEnumTypeName(typedefS);
   }
 
   private Optional<StructureDS.Builder> readStructureExisting(Group.Builder groupBuilder, DataType dtype, Structure refv, Element varElem) {

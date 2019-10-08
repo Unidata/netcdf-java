@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.*;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -17,14 +17,10 @@ import java.lang.invoke.MethodHandles;
 /**
  * Test netcdf dataset in the JUnit framework.
  */
-
-public class TestAggSynthetic extends TestCase {
+public class TestAggSynthetic {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestAggSynthetic(String name) {
-    super(name);
-  }
-
+  @Test
   public void test1() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "aggSynthetic.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -44,6 +40,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void test2() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "aggSynthetic2.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -57,6 +54,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void test3() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "aggSynthetic3.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -70,6 +68,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testNoCoord() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "aggSynNoCoord.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -83,6 +82,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testNoCoordDir() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "aggSynNoCoordsDir.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -96,6 +96,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testJoinNewScalarCoord() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "aggJoinNewScalarCoord.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -115,6 +116,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testRename() throws IOException, InvalidRangeException {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
@@ -123,7 +125,7 @@ public class TestAggSynthetic extends TestCase {
         + "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" + "  </aggregation>\n"
         + "</netcdf>";
 
-    String filename = "file:./" + TestNcMLRead.topDir + "aggSynRename.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "exclude/aggSynRename.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), null);
 
     testDimensions(ncfile);
@@ -134,6 +136,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testScan() throws IOException, InvalidRangeException {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
@@ -156,7 +159,7 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
-  public void testDimensions(NetcdfFile ncfile) {
+  private void testDimensions(NetcdfFile ncfile) {
     logger.debug("ncfile = {}", ncfile);
 
     Dimension latDim = ncfile.findDimension("lat");
@@ -177,7 +180,7 @@ public class TestAggSynthetic extends TestCase {
     assert timeDim.getLength() == 3 : timeDim.getLength();
   }
 
-  public void testCoordVar(NetcdfFile ncfile) throws IOException {
+  private void testCoordVar(NetcdfFile ncfile) throws IOException {
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
     assert lat.getShortName().equals("lat");
@@ -210,7 +213,7 @@ public class TestAggSynthetic extends TestCase {
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
   }
 
-  public void testAggCoordVar(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVar(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
     assert time.getShortName().equals("time");
@@ -229,7 +232,7 @@ public class TestAggSynthetic extends TestCase {
     assert dataD.get(2) == 99;
   }
 
-  public void testAggCoordVar2(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVar2(NetcdfFile ncfile) throws IOException {
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -249,7 +252,7 @@ public class TestAggSynthetic extends TestCase {
     assert dataI.getIntNext() == 2 : dataI.getIntCurrent();
   }
 
-  public void testAggCoordVar3(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVar3(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
     assert time.getShortName().equals("time");
@@ -269,7 +272,7 @@ public class TestAggSynthetic extends TestCase {
     Assert2.assertNearlyEquals(dataI.getDoubleNext(), 99.0);
   }
 
-  public void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
     assert time.getShortName().equals("time");
@@ -289,7 +292,7 @@ public class TestAggSynthetic extends TestCase {
     }
   }
 
-  public void testAggCoordVarJoinedScalar(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVarJoinedScalar(NetcdfFile ncfile) throws IOException {
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -309,7 +312,7 @@ public class TestAggSynthetic extends TestCase {
     assert dataI.get(2) == 83532;
   }
 
-  public void testAggCoordVarNoCoord(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVarNoCoord(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
     assert time.getShortName().equals("time");
@@ -331,7 +334,7 @@ public class TestAggSynthetic extends TestCase {
     assert coordName.equals("time2.nc") : coordName;
   }
 
-  public void testAggCoordVarNoCoordsDir(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVarNoCoordsDir(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
     assert time.getShortName().equals("time");
@@ -353,7 +356,7 @@ public class TestAggSynthetic extends TestCase {
     assert coordName.equals("time2Dir.nc") : coordName;
   }
 
-  public void testReadData(NetcdfFile ncfile, String name) throws IOException {
+  private void testReadData(NetcdfFile ncfile, String name) throws IOException {
 
     Variable v = ncfile.findVariable(name);
     assert null != v;
@@ -390,7 +393,7 @@ public class TestAggSynthetic extends TestCase {
 
   }
 
-  public void readSlice(NetcdfFile ncfile, int[] origin, int[] shape, String name)
+  private void readSlice(NetcdfFile ncfile, int[] origin, int[] shape, String name)
       throws IOException, InvalidRangeException {
 
     Variable v = ncfile.findVariable(name);
@@ -412,7 +415,7 @@ public class TestAggSynthetic extends TestCase {
         }
   }
 
-  public void testReadSlice(NetcdfFile ncfile, String name) throws IOException, InvalidRangeException {
+  private void testReadSlice(NetcdfFile ncfile, String name) throws IOException, InvalidRangeException {
     readSlice(ncfile, new int[] {0, 0, 0}, new int[] {3, 3, 4}, name);
     readSlice(ncfile, new int[] {0, 0, 0}, new int[] {2, 3, 2}, name);
     readSlice(ncfile, new int[] {2, 0, 0}, new int[] {1, 3, 4}, name);

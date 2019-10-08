@@ -24,7 +24,20 @@ public class TestNcmlReaderProblems {
 
   @Test
   public void problem() throws IOException {
-    compare("file:C:/dev/github/netcdf-java/cdm/core/src/test/data/ncml/aggJoinNewScalarCoord.xml");
+    // This used to fail in  NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
+    // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
+
+    // This fails in NcmlReaderNew, because "NcML Variable dtype is required for new variables".
+    // Implies that an aggregation element must (at least in this case) add stuff to the Dataset.Builder,
+    // before the non-agg elements are processed.
+    // compare("file:" + TestNcMLRead.topDir + "aggSynRename.xml");
+    // compare("file:" + TestNcMLRead.topDir + "aggUnionRename.xml");
+
+    // This is failing on DIFF time: element type double !== int
+    // I think original is wrong, since ncml has <variable name="time" type="int">
+    // compare("file:" + TestNcMLRead.topDir + "aggSynthetic.xml");
+
+    compare("file:" + TestNcMLRead.topDir + "modifyAtts.xml");
   }
 
   private void compare(String ncmlLocation) throws IOException {

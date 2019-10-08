@@ -4,7 +4,6 @@
  */
 package ucar.nc2.ncml;
 
-import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.ncml.NcMLReaderNew;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.TestDir;
 
 /**
@@ -58,7 +56,7 @@ public class TestNcmlReadersCompare {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         if (!compare.compare(org, withBuilder)) {
-          System.out.printf("Compare %s %s%n", ncmlLocation, f);
+          System.out.printf("Compare %s%n%s%n", ncmlLocation, f);
           fail();
         }
       }

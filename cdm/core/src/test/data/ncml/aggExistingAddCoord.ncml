@@ -3,8 +3,8 @@
 
   <!-- A time dimension exists, but not a time coordinate -->
   <variable name="time" shape="time" type="int">
-     <values start="0" increment="1" />
      <attribute name="units" value="fake" />
+     <values start="0" increment="1" />
   </variable>
 
 	<aggregation  dimName="time" type="joinExisting">

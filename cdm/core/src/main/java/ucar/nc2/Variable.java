@@ -1717,7 +1717,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (this.dataType.isEnum()) {
       this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
       if (this.enumTypedef == null) {
-        throw new IllegalStateException(String.format("EnumTypedef %s does not exist in a parent Group", builder.enumTypeName));
+        throw new IllegalStateException(String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
       }
     }
 

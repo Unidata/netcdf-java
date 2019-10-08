@@ -219,8 +219,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "file1 group");
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "file2 group");
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "copy");
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "org");
 
     // attributes
     ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);
@@ -282,8 +282,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "file1 var");
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "file2 var");
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "copy");
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "org");
 
     // attributes
     ok &= checkAttributes(org, org.getAttributes(), copy.getAttributes(), filter);
