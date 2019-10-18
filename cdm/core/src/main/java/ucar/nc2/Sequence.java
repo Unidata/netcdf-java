@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * 
  * @author caron
  * @since Feb 23, 2008
- * @deprecated Sequence will possibly not extend Structure or Variable, in 6.
+ * @deprecated Sequence may not extend Structure or Variable, in 6.
  */
 @Deprecated
 public class Sequence extends Structure {
@@ -120,13 +120,12 @@ public class Sequence extends Structure {
   }
 
   public Builder<?> toBuilder() {
-    Sequence.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Sequence.Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b;
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   /**

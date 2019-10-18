@@ -670,14 +670,13 @@ public class Structure extends Variable {
 
   @Override
   public Builder<?> toBuilder() {
-    Structure.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     this.members.forEach(m -> b.addMemberVariable(m.toBuilder()));
-    return b;
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   /**
@@ -697,7 +696,7 @@ public class Structure extends Variable {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
-    private List<Variable.Builder> vbuilders = new ArrayList<>();
+    public List<Variable.Builder> vbuilders = new ArrayList<>();
     private boolean built;
 
     public T addMemberVariable(Variable.Builder v) {
@@ -716,6 +715,7 @@ public class Structure extends Variable {
       return want.isPresent();
     }
 
+    /** Normally this is called by Group.build() */
     public Structure build() {
       if (built)
         throw new IllegalStateException("already built");

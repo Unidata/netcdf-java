@@ -10,7 +10,7 @@ import ucar.ma2.Range;
 import ucar.ma2.Section;
 
 /**
- * Static helper methnods for Dimension.
+ * Static helper methods for Dimension.
  *
  * @author caron
  * @since 10/3/2019.
@@ -117,8 +117,28 @@ public class Dimensions {
     if ((shape == null) || (shape.length == 0)) { // scalar
       return newDimensions;
     }
-    for (int len : shape)
-      newDimensions.add(Dimension.builder().setLength(len).setIsShared(false).build());
+    for (int len : shape) {
+      newDimensions.add(Dimension.builder().setIsVariableLength(len == -1).setLength(len).setIsShared(false).build());
+    }
     return newDimensions;
+  }
+
+  /**
+   * Get list of Dimensions, including parents if any.
+   *
+   * @return array of Dimension, rank of v plus all parents.
+   */
+  public static List<Dimension> makeDimensionsAll(Variable v) {
+    List<Dimension> dimsAll = new ArrayList<>();
+    addDimensionsAll(dimsAll, v);
+    return dimsAll;
+  }
+
+  private static void addDimensionsAll(List<Dimension> result, Variable v) {
+    if (v.isMemberOfStructure())
+      addDimensionsAll(result, v.getParentStructure());
+
+    for (int i = 0; i < v.getRank(); i++)
+      result.add(v.getDimension(i));
   }
 }

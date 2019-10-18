@@ -73,7 +73,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  private EnhanceScaleMissingUnsignedImpl(VariableDS forVar, boolean fillValueIsMissing, boolean invalidDataIsMissing,
+  EnhanceScaleMissingUnsignedImpl(VariableDS forVar, boolean fillValueIsMissing, boolean invalidDataIsMissing,
       boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
@@ -166,7 +166,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       hasFillValue = true;
     } else {
       // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      String fileTypeId = forVar.getNetcdfFile() == null ? null : forVar.getNetcdfFile().getFileTypeId();
+      String fileTypeId = forVar.orgFileTypeId;
 
       boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
           || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);

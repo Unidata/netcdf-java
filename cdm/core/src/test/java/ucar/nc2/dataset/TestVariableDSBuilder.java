@@ -4,18 +4,24 @@ package ucar.nc2.dataset;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 import com.google.common.collect.ImmutableList;
+import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
 import org.junit.Test;
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
 import ucar.ma2.Section;
+import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.CompareNetcdf2;
 
 /** Test VariableDS builders */
-public class TestVariableDSBuilders {
+public class TestVariableDSBuilder {
 
   @Test
   public void testVarBuilder() {
@@ -88,52 +94,41 @@ public class TestVariableDSBuilders {
   }
 
   @Test
-  public void testBuilderChain() {
-    StructureDS struct = StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
-    assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
-    assertThat(struct.getShortName()).isEqualTo("struct");
-    assertThat(struct.getVariableNames()).hasSize(0);
-    assertThat(struct.getVariables()).hasSize(0);
+  public void testCopyFrom() {
+    Group group =
+        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+            .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
+    Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
+        .setDimensionsByName("dim1 dim2").addAttribute(new Attribute("units", "flower"));
+    vb.getAttributeContainer().addAttribute(new Attribute("attName", "AttValue"));
+    Variable v = vb.build();
+
+    VariableDS.Builder builder = VariableDS.builder().copyFrom(v);
+    assertThat(builder.units).isEqualTo("flower");
+
+    VariableDS varDS = builder.build();
+    assertThat(varDS.getShortName()).isEqualTo("name");
+    assertThat(varDS.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(varDS.findAttValueIgnoreCase("attname", null)).isEqualTo("AttValue");
+    assertThat(varDS.getUnitsString()).isEqualTo("flower");
   }
 
   @Test
-  public void testToBuilderChain() {
-    StructureDS struct = StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
-    StructureDS struct2 = struct.toBuilder().setName("s2").build();
-    assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
-    assertThat(struct2.getShortName()).isEqualTo("s2");
-    assertThat(struct2.getVariableNames()).hasSize(0);
-    assertThat(struct2.getVariables()).hasSize(0);
+  public void testMissingData() throws IOException {
+    Group parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+        .addDimension(new Dimension("dim2", 27)).build(null);
+
+    VariableDS vds = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")
+        .setEnhanceMode(NetcdfDataset.getEnhanceAll()).addAttribute(new Attribute("missing_value", 0.0f))
+        .setDimensionsByName("dim1").setGroup(parent).build();
+
+    Array data = vds.read();
+    System.out.printf("data = %s%n", data);
+    IndexIterator iter = data.getIndexIterator();
+    while (iter.hasNext()) {
+      assertThat(iter.getFloatNext()).isEqualTo(Float.NaN);
+    }
   }
-
-  @Test
-  public void testStructBuilder() {
-    StructureDS var = StructureDS.builder().setName("name").setDataType(DataType.FLOAT).build();
-    assertThat(var.getDataType()).isEqualTo(DataType.STRUCTURE);
-    assertThat(var.getShortName()).isEqualTo("name");
-    assertThat(var.isScalar()).isTrue();
-  }
-
-  @Test
-  public void testStructDSBuilder() {
-    StructureDS var = StructureDS.builder().setName("name").setUnits("units").setDesc("desc").build();
-    assertThat(var.getUnitsString()).isEqualTo("units");
-    assertThat(var.getDescription()).isEqualTo("desc");
-    assertThat(var.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
-    assertThat(var.findAttValueIgnoreCase(CDM.LONG_NAME, "")).isEqualTo("desc");
-  }
-
-  @Test
-  public void testStructDSBuilderOrgValues() {
-    Structure orgVar = Structure.builder().setName("orgName").setDataType(DataType.INT).build();
-    StructureDS var =
-        StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar).build();
-    assertThat(var.getOriginalDataType()).isEqualTo(DataType.STRUCTURE);
-    assertThat(var.getOriginalName()).isEqualTo("orgName");
-    assertThat(var.getOriginalVariable()).isEqualTo(orgVar);
-  }
-
-
 
 }
 

@@ -369,7 +369,9 @@ public class LatLonRect {
    * Extend the bounding box to contain this point
    *
    * @param p point to include
+   * @deprecated use builder
    */
+  @Deprecated
   public void extend(LatLonPoint p) {
     if (contains(p))
       return;
@@ -436,7 +438,9 @@ public class LatLonRect {
    * Extend the bounding box to contain the given rectangle
    *
    * @param r rectangle to include
+   * @deprecated use builder
    */
+  @Deprecated
   public void extend(LatLonRect r) {
     Preconditions.checkNotNull(r);
 
@@ -521,7 +525,6 @@ public class LatLonRect {
     double max = Math.min(max1, max2);
     return min < max;
   }
-
 
   /**
    * Return a String representation of this object.

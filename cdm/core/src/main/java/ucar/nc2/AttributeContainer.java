@@ -6,19 +6,26 @@
 package ucar.nc2;
 
 /**
- * A mutable Container of Attributes
+ * A Container of Attributes.
+ * Use AttributeContainerHelper for a mutable contained.
  *
  * @author caron
  * @since 3/20/14
  */
 public interface AttributeContainer {
 
-  /** Returns immutable list of attributes. */
+  /**
+   * Returns immutable list of attributes.
+   * TODO will return ImmutableList<Attribute> in version 6
+   */
   java.util.List<Attribute> getAttributes();
 
   /**
    * Add all; replace old if has same name
+   * 
+   * @deprecated will be removed in version 6.
    */
+  @Deprecated
   void addAll(Iterable<Attribute> atts);
 
   /**
@@ -26,7 +33,9 @@ public interface AttributeContainer {
    * 
    * @param att add this Attribute
    * @return the added attribute
+   * @deprecated will be removed in version 6.
    */
+  @Deprecated
   Attribute addAttribute(Attribute att);
 
   /**
@@ -47,7 +56,9 @@ public interface AttributeContainer {
    *
    * @param a remove this attribute
    * @return true if was found and removed
+   * @deprecated will be removed in version 6.
    */
+  @Deprecated
   boolean remove(Attribute a);
 
   /**
@@ -55,7 +66,9 @@ public interface AttributeContainer {
    *
    * @param attName if exists, remove this attribute
    * @return true if was found and removed
+   * @deprecated will be removed in version 6.
    */
+  @Deprecated
   boolean removeAttribute(String attName);
 
   /**
@@ -63,7 +76,9 @@ public interface AttributeContainer {
    *
    * @param attName if exists, remove this attribute
    * @return true if was found and removed
+   * @deprecated will be removed in version 6.
    */
+  @Deprecated
   boolean removeAttributeIgnoreCase(String attName);
 
 }

@@ -131,7 +131,6 @@ public class NavigatedPanel extends JPanel {
   private ProjectionPointImpl workW = new ProjectionPointImpl();
   private LatLonPointImpl workL = new LatLonPointImpl();
   private Point2D workS = new Point2D.Double();
-  private Bearing workB = new Bearing();
   private Rectangle myBounds = new Rectangle();
   private ProjectionRect boundingBox = new ProjectionRect();
 
@@ -723,11 +722,11 @@ public class NavigatedPanel extends JPanel {
     sbuff.append(workL.toString(5));
 
     if (hasReference) {
-      Bearing.calculateBearing(refLatLon, workL, workB);
+      Bearing bearing = Bearing.calculateBearing(refLatLon, workL);
       sbuff.append("  (");
-      sbuff.append(Format.dfrac(workB.getAngle(), 0));
+      sbuff.append(Format.dfrac(bearing.getAngle(), 0));
       sbuff.append(" deg ");
-      sbuff.append(Format.d(workB.getDistance(), 4, 5));
+      sbuff.append(Format.d(bearing.getDistance(), 4, 5));
       sbuff.append(" km)");
     }
 

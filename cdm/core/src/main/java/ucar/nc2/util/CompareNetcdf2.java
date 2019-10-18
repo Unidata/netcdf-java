@@ -153,12 +153,14 @@ public class CompareNetcdf2 {
       NetcdfDataset orgds = (NetcdfDataset) org;
       NetcdfDataset copyds = (NetcdfDataset) copy;
 
-      List matches = new ArrayList();
-      ok &= checkAll("Dataset CS:", orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
-      for (int i = 0; i < matches.size(); i += 2) {
-        CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
-        CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
-        ok &= compareCoordinateSystem(orgCs, copyCs, filter);
+      // coordinate systems
+      for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
+        CoordinateSystem cs2 = copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName())).findFirst().orElse(null);
+        if (cs2 == null) {
+          f.format("  ** Cant find CoordinateSystem=%s in file2 %n", cs1.getName());
+        } else {
+          ok &= compareCoordinateSystem(cs1, cs2, filter);
+        }
       }
     }
 
@@ -323,15 +325,16 @@ public class CompareNetcdf2 {
 
     // coordinate systems
     if (org instanceof VariableEnhanced && copy instanceof VariableEnhanced) {
-      VariableEnhanced orgds = (VariableEnhanced) org;
-      VariableEnhanced copyds = (VariableEnhanced) copy;
+      VariableEnhanced orge = (VariableEnhanced) org;
+      VariableEnhanced copye = (VariableEnhanced) copy;
 
-      List matches = new ArrayList();
-      ok &= checkAll(orgds.getFullName(), orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
-      for (int i = 0; i < matches.size(); i += 2) {
-        CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
-        CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
-        ok &= compareCoordinateSystem(orgCs, copyCs, filter);
+      for (CoordinateSystem cs1 : orge.getCoordinateSystems()) {
+        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName())).findFirst().orElse(null);
+        if (cs2 == null) {
+          f.format("  ** Cant find cs %s in file2 var %s %n", cs1.getName(), org.getShortName());
+        } else {
+          ok &= compareCoordinateSystem(cs1, cs2, filter);
+        }
       }
     }
 
@@ -351,8 +354,15 @@ public class CompareNetcdf2 {
       ok &= compareCoordinateAxis(orgCs, copyCs, filter);
     }
 
-    List matchTransforms = new ArrayList();
-    ok &= checkAll(cs1.getName(), cs1.getCoordinateTransforms(), cs2.getCoordinateTransforms(), matchTransforms);
+    for (CoordinateTransform ct1 : cs1.getCoordinateTransforms()) {
+      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream().filter(ct -> ct.getName().equals(ct1.getName())).findFirst().orElse(null);
+      if (ct2 == null) {
+        f.format("  ** Cant find transform %s in file2 %n", ct1.getName());
+      } else {
+        ok &= ct1.equals(ct2);
+      }
+    }
+
     return ok;
   }
 
@@ -401,7 +411,6 @@ public class CompareNetcdf2 {
 
     return ok;
   }
-
 
   // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.

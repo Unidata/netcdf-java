@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;

@@ -24,32 +24,15 @@ public class Bearing {
 
   /**
    * Default Earth. Major radius and flattening;
+   * TODO: reconcile with Earth.DEFAULT.
    *
    */
   private static final Earth defaultEarth = new Earth(6378137.0, 0., 298.257223563);
 
   /**
-   * Earth radius
-   */
-  private static double A;
-  // private static double A = 6378137.0; // in meters (for reference)
-
-  /**
-   * The Earth flattening value
-   */
-  private static double F;
-  // private static double F = 1.0 / 298.257223563; (for reference)
-
-  /**
    * epsilon
    */
   private static final double EPS = 0.5E-13;
-
-  /**
-   * constant R
-   */
-  // private static final double R = 1.0 - F; (for reference)
-  private static double R;
 
   /**
    * conversion for degrees to radians
@@ -61,6 +44,12 @@ public class Bearing {
    */
   private static final double deg = Math.toDegrees(1.0);
 
+  /** @deprecated do not use */
+  @Deprecated
+  public static Bearing calculateBearing(Earth e, LatLonPoint pt1, LatLonPoint pt2, Bearing result) {
+    return calculateBearing(e, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude(), result);
+  }
+
   /**
    * Calculate the bearing between the 2 points.
    * See calculateBearing below.
@@ -68,14 +57,19 @@ public class Bearing {
    * @param e Earth object (defines radius & flattening)
    * @param pt1 Point 1
    * @param pt2 Point 2
-   * @param result Object to use if non-null
    * @return The bearing
    */
-  public static Bearing calculateBearing(Earth e, LatLonPoint pt1, LatLonPoint pt2, Bearing result) {
-
-    return calculateBearing(e, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude(), result);
+  public static Bearing calculateBearing(Earth e, LatLonPoint pt1, LatLonPoint pt2) {
+    return calculateBearing(e, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude());
   }
 
+
+  /** @deprecated do not use */
+  @Deprecated
+  public static Bearing calculateBearing(LatLonPoint pt1, LatLonPoint pt2, Bearing result) {
+    return calculateBearing(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude(),
+        result);
+  }
 
   /**
    * Calculate the bearing between the 2 points.
@@ -83,17 +77,19 @@ public class Bearing {
    *
    * @param pt1 Point 1
    * @param pt2 Point 2
-   * @param result Object to use if non-null
    * @return The bearing
    */
-  public static Bearing calculateBearing(LatLonPoint pt1, LatLonPoint pt2, Bearing result) {
-
-    return calculateBearing(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude(),
-        result);
+  public static Bearing calculateBearing(LatLonPoint pt1, LatLonPoint pt2) {
+    return calculateBearing(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude());
   }
 
-  /** _more_ */
   private static int maxLoopCnt;
+
+  /** @deprecated do not use */
+  @Deprecated
+  public static Bearing calculateBearing(double lat1, double lon1, double lat2, double lon2, Bearing result) {
+    return calculateBearing(defaultEarth, lat1, lon1, lat2, lon2, result);
+  }
 
   /**
    * Computes distance (in km), azimuth (degrees clockwise positive
@@ -105,16 +101,264 @@ public class Bearing {
    * @param lon1 Lon of point 1
    * @param lat2 Lat of point 2
    * @param lon2 Lon of point 2
-   * @param result put result here, or null to allocate
    * @return a Bearing object with distance (in km), azimuth from
    *         pt1 to pt2 (degrees, 0 = north, clockwise positive)
    */
-  public static Bearing calculateBearing(double lat1, double lon1, double lat2, double lon2, Bearing result) {
-
-    return calculateBearing(defaultEarth, lat1, lon1, lat2, lon2, result);
+  public static Bearing calculateBearing(double lat1, double lon1, double lat2, double lon2) {
+    return calculateBearing(defaultEarth, lat1, lon1, lat2, lon2);
   }
 
+  /** @deprecated do not use */
+  @Deprecated
+  public static Bearing calculateBearing(Earth e, double lat1, double lon1, double lat2, double lon2, Bearing result) {
+    if (result == null) {
+      result = new Bearing();
+    }
 
+    if ((lat1 == lat2) && (lon1 == lon2)) {
+      result.distance = 0;
+      result.azimuth = 0;
+      result.backazimuth = 0;
+      return result;
+    }
+
+    double A = e.getMajor(); // Earth radius
+    double F = e.getFlattening(); // Earth flattening value
+    double R = 1.0 - F;
+
+    double GLAT1 = rad * lat1;
+    double GLAT2 = rad * lat2;
+    double TU1 = R * Math.sin(GLAT1) / Math.cos(GLAT1);
+    double TU2 = R * Math.sin(GLAT2) / Math.cos(GLAT2);
+    double CU1 = 1. / Math.sqrt(TU1 * TU1 + 1.);
+    double SU1 = CU1 * TU1;
+    double CU2 = 1. / Math.sqrt(TU2 * TU2 + 1.);
+    double S = CU1 * CU2;
+    double BAZ = S * TU2;
+    double FAZ = BAZ * TU1;
+    double GLON1 = rad * lon1;
+    double GLON2 = rad * lon2;
+    double X = GLON2 - GLON1;
+    double D, SX, CX, SY, CY, Y, SA, C2A, CZ, E, C;
+    int loopCnt = 0;
+    do {
+      loopCnt++;
+      // Check for an infinite loop
+      if (loopCnt > 1000) {
+        throw new IllegalArgumentException(
+            "Too many iterations calculating bearing:" + lat1 + " " + lon1 + " " + lat2 + " " + lon2);
+      }
+      SX = Math.sin(X);
+      CX = Math.cos(X);
+      TU1 = CU2 * SX;
+      TU2 = BAZ - SU1 * CU2 * CX;
+      SY = Math.sqrt(TU1 * TU1 + TU2 * TU2);
+      CY = S * CX + FAZ;
+      Y = Math.atan2(SY, CY);
+      SA = S * SX / SY;
+      C2A = -SA * SA + 1.;
+      CZ = FAZ + FAZ;
+      if (C2A > 0.) {
+        CZ = -CZ / C2A + CY;
+      }
+      E = CZ * CZ * 2. - 1.;
+      C = ((-3. * C2A + 4.) * F + 4.) * C2A * F / 16.;
+      D = X;
+      X = ((E * CY * C + CZ) * SY * C + Y) * SA;
+      X = (1. - C) * X * F + GLON2 - GLON1;
+    } while (Math.abs(D - X) > EPS);
+
+    if (loopCnt > maxLoopCnt) {
+      maxLoopCnt = loopCnt;
+    }
+
+    FAZ = Math.atan2(TU1, TU2);
+    BAZ = Math.atan2(CU1 * SX, BAZ * CX - SU1 * CU2) + Math.PI;
+    X = Math.sqrt((1. / R / R - 1.) * C2A + 1.) + 1.;
+    X = (X - 2.) / X;
+    C = 1. - X;
+    C = (X * X / 4. + 1.) / C;
+    D = (0.375 * X * X - 1.) * X;
+    X = E * CY;
+    S = 1. - E - E;
+    S = ((((SY * SY * 4. - 3.) * S * CZ * D / 6. - X) * D / 4. + CZ) * SY * D + Y) * C * A * R;
+
+    result.distance = S / 1000.0; // meters to km
+    result.azimuth = FAZ * deg; // radians to degrees
+
+    if (result.azimuth < 0.0) {
+      result.azimuth += 360.0; // reset azs from -180 to 180 to 0 to 360
+    }
+
+    result.backazimuth = BAZ * deg; // radians to degrees; already in 0 to 360 range
+
+    return result;
+  }
+
+  /**
+   * Calculate a position given an azimuth and distance from
+   * another point.
+   *
+   * @param e Earth object (defines radius and flattening)
+   * @param pt1 Point 1
+   * @param az azimuth (degrees)
+   * @param dist distance from the point (km)
+   * @param result Object to use if non-null
+   * @return The LatLonPoint
+   * @see #findPoint(double,double,double,double,LatLonPointImpl)
+   * @deprecated will return LatLonPoint in 6.
+   */
+  public static LatLonPointImpl findPoint(Earth e, LatLonPoint pt1, double az, double dist, LatLonPointImpl result) {
+    return findPoint(e, pt1.getLatitude(), pt1.getLongitude(), az, dist, result);
+  }
+
+  /**
+   * Calculate a position given an azimuth and distance from
+   * another point. Uses default Earth.
+   *
+   * @param pt1 Point 1
+   * @param az azimuth (degrees)
+   * @param dist distance from the point (km)
+   * @param result Object to use if non-null
+   * @return The LatLonPoint
+   * @see #findPoint(double,double,double,double,LatLonPointImpl)
+   * @deprecated will return LatLonPoint in 6.
+   */
+  public static LatLonPointImpl findPoint(LatLonPoint pt1, double az, double dist, LatLonPointImpl result) {
+    return findPoint(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), az, dist, result);
+  }
+
+  /**
+   * Calculate a position given an azimuth and distance from
+   * another point. See details, below. Uses default Earth.
+   *
+   * @param lat1 latitude of starting point
+   * @param lon1 longitude of starting point
+   * @param az forward azimuth (degrees)
+   * @param dist distance from the point (km)
+   * @param result Object to use if non-null
+   * @return the position as a LatLonPointImpl
+   * @deprecated will return LatLonPoint in 6.
+   */
+  public static LatLonPointImpl findPoint(double lat1, double lon1, double az, double dist, LatLonPointImpl result) {
+    return findPoint(defaultEarth, lat1, lon1, az, dist, result);
+  }
+
+  /**
+   * Calculate a position given an azimuth and distance from
+   * another point.
+   * <p/>
+   * <p/>
+   * Algorithm from National Geodetic Survey, FORTRAN program "forward,"
+   * subroutine "DIRCT1," by stephen j. frakes.
+   * http://www.ngs.noaa.gov/TOOLS/Inv_Fwd/Inv_Fwd.html
+   * <p>
+   * Original documentation:
+   * 
+   * <pre>
+   *    SOLUTION OF THE GEODETIC DIRECT PROBLEM AFTER T.VINCENTY
+   *    MODIFIED RAINSFORD'S METHOD WITH HELMERT'S ELLIPTICAL TERMS
+   *    EFFECTIVE IN ANY AZIMUTH AND AT ANY DISTANCE SHORT OF ANTIPODAL
+   * </pre>
+   *
+   * @param e Earth object (defines radius and flattening)
+   * @param lat1 latitude of starting point
+   * @param lon1 longitude of starting point
+   * @param az forward azimuth (degrees)
+   * @param dist distance from the point (km)
+   * @param result Object to use if non-null
+   * @return the position as a LatLonPointImpl
+   * @deprecated will return LatLonPoint in 6.
+   */
+  public static LatLonPointImpl findPoint(Earth e, double lat1, double lon1, double az, double dist,
+      LatLonPointImpl result) {
+    if (result == null) {
+      result = new LatLonPointImpl();
+    }
+
+    if ((dist == 0)) {
+      result.setLatitude(lat1);
+      result.setLongitude(lon1);
+      return result;
+    }
+
+    double A = e.getMajor(); // Earth radius
+    double F = e.getFlattening(); // Earth flattening value
+    double R = 1.0 - F;
+
+    // Algorithm from National Geodetic Survey, FORTRAN program "forward,"
+    // subroutine "DIRCT1," by stephen j. frakes.
+    // http://www.ngs.noaa.gov/TOOLS/Inv_Fwd/Inv_Fwd.html
+    // Conversion to JAVA from FORTRAN was made with as few changes as
+    // possible to avoid errors made while recasting form, and
+    // to facilitate any future comparisons between the original
+    // code and the altered version in Java.
+    // Original documentation:
+    // SUBROUTINE DIRCT1(GLAT1,GLON1,GLAT2,GLON2,FAZ,BAZ,S)
+    //
+    // SOLUTION OF THE GEODETIC DIRECT PROBLEM AFTER T.VINCENTY
+    // MODIFIED RAINSFORD'S METHOD WITH HELMERT'S ELLIPTICAL TERMS
+    // EFFECTIVE IN ANY AZIMUTH AND AT ANY DISTANCE SHORT OF ANTIPODAL
+    //
+    // A IS THE SEMI-MAJOR AXIS OF THE REFERENCE ELLIPSOID
+    // F IS THE FLATTENING OF THE REFERENCE ELLIPSOID
+    // LATITUDES AND LONGITUDES IN RADIANS POSITIVE NORTH AND EAST
+    // AZIMUTHS IN RADIANS CLOCKWISE FROM NORTH
+    // GEODESIC DISTANCE S ASSUMED IN UNITS OF SEMI-MAJOR AXIS A
+    //
+    // PROGRAMMED FOR CDC-6600 BY LCDR L.PFEIFER NGS ROCKVILLE MD 20FEB75
+    // MODIFIED FOR SYSTEM 360 BY JOHN G GERGEN NGS ROCKVILLE MD 750608
+    //
+
+    if (az < 0.0) {
+      az += 360.0; // reset azs from -180 to 180 to 0 to 360
+    }
+    double FAZ = az * rad;
+    double GLAT1 = lat1 * rad;
+    double GLON1 = lon1 * rad;
+    double S = dist * 1000.; // convert to meters
+    double TU = R * Math.sin(GLAT1) / Math.cos(GLAT1);
+    double SF = Math.sin(FAZ);
+    double CF = Math.cos(FAZ);
+    double BAZ = 0.;
+    if (CF != 0) {
+      BAZ = Math.atan2(TU, CF) * 2;
+    }
+    double CU = 1. / Math.sqrt(TU * TU + 1.);
+    double SU = TU * CU;
+    double SA = CU * SF;
+    double C2A = -SA * SA + 1.;
+    double X = Math.sqrt((1. / R / R - 1.) * C2A + 1.) + 1.;
+    X = (X - 2.) / X;
+    double C = 1. - X;
+    C = (X * X / 4. + 1) / C;
+    double D = (0.375 * X * X - 1.) * X;
+    TU = S / R / A / C;
+    double Y = TU;
+    double SY, CY, CZ, E, GLAT2, GLON2;
+    do {
+      SY = Math.sin(Y);
+      CY = Math.cos(Y);
+      CZ = Math.cos(BAZ + Y);
+      E = CZ * CZ * 2. - 1.;
+      C = Y;
+      X = E * CY;
+      Y = E + E - 1.;
+      Y = (((SY * SY * 4. - 3.) * Y * CZ * D / 6. + X) * D / 4. - CZ) * SY * D + TU;
+    } while (Math.abs(Y - C) > EPS);
+    BAZ = CU * CY * CF - SU * SY;
+    C = R * Math.sqrt(SA * SA + BAZ * BAZ);
+    D = SU * CY + CU * SY * CF;
+    GLAT2 = Math.atan2(D, C);
+    C = CU * CY - SU * SY * CF;
+    X = Math.atan2(SY * SF, C);
+    C = ((-3. * C2A + 4.) * F + 4.) * C2A * F / 16.;
+    D = ((E * CY * C + CZ) * SY * C + Y) * SA;
+    GLON2 = GLON1 + X - (1. - C) * D * F;
+    result.setLatitude(GLAT2 * deg);
+    result.setLongitude(GLON2 * deg);
+    return result;
+  }
 
   /**
    * Computes distance (in km), azimuth (degrees clockwise positive
@@ -148,26 +392,18 @@ public class Bearing {
    * @param lon1 Lon of point 1
    * @param lat2 Lat of point 2
    * @param lon2 Lon of point 2
-   * @param result put result here, or null to allocate
    * @return a Bearing object with distance (in km), azimuth from
    *         pt1 to pt2 (degrees, 0 = north, clockwise positive)
    */
-  public static Bearing calculateBearing(Earth e, double lat1, double lon1, double lat2, double lon2, Bearing result) {
-
-    if (result == null) {
-      result = new Bearing();
-    }
+  public static Bearing calculateBearing(Earth e, double lat1, double lon1, double lat2, double lon2) {
 
     if ((lat1 == lat2) && (lon1 == lon2)) {
-      result.distance = 0;
-      result.azimuth = 0;
-      result.backazimuth = 0;
-      return result;
+      return new Bearing(0, 0, 0);
     }
 
-    A = e.getMajor();
-    F = e.getFlattening();
-    R = 1.0 - F;
+    double A = e.getMajor(); // Earth radius
+    double F = e.getFlattening(); // Earth flattening value
+    double R = 1.0 - F;
 
     // Algorithm from National Geodetic Survey, FORTRAN program "inverse,"
     // subroutine "INVER1," by L. PFEIFER and JOHN G. GERGEN.
@@ -258,16 +494,16 @@ public class Bearing {
     S = 1. - E - E;
     S = ((((SY * SY * 4. - 3.) * S * CZ * D / 6. - X) * D / 4. + CZ) * SY * D + Y) * C * A * R;
 
-    result.distance = S / 1000.0; // meters to km
-    result.azimuth = FAZ * deg; // radians to degrees
+    double distance = S / 1000.0; // meters to km
+    double azimuth = FAZ * deg; // radians to degrees
 
-    if (result.azimuth < 0.0) {
-      result.azimuth += 360.0; // reset azs from -180 to 180 to 0 to 360
+    if (azimuth < 0.0) {
+      azimuth += 360.0; // reset azs from -180 to 180 to 0 to 360
     }
 
-    result.backazimuth = BAZ * deg; // radians to degrees; already in 0 to 360 range
+    double backazimuth = BAZ * deg; // radians to degrees; already in 0 to 360 range
 
-    return result;
+    return new Bearing(azimuth, backazimuth, distance);
   }
 
   /*
@@ -326,20 +562,26 @@ public class Bearing {
    * }
    */
 
-  /**
-   * the azimuth, degrees, 0 = north, clockwise positive
-   */
+  /////////////////////////////////////////////////////////////////////////////////////
+  // TODO make these final in 6.
+
+  /** the azimuth, degrees, 0 = north, clockwise positive */
   private double azimuth;
 
-  /**
-   * the back azimuth, degrees, 0 = north, clockwise positive
-   */
+  /** the back azimuth, degrees, 0 = north, clockwise positive */
   private double backazimuth;
 
-  /**
-   * separation in kilometers
-   */
+  /** separation in kilometers */
   private double distance;
+
+  // TODO go away in 6.0
+  private Bearing() {}
+
+  public Bearing(double azimuth, double backazimuth, double distance) {
+    this.azimuth = azimuth;
+    this.backazimuth = backazimuth;
+    this.distance = distance;
+  }
 
   /**
    * Get the azimuth in degrees, 0 = north, clockwise positive
@@ -368,176 +610,10 @@ public class Bearing {
     return distance;
   }
 
-  /**
-   * Nice format.
-   *
-   * @return return a nice format of this Bearing
-   */
+
+  @Override
   public String toString() {
-    String buf = "Azimuth: " + azimuth + " Back azimuth: " + backazimuth + " Distance: " + distance;
-    return buf;
-  }
-
-  /**
-   * Calculate a position given an azimuth and distance from
-   * another point.
-   *
-   * @param e Earth object (defines radius and flattening)
-   * @param pt1 Point 1
-   * @param az azimuth (degrees)
-   * @param dist distance from the point (km)
-   * @param result Object to use if non-null
-   * @return The LatLonPoint
-   * @see #findPoint(double,double,double,double,LatLonPointImpl)
-   */
-  public static LatLonPointImpl findPoint(Earth e, LatLonPoint pt1, double az, double dist, LatLonPointImpl result) {
-    return findPoint(e, pt1.getLatitude(), pt1.getLongitude(), az, dist, result);
-  }
-
-  /**
-   * Calculate a position given an azimuth and distance from
-   * another point. Uses default Earth.
-   *
-   * @param pt1 Point 1
-   * @param az azimuth (degrees)
-   * @param dist distance from the point (km)
-   * @param result Object to use if non-null
-   * @return The LatLonPoint
-   * @see #findPoint(double,double,double,double,LatLonPointImpl)
-   */
-  public static LatLonPointImpl findPoint(LatLonPoint pt1, double az, double dist, LatLonPointImpl result) {
-    return findPoint(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), az, dist, result);
-  }
-
-  /**
-   * Calculate a position given an azimuth and distance from
-   * another point. See details, below. Uses default Earth.
-   *
-   * @param lat1 latitude of starting point
-   * @param lon1 longitude of starting point
-   * @param az forward azimuth (degrees)
-   * @param dist distance from the point (km)
-   * @param result Object to use if non-null
-   * @return the position as a LatLonPointImpl
-   */
-  public static LatLonPointImpl findPoint(double lat1, double lon1, double az, double dist, LatLonPointImpl result) {
-    return findPoint(defaultEarth, lat1, lon1, az, dist, result);
-  }
-
-
-  /**
-   * Calculate a position given an azimuth and distance from
-   * another point.
-   * <p/>
-   * <p/>
-   * Algorithm from National Geodetic Survey, FORTRAN program "forward,"
-   * subroutine "DIRCT1," by stephen j. frakes.
-   * http://www.ngs.noaa.gov/TOOLS/Inv_Fwd/Inv_Fwd.html
-   * <p>
-   * Original documentation:
-   * 
-   * <pre>
-   *    SOLUTION OF THE GEODETIC DIRECT PROBLEM AFTER T.VINCENTY
-   *    MODIFIED RAINSFORD'S METHOD WITH HELMERT'S ELLIPTICAL TERMS
-   *    EFFECTIVE IN ANY AZIMUTH AND AT ANY DISTANCE SHORT OF ANTIPODAL
-   * </pre>
-   *
-   * @param e Earth object (defines radius and flattening)
-   * @param lat1 latitude of starting point
-   * @param lon1 longitude of starting point
-   * @param az forward azimuth (degrees)
-   * @param dist distance from the point (km)
-   * @param result Object to use if non-null
-   * @return the position as a LatLonPointImpl
-   */
-  public static LatLonPointImpl findPoint(Earth e, double lat1, double lon1, double az, double dist,
-      LatLonPointImpl result) {
-    if (result == null) {
-      result = new LatLonPointImpl();
-    }
-
-    if ((dist == 0)) {
-      result.setLatitude(lat1);
-      result.setLongitude(lon1);
-      return result;
-    }
-
-    A = e.getMajor();
-    F = e.getFlattening();
-    R = 1.0 - F;
-
-    // Algorithm from National Geodetic Survey, FORTRAN program "forward,"
-    // subroutine "DIRCT1," by stephen j. frakes.
-    // http://www.ngs.noaa.gov/TOOLS/Inv_Fwd/Inv_Fwd.html
-    // Conversion to JAVA from FORTRAN was made with as few changes as
-    // possible to avoid errors made while recasting form, and
-    // to facilitate any future comparisons between the original
-    // code and the altered version in Java.
-    // Original documentation:
-    // SUBROUTINE DIRCT1(GLAT1,GLON1,GLAT2,GLON2,FAZ,BAZ,S)
-    //
-    // SOLUTION OF THE GEODETIC DIRECT PROBLEM AFTER T.VINCENTY
-    // MODIFIED RAINSFORD'S METHOD WITH HELMERT'S ELLIPTICAL TERMS
-    // EFFECTIVE IN ANY AZIMUTH AND AT ANY DISTANCE SHORT OF ANTIPODAL
-    //
-    // A IS THE SEMI-MAJOR AXIS OF THE REFERENCE ELLIPSOID
-    // F IS THE FLATTENING OF THE REFERENCE ELLIPSOID
-    // LATITUDES AND LONGITUDES IN RADIANS POSITIVE NORTH AND EAST
-    // AZIMUTHS IN RADIANS CLOCKWISE FROM NORTH
-    // GEODESIC DISTANCE S ASSUMED IN UNITS OF SEMI-MAJOR AXIS A
-    //
-    // PROGRAMMED FOR CDC-6600 BY LCDR L.PFEIFER NGS ROCKVILLE MD 20FEB75
-    // MODIFIED FOR SYSTEM 360 BY JOHN G GERGEN NGS ROCKVILLE MD 750608
-    //
-
-    if (az < 0.0) {
-      az += 360.0; // reset azs from -180 to 180 to 0 to 360
-    }
-    double FAZ = az * rad;
-    double GLAT1 = lat1 * rad;
-    double GLON1 = lon1 * rad;
-    double S = dist * 1000.; // convert to meters
-    double TU = R * Math.sin(GLAT1) / Math.cos(GLAT1);
-    double SF = Math.sin(FAZ);
-    double CF = Math.cos(FAZ);
-    double BAZ = 0.;
-    if (CF != 0) {
-      BAZ = Math.atan2(TU, CF) * 2;
-    }
-    double CU = 1. / Math.sqrt(TU * TU + 1.);
-    double SU = TU * CU;
-    double SA = CU * SF;
-    double C2A = -SA * SA + 1.;
-    double X = Math.sqrt((1. / R / R - 1.) * C2A + 1.) + 1.;
-    X = (X - 2.) / X;
-    double C = 1. - X;
-    C = (X * X / 4. + 1) / C;
-    double D = (0.375 * X * X - 1.) * X;
-    TU = S / R / A / C;
-    double Y = TU;
-    double SY, CY, CZ, E, GLAT2, GLON2;
-    do {
-      SY = Math.sin(Y);
-      CY = Math.cos(Y);
-      CZ = Math.cos(BAZ + Y);
-      E = CZ * CZ * 2. - 1.;
-      C = Y;
-      X = E * CY;
-      Y = E + E - 1.;
-      Y = (((SY * SY * 4. - 3.) * Y * CZ * D / 6. + X) * D / 4. - CZ) * SY * D + TU;
-    } while (Math.abs(Y - C) > EPS);
-    BAZ = CU * CY * CF - SU * SY;
-    C = R * Math.sqrt(SA * SA + BAZ * BAZ);
-    D = SU * CY + CU * SY * CF;
-    GLAT2 = Math.atan2(D, C);
-    C = CU * CY - SU * SY * CF;
-    X = Math.atan2(SY * SF, C);
-    C = ((-3. * C2A + 4.) * F + 4.) * C2A * F / 16.;
-    D = ((E * CY * C + CZ) * SY * C + Y) * SA;
-    GLON2 = GLON1 + X - (1. - C) * D * F;
-    result.setLatitude(GLAT2 * deg);
-    result.setLongitude(GLON2 * deg);
-    return result;
+    return "Azimuth: " + azimuth + " Back azimuth: " + backazimuth + " Distance: " + distance;
   }
 
 }

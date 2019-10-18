@@ -45,7 +45,7 @@ import ucar.unidata.io.RandomAccessFile;
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
  */
 public class NcStream {
-  // must start with this "CDFS"
+  // must start with this "CDFS"`
   public static final byte[] MAGIC_START = {0x43, 0x44, 0x46, 0x53};
 
   public static final byte[] MAGIC_HEADER = {(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
@@ -478,18 +478,18 @@ public class NcStream {
       if (lenp != len)
         System.out.println("HEY lenp != len");
       if (lenp == 1)
-        return Attribute.builder(attp.getName()).setStringValue(attp.getSdata(0)).build();
+        return new Attribute(attp.getName(), attp.getSdata(0));
       else {
         Array data = Array.factory(dtUse, new int[] {lenp});
         for (int i = 0; i < lenp; i++)
           data.setObject(i, attp.getSdata(i));
-        return Attribute.builder(attp.getName()).setValues(data).build();
+        return new Attribute(attp.getName(), data);
       }
     } else {
       ByteString bs = attp.getData();
       ByteBuffer bb = ByteBuffer.wrap(bs.toByteArray());
       // if null, then use int[]{bb.limit()}
-      return Attribute.builder(attp.getName()).setValues(Array.factory(dtUse, (int[]) null, bb)).build();
+      return new Attribute(attp.getName(), Array.factory(dtUse, (int[]) null, bb));
     }
   }
 

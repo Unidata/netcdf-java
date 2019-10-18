@@ -6,8 +6,8 @@ import java.util.EnumSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -90,26 +90,6 @@ public class NetcdfDatasets {
   // enhancing
 
   /**
-   * Make NetcdfFile into NetcdfDataset with given enhance mode
-   *
-   * @param ncfile wrap this
-   * @param mode using this enhance mode (may be null, meaning no enhance)
-   * @return NetcdfDataset wrapping the given ncfile
-   * @throws IOException on io error
-   */
-  public static NetcdfDataset wrap(NetcdfFile ncfile, Set<Enhance> mode) throws IOException {
-    if (ncfile instanceof NetcdfDataset) {
-      NetcdfDataset ncd = (NetcdfDataset) ncfile;
-      if (!ncd.enhanceNeeded(mode))
-        return (NetcdfDataset) ncfile;
-    }
-
-    // enhancement requires wrappping, to not modify underlying dataset, eg if cached
-    // perhaps need a method variant that allows the ncfile to be modified
-    return new NetcdfDataset(ncfile, mode);
-  }
-
-  /**
    * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
    *
    * @param location location of file
@@ -164,81 +144,40 @@ public class NetcdfDatasets {
    * @throws java.io.IOException on read error
    */
   public static NetcdfDataset openDataset(DatasetUrl location, Set<Enhance> enhanceMode, int buffer_size,
-      ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+      CancelTask cancelTask, Object spiObject) throws IOException {
     NetcdfFile ncfile = openProtocolOrFile(location, buffer_size, cancelTask, spiObject);
-    NetcdfDataset ds;
-    if (ncfile instanceof NetcdfDataset) {
-      ds = (NetcdfDataset) ncfile;
-      enhance(ds, enhanceMode, cancelTask); // enhance "in place", ie modify the NetcdfDataset
-    } else {
-      ds = new NetcdfDataset(ncfile, enhanceMode); // enhance when wrapping
-    }
-
-    return ds;
+    return enhance(ncfile, enhanceMode, cancelTask);
   }
 
-  /*
-   * Enhancement use cases
-   * 1. open NetcdfDataset(enhance).
-   * 2. NcML - must create the NetcdfDataset, and enhance when its done.
+  /**
+   * Make NetcdfFile into NetcdfDataset and enhance if needed
    *
-   * Enhance mode is set when
-   * 1) the NetcdfDataset is opened
-   * 2) enhance(EnumSet<Enhance> mode) is called.
-   *
-   * Possible remove all direct access to Variable.enhance
+   * @param ncfile wrap this
+   * @param mode using this enhance mode (may be null, meaning no enhance)
+   * @return NetcdfDataset.Builder wrapping the given ncfile
+   * @throws IOException on io error
    */
-  private static CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask)
+  public static NetcdfDataset enhance(NetcdfFile ncfile, Set<Enhance> mode, CancelTask cancelTask)
       throws IOException {
-    if (mode == null) {
-      mode = EnumSet.noneOf(Enhance.class);
-    }
 
-    // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
-    CoordSysBuilderIF builder = null;
-    if (mode.contains(Enhance.CoordSystems) && !ds.getEnhanceMode().contains(Enhance.CoordSystems)) {
-      builder = ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-      builder.augmentDataset(ds, cancelTask);
-      // LOOK ds.convUsed = builder.getConventionUsed();
-    }
-
-    // now enhance enum/scale/offset/unsigned, using augmented dataset
-    if ((mode.contains(Enhance.ConvertEnums) && !ds.getEnhanceMode().contains(Enhance.ConvertEnums))
-        || (mode.contains(Enhance.ConvertUnsigned) && !ds.getEnhanceMode().contains(Enhance.ConvertUnsigned))
-        || (mode.contains(Enhance.ApplyScaleOffset) && !ds.getEnhanceMode().contains(Enhance.ApplyScaleOffset))
-        || (mode.contains(Enhance.ConvertMissing) && !ds.getEnhanceMode().contains(Enhance.ConvertMissing))) {
-      for (Variable v : ds.getVariables()) {
-        VariableEnhanced ve = (VariableEnhanced) v;
-        ve.enhance(mode);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-      }
-    }
-
-    // now find coord systems which may change some Variables to axes, etc
-    if (builder != null) {
-      // temporarily set enhanceMode if incomplete coordinate systems are allowed
-      if (mode.contains(Enhance.IncompleteCoordSystems)) {
-        ds.getEnhanceMode().add(Enhance.IncompleteCoordSystems);
-        builder.buildCoordinateSystems(ds);
-        ds.getEnhanceMode().remove(Enhance.IncompleteCoordSystems);
+    if (ncfile instanceof NetcdfDataset) {
+      NetcdfDataset ncd = (NetcdfDataset) ncfile;
+      NetcdfDataset.Builder builder = ncd.toBuilder();
+      if (DatasetEnhancer.enhanceNeeded(mode, ncd.getEnhanceMode())) {
+        DatasetEnhancer enhancer = new DatasetEnhancer(ncfile, builder, mode, cancelTask);
+        return enhancer.enhance();
       } else {
-        builder.buildCoordinateSystems(ds);
+        return ncd;
       }
     }
 
-    /*
-     * timeTaxis must be CoordinateAxis1DTime
-     * for (CoordinateSystem cs : ds.getCoordinateSystems()) {
-     * cs.makeTimeAxis();
-     * }
-     */
-
-
-    ds.finish(); // recalc the global lists
-    ds.getEnhanceMode().addAll(mode);
-
-    return builder;
+    // original file not a NetcdfDataset
+    NetcdfDataset.Builder builder = NetcdfDataset.builder(ncfile);
+    if (DatasetEnhancer.enhanceNeeded(mode, null)) {
+      DatasetEnhancer enhancer = new DatasetEnhancer(ncfile, builder, mode, cancelTask);
+      return enhancer.enhance();
+    }
+    return builder.build();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -350,19 +289,6 @@ public class NetcdfDatasets {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Factory method for opening a NetcdfFile.
-   *
-   * @param location location of dataset.
-   * @param cancelTask use to allow task to be cancelled; may be null.
-   * @return NetcdfFile object
-   * @throws java.io.IOException on read error
-   */
-  public static NetcdfFile openFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-    return openProtocolOrFile(durl, -1, cancelTask, null);
-  }
 
   /**
    * Factory method for opening a NetcdfFile through the netCDF API. May be any kind of file that

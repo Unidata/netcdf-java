@@ -1802,7 +1802,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (g == null)
       g = rootGroup;
     String dimName = shortName + "_strlen";
-    addDimension(g, Dimension.builder().setName(dimName).setLength(strlen).build());
+    addDimension(g, new Dimension(dimName, strlen));
     Variable v = new Variable(this, g, null, shortName);
     v.setDataType(DataType.CHAR);
     v.setDimensions(dims + " " + dimName);

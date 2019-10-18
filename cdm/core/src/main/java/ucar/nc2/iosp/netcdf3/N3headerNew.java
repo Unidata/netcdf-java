@@ -134,10 +134,10 @@ public class N3headerNew {
       int len = raf.readInt();
       Dimension dim;
       if (len == 0) {
-        dim = Dimension.builder(name, numrecs).setIsUnlimited(true).build();
+        dim = Dimension.builder().setName(name).setIsUnlimited(true).setLength(numrecs).build();
         udim = dim;
       } else {
-        dim = Dimension.builder(name, len).build();
+        dim = new Dimension(name, len);
       }
       fileDimensions.add(dim);
       root.addDimension(dim);
@@ -420,7 +420,7 @@ public class N3headerNew {
           val = "";
         if (fout != null)
           fout.format(" end read String val pos= %d%n", raf.getFilePointer());
-        att = Attribute.builder(name).setStringValue(val).build();
+        att = new Attribute(name, val);
 
       } else {
         if (fout != null)

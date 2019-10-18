@@ -92,5 +92,16 @@ public interface Projection {
    */
   java.util.List<Parameter> getProjectionParameters();
 
+  /**
+   * Convert a lat/lon bounding box to a world coordinate bounding box,
+   * by finding the minimum enclosing box.
+   * Handles lat/lon points that do not intersect the projection panel.
+   *
+   * @param latlonRect input lat,lon bounding box
+   * @return minimum enclosing box in world coordinates, or null if no part of the LatLonRect intersects the projection
+   *         plane
+   */
+  ProjectionRect latLonToProjBB(LatLonRect latlonRect);
+
 }
 

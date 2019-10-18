@@ -25,6 +25,7 @@ import java.nio.channels.WritableByteChannel;
  * Data access is done through the read() methods, which return a memory resident Array.
  * <p>
  * Immutable if setImmutable() was called.
+ * TODO Variables will be immutable in 6.
  *
  * @author caron
  * @see ucar.ma2.Array
@@ -151,7 +152,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     Group g = super.getParentGroup();
     if (g == null) {
       g = ncfile.getRootGroup();
-      super.setParentGroup(g);
+      super.setParentGroup(g); // TODO: WTF?
     }
 
     assert g != null;
@@ -229,7 +230,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return Dimension names, space delineated
    */
   public String getDimensionsString() {
-    return Dimension.makeDimensionsString(dimensions);
+    return Dimensions.makeDimensionsString(dimensions);
   }
 
   /**
@@ -322,6 +323,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return shapeAsSection;
   }
 
+  /** @deprecated Use Variable.builder() */
+  @Deprecated
   public ProxyReader getProxyReader() {
     return proxyReader;
   }
@@ -362,23 +365,23 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     subsection = Section.fill(subsection, shape);
 
     // create a copy of this variable with a proxy reader
-    Variable sectionV = copy(); // subclasses must override
+    Variable.Builder sectionV = this.toBuilder(); // subclasses override toBuilder()
     sectionV.setProxyReader(new SectionReader(this, subsection));
-    sectionV.shape = subsection.getShape();
-    sectionV.createNewCache(); // dont share the cache
+    sectionV.resetCache(); // dont share the cache
     sectionV.setCaching(false); // dont cache
 
     // replace dimensions if needed !! LOOK not shared
-    sectionV.dimensions = new ArrayList<>();
+    int[] shape = subsection.getShape();
+    List<Dimension> dimensions = new ArrayList<>();
     for (int i = 0; i < getRank(); i++) {
       Dimension oldD = getDimension(i);
-      Dimension newD =
-          (oldD.getLength() == sectionV.shape[i]) ? oldD : new Dimension(oldD.getShortName(), sectionV.shape[i], false);
-      newD.setUnlimited(oldD.isUnlimited());
-      sectionV.dimensions.add(newD);
+      Dimension newD = (oldD.getLength() == shape[i]) ? oldD
+          : Dimension.builder(oldD.getShortName(), shape[i]).setIsShared(false).setIsUnlimited(oldD.isUnlimited())
+              .build();
+      dimensions.add(newD);
     }
-    sectionV.resetShape();
-    return sectionV;
+    sectionV.dimensions = dimensions;
+    return sectionV.build();
   }
 
 
@@ -410,17 +413,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // create a copy of this variable with a proxy reader
-    Variable sliceV = copy(); // subclasses must override
+    Variable.Builder sliceV = this.toBuilder(); // subclasses override toBuilder()
     Section slice = new Section(getShapeAsSection());
     slice.replaceRange(dim, new Range(value, value)).makeImmutable();
     sliceV.setProxyReader(new SliceReader(this, dim, slice));
-    sliceV.createNewCache(); // dont share the cache
+    sliceV.resetCache(); // dont share the cache
     sliceV.setCaching(false); // dont cache
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
-    sliceV.resetShape();
-    return sliceV;
+    return sliceV.build();
   }
 
   /**
@@ -440,24 +442,29 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // create a copy of this variable with a proxy reader
-    Variable sliceV = copy(); // subclasses must override
+    Variable.Builder sliceV = this.toBuilder(); // subclasses override toBuilder()
     sliceV.setProxyReader(new ReduceReader(this, dimIdx));
-    sliceV.createNewCache(); // dont share the cache
+    sliceV.resetCache(); // dont share the cache
     sliceV.setCaching(false); // dont cache
 
     // remove dimension(s) - reduce rank
     for (Dimension d : dims)
       sliceV.dimensions.remove(d);
-    sliceV.resetShape();
-    return sliceV;
+    return sliceV.build();
   }
 
+  /** @deprecated Use Variable.toBuilder() */
+  @Deprecated
   protected Variable copy() {
     return new Variable(this);
   }
 
   public NetcdfFile getNetcdfFile() {
     return ncfile;
+  }
+
+  public String getFileTypeId() {
+    return ncfile.getFileTypeId();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -990,7 +997,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return f.toString();
   }
 
-  private static boolean showSize;
+  private static boolean showSize = false;
 
   protected String extraInfo() {
     return showSize ? " // " + getElementSize() + " " + getSize() : "";
@@ -1216,12 +1223,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // AttributeHelper
 
+  // TODO will return ImmutableList<Attribute> in version 6
   public java.util.List<Attribute> getAttributes() {
     return attributes.getAttributes();
   }
 
-  /** @deprecated Do not use. */
-  @Deprecated
   public AttributeContainer getAttributeContainer() {
     return new AttributeContainerHelper(getFullName(), attributes.getAttributes());
   }
@@ -1435,7 +1441,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Is this Variable immutable
    *
    * @return if immutable
+   * @deprecated Use Variable.builder()
    */
+  @Deprecated
   public boolean isImmutable() {
     return immutable;
   }
@@ -1625,7 +1633,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Get list of Dimensions, including parents if any.
    *
    * @return array of Dimension, rank of v plus all parents.
+   * @deprecated use Dimensions.makeDimensionsAll(Variable);
    */
+  @Deprecated
   public List<Dimension> getDimensionsAll() {
     List<Dimension> dimsAll = new ArrayList<>();
     addDimensionsAll(dimsAll, this);
@@ -1640,6 +1650,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       result.add(v.getDimension(i));
   }
 
+  /** @deprecated use Dimensions.makeDimensionsAll(Variable); */
+  @Deprecated
   public int[] getShapeAll() {
     if (getParentStructure() == null)
       return getShape();
@@ -1703,9 +1715,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     super(builder.shortName);
     this.group = builder.parent;
     this.ncfile = builder.ncfile;
+    this.parentstruct = builder.parentStruct;
     this.dataType = builder.dataType;
     this.attributes = builder.attributes;
-    setParentStructure(builder.parentStruct);
     this.proxyReader = builder.proxyReader == null ? this : builder.proxyReader;
     this.spiObject = builder.spiObject;
     this.cache = builder.cache;
@@ -1727,11 +1739,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // Convert dimension to shared dimensions that live in a parent group.
-    if (builder.dimString != null) {
+    if (builder.dimString != null && !builder.dimString.isEmpty()) {
       this.dimensions = this.group.makeDimensionsList(builder.dimString);
-      if (builder.autoGen != null) {
-        this.cache.data = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
-      }
     } else {
       // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
       List<Dimension> dims = new ArrayList<>();
@@ -1748,6 +1757,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
         }
       }
       this.dimensions = dims;
+    }
+    if (builder.autoGen != null) {
+      this.cache.data = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
     }
 
     // calculated fields
@@ -1784,10 +1796,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   // build() replaces parent but respects ncfile and proxyReader.
   // Normally on a copy you want to set proxyReader to null;
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setName(this.shortName).setGroup(this.group).setNcfile(this.ncfile).setDataType(this.dataType)
+    builder.setName(this.shortName).setGroup(this.group).setNcfile(this.ncfile)
+        .setParentStructure(this.getParentStructure()).setDataType(this.dataType)
         .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
-        .addDimensions(this.dimensions).addAttributes(this.attributes.atts)
-        .setParentStructure(this.getParentStructure()).setProxyReader(this.proxyReader).setSPobject(this.spiObject);
+        .addDimensions(this.dimensions).addAttributes(this.attributes.atts).setProxyReader(this.proxyReader)
+        .setSPobject(this.spiObject);
 
     if (this.cache.isMetadata) {
       builder.setCachedData(this.cache.data, true);
@@ -1812,21 +1825,23 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   public static abstract class Builder<T extends Builder<T>> {
-    // toBuilder() retains the original ncfile, which agg needs. Clear to reparent.
-    public NetcdfFile ncfile;
     public String shortName;
     public DataType dataType;
-    private String enumTypeName;
+
+    public NetcdfFile ncfile; // set in Group build() if null
+    public Group parent; // set in Group.build()
+    public Structure parentStruct; // set in Structure.build()
+
+    public String dimString; // if set, supercedes dimensions
     public List<Dimension> dimensions = new ArrayList<>();
-    String dimString;
-    private AutoGen autoGen;
-    private AttributeContainerHelper attributes = new AttributeContainerHelper("");
-    // toBuilder() retains the original parent group, build always replaces.
-    private Group parent;
-    private Structure parentStruct;
     public Object spiObject;
     public ProxyReader proxyReader;
     public Cache cache = new Cache(); // cache cannot be null
+
+    private String enumTypeName;
+    private AutoGen autoGen;
+    private AttributeContainerHelper attributes = new AttributeContainerHelper("");
+
     private boolean built;
 
     protected abstract T self();
@@ -1841,7 +1856,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
-    public AttributeContainer getAttributeContainer() {
+    public AttributeContainerHelper getAttributeContainer() {
       return attributes;
     }
 
@@ -1855,21 +1870,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
-    // Set dimensions by name. Note that the List<Dimension> is not created
-    // until Variable is built.
+    // Set dimensions by name. If set, supercedes addDimension()
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
       return self();
-    }
-
-    public int getRank() {
-      if (!dimensions.isEmpty()) {
-        return dimensions.size();
-      } else if (dimString != null) {
-        StringTokenizer stoke = new StringTokenizer(dimString, " ");
-        return stoke.countTokens();
-      }
-      return 0;
     }
 
     /**
@@ -1879,19 +1883,31 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
      * @throws RuntimeException if any shape < 1 and not -1.
      */
     public T setDimensionsAnonymous(int[] shape) {
-      this.dimensions = new ArrayList<>();
-      for (int i = 0; i < shape.length; i++) {
-        if ((shape[i] < 1) && (shape[i] != -1))
-          throw new RuntimeException("shape[" + i + "]=" + shape[i] + " must be > 0");
-        Dimension anon;
-        if (shape[i] == -1) {
-          anon = Dimension.VLEN;
-        } else {
-          anon = Dimension.builder().setIsShared(false).setLength(shape[i]).build();
-        }
-        dimensions.add(anon);
-      }
+      this.dimensions = Dimensions.makeDimensionsAnon(shape);
       return self();
+    }
+
+    // TODO what about dimString?
+    public List<Dimension> getDimensionsAll() {
+      List<Dimension> dimsAll = new ArrayList<>();
+      addDimensionsAll(dimsAll, this);
+      return dimsAll;
+    }
+
+    private void addDimensionsAll(List<Dimension> result, Variable.Builder<?> v) {
+      // if (v.parentStruct != null) TODO
+      // addDimensionsAll(result, v.parentStruct);
+
+      result.addAll(v.dimensions);
+    }
+
+    public int getRank() {
+      if (dimString != null) {
+        StringTokenizer stoke = new StringTokenizer(dimString, " ");
+        return stoke.countTokens();
+      } else {
+        return dimensions.size();
+      }
     }
 
     public T setDataType(DataType dataType) {
@@ -1952,18 +1968,22 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
-    /** Copy metadata from orgVar. */
+    public T setCaching(boolean caching) {
+      this.cache.isCaching = caching;
+      this.cache.cachingSet = true;
+      return self();
+    }
+
+    /** TODO Copy metadata from orgVar. */
     public T copyFrom(Variable orgVar) {
       setName(orgVar.getShortName());
       setDataType(orgVar.getDataType());
       if (orgVar.getEnumTypedef() != null) {
         setEnumTypeName(orgVar.getEnumTypedef().getShortName());
       }
+      setGroup(orgVar.getParentGroup());
       setSPobject(orgVar.getSPobject());
-
-      for (Dimension d : orgVar.getDimensions())
-        addDimension(new Dimension(d.toBuilder())); // can just copy after ver 6.
-
+      addDimensions(orgVar.getDimensions());
       addAttributes(orgVar.getAttributes()); // copy
 
       return self();
@@ -1973,6 +1993,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return Dimensions.makeSectionFromDimensions(this.dimensions);
     }
 
+    /** Normally this is called by Group.build() */
     public Variable build() {
       if (built)
         throw new IllegalStateException("already built");

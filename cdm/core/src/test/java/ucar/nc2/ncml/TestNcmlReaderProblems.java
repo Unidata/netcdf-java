@@ -36,14 +36,14 @@ public class TestNcmlReaderProblems {
     // I think original is wrong, since ncml has <variable name="time" type="int">
     // compare("file:" + TestNcMLRead.topDir + "aggSynthetic.xml");
 
-    compare("file:" + TestNcMLRead.topDir + "modifyAtts.xml");
+    compare("file:" + TestNcMLRead.topDir + "aggSynthetic.xml");
   }
 
   private void compare(String ncmlLocation) throws IOException {
     System.out.printf("Compare %s%n", ncmlLocation);
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
-      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null)) {
+      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, true, true, true);
         boolean ok = compare.compare(org, withBuilder);

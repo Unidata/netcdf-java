@@ -63,7 +63,7 @@ class BuilderHelper {
 
     // variables
     for (Variable v : src.getVariables()) {
-      Optional<Variable.Builder> targetV = targetGroup.findVariable(v.getShortName());
+      Optional<Variable.Builder<?>> targetV = targetGroup.findVariable(v.getShortName());
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
       if (replace || !targetV.isPresent()) { // replace it
         // LOOK not needed ??
@@ -75,9 +75,8 @@ class BuilderHelper {
          * to target dataset.
          * }
          */
-        targetV.ifPresent(vb -> targetGroup.removeVariable(vb.shortName));
-        Variable.Builder vb = v.toBuilder().setProxyReader(null);
-        targetGroup.addVariable(vb);
+        Variable.Builder<?> vb = v.toBuilder().setProxyReader(null);
+        targetGroup.replaceVariable(vb);
         // LOOK not needed? v.resetDimensions(); // dimensions will be different
 
       } /*

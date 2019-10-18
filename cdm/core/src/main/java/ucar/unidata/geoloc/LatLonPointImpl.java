@@ -15,6 +15,7 @@ import java.util.Formatter;
  * @author Russ Rew
  * @author John Caron
  * @see LatLonPoint
+ * @deprecated only use LatLonPoint in 6.
  */
 public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
 

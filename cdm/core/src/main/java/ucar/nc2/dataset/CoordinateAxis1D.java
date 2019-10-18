@@ -1013,13 +1013,16 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   public Builder<?> toBuilder() {
-    CoordinateAxis1D.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (CoordinateAxis1D.Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  public CoordinateAxis1D(VariableDS.Builder<?> builder) {
+    super(builder);
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b;
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   /**

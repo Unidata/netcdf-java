@@ -19,6 +19,7 @@ import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
+import ucar.unidata.geoloc.Projection;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -493,7 +494,7 @@ public class SimpleGeomTable extends JPanel {
 
       setNGrids(gset.getGrids().size());
 
-      ProjectionImpl proj = gcs.getProjection();
+      Projection proj = gcs.getProjection();
       if (proj != null)
         setProjection(proj.getClassName());
 
