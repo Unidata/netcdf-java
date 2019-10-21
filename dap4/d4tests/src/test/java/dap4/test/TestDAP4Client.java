@@ -1,16 +1,15 @@
 package dap4.test;
 
-import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NotJenkins;
-import ucar.unidata.util.test.category.NotTravis;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
@@ -20,11 +19,14 @@ import java.util.List;
 /**
  * Test OpenDap Server at the NetcdfDataset level
  */
-@Ignore
-public class TestHyrax extends DapTestCommon {
+public class TestDAP4Client extends DapTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static final boolean DEBUG = false;
+
+  static final boolean BROKEN = false; // on/off known broken tests
+
+  static final boolean BUILDBASELINE = false;
 
   static final boolean NCDUMP = true; // Use NcDumpW instead of NCPrint
 
@@ -35,22 +37,16 @@ public class TestHyrax extends DapTestCommon {
   // Mnemonic
   static final boolean HEADERONLY = false;
 
-  static final String IP = "ec2-54-204-231-163";
   //////////////////////////////////////////////////
   // Constants
 
+  static final String SERVLETPATH = "d4ts/testfiles";
+
   static final String DATADIR = "src/test/data"; // relative to dap4 root
-  static final String TESTDATADIR = DATADIR + "/resources/TestHyrax";
-  static final String BASELINEDIR = TESTDATADIR + "/baseline";
+  static final String BASELINEDIR = "TestDAP4Client/baseline";
 
   // Define the names of the xfail tests
-  static final String[] XFAIL_TESTS = {"test_struct_array.nc"};
-
-  // Order is important; testing reachability is in the order
-  // listed
-  static final String[] SOURCES =
-      new String[] {"hyrax", "http://" + IP + ".compute-1.amazonaws.com:8080/opendap/data/reader/dap4/dap4.html",
-          "dap4://" + IP + ".compute-1.amazonaws.com:8080/opendap/data/reader/dap4"};
+  static final String[] XFAIL_TESTS = {};
 
   static boolean isXfailTest(String t) {
     for (String s : XFAIL_TESTS) {
@@ -63,21 +59,41 @@ public class TestHyrax extends DapTestCommon {
   //////////////////////////////////////////////////
   // Type Declarations
 
-  static class Source {
-    public String name;
-    public String testurl;
-    public String prefix;
+  static class Server {
+    public static String SERVLET = "dts";
+    public String ip;
+    public String port;
 
-    public Source(String name, String testurl, String prefix) {
-      this.name = name;
-      this.prefix = prefix;
-      this.testurl = testurl;
+    public Server(String ip, String port) {
+      this.ip = ip;
+      this.port = port;
     }
+
+    public String getURL() {
+      StringBuilder buf = new StringBuilder();
+      buf.append("http://");
+      buf.append(this.ip);
+      if (port != null) {
+        buf.append(":");
+        buf.append(this.port);
+      }
+      return buf.toString();
+    }
+
+    // Return a URL for testing if server is up/down
+    public String getTestURL() {
+      StringBuilder baseurl = new StringBuilder().append(getURL());
+      baseurl.append("/");
+      baseurl.append(SERVLET);
+      return baseurl.toString();
+    }
+
   }
 
   static class ClientTest {
     static String root = null;
     static String server = null;
+    static String servlet = null;
     static int counter = 0;
 
     boolean checksumming = true;
@@ -86,7 +102,6 @@ public class TestHyrax extends DapTestCommon {
 
     String title;
     String dataset; // path minus the server url part.
-    String datasetpath; // Hyrax test databuffer is segregated into multiple directories
     String baselinepath;
     String constraint;
     int id;
@@ -96,10 +111,11 @@ public class TestHyrax extends DapTestCommon {
     }
 
     ClientTest(int id, String datasetpath, String constraint) {
+      if (constraint == null)
+        constraint = "";
       // Break off the final file set name
       int index = datasetpath.lastIndexOf('/');
       this.dataset = datasetpath.substring(index + 1, datasetpath.length());
-      this.datasetpath = datasetpath;
       this.title = this.dataset;
       this.id = id;
       this.constraint = (constraint.length() == 0 ? null : constraint);
@@ -124,15 +140,28 @@ public class TestHyrax extends DapTestCommon {
     }
 
     String makeurl() {
-      String url = url = server + "/" + datasetpath;
+      String url = this.server + "/" + this.servlet + "/" + this.dataset;
       if (constraint != null)
         url += ("?" + constraint);
+      url += "#dap4";
       return url;
     }
 
     public String toString() {
       return dataset;
     }
+  }
+
+  //////////////////////////////////////////////////
+  // Class variables
+
+  // Order is important; testing reachability is in the order listed
+  static List<Server> SERVERS;
+
+  static {
+    SERVERS = new ArrayList<>();
+    SERVERS.add(new Server("149.165.169.123", "8080"));
+    SERVERS.add(new Server("remotetest.unidata.ucar.edu", null));
   }
 
   //////////////////////////////////////////////////
@@ -143,20 +172,37 @@ public class TestHyrax extends DapTestCommon {
   List<ClientTest> alltestcases = new ArrayList<ClientTest>();
   List<ClientTest> chosentests = new ArrayList<ClientTest>();
 
-  String resourceroot = null;
   String datasetpath = null;
 
-  String sourceurl = null;
+  Server server = null;
 
   //////////////////////////////////////////////////
 
   @Before
   public void setup() throws Exception {
-    this.resourceroot = getResourceRoot();
-    this.resourceroot = DapUtil.absolutize(this.resourceroot); // handle problem of windows paths
-    System.out.println("Using source url " + this.sourceurl);
-    defineAllTestcases(this.resourceroot, this.sourceurl);
+    // Find the server to use
+    this.server = null;
+    for (Server svc : SERVERS) {
+      String url = svc.getTestURL();
+      try (HTTPMethod method = HTTPFactory.Get(url)) {
+        try {
+          int code = method.execute();
+          if (code == 200) {
+            this.server = svc;
+            System.out.println("Using server url " + url);
+            break;
+          }
+        } catch (HTTPException e) {
+          this.server = null;
+        }
+      }
+    }
+    if (this.server == null)
+      throw new Exception("Cannot locate server");
+    defineAllTestcases(this.getResourceDir(), SERVLETPATH, this.server.getURL());
     chooseTestcases();
+    if (BUILDBASELINE)
+      prop_baseline = true;
   }
 
   //////////////////////////////////////////////////
@@ -164,7 +210,8 @@ public class TestHyrax extends DapTestCommon {
 
   void chooseTestcases() {
     if (false) {
-      chosentests = locate("dmr-testsuite/test_array_7.xml");
+      chosentests = locate("test_atomic_types.nc");
+      prop_baseline = true;
     } else {
       for (ClientTest tc : alltestcases) {
         chosentests.add(tc);
@@ -172,78 +219,61 @@ public class TestHyrax extends DapTestCommon {
     }
   }
 
-  boolean defineAllTestcases(String root, String server) {
-
+  boolean defineAllTestcases(String root, String servlet, String server) {
     boolean what = HEADERONLY;
-
     ClientTest.root = root;
     ClientTest.server = server;
-    if (false) {
-      alltestcases.add(new ClientTest(1, "D4-xml/DMR_4.xml", "b1"));
-    }
-    if (false) {
-      alltestcases.add(new ClientTest("test_simple_1.dmr"));
-      // deleted: alltestcases.add(new TestCase("dmr-testsuite/testall.xml"));
-    }
-    if (false) {
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_1.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_2.xml"));
-      strings: alltestcases.add(new ClientTest("dmr-testsuite/test_array_3.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_4.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_5.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_6.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_7.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_8.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_10.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_array_11.xml"));
-
-    }
-    if (false) {
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_1.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_2.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_3.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_4.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_5.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_6.xml"));
-      // sequence: alltestcases.add(new TestCase("dmr-testsuite/test_simple_7.xml"));
-      // sequence: alltestcases.add(new TestCase("dmr-testsuite/test_simple_8.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_9.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_9.1.xml"));
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_10.xml"));
-    }
-    if (false) {
-      // alltestcases.add(new TestCase("D4-xml/DMR_0.1.xml")); needs fixing
-      alltestcases.add(new ClientTest("D4-xml/DMR_0.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_1.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_2.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_2.1.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_3.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_3.1.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_3.2.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_3.3.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_3.4.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_3.5.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_4.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_4.1.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_5.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_5.1.xml"));
-      // serial: alltestcases.add(new TestCase("D4-xml/DMR_6.xml"));
-      // serial: alltestcases.add(new TestCase("D4-xml/DMR_6.1.xml"));
-      // serial: alltestcases.add(new TestCase("D4-xml/DMR_6.2.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_7.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_7.1.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_7.2.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_7.3.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_7.4.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_7.5.xml"));
-      alltestcases.add(new ClientTest("D4-xml/DMR_8.xml"));
-    }
-
-    if (false) {
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_3_error_1.xml").xfail());
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_3_error_2.xml").xfail());
-      alltestcases.add(new ClientTest("dmr-testsuite/test_simple_3_error_3.xml").xfail());
-    }
+    ClientTest.servlet = servlet;
+    alltestcases.add(new ClientTest("test_atomic_array.nc"));
+    alltestcases.add(new ClientTest("test_atomic_types.nc"));
+    alltestcases.add(new ClientTest("test_enum.nc"));
+    alltestcases.add(new ClientTest("test_enum_2.nc"));
+    alltestcases.add(new ClientTest("test_enum_array.nc"));
+    alltestcases.add(new ClientTest("test_enum1.nc"));
+    alltestcases.add(new ClientTest("test_fill.nc"));
+    alltestcases.add(new ClientTest("test_groups1.nc"));
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_misc1.nc")); // 0 size unlimited
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_one_var.nc")); // 0 size unlimited
+    alltestcases.add(new ClientTest("test_one_vararray.nc"));
+    alltestcases.add(new ClientTest("test_opaque.nc"));
+    alltestcases.add(new ClientTest("test_opaque_array.nc"));
+    alltestcases.add(new ClientTest("test_struct_array.nc"));
+    alltestcases.add(new ClientTest("test_struct_nested.nc"));
+    alltestcases.add(new ClientTest("test_struct_nested3.nc"));
+    alltestcases.add(new ClientTest("test_struct_type.nc"));
+    alltestcases.add(new ClientTest("test_struct1.nc"));
+    alltestcases.add(new ClientTest("test_test.nc"));
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_unlim.nc")); // ?
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_unlim1.nc")); // ?
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_utf8.nc")); // ?
+    alltestcases.add(new ClientTest("test_vlen1.nc"));
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen2.nc")); // non scalar vlen
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen3.nc")); // non scalar vlen
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen4.nc")); // non scalar vlen
+    alltestcases.add(new ClientTest("test_vlen5.nc"));
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen6.nc")); // non-scalar vlen
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen7.nc")); // non-scalar vlen
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen8.nc")); // non-scalar vlen
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen9.nc")); // non-scalar
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen10.nc")); // non-scalar
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_vlen11.nc")); // unknown failure
+    if (BROKEN)
+      alltestcases.add(new ClientTest("test_zerodim.nc")); // non-scalar seq
+    alltestcases.add(new ClientTest("tst_fills.nc"));
     for (ClientTest test : alltestcases) {
       if (what == HEADERONLY)
         test.headeronly();
@@ -255,18 +285,18 @@ public class TestHyrax extends DapTestCommon {
   // Junit test method
 
   @Test
-  @Category({NotJenkins.class, NotTravis.class})
-  public void testHyrax() throws Exception {
+  public void testDAP4Client() throws Exception {
     boolean pass = true;
     for (ClientTest testcase : chosentests) {
       if (!doOneTest(testcase))
         pass = false;
     }
-    Assert.assertTrue("*** Fail: TestHyrax", pass);
+    Assert.assertTrue("*** Fail: TestDAP4Client", pass);
   }
 
   //////////////////////////////////////////////////
   // Primary test method
+
   boolean doOneTest(ClientTest testcase) throws Exception {
     boolean pass = true;
     System.out.println("Testcase: " + testcase.dataset);
@@ -360,7 +390,7 @@ public class TestHyrax extends DapTestCommon {
   List<ClientTest> locate(String prefix) {
     List<ClientTest> results = new ArrayList<ClientTest>();
     for (ClientTest ct : this.alltestcases) {
-      if (!ct.datasetpath.startsWith(prefix))
+      if (!ct.dataset.startsWith(prefix))
         continue;
       results.add(ct);
     }
@@ -372,21 +402,5 @@ public class TestHyrax extends DapTestCommon {
     return false;
   }
 
-
-  //////////////////////////////////////////////////
-  // Stand alone
-
-  static public void main(String[] argv) {
-    try {
-      new TestHyrax().testHyrax();
-    } catch (Exception e) {
-      System.err.println("*** FAIL");
-      e.printStackTrace();
-      System.exit(1);
-    }
-    System.err.println("*** PASS");
-    System.exit(0);
-  }// main
-
-} // class TestHyrax
+} // class TestDAP4Client
 
