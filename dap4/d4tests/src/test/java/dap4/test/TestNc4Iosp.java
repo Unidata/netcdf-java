@@ -2,6 +2,7 @@ package dap4.test;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ucar.unidata.util.test.category.NotTravis;
 
+@Ignore
 @Category(NotTravis.class)
 public class TestNc4Iosp extends DapTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
