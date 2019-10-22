@@ -41,9 +41,9 @@ allprojects {
     // <prerelease version> may be SNAPSHOT, alphax, betax, etc.
     // Note - if bumping to a new major or minor version, be sure to update the docs (see step 1 in
     // docs/src/private/internal/release.md for details)
-    version = '5.2.0'
+    version = '5.3.0-SNAPSHOT'
     // Eventually, we'll stop appending "SNAPSHOT" to our versions and just use this.
-    status = 'release'
+    status = 'development'
 }
 
 // Matches Maven's "project.description".
