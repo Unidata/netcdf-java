@@ -274,3 +274,8 @@ None of these moves resulted in an API break.
 This move is a stepping stone towards supporting the Java Platform Module System in future releases of netCDF-Java.
 At this very least, this change will require updating your build scripts to use `cdm-core` over `cdm`.
 For information on what is included in the new modules, please visit the [Using netCDF-Java Maven Artifacts](using_netcdf_java_artifacts.html) documentation.
+
+### Allow HTTPRandomAccessFile maximum buffer size to be set by System Property
+
+When reading a remote file over http using byte-range requests, the default buffer size [can result in the need for a large heap](https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2019/msg00016.html){:target="_blank"}.
+Starting with v5.2.0, users can set the maximum buffer size in bytes using the Java System Property `ucar.unidata.io.http.maxHTTPBufferSize` (default is 10 MB).

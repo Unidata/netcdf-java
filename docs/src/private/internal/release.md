@@ -54,7 +54,13 @@ If so, you can skip to step 4.
 
 1. Update Unidata download page
     - check https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
-      * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
+      * Edit (on machine www) `/content/downloads/netcdf-java/toc.xml` as needed
+
+1. Update netcdf-java landing page (if major or minor version change)
+    - Edit (on machine www) /web/content/software/netcdf-java/index.html, update major.minor version string as needed.
+      There are only links to docs, so it is really just major.minor, so in `vim`, something like:
+   
+      `:%s/5.0/5.1/gc`
 
 1. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
