@@ -279,3 +279,5 @@ For information on what is included in the new modules, please visit the [Using 
 
 When reading a remote file over http using byte-range requests, the default buffer size [can result in the need for a large heap](https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2019/msg00016.html){:target="_blank"}.
 Starting with v5.2.0, users can set the maximum buffer size in bytes using the Java System Property `ucar.unidata.io.http.maxHTTPBufferSize` (default is 10 MB).
+
+## netCDF-Java API Changes (5.3.x)
