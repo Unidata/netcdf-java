@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import ucar.unidata.util.test.category.NotTravis;
 
-@Ignore
 @Category(NotTravis.class)
 public class TestNc4Iosp extends DapTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
