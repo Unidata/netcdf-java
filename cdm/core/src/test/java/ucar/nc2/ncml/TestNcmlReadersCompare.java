@@ -5,7 +5,6 @@
 package ucar.nc2.ncml;
 
 import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -34,8 +33,7 @@ public class TestNcmlReadersCompare {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(TestNcMLRead.topDir, new MyFileFilter(), filenames,
-          true);
+      TestDir.actOnAllParameterized(TestNcMLRead.topDir, new MyFileFilter(), filenames, true);
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }
@@ -73,9 +71,12 @@ public class TestNcmlReadersCompare {
       String name = pathname.getName();
 
       // Temporarily remove these until they're working
-      if (name.contains("aggSynthetic.xml")) return false;
-      if (name.contains("aggUnionRename.xml")) return false;
-      if (name.contains("testAggFmrc")) return false;
+      if (name.contains("aggSynthetic.xml"))
+        return false;
+      if (name.contains("aggUnionRename.xml"))
+        return false;
+      if (name.contains("testAggFmrc"))
+        return false;
       return name.endsWith("ml");
     }
   }
