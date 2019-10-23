@@ -54,7 +54,13 @@ If so, you can skip to step 4.
 
 1. Update Unidata download page
     - check https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
-      * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
+      * Edit (on machine www) `/content/downloads/netcdf-java/toc.xml` as needed
+
+1. Update netcdf-java landing page (if major or minor version change)
+    - Edit (on machine www) /web/content/software/netcdf-java/index.html, update major.minor version string as needed.
+      There are only links to docs, so it is really just major.minor, so in `vim`, something like:
+   
+      `:%s/5.0/5.1/gc`
 
 1. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
@@ -83,7 +89,6 @@ If so, you can skip to step 4.
 1. In the git log of master, find the "Release ${releaseVersion}" commit and tag it with the version number.
     - `git log`
     - `git tag v${releaseVersion} <commit-id>`
-        * `HEAD~1` is usually the right commit, so you can probably do `git tag v${releaseVersion} HEAD~1`
     - You can't create this tag earlier because when our PR was merged above, GitHub rebased our original
       commits, creating brand new commits in the process. We want to apply the tag to the new commit,
       because it will actually be part of `master`'s history.
@@ -95,17 +100,22 @@ If so, you can skip to step 4.
     - If we need to do a security update on a previous minor release, we'll create a new branch from the committed tag and work from that, ultimately following the instructions above when we're done.
 
 1. Create a release on GitHub using the tag you just pushed.
-    - Example: https://github.com/Unidata/netcdf-java/releases/tag/v5.0.0
+    - Example: https://github.com/Unidata/netcdf-java/releases/tag/v5.1.0
     - To help create the changelog, examine the pull requests on GitHub. For example, this URL shows all PRs that
-      have been merged into `master` since 2016-02-12:
-      https://github.com/Unidata/netcdf-java/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
+      have been merged into `master` since 2019-09-12:
+      
+      https://github.com/Unidata/netcdf-java/pulls?q=base%3Amaster+merged%3A%3E%3D2019-09-12
+      
+      and this URL shows the commits between two tags (`v5.0.0` and `v5.1.0`):
+      
+      https://github.com/Unidata/netcdf-java/compare/v5.0.0...v5.1.0
 
 1. Make blog post for the release.
-    - Example: https://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds4
+    - Example: https://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-version-51
     - Best to leave it relatively short and just link to the GitHub release.
 
 1. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu
-    - Example: https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
+    - Example: https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2019/msg00013.html
     - Best to leave it relatively short and just link to the GitHub release.
 
 **Note 2**: In the future, we could be performing even more, if not all, of these steps from Jenkins.
