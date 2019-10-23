@@ -96,6 +96,7 @@ class CacheAggregationsSpec extends Specification {
         }
     }
 
+    /* Disable 10/23/2019 jlcaron
     def "tiled"() {
         setup:
         String filename = "file:./"+TestNcMLRead.topDir + "tiled/testAggTiled.ncml";
@@ -113,7 +114,7 @@ class CacheAggregationsSpec extends Specification {
             then:
             expecteds == actuals
         }
-    }
+    } */
 
     def "fmrc"() {
         setup:
