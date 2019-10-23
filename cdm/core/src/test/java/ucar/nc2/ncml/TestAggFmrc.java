@@ -7,6 +7,7 @@ package ucar.nc2.ncml;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -26,7 +27,8 @@ import static java.lang.Math.toIntExact;
 
 
 /** Test FMRC NcML aggregations using a directory scan and explicitly listed datasets. */
-
+// Ignoring AggFmrc until we decide what were doing with them
+// @Ignore
 public class TestAggFmrc {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

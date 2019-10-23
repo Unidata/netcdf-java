@@ -5,7 +5,6 @@
 package ucar.nc2.ncml;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -298,7 +297,7 @@ public class TestAggUnionSimple {
 
   @Test
   public void testRename() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "exclude/aggUnionRename.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "aggUnionRename.xml";
     NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);
     Variable v = scanFile.findVariable("LavaFlow");
     assert v != null;
