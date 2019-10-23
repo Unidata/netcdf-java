@@ -564,6 +564,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   /**
    * DO NOT USE DIRECTLY. public by accident.
    * recalc any enhancement info
+   * 
    * @deprecated do not use
    */
   @Deprecated
@@ -630,10 +631,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setOriginalVariable(this.orgVar)
-        .setOriginalName(this.orgName)
-        .setUnits(this.proxy.units)
+    return b.setOriginalVariable(this.orgVar).setOriginalName(this.orgName).setUnits(this.proxy.units)
         .setDesc(this.proxy.desc);
   }
 
@@ -699,7 +697,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     public StructureDS build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
       return new StructureDS(this);

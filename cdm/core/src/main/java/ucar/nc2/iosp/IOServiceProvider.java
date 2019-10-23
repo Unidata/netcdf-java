@@ -64,7 +64,7 @@ public interface IOServiceProvider {
   void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;
 
   /**
-   * Open existing file, and populate it. 
+   * Open existing file, and populate it.
    *
    * @param raf the file to work on, it has already passed the isValidFile() test.
    * @param rootGroup add objects to the root group.
@@ -74,19 +74,20 @@ public interface IOServiceProvider {
   void open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
 
   /**
-   * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the Variable, and the
+   * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the
+   * Variable, and the
    * requested shape.
    *
-   * @param v2      a top-level Variable
-   * @param section the section of data to read. There must be a Range for each Dimension in the variable, in order. Note: no nulls allowed.
-   *                IOSP may not modify.
+   * @param v2 a top-level Variable
+   * @param section the section of data to read. There must be a Range for each Dimension in the variable, in order.
+   *        Note: no nulls allowed.
+   *        IOSP may not modify.
    * @return the requested data in a memory-resident Array
-   * @throws java.io.IOException            if read error
+   * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    * @see ucar.ma2.Range
    */
-  ucar.ma2.Array readData(Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException;
+  ucar.ma2.Array readData(Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
    * Read data from a top level Variable and send data to a WritableByteChannel.

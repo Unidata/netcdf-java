@@ -1011,6 +1011,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   protected CoordinateAxis1D(Builder<?> builder) {
     super(builder);
   }
+
   public Builder<?> toBuilder() {
     CoordinateAxis1D.Builder<?> r2 = addLocalFieldsToBuilder(builder());
     return (CoordinateAxis1D.Builder<?>) super.addLocalFieldsToBuilder(r2);
@@ -1023,6 +1024,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -1042,7 +1044,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     protected abstract T self();
 
     public CoordinateAxis1D build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new CoordinateAxis1D(this);
     }

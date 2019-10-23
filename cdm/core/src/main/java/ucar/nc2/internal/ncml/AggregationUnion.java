@@ -35,10 +35,13 @@ class AggregationUnion extends Aggregation {
     }
   }
 
-  /* LOOK is this supported ?
-  @Override
-  protected void rebuildDataset() throws IOException {
-    // LOOK ncDataset.empty();
-    buildNetcdfDataset(null);
-  } */
+  /*
+   * LOOK is this supported ?
+   * 
+   * @Override
+   * protected void rebuildDataset() throws IOException {
+   * // LOOK ncDataset.empty();
+   * buildNetcdfDataset(null);
+   * }
+   */
 }

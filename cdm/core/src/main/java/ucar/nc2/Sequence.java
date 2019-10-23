@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * Sequence is a one-dimensional Structure with indeterminate length.
  * The only data access is through getStructureIterator().
  * However, read() will read in the entire data and return an ArraySequence.
+ * 
  * @author caron
  * @since Feb 23, 2008
  * @deprecated Sequence will possibly not extend Structure or Variable, in 6.
@@ -23,8 +24,11 @@ public class Sequence extends Structure {
    * Sequence Constructor
    *
    * @param ncfile the containing NetcdfFile.
+   * 
    * @param group the containing group; if null, use rootGroup
+   * 
    * @param parent parent Structure, may be null
+   * 
    * @param shortName variable shortName, must be unique within the Group
    */
   public Sequence(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
@@ -114,6 +118,7 @@ public class Sequence extends Structure {
   protected Sequence(Builder<?> builder) {
     super(builder);
   }
+
   public Builder<?> toBuilder() {
     Sequence.Builder<?> r2 = addLocalFieldsToBuilder(builder());
     return (Sequence.Builder<?>) super.addLocalFieldsToBuilder(r2);
@@ -126,6 +131,7 @@ public class Sequence extends Structure {
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -145,7 +151,8 @@ public class Sequence extends Structure {
     protected abstract T self();
 
     public Sequence build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new Sequence(this);
     }

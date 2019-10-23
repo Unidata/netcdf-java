@@ -13,6 +13,7 @@ import java.io.IOException;
 
 /**
  * Enhance sequence
+ * 
  * @author caron
  * @since Nov 10, 2009
  * @deprecated SequenceDS will not extend StructureDS in 6.

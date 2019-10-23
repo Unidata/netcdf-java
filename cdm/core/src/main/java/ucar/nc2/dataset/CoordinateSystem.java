@@ -764,14 +764,12 @@ public class CoordinateSystem {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setNetcdfDataset(this.ds)
-        .addCoordinateAxes(this.coordAxes)
-        .addCoordinateTransforms(this.coordTrans);
+    return b.setNetcdfDataset(this.ds).addCoordinateAxes(this.coordAxes).addCoordinateTransforms(this.coordTrans);
   }
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -785,7 +783,7 @@ public class CoordinateSystem {
     }
   }
 
-  public static abstract class Builder<T extends Builder<T>>  {
+  public static abstract class Builder<T extends Builder<T>> {
     private NetcdfDataset ncd;
     private List<CoordinateAxis> coordAxes = new ArrayList<>();
     private List<CoordinateTransform> coordTrans = new ArrayList<>();
@@ -819,7 +817,8 @@ public class CoordinateSystem {
     }
 
     public CoordinateSystem build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new CoordinateSystem(this);
     }

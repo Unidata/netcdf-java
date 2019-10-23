@@ -66,7 +66,8 @@ class AggregationExisting extends AggregationOuter {
       } else {
         // docs claim we can add the coord variable in the outer ncml, so make a fake one for now, make
         // sure it gets removed if user adds it outside of aggregation.
-        VariableDS.Builder fake = VariableDS.builder().setName(dimName).setDataType(DataType.INT).setDimensionsByName(dimName);
+        VariableDS.Builder fake =
+            VariableDS.builder().setName(dimName).setDataType(DataType.INT).setDimensionsByName(dimName);
         fake.setAutoGen(0, 1);
         rootGroup.addVariable(fake);
         System.out.printf("HEY adding a fake coord var for %s%n", dimName);
@@ -119,7 +120,8 @@ class AggregationExisting extends AggregationOuter {
     }
 
     // handle the agg coordinate variable
-    Optional<Variable.Builder> joinAggCoordOpt = rootGroup.findVariable(dimName); // long name of dimension, coord variable
+    Optional<Variable.Builder> joinAggCoordOpt = rootGroup.findVariable(dimName); // long name of dimension, coord
+                                                                                  // variable
     if (!joinAggCoordOpt.isPresent() && (type == Type.joinExisting)) {
       typicalDataset.close(typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on " + getLocation());
@@ -396,9 +398,9 @@ class AggregationExisting extends AggregationOuter {
   // has the name getCacheName()
   private String getCacheName() {
     String cacheName = ncDataset.location;
-    //if (cacheName == null) { LOOK
-    //  cacheName = ncDataset.getCacheName();
-    //}
+    // if (cacheName == null) { LOOK
+    // cacheName = ncDataset.getCacheName();
+    // }
     return cacheName;
   }
 

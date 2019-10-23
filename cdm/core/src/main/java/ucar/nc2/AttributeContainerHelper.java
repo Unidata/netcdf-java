@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Manages Collections of Attributes.
  * This is the mutable version, call toImmutable() for immutable version.
+ * 
  * @author caron
  * @since 5/5/2015
  */
@@ -186,10 +187,7 @@ public class AttributeContainerHelper implements AttributeContainer {
 
     @Override
     public String findAttValueIgnoreCase(String attName, String defaultValue) {
-      return atts.stream()
-          .filter(a -> a.getShortName().equals(attName))
-          .findFirst()
-          .map(Attribute::getStringValue)
+      return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().map(Attribute::getStringValue)
           .orElse(defaultValue);
     }
 

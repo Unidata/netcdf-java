@@ -416,11 +416,8 @@ public class NcStream {
   private static Dimension decodeDim(NcStreamProto.Dimension dim) {
     String name = (dim.getName().isEmpty() ? null : dim.getName());
     int dimLen = dim.getIsVlen() ? -1 : (int) dim.getLength();
-    return Dimension.builder(name, dimLen)
-        .setIsShared(!dim.getIsPrivate())
-        .setIsUnlimited(dim.getIsUnlimited())
-        .setIsVariableLength(dim.getIsVlen())
-        .build();
+    return Dimension.builder(name, dimLen).setIsShared(!dim.getIsPrivate()).setIsUnlimited(dim.getIsUnlimited())
+        .setIsVariableLength(dim.getIsVlen()).build();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -498,9 +495,7 @@ public class NcStream {
 
   private static Variable.Builder decodeVar(NcStreamProto.Variable var) {
     DataType varType = convertDataType(var.getDataType());
-    Variable.Builder ncvar = Variable.builder()
-        .setName(var.getName())
-        .setDataType(varType);
+    Variable.Builder ncvar = Variable.builder().setName(var.getName()).setDataType(varType);
 
     if (varType.isEnum()) {
       ncvar.setEnumTypeName(var.getEnumType());
@@ -513,7 +508,7 @@ public class NcStream {
     Section section = new Section();
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : var.getShapeList()) {
       dims.add(decodeDim(dim));
-      section.appendRange((int)dim.getLength());
+      section.appendRange((int) dim.getLength());
     }
     ncvar.addDimensions(dims);
 
@@ -531,17 +526,16 @@ public class NcStream {
   }
 
   private static Structure.Builder decodeStructure(NcStreamProto.Structure s) {
-    Structure.Builder ncvar = (s.getDataType() == ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE)
-        ? Sequence.builder() : Structure.builder();
+    Structure.Builder ncvar =
+        (s.getDataType() == ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE) ? Sequence.builder() : Structure.builder();
 
-    ncvar.setName(s.getName())
-        .setDataType(convertDataType(s.getDataType()));
+    ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()));
 
     List<Dimension> dims = new ArrayList<>(6);
     Section section = new Section();
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : s.getShapeList()) {
       dims.add(decodeDim(dim));
-      section.appendRange((int)dim.getLength());
+      section.appendRange((int) dim.getLength());
     }
     ncvar.addDimensions(dims);
 
@@ -768,8 +762,8 @@ public class NcStream {
     return size;
   }
 
-  private static NcStreamProto.StructureData encodeStructureDataProto(byte[] fixed, List<Integer> count, List<String> ss,
-      int nrows, int rowLength) {
+  private static NcStreamProto.StructureData encodeStructureDataProto(byte[] fixed, List<Integer> count,
+      List<String> ss, int nrows, int rowLength) {
     NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
     builder.setData(ByteString.copyFrom(fixed));
     builder.setNrows(nrows);

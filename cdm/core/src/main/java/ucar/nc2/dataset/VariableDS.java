@@ -175,6 +175,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   /**
    * Remove coordinate system info.
+   * 
    * @deprecated Use NetcdfDataset.builder()
    */
   @Deprecated
@@ -185,6 +186,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   /**
    * Calculate scale/offset/missing/enum/unsigned value info. This may change the DataType.
+   * 
    * @deprecated Use NetcdfDataset.builder()
    */
   @Deprecated
@@ -746,6 +748,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.desc);
     this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this);
   }
+
   public Builder<?> toBuilder() {
     VariableDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(r2);
@@ -753,18 +756,14 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder
-        .setOriginalVariable(this.orgVar)
-        .setOriginalDataType(this.orgDataType)
-        .setOriginalName(this.orgName)
-        .setEnhanceMode(this.enhanceMode)
-        .setUnits(this.enhanceProxy.units)
-        .setDesc(this.enhanceProxy.desc);
+    builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
+        .setEnhanceMode(this.enhanceMode).setUnits(this.enhanceProxy.units).setDesc(this.enhanceProxy.desc);
     return builder;
   }
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -838,7 +837,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     public VariableDS build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new VariableDS(this);
     }

@@ -57,7 +57,8 @@ public class NetcdfDatasets {
    *        the calling thread.
    * @param period (secs) do periodic cleanups every this number of seconds.
    */
-  public static synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period) {
+  public static synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit,
+      int period) {
     netcdfFileCache = new FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, hardLimit, period);
   }
 
@@ -147,7 +148,8 @@ public class NetcdfDatasets {
   public static NetcdfDataset openDataset(String location, boolean enhance, int buffer_size,
       ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-    return openDataset(durl, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null, buffer_size, cancelTask, spiObject);
+    return openDataset(durl, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null, buffer_size, cancelTask,
+        spiObject);
   }
 
   /**
@@ -271,7 +273,8 @@ public class NetcdfDatasets {
    */
   public static NetcdfDataset acquireDataset(DatasetUrl location, boolean enhanceMode,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return acquireDataset(null, location, enhanceMode ? NetcdfDataset.getDefaultEnhanceMode() : null, -1, cancelTask, null);
+    return acquireDataset(null, location, enhanceMode ? NetcdfDataset.getDefaultEnhanceMode() : null, -1, cancelTask,
+        null);
   }
 
   /**

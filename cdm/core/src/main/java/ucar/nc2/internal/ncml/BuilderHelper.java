@@ -55,11 +55,8 @@ class BuilderHelper {
     // dimensions
     for (Dimension d : src.getDimensions()) {
       if (!targetGroup.findDimension(d.getShortName()).isPresent()) {
-        Dimension newd = Dimension.builder(d.getShortName(), d.getLength())
-          .setIsShared(d.isShared())
-          .setIsUnlimited(unlimitedOK && d.isUnlimited())
-          .setIsVariableLength(d.isVariableLength())
-          .build();
+        Dimension newd = Dimension.builder(d.getShortName(), d.getLength()).setIsShared(d.isShared())
+            .setIsUnlimited(unlimitedOK && d.isUnlimited()).setIsVariableLength(d.isVariableLength()).build();
         targetGroup.addDimension(newd);
       }
     }
@@ -70,21 +67,27 @@ class BuilderHelper {
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
       if (replace || !targetV.isPresent()) { // replace it
         // LOOK not needed ??
-        /* if ((v instanceof Structure) && !(v instanceof StructureDS)) {
-          v = new StructureDS(targetGroup, (Structure) v);
-        } else if (!(v instanceof VariableDS)) {
-          v = new VariableDS(targetGroup, v, false); // enhancement done by original variable, this is just to reparent to target dataset.
-        } */
+        /*
+         * if ((v instanceof Structure) && !(v instanceof StructureDS)) {
+         * v = new StructureDS(targetGroup, (Structure) v);
+         * } else if (!(v instanceof VariableDS)) {
+         * v = new VariableDS(targetGroup, v, false); // enhancement done by original variable, this is just to reparent
+         * to target dataset.
+         * }
+         */
         targetV.ifPresent(vb -> targetGroup.removeVariable(vb.shortName));
         Variable.Builder vb = v.toBuilder().setProxyReader(null);
         targetGroup.addVariable(vb);
         // LOOK not needed? v.resetDimensions(); // dimensions will be different
 
-      } /* LOOK was else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
-        // this is the case where we defined the variable, but didnt set its data. we now set it with the first nested
-        // dataset that has a variable with the same name
-        targetVe.setOriginalVariable(v);
-      } */
+      } /*
+         * LOOK was else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
+         * // this is the case where we defined the variable, but didnt set its data. we now set it with the first
+         * nested
+         * // dataset that has a variable with the same name
+         * targetVe.setOriginalVariable(v);
+         * }
+         */
     }
 
     // nested groups - check if target already has it

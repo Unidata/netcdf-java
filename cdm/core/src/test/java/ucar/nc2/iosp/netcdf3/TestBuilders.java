@@ -2,7 +2,6 @@
 package ucar.nc2.iosp.netcdf3;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -31,18 +30,20 @@ public class TestBuilders {
     try {
       TestDir.actOnAllParameterized(testDir, new SuffixFileFilter(".nc"), filenames);
     } catch (IOException e) {
-      filenames.add(new Object[]{e.getMessage()});
+      filenames.add(new Object[] {e.getMessage()});
     }
     return filenames;
   }
 
   private String filename;
+
   public TestBuilders(String filename) {
     this.filename = filename;
   }
 
   @Test
-  public void compareWithBuilder() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+  public void compareWithBuilder()
+      throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
     logger.info("TestBuilders on {}%n", filename);
     SPFactory.setServiceProvider("ucar.nc2.iosp.netcdf3.N3raf");
     try (NetcdfFile org = NetcdfFile.open(filename)) {

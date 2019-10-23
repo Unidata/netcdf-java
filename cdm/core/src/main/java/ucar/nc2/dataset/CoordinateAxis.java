@@ -417,6 +417,7 @@ public class CoordinateAxis extends VariableDS {
     this.boundaryRef = builder.boundaryRef;
     this.isContiguous = builder.isContiguous;
   }
+
   public Builder<?> toBuilder() {
     CoordinateAxis.Builder<?> r2 = addLocalFieldsToBuilder(builder());
     return (CoordinateAxis.Builder<?>) super.addLocalFieldsToBuilder(r2);
@@ -424,16 +425,13 @@ public class CoordinateAxis extends VariableDS {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setNetcdfDataset(this.ncd)
-        .setAxisType(this.axisType)
-        .setPositive(this.positive)
-        .setBoundary(this.boundaryRef)
-        .setIsContiguous(this.isContiguous);
+    return b.setNetcdfDataset(this.ncd).setAxisType(this.axisType).setPositive(this.positive)
+        .setBoundary(this.boundaryRef).setIsContiguous(this.isContiguous);
   }
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -483,7 +481,8 @@ public class CoordinateAxis extends VariableDS {
     }
 
     public CoordinateAxis build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new CoordinateAxis(this);
     }

@@ -13,6 +13,7 @@ import java.io.IOException;
 
 /**
  * This is really just an interface to Netcdf-3 and Netcdf-4 file writing.
+ * 
  * @deprecated Do not use.
  *
  * @author caron

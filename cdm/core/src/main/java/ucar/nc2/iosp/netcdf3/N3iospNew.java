@@ -35,7 +35,7 @@ import ucar.unidata.io.RandomAccessFile;
 public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
 
-   /*
+  /*
    * CLASSIC
    * The maximum size of a record in the classic format in versions 3.5.1 and earlier is 2^32 - 4 bytes.
    * In versions 3.6.0 and later, there is no such restriction on total record size for the classic format
@@ -141,7 +141,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     ncfile.finish();
   }
 
-    /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // data reading
 
   @Override
@@ -348,19 +348,19 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     return count;
   }
 
-   //////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////
   @Override
   public boolean syncExtend() throws IOException {
-    //boolean result = header.synchNumrecs();
-   // if (result && log.isDebugEnabled())
-   //  log.debug(" N3iosp syncExtend " + raf.getLocation() + " numrecs =" + header.numrecs);
+    // boolean result = header.synchNumrecs();
+    // if (result && log.isDebugEnabled())
+    // log.debug(" N3iosp syncExtend " + raf.getLocation() + " numrecs =" + header.numrecs);
     return true;
   }
 
   public void flush() throws java.io.IOException {
     if (raf != null) {
       raf.flush();
-      //      raf.flush();
+      // raf.flush();
     }
   }
 
@@ -379,6 +379,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     super.reacquire();
     header.raf = this.raf;
   }
+
   /**
    * Debug info for this object.
    */
@@ -391,10 +392,12 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   public Object sendIospMessage(Object message) {
     if (null == header)
       return null;
-   /* if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
-      return header.makeRecordStructure();
-    else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
-      return header.removeRecordStructure(); */
+    /*
+     * if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
+     * return header.makeRecordStructure();
+     * else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
+     * return header.removeRecordStructure();
+     */
 
     return super.sendIospMessage(message);
   }

@@ -112,15 +112,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public static Set<Enhance> getEnhanceAll() {
     return EnhanceAll;
   }
+
   public static Set<Enhance> getEnhanceNone() {
     return EnhanceNone;
   }
+
   public static Set<Enhance> getDefaultEnhanceMode() {
     return defaultEnhanceMode;
   }
 
   /**
    * Set the default set of Enhancements to do for all subsequent dataset opens and acquires.
+   * 
    * @param mode the default set of Enhancements for open and acquire factory methods
    */
   public static void setDefaultEnhanceMode(Set<Enhance> mode) {
@@ -341,6 +344,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Call when application exits, if you have previously called initNetcdfFileCache.
    * This shuts down any background threads in order to get a clean process shutdown.
+   * 
    * @deprecated use NetcdfDatasets.shutdown
    */
   @Deprecated
@@ -469,6 +473,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * 2) enhance(EnumSet<Enhance> mode) is called.
    *
    * Possible remove all direct access to Variable.enhance
+   * 
    * @deprecated use NetcdfDatasets.enhance
    */
   @Deprecated
@@ -867,6 +872,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Clear Coordinate System metadata, to allow them to be redone
+   * 
    * @deprecated Use NetcdfDataset.builder()
    */
   @Deprecated
@@ -1177,6 +1183,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Sort Variables, CoordAxes by name.
+   * 
    * @deprecated Use NetcdfDataset.builder()
    */
   @Deprecated
@@ -1207,6 +1214,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * No-arg Constructor
+   * 
    * @deprecated Use NetcdfDataset.builder()
    */
   @Deprecated
@@ -1564,18 +1572,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   // Add local fields to the passed - in builder.
   private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setOrgFile(this.orgFile)
-        .addCoordinateAxes(this.coordAxes)
-        .addCoordinateSystems(this.coordSys)
-        .addCoordinateTransforms(this.coordTransforms)
-        .setConventionUsed(this.convUsed)
-        .setEnhanceMode(this.enhanceMode)
+    return b.setOrgFile(this.orgFile).addCoordinateAxes(this.coordAxes).addCoordinateSystems(this.coordSys)
+        .addCoordinateTransforms(this.coordTransforms).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
         .setAggregation(this.agg);
   }
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -1653,7 +1657,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     public NetcdfDataset build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new NetcdfDataset(this);
     }

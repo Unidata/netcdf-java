@@ -31,11 +31,16 @@ class AggDataset implements Comparable<AggDataset> {
 
   private final MFile mfile;
   private final Set<Enhance> enhance; // used by Fmrc to read enhanced datasets
-  @Nullable protected final String cacheLocation;
-  @Nullable private final String id; // id attribute on the netcdf element
-  @Nullable private final Element ncmlElem;
-  @Nullable protected final ucar.nc2.util.cache.FileFactory reader;
-  @Nullable protected final Object spiObject; // pass to NetcdfFile.open()
+  @Nullable
+  protected final String cacheLocation;
+  @Nullable
+  private final String id; // id attribute on the netcdf element
+  @Nullable
+  private final Element ncmlElem;
+  @Nullable
+  protected final ucar.nc2.util.cache.FileFactory reader;
+  @Nullable
+  protected final Object spiObject; // pass to NetcdfFile.open()
 
   // deferred opening LOOK
   protected DatasetUrl durl;
@@ -62,8 +67,9 @@ class AggDataset implements Comparable<AggDataset> {
    * @param wantEnhance open dataset in enhance mode, may be null
    * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
    */
-  protected AggDataset(String cacheLocation, String location,  @Nullable String id, @Nullable EnumSet<Enhance> wantEnhance,
-      @Nullable ucar.nc2.util.cache.FileFactory reader, @Nullable Object spiObject, @Nullable Element ncmlElem) {
+  protected AggDataset(String cacheLocation, String location, @Nullable String id,
+      @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.util.cache.FileFactory reader,
+      @Nullable Object spiObject, @Nullable Element ncmlElem) {
     this.mfile = MFileOS.getExistingFile(location); // may be null
     this.cacheLocation = cacheLocation;
     this.id = id;

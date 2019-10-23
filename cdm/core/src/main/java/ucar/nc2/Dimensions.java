@@ -75,8 +75,9 @@ public class Dimensions {
    * Create a dimension list using the dimensions names. Inverse of makeDimensionsString().
    *
    * @param dimensions list of possible dimensions, may not be null
-   * @param dimString  : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon dimension. null or
-   *                   empty String is a scalar.
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
+   *        dimension. null or
+   *        empty String is a scalar.
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */

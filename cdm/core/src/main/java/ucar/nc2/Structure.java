@@ -249,8 +249,9 @@ public class Structure extends Variable {
     return found;
   }
 
-  /** 
+  /**
    * Set the parent group of this Structure, and all member variables.
+   * 
    * @deprecated Use Structure.builder()
    */
   @Deprecated
@@ -681,6 +682,7 @@ public class Structure extends Variable {
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -709,13 +711,14 @@ public class Structure extends Variable {
     }
 
     public boolean removeMemberVariable(String memberName) {
-      Optional<Variable.Builder> want = vbuilders.stream().filter(v->v.shortName.equals(memberName)).findFirst();
+      Optional<Variable.Builder> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();
       want.ifPresent(v -> vbuilders.remove(v));
       return want.isPresent();
     }
 
     public Structure build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
       return new Structure(this);

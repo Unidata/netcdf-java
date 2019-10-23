@@ -1618,6 +1618,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * For subclass construction.
    * Use NetcdfFileSubclass to access this constructor
+   * 
    * @deprecated use NetcdfFile.builder()
    */
   @Deprecated
@@ -1699,11 +1700,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   /**
    * Public by accident.
+   * 
    * @deprecated Use NetcdfFile.builder()
    */
   @Deprecated
   public void setRootGroup(Group rootGroup) {
-     this.rootGroup = rootGroup;
+    this.rootGroup = rootGroup;
   }
 
   /**
@@ -1985,6 +1987,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Completely empty the objects in the netcdf file.
    * Used for rereading the file on a sync().
+   * 
    * @deprecated ???
    */
   @Deprecated
@@ -2006,6 +2009,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Finish constructing the object model.
    * This construsts the "global" variables, attributes and dimensions.
    * It also looks for coordinate variables.
+   * 
    * @deprecated Use NetcdfFile.builder()
    */
   @Deprecated
@@ -2539,22 +2543,20 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
     finish(); // LOOK
   }
+
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setLocation(this.location)
-        .setId(this.id)
-        .setTitle(this.title)
-        .setRootGroup(this.rootGroup.toBuilder())
+    return b.setLocation(this.location).setId(this.id).setTitle(this.title).setRootGroup(this.rootGroup.toBuilder())
         .setIosp(this.iosp);
   }
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -2568,7 +2570,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
   }
 
-  public static abstract class Builder<T extends Builder<T>>  {
+  public static abstract class Builder<T extends Builder<T>> {
     public Group.Builder rootGroup = Group.builder().setName("");
     private String id;
     private String title;
@@ -2606,7 +2608,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
 
     public NetcdfFile build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new NetcdfFile(this);
     }

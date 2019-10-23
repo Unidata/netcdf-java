@@ -185,13 +185,8 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
 
   /** Turn into a mutable Builder. Like a copy constructor. */
   public Builder toBuilder() {
-    return builder()
-        .setName(this.shortName)
-        .setGroup(this.getGroup())
-        .setIsUnlimited(this.isUnlimited)
-        .setIsVariableLength(this.isVariableLength)
-        .setIsShared(this.isShared)
-        .setLength(this.length);
+    return builder().setName(this.shortName).setGroup(this.getGroup()).setIsUnlimited(this.isUnlimited)
+        .setIsVariableLength(this.isVariableLength).setIsShared(this.isShared).setLength(this.length);
   }
 
   /**
@@ -257,7 +252,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
       return false;
     Dimension other = (Dimension) oo;
     Group g = getGroup();
-    if ((g != null) && !g.equals(other.getGroup()))  // TODO remove group in 6
+    if ((g != null) && !g.equals(other.getGroup())) // TODO remove group in 6
       return false;
     if ((getShortName() == null) && (other.getShortName() != null))
       return false;
@@ -273,7 +268,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   @Override
   public int hashCode() {
     int result = 17;
-    Group g = getGroup();  // TODO remove group in 6
+    Group g = getGroup(); // TODO remove group in 6
     if (g != null)
       result += 37 * result + g.hashCode();
     if (null != getShortName())
@@ -531,17 +526,19 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
       this.length = length;
     }
 
-    /** Set is unlimited.
-     *  Used by netcdf3 for variables whose outer dimension can change
+    /**
+     * Set is unlimited.
+     * Used by netcdf3 for variables whose outer dimension can change
      */
     public Builder setIsUnlimited(boolean isUnlimited) {
       this.isUnlimited = isUnlimited;
       return this;
     }
 
-    /** Set variable length is true.
-     *  Implies that its not shared, nor unlimited.
-     *  Used by sequences.
+    /**
+     * Set variable length is true.
+     * Implies that its not shared, nor unlimited.
+     * Used by sequences.
      */
     public Builder setIsVariableLength(boolean isVariableLength) {
       this.isVariableLength = isVariableLength;
@@ -590,6 +587,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
 
     /**
      * Set the parent group.
+     * 
      * @deprecated Will not use in 6.0
      */
     @Deprecated
@@ -599,7 +597,8 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     }
 
     public Dimension build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new Dimension(this);
     }

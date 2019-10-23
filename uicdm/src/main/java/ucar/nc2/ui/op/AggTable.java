@@ -124,7 +124,7 @@ public class AggTable extends JPanel {
     prefs.putInt("splitPos", split.getDividerLocation());
   }
 
-   public void clear() {
+  public void clear() {
     datasetTable.clearBeans();
     aggTA.clear();
   }
@@ -213,8 +213,8 @@ public class AggTable extends JPanel {
   public static class DatasetBean {
     Aggregation.Dataset ds;
 
-     @Nullable
-     NetcdfFile acquireFile() {
+    @Nullable
+    NetcdfFile acquireFile() {
       try {
         return ds.acquireFile(null);
       } catch (IOException e) {

@@ -37,7 +37,7 @@ public class TestRadialDataset {
     testAllMethods(topDir + "nexrad/level2/Level2_KYUX_20060527_2335.ar2v");
   }
 
-  //@Test
+  // @Test
   public void testReadDirectory() throws IOException {
     long start = System.currentTimeMillis();
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);

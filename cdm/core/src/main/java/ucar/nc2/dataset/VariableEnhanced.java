@@ -33,6 +33,7 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
 
   /**
    * Enhance using the given set of NetcdfDataset.Enhance
+   * 
    * @deprecated do not use
    */
   @Deprecated
@@ -40,6 +41,7 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
 
   /**
    * clear previous coordinate systems. if any
+   * 
    * @deprecated do not use
    */
   @Deprecated

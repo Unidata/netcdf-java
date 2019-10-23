@@ -1,7 +1,6 @@
 package ucar.nc2;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Test;

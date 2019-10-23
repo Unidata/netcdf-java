@@ -192,6 +192,7 @@ public interface EnhanceScaleMissingUnsigned extends IsMissingEvaluator {
 
   /**
    * set if valid_range is considered isMissing(); better set in constructor if possible
+   * 
    * @deprecated Do not use.
    */
   @Deprecated
@@ -199,6 +200,7 @@ public interface EnhanceScaleMissingUnsigned extends IsMissingEvaluator {
 
   /**
    * set if missing_data is considered isMissing(); better set in constructor if possible
+   * 
    * @deprecated Do not use.
    */
   @Deprecated

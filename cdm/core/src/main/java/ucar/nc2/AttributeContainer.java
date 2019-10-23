@@ -31,6 +31,7 @@ public interface AttributeContainer {
 
   /**
    * Find a String-valued Attribute by Attribute name (ignore case), return the (string) value of the Attribute.
+   * 
    * @return the attribute value, or defaultValue if not found
    */
   String findAttValueIgnoreCase(String attName, String defaultValue);

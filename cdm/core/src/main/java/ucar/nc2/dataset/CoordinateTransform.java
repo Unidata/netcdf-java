@@ -177,15 +177,13 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b
-        .setName(this.name)
-        .setAuthority(this.authority)
-        .setTransformType(this.transformType)
+    return b.setName(this.name).setAuthority(this.authority).setTransformType(this.transformType)
         .addParameters(this.params);
   }
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -199,7 +197,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     }
   }
 
-  public static abstract class Builder<T extends Builder<T>>  {
+  public static abstract class Builder<T extends Builder<T>> {
     private String name, authority;
     private TransformType transformType;
     private List<Parameter> params = new ArrayList<>();
@@ -233,7 +231,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     }
 
     public CoordinateTransform build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new CoordinateTransform(this);
     }

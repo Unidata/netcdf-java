@@ -474,6 +474,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
     return enumTypedef.lookupEnumString(val);
   }
+
   /**
    * Public by accident.
    *
@@ -1065,7 +1066,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /////////////////////////////////////////////////////////////////////////////
 
-   /** @deprecated Use Variable.builder() */
+  /** @deprecated Use Variable.builder() */
   @Deprecated
   protected Variable() {}
 
@@ -1289,6 +1290,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /**
    * Use when dimensions have changed, to recalculate the shape.
+   * 
    * @deprecated Use Variable.builder()
    */
   @Deprecated
@@ -1335,6 +1337,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Reset the dimension array. Anonymous dimensions are left alone.
    * Shared dimensions are searched for recursively in the parent groups.
+   * 
    * @deprecated Use Variable.builder()
    */
   @Deprecated
@@ -1388,6 +1391,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /**
    * Set this Variable to be a scalar
+   * 
    * @deprecated Use Variable.builder()
    */
   @Deprecated
@@ -1717,7 +1721,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (this.dataType.isEnum()) {
       this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
       if (this.enumTypedef == null) {
-        throw new IllegalStateException(String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
+        throw new IllegalStateException(
+            String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
       }
     }
 
@@ -1779,17 +1784,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   // build() replaces parent but respects ncfile and proxyReader.
   // Normally on a copy you want to set proxyReader to null;
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder
-        .setName(this.shortName)
-        .setGroup(this.group)
-        .setNcfile(this.ncfile)
-        .setDataType(this.dataType)
+    builder.setName(this.shortName).setGroup(this.group).setNcfile(this.ncfile).setDataType(this.dataType)
         .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
-        .addDimensions(this.dimensions)
-        .addAttributes(this.attributes.atts)
-        .setParentStructure(this.getParentStructure())
-        .setProxyReader(this.proxyReader)
-        .setSPobject(this.spiObject);
+        .addDimensions(this.dimensions).addAttributes(this.attributes.atts)
+        .setParentStructure(this.getParentStructure()).setProxyReader(this.proxyReader).setSPobject(this.spiObject);
 
     if (this.cache.isMetadata) {
       builder.setCachedData(this.cache.data, true);
@@ -1799,6 +1797,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /**
    * Get Builder for this class that allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
@@ -1812,7 +1811,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
   }
 
-  public static abstract class Builder<T extends Builder<T>>  {
+  public static abstract class Builder<T extends Builder<T>> {
     // toBuilder() retains the original ncfile, which agg needs. Clear to reparent.
     public NetcdfFile ncfile;
     public String shortName;
@@ -1975,7 +1974,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     public Variable build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new Variable(this);
     }

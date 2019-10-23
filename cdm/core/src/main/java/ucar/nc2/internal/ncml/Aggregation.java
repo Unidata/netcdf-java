@@ -27,8 +27,10 @@ import java.util.concurrent.Executor;
 /**
  * Superclass for NcML Aggregation Builder.
  * An Aggregation acts as a ProxyReader for VariableDS. That, is it must implement:
+ * 
  * <pre>
  * public Array read(Variable mainv);
+ * 
  * public Array read(Variable mainv, Section section);
  * </pre>
  *
@@ -37,8 +39,7 @@ import java.util.concurrent.Executor;
 public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
 
   protected enum Type {
-    forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting, joinExistingOne,
-    joinNew, tiled, union
+    forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting, joinExistingOne, joinNew, tiled, union
   }
 
   protected enum TypicalDataset {
@@ -237,25 +238,28 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
     return datasetManager.getLastChanged();
   }
 
-  /* LOOK
-  private boolean _sync() throws IOException {
-    if (!datasetManager.scan(true))
-      return false; // nothing changed LOOK what about grib extention ??
-    cacheDirty = true;
-    makeDatasets(null);
-
-    // rebuild the metadata
-    rebuildDataset();
-    ncDataset.finish();
-    if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the coordinate
-      // systems
-      ncDataset.clearCoordinateSystems();
-      ncDataset.enhance(ncDataset.getEnhanceMode());
-      ncDataset.finish();
-    }
-
-    return true;
-  } */
+  /*
+   * LOOK
+   * private boolean _sync() throws IOException {
+   * if (!datasetManager.scan(true))
+   * return false; // nothing changed LOOK what about grib extention ??
+   * cacheDirty = true;
+   * makeDatasets(null);
+   * 
+   * // rebuild the metadata
+   * rebuildDataset();
+   * ncDataset.finish();
+   * if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the
+   * coordinate
+   * // systems
+   * ncDataset.clearCoordinateSystems();
+   * ncDataset.enhance(ncDataset.getEnhanceMode());
+   * ncDataset.finish();
+   * }
+   * 
+   * return true;
+   * }
+   */
 
   @Override
   public String getFileTypeId() { // LOOK - should cache ??
@@ -468,7 +472,8 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
    */
   protected AggDataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
       String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
-    return new AggDataset(cacheName, location, id, enhance, reader, spiObject, ncmlElem); // overridden in OuterDim, tiled
+    return new AggDataset(cacheName, location, id, enhance, reader, spiObject, ncmlElem); // overridden in OuterDim,
+                                                                                          // tiled
   }
 
   protected AggDataset makeDataset(MFile dset) {
@@ -501,11 +506,13 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
           System.out.println(" debugProxy: hasProxyReader " + v.shortName);
         continue; // dont mess with agg variables
       }
-      /* LOOK no caching
-      if (v.isCaching()) { // cache the small ones
-        v.setCachedData(v.read()); // cache the variableDS directly
-
-      } else { // put proxy on the rest */
+      /*
+       * LOOK no caching
+       * if (v.isCaching()) { // cache the small ones
+       * v.setCachedData(v.read()); // cache the variableDS directly
+       * 
+       * } else { // put proxy on the rest
+       */
       v.setProxyReader(proxy);
       if (debugProxy)
         System.out.println(" debugProxy: set proxy on " + v.shortName);

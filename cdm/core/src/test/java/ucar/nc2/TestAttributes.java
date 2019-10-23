@@ -5,7 +5,6 @@
 package ucar.nc2;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Test;
@@ -141,7 +140,7 @@ public class TestAttributes {
     Attribute att = Attribute.builder().setName("name").setValues(ImmutableList.of(1, 2, 3)).build();
     assertThat(att.getDataType()).isEqualTo(DataType.INT);
 
-    Array array = Array.factory(DataType.SHORT, new int[] {4}, new short[] {1,2,3,4});
+    Array array = Array.factory(DataType.SHORT, new int[] {4}, new short[] {1, 2, 3, 4});
     Attribute att2 = Attribute.builder().setName("name").setValues(array).build();
     assertThat(att2.getDataType()).isEqualTo(DataType.SHORT);
     assertThat(att2.getValues()).isEqualTo(array);

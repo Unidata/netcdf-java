@@ -57,14 +57,16 @@ public class AggregationNew extends AggregationOuter {
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
       DataType coordType = getCoordinateType();
-      VariableDS.Builder joinAggCoordVar = VariableDS.builder().setName(dimName).setDataType(coordType).setDimensionsByName(dimName);
+      VariableDS.Builder joinAggCoordVar =
+          VariableDS.builder().setName(dimName).setDataType(coordType).setDimensionsByName(dimName);
       root.addVariable(joinAggCoordVar);
       joinAggCoordVar.setProxyReader(this);
       if (isDate)
         joinAggCoordVar.addAttribute(Attribute.builder(_Coordinate.AxisType).setStringValue("Time").build());
 
       // if speced externally, this variable will get replaced
-      // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType, joinAggCoordVar.units);
+      // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType,
+      // joinAggCoordVar.units);
       CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.units);
       joinAggCoordVar.setSPobject(cv);
       cacheList.add(cv);

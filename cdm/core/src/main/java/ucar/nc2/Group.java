@@ -155,8 +155,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
-  public List<Dimension> makeDimensionsList(String dimString)
-      throws IllegalArgumentException {
+  public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
     List<Dimension> newDimensions = new ArrayList<>();
     if (dimString == null) // scalar
       return newDimensions; // empty list
@@ -808,7 +807,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
     builder.dimensions.forEach(d -> d.setGroup(this)); // LOOK remove in 6
     this.dimensions = new ArrayList<>(builder.dimensions);
-    this.enumTypedefs =  new ArrayList<>(builder.enumTypedefs);
+    this.enumTypedefs = new ArrayList<>(builder.enumTypedefs);
 
     // only the root group build() should be called, the rest get called recursively
     this.groups = builder.gbuilders.stream().map(g -> g.build(this)).collect(Collectors.toList());
@@ -829,12 +828,9 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   public Builder toBuilder() {
-    Builder builder = builder()
-        .setName(this.shortName)
-        .setNcfile(this.ncfile)
-        .addAttributes(this.attributes.getAttributes())
-        .addDimensions(this.dimensions)
-        .addEnumTypedefs(this.enumTypedefs);
+    Builder builder =
+        builder().setName(this.shortName).setNcfile(this.ncfile).addAttributes(this.attributes.getAttributes())
+            .addDimensions(this.dimensions).addEnumTypedefs(this.enumTypedefs);
 
     this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
     this.variables.forEach(v -> builder.addVariable(v.toBuilder()));
@@ -893,13 +889,13 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     public boolean removeDimension(String dimName) {
-      Optional<Dimension> want = dimensions.stream().filter(v->v.shortName.equals(dimName)).findFirst();
+      Optional<Dimension> want = dimensions.stream().filter(v -> v.shortName.equals(dimName)).findFirst();
       want.ifPresent(d -> dimensions.remove(d));
       return want.isPresent();
     }
 
     public Optional<Dimension> findDimension(String name) {
-      return dimensions.stream().filter(d->d.shortName.equals(name)).findFirst();
+      return dimensions.stream().filter(d -> d.shortName.equals(name)).findFirst();
     }
 
     public boolean resetDimensionLength(String dimName, int length) {
@@ -925,7 +921,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     public boolean removeGroup(String name) {
-      Optional<Group.Builder> want = gbuilders.stream().filter(v->v.shortName.equals(name)).findFirst();
+      Optional<Group.Builder> want = gbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
       want.ifPresent(v -> gbuilders.remove(v));
       return want.isPresent();
     }
@@ -952,8 +948,8 @@ public class Group extends CDMNode implements AttributeContainer {
         logger.info("Removed existing variable {}", variable.shortName);
       });
       vbuilders.add(variable);
-      //if (variable.shortName.equals("time"))
-      //  System.out.printf("HEY%n");
+      // if (variable.shortName.equals("time"))
+      // System.out.printf("HEY%n");
       return this;
     }
 
@@ -963,13 +959,13 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     public boolean removeVariable(String name) {
-      Optional<Variable.Builder> want = vbuilders.stream().filter(v->v.shortName.equals(name)).findFirst();
+      Optional<Variable.Builder> want = vbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
       want.ifPresent(v -> vbuilders.remove(v));
       return want.isPresent();
     }
 
     public Optional<Variable.Builder> findVariable(String name) {
-      return vbuilders.stream().filter(v->v.shortName.equals(name)).findFirst();
+      return vbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
     }
 
     public Builder setNcfile(NetcdfFile ncfile) {
@@ -995,11 +991,12 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     /**
-     * Only call build() on the root group,  when everything is ready.
+     * Only call build() on the root group, when everything is ready.
      * After that, everything is immutable.
      */
     public Group build(Group parent) {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new Group(this, parent);
     }

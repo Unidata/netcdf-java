@@ -31,7 +31,8 @@ import ucar.nc2.util.CancelTask;
  */
 class AggDatasetOuter extends AggDataset {
   private final AggregationOuter aggregationOuter;
-  @Nullable final String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank seperated
+  @Nullable
+  final String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank seperated
   final Date coordValueDate; // if its a date
   final boolean isStringValued; // if coordinat is a String
 
@@ -52,8 +53,8 @@ class AggDatasetOuter extends AggDataset {
    * @param enhance open dataset in enhance mode NOT USED
    * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
    */
-  AggDatasetOuter(AggregationOuter aggregationOuter, String cacheName, String location, String id,
-      String ncoordS, String coordValueS, EnumSet<Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+  AggDatasetOuter(AggregationOuter aggregationOuter, String cacheName, String location, String id, String ncoordS,
+      String coordValueS, EnumSet<Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
 
     super(cacheName, location, id, enhance, reader, aggregationOuter.spiObject, aggregationOuter.ncmlElem);
     this.aggregationOuter = aggregationOuter;
@@ -70,8 +71,8 @@ class AggDatasetOuter extends AggDataset {
     }
 
     boolean isString = false;
-    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne) || (
-        aggregationOuter.type == Type.forecastModelRunCollection)) {
+    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne)
+        || (aggregationOuter.type == Type.forecastModelRunCollection)) {
       if (coordValueS == null) {
         coordValueS = extractCoordNameFromFilename(this.getLocation());
         isString = true;
@@ -93,7 +94,7 @@ class AggDatasetOuter extends AggDataset {
 
     this.isStringValued = isString; // LOOK ??
     this.coordValue = coordValueS;
-    this.coordValueDate = null;  // LOOK why isnt this set?
+    this.coordValueDate = null; // LOOK why isnt this set?
   }
 
   private String extractCoordNameFromFilename(String loc) {
@@ -116,8 +117,8 @@ class AggDatasetOuter extends AggDataset {
     // default is that the coordinates are just the filenames
     // this can be overriden by an explicit declaration, which will replace the variable after ther agg is processed in
     // NcMLReader
-    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne) || (
-        aggregationOuter.type == Type.forecastModelRunCollection)) {
+    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne)
+        || (aggregationOuter.type == Type.forecastModelRunCollection)) {
       coordValueS = extractCoordNameFromFilename(this.getLocation());
       this.isStringValued = true;
     } else {

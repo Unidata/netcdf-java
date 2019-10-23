@@ -26,6 +26,7 @@ public class UnlimitedDimension extends Dimension {
 
   /**
    * Get the length of the Unlimited Dimension.
+   * 
    * @return length of Dimension
    */
 

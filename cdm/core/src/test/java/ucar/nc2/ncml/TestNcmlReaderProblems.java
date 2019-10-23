@@ -2,7 +2,6 @@
 package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -24,7 +23,7 @@ public class TestNcmlReaderProblems {
 
   @Test
   public void problem() throws IOException {
-    // This used to fail in  NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
+    // This used to fail in NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
     // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
 
     // This fails in NcmlReaderNew, because "NcML Variable dtype is required for new variables".

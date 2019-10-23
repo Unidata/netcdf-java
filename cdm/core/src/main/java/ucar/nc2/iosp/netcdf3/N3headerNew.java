@@ -260,8 +260,8 @@ public class N3headerNew {
         }
         Vinfo vinfo = (Vinfo) uvar.spiObject;
         if (vsize != vinfo.vsize) {
-          log.info( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52): fvsize=" +
-              vinfo.vsize+"!= calc size =" + vsize );
+          log.info("Misformed netCDF file - file written with incorrect padding for record variable (CDM-52): fvsize="
+              + vinfo.vsize + "!= calc size =" + vsize);
           recsize = vsize;
           vinfo.vsize = vsize;
         }
@@ -278,25 +278,27 @@ public class N3headerNew {
       System.out.println("  actualSize= " + actualSize);
     }
 
-    /* LOOK check for streaming file - numrecs must be calculated
-    if (isStreaming) {
-      long recordSpace = actualSize - recStart;
-      numrecs = recsize == 0 ? 0 : (int) (recordSpace / recsize);
-      if (debugStreaming) {
-        long extra = recsize == 0 ? 0 : recordSpace % recsize;
-        System.out
-            .println(" isStreaming recordSpace=" + recordSpace + " numrecs=" + numrecs + " has extra bytes = " + extra);
-      }
-
-      // set it in the unlimited dimension, all of the record variables
-      if (udim != null) {
-        udim.setLength(this.numrecs);
-        for (Variable uvar : uvars) {
-          uvar.resetShape();
-          uvar.invalidateCache();
-        }
-      }
-    } */
+    /*
+     * LOOK check for streaming file - numrecs must be calculated
+     * if (isStreaming) {
+     * long recordSpace = actualSize - recStart;
+     * numrecs = recsize == 0 ? 0 : (int) (recordSpace / recsize);
+     * if (debugStreaming) {
+     * long extra = recsize == 0 ? 0 : recordSpace % recsize;
+     * System.out
+     * .println(" isStreaming recordSpace=" + recordSpace + " numrecs=" + numrecs + " has extra bytes = " + extra);
+     * }
+     * 
+     * // set it in the unlimited dimension, all of the record variables
+     * if (udim != null) {
+     * udim.setLength(this.numrecs);
+     * for (Variable uvar : uvars) {
+     * uvar.resetShape();
+     * uvar.invalidateCache();
+     * }
+     * }
+     * }
+     */
 
     // check for truncated files
     // theres a "wart" that allows a file to be up to 3 bytes smaller than you expect.
@@ -346,46 +348,49 @@ public class N3headerNew {
     }
   }
 
-  /* synchronized boolean removeRecordStructure() {
-    boolean found = false;
-    for (Variable v : uvars) {
-      if (v.getFullName().equals("record")) {
-        uvars.remove(v);
-        ncfile.getRootGroup().getVariables().remove(v);
-        found = true;
-        break;
-      }
-    }
-
-    ncfile.finish();
-    return found;
-  }
-
-  synchronized boolean makeRecordStructure() {
-    // create record structure
-    if (!uvars.isEmpty()) {
-      Structure.Builder builder = Structure.builder().setName("record").setNcfile(ncfile).setParent(ncfile.getRootGroup());
-      builder.setDimensions(udim.getShortName());
-      for (Variable v : uvars) {
-        Variable memberV;
-        try {
-          memberV = v.slice(0, 0); // set unlimited dimension to 0
-        } catch (InvalidRangeException e) {
-          log.warn("N3header.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
-          return false;
-        }
-        memberV.setParentStructure(recordStructure);
-        builder.addMemberVariable(memberV);
-      }
-
-      uvars.add(recordStructure);
-      ncfile.getRootGroup().addVariable(recordStructure);
-      ncfile.finish();
-      return true;
-    }
-
-    return false;
-  } */
+  /*
+   * synchronized boolean removeRecordStructure() {
+   * boolean found = false;
+   * for (Variable v : uvars) {
+   * if (v.getFullName().equals("record")) {
+   * uvars.remove(v);
+   * ncfile.getRootGroup().getVariables().remove(v);
+   * found = true;
+   * break;
+   * }
+   * }
+   * 
+   * ncfile.finish();
+   * return found;
+   * }
+   * 
+   * synchronized boolean makeRecordStructure() {
+   * // create record structure
+   * if (!uvars.isEmpty()) {
+   * Structure.Builder builder =
+   * Structure.builder().setName("record").setNcfile(ncfile).setParent(ncfile.getRootGroup());
+   * builder.setDimensions(udim.getShortName());
+   * for (Variable v : uvars) {
+   * Variable memberV;
+   * try {
+   * memberV = v.slice(0, 0); // set unlimited dimension to 0
+   * } catch (InvalidRangeException e) {
+   * log.warn("N3header.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
+   * return false;
+   * }
+   * memberV.setParentStructure(recordStructure);
+   * builder.addMemberVariable(memberV);
+   * }
+   * 
+   * uvars.add(recordStructure);
+   * ncfile.getRootGroup().addVariable(recordStructure);
+   * ncfile.finish();
+   * return true;
+   * }
+   * 
+   * return false;
+   * }
+   */
 
   private int readAtts(AttributeContainer atts, Formatter fout) throws IOException {
     int natts = 0;

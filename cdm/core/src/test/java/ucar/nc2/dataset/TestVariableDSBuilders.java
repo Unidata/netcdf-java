@@ -3,7 +3,6 @@ package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
-
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.junit.Test;
@@ -28,8 +27,8 @@ public class TestVariableDSBuilders {
 
   @Test
   public void testVarDSBuilder() {
-    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-      .setUnits("units").setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll()).build();
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")
+        .setEnhanceMode(NetcdfDataset.getEnhanceAll()).build();
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
     assertThat(var.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
@@ -40,8 +39,8 @@ public class TestVariableDSBuilders {
   @Test
   public void testVarDSBuilderOrgValues() {
     Variable orgVar = Variable.builder().setName("orgName").setDataType(DataType.INT).build();
-    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-      .setOriginalName("orgName").setOriginalDataType(DataType.INT).setOriginalVariable(orgVar).build();
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setOriginalName("orgName")
+        .setOriginalDataType(DataType.INT).setOriginalVariable(orgVar).build();
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.INT);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
     assertThat(var.getOriginalVariable()).isEqualTo(orgVar);
@@ -57,41 +56,40 @@ public class TestVariableDSBuilders {
       // ok
     }
 
-    Group group = Group.builder()
-        .addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
-        .addDimension(Dimension.builder().setName("dim2").setLength(27).build())
-        .build(null);
+    Group group =
+        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+            .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
     List<Dimension> varDims = group.makeDimensionsList("dim1 dim2");
 
-    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-        .setGroup(group)
-        .addDimensions(varDims).build();
+    VariableDS var =
+        VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group).addDimensions(varDims).build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
     assertThat(var.isUnlimited()).isTrue();
-    assertThat(var.getShape()).isEqualTo(new int[] {7,27});
-    assertThat(var.getShapeAll()).isEqualTo(new int[] {7,27});
-    assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {7,27}));
+    assertThat(var.getShape()).isEqualTo(new int[] {7, 27});
+    assertThat(var.getShapeAll()).isEqualTo(new int[] {7, 27});
+    assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {7, 27}));
   }
 
   @Test
   public void testWithAnonymousDims() {
     // No parent group needed
-    int[] shape = new int[] {3,6,-1};
-    VariableDS var =  VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape).build();
+    int[] shape = new int[] {3, 6, -1};
+    VariableDS var =
+        VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape).build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
     assertThat(var.isUnlimited()).isFalse();
-    assertThat(var.getShape()).isEqualTo(new int[] {3,6,-1});
-    assertThat(var.getShapeAll()).isEqualTo(new int[] {3,6,-1});
-    assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {3,6,-1}));
+    assertThat(var.getShape()).isEqualTo(new int[] {3, 6, -1});
+    assertThat(var.getShapeAll()).isEqualTo(new int[] {3, 6, -1});
+    assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {3, 6, -1}));
   }
 
   @Test
   public void testBuilderChain() {
-    StructureDS struct =  StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
+    StructureDS struct = StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
@@ -100,7 +98,7 @@ public class TestVariableDSBuilders {
 
   @Test
   public void testToBuilderChain() {
-    StructureDS struct =  StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
+    StructureDS struct = StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build();
     StructureDS struct2 = struct.toBuilder().setName("s2").build();
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct2.getShortName()).isEqualTo("s2");
@@ -118,8 +116,7 @@ public class TestVariableDSBuilders {
 
   @Test
   public void testStructDSBuilder() {
-    StructureDS var = StructureDS.builder().setName("name")
-        .setUnits("units").setDesc("desc").build();
+    StructureDS var = StructureDS.builder().setName("name").setUnits("units").setDesc("desc").build();
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
     assertThat(var.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
@@ -129,8 +126,8 @@ public class TestVariableDSBuilders {
   @Test
   public void testStructDSBuilderOrgValues() {
     Structure orgVar = Structure.builder().setName("orgName").setDataType(DataType.INT).build();
-    StructureDS var = StructureDS.builder().setName("name")
-        .setOriginalName("orgName").setOriginalVariable(orgVar).build();
+    StructureDS var =
+        StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar).build();
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
     assertThat(var.getOriginalVariable()).isEqualTo(orgVar);

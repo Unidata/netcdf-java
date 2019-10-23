@@ -5,7 +5,6 @@
 package ucar.nc2.ncml;
 
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -32,17 +31,16 @@ public class TestNcmlReadersCompare {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(
-          TestNcMLRead.topDir,
-          pathname -> pathname.getName().endsWith("ml"),
-          filenames, true);
+      TestDir.actOnAllParameterized(TestNcMLRead.topDir, pathname -> pathname.getName().endsWith("ml"), filenames,
+          true);
     } catch (IOException e) {
-      filenames.add(new Object[]{e.getMessage()});
+      filenames.add(new Object[] {e.getMessage()});
     }
     return filenames;
   }
 
   private String ncmlLocation;
+
   public TestNcmlReadersCompare(String filename) {
     this.ncmlLocation = "file:" + filename;
   }
@@ -60,7 +58,7 @@ public class TestNcmlReadersCompare {
           fail();
         }
       }
-    } catch(IOException e) {
+    } catch (IOException e) {
       fail();
     }
   }

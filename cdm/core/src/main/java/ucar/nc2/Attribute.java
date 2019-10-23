@@ -24,7 +24,7 @@ import java.util.Map;
  * <p/>
  * Attributes are immutable after setImmutable().
  * Attributes will become immutable in 6.
-
+ * 
  * @author caron
  */
 public class Attribute extends CDMNode {
@@ -88,8 +88,8 @@ public class Attribute extends CDMNode {
     return this.enumtype;
   }
 
-   /** @deprecated Use Attribute.builder() */
-   @Deprecated
+  /** @deprecated Use Attribute.builder() */
+  @Deprecated
   public void setEnumType(EnumTypedef en) {
     this.enumtype = en;
   }
@@ -417,6 +417,7 @@ public class Attribute extends CDMNode {
 
   /**
    * Construct an empty attribute with no values
+   * 
    * @deprecated Use Attribute.builder()
    */
   @Deprecated
@@ -476,6 +477,7 @@ public class Attribute extends CDMNode {
 
   /**
    * Set the value as a String, trimming trailing zeros
+   * 
    * @param val value of Attribute
    * @deprecated Use Attribute.builder()
    */
@@ -520,6 +522,7 @@ public class Attribute extends CDMNode {
 
   /**
    * Set the values from a list
+   * 
    * @deprecated Use Attribute.builder()
    */
   @Deprecated
@@ -721,12 +724,8 @@ public class Attribute extends CDMNode {
 
   /** Turn into a mutable Builder. Like a copy constructor. */
   public Builder toBuilder() {
-    return builder()
-        .setName(this.shortName)
-        .setStringValue(this.svalue)
-        .setValues(this.values)
-        .setDataType(this.dataType)
-        .setEnumType(this.enumtype);
+    return builder().setName(this.shortName).setStringValue(this.svalue).setValues(this.values)
+        .setDataType(this.dataType).setEnumType(this.enumtype);
   }
 
   public static Builder builder() {
@@ -769,6 +768,7 @@ public class Attribute extends CDMNode {
 
     /**
      * Set the value as a String, trimming trailing zeros
+     * 
      * @param svalue value of Attribute
      */
     public Builder setStringValue(String svalue) {
@@ -903,7 +903,8 @@ public class Attribute extends CDMNode {
     }
 
     public Attribute build() {
-      if (built) throw new IllegalStateException("already built");
+      if (built)
+        throw new IllegalStateException("already built");
       built = true;
       return new Attribute(this);
     }

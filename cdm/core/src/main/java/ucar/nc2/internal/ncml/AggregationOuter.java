@@ -172,8 +172,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         // LOOK was Variable v = ncfile.findVariable(timeAxis.getFullNameEscaped());
         Variable v = ncfile.findVariable(timeAxis.shortName);
         if (v == null) {
-          logger.warn("readTimeCoordinates: variable = " + timeAxis.shortName + " not found in file "
-              + dataset.getLocation());
+          logger.warn(
+              "readTimeCoordinates: variable = " + timeAxis.shortName + " not found in file " + dataset.getLocation());
           return;
         }
         VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS(null, v, true);
@@ -243,7 +243,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         throw new IOException("cant read " + typicalDataset);
 
       pv.dtype = DataType.getType(data);
-      VariableDS.Builder promotedVar = VariableDS.builder().setName(pv.varName).setDataType(pv.dtype).setDimensionsByName(dimName);
+      VariableDS.Builder promotedVar =
+          VariableDS.builder().setName(pv.varName).setDataType(pv.dtype).setDimensionsByName(dimName);
       /*
        * if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not delat with
        * Dimension outer = ncDataset.getRootGroup().findDimension(dimName);
@@ -261,43 +262,45 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     }
   }
 
-  /* protected void rebuildDataset() throws IOException {
-    buildCoords(null);
-    Group.Builder rootGroup = ncDataset.rootGroup;
-
-    // reset dimension length
-    rootGroup.resetDimensionLength(dimName, getTotalCoords());
-
-    // reset coordinate var
-    Variable.Builder joinAggCoord = rootGroup.findVariable(dimName).orElseThrow(IllegalStateException::new);
-    joinAggCoord.setDimensionsByName(dimName); // reset its dimension LOOK is this needed?
-    joinAggCoord.resetCache(); // get rid of any cached data, since its now wrong
-
-    // reset agg variables LOOK is this needed?
-    for (Variable.Builder aggVar : aggVars) {
-      // aggVar.setDimensions(dimName); // reset its dimension
-      aggVar.resetDimensions(); // reset its dimensions
-      aggVar.invalidateCache(); // get rid of any cached data, since its now wrong
-    }
-
-    // reset the typical dataset, where non-agg variables live
-    AggDataset typicalDataset = getTypicalDataset();
-    for (Variable.Builder var : rootGroup.vbuilders) {
-      if (aggVars.contains(var) || dimName.equals(var.shortName))
-        continue;
-      AggProxyReader proxy = new AggProxyReader(typicalDataset);
-      var.setProxyReader(proxy);
-    }
-
-    // reset cacheVars
-    for (CacheVar cv : cacheList) {
-      cv.reset();
-    }
-
-    if (timeUnitsChange) {
-      readTimeCoordinates(joinAggCoord, null);
-    }
-  } */
+  /*
+   * protected void rebuildDataset() throws IOException {
+   * buildCoords(null);
+   * Group.Builder rootGroup = ncDataset.rootGroup;
+   * 
+   * // reset dimension length
+   * rootGroup.resetDimensionLength(dimName, getTotalCoords());
+   * 
+   * // reset coordinate var
+   * Variable.Builder joinAggCoord = rootGroup.findVariable(dimName).orElseThrow(IllegalStateException::new);
+   * joinAggCoord.setDimensionsByName(dimName); // reset its dimension LOOK is this needed?
+   * joinAggCoord.resetCache(); // get rid of any cached data, since its now wrong
+   * 
+   * // reset agg variables LOOK is this needed?
+   * for (Variable.Builder aggVar : aggVars) {
+   * // aggVar.setDimensions(dimName); // reset its dimension
+   * aggVar.resetDimensions(); // reset its dimensions
+   * aggVar.invalidateCache(); // get rid of any cached data, since its now wrong
+   * }
+   * 
+   * // reset the typical dataset, where non-agg variables live
+   * AggDataset typicalDataset = getTypicalDataset();
+   * for (Variable.Builder var : rootGroup.vbuilders) {
+   * if (aggVars.contains(var) || dimName.equals(var.shortName))
+   * continue;
+   * AggProxyReader proxy = new AggProxyReader(typicalDataset);
+   * var.setProxyReader(proxy);
+   * }
+   * 
+   * // reset cacheVars
+   * for (CacheVar cv : cacheList) {
+   * cv.reset();
+   * }
+   * 
+   * if (timeUnitsChange) {
+   * readTimeCoordinates(joinAggCoord, null);
+   * }
+   * }
+   */
 
   /////////////////////////////////////////////////////////////////////////////////////
 
@@ -848,7 +851,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
     f.format("%nVariable Proxies%n");
     for (Variable.Builder v : ncDataset.rootGroup.vbuilders) {
-        f.format("   %20s proxy %s%n", v.shortName, v.proxyReader == null ? "" : v.proxyReader.getClass().getName());
+      f.format("   %20s proxy %s%n", v.shortName, v.proxyReader == null ? "" : v.proxyReader.getClass().getName());
     }
 
 
