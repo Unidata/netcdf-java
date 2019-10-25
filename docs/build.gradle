@@ -67,7 +67,8 @@ task serveUserGuide(type: JRubyExec) {
 
 apply from: "$rootDir/gradle/any/javadoc.gradle"
 
-evaluationDependsOn(":cdm")  // Evaluate ":cdm" first so that SourceSets will have been added to the Project.
+evaluationDependsOn(":uicdm")  // Evaluate ":uicdm" first so that all :cdm SourceSets will have been added to the Project.
+                               // Not sure this is true, but let's see...
 
 task buildJavadocCdm(type: Javadoc) {
     description = "Generate Javadoc for the CDM subproject."
@@ -75,9 +76,18 @@ task buildJavadocCdm(type: Javadoc) {
     title = "NetCDF-Java CDM API v${version}"
     destinationDir = file("$buildDir/javadocCdm/")
     
-    SourceSet cdmMainSourceSet = rootProject.project(":cdm").sourceSets.main
-    source cdmMainSourceSet.allJava
-    classpath = files([ cdmMainSourceSet.compileClasspath, cdmMainSourceSet.output ])
+    SourceSet cdmCoreSourceSet = rootProject.project(":cdm:cdm-core").sourceSets.main
+    source cdmCoreSourceSet.allJava
+
+    SourceSet cdmImageSourceSet = rootProject.project(":cdm:cdm-image").sourceSets.main
+    source cdmImageSourceSet.allJava
+
+    SourceSet cdmRadialSourceSet = rootProject.project(":cdm:cdm-radial").sourceSets.main
+    source cdmRadialSourceSet.allJava
+    
+    classpath = files([ cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output,
+                        cdmImageSourceSet.compileClasspath, cdmImageSourceSet.output,
+                        cdmRadialSourceSet.compileClasspath, cdmRadialSourceSet.output])
     
     // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
     include 'thredds/client/catalog/*.java'
