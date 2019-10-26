@@ -41,47 +41,17 @@ public abstract class HTTPAuthUtil {
    * @return
    */
   static boolean authscopeCompatible(AuthScope ss, AuthScope ms) {
-    assert (ss.getScheme() != null && ms.getScheme() != null);
     if (!ss.getHost().equalsIgnoreCase(ms.getHost()))
       return false;
     if (ss.getPort() != ms.getPort())
       return false;
-    String sss = ss.getScheme().toLowerCase();
-    String mss = ms.getScheme().toLowerCase();
-    if (!sss.equals(mss)) {
-      // Do some special casing
-      if (sss.endsWith("s"))
-        sss = sss.substring(0, sss.length() - 1);
-      if (mss.endsWith("s"))
-        mss = mss.substring(0, mss.length() - 1);
-      if (!sss.equals(mss))
+    String sss = ss.getScheme();
+    String mss = ms.getScheme();
+    if (sss != AuthScope.ANY_SCHEME && mss != AuthScope.ANY_SCHEME && sss != mss)
         return false;
-    }
     return true;
   }
 
-  /**
-   * Given a session url AuthScope and a Method url AuthScope,
-   * return a new AuthScope that is the upgrade/merge of the other two.
-   * Here, upgrade changes the scheme (only) to move http -> https.
-   * Assumes authscopeCompatible() is true.
-   *
-   * @param ss Session authScope
-   * @param ms Method authScope
-   * @return upgraded AuthScope.
-   */
-  static AuthScope authscopeUpgrade(AuthScope ss, AuthScope ms) {
-    assert (HTTPAuthUtil.authscopeCompatible(ss, ms));
-    String sss = ss.getScheme().toLowerCase();
-    String mss = ms.getScheme().toLowerCase();
-    String upgrade = sss;
-    if (sss.startsWith("http") && mss.startsWith("http")) {
-      if (sss.equals("https") || mss.equals("https"))
-        upgrade = "https";
-    }
-    AuthScope host = new AuthScope(ss.getHost(), ss.getPort(), AuthScope.ANY_REALM, upgrade);
-    return host;
-  }
 
   static AuthScope uriToAuthScope(String surl) throws HTTPException {
     try {
@@ -101,12 +71,12 @@ public abstract class HTTPAuthUtil {
 
   static AuthScope uriToAuthScope(URI uri) {
     assert (uri != null);
-    return new AuthScope(uri.getHost(), uri.getPort(), AuthScope.ANY_REALM, uri.getScheme());
+    return new AuthScope(uri.getHost(), uri.getPort(), AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
   }
 
   static URI authscopeToURI(AuthScope authScope) throws HTTPException {
     try {
-      URI url = new URI(authScope.getScheme(), null, authScope.getHost(), authScope.getPort(), "", null, null);
+      URI url = new URI("https", null, authScope.getHost(), authScope.getPort(), "", null, null);
       return url;
     } catch (URISyntaxException mue) {
       throw new HTTPException(mue);
