@@ -349,12 +349,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       setcontent(rb);
       setheaders(rb, this.headers);
       this.lastrequest = buildRequest(rb, this.settings);
-      AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.methodurl);
-      AuthScope target = HTTPAuthUtil.authscopeUpgrade(session.getSessionScope(), methodscope);
       // AFAIK, targethost, httpclient, rb, and session
       // contain non-overlapping info => we cannot derive one
       // from any of the others.
-      HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
+      HttpHost targethost = new HttpHost(this.methodurl.getHost());
       HttpClientBuilder cb = HttpClients.custom();
       configClient(cb, this.settings);
       session.setAuthenticationAndProxy(cb);
