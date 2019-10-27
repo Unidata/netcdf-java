@@ -237,6 +237,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
     public T setPreBuilt(CoordinateTransform preBuilt) {
       this.preBuilt = preBuilt;
+      this.name = preBuilt.name;
       return self();
     }
 

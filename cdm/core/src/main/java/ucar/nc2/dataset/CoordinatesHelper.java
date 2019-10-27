@@ -63,11 +63,15 @@ public class CoordinatesHelper {
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder axis) {
+      if (axis == null) {
+        return this;
+      }
       coordAxes.add(axis);
       return this;
     }
 
     public Builder addCoordinateAxes(Collection<CoordinateAxis.Builder> axes) {
+      Preconditions.checkNotNull(axes);
       axes.forEach(a -> addCoordinateAxis(a));
       return this;
     }
@@ -78,20 +82,24 @@ public class CoordinatesHelper {
 
     // LOOK dedup
     public Builder addCoordinateSystem(CoordinateSystem.Builder cs) {
+      Preconditions.checkNotNull(cs);
       coordSys.add(cs);
       return this;
     }
 
     public Optional<CoordinateSystem.Builder> findCoordinateSystem(String coordAxesNames) {
+      Preconditions.checkNotNull(coordAxesNames);
       return coordSys.stream().filter(cs -> cs.coordAxesNames.equals(coordAxesNames)).findFirst();
     }
 
     public Builder addCoordinateSystems(Collection<CoordinateSystem.Builder> systems) {
+      Preconditions.checkNotNull(systems);
       coordSys.addAll(systems);
       return this;
     }
 
     public Builder addCoordinateTransform(CoordinateTransform.Builder ct) {
+      Preconditions.checkNotNull(ct);
       if (!findCoordinateTransform(ct.name).isPresent()) {
         coordTransforms.add(ct);
       }
@@ -99,11 +107,13 @@ public class CoordinatesHelper {
     }
 
     public Builder addCoordinateTransforms(Collection<CoordinateTransform.Builder> transforms) {
+      Preconditions.checkNotNull(transforms);
       transforms.forEach(ct -> addCoordinateTransform(ct));
       return this;
     }
 
     public Optional<CoordinateTransform.Builder> findCoordinateTransform(String ctName) {
+      Preconditions.checkNotNull(ctName);
       return coordTransforms.stream().filter(ct -> ct.name.equals(ctName)).findFirst();
     }
 
@@ -140,10 +150,12 @@ public class CoordinatesHelper {
     }
 
     public String makeCanonicalName(List<CoordinateAxis.Builder> axes) {
+      Preconditions.checkNotNull(axes);
       return axes.stream().sorted(new AxisComparator()).map(a -> a.shortName).collect(Collectors.joining(" "));
     }
 
     public CoordinatesHelper build(NetcdfDataset ncd) {
+      Preconditions.checkNotNull(ncd);
       if (built)
         throw new IllegalStateException("already built");
       built = true;
@@ -152,6 +164,8 @@ public class CoordinatesHelper {
 
     // Check if this Coordinate System is complete for v, ie its dimensions match v.
     public boolean isComplete(CoordinateSystem.Builder<?> cs, VariableDS.Builder<?> vb) {
+      Preconditions.checkNotNull(cs);
+      Preconditions.checkNotNull(vb);
       Set<Dimension> varDomain = new HashSet<>(vb.dimensions);
       Set<Dimension> csDomain = new HashSet<>();
       getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.dimensions));
@@ -159,11 +173,15 @@ public class CoordinatesHelper {
     }
 
     public boolean containsAxes(CoordinateSystem.Builder cs, List<CoordinateAxis.Builder> dataAxes) {
+      Preconditions.checkNotNull(cs);
+      Preconditions.checkNotNull(dataAxes);
       List<CoordinateAxis.Builder> csAxes = getAxesForSystem(cs);
       return csAxes.containsAll(dataAxes);
     }
 
     public boolean containsAxisTypes(CoordinateSystem.Builder cs, List<AxisType> axisTypes) {
+      Preconditions.checkNotNull(cs);
+      Preconditions.checkNotNull(axisTypes);
       List<CoordinateAxis.Builder> csAxes = getAxesForSystem(cs);
       for (AxisType axisType : axisTypes) {
         if (!containsAxisTypes(csAxes, axisType))

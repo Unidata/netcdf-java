@@ -2,9 +2,11 @@ package ucar.nc2.dataset.conv;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ucar.ma2.Array;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -73,5 +75,18 @@ public class TestSimpleGeom {
       }
     }
     ncd.close();
+  }
+
+  @Test
+  public void testCoordinateVariables() throws IOException {
+    String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/outflow_3seg_5timesteps_vlen.nc";
+    // open the test file
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile)) {
+      for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
+        System.out.printf("Try to read %s ", axis.getFullName());
+        Array data = axis.read();
+        System.out.printf(" OK (%d) %n", data.getSize());
+      }
+    }
   }
 }

@@ -22,9 +22,9 @@ public class TestCoordSysBuildingProblem {
 
   @Test
   public void problem() throws IOException {
-    String filename = "file:" + TestDir.cdmLocalTestDataDir + "dataset/cfMissingCalendarAttr.nc";
-    showOrg(filename);
-    showNew(filename);
+    String filename = "file:" + TestDir.cdmLocalTestDataDir + "wrf/WrfNoTimeVar.nc";
+    //showOrg(filename);
+    //showNew(filename);
     compare(filename);
   }
 
@@ -45,7 +45,7 @@ public class TestCoordSysBuildingProblem {
   private void showOrg(String fileLocation) throws IOException {
 
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
-      Variable v = org.findVariable("lat");
+      Variable v = org.findVariable("catchments_x");
       Array data = v.read();
       System.out.printf("data = %s%n", data);
     }
@@ -54,7 +54,7 @@ public class TestCoordSysBuildingProblem {
   private void showNew(String fileLocation) throws IOException {
 
     try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
-      Variable v = withBuilder.findVariable("lat");
+      Variable v = withBuilder.findVariable("catchments_x");
       Array data = v.read();
       System.out.printf("data = %s%n", data);
     }

@@ -272,8 +272,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     if (!got_grid_mapping) { // see if there are any grid mappings anyway
-      for (VarProcess vp : varList) {
-        VariableDS.Builder vds = vp.vb;
+      for (Variable.Builder vds : rootGroup.vbuilders) {
         String grid_mapping_name = vds.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
         if (grid_mapping_name != null) {
           vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
