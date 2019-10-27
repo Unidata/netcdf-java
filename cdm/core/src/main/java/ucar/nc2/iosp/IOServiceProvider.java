@@ -4,14 +4,19 @@
  */
 package ucar.nc2.iosp;
 
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureDataIterator;
-import ucar.nc2.ParsedSectionSpec;
-import ucar.nc2.Structure;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
+import ucar.ma2.Section;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.util.CancelTask;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * This is the service provider interface for the low-level I/O access classes (read only).
@@ -41,7 +46,7 @@ public interface IOServiceProvider {
    * @return true if valid.
    * @throws java.io.IOException if read error
    */
-  boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException;
+  boolean isValidFile(RandomAccessFile raf) throws IOException;
 
   /**
    * Open existing file, and populate ncfile with it. This method is only called by the
@@ -53,25 +58,36 @@ public interface IOServiceProvider {
    * @param ncfile add objects to this empty NetcdfFile
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
+   * @deprecated Use open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask)
    */
-  void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask)
-      throws IOException;
+  @Deprecated
+  void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;
 
   /**
-   * Read data from a top level Variable and return a memory resident Array.
-   * This Array has the same element type as the Variable, and the requested shape.
+   * Open existing file, and populate it.
+   *
+   * @param raf the file to work on, it has already passed the isValidFile() test.
+   * @param rootGroup add objects to the root group.
+   * @param cancelTask used to monitor user cancellation; may be null.
+   * @throws IOException if read error
+   */
+  void open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
+
+  /**
+   * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the
+   * Variable, and the
+   * requested shape.
    *
    * @param v2 a top-level Variable
-   * @param section the section of data to read.
-   *        There must be a Range for each Dimension in the variable, in order.
-   *        Note: no nulls allowed. IOSP may not modify.
+   * @param section the section of data to read. There must be a Range for each Dimension in the variable, in order.
+   *        Note: no nulls allowed.
+   *        IOSP may not modify.
    * @return the requested data in a memory-resident Array
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    * @see ucar.ma2.Range
    */
-  ucar.ma2.Array readData(ucar.nc2.Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException;
+  ucar.ma2.Array readData(Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
    * Read data from a top level Variable and send data to a WritableByteChannel.
@@ -86,13 +102,13 @@ public interface IOServiceProvider {
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+  long readToByteChannel(Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-  long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+  long streamToByteChannel(Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-  long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
+  long readToOutputStream(Variable v2, Section section, OutputStream out)
       throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -132,7 +148,9 @@ public interface IOServiceProvider {
    *
    * @return true if the NetcdfFile was extended.
    * @throws IOException if a read error occured when accessing the underlying dataset.
+   * @deprecated Do not use.
    */
+  @Deprecated
   boolean syncExtend() throws IOException;
 
   /**

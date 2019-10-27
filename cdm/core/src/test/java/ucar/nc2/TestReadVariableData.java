@@ -14,10 +14,10 @@ import java.lang.invoke.MethodHandles;
 
 /** Test reading variable data */
 
-public class TestRead extends TestCase {
+public class TestReadVariableData extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestRead(String name) {
+  public TestReadVariableData(String name) {
     super(name);
   }
 

@@ -9,9 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
-import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -25,7 +22,7 @@ public class TestNcMLRenameVar extends TestCase {
   }
 
   NetcdfFile ncfile = null;
-  String filename = "file:./" + TestNcML.topDir + "renameVar.xml";
+  String filename = "file:./" + TestNcMLRead.topDir + "renameVar.xml";
 
   public void setUp() {
     try {

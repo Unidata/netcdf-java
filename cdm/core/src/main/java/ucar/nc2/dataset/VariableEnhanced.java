@@ -16,6 +16,8 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
 
   ucar.nc2.Variable getOriginalVariable();
 
+  /** @deprecated do not use */
+  @Deprecated
   void setOriginalVariable(ucar.nc2.Variable orgVar);
 
   String getOriginalName();
@@ -24,16 +26,24 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
    * Set the Unit String for this Variable. Default is to use the CDM.UNITS attribute.
    * 
    * @param units unit string
+   * @deprecated do not use
    */
+  @Deprecated
   void setUnitsString(String units);
 
   /**
    * Enhance using the given set of NetcdfDataset.Enhance
+   * 
+   * @deprecated do not use
    */
+  @Deprecated
   void enhance(Set<NetcdfDataset.Enhance> mode);
 
   /**
    * clear previous coordinate systems. if any
+   * 
+   * @deprecated do not use
    */
+  @Deprecated
   void clearCoordinateSystems();
 }

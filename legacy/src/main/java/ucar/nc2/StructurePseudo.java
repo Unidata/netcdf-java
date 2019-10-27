@@ -93,7 +93,6 @@ public class StructurePseudo extends Structure {
     for (String name : varNames) {
       Variable orgV = group.findVariable(name);
       if (orgV == null) {
-        log.warn("StructurePseudo cannot find variable " + name);
         continue; // skip - should log message
       }
 

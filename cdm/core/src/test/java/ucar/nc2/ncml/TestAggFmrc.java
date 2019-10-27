@@ -7,6 +7,7 @@ package ucar.nc2.ncml;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -26,7 +27,8 @@ import static java.lang.Math.toIntExact;
 
 
 /** Test FMRC NcML aggregations using a directory scan and explicitly listed datasets. */
-
+// Ignoring AggFmrc until we decide what were doing with them
+// @Ignore
 public class TestAggFmrc {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -49,11 +51,11 @@ public class TestAggFmrc {
    */
   @Before
   public void prepAggDataset() {
-    String filenameScan = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_SCAN;
-    String filenameExplicit = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_EXPLICIT;
-    String filenameA = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_A;
-    String filenameB = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_B;
-    String filenameC = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_C;
+    String filenameScan = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_SCAN;
+    String filenameExplicit = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_EXPLICIT;
+    String filenameA = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_A;
+    String filenameB = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_B;
+    String filenameC = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_C;
     try {
 
       fmrcScan = Fmrc.open(filenameScan, null);

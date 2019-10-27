@@ -11,6 +11,7 @@ import java.io.IOException;
  * Common header for netcdf3, netcdf4, hdf5, hdf4.
  *
  * @author dmh
+ * @deprecated Will move to internal module in version 6.
  */
 
 public class NCheader {

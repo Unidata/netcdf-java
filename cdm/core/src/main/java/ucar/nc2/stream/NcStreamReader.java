@@ -7,6 +7,7 @@ package ucar.nc2.stream;
 import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
@@ -327,7 +328,9 @@ public class NcStreamReader {
       ncfile.setTitle(proto.getTitle());
 
     NcStreamProto.Group root = proto.getRoot();
-    NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
+    Group.Builder rootBuilder = Group.builder().setNcfile(ncfile).setName("");
+    NcStream.readGroup(root, ncfile, rootBuilder);
+    ncfile.setRootGroup(rootBuilder.build(null));
     ncfile.finish();
     return ncfile;
   }
