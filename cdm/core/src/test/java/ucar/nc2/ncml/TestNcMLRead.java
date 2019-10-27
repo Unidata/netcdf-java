@@ -11,18 +11,20 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.TestDir;
 
 /** Test netcdf dataset in the JUnit framework. */
 
 public class TestNcMLRead extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  public static String topDir = TestDir.cdmLocalTestDataDir + "ncml/";
 
   public TestNcMLRead(String name) {
     super(name);
   }
 
   NetcdfFile ncfile = null;
-  String location = "file:" + TestNcML.topDir + "testRead.xml";
+  String location = "file:" + topDir + "testRead.xml";
 
   public void setUp() {
     try {
@@ -258,7 +260,7 @@ public class TestNcMLRead extends TestCase {
     public TestRead2(String name) {
       super(name);
       ncfile = null;
-      location = "file:" + TestNcML.topDir + "readMetadata.xml";
+      location = "file:" + topDir + "readMetadata.xml";
     }
   }
 
@@ -268,7 +270,7 @@ public class TestNcMLRead extends TestCase {
     public TestReadHttps(String name) {
       super(name);
       ncfile = null;
-      location = "file:" + TestNcML.topDir + "testReadHttps.xml";
+      location = "file:" + topDir + "testReadHttps.xml";
     }
   }
 

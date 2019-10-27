@@ -240,15 +240,16 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return "ncstreamRemote";
   }
 
-  public void writeToFile(String filename) throws IOException {
+  public long writeToFile(String filename) throws IOException {
     File file = new File(filename);
     String url = remoteURI + "?req=header";
     Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
+    long size = 0;
     try (FileOutputStream fos = new FileOutputStream(file)) {
 
-      long size = 4;
       fos.write(NcStream.MAGIC_START);
+      size += 4;
 
       // header
       try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
@@ -299,6 +300,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       fos.flush();
     }
+    return size;
   }
 
   @Override

@@ -1,5 +1,6 @@
 package ucar.nc2.ncml;
 
+import java.util.Set;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -16,7 +18,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class TestAggDatasetIsCached {
   public void TestAggCached() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
-    // String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
+    // String filename = "file:./"+TestNcMLRead.topDir + "aggExisting.xml";
     boolean ok = true;
 
     System.out.printf("==========%n");
@@ -57,7 +58,7 @@ public class TestAggDatasetIsCached {
       ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false);
       System.out.printf("----------------%nfile=%s%n%s%n", filename, out);
 
-      EnumSet<NetcdfDataset.Enhance> modes = ncd2.getEnhanceMode();
+      Set<Enhance> modes = ncd2.getEnhanceMode();
       showModes(modes);
       ncd2.close();
       System.out.printf("==========%n");
@@ -79,7 +80,7 @@ public class TestAggDatasetIsCached {
     assert gotit;
   }
 
-  private void showModes(EnumSet<NetcdfDataset.Enhance> modes) {
+  private void showModes(Set<NetcdfDataset.Enhance> modes) {
     for (NetcdfDataset.Enhance mode : modes) {
       System.out.printf("%s,", mode);
     }

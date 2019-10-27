@@ -2,6 +2,6 @@
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 	<attribute name="title" type="string" value="Union cldc and lflx"/>
   <aggregation type="union">
-    <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/> 
+    <scan location="nc/" suffix="mean.nc"/>
   </aggregation>
 </netcdf>

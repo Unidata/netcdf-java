@@ -37,7 +37,7 @@ public class TestRadialDataset {
     testAllMethods(topDir + "nexrad/level2/Level2_KYUX_20060527_2335.ar2v");
   }
 
-  @Test
+  // @Test
   public void testReadDirectory() throws IOException {
     long start = System.currentTimeMillis();
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);
@@ -46,6 +46,12 @@ public class TestRadialDataset {
     doDirectory(topDir + "nexrad/level2/", false, 10, ".raw");
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = " + took + " msec");
+  }
+
+  @Test
+  public void problem() throws IOException {
+    String filename = topDir + "nexrad/level2/VCP11/20030912143758.raw";
+    testAllMethods(filename);
   }
 
   private int doDirectory(String dirName, boolean alwaysUncompress, int max, String suffix) throws IOException {

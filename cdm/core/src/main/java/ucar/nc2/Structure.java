@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -39,24 +41,19 @@ import ucar.nc2.util.Indent;
  */
 
 public class Structure extends Variable {
-  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
-  protected static int defaultBufferSize = 500 * 1000; // 500K bytes
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
+  private static final int defaultBufferSize = 500 * 1000; // 500K bytes
 
-  protected List<Variable> members;
-  protected HashMap<String, Variable> memberHash;
-  protected boolean isSubset;
-
-  /*
+  /**
    * Create a Structure "from scratch". Also must call setDimensions().
    *
    * @param ncfile the containing NetcdfFile.
-   * 
    * @param group the containing group; if null, use rootGroup
-   * 
    * @param parent parent Structure, may be null
-   * 
    * @param shortName variable shortName, must be unique within the Group
+   * @deprecated Use Structure.builder()
    */
+  @Deprecated
   public Structure(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     super(ncfile, group, parent, shortName);
     setDataType(DataType.STRUCTURE);
@@ -73,7 +70,9 @@ public class Structure extends Variable {
    * @param parent parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    * @param dimList list of Dimensions
+   * @deprecated Use Structure.builder()
    */
+  @Deprecated
   public Structure(NetcdfFile ncfile, Group group, Structure parent, String shortName, List<Dimension> dimList) {
     this(ncfile, group, parent, shortName);
     setDimensions(dimList);
@@ -83,21 +82,15 @@ public class Structure extends Variable {
    * Copy constructor.
    * 
    * @param from copy from this
+   * @deprecated Use Structure.builder()
    */
+  @Deprecated
   protected Structure(Structure from) { // , boolean reparent) {
     super(from);
 
     members = new ArrayList<>(from.members);
     memberHash = new HashMap<>(from.memberHash);
     isSubset = from.isSubset();
-
-    /*
-     * if (reparent) {
-     * for (Variable v : members) {
-     * v.setParentStructure(this);
-     * }
-     * }
-     */
   }
 
   /**
@@ -142,7 +135,7 @@ public class Structure extends Variable {
 
   // for section and slice
   @Override
-  protected Variable copy() {
+  protected Structure copy() {
     return new Structure(this);
   }
 
@@ -172,7 +165,9 @@ public class Structure extends Variable {
    * 
    * @param v add this variable as a member of this structure
    * @return the added variable
+   * @deprecated Use Structure.builder()
    */
+  @Deprecated
   public Variable addMemberVariable(Variable v) {
     if (isImmutable())
       throw new IllegalStateException("Cant modify");
@@ -186,7 +181,9 @@ public class Structure extends Variable {
    * Set the list of member variables.
    * 
    * @param vars this is the list of member variables
+   * @deprecated Use Structure.builder()
    */
+  @Deprecated
   public void setMemberVariables(List<Variable> vars) {
     if (isImmutable())
       throw new IllegalStateException("Cant modify");
@@ -202,7 +199,9 @@ public class Structure extends Variable {
    * 
    * @param v remove this variable as a member of this structure
    * @return true if was found and removed
+   * @deprecated Use Structure.builder()
    */
+  @Deprecated
   public boolean removeMemberVariable(Variable v) {
     if (isImmutable())
       throw new IllegalStateException("Cant modify");
@@ -227,7 +226,9 @@ public class Structure extends Variable {
    * 
    * @param newVar add this variable as a member of this structure
    * @return true if was found and replaced
+   * @deprecated Use Structure.builder()
    */
+  @Deprecated
   public boolean replaceMemberVariable(Variable newVar) {
     if (isImmutable())
       throw new IllegalStateException("Cant modify");
@@ -248,7 +249,12 @@ public class Structure extends Variable {
     return found;
   }
 
-  /** Set the parent group of this Structure, and all member variables. */
+  /**
+   * Set the parent group of this Structure, and all member variables.
+   * 
+   * @deprecated Use Structure.builder()
+   */
+  @Deprecated
   @Override
   public void setParentGroup(Group group) {
     if (isImmutable())
@@ -261,6 +267,8 @@ public class Structure extends Variable {
     }
   }
 
+  /** @deprecated Use Structure.builder() */
+  @Deprecated
   @Override
   public Variable setImmutable() {
     members = Collections.unmodifiableList(members);
@@ -644,6 +652,77 @@ public class Structure extends Variable {
       buf.format("%n");
     }
     buf.format("%n");
+  }
+
+  ////////////////////////////////////////////////////////
+  // TODO make private final and Immutable in release 6.
+  protected List<Variable> members;
+  protected HashMap<String, Variable> memberHash;
+  protected boolean isSubset;
+
+  protected Structure(Builder<?> builder) {
+    super(builder);
+    builder.vbuilders.forEach(v -> v.setParentStructure(this));
+    this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
+    memberHash = new HashMap<>();
+    this.members.forEach(m -> memberHash.put(m.getShortName(), m));
+  }
+
+  @Override
+  public Builder<?> toBuilder() {
+    Structure.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    this.members.forEach(m -> b.addMemberVariable(m.toBuilder()));
+    return b;
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   * 
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
+    private List<Variable.Builder> vbuilders = new ArrayList<>();
+    private boolean built;
+
+    public T addMemberVariable(Variable.Builder v) {
+      vbuilders.add(v);
+      return self();
+    }
+
+    public T addMemberVariables(List<Variable.Builder> vars) {
+      vbuilders.addAll(vars);
+      return self();
+    }
+
+    public boolean removeMemberVariable(String memberName) {
+      Optional<Variable.Builder> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();
+      want.ifPresent(v -> vbuilders.remove(v));
+      return want.isPresent();
+    }
+
+    public Structure build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      this.setDataType(DataType.STRUCTURE);
+      return new Structure(this);
+    }
   }
 
 }

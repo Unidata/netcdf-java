@@ -6,18 +6,14 @@
 package ucar.nc2;
 
 /**
- * Container of Attributes
+ * A mutable Container of Attributes
  *
  * @author caron
  * @since 3/20/14
  */
 public interface AttributeContainer {
 
-  /**
-   * Returns the list of attributes for this variable.
-   * 
-   * @return list of attributes, immutable
-   */
+  /** Returns immutable list of attributes. */
   java.util.List<Attribute> getAttributes();
 
   /**
@@ -33,7 +29,6 @@ public interface AttributeContainer {
    */
   Attribute addAttribute(Attribute att);
 
-
   /**
    * Find a String-valued Attribute by Attribute name (ignore case), return the (string) value of the Attribute.
    * 
@@ -46,7 +41,6 @@ public interface AttributeContainer {
   Attribute findAttributeIgnoreCase(String attName);
 
   String getName();
-
 
   /**
    * Remove an Attribute : uses the attribute hashCode to find it.

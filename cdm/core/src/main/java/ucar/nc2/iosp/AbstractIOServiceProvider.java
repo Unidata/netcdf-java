@@ -9,6 +9,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
@@ -60,6 +61,11 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
+  public void open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+    open(raf, rootGroup.getNcfile(), cancelTask);
+  }
+
+  @Override
   public void close() throws java.io.IOException {
     if (raf != null)
       raf.close();
@@ -90,6 +96,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return IospHelper.copyToByteChannel(data, channel);
   }
 
+  @Override
   public long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
@@ -97,6 +104,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return IospHelper.copyToOutputStream(data, out);
   }
 
+  @Override
   public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 

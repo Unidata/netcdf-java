@@ -135,11 +135,11 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (isExisting) {
       if (iospw == null) {
         raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
-        spi = SPFactory.getServiceProvider();
-        spiw = (IOServiceProviderWriter) spi;
+        iosp = SPFactory.getServiceProvider();
+        spiw = (IOServiceProviderWriter) iosp;
       } else {
         spiw = iospw;
-        spi = spiw;
+        iosp = spiw;
       }
       spiw.open(raf, this, null);
       spiw.setFill(fill);
@@ -631,11 +631,11 @@ public class NetcdfFileWriteable extends NetcdfFile {
       throw new UnsupportedOperationException("not in define mode");
 
     if (cached_spiw == null) {
-      spi = SPFactory.getServiceProvider();
-      spiw = (IOServiceProviderWriter) spi;
+      iosp = SPFactory.getServiceProvider();
+      spiw = (IOServiceProviderWriter) iosp;
     } else {
       spiw = cached_spiw;
-      spi = spiw;
+      iosp = spiw;
     }
     spiw.setFill(fill);
     spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
@@ -837,7 +837,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       spiw.close();
       spiw = null;
     }
-    spi = null;
+    iosp = null;
   }
 
   public String getFileTypeId() {
@@ -886,8 +886,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
     super();
     this.location = location;
     ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
-    spi = SPFactory.getServiceProvider();
-    spiw = (IOServiceProviderWriter) spi;
+    iosp = SPFactory.getServiceProvider();
+    spiw = (IOServiceProviderWriter) iosp;
     spiw.open(raf, this, null);
   }
 

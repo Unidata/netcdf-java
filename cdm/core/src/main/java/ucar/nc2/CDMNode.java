@@ -19,8 +19,9 @@ import java.util.Map;
  * Also move various common fields and methods to here.
  *
  * @author Heimbigner
+ * @deprecated Will move to Dap4 module in version 6.
  */
-
+@Deprecated
 public abstract class CDMNode {
 
   protected CDMSort sort;
@@ -109,7 +110,9 @@ public abstract class CDMNode {
    * Alias for getParentGroup
    *
    * @return parent Group
+   * @deprecated Do not use.
    */
+  @Deprecated
   public Group getGroup() {
     return getParentGroup();
   }
@@ -118,6 +121,7 @@ public abstract class CDMNode {
    * Set the parent Group
    *
    * @param parent The new parent group
+   * @deprecated Do not use.
    */
   public void setParentGroup(Group parent) {
     if (!immutable)

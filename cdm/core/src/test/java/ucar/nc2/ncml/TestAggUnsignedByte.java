@@ -21,7 +21,7 @@ import ucar.nc2.Variable;
 public class TestAggUnsignedByte {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final String AGG_FILENAME = "ubyte_agg.ncml";
+  private final String AGG_FILENAME = "aggUbyte.ncml";
   private final String UBYTE_VAR_NAME = "ir_anvil_detection";
 
   private NetcdfFile ncfile;
@@ -32,7 +32,7 @@ public class TestAggUnsignedByte {
    */
   @Before
   public void prepAggDataset() {
-    String filename = "file:./" + TestNcML.topDir + AGG_FILENAME;
+    String filename = "file:./" + TestNcMLRead.topDir + AGG_FILENAME;
     try {
       ncfile = NcMLReader.readNcML(filename, null);
       v = ncfile.findVariable(UBYTE_VAR_NAME);

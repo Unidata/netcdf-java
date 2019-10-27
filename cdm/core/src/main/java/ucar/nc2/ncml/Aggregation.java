@@ -81,7 +81,7 @@ import java.util.concurrent.Executor;
  * </ol>
  * 
  */
-public abstract class Aggregation {
+public abstract class Aggregation implements AggregationIF {
 
   protected enum Type {
     forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting, joinExistingOne, // joinExisting with a
@@ -97,7 +97,7 @@ public abstract class Aggregation {
     FIRST, RANDOM, LATEST, PENULTIMATE
   }
 
-  protected static TypicalDataset typicalDatasetMode;
+  protected static TypicalDataset typicalDatasetMode = TypicalDataset.FIRST;
 
   protected static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   protected static DiskCache2 diskCache2;
@@ -258,6 +258,7 @@ public abstract class Aggregation {
 
   /////////////////////////////////////////////////////////////////////
 
+  @Override
   public void close() throws IOException {
     persistWrite();
   }
@@ -269,6 +270,7 @@ public abstract class Aggregation {
    * @return true if directory was rescanned and dataset may have been updated
    * @throws IOException on io error
    */
+  @Override
   public synchronized boolean syncExtend() throws IOException {
     return datasetManager.isScanNeeded() && _sync();
   }
@@ -278,6 +280,7 @@ public abstract class Aggregation {
   // }
 
   // LOOK could also use syncExtend()
+  @Override
   public long getLastModified() {
     try {
       datasetManager.scanIfNeeded();
@@ -306,6 +309,7 @@ public abstract class Aggregation {
     return true;
   }
 
+  @Override
   public String getFileTypeId() { // LOOK - should cache ??
     Dataset ds = null;
     NetcdfFile ncfile = null;
@@ -328,6 +332,7 @@ public abstract class Aggregation {
     return "N/A";
   }
 
+  @Override
   public String getFileTypeDescription() { // LOOK - should cache ??
     Dataset ds = null;
     NetcdfFile ncfile = null;
@@ -376,6 +381,7 @@ public abstract class Aggregation {
    *
    * @throws IOException on error
    */
+  @Override
   public void persistWrite() throws IOException {}
 
   /**
@@ -383,6 +389,7 @@ public abstract class Aggregation {
    */
   protected void persistRead() {}
 
+  @Override
   public void getDetailInfo(Formatter f) {
     f.format("  Type=%s%n", type);
     f.format("  dimName=%s%n", dimName);
@@ -395,15 +402,11 @@ public abstract class Aggregation {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // all elements are processed, finish construction
-
   public void finish(CancelTask cancelTask) throws IOException {
     datasetManager.scan(true); // Make the list of Datasets, by scanning if needed.
     cacheDirty = true;
     makeDatasets(cancelTask);
-
-    // ucar.unidata.io.RandomAccessFile.setDebugAccess( true);
     buildNetcdfDataset(cancelTask);
-    // ucar.unidata.io.RandomAccessFile.setDebugAccess( false);
   }
 
   public List<Dataset> getDatasets() {

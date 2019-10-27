@@ -4,11 +4,14 @@
  */
 package ucar.nc2;
 
+import static com.google.common.truth.Truth.assertThat;
+import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
@@ -122,5 +125,24 @@ public class TestAttributes {
     long result = att.getNumericValue().longValue(); // returned -9223372036854775808L, before bug fix.
 
     Assert.assertEquals(N3iosp.NC_FILL_INT64, result);
+  }
+
+  @Test
+  public void testStringBuilder() {
+    Attribute att = Attribute.builder().setName("name").setStringValue("svalue").build();
+    assertThat(att).isEqualTo(new Attribute("name", "svalue"));
+    Attribute att2 = att.toBuilder().setName("name2").build();
+    assertThat(att2).isEqualTo(new Attribute("name2", "svalue"));
+  }
+
+  @Test
+  public void testBuilder() {
+    Attribute att = Attribute.builder().setName("name").setValues(ImmutableList.of(1, 2, 3)).build();
+    assertThat(att.getDataType()).isEqualTo(DataType.INT);
+
+    Array array = Array.factory(DataType.SHORT, new int[] {4}, new short[] {1, 2, 3, 4});
+    Attribute att2 = Attribute.builder().setName("name").setValues(array).build();
+    assertThat(att2.getDataType()).isEqualTo(DataType.SHORT);
+    assertThat(att2.getValues()).isEqualTo(array);
   }
 }

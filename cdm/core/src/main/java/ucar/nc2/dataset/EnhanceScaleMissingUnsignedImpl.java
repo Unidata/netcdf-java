@@ -105,7 +105,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
 
     DataType scaleType = null, offsetType = null, validType = null;
-    logger.debug("{} for Variable = {}", getClass().getSimpleName(), forVar.getFullName());
+    logger.debug("{} for Variable = {}", getClass().getSimpleName(), forVar.getShortName());
 
     Attribute scaleAtt = forVar.findAttribute(CDM.SCALE_FACTOR);
     if (scaleAtt != null && !scaleAtt.isString()) {

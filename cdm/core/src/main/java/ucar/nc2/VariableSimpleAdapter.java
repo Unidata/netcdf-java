@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers;
 import java.util.List;
@@ -16,8 +17,9 @@ import java.util.stream.Collectors;
  * @author caron
  * @since Apr 20, 2008
  */
+@Immutable
 public class VariableSimpleAdapter implements VariableSimpleIF {
-  private StructureMembers.Member m;
+  private final StructureMembers.Member m;
 
   public static List<VariableSimpleIF> convert(StructureMembers sm) {
     List<StructureMembers.Member> mlist = sm.getMembers();

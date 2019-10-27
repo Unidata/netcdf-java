@@ -9,6 +9,6 @@
     <attribute name="UNITS" orgName="units" />
     <attribute name="longer_name" type="string" value="Abe said what?"/>
     <remove type="attribute" name="long_name"/>
-  </variable >
+  </variable>
 
 </netcdf>

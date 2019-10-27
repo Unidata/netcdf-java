@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -28,7 +26,7 @@ public class TestNcMLReadOverride extends TestCase {
   public void setUp() {
     if (ncfile != null)
       return;
-    String filename = "file:./" + TestNcML.topDir + "testReadOverride.xml";
+    String filename = "file:./" + TestNcMLRead.topDir + "testReadOverride.xml";
 
     try {
       ncfile = NcMLReader.readNcML(filename, null);

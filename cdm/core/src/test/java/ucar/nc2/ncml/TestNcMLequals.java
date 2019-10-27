@@ -21,8 +21,8 @@ public class TestNcMLequals extends TestCase {
   }
 
   public void testEquals() throws IOException {
-    testEquals("file:" + TestNcML.topDir + "testEquals.xml");
-    testEnhanceEquals("file:" + TestNcML.topDir + "testEquals.xml");
+    testEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
+    testEnhanceEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
   }
 
   public void problem() throws IOException {

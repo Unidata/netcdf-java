@@ -4,6 +4,13 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.Preconditions;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
@@ -23,6 +30,7 @@ import java.util.Collections;
  */
 public class Group extends CDMNode implements AttributeContainer {
 
+  @Deprecated
   static List<Group> collectPath(Group g) {
     List<Group> list = new ArrayList<>();
     while (g != null) {
@@ -31,14 +39,6 @@ public class Group extends CDMNode implements AttributeContainer {
     }
     return list;
   }
-
-  protected NetcdfFile ncfile;
-  protected List<Variable> variables = new ArrayList<>();
-  protected List<Dimension> dimensions = new ArrayList<>();
-  protected List<Group> groups = new ArrayList<>();
-  protected AttributeContainerHelper attributes;
-  protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
-  private int hashCode;
 
   /**
    * Is this the root group?
@@ -83,23 +83,6 @@ public class Group extends CDMNode implements AttributeContainer {
     }
     return null;
   }
-
-  /*
-   * Find the Variable with the specified escaped (short) name in this group.
-   * 
-   * @param varShortNameEscaped escaped short name of Variable within this group.
-   * 
-   * @return the Variable, or null if not found
-   * 
-   * @see NetcdfFile#escapeName
-   * 
-   * @see NetcdfFile#unescapeName
-   *
-   * public Variable findVariableEscaped(String varShortNameEscaped) {
-   * if (varShortNameEscaped == null) return null;
-   * return findVariable( NetcdfFile.makeNameUnescaped(varShortNameEscaped));
-   * }
-   */
 
   /**
    * Find the Variable with the specified (short) name in this group or a parent group.
@@ -165,6 +148,46 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
+   * Create a dimension list using dimension names. The dimension is searched for recursively in the parent groups.
+   *
+   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
+   *        dimension. null or empty String is a scalar.
+   * @return list of dimensions
+   * @throws IllegalArgumentException if cant find dimension or parse error.
+   */
+  public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
+    List<Dimension> newDimensions = new ArrayList<>();
+    if (dimString == null) // scalar
+      return newDimensions; // empty list
+    dimString = dimString.trim();
+    if (dimString.isEmpty()) // scalar
+      return newDimensions; // empty list
+
+    StringTokenizer stoke = new StringTokenizer(dimString);
+    while (stoke.hasMoreTokens()) {
+      String dimName = stoke.nextToken();
+      Dimension d;
+      if (dimName.equals("*"))
+        d = Dimension.VLEN;
+      else
+        d = this.findDimension(dimName);
+      if (d == null) {
+        // if numeric - then its anonymous dimension
+        try {
+          int len = Integer.parseInt(dimName);
+          d = Dimension.builder().setLength(len).setIsShared(false).build();
+        } catch (Exception e) {
+          throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
+        }
+      }
+      newDimensions.add(d);
+    }
+
+    return newDimensions;
+  }
+
+
+  /**
    * Get the enumerations contained directly in this group.
    *
    * @return List of type EnumTypedef; may be empty, not null.
@@ -195,6 +218,28 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
+   * Find a Dimension in this or a parent Group, using equals.
+   *
+   * @param dim Dimension .
+   * @return the Dimension, or null if not found
+   */
+  public Dimension findDimension(Dimension dim) {
+    if (dim == null) {
+      return null;
+    }
+    for (Dimension d : dimensions) {
+      if (d.equals(dim)) {
+        return d;
+      }
+    }
+    Group parent = getParentGroup();
+    if (parent != null) {
+      return parent.findDimension(dim);
+    }
+    return null;
+  }
+
+  /**
    * Retrieve a Dimension using its (short) name, in this group only
    *
    * @param name Dimension name.
@@ -203,7 +248,6 @@ public class Group extends CDMNode implements AttributeContainer {
   public Dimension findDimensionLocal(String name) {
     if (name == null)
       return null;
-    // name = NetcdfFile.makeNameUnescaped(name);
     for (Dimension d : dimensions) {
       if (name.equals(d.getShortName()))
         return d;
@@ -231,22 +275,32 @@ public class Group extends CDMNode implements AttributeContainer {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
+  /** @deprecated Use Group.builder() */
+  @Deprecated
   public Attribute addAttribute(Attribute att) {
     return attributes.addAttribute(att);
   }
 
+  /** @deprecated Use Group.builder() */
+  @Deprecated
   public void addAll(Iterable<Attribute> atts) {
     attributes.addAll(atts);
   }
 
+  /** @deprecated Use Group.builder() */
+  @Deprecated
   public boolean remove(Attribute a) {
     return attributes.remove(a);
   }
 
+  /** @deprecated Use Group.builder() */
+  @Deprecated
   public boolean removeAttribute(String attName) {
     return attributes.removeAttribute(attName);
   }
 
+  /** @deprecated Use Group.builder() */
+  @Deprecated
   public boolean removeAttributeIgnoreCase(String attName) {
     return attributes.removeAttributeIgnoreCase(attName);
   }
@@ -407,7 +461,6 @@ public class Group extends CDMNode implements AttributeContainer {
     }
   }
 
-
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -416,7 +469,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param ncfile NetcdfFile owns this Group
    * @param parent parent of Group. If null, this is the root Group.
    * @param shortName short name of Group.
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
     super(shortName);
     this.ncfile = ncfile;
@@ -428,7 +483,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * Set the Group's parent Group
    *
    * @param parent parent group.
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public void setParentGroup(Group parent) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -441,7 +498,9 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param shortName set to this value
    * @return valid CDM object name
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public String setName(String shortName) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -456,7 +515,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * @throws IllegalStateException if this dimension is {@link #setImmutable() immutable}.
    * @throws IllegalArgumentException if {@code dim} isn't shared or a dimension with {@code dim}'s name already
    *         exists within the group.
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public void addDimension(Dimension dim) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -482,7 +543,9 @@ public class Group extends CDMNode implements AttributeContainer {
    *         meaning that a dimension with {@code dim}'s name already exists within the group.
    * @throws IllegalStateException if this dimension is {@link #setImmutable() immutable}.
    * @throws IllegalArgumentException if {@code dim} isn't shared.
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public boolean addDimensionIfNotExists(Dimension dim) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -503,7 +566,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * Add a nested Group
    *
    * @param g add this Group.
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public void addGroup(Group g) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -520,7 +585,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * Add an Enumeration
    *
    * @param e add this Enumeration.
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public void addEnumeration(EnumTypedef e) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -534,7 +601,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * Add a Variable
    *
    * @param v add this Variable.
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public void addVariable(Variable v) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -556,7 +625,9 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param d remove this Dimension.
    * @return true if was found and removed
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public boolean remove(Dimension d) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -568,7 +639,9 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param g remove this Group.
    * @return true if was found and removed
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public boolean remove(Group g) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -580,7 +653,9 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param v remove this Variable.
    * @return true if was found and removed
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public boolean remove(Variable v) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -592,7 +667,9 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param dimName Dimension name.
    * @return true if dimension found and removed
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public boolean removeDimension(String dimName) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -611,7 +688,9 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param shortName Variable name.
    * @return true if Variable found and removed
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public boolean removeVariable(String shortName) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -629,7 +708,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * Make this immutable.
    *
    * @return this
+   * @deprecated Use Group.builder()
    */
+  @Deprecated
   public Group setImmutable() {
     super.setImmutable();
     variables = Collections.unmodifiableList(variables);
@@ -707,5 +788,220 @@ public class Group extends CDMNode implements AttributeContainer {
       current = next;
     }
     return current;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // TODO make private final and immutable in 6
+  protected NetcdfFile ncfile;
+  protected List<Variable> variables = new ArrayList<>();
+  protected List<Dimension> dimensions = new ArrayList<>();
+  protected List<Group> groups = new ArrayList<>();
+  protected AttributeContainerHelper attributes;
+  protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
+  private int hashCode;
+
+  public Group(Builder builder, Group parent) {
+    super(builder.shortName);
+    this.group = parent;
+    this.ncfile = builder.ncfile;
+
+    builder.dimensions.forEach(d -> d.setGroup(this)); // LOOK remove in 6
+    this.dimensions = new ArrayList<>(builder.dimensions);
+    this.enumTypedefs = new ArrayList<>(builder.enumTypedefs);
+
+    // only the root group build() should be called, the rest get called recursively
+    this.groups = builder.gbuilders.stream().map(g -> g.build(this)).collect(Collectors.toList());
+
+    builder.vbuilders.forEach(v -> {
+      v.setGroup(this);
+      if (v.ncfile == null) {
+        v.setNcfile(this.ncfile);
+      }
+    });
+    this.variables = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
+
+    this.attributes = builder.attributes;
+
+    // This needs to go away in 6.
+    this.dimensions.forEach(d -> d.setParentGroup(this));
+    this.enumTypedefs.forEach(e -> e.setParentGroup(this));
+  }
+
+  public Builder toBuilder() {
+    Builder builder =
+        builder().setName(this.shortName).setNcfile(this.ncfile).addAttributes(this.attributes.getAttributes())
+            .addDimensions(this.dimensions).addEnumTypedefs(this.enumTypedefs);
+
+    this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
+    this.variables.forEach(v -> builder.addVariable(v.toBuilder()));
+
+    return builder;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    static private final Logger logger = LoggerFactory.getLogger(Builder.class);
+
+    private NetcdfFile ncfile;
+    private AttributeContainerHelper attributes = new AttributeContainerHelper("");
+    private List<Dimension> dimensions = new ArrayList<>();
+    private List<EnumTypedef> enumTypedefs = new ArrayList<>();
+    public List<Group.Builder> gbuilders = new ArrayList<>();
+    public List<Variable.Builder> vbuilders = new ArrayList<>();
+    private String shortName;
+    private boolean built;
+
+    public Builder addAttribute(Attribute att) {
+      Preconditions.checkNotNull(att);
+      attributes.addAttribute(att);
+      return this;
+    }
+
+    public Builder addAttributes(Iterable<Attribute> atts) {
+      Preconditions.checkNotNull(atts);
+      attributes.addAll(atts);
+      return this;
+    }
+
+    public AttributeContainer getAttributeContainer() {
+      return attributes;
+    }
+
+    public Builder addDimension(Dimension dim) {
+      Preconditions.checkNotNull(dim);
+      dimensions.add(dim);
+      return this;
+    }
+
+    public Builder addDimension(Dimension.Builder dim) {
+      Preconditions.checkNotNull(dim);
+      dimensions.add(dim.build());
+      return this;
+    }
+
+    public Builder addDimensions(Collection<Dimension> dims) {
+      Preconditions.checkNotNull(dims);
+      dimensions.addAll(dims);
+      return this;
+    }
+
+    public boolean removeDimension(String dimName) {
+      Optional<Dimension> want = dimensions.stream().filter(v -> v.shortName.equals(dimName)).findFirst();
+      want.ifPresent(d -> dimensions.remove(d));
+      return want.isPresent();
+    }
+
+    public Optional<Dimension> findDimension(String name) {
+      return dimensions.stream().filter(d -> d.shortName.equals(name)).findFirst();
+    }
+
+    public boolean resetDimensionLength(String dimName, int length) {
+      Optional<Dimension> oldDim = findDimension(dimName);
+      oldDim.ifPresent(d -> {
+        removeDimension(dimName);
+        addDimension(new Dimension(d.toBuilder()).toBuilder().setLength(length));
+      });
+      return oldDim.isPresent();
+    }
+
+    /** Add a nested Group. */
+    public Builder addGroup(Group.Builder nested) {
+      Preconditions.checkNotNull(nested);
+      gbuilders.add(nested);
+      return this;
+    }
+
+    public Builder addGroups(Collection<Group.Builder> groups) {
+      Preconditions.checkNotNull(groups);
+      groups.addAll(groups);
+      return this;
+    }
+
+    public boolean removeGroup(String name) {
+      Optional<Group.Builder> want = gbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
+      want.ifPresent(v -> gbuilders.remove(v));
+      return want.isPresent();
+    }
+
+    /** Add an EnumTypedef. */
+    public Builder addEnumTypedef(EnumTypedef typedef) {
+      Preconditions.checkNotNull(typedef);
+      enumTypedefs.add(typedef);
+      return this;
+    }
+
+    public Builder addEnumTypedefs(Collection<EnumTypedef> typedefs) {
+      Preconditions.checkNotNull(typedefs);
+      enumTypedefs.addAll(typedefs);
+      return this;
+    }
+
+    /** Add a Variable, replacing one of same name if its exists. */
+    public Builder addVariable(Variable.Builder variable) {
+      Preconditions.checkNotNull(variable);
+      findVariable(variable.shortName).ifPresent(v -> {
+        System.out.printf("HEY %s already exists %n", v.shortName);
+        removeVariable(v.shortName);
+        logger.info("Removed existing variable {}", variable.shortName);
+      });
+      vbuilders.add(variable);
+      // if (variable.shortName.equals("time"))
+      // System.out.printf("HEY%n");
+      return this;
+    }
+
+    public Builder addVariables(Collection<Variable.Builder> vars) {
+      vbuilders.addAll(vars);
+      return this;
+    }
+
+    public boolean removeVariable(String name) {
+      Optional<Variable.Builder> want = vbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
+      want.ifPresent(v -> vbuilders.remove(v));
+      return want.isPresent();
+    }
+
+    public Optional<Variable.Builder> findVariable(String name) {
+      return vbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
+    }
+
+    public Builder setNcfile(NetcdfFile ncfile) {
+      this.ncfile = ncfile;
+      return this;
+    }
+
+    public Builder setName(String shortName) {
+      this.shortName = shortName;
+      return this;
+    }
+
+    public NetcdfFile getNcfile() {
+      return this.ncfile;
+    }
+
+    public Optional<Builder> findGroup(String name) {
+      return this.gbuilders.stream().filter(g -> g.shortName.equals(name)).findFirst();
+    }
+
+    public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
+      return Dimension.makeDimensionsList(this.dimensions, dimString);
+    }
+
+    /**
+     * Only call build() on the root group, when everything is ready.
+     * After that, everything is immutable.
+     */
+    public Group build(Group parent) {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new Group(this, parent);
+    }
+
+
+
   }
 }

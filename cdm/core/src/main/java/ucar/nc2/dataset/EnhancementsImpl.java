@@ -17,7 +17,7 @@ import java.util.*;
  */
 class EnhancementsImpl implements Enhancements {
   private Variable forVar;
-  private String desc, units;
+  String desc, units;
   private List<CoordinateSystem> coordSys; // dont allocate unless its used
 
   /**
