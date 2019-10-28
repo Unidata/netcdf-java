@@ -248,6 +248,11 @@ public class TestDir {
     return actOnAll(dirName, ff, new ListAction(filenames), true);
   }
 
+  public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames,
+      boolean recurse) throws IOException {
+    return actOnAll(dirName, ff, new ListAction(filenames), recurse);
+  }
+
   static class ListAction implements Act {
     Collection<Object[]> filenames;
 

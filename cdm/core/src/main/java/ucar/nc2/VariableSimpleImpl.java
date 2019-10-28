@@ -5,6 +5,7 @@
 
 package ucar.nc2;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 import ucar.nc2.constants.CDM;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
  * @author caron
  * @since 6/10/14
  */
+@Immutable
 public class VariableSimpleImpl implements VariableSimpleIF {
 
   public static VariableSimpleImpl makeScalar(String name, String desc, String units, DataType dt) {

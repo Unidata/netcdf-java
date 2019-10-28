@@ -29,9 +29,8 @@ import java.util.Map;
  * @see ucar.nc2.dt.grid.CFGridWriter2
  * @see ucar.nc2.ft.point.writer.CFPointWriter
  *
- * @author caron
+ * @deprecated use ucar.nc2.writer.FileWriter
  */
-
 public class FileWriter2 {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
   private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes

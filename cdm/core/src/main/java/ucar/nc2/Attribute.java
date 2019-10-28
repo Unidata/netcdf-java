@@ -23,13 +23,15 @@ import java.util.Map;
  * The value can be a one dimensional array of Strings or numeric values.
  * <p/>
  * Attributes are immutable after setImmutable().
- *
+ * Attributes will become immutable in 6.
+ * 
  * @author caron
  */
-
 public class Attribute extends CDMNode {
+  private static final String SPECIALPREFIX = "_";
 
-  static final String SPECIALPREFIX = "_";
+  /** @deprecated */
+  @Deprecated
   static final String[] SPECIALS =
       {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
 
@@ -38,7 +40,9 @@ public class Attribute extends CDMNode {
    *
    * @param atts list of attributes
    * @return map of attributes by name
+   * @deprecated
    */
+  @Deprecated
   public static Map<String, Attribute> makeMap(List<Attribute> atts) {
     int size = (atts == null) ? 1 : atts.size();
     Map<String, Attribute> result = new HashMap<>(size);
@@ -49,6 +53,8 @@ public class Attribute extends CDMNode {
     return result;
   }
 
+  /** @deprecated */
+  @Deprecated
   public static boolean isspecial(Attribute a) {
     String nm = a.getShortName();
     if (nm.startsWith(SPECIALPREFIX)) {
@@ -60,6 +66,7 @@ public class Attribute extends CDMNode {
     }
     return false; /* is not special */
   }
+
   ///////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -71,6 +78,8 @@ public class Attribute extends CDMNode {
     return dataType;
   }
 
+  /** @deprecated Use Attribute.builder() */
+  @Deprecated
   public void setDataType(DataType dt) {
     this.dataType = dt;
   }
@@ -79,6 +88,8 @@ public class Attribute extends CDMNode {
     return this.enumtype;
   }
 
+  /** @deprecated Use Attribute.builder() */
+  @Deprecated
   public void setEnumType(EnumTypedef en) {
     this.enumtype = en;
   }
@@ -319,24 +330,18 @@ public class Attribute extends CDMNode {
    * @param s string to quote
    * @return equivilent string replacing special chars
    */
-  public static String encodeString(String s) {
+  private static String encodeString(String s) {
     return StringUtil2.replace(s, org, replace);
   }
-
-  ///////////////////////////////////////////////////////////////////////////////
-
-  private String svalue; // optimization for common case of single String valued attribute
-  private DataType dataType;
-  private EnumTypedef enumtype;
-  private int nelems; // can be 0 or greater
-  private Array values;
 
   /**
    * Copy constructor
    *
    * @param name name of new Attribute
    * @param from copy value from here.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, Attribute from) {
     super(name);
     if (name == null)
@@ -354,7 +359,9 @@ public class Attribute extends CDMNode {
    *
    * @param name name of Attribute
    * @param val value of Attribute
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, String val) {
     super(name);
     setDataType(DataType.STRING);
@@ -369,11 +376,15 @@ public class Attribute extends CDMNode {
    *
    * @param name name of Attribute
    * @param val value of Attribute
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, Number val) {
     this(name, val, false);
   }
 
+  /** @deprecated Use Attribute.builder() */
+  @Deprecated
   public Attribute(String name, Number val, boolean isUnsigned) {
     super(name);
     if (name == null)
@@ -395,7 +406,9 @@ public class Attribute extends CDMNode {
    *
    * @param name name of attribute
    * @param values array of values.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, Array values) {
     this(name, values.getDataType());
     setValues(values);
@@ -404,12 +417,17 @@ public class Attribute extends CDMNode {
 
   /**
    * Construct an empty attribute with no values
+   * 
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, DataType dataType) {
     this(name);
     setDataType(dataType);
   }
 
+  /** @deprecated Use Attribute.builder() */
+  @Deprecated
   public Attribute(String name, List values) {
     this(name, values, false);
   }
@@ -421,7 +439,9 @@ public class Attribute extends CDMNode {
    * @param name name of attribute
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    * @param isUnsigned if the data type is unsigned.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
     if (values == null || values.isEmpty())
@@ -437,7 +457,9 @@ public class Attribute extends CDMNode {
    * Need to do this so ucar.unidata.geoloc package doesnt depend on ucar.nc2 library
    *
    * @param param copy info from here.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(ucar.unidata.util.Parameter param) {
     this(param.getName());
 
@@ -454,10 +476,12 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * set the value as a String, trimming trailing zeroes
-   *
+   * Set the value as a String, trimming trailing zeros
+   * 
    * @param val value of Attribute
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   private void setStringValue(String val) {
     if (val == null)
       throw new IllegalArgumentException("Attribute value cannot be null");
@@ -487,7 +511,9 @@ public class Attribute extends CDMNode {
    * Constructor. Must also set value
    *
    * @param name name of Attribute
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   protected Attribute(String name) {
     super(name);
     if (name == null)
@@ -496,7 +522,10 @@ public class Attribute extends CDMNode {
 
   /**
    * Set the values from a list
+   * 
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public void setValues(List values) {
     if (values == null || values.isEmpty())
       throw new IllegalArgumentException("Cannot determine attribute's type");
@@ -550,7 +579,9 @@ public class Attribute extends CDMNode {
    * set the values from an Array
    *
    * @param arr value of Attribute
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public void setValues(Array arr) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -607,7 +638,9 @@ public class Attribute extends CDMNode {
    * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
    *
    * @param name name of attribute
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public synchronized void setName(String name) {
     if (immutable)
       throw new IllegalStateException("Cant modify");
@@ -669,5 +702,214 @@ public class Attribute extends CDMNode {
     }
     return result;
   }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  // TODO make these final in 6.
+  private String svalue; // optimization for common case of single String valued attribute
+  private DataType dataType;
+  private EnumTypedef enumtype;
+  private int nelems; // can be 0 or greater
+  private Array values; // can this be made immutable?? Otherwise return a copy.
+
+  private Attribute(Builder builder) {
+    super(builder.name);
+    this.svalue = builder.svalue;
+    this.dataType = builder.dataType;
+    this.enumtype = builder.enumtype;
+    this.nelems = builder.nelems;
+    this.values = builder.values;
+    this.nelems = (svalue != null) ? 1 : (int) this.values.getSize();
+  }
+
+  /** Turn into a mutable Builder. Like a copy constructor. */
+  public Builder toBuilder() {
+    return builder().setName(this.shortName).setStringValue(this.svalue).setValues(this.values)
+        .setDataType(this.dataType).setEnumType(this.enumtype);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static Builder builder(String name) {
+    return new Builder(name);
+  }
+
+  public static class Builder {
+    private String name;
+    private DataType dataType;
+    private String svalue; // optimization for common case of single String valued attribute
+    private Array values;
+    private int nelems;
+    private EnumTypedef enumtype;
+    private boolean built;
+
+    private Builder() {}
+
+    private Builder(String name) {
+      this.name = name;
+    }
+
+    public Builder setName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder setDataType(DataType dataType) {
+      this.dataType = dataType;
+      return this;
+    }
+
+    public Builder setEnumType(EnumTypedef enumtype) {
+      this.enumtype = enumtype;
+      return this;
+    }
+
+    /**
+     * Set the value as a String, trimming trailing zeros
+     * 
+     * @param svalue value of Attribute
+     */
+    public Builder setStringValue(String svalue) {
+      if (svalue == null)
+        throw new IllegalArgumentException("Attribute value cannot be null");
+
+      // get rid of trailing nul characters
+      int len = svalue.length();
+      while ((len > 0) && (svalue.charAt(len - 1) == 0))
+        len--;
+      if (len != svalue.length())
+        svalue = svalue.substring(0, len);
+
+      this.svalue = svalue;
+      this.nelems = 1;
+      this.dataType = DataType.STRING;
+      return this;
+    }
+
+    /**
+     * Set the values from a list of String or one of the primitives
+     * Integer, Float, Double, Short, Long, Integer, Byte.
+     */
+    public Builder setValues(List<Object> values) {
+      if (values == null || values.isEmpty())
+        throw new IllegalArgumentException("Cannot determine attribute's type");
+      int n = values.size();
+      Class c = values.get(0).getClass();
+      Object pa;
+
+      if (c == String.class) {
+        this.dataType = DataType.STRING;
+        String[] va = new String[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (String) values.get(i);
+      } else if (c == Integer.class) {
+        this.dataType = DataType.INT;
+        int[] va = new int[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (Integer) values.get(i);
+      } else if (c == Double.class) {
+        this.dataType = DataType.DOUBLE;
+        double[] va = new double[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (Double) values.get(i);
+      } else if (c == Float.class) {
+        this.dataType = DataType.FLOAT;
+        float[] va = new float[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (Float) values.get(i);
+      } else if (c == Short.class) {
+        this.dataType = DataType.SHORT;
+        short[] va = new short[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (Short) values.get(i);
+      } else if (c == Byte.class) {
+        this.dataType = DataType.BYTE;
+        byte[] va = new byte[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (Byte) values.get(i);
+      } else if (c == Long.class) {
+        this.dataType = DataType.LONG;
+        long[] va = new long[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (Long) values.get(i);
+      } else {
+        throw new IllegalArgumentException("Unknown type for Attribute = " + c.getName());
+      }
+      return setValues(Array.factory(this.dataType, new int[] {n}, pa));
+    }
+
+    /**
+     * Set the values from an Array.
+     * Also sets the DataType from values.getElementType().
+     *
+     * @param arr value of Attribute
+     */
+    public Builder setValues(Array arr) {
+      if (arr == null) {
+        dataType = DataType.STRING;
+        return this;
+      }
+
+      if (arr.getElementType() == char.class) { // turn CHAR into STRING
+        ArrayChar carr = (ArrayChar) arr;
+        if (carr.getRank() == 1) { // common case
+          svalue = carr.getString();
+          this.nelems = 1;
+          this.dataType = DataType.STRING;
+          return this;
+        }
+        // otherwise its an array of Strings
+        arr = carr.make1DStringArray();
+      }
+
+      // this should be a utility somewhere
+      if (arr.getElementType() == ByteBuffer.class) { // turn OPAQUE into BYTE
+        int totalLen = 0;
+        arr.resetLocalIterator();
+        while (arr.hasNext()) {
+          ByteBuffer bb = (ByteBuffer) arr.next();
+          totalLen += bb.limit();
+        }
+        byte[] ba = new byte[totalLen];
+        int pos = 0;
+        arr.resetLocalIterator();
+        while (arr.hasNext()) {
+          ByteBuffer bb = (ByteBuffer) arr.next();
+          System.arraycopy(bb.array(), 0, ba, pos, bb.limit());
+          pos += bb.limit();
+        }
+        arr = Array.factory(DataType.BYTE, new int[] {totalLen}, ba);
+      }
+
+      if (DataType.getType(arr) == DataType.OBJECT)
+        throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
+
+      if (arr.getRank() > 1)
+        arr = arr.reshape(new int[] {(int) arr.getSize()}); // make sure 1D
+
+      this.values = arr;
+      this.nelems = (int) arr.getSize();
+      this.dataType = DataType.getType(arr);
+      return this;
+    }
+
+    public Attribute build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new Attribute(this);
+    }
+
+  }
+
 
 }

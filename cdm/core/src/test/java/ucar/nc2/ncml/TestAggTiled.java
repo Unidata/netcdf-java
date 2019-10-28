@@ -5,6 +5,7 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -16,7 +17,7 @@ import java.lang.invoke.MethodHandles;
 /**
  * Test tiled aggregation
  */
-
+@Ignore
 public class TestAggTiled extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -28,7 +29,7 @@ public class TestAggTiled extends TestCase {
   }
 
   public void testTiled4() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "tiled/testAggTiled.ncml";
+    String filename = "file:./" + TestNcMLRead.topDir + "tiled/testAggTiled.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     logger.debug(" TestNcmlAggExisting.open {}", ncfile);
@@ -67,7 +68,7 @@ public class TestAggTiled extends TestCase {
   }
 
   public void testStride() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcML.topDir + "tiled/testAggTiled.ncml";
+    String filename = "file:./" + TestNcMLRead.topDir + "tiled/testAggTiled.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     logger.debug(" TestNcmlAggExisting.open {}", ncfile);

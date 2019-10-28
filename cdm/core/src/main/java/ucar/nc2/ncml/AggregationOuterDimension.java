@@ -560,7 +560,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
         this.coordValue = extractCoordNameFromFilename(this.getLocation());
         this.isStringValued = true;
-        this.isStringValued = true;
       }
 
       if (null != dateFormatMark) {

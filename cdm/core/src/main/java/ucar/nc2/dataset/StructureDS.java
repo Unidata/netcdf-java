@@ -20,15 +20,10 @@ import java.util.Set;
  * @author john caron
  * @see NetcdfDataset
  */
-
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
-  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDS.class);
 
-  private EnhancementsImpl proxy; // API relies that this cant be null
-
-  protected Structure orgVar; // wrap this Variable
-  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
-
+  /** @deprecated Use StructureDS.builder() */
+  @Deprecated
   protected StructureDS(NetcdfFile ncfile, Group group, String shortName) {
     super(ncfile, group, null, shortName);
     this.proxy = new EnhancementsImpl(this);
@@ -44,7 +39,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * @param dims list of dimension names, space delimited
    * @param units unit string (may be null)
    * @param desc description (may be null)
+   * @deprecated Use StructureDS.builder()
    */
+  @Deprecated
   public StructureDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName, String dims,
       String units, String desc) {
 
@@ -59,12 +56,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /**
-   * Create a StructureDS thats wraps a Structure
+   * Create a StructureDS that wraps a Structure
    *
    * @param g parent group
    * @param orgVar original Structure
+   * @deprecated Use StructureDS.builder()
    */
-  public StructureDS(Group g, ucar.nc2.Structure orgVar) { // , boolean reparent) {
+  @Deprecated
+  public StructureDS(Group g, ucar.nc2.Structure orgVar) {
     super(orgVar);
     setParentGroup(g);
     this.orgVar = orgVar;
@@ -111,7 +110,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * @param parent parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
    * @param orgVar the original Structure to wrap.
+   * @deprecated Use StructureDS.builder()
    */
+  @Deprecated
   public StructureDS(NetcdfDataset ds, Group group, Structure parent, String shortName, Structure orgVar) {
     super(ds, group, parent, shortName);
 
@@ -127,7 +128,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   // for section and slice and select
 
   @Override
-  protected Variable copy() {
+  protected StructureDS copy() {
     return new StructureDS(getParentGroup(), this);
   }
 
@@ -160,7 +161,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * Set the Structure to wrap.
    *
    * @param orgVar original Variable, must be a Structure
+   * @deprecated Use StructureDS.builder()
    */
+  @Deprecated
   public void setOriginalVariable(ucar.nc2.Variable orgVar) {
     if (!(orgVar instanceof Structure))
       throw new IllegalArgumentException("StructureDS must wrap a Structure; name=" + orgVar.getFullName());
@@ -561,7 +564,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   /**
    * DO NOT USE DIRECTLY. public by accident.
    * recalc any enhancement info
+   * 
+   * @deprecated do not use
    */
+  @Deprecated
   public void enhance(Set<NetcdfDataset.Enhance> mode) {
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
@@ -569,14 +575,20 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
   }
 
+  /** @deprecated Use StructureDS.builder() */
+  @Deprecated
   public void clearCoordinateSystems() {
     this.proxy = new EnhancementsImpl(this, getUnitsString(), getDescription());
   }
 
+  /** @deprecated Use StructureDS.builder() */
+  @Deprecated
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
     proxy.addCoordinateSystem(p0);
   }
 
+  /** @deprecated Use StructureDS.builder() */
+  @Deprecated
   public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
     proxy.removeCoordinateSystem(p0);
   }
@@ -593,8 +605,104 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return proxy.getUnitsString();
   }
 
+  /** @deprecated Use StructureDS.builder() */
+  @Deprecated
   public void setUnitsString(String units) {
     proxy.setUnitsString(units);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  private EnhancementsImpl proxy; // API relies that this cant be null
+  protected Structure orgVar; // wrap this Variable
+  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
+
+  protected StructureDS(Builder<?> builder) {
+    super(builder);
+    this.orgVar = builder.orgVar;
+    this.orgName = builder.orgName;
+    this.proxy = new EnhancementsImpl(this, builder.units, builder.desc);
+  }
+
+  @Override
+  public Builder<?> toBuilder() {
+    StructureDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
+    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+  }
+
+  // Add local fields to the passed - in builder.
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    return b.setOriginalVariable(this.orgVar).setOriginalName(this.orgName).setUnits(this.proxy.units)
+        .setDesc(this.proxy.desc);
+  }
+
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
+    private Structure orgVar; // wrap this Variable
+    private String orgName; // in case Variable was renamed, and we need the original name for aggregation
+    private String units;
+    private String desc;
+    private boolean built;
+
+    public T setOriginalVariable(Structure orgVar) {
+      this.orgVar = orgVar;
+      return self();
+    }
+
+    public T setOriginalName(String orgName) {
+      this.orgName = orgName;
+      return self();
+    }
+
+    public T setUnits(String units) {
+      this.units = units;
+      if (units != null) {
+        addAttribute(Attribute.builder(CDM.UNITS).setStringValue(units).build());
+      }
+      return self();
+    }
+
+    public T setDesc(String desc) {
+      this.desc = desc;
+      if (desc != null) {
+        addAttribute(Attribute.builder(CDM.LONG_NAME).setStringValue(desc).build());
+      }
+      return self();
+    }
+
+    /** Copy metadata from orgVar. */
+    public T copyFrom(Structure orgVar) {
+      super.copyFrom(orgVar);
+      for (Variable v : orgVar.getVariables()) {
+        Variable.Builder newVar;
+        if (v instanceof Sequence) {
+          newVar = SequenceDS.builder().copyFrom((Sequence) v);
+        } else if (v instanceof Structure) {
+          newVar = StructureDS.builder().copyFrom((StructureDS) v);
+        } else {
+          newVar = VariableDS.builder().copyFrom(v);
+        }
+        addMemberVariable(newVar);
+      }
+      return self();
+    }
+
+    public StructureDS build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      this.setDataType(DataType.STRUCTURE);
+      return new StructureDS(this);
+    }
   }
 
 }

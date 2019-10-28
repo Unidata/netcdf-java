@@ -28,7 +28,9 @@ import ucar.unidata.util.Parameter;
  * Creates a "netcdfDatasetInfo" XML document, used by the TDS "Common Data Model Coordinate System Validation".
  *
  * @author john caron
+ * @deprecated This will move to another package.
  */
+@Deprecated
 public class NetcdfDatasetInfo implements Closeable {
   private NetcdfDataset ds;
   private CoordSysBuilderIF builder;

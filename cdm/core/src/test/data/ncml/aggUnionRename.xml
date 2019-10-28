@@ -3,6 +3,6 @@
 	<attribute name="title" type="string" value="Union cldc and lflx"/>
   <variable name="LavaFlow" orgName="lflx" />
   <aggregation type="union">
-    <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/>
+    <scan location="nc/" suffix="mean.nc"/>
   </aggregation>
 </netcdf>

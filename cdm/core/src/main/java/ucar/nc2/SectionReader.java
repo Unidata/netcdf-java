@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
@@ -14,10 +15,10 @@ import java.io.IOException;
  * @author caron
  * @see Variable#section(Section subsection)
  */
-
+@Immutable
 class SectionReader implements ProxyReader {
-  private Section orgSection; // section of the original
-  private Variable orgClient;
+  private final Section orgSection; // section of the original
+  private final Variable orgClient;
 
   // section must be filled
   SectionReader(Variable orgClient, Section section) {

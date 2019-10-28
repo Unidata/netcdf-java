@@ -5,6 +5,9 @@
 
 package ucar.nc2;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
@@ -19,14 +22,12 @@ import java.util.*;
  */
 @Immutable
 public class EnumTypedef extends CDMNode {
-
   // Constants for the unsigned max values for enum(1,2,4)
-  public static final int UBYTE_MAX = 255;
-  public static final int USHORT_MAX = 65535;
-  // not used static public final long UINT_MAX = 4294967295L;
+  private static final int UBYTE_MAX = 255;
+  private static final int USHORT_MAX = 65535;
 
-  private final Map<Integer, String> map;
-  private final ArrayList<String> enumStrings;
+  private final ImmutableMap<Integer, String> map;
+  private final ImmutableList<String> enumStrings;
   private final DataType basetype;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
@@ -35,17 +36,16 @@ public class EnumTypedef extends CDMNode {
 
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
     super(name);
-    assert (validateMap(map, basetype));
-    this.map = map;
+    Preconditions.checkArgument(validateMap(map, basetype));
+    this.map = ImmutableMap.copyOf(map);
 
-    enumStrings = new ArrayList<>(map.values());
-    Collections.sort(enumStrings);
+    enumStrings = ImmutableList.sortedCopyOf(map.values());
 
     assert basetype == DataType.ENUM1 || basetype == DataType.ENUM2 || basetype == DataType.ENUM4;
     this.basetype = basetype;
   }
 
-  public List<String> getEnumStrings() {
+  public ImmutableList<String> getEnumStrings() {
     return enumStrings;
   }
 
@@ -57,7 +57,7 @@ public class EnumTypedef extends CDMNode {
     return this.basetype;
   }
 
-  public boolean validateMap(Map<Integer, String> map, DataType basetype) {
+  private boolean validateMap(Map<Integer, String> map, DataType basetype) {
     if (map == null || basetype == null)
       return false;
     for (Integer i : map.keySet()) {
@@ -79,23 +79,6 @@ public class EnumTypedef extends CDMNode {
     }
     return true;
   }
-
-  /*
-   * private boolean
-   * IgnoreinRange(int i) {
-   * // WARNING, we do not have signed/unsigned info available
-   * if (this.basetype == DataType.ENUM1
-   * && (i >= Byte.MIN_VALUE || i <= UBYTE_MAX))
-   * return true;
-   * else if (this.basetype == DataType.ENUM2
-   * && (i >= Short.MIN_VALUE || i <= USHORT_MAX))
-   * return true;
-   * else if (this.basetype == DataType.ENUM4) // always ok
-   * return true;
-   * else
-   * return false;
-   * }
-   */
 
   public String lookupEnumString(int e) {
     String result = map.get(e);
@@ -172,7 +155,7 @@ public class EnumTypedef extends CDMNode {
       return false;
     String name = getShortName();
     String thatname = that.getShortName();
-    return !(!Objects.equals(name, thatname));
+    return Objects.equals(name, thatname);
 
   }
 

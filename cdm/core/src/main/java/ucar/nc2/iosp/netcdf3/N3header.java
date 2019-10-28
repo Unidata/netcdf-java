@@ -22,9 +22,9 @@ import java.io.IOException;
 public class N3header extends NCheader {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
 
-  static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
-  private static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
+  static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
+  static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
   static final byte[] MAGIC_LONG = {0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the
                                                              // variable offset value
   static final int MAGIC_DIM = 10;
@@ -47,6 +47,21 @@ public class N3header extends NCheader {
 
   private static boolean debugVariablePos;
   private static boolean debugStreaming;
+
+  // variable info for reading/writing
+  static class Vinfo {
+    long vsize; // size of array in bytes. if isRecord, size per record.
+    long begin; // offset of start of data from start of file
+    boolean isRecord; // is it a record variable?
+    long attsPos; // attributes start here - used for update
+
+    Vinfo(long vsize, long begin, boolean isRecord, long attsPos) {
+      this.vsize = vsize;
+      this.begin = begin;
+      this.isRecord = isRecord;
+      this.attsPos = attsPos;
+    }
+  }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1020,22 +1035,6 @@ public class N3header extends NCheader {
     }
 
     return true;
-  }
-
-
-  // variable info for reading/writing
-  static class Vinfo {
-    long vsize; // size of array in bytes. if isRecord, size per record.
-    long begin; // offset of start of data from start of file
-    boolean isRecord; // is it a record variable?
-    long attsPos; // attributes start here - used for update
-
-    Vinfo(long vsize, long begin, boolean isRecord, long attsPos) {
-      this.vsize = vsize;
-      this.begin = begin;
-      this.isRecord = isRecord;
-      this.attsPos = attsPos;
-    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////

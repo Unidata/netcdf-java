@@ -1,6 +1,9 @@
 /* Copyright */
 package ucar.nc2;
 
+import com.google.common.collect.ImmutableList;
+import javax.annotation.concurrent.Immutable;
+import org.apache.http.MethodNotSupportedException;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,12 +11,14 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * manages Collections of Attributes.
- *
+ * Manages Collections of Attributes.
+ * This is the mutable version, call toImmutable() for immutable version.
+ * 
  * @author caron
  * @since 5/5/2015
  */
 public class AttributeContainerHelper implements AttributeContainer {
+
   final String name;
   List<Attribute> atts;
 
@@ -56,7 +61,9 @@ public class AttributeContainerHelper implements AttributeContainer {
     return att;
   }
 
-  /** Add all; replace old if has same name */
+  /**
+   * Add all; replace old if has same name
+   */
   @Override
   public void addAll(Iterable<Attribute> atts) {
     for (Attribute att : atts)
@@ -149,4 +156,69 @@ public class AttributeContainerHelper implements AttributeContainer {
     }
   }
 
+  public AttributeContainer toImmutable() {
+    return new AttributeContainerImmutable(name, atts);
+  }
+
+  @Immutable
+  private static class AttributeContainerImmutable implements AttributeContainer {
+    private final String name;
+    private final ImmutableList<Attribute> atts;
+
+    private AttributeContainerImmutable(String name, List<Attribute> atts) {
+      this.name = name;
+      this.atts = ImmutableList.copyOf(atts);
+    }
+
+    @Override
+    public List<Attribute> getAttributes() {
+      return atts;
+    }
+
+    @Override
+    public void addAll(Iterable<Attribute> atts) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Attribute addAttribute(Attribute att) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String findAttValueIgnoreCase(String attName, String defaultValue) {
+      return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().map(Attribute::getStringValue)
+          .orElse(defaultValue);
+    }
+
+    @Override
+    public Attribute findAttribute(String attName) {
+      return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().orElse(null);
+    }
+
+    @Override
+    public Attribute findAttributeIgnoreCase(String attName) {
+      return atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(attName)).findFirst().orElse(null);
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public boolean remove(Attribute a) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAttribute(String attName) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeAttributeIgnoreCase(String attName) {
+      throw new UnsupportedOperationException();
+    }
+  }
 }
