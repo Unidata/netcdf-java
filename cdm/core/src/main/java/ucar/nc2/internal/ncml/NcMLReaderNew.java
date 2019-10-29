@@ -1326,8 +1326,8 @@ public class NcMLReaderNew {
           // this defers creation until build(), when all dimension sizes are known.
           // must also set dimensions by name.
           v.setAutoGen(start, incr);
-          if (!v.dimensions.isEmpty()) {
-            v.setDimensionsByName(Dimensions.makeDimensionsString(v.dimensions));
+          if (v.getRank() > 0) {
+            v.setDimensionsByName(v.makeDimensionsString());
           }
         } else {
           Array data = Array.makeArray(dtype, npts, start, incr);

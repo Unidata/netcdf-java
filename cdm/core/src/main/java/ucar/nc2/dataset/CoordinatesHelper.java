@@ -1,9 +1,9 @@
 package ucar.nc2.dataset;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -12,10 +12,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.Immutable;
-import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 
 /** A helper class for NetcdfDataset to build and manage coordinates */
 @Immutable
@@ -80,6 +78,13 @@ public class CoordinatesHelper {
       return coordAxes.stream().filter(axis -> axis.shortName.equals(axisName)).findFirst();
     }
 
+    public boolean replaceCoordinateAxis(CoordinateAxis.Builder<?> axis) {
+      Optional<CoordinateAxis.Builder> want = findCoordinateAxis(axis.shortName);
+      want.ifPresent(v -> coordAxes.remove(v));
+      addCoordinateAxis(axis);
+      return want.isPresent();
+    }
+
     // LOOK dedup
     public Builder addCoordinateSystem(CoordinateSystem.Builder cs) {
       Preconditions.checkNotNull(cs);
@@ -117,9 +122,9 @@ public class CoordinatesHelper {
       return coordTransforms.stream().filter(ct -> ct.name.equals(ctName)).findFirst();
     }
 
-    public List<CoordinateAxis.Builder> getAxesForSystem(CoordinateSystem.Builder cs) {
+    public List<CoordinateAxis.Builder<?>> getAxesForSystem(CoordinateSystem.Builder cs) {
       Preconditions.checkNotNull(cs);
-      List<CoordinateAxis.Builder> axes = new ArrayList<>();
+      List<CoordinateAxis.Builder<?>> axes = new ArrayList<>();
       StringTokenizer stoker = new StringTokenizer(cs.coordAxesNames);
       while (stoker.hasMoreTokens()) {
         String vname = stoker.nextToken();
@@ -166,23 +171,25 @@ public class CoordinatesHelper {
     public boolean isComplete(CoordinateSystem.Builder<?> cs, VariableDS.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(vb);
-      Set<Dimension> varDomain = new HashSet<>(vb.dimensions);
-      Set<Dimension> csDomain = new HashSet<>();
-      getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.dimensions));
+      // TODO using strings instead of Dimensions, to avaid exposing mutable Dimension objects.
+      // TODO Might reconsider in 6.
+      Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionNames().iterator());
+      HashSet<String> csDomain = new HashSet<>();
+      getAxesForSystem(cs).forEach(axis -> axis.getDimensionNames().forEach(dim -> csDomain.add(dim)));
       return varDomain.equals(csDomain);
     }
 
     public boolean containsAxes(CoordinateSystem.Builder cs, List<CoordinateAxis.Builder> dataAxes) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(dataAxes);
-      List<CoordinateAxis.Builder> csAxes = getAxesForSystem(cs);
+      List<CoordinateAxis.Builder<?>> csAxes = getAxesForSystem(cs);
       return csAxes.containsAll(dataAxes);
     }
 
     public boolean containsAxisTypes(CoordinateSystem.Builder cs, List<AxisType> axisTypes) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(axisTypes);
-      List<CoordinateAxis.Builder> csAxes = getAxesForSystem(cs);
+      List<CoordinateAxis.Builder<?>> csAxes = getAxesForSystem(cs);
       for (AxisType axisType : axisTypes) {
         if (!containsAxisTypes(csAxes, axisType))
           return false;
@@ -190,7 +197,7 @@ public class CoordinatesHelper {
       return true;
     }
 
-    private boolean containsAxisTypes(List<CoordinateAxis.Builder> axes, AxisType want) {
+    private boolean containsAxisTypes(List<CoordinateAxis.Builder<?>> axes, AxisType want) {
       for (CoordinateAxis.Builder axis : axes) {
         if (axis.axisType == want)
           return true;

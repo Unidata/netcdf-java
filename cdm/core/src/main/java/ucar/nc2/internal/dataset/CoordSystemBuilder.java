@@ -66,18 +66,17 @@ public class CoordSystemBuilder {
     if ((vb.dataType == DataType.STRUCTURE) || vb.parentStruct != null)
       return false;
 
-    List<Dimension> dimensions = vb.dimensions;
-    int rank = dimensions.size();
+    int rank = vb.getRank();
     if (rank == 1) {
-      Dimension firstd = dimensions.get(0);
-      if (vb.shortName.equals(firstd.getShortName())) {
+      String firstd = vb.getFirstDimensionName();
+      if (vb.shortName.equals(firstd)) {
         return true;
       }
     }
     if (rank == 2) { // two dimensional
-      Dimension firstd = dimensions.get(0);
+      String firstd = vb.getFirstDimensionName();
       // must be char valued (then its really a String)
-      return vb.shortName.equals(firstd.getShortName()) && (vb.dataType == DataType.CHAR);
+      return vb.shortName.equals(firstd) && (vb.dataType == DataType.CHAR);
     }
 
     return false;
@@ -118,7 +117,7 @@ public class CoordSystemBuilder {
   protected CoordinatesHelper.Builder coords;
 
   protected List<VarProcess> varList = new ArrayList<>();
-  protected Multimap<Dimension, VarProcess> coordVarMap = ArrayListMultimap.create(); // coords for Dimension
+  protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create(); // coordinate variables for Dimension (name)
 
   protected String conventionName = _Coordinate.Convention; // default name of Convention, override in subclass
   protected Formatter parseInfo = new Formatter();
@@ -743,7 +742,7 @@ public class CoordSystemBuilder {
       isCoordinateVariable =
           isCoordinateVariable(v) || (null != v.getAttributeContainer().findAttribute(_Coordinate.AliasForDimension));
       if (isCoordinateVariable) {
-        coordVarMap.put(v.dimensions.get(0), this);
+        coordVarsForDimension.put(v.getFirstDimensionName(), this);
       }
 
       Attribute att = v.getAttributeContainer().findAttributeIgnoreCase(_Coordinate.AxisType);
@@ -763,15 +762,15 @@ public class CoordSystemBuilder {
         } else {
           Optional<Dimension> coordDimOpt = gb.findDimension(coordVarAlias);
           coordDimOpt.ifPresent(coordDim -> {
-            Dimension vDim = v.dimensions.get(0);
-            if (!coordDim.equals(vDim)) {
+            String vDim = v.getFirstDimensionName();
+            if (!coordDim.getShortName().equals(vDim)) {
               parseInfo.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s%n", v.getFullName(),
                   coordVarAlias);
               userAdvice.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s%n", v.getFullName(),
                   coordVarAlias);
             } else {
               isCoordinateAxis = true;
-              coordVarMap.put(coordDim, this);
+              coordVarsForDimension.put(coordDim.getShortName(), this);
               parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(),
                   coordVarAlias);
             }
@@ -824,6 +823,11 @@ public class CoordSystemBuilder {
      */
     protected CoordinateAxis.Builder makeIntoCoordinateAxis() {
       if (axis != null) {
+        return axis;
+      }
+
+      if (vb instanceof CoordinateAxis.Builder) {
+        axis = (CoordinateAxis.Builder) vb;
         return axis;
       }
 
@@ -911,8 +915,8 @@ public class CoordSystemBuilder {
       }
 
       if (addCoordVariables) {
-        for (Dimension d : vb.dimensions) {
-          for (VarProcess vp : coordVarMap.get(d)) {
+        for (String d : vb.getDimensionNames()) {
+          for (VarProcess vp : coordVarsForDimension.get(d)) {
             CoordinateAxis.Builder axis = vp.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) {
               axesList.add(axis);

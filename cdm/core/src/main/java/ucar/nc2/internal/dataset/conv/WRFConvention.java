@@ -279,13 +279,13 @@ public class WRFConvention extends CoordSystemBuilder {
 
       // make axes
       if (!isLatLon) {
-        coords.addCoordinateAxis(makeXCoordAxis("x", "west_east"));
-        coords.addCoordinateAxis(makeXCoordAxis("x_stag", "west_east_stag"));
-        coords.addCoordinateAxis(makeYCoordAxis("y", "south_north"));
-        coords.addCoordinateAxis(makeYCoordAxis("y_stag", "south_north_stag"));
+        datasetBuilder.replaceCoordinateAxis( rootGroup, makeXCoordAxis("x", "west_east"));
+        datasetBuilder.replaceCoordinateAxis( rootGroup, makeXCoordAxis("x_stag", "west_east_stag"));
+        datasetBuilder.replaceCoordinateAxis( rootGroup, makeYCoordAxis("y", "south_north"));
+        datasetBuilder.replaceCoordinateAxis( rootGroup, makeYCoordAxis("y_stag", "south_north_stag"));
       }
-      coords.addCoordinateAxis(makeZCoordAxis("z", "bottom_top"));
-      coords.addCoordinateAxis(makeZCoordAxis("z_stag", "bottom_top_stag"));
+      datasetBuilder.replaceCoordinateAxis( rootGroup, makeZCoordAxis("z", "bottom_top"));
+      datasetBuilder.replaceCoordinateAxis( rootGroup, makeZCoordAxis("z_stag", "bottom_top_stag"));
 
       if (projCT != null) {
         VariableDS.Builder v = makeCoordinateTransformVariable(projCT);
@@ -303,10 +303,10 @@ public class WRFConvention extends CoordSystemBuilder {
       if (taxis == null)
         taxis = makeTimeCoordAxis("Time", "Times");
       if (taxis != null)
-        coords.addCoordinateAxis(taxis);
+        datasetBuilder.replaceCoordinateAxis( rootGroup, taxis);
     }
 
-    coords.addCoordinateAxis(makeSoilDepthCoordAxis("ZS"));
+    datasetBuilder.replaceCoordinateAxis( rootGroup, makeSoilDepthCoordAxis("ZS"));
   }
 
   private void removeConstantTimeDim(Variable.Builder<?> vb) {
@@ -502,8 +502,9 @@ public class WRFConvention extends CoordSystemBuilder {
     double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
 
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dim.getShortName()).setUnits("km").setDesc("synthesized GeoY coordinate from DX attribute");
+        .setDimensionsByName(dim.getShortName()).setUnits("km").setDesc("synthesized GeoY coordinate from DY attribute");
     v.setAxisType(AxisType.GeoY);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
     v.setAutoGen(starty, dy);
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));

@@ -1583,6 +1583,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // LOOK how do we get the variableDS to reference the coordinate system?
     // CoordinatesHelper has to wire the coordinate systems together
     for (Variable v : this.variables) {
+      if (!(v instanceof VariableDS)) {
+        System.out.printf("WTF");
+      }
       VariableDS vds = (VariableDS) v;
       vds.setCoordinateSystems(coords);
     }
@@ -1644,6 +1647,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     private boolean built;
 
     protected abstract T self();
+
+    /**
+     * Add a CoordinateAxis to the dataset coordinates and to the list of variables.
+     * Replaces any existing Variable and CoordinateAxis with the same name.
+     */
+    public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder axis) {
+      if (axis == null)
+        return;
+      coords.replaceCoordinateAxis(axis);
+      group.replaceVariable(axis);
+    }
 
     public T setOrgFile(NetcdfFile orgFile) {
       this.orgFile = orgFile;

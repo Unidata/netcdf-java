@@ -245,7 +245,7 @@ public class N3headerNew {
     if (uvars.isEmpty()) // if there are no record variables
       recStart = 0;
 
-    // LOOK Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
+    // Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
     // the file contained only one record variable and it was of type byte, char, or short).
     // Example ~/cdm/core/src/test/data/byteArrayRecordVarPaddingTest-bad.nc
     if (uvars.size() == 1) {
@@ -253,7 +253,7 @@ public class N3headerNew {
       DataType dtype = uvar.dataType;
       if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
         long vsize = dtype.getSize(); // works for all netcdf-3 data types
-        List<Dimension> dims = uvar.dimensions;
+        List<Dimension> dims = uvar.copyDimensions(); // TODO you really do need the dimensions here, huh?
         for (Dimension curDim : dims) {
           if (!curDim.isUnlimited())
             vsize *= curDim.getLength();

@@ -108,7 +108,7 @@ public class AggregationNew extends AggregationOuter {
       // construct new variable, replace old one LOOK what about Structures?
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(ncDataset, aggVar.getParentGroup());
       VariableDS.Builder vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
-          .setDimensionsByName(dimName + " " + Dimensions.makeDimensionsString(aggVar.dimensions));
+          .setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(aggVar.getAttributeContainer(), vagg.getAttributeContainer());
 

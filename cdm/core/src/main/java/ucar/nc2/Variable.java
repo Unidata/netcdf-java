@@ -4,6 +4,12 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
@@ -1832,8 +1838,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public Group parent; // set in Group.build()
     public Structure parentStruct; // set in Structure.build()
 
-    public String dimString; // if set, supercedes dimensions
-    public List<Dimension> dimensions = new ArrayList<>();
+    private String dimString; // if set, supercedes dimensions
+    private List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
     public Object spiObject;
     public ProxyReader proxyReader;
     public Cache cache = new Cache(); // cache cannot be null
@@ -1860,6 +1866,20 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return attributes;
     }
 
+    /* TODO Dimensions are tricky during the transition to 6, because they have a pointer to their Group in 5.x,
+     * but with Builders, the Group isnt created until build(). The Group is part of equals() and hash().
+     * The second issue is that we may not immediatley know the length, so that may have to be made later.
+     * Provisionally, we are going to try this strategy: during build, Dimensions are created without Groups, and
+     * hash and equals are modified to allow that. During build, the Dimensions are  recreated with the Group, and
+     * Variables Dimensions are replaced with shared Dimensions.
+     * For 6.0, Dimensions become value objects, without a reference to containing Group.
+     *
+     * A VariableBuilder does not know its Group.Builder, so searching for "parent dimensions", must be done with the Group.Builder
+     * object, not the Variable.Builder.
+     *
+     * Havent dealt with structure yet, eg getDimensionsAll(), but should be ok because Variable.Builder does know its parent structure.
+     */
+
     public T addDimension(Dimension dim) {
       dimensions.add(dim);
       return self();
@@ -1871,9 +1891,44 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // Set dimensions by name. If set, supercedes addDimension()
+    /* WHY NOT      List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
+      v.addDimensions(varDims); //
+    */
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
       return self();
+    }
+
+    @Nullable
+    public String getFirstDimensionName() {
+      if (dimString != null) {
+        Iterable<String> iter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
+        return Iterators.getNext(iter.iterator(), null);
+      } else if (dimensions.size() > 0) {
+        return dimensions.get(0).getShortName();
+      }
+      return null;
+    }
+
+    public Iterable<String> getDimensionNames() {
+      if (dimString != null) {
+        return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
+      } else if (dimensions.size() > 0) {
+        return dimensions.stream().map(d -> d.getShortName()).collect(Collectors.toList());
+      }
+      return ImmutableList.of();
+    }
+
+    public String makeDimensionsString() {
+      if (dimString != null ) {
+        return dimString;
+      }
+      return Dimensions.makeDimensionsString(this.dimensions);
+    }
+
+    // TODO reconsider when Dimensions are really immutable
+    public List<Dimension> copyDimensions() {
+      return dimensions.stream().map (d -> new Dimension(d.toBuilder())).collect(Collectors.toList());
     }
 
     /**
@@ -1903,8 +1958,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     public int getRank() {
       if (dimString != null) {
-        StringTokenizer stoke = new StringTokenizer(dimString, " ");
-        return stoke.countTokens();
+        Iterable<String> iter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
+        return Iterators.size(iter.iterator());
       } else {
         return dimensions.size();
       }

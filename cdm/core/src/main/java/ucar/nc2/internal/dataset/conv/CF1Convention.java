@@ -6,10 +6,10 @@ package ucar.nc2.internal.dataset.conv;
 
 import static ucar.nc2.internal.dataset.CoordSystemFactory.breakupConventionNames;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
 import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -245,22 +245,21 @@ public class CF1Convention extends CSMConvention {
                 });
               }
 
-              List<Dimension> dims = vb.dimensions;
-
+              List<String> dimNames = ImmutableList.copyOf(vb.getDimensionNames());
               // Append any geometry dimensions as axis
               final StringBuilder pre = new StringBuilder();
               // must go backwards for some reason.
-              for (int i = dims.size()-1; i >= 0; i--) {
-                Dimension dim = dims.get(i);
-                if (!dim.getShortName().equals("time")) {
-                  rootGroup.findVariable(dim.getFullNameEscaped()).ifPresent( coordvar -> {
+              for (int i = dimNames.size()-1; i >= 0; i--) {
+                String dimName = dimNames.get(i);
+                if (!dimName.equals("time")) {
+                  rootGroup.findVariable(dimName).ifPresent( coordvar -> {
                         coordvar.getAttributeContainer().addAttribute(new Attribute(_Coordinate.AxisType,
                             AxisType.SimpleGeometryID.toString()));
                   });
                   // handle else case as malformed CF NetCDF
                 }
 
-                pre.append(dim.getShortName());
+                pre.append(dimName);
                 pre.append(" ");
               }
 

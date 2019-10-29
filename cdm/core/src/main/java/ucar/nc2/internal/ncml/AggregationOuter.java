@@ -840,7 +840,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
     f.format("%nAggregation Variables%n");
     for (VariableDS.Builder vds : aggVars) {
-      f.format("   %s %s%n", vds.shortName, Dimensions.makeDimensionsString(vds.dimensions));
+      f.format("   %s %s%n", vds.shortName, String.join(",", vds.getDimensionNames()));
     }
 
     if (!cacheList.isEmpty()) {

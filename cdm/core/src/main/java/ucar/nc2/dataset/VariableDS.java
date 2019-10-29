@@ -736,7 +736,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   private List<String> coordSysNames;
 
   // TODO make these final and immutable in 6.
-  private EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
+  private EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl();
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O

@@ -36,7 +36,7 @@ public class TestNcmlReaderProblems {
     // I think original is wrong, since ncml has <variable name="time" type="int">
     // compare("file:" + TestNcMLRead.topDir + "aggSynthetic.xml");
 
-    compare("file:" + TestNcMLRead.topDir + "aggSynthetic.xml");
+    compare("file:" + TestNcMLRead.topDir + "aggExisting4.ncml");
   }
 
   private void compare(String ncmlLocation) throws IOException {

@@ -70,12 +70,15 @@ class BuilderHelper {
         /*
          * if ((v instanceof Structure) && !(v instanceof StructureDS)) {
          * v = new StructureDS(targetGroup, (Structure) v);
-         * } else if (!(v instanceof VariableDS)) {
-         * v = new VariableDS(targetGroup, v, false); // enhancement done by original variable, this is just to reparent
-         * to target dataset.
-         * }
+         * } else
          */
-        Variable.Builder<?> vb = v.toBuilder().setProxyReader(null);
+        VariableDS.Builder<?> vb;
+        if (!(v instanceof VariableDS)) {
+          vb = VariableDS.builder().copyFrom(v);
+        } else {
+          vb = ((VariableDS)v).toBuilder().setProxyReader(null);
+        }
+
         targetGroup.replaceVariable(vb);
         // LOOK not needed? v.resetDimensions(); // dimensions will be different
 

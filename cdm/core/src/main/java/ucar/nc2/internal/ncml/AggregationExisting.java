@@ -37,7 +37,9 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.CancelTask;
 
 /**
- * JoinExisting Aggregation.
+ * "JoinExisting" Aggregation. Existing means that the dimension already exists in the component variables.
+ * For every variable with that dimension, replace it with its "aggreation" whose dimensions lebgth is the
+ * sum of the the component lengths. The dimensions must be the outer dimension.
  *
  * @author caron
  */
