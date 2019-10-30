@@ -127,7 +127,7 @@ public class CF1Convention extends CSMConvention {
     boolean got_grid_mapping = false;
 
     // look for transforms
-    for (Variable.Builder vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
       // look for special standard_names
       String sname = vb.getAttributeContainer().findAttValueIgnoreCase(CF.STANDARD_NAME, null);
       if (sname != null) {
@@ -243,6 +243,10 @@ public class CF1Convention extends CSMConvention {
                     cds.append(" ");
                   }
                 });
+              }
+
+              if (vb.shortName.equals("et")) {
+                System.out.println("WTF");
               }
 
               List<String> dimNames = ImmutableList.copyOf(vb.getDimensionNames());

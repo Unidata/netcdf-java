@@ -78,7 +78,20 @@ public class TestSimpleGeom {
   }
 
   @Test
-  public void testCoordinateVariables() throws IOException {
+  public void testCoordinateVariable() throws IOException {
+    String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/outflow_3seg_5timesteps_vlen.nc";
+    // open the test file
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile)) {
+      for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
+        System.out.printf("Try to read %s ", axis.getFullName());
+        Array data = axis.read();
+        System.out.printf(" OK (%d) %n", data.getSize());
+      }
+    }
+  }
+
+  @Test
+  public void testVarLenDataVariable() throws IOException {
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
     try (NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile)) {

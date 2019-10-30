@@ -238,11 +238,14 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   Array convert(Array data, Set<NetcdfDataset.Enhance> enhancements) {
-    if (enhancements.contains(Enhance.ConvertEnums) && dataType.isEnum()
-        || (orgDataType != null && orgDataType.isEnum())) {
+    if (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum())) {
       // Creates STRING data. As a result, we can return here, because the other conversions don't apply to STRING.
       return convertEnums(data);
     } else {
+      // TODO: make work for isVariableLength; i thought BUFR worked?
+      if (this.isVariableLength) {
+        return data;
+      }
       return scaleMissingUnsignedProxy.convert(data, enhancements.contains(Enhance.ConvertUnsigned),
           enhancements.contains(Enhance.ApplyScaleOffset), enhancements.contains(Enhance.ConvertMissing));
     }

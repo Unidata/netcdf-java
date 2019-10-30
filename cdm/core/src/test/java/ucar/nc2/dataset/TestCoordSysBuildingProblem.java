@@ -22,9 +22,9 @@ public class TestCoordSysBuildingProblem {
 
   @Test
   public void problem() throws IOException {
-    String filename = "file:" + TestDir.cdmLocalTestDataDir + "wrf/WrfTimesStrUnderscore.nc";
-    //showOrg(filename);
-    //showNew(filename);
+    String filename = "file:" + TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/huc_helper_test.nc";
+    // showOrg(filename);
+    // showNew(filename);
     compare(filename);
   }
 
@@ -45,7 +45,7 @@ public class TestCoordSysBuildingProblem {
   private void showOrg(String fileLocation) throws IOException {
 
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
-      Variable v = org.findVariable("Times");
+      Variable v = org.findVariable("catchments_part_node_count");
       Array data = v.read();
       System.out.printf("data = %s%n", data);
     }
