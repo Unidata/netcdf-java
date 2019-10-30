@@ -157,8 +157,7 @@ public class NetcdfDatasets {
    * @return NetcdfDataset.Builder wrapping the given ncfile
    * @throws IOException on io error
    */
-  public static NetcdfDataset enhance(NetcdfFile ncfile, Set<Enhance> mode, CancelTask cancelTask)
-      throws IOException {
+  public static NetcdfDataset enhance(NetcdfFile ncfile, Set<Enhance> mode, CancelTask cancelTask) throws IOException {
 
     if (ncfile instanceof NetcdfDataset) {
       NetcdfDataset ncd = (NetcdfDataset) ncfile;

@@ -49,13 +49,11 @@ class CSMConvention extends CoardsConventions {
     for (Variable.Builder vb : rootGroup.vbuilders) {
       VariableDS.Builder vds = (VariableDS.Builder) vb;
       String unit = vds.units;
-      if (unit != null && (unit.equalsIgnoreCase("hybrid_sigma_pressure") ||
-          unit.equalsIgnoreCase("sigma_level"))) {
-          // both a coordinate axis and transform
-          vds.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
-          vds.addAttribute(
-              new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
-          vds.addAttribute(new Attribute(_Coordinate.Axes, vds.getFullName()));
+      if (unit != null && (unit.equalsIgnoreCase("hybrid_sigma_pressure") || unit.equalsIgnoreCase("sigma_level"))) {
+        // both a coordinate axis and transform
+        vds.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
+        vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
+        vds.addAttribute(new Attribute(_Coordinate.Axes, vds.getFullName()));
       }
     }
   }
@@ -75,25 +73,27 @@ class CSMConvention extends CoardsConventions {
   }
 
   // Apparently never called ??
-  /* protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    CoordinateTransform ct = null;
-
-    String unit = ctv.getUnitsString();
-    if (unit != null) {
-      if (unit.equalsIgnoreCase("hybrid_sigma_pressure")) {
-        HybridSigmaPressureBuilder b = new HybridSigmaPressureBuilder();
-        ct = b.makeCoordinateTransform(ds, ctv);
-
-      } else if (unit.equalsIgnoreCase("sigma_level")) { // LOOK - no test case for CSM Sigma Vertical coord ??
-        SigmaBuilder b = new SigmaBuilder();
-        ct = b.makeCoordinateTransform(ds, ctv);
-      }
-    }
-    if (ct != null)
-      return ct;
-
-    return super.makeCoordinateTransform(ds, ctv);
-  } */
+  /*
+   * protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+   * CoordinateTransform ct = null;
+   * 
+   * String unit = ctv.getUnitsString();
+   * if (unit != null) {
+   * if (unit.equalsIgnoreCase("hybrid_sigma_pressure")) {
+   * HybridSigmaPressureBuilder b = new HybridSigmaPressureBuilder();
+   * ct = b.makeCoordinateTransform(ds, ctv);
+   * 
+   * } else if (unit.equalsIgnoreCase("sigma_level")) { // LOOK - no test case for CSM Sigma Vertical coord ??
+   * SigmaBuilder b = new SigmaBuilder();
+   * ct = b.makeCoordinateTransform(ds, ctv);
+   * }
+   * }
+   * if (ct != null)
+   * return ct;
+   * 
+   * return super.makeCoordinateTransform(ds, ctv);
+   * }
+   */
 
   private class HybridSigmaPressureBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
     public String getTransformName() {

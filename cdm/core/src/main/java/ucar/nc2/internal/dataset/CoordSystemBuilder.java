@@ -117,7 +117,8 @@ public class CoordSystemBuilder {
   protected CoordinatesHelper.Builder coords;
 
   protected List<VarProcess> varList = new ArrayList<>();
-  protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create(); // coordinate variables for Dimension (name)
+  protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create(); // coordinate variables for
+                                                                                             // Dimension (name)
 
   protected String conventionName = _Coordinate.Convention; // default name of Convention, override in subclass
   protected Formatter parseInfo = new Formatter();
@@ -525,17 +526,21 @@ public class CoordSystemBuilder {
   protected void makeCoordinateTransforms() {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && vp.ct == null) { // TODO dont have ncd
-        vp.ct = CoordinateTransform.builder().setName(vp.vb.shortName).setAttributeContainer(vp.vb.getAttributeContainer());
+        vp.ct =
+            CoordinateTransform.builder().setName(vp.vb.shortName).setAttributeContainer(vp.vb.getAttributeContainer());
         coords.addCoordinateTransform(vp.ct);
-        // vp.ct = CoordTransBuilder.makeCoordinateTransform(null, vp.vb.getAttributeContainer(), parseInfo, userAdvice);
+        // vp.ct = CoordTransBuilder.makeCoordinateTransform(null, vp.vb.getAttributeContainer(), parseInfo,
+        // userAdvice);
       }
     }
   }
 
-  /* Apparently never called ??
-  protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    return CoordTransBuilder.makeCoordinateTransform(ds, ctv, parseInfo, userAdvice);
-  } */
+  /*
+   * Apparently never called ??
+   * protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+   * return CoordTransBuilder.makeCoordinateTransform(ds, ctv, parseInfo, userAdvice);
+   * }
+   */
 
   /**
    * Assign CoordinateTransform objects to Variables and Coordinate Systems.
@@ -930,8 +935,7 @@ public class CoordSystemBuilder {
 
     void addCoordinateTransform(CoordinateTransform.Builder ct) {
       if (cs == null) {
-        parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", vb.getFullName(),
-            ct.name);
+        parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", vb.getFullName(), ct.name);
         return;
       }
       cs.addCoordinateTransformByName(ct.name);

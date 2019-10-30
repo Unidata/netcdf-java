@@ -174,7 +174,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     this.attributeContainer = new AttributeContainerHelper(this.name);
     this.attributeContainer.addAll(builder.attributeContainer.getAttributes());
 
-    CoordinateTransform ct = CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter());
+    CoordinateTransform ct =
+        CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter());
     ct.attributeContainer = new AttributeContainerHelper(this.name);
     ct.attributeContainer.addAll(builder.attributeContainer.getAttributes());
   }
@@ -252,7 +253,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       }
 
       // All this trouble because we need ncd before we can build.
-      CoordinateTransform ct = CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
+      CoordinateTransform ct =
+          CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
       if (ct != null) {
         ct.name = this.name;
         ct.attributeContainer = new AttributeContainerHelper(this.name);

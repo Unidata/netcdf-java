@@ -153,16 +153,18 @@ public class DefaultConventions extends CoordSystemBuilder {
     return null;
   }
 
-  /* @Override
-  protected void makeCoordinateTransforms() {
-    if (projCT != null) {
-      VarProcess vp = findVarProcess(projCT.getName(), null);
-      if (vp != null) {
-        vp.ct = projCT;
-      }
-    }
-    super.makeCoordinateTransforms();
-  } */
+  /*
+   * @Override
+   * protected void makeCoordinateTransforms() {
+   * if (projCT != null) {
+   * VarProcess vp = findVarProcess(projCT.getName(), null);
+   * if (vp != null) {
+   * vp.ct = projCT;
+   * }
+   * }
+   * super.makeCoordinateTransforms();
+   * }
+   */
 
   @Override
   @Nullable

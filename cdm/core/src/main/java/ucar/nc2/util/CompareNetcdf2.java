@@ -155,7 +155,8 @@ public class CompareNetcdf2 {
 
       // coordinate systems
       for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
-        CoordinateSystem cs2 = copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName())).findFirst().orElse(null);
+        CoordinateSystem cs2 = copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
         if (cs2 == null) {
           f.format("  ** Cant find CoordinateSystem=%s in file2 %n", cs1.getName());
         } else {
@@ -329,7 +330,8 @@ public class CompareNetcdf2 {
       VariableEnhanced copye = (VariableEnhanced) copy;
 
       for (CoordinateSystem cs1 : orge.getCoordinateSystems()) {
-        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName())).findFirst().orElse(null);
+        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
         if (cs2 == null) {
           f.format("  ** Cant find cs %s in file2 var %s %n", cs1.getName(), org.getShortName());
         } else {
@@ -355,7 +357,8 @@ public class CompareNetcdf2 {
     }
 
     for (CoordinateTransform ct1 : cs1.getCoordinateTransforms()) {
-      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream().filter(ct -> ct.getName().equals(ct1.getName())).findFirst().orElse(null);
+      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream().filter(ct -> ct.getName().equals(ct1.getName()))
+          .findFirst().orElse(null);
       if (ct2 == null) {
         f.format("  ** Cant find transform %s in file2 %n", ct1.getName());
       } else {

@@ -1866,18 +1866,21 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return attributes;
     }
 
-    /* TODO Dimensions are tricky during the transition to 6, because they have a pointer to their Group in 5.x,
+    /*
+     * TODO Dimensions are tricky during the transition to 6, because they have a pointer to their Group in 5.x,
      * but with Builders, the Group isnt created until build(). The Group is part of equals() and hash().
      * The second issue is that we may not immediatley know the length, so that may have to be made later.
      * Provisionally, we are going to try this strategy: during build, Dimensions are created without Groups, and
-     * hash and equals are modified to allow that. During build, the Dimensions are  recreated with the Group, and
+     * hash and equals are modified to allow that. During build, the Dimensions are recreated with the Group, and
      * Variables Dimensions are replaced with shared Dimensions.
      * For 6.0, Dimensions become value objects, without a reference to containing Group.
      *
-     * A VariableBuilder does not know its Group.Builder, so searching for "parent dimensions", must be done with the Group.Builder
+     * A VariableBuilder does not know its Group.Builder, so searching for "parent dimensions", must be done with the
+     * Group.Builder
      * object, not the Variable.Builder.
      *
-     * Havent dealt with structure yet, eg getDimensionsAll(), but should be ok because Variable.Builder does know its parent structure.
+     * Havent dealt with structure yet, eg getDimensionsAll(), but should be ok because Variable.Builder does know its
+     * parent structure.
      */
 
     public T addDimension(Dimension dim) {
@@ -1891,9 +1894,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // Set dimensions by name. If set, supercedes addDimension()
-    /* WHY NOT      List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
-      v.addDimensions(varDims); //
-    */
+    /*
+     * WHY NOT List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
+     * v.addDimensions(varDims); //
+     */
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
       return self();
@@ -1920,7 +1924,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     public String makeDimensionsString() {
-      if (dimString != null ) {
+      if (dimString != null) {
         return dimString;
       }
       return Dimensions.makeDimensionsString(this.dimensions);
@@ -1928,7 +1932,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     // TODO reconsider when Dimensions are really immutable
     public List<Dimension> copyDimensions() {
-      return dimensions.stream().map (d -> new Dimension(d.toBuilder())).collect(Collectors.toList());
+      return dimensions.stream().map(d -> new Dimension(d.toBuilder())).collect(Collectors.toList());
     }
 
     /**

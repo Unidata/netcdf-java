@@ -30,8 +30,8 @@ public class VerticalCT extends CoordinateTransform {
     // These are from CF-1.0: not all are implemented because we dont have an example to test
     HybridSigmaPressure(CF.atmosphere_hybrid_sigma_pressure_coordinate), HybridHeight(
         CF.atmosphere_hybrid_height_coordinate), LnPressure(CF.atmosphere_ln_pressure_coordinate), OceanSigma(
-        CF.ocean_sigma_coordinate), OceanS(
-        CF.ocean_s_coordinate), Sleve(CF.atmosphere_sleve_coordinate), Sigma(CF.atmosphere_sigma_coordinate),
+            CF.ocean_sigma_coordinate), OceanS(
+                CF.ocean_s_coordinate), Sleve(CF.atmosphere_sleve_coordinate), Sigma(CF.atmosphere_sigma_coordinate),
 
     // -Sachin 03/25/09
     OceanSG1("ocean_s_g1"), OceanSG2("ocean_s_g2"),

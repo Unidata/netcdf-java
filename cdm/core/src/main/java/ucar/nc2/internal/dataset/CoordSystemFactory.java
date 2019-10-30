@@ -264,8 +264,8 @@ public class CoordSystemFactory {
     if (coordSysFactory == null) {
       return Optional.empty();
       // if no convention class found, use the default
-      //coordSysFactory = new DefaultConventions.Factory();
-      //isDefault = true;
+      // coordSysFactory = new DefaultConventions.Factory();
+      // isDefault = true;
     }
 
     // Now that youve done all this work, what about storing the CoordSystemBuilderFactory in the

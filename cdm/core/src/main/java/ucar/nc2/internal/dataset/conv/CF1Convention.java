@@ -5,7 +5,6 @@
 package ucar.nc2.internal.dataset.conv;
 
 import static ucar.nc2.internal.dataset.CoordSystemFactory.breakupConventionNames;
-
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
@@ -133,10 +132,13 @@ public class CF1Convention extends CSMConvention {
       if (sname != null) {
         sname = sname.trim();
 
-        /* if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) { // TODO why isnt this with other Transforms?
-          makeAtmLnCoordinate(vds);
-          continue;
-        } */
+        /*
+         * if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) { // TODO why isnt this with other
+         * Transforms?
+         * makeAtmLnCoordinate(vds);
+         * continue;
+         * }
+         */
 
         if (sname.equalsIgnoreCase(CF.TIME_REFERENCE)) {
           vb.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
@@ -159,11 +161,10 @@ public class CF1Convention extends CSMConvention {
 
         for (String vertical_coord : vertical_coords) {
           if (sname.equalsIgnoreCase(vertical_coord)) {
-            vb.addAttribute(
-                new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
+            vb.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
             if (vb.getAttributeContainer().findAttribute(_Coordinate.Axes) == null) {
-              vb.addAttribute(new Attribute(_Coordinate.Axes,
-                  vb.shortName)); // LOOK: may also be time dependent; was getFullName()
+              vb.addAttribute(new Attribute(_Coordinate.Axes, vb.shortName)); // LOOK: may also be time dependent; was
+                                                                              // getFullName()
             }
           }
         }
@@ -173,26 +174,21 @@ public class CF1Convention extends CSMConvention {
       }
 
       // look for horiz transforms. only ones that are referenced by another variable.
-      String grid_mapping = vb.getAttributeContainer()
-          .findAttValueIgnoreCase(CF.GRID_MAPPING, null);
+      String grid_mapping = vb.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING, null);
       if (grid_mapping != null) {
         Optional<Variable.Builder<?>> gridMapOpt = rootGroup.findVariable(grid_mapping);
         if (gridMapOpt.isPresent()) {
           // TODO might be group relative - CF does not specify - see original version
           Variable.Builder<?> gridMap = gridMapOpt.get();
-          gridMap.addAttribute(
-              new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
+          gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
-          String grid_mapping_name = gridMap.getAttributeContainer()
-              .findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+          String grid_mapping_name = gridMap.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
           if (CF.LATITUDE_LONGITUDE.equals(grid_mapping_name)) {
             // "grid_mapping_name == latitude_longitude" is special in CF: it's applied to variables that describe
             // properties of lat/lon CRSes.
-            gridMap.addAttribute(
-                new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));
+            gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));
           } else {
-            gridMap.addAttribute(
-                new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
+            gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
           }
 
           got_grid_mapping = true;
@@ -214,7 +210,8 @@ public class CF1Convention extends CSMConvention {
             addOptionalAttributeIn(coordsvar, vb, CF.NODES);
             addOptionalAttributeIn(coordsvar, vb, CF.NODE_COUNT);
 
-            if (CF.POLYGON.equalsIgnoreCase(coordsvar.getAttributeContainer().findAttValueIgnoreCase(CF.GEOMETRY_TYPE, ""))) {
+            if (CF.POLYGON
+                .equalsIgnoreCase(coordsvar.getAttributeContainer().findAttValueIgnoreCase(CF.GEOMETRY_TYPE, ""))) {
               addOptionalAttributeIn(coordsvar, vb, CF.INTERIOR_RING);
             }
 
@@ -228,16 +225,13 @@ public class CF1Convention extends CSMConvention {
                   Attribute axis = temp.getAttributeContainer().findAttribute(CF.AXIS);
                   if (axis != null) {
                     if ("x".equalsIgnoreCase(axis.getStringValue())) {
-                      temp.addAttribute(new Attribute(_Coordinate.AxisType,
-                          AxisType.SimpleGeometryX.toString()));
+                      temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
                     }
                     if ("y".equalsIgnoreCase(axis.getStringValue())) {
-                      temp.addAttribute(new Attribute(_Coordinate.AxisType,
-                          AxisType.SimpleGeometryY.toString()));
+                      temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
                     }
                     if ("z".equalsIgnoreCase(axis.getStringValue())) {
-                      temp.addAttribute(new Attribute(_Coordinate.AxisType,
-                          AxisType.SimpleGeometryZ.toString()));
+                      temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
                     }
                     cds.append(coord);
                     cds.append(" ");
@@ -253,12 +247,12 @@ public class CF1Convention extends CSMConvention {
               // Append any geometry dimensions as axis
               final StringBuilder pre = new StringBuilder();
               // must go backwards for some reason.
-              for (int i = dimNames.size()-1; i >= 0; i--) {
+              for (int i = dimNames.size() - 1; i >= 0; i--) {
                 String dimName = dimNames.get(i);
                 if (!dimName.equals("time")) {
-                  rootGroup.findVariable(dimName).ifPresent( coordvar -> {
-                        coordvar.getAttributeContainer().addAttribute(new Attribute(_Coordinate.AxisType,
-                            AxisType.SimpleGeometryID.toString()));
+                  rootGroup.findVariable(dimName).ifPresent(coordvar -> {
+                    coordvar.getAttributeContainer()
+                        .addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
                   });
                   // handle else case as malformed CF NetCDF
                 }
@@ -311,76 +305,78 @@ public class CF1Convention extends CSMConvention {
 
   private boolean avhrr_oiv2;
 
-  /* this is here because it doesnt fit into the 3D array thing.
-  private void makeAtmLnCoordinate(VariableDS.Builder<?> vb) {
-    // get the formula attribute
-    String formula = vb.getAttributeContainer().findAttValueIgnoreCase(CF.formula_terms, null);
-    if (null == formula) {
-      String msg = " Need attribute 'formula_terms' on Variable " + vb.getFullName() + "\n";
-      parseInfo.format(msg);
-      userAdvice.format(msg);
-      return;
-    }
-
-    // parse the formula string
-    Variable p0Var = null, levelVar = null;
-    StringTokenizer stoke = new StringTokenizer(formula, " :");
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      if (toke.equalsIgnoreCase("p0")) {
-        String name = stoke.nextToken();
-        p0Var = rootGroup.findVariable(name);
-      } else if (toke.equalsIgnoreCase("lev")) {
-        String name = stoke.nextToken();
-        levelVar = rootGroup.findVariable(name);
-      }
-    }
-
-    if (null == p0Var) {
-      String msg = " Need p0:varName on Variable " + v.getFullName() + " formula_terms\n";
-      parseInfo.format(msg);
-      userAdvice.format(msg);
-      return;
-    }
-
-    if (null == levelVar) {
-      String msg = " Need lev:varName on Variable " + v.getFullName() + " formula_terms\n";
-      parseInfo.format(msg);
-      userAdvice.format(msg);
-      return;
-    }
-
-    String units = p0Var.findAttValueIgnoreCase(CDM.UNITS, "hPa");
-
-    // create the data and the variable
-    try { // p(k) = p0 * exp(-lev(k))
-      double p0 = p0Var.readScalarDouble();
-      Array levelData = levelVar.read();
-      Array pressureData = Array.factory(DataType.DOUBLE, levelData.getShape());
-      IndexIterator ii = levelData.getIndexIterator();
-      IndexIterator iip = pressureData.getIndexIterator();
-      while (ii.hasNext()) {
-        double val = p0 * Math.exp(-1.0 * ii.getDoubleNext());
-        iip.setDoubleNext(val);
-      }
-
-      CoordinateAxis1D p = new CoordinateAxis1D(ds, null, v.getShortName() + "_pressure", DataType.DOUBLE,
-          levelVar.getDimensionsString(), units,
-          "Vertical Pressure coordinate synthesized from atmosphere_ln_pressure_coordinate formula");
-      p.setCachedData(pressureData, false);
-      p.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      p.addAttribute(new Attribute(_Coordinate.AliasForDimension, p.getDimensionsString()));
-      ds.addVariable(null, p);
-      parseInfo.format(" added Vertical Pressure coordinate %s from CF-1 %s%n", p.getFullName(),
-          CF.atmosphere_ln_pressure_coordinate);
-
-    } catch (IOException e) {
-      String msg = " Unable to read variables from " + v.getFullName() + " formula_terms\n";
-      parseInfo.format(msg);
-      userAdvice.format(msg);
-    }
-
-  } */
+  /*
+   * this is here because it doesnt fit into the 3D array thing.
+   * private void makeAtmLnCoordinate(VariableDS.Builder<?> vb) {
+   * // get the formula attribute
+   * String formula = vb.getAttributeContainer().findAttValueIgnoreCase(CF.formula_terms, null);
+   * if (null == formula) {
+   * String msg = " Need attribute 'formula_terms' on Variable " + vb.getFullName() + "\n";
+   * parseInfo.format(msg);
+   * userAdvice.format(msg);
+   * return;
+   * }
+   * 
+   * // parse the formula string
+   * Variable p0Var = null, levelVar = null;
+   * StringTokenizer stoke = new StringTokenizer(formula, " :");
+   * while (stoke.hasMoreTokens()) {
+   * String toke = stoke.nextToken();
+   * if (toke.equalsIgnoreCase("p0")) {
+   * String name = stoke.nextToken();
+   * p0Var = rootGroup.findVariable(name);
+   * } else if (toke.equalsIgnoreCase("lev")) {
+   * String name = stoke.nextToken();
+   * levelVar = rootGroup.findVariable(name);
+   * }
+   * }
+   * 
+   * if (null == p0Var) {
+   * String msg = " Need p0:varName on Variable " + v.getFullName() + " formula_terms\n";
+   * parseInfo.format(msg);
+   * userAdvice.format(msg);
+   * return;
+   * }
+   * 
+   * if (null == levelVar) {
+   * String msg = " Need lev:varName on Variable " + v.getFullName() + " formula_terms\n";
+   * parseInfo.format(msg);
+   * userAdvice.format(msg);
+   * return;
+   * }
+   * 
+   * String units = p0Var.findAttValueIgnoreCase(CDM.UNITS, "hPa");
+   * 
+   * // create the data and the variable
+   * try { // p(k) = p0 * exp(-lev(k))
+   * double p0 = p0Var.readScalarDouble();
+   * Array levelData = levelVar.read();
+   * Array pressureData = Array.factory(DataType.DOUBLE, levelData.getShape());
+   * IndexIterator ii = levelData.getIndexIterator();
+   * IndexIterator iip = pressureData.getIndexIterator();
+   * while (ii.hasNext()) {
+   * double val = p0 * Math.exp(-1.0 * ii.getDoubleNext());
+   * iip.setDoubleNext(val);
+   * }
+   * 
+   * CoordinateAxis1D p = new CoordinateAxis1D(ds, null, v.getShortName() + "_pressure", DataType.DOUBLE,
+   * levelVar.getDimensionsString(), units,
+   * "Vertical Pressure coordinate synthesized from atmosphere_ln_pressure_coordinate formula");
+   * p.setCachedData(pressureData, false);
+   * p.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+   * p.addAttribute(new Attribute(_Coordinate.AliasForDimension, p.getDimensionsString()));
+   * ds.addVariable(null, p);
+   * parseInfo.format(" added Vertical Pressure coordinate %s from CF-1 %s%n", p.getFullName(),
+   * CF.atmosphere_ln_pressure_coordinate);
+   * 
+   * } catch (IOException e) {
+   * String msg = " Unable to read variables from " + v.getFullName() + " formula_terms\n";
+   * parseInfo.format(msg);
+   * userAdvice.format(msg);
+   * }
+   * 
+   * }
+   */
 
   /*
    * vertical coordinate will be identifiable by:

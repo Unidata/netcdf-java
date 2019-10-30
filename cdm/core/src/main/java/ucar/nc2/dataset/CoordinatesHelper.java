@@ -45,9 +45,10 @@ public class CoordinatesHelper {
         this.coordAxes.add((CoordinateAxis) v);
       }
     }
-    this.coordTransforms = builder.coordTransforms.stream().map(ct -> ct.build(ncd))
-        .filter(Objects::nonNull).collect(Collectors.toList());
-    this.coordSys = builder.coordSys.stream().map(s -> s.build(ncd, this.coordAxes,  this.coordTransforms)).collect(Collectors.toList());
+    this.coordTransforms =
+        builder.coordTransforms.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull).collect(Collectors.toList());
+    this.coordSys = builder.coordSys.stream().map(s -> s.build(ncd, this.coordAxes, this.coordTransforms))
+        .collect(Collectors.toList());
   }
 
   public static Builder builder() {

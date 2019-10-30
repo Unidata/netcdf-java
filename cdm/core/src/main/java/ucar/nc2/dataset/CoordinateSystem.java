@@ -714,7 +714,8 @@ public class CoordinateSystem {
   protected boolean isImplicit; // where set?
   protected String dataType; // Grid, Station, etc. where set?
 
-  protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axes, List<CoordinateTransform> allTransforms) {
+  protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axes,
+      List<CoordinateTransform> allTransforms) {
     this.ds = ncd;
     this.isImplicit = builder.isImplicit;
 

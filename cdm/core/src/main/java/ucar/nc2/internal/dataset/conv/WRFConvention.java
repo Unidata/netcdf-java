@@ -201,8 +201,8 @@ public class WRFConvention extends CoordSystemBuilder {
       v.setCachedData(data, true);
       rootGroup.addVariable(v);
 
-      rootGroup.findVariable("LANDMASK").ifPresent(dataVar ->
-        dataVar.addAttribute(new Attribute(_Coordinate.Systems, "LatLonCoordSys")));
+      rootGroup.findVariable("LANDMASK")
+          .ifPresent(dataVar -> dataVar.addAttribute(new Attribute(_Coordinate.Systems, "LatLonCoordSys")));
 
     } else {
       double lat1 = findAttributeDouble("TRUELAT1");
@@ -279,13 +279,13 @@ public class WRFConvention extends CoordSystemBuilder {
 
       // make axes
       if (!isLatLon) {
-        datasetBuilder.replaceCoordinateAxis( rootGroup, makeXCoordAxis("x", "west_east"));
-        datasetBuilder.replaceCoordinateAxis( rootGroup, makeXCoordAxis("x_stag", "west_east_stag"));
-        datasetBuilder.replaceCoordinateAxis( rootGroup, makeYCoordAxis("y", "south_north"));
-        datasetBuilder.replaceCoordinateAxis( rootGroup, makeYCoordAxis("y_stag", "south_north_stag"));
+        datasetBuilder.replaceCoordinateAxis(rootGroup, makeXCoordAxis("x", "west_east"));
+        datasetBuilder.replaceCoordinateAxis(rootGroup, makeXCoordAxis("x_stag", "west_east_stag"));
+        datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis("y", "south_north"));
+        datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis("y_stag", "south_north_stag"));
       }
-      datasetBuilder.replaceCoordinateAxis( rootGroup, makeZCoordAxis("z", "bottom_top"));
-      datasetBuilder.replaceCoordinateAxis( rootGroup, makeZCoordAxis("z_stag", "bottom_top_stag"));
+      datasetBuilder.replaceCoordinateAxis(rootGroup, makeZCoordAxis("z", "bottom_top"));
+      datasetBuilder.replaceCoordinateAxis(rootGroup, makeZCoordAxis("z_stag", "bottom_top_stag"));
 
       if (projCT != null) {
         VariableDS.Builder v = makeCoordinateTransformVariable(projCT);
@@ -303,10 +303,10 @@ public class WRFConvention extends CoordSystemBuilder {
       if (taxis == null)
         taxis = makeTimeCoordAxis("Time", "Times");
       if (taxis != null)
-        datasetBuilder.replaceCoordinateAxis( rootGroup, taxis);
+        datasetBuilder.replaceCoordinateAxis(rootGroup, taxis);
     }
 
-    datasetBuilder.replaceCoordinateAxis( rootGroup, makeSoilDepthCoordAxis("ZS"));
+    datasetBuilder.replaceCoordinateAxis(rootGroup, makeSoilDepthCoordAxis("ZS"));
   }
 
   private void removeConstantTimeDim(Variable.Builder<?> vb) {
@@ -420,7 +420,7 @@ public class WRFConvention extends CoordSystemBuilder {
    * @param v for thsi axis
    * @return "up" if this is a Vertical (z) coordinate axis which goes up as coords get bigger,
    *         else return "down"
-   * TODO: doesnt seem to be used
+   *         TODO: doesnt seem to be used
    */
   public String getZisPositive(CoordinateAxis v) {
     return "down"; // eta coords decrease upward
@@ -478,7 +478,8 @@ public class WRFConvention extends CoordSystemBuilder {
     double startx = centerX - dx * (nx - 1) / 2; // ya just gotta know
 
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dim.getShortName()).setUnits("km").setDesc("synthesized GeoX coordinate from DX attribute");
+        .setDimensionsByName(dim.getShortName()).setUnits("km")
+        .setDesc("synthesized GeoX coordinate from DX attribute");
     v.setAutoGen(startx, dx);
     v.setAxisType(AxisType.GeoX);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
@@ -502,7 +503,8 @@ public class WRFConvention extends CoordSystemBuilder {
     double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
 
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dim.getShortName()).setUnits("km").setDesc("synthesized GeoY coordinate from DY attribute");
+        .setDimensionsByName(dim.getShortName()).setUnits("km")
+        .setDesc("synthesized GeoY coordinate from DY attribute");
     v.setAxisType(AxisType.GeoY);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
     v.setAutoGen(starty, dy);
@@ -567,7 +569,7 @@ public class WRFConvention extends CoordSystemBuilder {
     if (dim == null)
       return null;
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.SHORT)
-      .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("synthesized coordinate: only an index");
+        .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("synthesized coordinate: only an index");
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals(dim.getShortName()))
@@ -620,15 +622,13 @@ public class WRFConvention extends CoordSystemBuilder {
           if (isCanonicalIsoStr) {
             cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS);
           } else {
-            cd = CalendarDateFormatter
-                .isoStringToCalendarDate(null, dateS.replaceFirst("_", "T"));
+            cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS.replaceFirst("_", "T"));
           }
 
           values.set(count++, (double) cd.getMillis() / 1000);
 
         } catch (IllegalArgumentException e) {
-          parseInfo
-              .format("ERROR: cant parse Time string = <%s> err= %s%n", dateS, e.getMessage());
+          parseInfo.format("ERROR: cant parse Time string = <%s> err= %s%n", dateS, e.getMessage());
 
           // one more try
           String startAtt = rootGroup.getAttributeContainer().findAttValueIgnoreCase("START_DATE", null);
@@ -637,8 +637,7 @@ public class WRFConvention extends CoordSystemBuilder {
               CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, startAtt);
               values.set(0, (double) cd.getMillis() / 1000);
             } catch (IllegalArgumentException e2) {
-              parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n",
-                  startAtt,
+              parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt,
                   e2.getMessage());
             }
           }
@@ -736,40 +735,42 @@ public class WRFConvention extends CoordSystemBuilder {
     return att.getNumericValue().doubleValue();
   }
 
-  /** TODO
+  /**
+   * TODO
    * Assign CoordinateTransform objects to Coordinate Systems.
    *
-  @Override
-  protected void assignCoordinateTransforms() {
-    super.assignCoordinateTransforms();
-
-    // any cs with a vertical coordinate with no units
-    for (CoordinateSystem.Builder cs : coords.coordSys) {
-      if (cs.getZaxis() != null) {
-        String units = cs.getZaxis().getUnitsString();
-        if ((units == null) || (units.trim().isEmpty())) {
-          CoordinateTransform.Builder vct = makeWRFEtaVerticalCoordinateTransform(cs);
-          if (vct != null) {
-            cs.addCoordinateTransformByName(vct.name);
-            coords.addCoordinateTransform(vct);
-          }
-          parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s%n", cs.getName());
-        }
-      }
-    }
-  }
-
-  private CoordinateTransform.Builder makeWRFEtaVerticalCoordinateTransform(CoordinateSystem.Builder cs) {
-    if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
-        || (null == ds.findVariable("PB")))
-      return null;
-
-    CoordinateTransform builder = new WRFEtaTransformBuilder(cs);
-
-    return CoordinateTransform.builder().setVerticalTransform("CoordinateTransform");
-
-    return builder.makeCoordinateTransform(ds, null);
-  } */
+   * @Override
+   *           protected void assignCoordinateTransforms() {
+   *           super.assignCoordinateTransforms();
+   * 
+   *           // any cs with a vertical coordinate with no units
+   *           for (CoordinateSystem.Builder cs : coords.coordSys) {
+   *           if (cs.getZaxis() != null) {
+   *           String units = cs.getZaxis().getUnitsString();
+   *           if ((units == null) || (units.trim().isEmpty())) {
+   *           CoordinateTransform.Builder vct = makeWRFEtaVerticalCoordinateTransform(cs);
+   *           if (vct != null) {
+   *           cs.addCoordinateTransformByName(vct.name);
+   *           coords.addCoordinateTransform(vct);
+   *           }
+   *           parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s%n", cs.getName());
+   *           }
+   *           }
+   *           }
+   *           }
+   * 
+   *           private CoordinateTransform.Builder makeWRFEtaVerticalCoordinateTransform(CoordinateSystem.Builder cs) {
+   *           if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
+   *           || (null == ds.findVariable("PB")))
+   *           return null;
+   * 
+   *           CoordinateTransform builder = new WRFEtaTransformBuilder(cs);
+   * 
+   *           return CoordinateTransform.builder().setVerticalTransform("CoordinateTransform");
+   * 
+   *           return builder.makeCoordinateTransform(ds, null);
+   *           }
+   */
 
   public static class Factory implements CoordSystemBuilderFactory {
 

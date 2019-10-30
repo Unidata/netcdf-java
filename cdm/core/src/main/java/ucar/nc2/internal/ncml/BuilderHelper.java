@@ -76,7 +76,7 @@ class BuilderHelper {
         if (!(v instanceof VariableDS)) {
           vb = VariableDS.builder().copyFrom(v);
         } else {
-          vb = ((VariableDS)v).toBuilder().setProxyReader(null);
+          vb = ((VariableDS) v).toBuilder().setProxyReader(null);
         }
 
         targetGroup.replaceVariable(vb);
