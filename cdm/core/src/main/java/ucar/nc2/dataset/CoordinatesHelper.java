@@ -152,7 +152,7 @@ public class CoordinatesHelper {
         } else {
           // TODO this should fail, leaving it here to match current behavior.
           log.warn("No axis named {}", vname);
-          //throw new IllegalArgumentException("Cant find axis " + vname);
+          // throw new IllegalArgumentException("Cant find axis " + vname);
         }
       }
       return makeCanonicalName(axes);
