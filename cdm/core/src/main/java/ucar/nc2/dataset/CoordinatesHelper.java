@@ -18,6 +18,7 @@ import ucar.nc2.constants.AxisType;
 /** A helper class for NetcdfDataset to build and manage coordinates */
 @Immutable
 public class CoordinatesHelper {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
   private final List<CoordinateAxis> coordAxes;
   private final List<CoordinateSystem> coordSys;
   private final List<CoordinateTransform> coordTransforms;
@@ -149,7 +150,9 @@ public class CoordinatesHelper {
         if (vbOpt.isPresent()) {
           axes.add(vbOpt.get());
         } else {
-          throw new IllegalArgumentException("Cant find axis " + vname);
+          // TODO this should fail, leaving it here to match current behavior.
+          log.warn("No axis named {}", vname);
+          //throw new IllegalArgumentException("Cant find axis " + vname);
         }
       }
       return makeCanonicalName(axes);

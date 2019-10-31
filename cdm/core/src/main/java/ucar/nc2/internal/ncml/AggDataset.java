@@ -21,6 +21,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.util.CancelTask;
 
@@ -186,8 +187,8 @@ class AggDataset implements Comparable<AggDataset> {
 
   protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
     Variable v = ncfile.findVariable(mainV.getFullNameEscaped());
-    if (v == null) { // might be renamed
-      VariableEnhanced ve = (VariableEnhanced) mainV;
+    if (v == null && mainV instanceof VariableDS) { // might be renamed
+      VariableDS ve = (VariableDS) mainV;
       v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped
     }
     return v;

@@ -624,6 +624,8 @@ public class NcMLReaderNew {
       Aggregation agg = readAgg(aggElem, ncmlLocation, builder, cancelTask);
       builder.setAggregation(agg);
       agg.build(cancelTask);
+
+      // LOOK seems like we should add the agg metadata here, so that it can be modified.
     }
 
     // read the root group and recurse
@@ -1027,8 +1029,16 @@ public class NcMLReaderNew {
       return;
     }
 
+    // refv does not exist, but addedFromAgg may be present
     DataType finalDtype = dtype;
-    addedFromAgg.ifPresent(agg -> augmentVariableNew(agg, finalDtype, varElem));
+    addedFromAgg.ifPresent(agg -> {
+      if (agg instanceof VariableDS.Builder<?>) {
+        VariableDS.Builder<?> aggDs = (VariableDS.Builder<?>) agg;
+        aggDs.setOriginalName(nameInFile);
+      }
+      DataType reallyFinalDtype = finalDtype != null ? finalDtype : agg.dataType;
+      augmentVariableNew(agg, reallyFinalDtype, varElem);
+    });
   }
 
   private Optional<Builder> readVariableExisting(Group.Builder groupBuilder, DataType dtype, Variable refv,

@@ -15,7 +15,7 @@ public class TestNetcdfDatasetBuilder {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
-    Variable.Builder vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
+    VariableDS.Builder<?> vb = VariableDS.builder().setName("varName").setDataType(DataType.STRING);
     Group.Builder groupb =
         Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
 

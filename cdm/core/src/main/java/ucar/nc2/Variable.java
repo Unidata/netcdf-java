@@ -371,9 +371,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     subsection = Section.fill(subsection, shape);
 
     // create a copy of this variable with a proxy reader
-    Variable.Builder sectionV = this.toBuilder(); // subclasses override toBuilder()
+    Variable sectionV = copy(); // subclasses must override
     sectionV.setProxyReader(new SectionReader(this, subsection));
-    sectionV.resetCache(); // dont share the cache
+    sectionV.shape = subsection.getShape();
+    sectionV.createNewCache(); // dont share the cache
     sectionV.setCaching(false); // dont cache
 
     // replace dimensions if needed !! LOOK not shared
@@ -387,7 +388,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       dimensions.add(newD);
     }
     sectionV.dimensions = dimensions;
-    return sectionV.build();
+    return sectionV;
   }
 
 
@@ -469,8 +470,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return ncfile;
   }
 
+  @Nullable
   public String getFileTypeId() {
-    return ncfile.getFileTypeId();
+    return ncfile == null ? null : ncfile.getFileTypeId();
   }
 
   //////////////////////////////////////////////////////////////////////////////
