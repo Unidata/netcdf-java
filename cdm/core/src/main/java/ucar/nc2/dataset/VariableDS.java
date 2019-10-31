@@ -238,7 +238,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   Array convert(Array data, Set<NetcdfDataset.Enhance> enhancements) {
-    if (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum())) {
+    if (enhancements.contains(Enhance.ConvertEnums)
+        && (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
       // Creates STRING data. As a result, we can return here, because the other conversions don't apply to STRING.
       return convertEnums(data);
     } else {

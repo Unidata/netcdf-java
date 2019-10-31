@@ -29,7 +29,7 @@ public class TestNcmlReaderProblems {
     // This used to fail in NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
     // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
 
-    compare("file:" + TestNcMLRead.topDir + "aggSynthetic2.xml");
+    compare("file:" + TestNcMLRead.topDir + "standalone/enum.ncml");
   }
 
   private void compare(String ncmlLocation) throws IOException {

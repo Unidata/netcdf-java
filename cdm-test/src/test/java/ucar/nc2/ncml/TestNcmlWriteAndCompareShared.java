@@ -84,7 +84,7 @@ public class TestNcmlWriteAndCompareShared {
     // try everything from these directories
     try {
       addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/",
-          new NotFileFilter(new SuffixFileFilter(new String[] {".cdl", ".nc5"})), false);
+          new NotFileFilter(new SuffixFileFilter(new String[] {".cdl", ".nc5", ".gbx9"})), false);
     } catch (IOException e) {
       e.printStackTrace();
     }
