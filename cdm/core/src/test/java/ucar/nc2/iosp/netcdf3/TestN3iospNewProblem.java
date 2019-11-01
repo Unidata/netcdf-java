@@ -1,6 +1,6 @@
 package ucar.nc2.iosp.netcdf3;
 
-import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 
-public class TestBuilderProblem {
+public class TestN3iospNewProblem {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
@@ -22,14 +22,14 @@ public class TestBuilderProblem {
     logger.info("TestBuilders on {}%n", filename);
     SPFactory.setServiceProvider("ucar.nc2.iosp.netcdf3.N3raf");
     try (NetcdfFile org = NetcdfFile.open(filename)) {
-      TestDir.readAllData(org);
-      SPFactory.setServiceProvider("ucar.nc2.iosp.netcdf3.N3iospNew");
+      SPFactory.setServiceProvider("ucar.nc2.internal.iosp.netcdf3.N3iospNew");
       try (NetcdfFile withBuilder = NetcdfFile.open(filename)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, true, true, true);
-        boolean ok = compare.compare(org, withBuilder);
-        System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
-        assertThat(ok).isTrue();
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        if (!compare.compare(org, withBuilder)) {
+          System.out.printf("Compare %s%n%s%n", filename, f);
+          fail();
+        }
       }
     } finally {
       SPFactory.setServiceProvider("ucar.nc2.iosp.netcdf3.N3raf");

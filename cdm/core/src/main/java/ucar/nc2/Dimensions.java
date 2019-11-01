@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.ma2.Section;
 
 /**
  * Static helper methods for Dimension.

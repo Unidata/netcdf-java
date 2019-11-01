@@ -26,7 +26,7 @@ public class VariableSimpleImpl implements VariableSimpleIF {
   }
 
   public static VariableSimpleImpl makeString(String name, String desc, String units, int str_len) {
-    Dimension d = new Dimension(name + "_strlen", str_len, false, false, false);
+    Dimension d = Dimension.builder(name + "_strlen", str_len).setIsShared(false).build();
     // String dimString = Dimension.makeDimensionsString(new int[] {str_len});
     return new VariableSimpleImpl(name, desc, units, DataType.CHAR, Collections.singletonList(d));
   }

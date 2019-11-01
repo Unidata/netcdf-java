@@ -819,6 +819,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * }
    */
 
+  /** @deprecated do not use */
+  @Deprecated
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
       return IospHelper.copyToByteChannel(read(section), wbc);
@@ -1807,7 +1809,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     builder.setName(this.shortName).setGroup(this.group).setNcfile(this.ncfile)
         .setParentStructure(this.getParentStructure()).setDataType(this.dataType)
         .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
-        .addDimensions(this.dimensions).addAttributes(this.attributes.atts).setProxyReader(this.proxyReader)
+        .addDimensions(this.dimensions).addAttributes(this.attributes.getAttributes()).setProxyReader(this.proxyReader)
         .setSPobject(this.spiObject);
 
     if (this.cache.isMetadata) {

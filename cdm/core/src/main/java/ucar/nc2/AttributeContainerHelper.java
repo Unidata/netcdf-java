@@ -3,7 +3,6 @@ package ucar.nc2;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.concurrent.Immutable;
-import org.apache.http.MethodNotSupportedException;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,8 +18,8 @@ import java.util.List;
  */
 public class AttributeContainerHelper implements AttributeContainer {
 
-  final String name;
-  List<Attribute> atts;
+  private final String name;
+  private List<Attribute> atts;
 
   public AttributeContainerHelper(String name) {
     this.name = name;

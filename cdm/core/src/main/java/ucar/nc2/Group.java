@@ -1004,6 +1004,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return vbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
     }
 
+    // Generally ncfile in NetcdfFile.build()
     public Builder setNcfile(NetcdfFile ncfile) {
       this.ncfile = ncfile;
       return this;
@@ -1014,7 +1015,6 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
-    /** @deprecated will be removed in version 6 */
     public NetcdfFile getNcfile() {
       return this.ncfile;
     }

@@ -11,8 +11,9 @@ import ucar.nc2.iosp.IOServiceProvider;
  * This allows us to switch implementations in one place, used for testing and timing.
  * 
  * @author caron
+ * @deprecated do not use
  */
-
+@Deprecated
 public class SPFactory {
   // Current default. Will change to N3iospNew in 6.
   private static Class spClass = N3raf.class;

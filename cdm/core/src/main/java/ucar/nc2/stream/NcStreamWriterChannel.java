@@ -21,7 +21,9 @@ import java.nio.channels.WritableByteChannel;
  *
  * @author caron
  * @since 7/10/12
+ * @deprecated do not use
  */
+@Deprecated
 public class NcStreamWriterChannel {
   private static final long maxChunk = 1000 * 1000; // 1 MByte
   private static final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
