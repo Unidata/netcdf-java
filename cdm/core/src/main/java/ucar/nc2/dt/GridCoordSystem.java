@@ -138,6 +138,7 @@ public interface GridCoordSystem {
    * Same as getProjectionCT().getProjection().
    * 
    * @return ProjectionImpl or null.
+   * @deprecated this will return Projection, not ProjectionImpl in 6.
    */
   ucar.unidata.geoloc.ProjectionImpl getProjection();
 

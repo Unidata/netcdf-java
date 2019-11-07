@@ -14,7 +14,9 @@ import java.util.*;
  * Factored out so that it can be used as a 'mixin' in VariablesDS and StructureDS.
  * 
  * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 class EnhancementsImpl implements Enhancements {
   private Variable forVar;
   String desc, units;

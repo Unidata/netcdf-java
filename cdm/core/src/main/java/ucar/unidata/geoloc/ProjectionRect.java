@@ -176,7 +176,9 @@ public class ProjectionRect implements java.io.Serializable {
    * @param r the <code>Rectangle2D</code> to add to this
    *        <code>Rectangle2D</code>.
    * @since 1.2
+   * @deprecated use builder
    */
+  @Deprecated
   public void add(ProjectionRect r) {
     double x1 = Math.min(getMinX(), r.getMinX());
     double x2 = Math.max(getMaxX(), r.getMaxX());
@@ -204,7 +206,9 @@ public class ProjectionRect implements java.io.Serializable {
    * @param newx the X coordinate of the new point
    * @param newy the Y coordinate of the new point
    * @since 1.2
+   * @deprecated use builder
    */
+  @Deprecated
   public void add(double newx, double newy) {
     double x1 = Math.min(getMinX(), newx);
     double x2 = Math.max(getMaxX(), newx);
@@ -231,7 +235,9 @@ public class ProjectionRect implements java.io.Serializable {
    * @param pt the new <code>Point2D</code> to add to this
    *        <code>Rectangle2D</code>.
    * @since 1.2
+   * @deprecated use builder
    */
+  @Deprecated
   public void add(ProjectionPoint pt) {
     add(pt.getX(), pt.getY());
   }
@@ -385,8 +391,9 @@ public class ProjectionRect implements java.io.Serializable {
   /**
    * set minimum X
    *
-   * @param x minimum x
+   * @deprecated use builder
    */
+  @Deprecated
   public void setX(double x) {
     setRect(x, getY(), getWidth(), getHeight());
   }
@@ -395,7 +402,9 @@ public class ProjectionRect implements java.io.Serializable {
    * set minimum Y
    *
    * @param y minimum y
+   * @deprecated use builder
    */
+  @Deprecated
   public void setY(double y) {
     setRect(getX(), y, getWidth(), getHeight());
   }
@@ -404,7 +413,9 @@ public class ProjectionRect implements java.io.Serializable {
    * set X width
    *
    * @param w x width
+   * @deprecated use builder
    */
+  @Deprecated
   public void setWidth(double w) {
     setRect(getX(), getY(), w, getHeight());
   }
@@ -413,15 +424,21 @@ public class ProjectionRect implements java.io.Serializable {
    * set Y height
    *
    * @param h Y height
+   * @deprecated use builder
    */
+  @Deprecated
   public void setHeight(double h) {
     setRect(getX(), getY(), getWidth(), h);
   }
 
+  /** @deprecated use builder */
+  @Deprecated
   public void setRect(ProjectionRect r) {
     setRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
   }
 
+  /** @deprecated use builder */
+  @Deprecated
   public void setRect(double x, double y, double w, double h) {
     this.x = x;
     this.y = y;

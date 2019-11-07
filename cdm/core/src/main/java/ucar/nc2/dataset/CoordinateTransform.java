@@ -4,7 +4,9 @@
  */
 package ucar.nc2.dataset;
 
-import java.util.Collection;
+import java.util.Formatter;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
@@ -159,16 +161,23 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
 
-  protected final String name, authority;
+  protected String name, authority;
   protected final TransformType transformType;
   protected List<Parameter> params;
+  private AttributeContainerHelper attributeContainer;
 
-
-  protected CoordinateTransform(Builder<?> builder) {
+  // not needed?
+  protected CoordinateTransform(Builder<?> builder, NetcdfDataset ncd) {
     this.name = builder.name;
     this.authority = builder.authority;
     this.transformType = builder.transformType;
-    this.params = builder.params;
+    this.attributeContainer = new AttributeContainerHelper(this.name);
+    this.attributeContainer.addAll(builder.attributeContainer.getAttributes());
+
+    CoordinateTransform ct =
+        CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter());
+    ct.attributeContainer = new AttributeContainerHelper(this.name);
+    ct.attributeContainer.addAll(builder.attributeContainer.getAttributes());
   }
 
   public Builder<?> toBuilder() {
@@ -178,7 +187,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     return b.setName(this.name).setAuthority(this.authority).setTransformType(this.transformType)
-        .addParameters(this.params);
+        .setAttributeContainer(this.attributeContainer);
   }
 
   /**
@@ -198,9 +207,11 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   }
 
   public static abstract class Builder<T extends Builder<T>> {
-    private String name, authority;
+    public String name;
+    private String authority;
     private TransformType transformType;
-    private List<Parameter> params = new ArrayList<>();
+    private AttributeContainer attributeContainer;
+    private CoordinateTransform preBuilt;
     private boolean built;
 
     protected abstract T self();
@@ -220,21 +231,37 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       return self();
     }
 
-    public T addParameter(Parameter p) {
-      params.add(p);
+    public T setAttributeContainer(AttributeContainer attributeContainer) {
+      this.attributeContainer = attributeContainer;
       return self();
     }
 
-    public T addParameters(Collection<Parameter> parameters) {
-      params.addAll(parameters);
+    public T setPreBuilt(CoordinateTransform preBuilt) {
+      this.preBuilt = preBuilt;
+      this.name = preBuilt.name;
       return self();
     }
 
-    public CoordinateTransform build() {
+
+    public CoordinateTransform build(NetcdfDataset ncd) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateTransform(this);
+
+      if (this.preBuilt != null) {
+        return this.preBuilt;
+      }
+
+      // All this trouble because we need ncd before we can build.
+      CoordinateTransform ct =
+          CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
+      if (ct != null) {
+        ct.name = this.name;
+        ct.attributeContainer = new AttributeContainerHelper(this.name);
+        ct.attributeContainer.addAll(attributeContainer.getAttributes());
+      }
+
+      return ct;
     }
   }
 

@@ -63,21 +63,23 @@ class BuilderHelper {
 
     // variables
     for (Variable v : src.getVariables()) {
-      Optional<Variable.Builder> targetV = targetGroup.findVariable(v.getShortName());
+      Optional<Variable.Builder<?>> targetV = targetGroup.findVariable(v.getShortName());
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
       if (replace || !targetV.isPresent()) { // replace it
         // LOOK not needed ??
         /*
          * if ((v instanceof Structure) && !(v instanceof StructureDS)) {
          * v = new StructureDS(targetGroup, (Structure) v);
-         * } else if (!(v instanceof VariableDS)) {
-         * v = new VariableDS(targetGroup, v, false); // enhancement done by original variable, this is just to reparent
-         * to target dataset.
-         * }
+         * } else
          */
-        targetV.ifPresent(vb -> targetGroup.removeVariable(vb.shortName));
-        Variable.Builder vb = v.toBuilder().setProxyReader(null);
-        targetGroup.addVariable(vb);
+        VariableDS.Builder<?> vb;
+        if (!(v instanceof VariableDS)) {
+          vb = VariableDS.builder().copyFrom(v);
+        } else {
+          vb = ((VariableDS) v).toBuilder().setProxyReader(null);
+        }
+
+        targetGroup.replaceVariable(vb);
         // LOOK not needed? v.resetDimensions(); // dimensions will be different
 
       } /*

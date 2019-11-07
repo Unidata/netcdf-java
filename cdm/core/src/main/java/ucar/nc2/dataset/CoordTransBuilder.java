@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import javax.annotation.Nullable;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
@@ -153,6 +154,7 @@ public class CoordTransBuilder {
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
+  @Nullable
   public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
       Formatter parseInfo, Formatter errInfo) {
     // standard name

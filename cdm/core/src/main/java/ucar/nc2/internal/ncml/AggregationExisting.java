@@ -37,7 +37,9 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.CancelTask;
 
 /**
- * JoinExisting Aggregation.
+ * "JoinExisting" Aggregation. Existing means that the dimension already exists in the component variables.
+ * For every variable with that dimension, replace it with its "aggreation" whose dimensions lebgth is the
+ * sum of the the component lengths. The dimensions must be the outer dimension.
  *
  * @author caron
  */
@@ -110,8 +112,7 @@ class AggregationExisting extends AggregationOuter {
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(v, vagg.getAttributeContainer());
 
-      rootGroup.removeVariable(v.getShortName());
-      rootGroup.addVariable(vagg);
+      rootGroup.replaceVariable(vagg);
       aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) {
@@ -120,8 +121,8 @@ class AggregationExisting extends AggregationOuter {
     }
 
     // handle the agg coordinate variable
-    Optional<Variable.Builder> joinAggCoordOpt = rootGroup.findVariable(dimName); // long name of dimension, coord
-                                                                                  // variable
+    Optional<Variable.Builder<?>> joinAggCoordOpt = rootGroup.findVariable(dimName); // long name of dimension, coord
+    // variable
     if (!joinAggCoordOpt.isPresent() && (type == Type.joinExisting)) {
       typicalDataset.close(typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on " + getLocation());
@@ -137,9 +138,9 @@ class AggregationExisting extends AggregationOuter {
       rootGroup.addVariable(joinAggCoord);
       aggVars.add(joinAggCoord);
 
-      joinAggCoord.addAttribute(Attribute.builder(_Coordinate.AxisType).setStringValue("Time").build());
-      joinAggCoord.addAttribute(Attribute.builder(CDM.LONG_NAME).setStringValue("time coordinate").build());
-      joinAggCoord.addAttribute(Attribute.builder(CF.STANDARD_NAME).setStringValue("time").build());
+      joinAggCoord.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+      joinAggCoord.addAttribute(new Attribute(CDM.LONG_NAME, "time coordinate"));
+      joinAggCoord.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
     }
 
     if (timeUnitsChange && joinAggCoord != null) {

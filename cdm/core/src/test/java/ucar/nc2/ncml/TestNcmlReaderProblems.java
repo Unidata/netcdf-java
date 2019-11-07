@@ -23,27 +23,22 @@ public class TestNcmlReaderProblems {
 
   @Test
   public void problem() throws IOException {
+    // This appears to be wrong (time(31)) in NcmlReader, and correct NcmlReaderNew (time(59)).
+    // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
+
     // This used to fail in NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
     // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
 
-    // This fails in NcmlReaderNew, because "NcML Variable dtype is required for new variables".
-    // Implies that an aggregation element must (at least in this case) add stuff to the Dataset.Builder,
-    // before the non-agg elements are processed.
-    // compare("file:" + TestNcMLRead.topDir + "aggSynRename.xml");
-    // compare("file:" + TestNcMLRead.topDir + "aggUnionRename.xml");
-
-    // This is failing on DIFF time: element type double !== int
-    // I think original is wrong, since ncml has <variable name="time" type="int">
-    // compare("file:" + TestNcMLRead.topDir + "aggSynthetic.xml");
-
-    compare("file:" + TestNcMLRead.topDir + "modifyAtts.xml");
+    compare("file:" + TestNcMLRead.topDir + "standalone/enum.ncml");
   }
 
   private void compare(String ncmlLocation) throws IOException {
     System.out.printf("Compare %s%n", ncmlLocation);
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
-      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null)) {
+      System.out.printf("NcMLReader == %s%n", org);
+      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
+        System.out.printf("NcMLReaderNew == %s%n", withBuilder);
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, true, true, true);
         boolean ok = compare.compare(org, withBuilder);

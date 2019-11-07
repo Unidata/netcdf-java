@@ -244,6 +244,10 @@ public class CF1Convention extends CSMConvention {
                 }
               }
 
+              if (v.getShortName().equals("et")) {
+                System.out.println("WTF");
+              }
+
               List<Dimension> dims = v.getDimensions();
 
               // Append any geometry dimensions as axis

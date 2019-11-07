@@ -625,14 +625,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   @Override
   public Builder<?> toBuilder() {
-    StructureDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.setOriginalVariable(this.orgVar).setOriginalName(this.orgName).setUnits(this.proxy.units)
+    b.setOriginalVariable(this.orgVar).setOriginalName(this.orgName).setUnits(this.proxy.units)
         .setDesc(this.proxy.desc);
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   public static Builder<?> builder() {
@@ -666,7 +666,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     public T setUnits(String units) {
       this.units = units;
       if (units != null) {
-        addAttribute(Attribute.builder(CDM.UNITS).setStringValue(units).build());
+        addAttribute(new Attribute(CDM.UNITS, units));
       }
       return self();
     }
@@ -674,7 +674,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     public T setDesc(String desc) {
       this.desc = desc;
       if (desc != null) {
-        addAttribute(Attribute.builder(CDM.LONG_NAME).setStringValue(desc).build());
+        addAttribute(new Attribute(CDM.LONG_NAME, desc));
       }
       return self();
     }
@@ -696,6 +696,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       return self();
     }
 
+    /** Normally this is called by Group.build() */
     public StructureDS build() {
       if (built)
         throw new IllegalStateException("already built");

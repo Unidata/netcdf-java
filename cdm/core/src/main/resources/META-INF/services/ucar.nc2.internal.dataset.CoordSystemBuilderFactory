@@ -1,0 +1,3 @@
+ucar.nc2.internal.dataset.conv.CoardsConventions$Factory
+ucar.nc2.internal.dataset.conv.CSMConvention$Factory
+ucar.nc2.internal.dataset.conv.WRFConvention$Factory

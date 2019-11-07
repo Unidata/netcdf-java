@@ -134,10 +134,10 @@ public class N3headerNew {
       int len = raf.readInt();
       Dimension dim;
       if (len == 0) {
-        dim = Dimension.builder(name, numrecs).setIsUnlimited(true).build();
+        dim = Dimension.builder().setName(name).setIsUnlimited(true).setLength(numrecs).build();
         udim = dim;
       } else {
-        dim = Dimension.builder(name, len).build();
+        dim = new Dimension(name, len);
       }
       fileDimensions.add(dim);
       root.addDimension(dim);
@@ -245,7 +245,7 @@ public class N3headerNew {
     if (uvars.isEmpty()) // if there are no record variables
       recStart = 0;
 
-    // LOOK Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
+    // Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
     // the file contained only one record variable and it was of type byte, char, or short).
     // Example ~/cdm/core/src/test/data/byteArrayRecordVarPaddingTest-bad.nc
     if (uvars.size() == 1) {
@@ -253,7 +253,7 @@ public class N3headerNew {
       DataType dtype = uvar.dataType;
       if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
         long vsize = dtype.getSize(); // works for all netcdf-3 data types
-        List<Dimension> dims = uvar.dimensions;
+        List<Dimension> dims = uvar.copyDimensions(); // TODO you really do need the dimensions here, huh?
         for (Dimension curDim : dims) {
           if (!curDim.isUnlimited())
             vsize *= curDim.getLength();
@@ -420,7 +420,7 @@ public class N3headerNew {
           val = "";
         if (fout != null)
           fout.format(" end read String val pos= %d%n", raf.getFilePointer());
-        att = Attribute.builder(name).setStringValue(val).build();
+        att = new Attribute(name, val);
 
       } else {
         if (fout != null)
