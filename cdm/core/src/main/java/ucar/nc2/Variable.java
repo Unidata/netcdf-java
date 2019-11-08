@@ -1898,10 +1898,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // Set dimensions by name. If set, supercedes addDimension()
-    /*
-     * WHY NOT List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
-     * v.addDimensions(varDims); //
-     */
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
       return self();
@@ -1934,7 +1930,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return Dimensions.makeDimensionsString(this.dimensions);
     }
 
-    // TODO reconsider when Dimensions are really immutable
+    @Deprecated
     public List<Dimension> copyDimensions() {
       return dimensions.stream().map(d -> new Dimension(d.toBuilder())).collect(Collectors.toList());
     }

@@ -827,7 +827,6 @@ public class Group extends CDMNode implements AttributeContainer {
       Variable var = vb.build();
       this.variables.add(var);
     }
-    // this.variables = builder.vbuilders.stream().map(vb-> vb.build()).collect(Collectors.toList());
 
     this.attributes = builder.attributes;
 

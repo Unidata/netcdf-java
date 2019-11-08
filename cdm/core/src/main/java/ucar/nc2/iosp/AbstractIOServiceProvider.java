@@ -5,7 +5,6 @@
 
 package ucar.nc2.iosp;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
