@@ -14,14 +14,14 @@ public class TestNetcdfDatasetBuilder {
   public void testBuilder() {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder nested = Group.builder().setName("child");
+    Group.Builder nested = Group.builder(null).setName("child");
     VariableDS.Builder<?> vb = VariableDS.builder().setName("varName").setDataType(DataType.STRING);
     Group.Builder groupb =
-        Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
+        Group.builder(null).setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
+    nested.setParentGroup(groupb);
 
     NetcdfDataset.Builder builder =
         NetcdfDataset.builder().setId("Hid").setLocation("location").setRootGroup(groupb).setTitle("title");
-
 
     NetcdfDataset ncfile = builder.build();
     assertThat(ncfile.getId()).isEqualTo("Hid");

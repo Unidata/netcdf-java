@@ -2000,7 +2000,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   private Group makeRootGroup() {
-    return Group.builder().setNcfile(this).setName("").build(null);
+    return Group.builder(null).setNcfile(this).setName("").build(null);
   }
 
   /**
@@ -2572,7 +2572,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   public static abstract class Builder<T extends Builder<T>> {
-    public Group.Builder rootGroup = Group.builder().setName("");
+    public Group.Builder rootGroup = Group.builder(null).setName("");
     private String id;
     private String title;
     public String location;

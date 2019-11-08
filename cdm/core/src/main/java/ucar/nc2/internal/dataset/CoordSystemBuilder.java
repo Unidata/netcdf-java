@@ -5,8 +5,10 @@ import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
@@ -61,7 +63,7 @@ public class CoordSystemBuilder {
    *
    * @return true if a coordinate variable.
    */
-  private static boolean isCoordinateVariable(Variable.Builder<?> vb) {
+  public static boolean isCoordinateVariable(Variable.Builder<?> vb) {
     // Structures and StructureMembers cant be coordinate variables
     if ((vb.dataType == DataType.STRUCTURE) || vb.parentStruct != null)
       return false;
@@ -82,6 +84,13 @@ public class CoordSystemBuilder {
     return false;
   }
 
+  public static int countDomainSize(Variable.Builder... axes) {
+    Set<Dimension> domain = new HashSet<>();
+    for (Variable.Builder axis : axes) {
+      domain.addAll(axis.dimensions);
+    }
+    return domain.size();
+  }
 
   /**
    * Does this axis "fit" this variable. True if all of the dimensions in the axis also appear in

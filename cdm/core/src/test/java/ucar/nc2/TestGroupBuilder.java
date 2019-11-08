@@ -12,9 +12,9 @@ public class TestGroupBuilder {
   public void testBuilder() {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder nested = Group.builder().setName("child");
+    Group.Builder nested = Group.builder(null).setName("child");
     Variable.Builder vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
-    Group group = Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb)
+    Group group = Group.builder(null).setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb)
         .build(null);
 
     assertThat(group.getShortName()).isEqualTo("name");
@@ -43,7 +43,7 @@ public class TestGroupBuilder {
   @Test
   public void testReplaceDimension() {
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder builder = Group.builder().setName("name");
+    Group.Builder builder = Group.builder(null).setName("name");
 
     assertThat(builder.replaceDimension(dim)).isFalse();
     assertThat(builder.findDimension("dimName")).isEqualTo(Optional.of(dim));
@@ -56,7 +56,7 @@ public class TestGroupBuilder {
   @Test
   public void testDuplicateDimension() {
     Dimension dim = new Dimension("dimName", 42);
-    Group.Builder builder = Group.builder().setName("name").addDimension(dim);
+    Group.Builder builder = Group.builder(null).setName("name").addDimension(dim);
 
     try {
       builder.addDimension(dim);
@@ -68,9 +68,9 @@ public class TestGroupBuilder {
 
   @Test
   public void testRemoveGroup() {
-    Group.Builder child = Group.builder().setName("child");
-    Group.Builder child2 = Group.builder().setName("child2");
-    Group.Builder builder = Group.builder().setName("name").addGroup(child).addGroup(child2);
+    Group.Builder child = Group.builder(null).setName("child");
+    Group.Builder child2 = Group.builder(null).setName("child2");
+    Group.Builder builder = Group.builder(null).setName("name").addGroup(child).addGroup(child2);
 
     assertThat(builder.gbuilders).hasSize(2);
     assertThat(builder.removeGroup("child")).isTrue();
@@ -82,7 +82,7 @@ public class TestGroupBuilder {
   @Test
   public void testReplaceVariable() {
     Variable.Builder vb = Variable.builder().setName("varName");
-    Group.Builder builder = Group.builder().setName("name");
+    Group.Builder builder = Group.builder(null).setName("name");
 
     assertThat(builder.replaceVariable(vb)).isFalse();
     assertThat(builder.findVariable("varName")).isEqualTo(Optional.of(vb));
@@ -95,7 +95,7 @@ public class TestGroupBuilder {
   @Test
   public void testDuplicateVariable() {
     Variable.Builder vb = Variable.builder().setName("varName");
-    Group.Builder builder = Group.builder().setName("name").addVariable(vb);
+    Group.Builder builder = Group.builder(null).setName("name").addVariable(vb);
 
     try {
       builder.addVariable(vb);
@@ -109,7 +109,7 @@ public class TestGroupBuilder {
   public void testAttributes() {
     Attribute att1 = new Attribute("attName", "value");
     Attribute att2 = new Attribute("attName2", "value2");
-    Group.Builder builder = Group.builder().setName("name").addAttribute(att1).addAttribute(att2);
+    Group.Builder builder = Group.builder(null).setName("name").addAttribute(att1).addAttribute(att2);
 
     AttributeContainer atts = builder.getAttributeContainer();
     assertThat(atts.getAttributes()).isNotEmpty();

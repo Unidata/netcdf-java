@@ -222,8 +222,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "copy");
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "org");
+    ok &= checkGroupDimensions(org, copy, "copy");
+    ok &= checkGroupDimensions(copy, org, "org");
 
     // attributes
     ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);
@@ -400,18 +400,77 @@ public class CompareNetcdf2 {
     return ok;
   }
 
+  // Theres a bug in old HDF4 (eg "MOD021KM.A2004328.1735.004.2004329164007.hdf) where dimensions
+  // no properly moved up (eg dim BAND_250M is in both root and Data_Fields).
+  // So we are going to allow that to be ok (until proven otherwise) but we have to adjust
+  // dimension comparision. Currently Dimension.equals() checks the Group.
   private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2, String where) {
     boolean ok = true;
 
     for (Dimension d1 : list1) {
       if (d1.isShared()) {
-        boolean hasit = list2.contains(d1);
-        if (!hasit)
-          f.format("  ** Missing dim %s not in %s %n", d1, where);
+        boolean hasit = listContains(list2, d1);
+        if (!hasit) {
+          f.format("  ** Missing Variable dim %s not in %s %n", d1, where);
+        }
         ok &= hasit;
       }
     }
 
+    return ok;
+  }
+
+  // Check contains not using Group
+  private boolean listContains(List<Dimension> list, Dimension d2) {
+    for (Dimension d1 : list) {
+      if (equalInValue(d1, d2)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Dimension findDimension(Group g, Dimension dim) {
+    if (dim == null) {
+      return null;
+    }
+    for (Dimension d : g.getDimensions()) {
+      if (equalInValue(d, dim)) {
+        return d;
+      }
+    }
+    Group parent = g.getParentGroup();
+    if (parent != null) {
+      return findDimension(parent, dim);
+    }
+    return null;
+  }
+
+  // values equal, not using Group
+  private boolean equalInValue(Dimension d1, Dimension other) {
+    if ((d1.getShortName() == null) && (other.getShortName() != null))
+      return false;
+    if ((d1.getShortName() != null) && !d1.getShortName().equals(other.getShortName()))
+      return false;
+    return (d1.getLength() == other.getLength()) && (d1.isUnlimited() == other.isUnlimited())
+        && (d1.isVariableLength() == other.isVariableLength()) && (d1.isShared() == other.isShared());
+  }
+
+  private boolean checkGroupDimensions(Group group1, Group group2, String where) {
+    boolean ok = true;
+    for (Dimension d1 : group1.getDimensions()) {
+      if (d1.isShared()) {
+        if (!group2.getDimensions().contains(d1)) {
+          // not in local, is it in a parent?
+          if (findDimension(group2, d1) != null) {
+            f.format("  ** Dimension %s in parent group %s %n", d1, where);
+          } else {
+            f.format("  ** Missing Group dim %s not in %s %n", d1, where);
+            ok = false;
+          }
+        }
+      }
+    }
     return ok;
   }
 

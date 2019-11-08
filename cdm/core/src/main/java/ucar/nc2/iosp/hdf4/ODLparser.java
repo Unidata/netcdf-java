@@ -56,7 +56,7 @@ public class ODLparser {
 
   private Document doc;
 
-  void showDoc(PrintWriter out) {
+  public void showDoc(PrintWriter out) {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     try {
       fmt.output(doc, out);
@@ -65,7 +65,7 @@ public class ODLparser {
     }
   }
 
-  void parseFile(String filename) throws IOException {
+  public void parseFile(String filename) throws IOException {
     String text = new String(IO.readFileToByteArray(filename), StandardCharsets.UTF_8);
     parseFromString(text);
   }
