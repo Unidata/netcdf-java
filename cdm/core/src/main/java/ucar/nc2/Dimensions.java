@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
+import javax.annotation.Nullable;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 
@@ -15,6 +16,11 @@ import ucar.ma2.Range;
  * @since 10/3/2019.
  */
 public class Dimensions {
+
+  public interface Find {
+    @Nullable
+    Dimension findByName(String dimName);
+  }
 
   /**
    * Make a ucar.ma2.Section from an ordered set of Dimension onjects.
@@ -70,17 +76,7 @@ public class Dimensions {
     return buf.toString();
   }
 
-  /**
-   * Create a dimension list using the dimensions names. Inverse of makeDimensionsString().
-   *
-   * @param dimensions list of possible dimensions, may not be null
-   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
-   *        dimension. null or
-   *        empty String is a scalar.
-   * @return list of dimensions
-   * @throws IllegalArgumentException if cant find dimension or parse error.
-   */
-  public static List<Dimension> makeDimensionsList(List<Dimension> dimensions, String dimString) {
+  public static List<Dimension> makeDimensionsList(Find finder, String dimString) throws IllegalArgumentException {
     List<Dimension> newDimensions = new ArrayList<>();
     if (dimString == null) // scalar
       return newDimensions; // empty list
@@ -91,22 +87,25 @@ public class Dimensions {
     StringTokenizer stoke = new StringTokenizer(dimString);
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();
-      Dimension dim;
-      if (dimName.equals("*"))
-        dim = Dimension.VLEN;
-      else
-        dim = dimensions.stream().filter(d -> d.getShortName().equals(dimName)).findFirst().orElse(null);
-      if (dim == null) {
+      Dimension d;
+      if (dimName.equals("*")) {
+        d = Dimension.VLEN;
+      } else {
+        d = finder.findByName(dimName);
+      }
+
+      if (d == null) {
         // if numeric - then its anonymous dimension
         try {
           int len = Integer.parseInt(dimName);
-          dim = Dimension.builder().setLength(len).setIsShared(false).build();
+          d = Dimension.builder().setLength(len).setIsShared(false).build();
         } catch (Exception e) {
           throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
         }
       }
-      newDimensions.add(dim);
+      newDimensions.add(d);
     }
+
     return newDimensions;
   }
 

@@ -1587,8 +1587,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       if (!(v instanceof VariableDS)) {
         System.out.printf("WTF");
       }
-      VariableDS vds = (VariableDS) v;
-      vds.setCoordinateSystems(coords);
+      if (v instanceof VariableDS) {
+        VariableDS vds = (VariableDS) v;
+        vds.setCoordinateSystems(coords);
+      }
     }
 
     finish(); // LOOK
@@ -1686,7 +1688,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       setId(orgFile.getId());
       setTitle(orgFile.getTitle());
 
-      Group.Builder root = Group.builder().setName("");
+      Group.Builder root = Group.builder(null).setName("");
       convertGroup(root, orgFile.getRootGroup());
       setRootGroup(root);
 
@@ -1707,7 +1709,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         g.addVariable(convertVariable(v)); // convert
 
       for (Group nested : from.getGroups()) {
-        Group.Builder nnested = Group.builder();
+        Group.Builder nnested = Group.builder(g);
         g.addGroup(nnested);
         convertGroup(nnested, nested); // convert
       }
@@ -1718,7 +1720,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       if (v instanceof Sequence) {
         newVar = SequenceDS.builder().copyFrom((Sequence) v);
       } else if (v instanceof Structure) {
-        newVar = StructureDS.builder().copyFrom((StructureDS) v);
+        newVar = StructureDS.builder().copyFrom((Structure) v);
       } else {
         newVar = VariableDS.builder().copyFrom(v);
       }

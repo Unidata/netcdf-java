@@ -22,7 +22,7 @@ import ucar.unidata.util.test.TestDir;
  * Compare objects in original N3iosp vs N3iospNew using builders.
  */
 @RunWith(Parameterized.class)
-public class TestN3iospNew {
+public class TestN3iospCompare {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static String testDir = TestDir.cdmLocalTestDataDir;
 
@@ -39,7 +39,7 @@ public class TestN3iospNew {
 
   private String filename;
 
-  public TestN3iospNew(String filename) {
+  public TestN3iospCompare(String filename) {
     this.filename = filename;
   }
 

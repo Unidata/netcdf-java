@@ -49,7 +49,7 @@ public class H4type {
    * #define DFNT_INT64 26
    * #define DFNT_UINT64 27
    */
-  static DataType setDataType(short type, Variable v) {
+  public static DataType setDataType(short type, Variable v) {
     DataType dt;
     switch (type) {
       case 3:

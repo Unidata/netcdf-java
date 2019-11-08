@@ -662,7 +662,7 @@ public class Structure extends Variable {
 
   protected Structure(Builder<?> builder) {
     super(builder);
-    builder.vbuilders.forEach(v -> v.setParentStructure(this));
+    builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile).setGroup(builder.parent));
     this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
