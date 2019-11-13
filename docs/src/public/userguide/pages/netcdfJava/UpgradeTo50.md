@@ -43,7 +43,10 @@ As such, we no longer utilize WebStart.
 * Use `Array.isVlen()` to discover if an Array represents vlen data.
 * `ArrayObject.factory(Class classType, Index index)` is now `ArrayObject.factory(DataType dtype, Class classType, boolean isVlen, Index index)`
 * Use `Array.makeVlenArray(int[] shape, Array[] data)` to construct _vlen_ data.
-* See [here](variable_length_data.html) for more information.
+
+
+
+
 
 ### AutoCloseable
 
@@ -201,7 +204,7 @@ instead of the exact comparison done by `equals(Array, Array)`.
 * Completely new package `ucar.nc2.ft2.coverage` that replaces `ucar.nc2.dt.grid`
   The class `FeatureDatasetCoverage` replaces `GridDataset`.
 * Uses of classes in `car.nc2.dt.grid` are deprecated, though the code is still in the core jar file for now.
-* For new API see [Coverage Datasets](coverage_datasets.html)
+* For new API see [Coverage Datasets](coverage_feature.html)
 * `FeatureType.COVERAGE` is the general term for `GRID`, `FMRC`, `SWATH`, `CURVILINEAR` types.
   Previously, `GRID` was used as the general type, now it refers to a specific type of Coverage.
   Affects `FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, ...)`

@@ -1,3 +1,4 @@
+
 ---
 title: CDM utility programs
 last_updated: 2018-10-22
@@ -144,7 +145,7 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.point.writer.CFPointW
 
 ## GribCdmIndex
 
-Write GRIB Collection Indexes from an XML file containing a [GRIB `<featureCollection>`](grib_feature_collections_ref.html) XML element.
+Write GRIB Collection Indexes from an XML file containing a [GRIB `<featureCollection>`](/grib_feature_collections_ref.html) XML element.
 
 ~~~bash
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmIndex [options]
@@ -165,7 +166,7 @@ Example:
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmIndex -fc /data/fc/gfs_example.xml
 ~~~
 
-Note that the output file is placed in the root directory of the collection, as specified by the [Collection Specification](collection_spec_string_ref.html) of the GRIB [`<featureCollection>`](feature_collections_ref.html).
+Note that the output file is placed in the root directory of the collection, as specified by the [Collection Specification](/collection_spec_string_ref.html) of the GRIB [`<featureCollection>`](feature_collections_ref.html).
 
 ## FeatureScan
 
