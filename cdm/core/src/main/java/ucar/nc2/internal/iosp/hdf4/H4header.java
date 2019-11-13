@@ -1115,6 +1115,7 @@ public class H4header {
     }
 
     List<DataChunk> readChunks(NetcdfFile ncfile) throws IOException {
+      System.out.printf("readChunks for %s%n", v.shortName);
       return data.chunked.getDataChunks(ncfile);
     }
 
