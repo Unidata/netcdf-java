@@ -63,7 +63,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
     Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
-    header.read(raf, rootGroup, null);
+    header.build(raf, rootGroup, null);
     ncfile.setRootGroup(rootGroup.build(null));
     ncfile.finish();
   }
@@ -79,7 +79,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = new H4header();
-    header.read(raf, rootGroup, null);
+    header.build(raf, rootGroup, null);
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
@@ -88,7 +88,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();
     DataType dataType = v.getDataType();
-    vinfo.setLayoutInfo(); // make sure needed info is present
+    vinfo.setLayoutInfo(this.ncfile); // make sure needed info is present
 
     // make sure section is complete
     section = Section.fill(section, v.getShape());
@@ -113,7 +113,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isChunked) {
-        H4ChunkIterator chunkIterator = new H4ChunkIterator((Structure) v, vinfo);
+        H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
         Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
         Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
         return Array.factory(dataType, section.getShape(), data);
@@ -139,7 +139,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isChunked) {
-        LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator((Structure) v, vinfo);
+        LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
         LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
         Object data = IospHelper.readDataFill(layout, dataType, vinfo.fillValue);
         return Array.factory(dataType, section.getShape(), data);
@@ -161,7 +161,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   private ArrayStructure readStructureData(Structure s, Section section)
       throws IOException, InvalidRangeException {
     H4header.Vinfo vinfo = (H4header.Vinfo) s.getSPobject();
-    vinfo.setLayoutInfo(); // make sure needed info is present
+    vinfo.setLayoutInfo(this.ncfile); // make sure needed info is present
     int recsize = vinfo.elemSize;
 
     // create the ArrayStructure
@@ -374,8 +374,8 @@ public class H4iosp extends AbstractIOServiceProvider {
     List<H4header.DataChunk> chunks;
     int chunkNo;
 
-    H4ChunkIterator(Structure s, H4header.Vinfo vinfo) throws IOException {
-      this.chunks = vinfo.readChunks(s);
+    H4ChunkIterator(H4header.Vinfo vinfo) throws IOException {
+      this.chunks = vinfo.chunks;
       this.chunkNo = 0;
     }
 
@@ -396,8 +396,8 @@ public class H4iosp extends AbstractIOServiceProvider {
     List<H4header.DataChunk> chunks;
     int chunkNo;
 
-    H4CompressedChunkIterator(Structure s, H4header.Vinfo vinfo) throws IOException {
-      this.chunks = vinfo.readChunks(s);
+    H4CompressedChunkIterator(H4header.Vinfo vinfo) throws IOException {
+      this.chunks = vinfo.chunks;
       this.chunkNo = 0;
     }
 

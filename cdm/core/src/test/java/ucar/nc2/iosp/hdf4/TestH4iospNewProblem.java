@@ -26,7 +26,7 @@ public class TestH4iospNewProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "/formats/hdf4/" + "MYD29.A2009152.0000.005.2009153124331.hdf";
+    String filename = TestDir.cdmUnitTestDir + "/formats/hdf4/" + "eos/amsua/amsua16_2008.001_37503_0001_0108_GC.eos";
     //showOrg(filename);
     //showNew(filename);
     compareWithBuilder(filename);

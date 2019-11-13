@@ -110,7 +110,7 @@ public class H4header {
     return isEos;
   }
 
-  void read(RandomAccessFile myRaf, Group.Builder root, Formatter debugOut) throws IOException {
+  void build(RandomAccessFile myRaf, Group.Builder root, Formatter debugOut) throws IOException {
     this.raf = myRaf;
     this.root = root;
 
@@ -247,8 +247,9 @@ public class H4header {
     // not already assigned to a group : put in root group.
     for (Variable.Builder v : vars) {
       Vinfo vinfo = (Vinfo) v.spiObject;
-      if (vinfo.group == null) {
-        root.replaceVariable(v);
+      // if (vinfo.group == null) {
+      if (vinfo.group == null && !root.findVariable(v.shortName).isPresent()) {
+        root.addVariable(v);
         vinfo.group = root;
       }
     }
@@ -379,7 +380,7 @@ public class H4header {
 
     boolean isUnlimited = (length == 0);
     Dimension dim = Dimension.builder(group.name, length).setIsUnlimited(isUnlimited).build();
-    System.out.println("nadded dimension " + dim.getShortName() + " from VG " + group.refno);
+    System.out.printf("nadded dimension %s = %d from VG %d%n", dim.getShortName(), dim.getLength(), group.refno);
     root.addDimension(dim);
   }
 
@@ -672,7 +673,7 @@ public class H4header {
     return Dimension.builder(dimName, len).setIsShared(false).build();
   }
 
-  private Variable makeVariable(NetcdfFile ncfile, TagVH vh) {
+  private Structure makeChunkVariable(NetcdfFile ncfile, TagVH vh) {
     Vinfo vinfo = new Vinfo(vh.refno);
     vinfo.tags.add(vh);
     vh.vinfo = vinfo;
@@ -690,84 +691,41 @@ public class H4header {
     if (vh.nfields < 1)
       throw new IllegalStateException();
 
-    Variable v;
-    if (vh.nfields == 1) {
-      // String name = createValidObjectName(vh.name);
-      v = new Variable(ncfile, null, null, vh.name);
-      vinfo.setVariable(v);
-      H4type.setDataType(vh.fld_type[0], v);
+    try {
+      Structure.Builder sb = Structure.builder().setName(vh.name);
+      vinfo.setVariable(sb);
+      Structure s = new Structure(ncfile, null, null, vh.name); // LOOK cheating
+      s.setSPobject(vinfo);
 
-      try {
-        if (vh.nvert > 1) {
+      if (vh.nvert > 1)
+        s.setDimensionsAnonymous(new int[] {vh.nvert});
+      else
+        s.setIsScalar();
 
-          if (vh.fld_order[0] > 1)
-            v.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_order[0]});
-          else if (vh.fld_order[0] < 0)
-            v.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_isize[0]});
-          else
-            v.setDimensionsAnonymous(new int[] {vh.nvert});
-
-        } else {
-
-          if (vh.fld_order[0] > 1)
-            v.setDimensionsAnonymous(new int[] {vh.fld_order[0]});
-          else if (vh.fld_order[0] < 0)
-            v.setDimensionsAnonymous(new int[] {vh.fld_isize[0]});
-          else
-            v.setIsScalar();
-        }
-
-      } catch (InvalidRangeException e) {
-        throw new IllegalStateException();
-      }
-
-      vinfo.setData(data, v.getElementSize());
-
-    } else {
-
-      Structure s;
-      try {
-        // String name = createValidObjectName(vh.name);
-        s = new Structure(ncfile, null, null, vh.name);
-        vinfo.setVariable(s);
-        // vinfo.recsize = vh.ivsize;
-
-        if (vh.nvert > 1)
-          s.setDimensionsAnonymous(new int[] {vh.nvert});
+      for (int fld = 0; fld < vh.nfields; fld++) {
+        Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
+        short type = vh.fld_type[fld];
+        short nelems = vh.fld_order[fld];
+        H4type.setDataType(type, m);
+        if (nelems > 1)
+          m.setDimensionsAnonymous(new int[] {nelems});
         else
-          s.setIsScalar();
+          m.setIsScalar();
 
-        for (int fld = 0; fld < vh.nfields; fld++) {
-          Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
-          short type = vh.fld_type[fld];
-          short nelems = vh.fld_order[fld];
-          H4type.setDataType(type, m);
-          if (nelems > 1)
-            m.setDimensionsAnonymous(new int[] {nelems});
-          else
-            m.setIsScalar();
-
-          m.setSPobject(new Minfo(vh.fld_offset[fld]));
-          s.addMemberVariable(m);
-        }
-
-      } catch (InvalidRangeException e) {
-        throw new IllegalStateException(e.getMessage());
+        m.setSPobject(new Minfo(vh.fld_offset[fld]));
+        s.addMemberVariable(m);
       }
 
       vinfo.setData(data, vh.ivsize);
-      v = s;
-    }
+      return s;
 
-    if (debugConstruct) {
-      System.out.println("added variable " + v.getNameAndDimensions() + " from VH " + vh);
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException(e.getMessage());
     }
-
-    return v;
   }
 
-  /* @Nullable
-  private Variable makeVariable(TagVH vh) {
+  @Nullable
+  private Variable.Builder makeVariable(TagVH vh) {
     Vinfo vinfo = new Vinfo(vh.refno);
     vinfo.tags.add(vh);
     vh.vinfo = vinfo;
@@ -847,7 +805,7 @@ public class H4header {
     }
 
     return vb;
-  } */
+  }
 
   // member info
 
@@ -998,7 +956,7 @@ public class H4header {
         TagTextN units = (TagTextN) tag;
         units.read(dim.rank);
         tag.used = true;
-        vb.addAttribute(Attribute.builder().setName(CDM.LONG_NAME).setValues((List)units.getList(), false).build());
+        vb.addAttribute(Attribute.builder().setName(CDM.UNITS).setValues((List)units.getList(), false).build());
       }
       if (tag.code == 706) {
         TagTextN formats = (TagTextN) tag;
@@ -1074,7 +1032,7 @@ public class H4header {
     int[] segSize;
 
     // chunked
-    // List<DataChunk> chunks;
+    List<DataChunk> chunks;
     int[] chunkSize;
 
     Vinfo(short refno) {
@@ -1106,7 +1064,7 @@ public class H4header {
 
     // make sure needed info is present : call this when variable needs to be read
     // this allows us to defer getting layout info until then
-    void setLayoutInfo() throws IOException {
+    void setLayoutInfo(NetcdfFile ncfile) throws IOException {
       if (data == null)
         return;
 
@@ -1129,7 +1087,7 @@ public class H4header {
 
       } else if (null != data.chunked) {
         isChunked = true;
-        // chunks = data.chunked.getDataChunks();
+        chunks = data.chunked.getDataChunks(ncfile);
         chunkSize = data.chunked.chunk_length;
         isCompressed = data.chunked.isCompressed;
 
@@ -1164,6 +1122,7 @@ public class H4header {
     }
 
     List<DataChunk> readChunks(NetcdfFile ncfile) throws IOException {
+      System.out.printf("readChunks for %s%n", v.shortName);
       return data.chunked.getDataChunks(ncfile);
     }
 
@@ -1397,7 +1356,7 @@ public class H4header {
 
     short sp_tag_desc; // SPECIAL_XXX constant
     byte[] sp_tag_header;
-
+    List<DataChunk> dataChunks;
 
     private void read() throws IOException {
       head_len = raf.readInt();
@@ -1433,9 +1392,7 @@ public class H4header {
       raf.readFully(sp_tag_header);
     }
 
-    List<DataChunk> dataChunks;
-
-    List<DataChunk> getDataChunks(NetcdfFile ncfile) throws IOException {
+    private List<DataChunk> getDataChunks(NetcdfFile ncfile) throws IOException {
       if (dataChunks == null) {
         dataChunks = new ArrayList<>();
 
@@ -1443,7 +1400,7 @@ public class H4header {
         if (debugChunkTable)
           System.out.println(" TagData getChunkedTable " + detail());
         TagVH chunkTableTag = (TagVH) tagMap.get(tagid(chunk_tbl_ref, chunk_tbl_tag));
-        Structure s = (Structure) makeVariable(ncfile, chunkTableTag);
+        Structure s = makeChunkVariable(ncfile, chunkTableTag);
         if (s == null)
           throw new IllegalStateException("cant parse " + chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
@@ -2019,7 +1976,6 @@ public class H4header {
         sbuff.append(elem_ref[i]).append(" ");
         sbuff.append("\n   ");
       }
-
       return sbuff.toString();
     }
   }

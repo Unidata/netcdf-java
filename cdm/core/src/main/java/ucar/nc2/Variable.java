@@ -764,9 +764,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     try {
-      if (ncfile == null) {
-        System.out.printf("HEY");
-      }
       return ncfile.readData(this, getShapeAsSection());
     } catch (InvalidRangeException e) {
       e.printStackTrace();

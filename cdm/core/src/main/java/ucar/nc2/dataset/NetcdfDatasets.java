@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
@@ -422,6 +423,6 @@ public class NetcdfDatasets {
     }
 
     // Open as a file or remote file
-    return NetcdfFile.open(durl.trueurl, buffer_size, cancelTask, spiObject);
+    return NetcdfFiles.open(durl.trueurl, buffer_size, cancelTask, spiObject);
   }
 }
