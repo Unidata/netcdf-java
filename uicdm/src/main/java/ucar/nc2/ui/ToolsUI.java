@@ -1205,7 +1205,8 @@ public class ToolsUI extends JPanel {
     try {
       DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
       if (addCoords) {
-        ncfile = useBuilders ? NetcdfDatasets.acquireDataset(durl, true, task) : NetcdfDataset.acquireDataset(durl, true, task);
+        ncfile = useBuilders ? NetcdfDatasets.acquireDataset(durl, true, task)
+            : NetcdfDataset.acquireDataset(durl, true, task);
       } else {
         ncfile = useBuilders ? NetcdfDatasets.acquireFile(durl, task) : NetcdfDataset.acquireFile(durl, task);
       }

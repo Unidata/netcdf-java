@@ -66,10 +66,12 @@ public class TestCoordSysCompare {
     public boolean attCheckOk(Variable v, Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
     }
+
     @Override
     public boolean varDataTypeCheckOk(Variable v) {
       return true;
     }
+
     @Override
     public boolean checkDimensionsForFile(String filename) {
       return true;

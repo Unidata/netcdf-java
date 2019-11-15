@@ -241,7 +241,7 @@ public class DatasetViewer extends JPanel {
 
     NetcdfFile compareFile = null;
     try {
-      compareFile = ToolsUI.getToolsUI().openFile(data.name, false,null);
+      compareFile = ToolsUI.getToolsUI().openFile(data.name, false, null);
       Formatter f = new Formatter();
 
       CompareNetcdf2 cn = new CompareNetcdf2(f, data.showCompare, data.showDetails, data.readData);

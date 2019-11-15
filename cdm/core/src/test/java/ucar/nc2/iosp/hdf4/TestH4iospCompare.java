@@ -2,7 +2,6 @@
 package ucar.nc2.iosp.hdf4;
 
 import static org.junit.Assert.fail;
-
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -68,13 +67,10 @@ public class TestH4iospCompare {
   }
 
   // These files the new iosp does it ci=orrectly, so we need to skip comparing dimensions.
-  static List<String> skipNames = ImmutableList.of(
-      "PR1B0000-2000101203_010_001.hdf",
-      "MISR_AM1_AGP_P040_F01_24.subset.eos",
-      "MISR_AM1_GRP_TERR_GM_P040_AN.eos",
-      "AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf",
-      "AMSR_E_L3_DailyLand_B04_20080101.hdf"
-  );
+  static List<String> skipNames = ImmutableList.of("PR1B0000-2000101203_010_001.hdf",
+      "MISR_AM1_AGP_P040_F01_24.subset.eos", "MISR_AM1_GRP_TERR_GM_P040_AN.eos",
+      "AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", "AMSR_E_L3_DailyLand_B04_20080101.hdf");
+
   static class DimensionsFilter implements ObjFilter {
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {
@@ -95,14 +91,17 @@ public class TestH4iospCompare {
 
       return true;
     }
+
     @Override
     public boolean varDataTypeCheckOk(Variable v) {
       return true;
     }
+
     @Override
     public boolean checkDimensionsForFile(String filename) {
       for (String name : skipNames) {
-        if (filename.endsWith(name)) return false;
+        if (filename.endsWith(name))
+          return false;
       }
       return true;
     }

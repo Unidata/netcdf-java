@@ -1,7 +1,6 @@
 package ucar.nc2.iosp.hdf4;
 
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -27,9 +26,10 @@ public class TestH4iospNewProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "/formats/hdf4/" + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf";
-    //showOrg(filename);
-    //showNew(filename);
+    String filename =
+        TestDir.cdmUnitTestDir + "/formats/hdf4/" + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf";
+    // showOrg(filename);
+    // showNew(filename);
     compareWithBuilder(filename);
   }
 
@@ -50,8 +50,8 @@ public class TestH4iospNewProblem {
   private void showOrg(String filename) throws IOException {
 
     try (NetcdfFile org = NetcdfFile.open(filename)) {
-      //Variable v = org.findVariable("catchments_part_node_count");
-      //Array data = v.read();
+      // Variable v = org.findVariable("catchments_part_node_count");
+      // Array data = v.read();
       System.out.printf("org = %s%n", org);
     }
   }
@@ -59,8 +59,8 @@ public class TestH4iospNewProblem {
   private void showNew(String filename) throws IOException {
 
     try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
-      //Variable v = withBuilder.findVariable("catchments_x");
-      //Array data = v.read();
+      // Variable v = withBuilder.findVariable("catchments_x");
+      // Array data = v.read();
       System.out.printf("withBuilder = %s%n", withBuilder);
     }
   }
