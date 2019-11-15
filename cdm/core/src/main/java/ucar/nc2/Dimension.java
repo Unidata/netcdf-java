@@ -573,7 +573,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     }
 
     public Builder setName(String shortName) {
-      this.shortName = shortName;
+      this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
       return this;
     }
 

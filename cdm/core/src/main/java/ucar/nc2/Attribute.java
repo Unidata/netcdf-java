@@ -754,7 +754,7 @@ public class Attribute extends CDMNode {
     private Builder() {}
 
     public Builder setName(String name) {
-      this.name = name;
+      this.name = NetcdfFiles.makeValidCdmObjectName(name);
       return this;
     }
 

@@ -2000,7 +2000,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     public T setName(String shortName) {
-      this.shortName = shortName;
+      this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
       return self();
     }
 
