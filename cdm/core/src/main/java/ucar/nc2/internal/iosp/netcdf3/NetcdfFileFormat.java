@@ -18,10 +18,19 @@ import java.io.IOException;
 
 /** Enumeration of the kinds of NetCDF file formats. */
 public enum NetcdfFileFormat {
-  INVALID(0, "Invalid"),
-  CLASSIC(1, "netcdf-3"),
-  OFFSET_64BIT(2, "netcdf-3 64bit-offset"),
-  NETCDF4(3, "netcdf-4"), // This is really just HDF-5, dont know yet if its written by netcdf4.
+  INVALID(0, "Invalid"), CLASSIC(1, "netcdf-3"), OFFSET_64BIT(2, "netcdf-3 64bit-offset"), NETCDF4(3, "netcdf-4"), // This
+                                                                                                                   // is
+                                                                                                                   // really
+                                                                                                                   // just
+                                                                                                                   // HDF-5,
+                                                                                                                   // dont
+                                                                                                                   // know
+                                                                                                                   // yet
+                                                                                                                   // if
+                                                                                                                   // its
+                                                                                                                   // written
+                                                                                                                   // by
+                                                                                                                   // netcdf4.
   NETCDF4_CLASSIC(4, "netcdf-4 classic"), // psuedo format I think
   DATA_64BIT(5, "netcdf-5"), HDF4(0x7005, "hdf-4"); // why is this here. and wheres hdf-5 ?
 
