@@ -938,6 +938,9 @@ public class Group extends CDMNode implements AttributeContainer {
      */
     public Builder addGroup(Group.Builder nested) {
       Preconditions.checkNotNull(nested);
+      this.findGroup(nested.shortName).ifPresent(g -> {
+            throw new IllegalStateException("Nested group already exists " + nested.shortName);
+          });
       gbuilders.add(nested);
       nested.setParentGroup(this);
       return this;
@@ -1047,7 +1050,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     public Builder setName(String shortName) {
-      this.shortName = shortName;
+      this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
       return this;
     }
 
@@ -1065,7 +1068,7 @@ public class Group extends CDMNode implements AttributeContainer {
      */
     public Group build(Group parent) {
       if (built)
-        throw new IllegalStateException("already built");
+        throw new IllegalStateException("Group was already built " + this.shortName);
       built = true;
       return new Group(this, parent);
     }

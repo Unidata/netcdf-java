@@ -15,6 +15,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.iosp.hdf4.TestH4iospCompare.DimensionsFilter;
 import ucar.nc2.iosp.netcdf3.SPFactory;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
@@ -26,7 +27,7 @@ public class TestH4iospNewProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "/formats/hdf4/" + "eos/amsua/amsua16_2008.001_37503_0001_0108_GC.eos";
+    String filename = TestDir.cdmUnitTestDir + "/formats/hdf4/" + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf";
     //showOrg(filename);
     //showNew(filename);
     compareWithBuilder(filename);
@@ -38,7 +39,7 @@ public class TestH4iospNewProblem {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        if (!compare.compare(org, withBuilder)) {
+        if (!compare.compare(org, withBuilder, new DimensionsFilter())) {
           System.out.printf("Compare %s%n%s%n", filename, f);
           fail();
         }

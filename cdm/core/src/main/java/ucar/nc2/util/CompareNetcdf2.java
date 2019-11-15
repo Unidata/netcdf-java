@@ -32,6 +32,9 @@ public class CompareNetcdf2 {
 
     // if true, compare variable, else skip comparision
     boolean varDataTypeCheckOk(Variable v);
+
+    // if true, compare variable, else skip comparision
+    boolean checkDimensionsForFile(String filename);
   }
 
   public static class Netcdf4ObjectFilter implements ObjFilter {
@@ -68,6 +71,11 @@ public class CompareNetcdf2 {
       if (v.getDataType() == DataType.CHAR)
         return false; // temp workaround
       return v.getDataType() != DataType.STRING;
+    }
+
+    @Override
+    public boolean checkDimensionsForFile(String filename) {
+      return true;
     }
   }
 
@@ -125,6 +133,10 @@ public class CompareNetcdf2 {
 
   public boolean compare(NetcdfFile org, NetcdfFile copy) {
     return compare(org, copy, showCompare, showEach, compareData);
+  }
+
+  public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter) {
+    return compare(org, copy, filter, showCompare, showEach, compareData);
   }
 
   public boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
@@ -222,8 +234,10 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkGroupDimensions(org, copy, "copy");
-    ok &= checkGroupDimensions(copy, org, "org");
+    if (filter == null || filter.checkDimensionsForFile(org.getNetcdfFile().getLocation())) {
+      ok &= checkGroupDimensions(org, copy, "copy");
+      ok &= checkGroupDimensions(copy, org, "org");
+    }
 
     // attributes
     ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);

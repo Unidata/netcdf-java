@@ -12,6 +12,7 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CompareNetcdf2;
@@ -61,14 +62,16 @@ public class TestCoordSysCompare {
   }
 
   public static class CoordsObjFilter implements ObjFilter {
-
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
     }
-
     @Override
     public boolean varDataTypeCheckOk(Variable v) {
+      return true;
+    }
+    @Override
+    public boolean checkDimensionsForFile(String filename) {
       return true;
     }
   }

@@ -301,7 +301,6 @@ public class H4header extends NCheader {
       if (lowest != null && current != lowest) {
         lowest.addDimension(dim);
         current.remove(dim);
-        System.out.printf("adjustDimensions %s to %s (old)%n", dim.getShortName(), lowest.getShortName());
       }
     }
   }
@@ -374,7 +373,6 @@ public class H4header extends NCheader {
     boolean isUnlimited = (length == 0);
     Dimension dim = new Dimension(group.name, length, true, isUnlimited, false);
     ncfile.addDimension(null, dim);
-    System.out.println("added dimension " + dim + " from VG " + group.refno);
   }
 
   private void addGlobalAttributes(TagVGroup group) throws IOException {
@@ -581,7 +579,6 @@ public class H4header extends NCheader {
       g.setName(g.getShortName() + tag.refno);
     }
     parent.addGroup(g);
-    // System.out.printf("Add %s to %s (old)%n", g.getShortName(), parent.getShortName());
   }
 
   private Variable makeImage(TagGroup group) {
@@ -654,7 +651,6 @@ public class H4header extends NCheader {
 
   private Dimension makeDimensionUnshared(String dimName, int len) {
     // create new dimension and add it
-    System.out.println("added unshared dimension " + dimName);
     return new Dimension(dimName, len, false);
   }
 
@@ -672,7 +668,6 @@ public class H4header extends NCheader {
     }
 
     // create new dimension and add it
-    System.out.println("added shared dimension " + dimName);
     return ncfile.addDimension(null, new Dimension(dimName, len));
   }
 

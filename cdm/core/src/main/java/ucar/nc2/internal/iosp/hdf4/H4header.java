@@ -296,7 +296,6 @@ public class H4header {
       Dimension dim = (Dimension) iter.next();
       if (!dimUsed.contains(dim)) {
         iter.remove();
-        System.out.printf("adjustDimensions remove unused dim %s%n", dim.getShortName());
       }
     }
 
@@ -320,9 +319,6 @@ public class H4header {
       if (lowest != null) {
         root.removeFromAny(root, dim);
         lowest.addDimensionIfNotExists(dim);
-        System.out.printf("adjustDimensions %s to %s (new)%n", dim.getShortName(), lowest.shortName);
-      } else {
-        System.out.printf("adjustDimensions %s missing group (new)%n", dim.getShortName());
       }
     }
   }
@@ -380,7 +376,6 @@ public class H4header {
 
     boolean isUnlimited = (length == 0);
     Dimension dim = Dimension.builder(group.name, length).setIsUnlimited(isUnlimited).build();
-    System.out.printf("nadded dimension %s = %d from VG %d%n", dim.getShortName(), dim.getLength(), group.refno);
     root.addDimension(dim);
   }
 
@@ -570,8 +565,8 @@ public class H4header {
         if ((vg.group != null) && (vg.group.parentGroup == root)) {
           addGroupToGroup(group, vg.group, vg);
         } else {
-          // danger - possible loops in HDF4 linkage?
-          makeGroup(vg, group).ifPresent(nested -> addGroupToGroup(group, nested, vg));
+          // makeGroup adds the nested group.
+          makeGroup(vg, group);
         }
       }
     }
@@ -597,7 +592,6 @@ public class H4header {
     parent.findGroup(g.shortName).ifPresent(groupExisting ->
       g.setName(g.shortName + tag.refno)); // disambiguate name
 
-    System.out.printf("Add group %s to %s (new)%n", g.shortName, parent.shortName);
     parent.addGroup(g);
   }
 
@@ -1122,7 +1116,6 @@ public class H4header {
     }
 
     List<DataChunk> readChunks(NetcdfFile ncfile) throws IOException {
-      System.out.printf("readChunks for %s%n", v.shortName);
       return data.chunked.getDataChunks(ncfile);
     }
 

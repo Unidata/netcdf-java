@@ -106,7 +106,7 @@ public class HdfEos {
     }
     f.format("raw = %n%s%n", smeta);
     ODLparser parser = new ODLparser();
-    parser.parseFromString(smeta); // now we have the ODL in JDOM elements
+    parser.parseFromString(smeta); // now we have the ODL as JDOM elements
     StringWriter sw = new StringWriter(5000);
     parser.showDoc(new PrintWriter(sw));
     f.format("parsed = %n%s%n", sw.toString());
@@ -272,7 +272,6 @@ public class HdfEos {
           dim = new Dimension(name, length);
           if (parent.addDimensionIfNotExists(dim)) {
             if (showWork) log.debug(" Add dimension {}", dim);
-            System.out.println("nadded amendSwath add dimension " + dim.getShortName());
           }
         }
       } else {
@@ -695,7 +694,7 @@ public class HdfEos {
         if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS")) {
           attHelper.replace(a, CDM.UNITS);
         }
-        if (a.getShortName().equalsIgnoreCase("SCALE_FACTOR")) {
+        if (a.getShortName().equalsIgnoreCase("SCALE_FACTOR") || a.getShortName().equalsIgnoreCase("FACTOR")) {
           attHelper.replace(a, CDM.SCALE_FACTOR);
         }
         if (a.getShortName().equalsIgnoreCase("OFFSET")) {
