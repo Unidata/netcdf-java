@@ -789,9 +789,8 @@ public class Group extends CDMNode implements AttributeContainer {
     this.enumTypedefs = new ArrayList<>(builder.enumTypedefs);
 
     // only the root group build() should be called, the rest get called recursively
-    this.groups = builder.gbuilders.stream()
-        .map(g -> g.setNcfile(this.ncfile).build(this))
-        .collect(Collectors.toList());
+    this.groups =
+        builder.gbuilders.stream().map(g -> g.setNcfile(this.ncfile).build(this)).collect(Collectors.toList());
 
     builder.vbuilders.forEach(v -> {
       v.setGroup(this);
@@ -814,9 +813,9 @@ public class Group extends CDMNode implements AttributeContainer {
 
   public Builder toBuilder() {
     Builder parentBuilder = (this.getParentGroup() == null) ? null : this.getParentGroup().toBuilder();
-    Builder builder =
-        builder(parentBuilder).setName(this.shortName).setNcfile(this.ncfile).addAttributes(this.attributes.getAttributes())
-            .addDimensions(this.dimensions).addEnumTypedefs(this.enumTypedefs);
+    Builder builder = builder(parentBuilder).setName(this.shortName).setNcfile(this.ncfile)
+        .addAttributes(this.attributes.getAttributes()).addDimensions(this.dimensions)
+        .addEnumTypedefs(this.enumTypedefs);
 
     this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
     this.variables.forEach(v -> builder.addVariable(v.toBuilder()));
@@ -832,8 +831,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
     static private final Logger logger = LoggerFactory.getLogger(Builder.class);
 
-    public @Nullable
-    Group.Builder parentGroup; // ignored during build()
+    public @Nullable Group.Builder parentGroup; // ignored during build()
     public List<Group.Builder> gbuilders = new ArrayList<>();
     public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     public String shortName;
@@ -939,8 +937,8 @@ public class Group extends CDMNode implements AttributeContainer {
     public Builder addGroup(Group.Builder nested) {
       Preconditions.checkNotNull(nested);
       this.findGroup(nested.shortName).ifPresent(g -> {
-            throw new IllegalStateException("Nested group already exists " + nested.shortName);
-          });
+        throw new IllegalStateException("Nested group already exists " + nested.shortName);
+      });
       gbuilders.add(nested);
       nested.setParentGroup(this);
       return this;
@@ -1059,8 +1057,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
-      return Dimensions
-          .makeDimensionsList(dimName -> this.findDimension(dimName).orElse(null), dimString);
+      return Dimensions.makeDimensionsList(dimName -> this.findDimension(dimName).orElse(null), dimString);
     }
 
     /**
@@ -1105,8 +1102,7 @@ public class Group extends CDMNode implements AttributeContainer {
         if (dim.isShared()) {
           Dimension sharedDim = gb.findDimension(dim.getShortName()).orElse(null);
           if (sharedDim == null) {
-            throw new IllegalStateException(
-                String.format("Shared Dimension %s does not exist in a parent proup", dim));
+            throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
           } else {
             dims.add(sharedDim);
           }

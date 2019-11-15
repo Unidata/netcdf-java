@@ -15,14 +15,9 @@ import java.nio.ByteBuffer;
  * @author john caron
  */
 public enum DataType {
-  BOOLEAN("boolean", 1, boolean.class, false),
-  BYTE("byte", 1, byte.class, false),
-  CHAR("char", 1, char.class, false),
-  SHORT("short", 2, short.class, false),
-  INT("int", 4, int.class, false),
-  LONG("long", 8, long.class, false),
-  FLOAT("float", 4, float.class, false),
-  DOUBLE("double", 8, double.class, false),
+  BOOLEAN("boolean", 1, boolean.class, false), BYTE("byte", 1, byte.class, false), CHAR("char", 1, char.class,
+      false), SHORT("short", 2, short.class, false), INT("int", 4, int.class, false), LONG("long", 8, long.class,
+          false), FLOAT("float", 4, float.class, false), DOUBLE("double", 8, double.class, false),
 
   // object types
   SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
@@ -37,10 +32,8 @@ public enum DataType {
 
   OBJECT("object", 1, Object.class, false), // added for use with Array
 
-  UBYTE("ubyte", 1, byte.class, true),
-  USHORT("ushort", 2, short.class, true),
-  UINT("uint", 4, int.class, true),
-  ULONG("ulong", 8, long.class, true);
+  UBYTE("ubyte", 1, byte.class, true), USHORT("ushort", 2, short.class, true), UINT("uint", 4, int.class,
+      true), ULONG("ulong", 8, long.class, true);
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both

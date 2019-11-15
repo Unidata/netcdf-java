@@ -50,8 +50,7 @@ import ucar.unidata.util.Format;
  * @since Jul 18, 2007
  */
 public class H4header {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(
-      H4header.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   private static final byte[] head = {0x0e, 0x03, 0x13, 0x01};
   private static final String shead = new String(head, StandardCharsets.UTF_8);
@@ -547,18 +546,20 @@ public class H4header {
         }
       }
 
-      /* original
-       if (tag.code == 1965) { // VGroup - prob a Group
-        TagVGroup vg = (TagVGroup) tag;
-        if ((vg.group != null) && (vg.group.getParentGroup() == ncfile.getRootGroup())) {
-          addGroupToGroup(group, vg.group, vg);
-          vg.group.setParentGroup(group);
-        } else {
-          Group nested = makeGroup(vg, group); // danger - loops
-          if (nested != null)
-            addGroupToGroup(group, nested, vg);
-        }
-      } */
+      /*
+       * original
+       * if (tag.code == 1965) { // VGroup - prob a Group
+       * TagVGroup vg = (TagVGroup) tag;
+       * if ((vg.group != null) && (vg.group.getParentGroup() == ncfile.getRootGroup())) {
+       * addGroupToGroup(group, vg.group, vg);
+       * vg.group.setParentGroup(group);
+       * } else {
+       * Group nested = makeGroup(vg, group); // danger - loops
+       * if (nested != null)
+       * addGroupToGroup(group, nested, vg);
+       * }
+       * }
+       */
 
       if (tag.code == 1965) { // VGroup - prob a Group
         TagVGroup vg = (TagVGroup) tag;
@@ -579,8 +580,7 @@ public class H4header {
   }
 
   private void addVariableToGroup(Group.Builder g, Variable.Builder v, Tag tag) {
-    g.findVariable(v.shortName).ifPresent(varExisting ->
-      v.setName(v.shortName + tag.refno)); // disambiguate
+    g.findVariable(v.shortName).ifPresent(varExisting -> v.setName(v.shortName + tag.refno)); // disambiguate
     g.addVariable(v);
     tag.vinfo.group = g;
   }
@@ -589,8 +589,7 @@ public class H4header {
     // may have to reparent the group
     root.removeGroup(g.shortName);
 
-    parent.findGroup(g.shortName).ifPresent(groupExisting ->
-      g.setName(g.shortName + tag.refno)); // disambiguate name
+    parent.findGroup(g.shortName).ifPresent(groupExisting -> g.setName(g.shortName + tag.refno)); // disambiguate name
 
     parent.addGroup(g);
   }
@@ -769,7 +768,7 @@ public class H4header {
 
       Structure.Builder s = Structure.builder().setName(vh.name);
       vinfo.setVariable(s);
-        // vinfo.recsize = vh.ivsize;
+      // vinfo.recsize = vh.ivsize;
 
       if (vh.nvert > 1)
         s.setDimensionsAnonymous(new int[] {vh.nvert});
@@ -927,7 +926,7 @@ public class H4header {
       throw new IllegalStateException();
 
     Variable.Builder vb = Variable.builder().setName("SDS-" + group.refno);
-      vb.setDimensionsAnonymous(dim.shape);
+    vb.setDimensionsAnonymous(dim.shape);
     DataType dataType = H4type.setDataType(nt.type, null);
     vb.setDataType(dataType);
 
@@ -944,19 +943,19 @@ public class H4header {
         TagTextN labels = (TagTextN) tag;
         labels.read(dim.rank);
         tag.used = true;
-        vb.addAttribute(Attribute.builder().setName(CDM.LONG_NAME).setValues((List)labels.getList(), false).build());
+        vb.addAttribute(Attribute.builder().setName(CDM.LONG_NAME).setValues((List) labels.getList(), false).build());
       }
       if (tag.code == 705) {
         TagTextN units = (TagTextN) tag;
         units.read(dim.rank);
         tag.used = true;
-        vb.addAttribute(Attribute.builder().setName(CDM.UNITS).setValues((List)units.getList(), false).build());
+        vb.addAttribute(Attribute.builder().setName(CDM.UNITS).setValues((List) units.getList(), false).build());
       }
       if (tag.code == 706) {
         TagTextN formats = (TagTextN) tag;
         formats.read(dim.rank);
         tag.used = true;
-        vb.addAttribute(Attribute.builder().setName("formats").setValues((List)formats.getList(), false).build());
+        vb.addAttribute(Attribute.builder().setName("formats").setValues((List) formats.getList(), false).build());
       }
       if (tag.code == 707) {
         TagSDminmax minmax = (TagSDminmax) tag;

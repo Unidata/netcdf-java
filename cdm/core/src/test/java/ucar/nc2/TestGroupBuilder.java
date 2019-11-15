@@ -14,8 +14,8 @@ public class TestGroupBuilder {
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder(null).setName("child");
     Variable.Builder vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
-    Group group = Group.builder(null).setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb)
-        .build(null);
+    Group group = Group.builder(null).setName("name").addAttribute(att).addDimension(dim).addGroup(nested)
+        .addVariable(vb).build(null);
 
     assertThat(group.getShortName()).isEqualTo("name");
     assertThat(group.isRoot()).isTrue();

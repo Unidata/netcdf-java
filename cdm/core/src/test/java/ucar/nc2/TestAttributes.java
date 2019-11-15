@@ -146,9 +146,9 @@ public class TestAttributes {
 
     List<String> vals2 = ImmutableList.of("1", "2", "3");
     // wont compile
-    //Attribute atts2 = Attribute.builder().setName("name").setValues(vals2).build();
+    // Attribute atts2 = Attribute.builder().setName("name").setValues(vals2).build();
     // wont compile
-    //Attribute atts21 = Attribute.builder().setName("name").setValues((List<Object>) vals2).build();
+    // Attribute atts21 = Attribute.builder().setName("name").setValues((List<Object>) vals2).build();
     Attribute atts22 = Attribute.builder().setName("name").setValues((List) vals2, false).build();
     assertThat(atts22.getDataType()).isEqualTo(DataType.STRING);
 

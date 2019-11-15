@@ -158,8 +158,7 @@ public class H4iosp extends AbstractIOServiceProvider {
    * @throws IOException on error
    * @throws InvalidRangeException if invalid section
    */
-  private ArrayStructure readStructureData(Structure s, Section section)
-      throws IOException, InvalidRangeException {
+  private ArrayStructure readStructureData(Structure s, Section section) throws IOException, InvalidRangeException {
     H4header.Vinfo vinfo = (H4header.Vinfo) s.getSPobject();
     vinfo.setLayoutInfo(this.ncfile); // make sure needed info is present
     int recsize = vinfo.elemSize;
@@ -311,64 +310,65 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   /*
-  // TODO implement this
-  private InputStream getChunkedInputStream(H4header.Vinfo vinfo) {
-    return new ChunkedInputStream(vinfo);
-  }
-
-  // look not implemented : skip data
-  private class ChunkedInputStream extends InputStream {
-    List<H4header.DataChunk> chunks;
-    int chunkNo;
-
-    byte[] buffer;
-    int segPos, segSize;
-
-    ChunkedInputStream(H4header.Vinfo vinfo) {
-      this.chunks = vinfo.chunks;
-      this.chunkNo = 0;
-    }
-
-    private void readChunk() throws IOException {
-      H4header.DataChunk chunk = chunks.get(chunkNo);
-      H4header.TagData chunkData = chunk.data;
-      chunkNo++;
-
-      if (chunkData.ext_type == TagEnum.SPECIAL_COMP) {
-        // read compressed data in
-        H4header.TagData cdata = chunkData.compress.getDataTag();
-        byte[] cbuffer = new byte[cdata.length];
-        raf.seek(cdata.offset);
-        raf.readFully(cbuffer);
-
-        // uncompress it
-        if (chunkData.compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
-          InputStream in = new java.util.zip.InflaterInputStream(new ByteArrayInputStream(cbuffer));
-          ByteArrayOutputStream out = new ByteArrayOutputStream(chunkData.compress.uncomp_length);
-          IO.copy(in, out);
-          buffer = out.toByteArray();
-        } else {
-          throw new IllegalStateException("unknown compression type =" + chunkData.compress.compress_type);
-        }
-
-      } else {
-        buffer = new byte[chunkData.length];
-        raf.seek(chunkData.offset);
-        raf.readFully(buffer);
-      }
-
-      segPos = 0;
-      segSize = buffer.length;
-    }
-
-    public int read() throws IOException {
-      if (segPos == segSize)
-        readChunk();
-      int b = buffer[segPos] & 0xff;
-      segPos++;
-      return b;
-    }
-  } */
+   * // TODO implement this
+   * private InputStream getChunkedInputStream(H4header.Vinfo vinfo) {
+   * return new ChunkedInputStream(vinfo);
+   * }
+   * 
+   * // look not implemented : skip data
+   * private class ChunkedInputStream extends InputStream {
+   * List<H4header.DataChunk> chunks;
+   * int chunkNo;
+   * 
+   * byte[] buffer;
+   * int segPos, segSize;
+   * 
+   * ChunkedInputStream(H4header.Vinfo vinfo) {
+   * this.chunks = vinfo.chunks;
+   * this.chunkNo = 0;
+   * }
+   * 
+   * private void readChunk() throws IOException {
+   * H4header.DataChunk chunk = chunks.get(chunkNo);
+   * H4header.TagData chunkData = chunk.data;
+   * chunkNo++;
+   * 
+   * if (chunkData.ext_type == TagEnum.SPECIAL_COMP) {
+   * // read compressed data in
+   * H4header.TagData cdata = chunkData.compress.getDataTag();
+   * byte[] cbuffer = new byte[cdata.length];
+   * raf.seek(cdata.offset);
+   * raf.readFully(cbuffer);
+   * 
+   * // uncompress it
+   * if (chunkData.compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
+   * InputStream in = new java.util.zip.InflaterInputStream(new ByteArrayInputStream(cbuffer));
+   * ByteArrayOutputStream out = new ByteArrayOutputStream(chunkData.compress.uncomp_length);
+   * IO.copy(in, out);
+   * buffer = out.toByteArray();
+   * } else {
+   * throw new IllegalStateException("unknown compression type =" + chunkData.compress.compress_type);
+   * }
+   * 
+   * } else {
+   * buffer = new byte[chunkData.length];
+   * raf.seek(chunkData.offset);
+   * raf.readFully(buffer);
+   * }
+   * 
+   * segPos = 0;
+   * segSize = buffer.length;
+   * }
+   * 
+   * public int read() throws IOException {
+   * if (segPos == segSize)
+   * readChunk();
+   * int b = buffer[segPos] & 0xff;
+   * segPos++;
+   * return b;
+   * }
+   * }
+   */
 
   private static class H4ChunkIterator implements LayoutTiled.DataChunkIterator {
     List<H4header.DataChunk> chunks;

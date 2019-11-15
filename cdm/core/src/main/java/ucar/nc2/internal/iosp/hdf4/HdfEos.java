@@ -132,17 +132,19 @@ public class HdfEos {
       Vinfo vinfo = (Vinfo) structMetadataVar.spiObject;
       structMetadata = vinfo.read();
 
-      /* read and parse the ODL
-      Array A = structMetadataVar.read();
-      if (A instanceof ArrayChar.D1) {
-        ArrayChar ca = (ArrayChar) A;
-        structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
-      } else if (A instanceof ArrayObject.D0) {
-        ArrayObject ao = (ArrayObject) A;
-        structMetadata = (String) ao.getObject(0);
-      } else {
-        log.error("Unsupported array type {} for StructMetadata", A.getElementType());
-      } */
+      /*
+       * read and parse the ODL
+       * Array A = structMetadataVar.read();
+       * if (A instanceof ArrayChar.D1) {
+       * ArrayChar ca = (ArrayChar) A;
+       * structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
+       * } else if (A instanceof ArrayObject.D0) {
+       * ArrayObject ao = (ArrayObject) A;
+       * structMetadata = (String) ao.getObject(0);
+       * } else {
+       * log.error("Unsupported array type {} for StructMetadata", A.getElementType());
+       * }
+       */
 
       if (sbuff != null) {
         sbuff.append(structMetadata);
@@ -271,7 +273,8 @@ public class HdfEos {
         } else {
           dim = new Dimension(name, length);
           if (parent.addDimensionIfNotExists(dim)) {
-            if (showWork) log.debug(" Add dimension {}", dim);
+            if (showWork)
+              log.debug(" Add dimension {}", dim);
           }
         }
       } else {
@@ -599,7 +602,8 @@ public class HdfEos {
   }
 
   // convert to shared dimensions
-  private void setSharedDimensions(Group.Builder group, Variable.Builder v, List<Element> values, List<Dimension> unknownDims, String location) {
+  private void setSharedDimensions(Group.Builder group, Variable.Builder v, List<Element> values,
+      List<Dimension> unknownDims, String location) {
     if (values.isEmpty()) {
       return;
     }

@@ -130,8 +130,8 @@ public class NetcdfDatasets {
   public static NetcdfDataset openDataset(String location, boolean enhance, int buffer_size,
       ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-    return openDataset(durl, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null,
-        buffer_size, cancelTask, spiObject);
+    return openDataset(durl, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null, buffer_size, cancelTask,
+        spiObject);
   }
 
   /**
