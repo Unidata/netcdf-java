@@ -7,6 +7,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;

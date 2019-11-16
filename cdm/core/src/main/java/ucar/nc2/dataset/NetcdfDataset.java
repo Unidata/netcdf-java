@@ -10,6 +10,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
