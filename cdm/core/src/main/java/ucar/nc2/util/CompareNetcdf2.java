@@ -28,13 +28,19 @@ public class CompareNetcdf2 {
 
   public interface ObjFilter {
     // if true, compare attribute, else skip comparision
-    boolean attCheckOk(Variable v, Attribute att);
+    default boolean attCheckOk(Variable v, Attribute att) {
+      return true;
+    }
 
     // if true, compare variable, else skip comparision
-    boolean varDataTypeCheckOk(Variable v);
+    default boolean varDataTypeCheckOk(Variable v) {
+      return true;
+    }
 
-    // if true, compare variable, else skip comparision
-    boolean checkDimensionsForFile(String filename);
+    // if true, compare dimension, else skip comparision
+    default boolean checkDimensionsForFile(String filename) {
+      return true;
+    }
   }
 
   public static class Netcdf4ObjectFilter implements ObjFilter {
@@ -71,11 +77,6 @@ public class CompareNetcdf2 {
       if (v.getDataType() == DataType.CHAR)
         return false; // temp workaround
       return v.getDataType() != DataType.STRING;
-    }
-
-    @Override
-    public boolean checkDimensionsForFile(String filename) {
-      return true;
     }
   }
 
