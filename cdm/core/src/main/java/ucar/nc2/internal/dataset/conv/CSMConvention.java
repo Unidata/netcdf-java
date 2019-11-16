@@ -23,7 +23,7 @@ import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dataset.transform.AbstractTransformBuilder;
 import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.dataset.CoordSystemBuilderFactory;
+import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
