@@ -57,6 +57,7 @@ public class NetcdfFiles {
     // Make sure RC gets loaded
     RC.initialize();
 
+    // Register iosp's that are part of cdm-core. This ensures that they are tried first.
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {

@@ -39,19 +39,19 @@ public class BTree2 {
   private boolean debugBtree2, debugPos;
   private java.io.PrintStream debugOut = System.out;
 
-  byte btreeType;
+  public final byte btreeType;
   private int nodeSize; // size in bytes of btree nodes
   private short recordSize; // size in bytes of btree records
 
   private String owner;
-  private H5header h5;
+  private H5headerIF h5;
   private RandomAccessFile raf;
 
-  List<Entry2> entryList = new ArrayList<>();
+  public List<Entry2> entryList = new ArrayList<>();
 
-  BTree2(H5header h5, String owner, long address) throws IOException {
+  public BTree2(H5headerIF h5, String owner, long address) throws IOException {
     this.h5 = h5;
-    this.raf = h5.raf;
+    this.raf = h5.getRandomAccessFile();
     this.owner = owner;
 
     raf.seek(h5.getFileOffset(address));
@@ -101,9 +101,9 @@ public class BTree2 {
   }
 
   // these are part of the level 1A data structure, type = 0
-  static class Entry2 {
+  public static class Entry2 {
     long childAddress, nrecords, totNrecords;
-    Object record;
+    public Object record;
   }
 
   class InternalNode {
@@ -282,7 +282,7 @@ public class BTree2 {
     }
   }
 
-  class Record5 {
+  public class Record5 {
     int nameHash;
     byte[] heapId = new byte[7];
 
@@ -293,9 +293,13 @@ public class BTree2 {
       if (debugBtree2)
         debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + Misc.showBytes(heapId));
     }
+
+    public byte[] getHeapId() {
+      return heapId;
+    }
   }
 
-  class Record6 {
+  public class Record6 {
     long creationOrder;
     byte[] heapId = new byte[7];
 
@@ -304,6 +308,10 @@ public class BTree2 {
       raf.readFully(heapId);
       if (debugBtree2)
         debugOut.println("  record6 creationOrder=" + creationOrder + " heapId=" + Misc.showBytes(heapId));
+    }
+
+    public byte[] getHeapId() {
+      return heapId;
     }
   }
 
@@ -333,7 +341,7 @@ public class BTree2 {
     }
   }
 
-  class Record8 {
+  public class Record8 {
     byte flags;
     int creationOrder, nameHash;
     byte[] heapId = new byte[8];
@@ -346,9 +354,13 @@ public class BTree2 {
       if (debugBtree2)
         debugOut.println("  record8 creationOrder=" + creationOrder + " heapId=" + Misc.showBytes(heapId));
     }
+
+    public byte[] getHeapId() {
+      return heapId;
+    }
   }
 
-  class Record9 {
+  public class Record9 {
     byte flags;
     int creationOrder;
     byte[] heapId = new byte[8];
@@ -357,6 +369,10 @@ public class BTree2 {
       raf.readFully(heapId);
       flags = raf.readByte();
       creationOrder = raf.readInt();
+    }
+
+    public byte[] getHeapId() {
+      return heapId;
     }
   }
 

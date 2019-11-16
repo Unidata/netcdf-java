@@ -37,7 +37,8 @@ public class DataBTree {
   private static final boolean debugChunkOrder = false;
   private static java.io.PrintStream debugOut = System.out;
 
-  private final H5header h5;
+  private final H5headerIF h5;
+  private final RandomAccessFile raf;
   private final MemTracker memTracker;
 
   private final long rootNodeAddress;
@@ -46,8 +47,10 @@ public class DataBTree {
 
   private Variable owner;
 
-  DataBTree(H5header h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) {
+  public DataBTree(H5headerIF h5, long rootNodeAddress, int[] varShape, int[] storageSize,
+      MemTracker memTracker) {
     this.h5 = h5;
+    this.raf = h5.getRandomAccessFile();
     this.rootNodeAddress = rootNodeAddress;
     this.tiling = new Tiling(varShape, storageSize);
     this.ndimStorage = storageSize.length;
@@ -56,12 +59,12 @@ public class DataBTree {
     wantType = 1;
   }
 
-  void setOwner(Variable owner) {
+  public void setOwner(Variable owner) {
     this.owner = owner;
   }
 
   // used by H5tiledLayoutBB
-  DataChunkIterator getDataChunkIteratorFilter(Section want) throws IOException {
+  public DataChunkIterator getDataChunkIteratorFilter(Section want) throws IOException {
     return new DataChunkIterator(want);
   }
 
@@ -112,7 +115,7 @@ public class DataBTree {
   // An Iterator over the DataChunks in the btree.
   // returns the data chunck info from the btree leaf (level 0) nodes
   // used by H5tiledLayoutBB, when there are filters
-  class DataChunkIterator {
+  public class DataChunkIterator {
     private Node root;
     private int[] wantOrigin;
 
@@ -158,17 +161,17 @@ public class DataBTree {
         debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent + " owner= "
             + owner.getNameAndDimensions());
 
-      h5.raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
-      h5.raf.seek(h5.getFileOffset(address));
+      raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
+      raf.seek(h5.getFileOffset(address));
       this.address = address;
 
-      String magic = h5.raf.readString(4);
+      String magic = raf.readString(4);
       if (!magic.equals("TREE"))
         throw new IllegalStateException("DataBTree doesnt start with TREE");
 
-      int type = h5.raf.readByte();
-      level = h5.raf.readByte();
-      nentries = h5.raf.readShort();
+      int type = raf.readByte();
+      level = raf.readByte();
+      nentries = raf.readShort();
       if (type != wantType)
         throw new IllegalStateException("DataBTree must be type " + wantType);
 
@@ -197,9 +200,9 @@ public class DataBTree {
         offset = new int[nentries + 1][ndimStorage];
         childPointer = new long[nentries + 1];
         for (int i = 0; i <= nentries; i++) {
-          h5.raf.skipBytes(8); // skip size, filterMask
+          raf.skipBytes(8); // skip size, filterMask
           for (int j = 0; j < ndimStorage; j++) {
-            long loffset = h5.raf.readLong();
+            long loffset = raf.readLong();
             assert loffset < Integer.MAX_VALUE;
             offset[i][j] = (int) loffset;
           }
@@ -293,18 +296,18 @@ public class DataBTree {
   // see http://www.hdfgroup.org/HDF5/doc/H5.format.html#V1Btrees,
   // see "Key" field (type 1) p 10
   // this is only for leaf nodes (level 0)
-  class DataChunk {
-    int size; // size of chunk in bytes; need storage layout dimensions to interpret
-    int filterMask; // bitfield indicating which filters have been skipped for this chunk
-    int[] offset; // offset index of this chunk, reletive to entire array
-    long filePos; // filePos of a single raw data chunk, already shifted by the offset if needed
+  public class DataChunk {
+    public final int size; // size of chunk in bytes; need storage layout dimensions to interpret
+    public final int filterMask; // bitfield indicating which filters have been skipped for this chunk
+    public final int[] offset; // offset index of this chunk, reletive to entire array
+    public final long filePos; // filePos of a single raw data chunk, already shifted by the offset if needed
 
     DataChunk(int ndim, boolean last) throws IOException {
-      this.size = h5.raf.readInt();
-      this.filterMask = h5.raf.readInt();
+      this.size = raf.readInt();
+      this.filterMask = raf.readInt();
       offset = new int[ndim];
       for (int i = 0; i < ndim; i++) {
-        long loffset = h5.raf.readLong();
+        long loffset = raf.readLong();
         assert loffset < Integer.MAX_VALUE;
         offset[i] = (int) loffset;
       }

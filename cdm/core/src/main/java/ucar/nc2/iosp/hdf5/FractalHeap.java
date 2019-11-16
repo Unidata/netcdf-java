@@ -69,7 +69,7 @@ public class FractalHeap {
   private java.io.PrintStream debugOut = System.out;
   static boolean debugDetail, debugFractalHeap, debugPos;
 
-  private final H5header h5;
+  private final H5headerIF h5;
   private final RandomAccessFile raf;
 
   int version;
@@ -98,9 +98,9 @@ public class FractalHeap {
   BTree2 btreeHugeObjects;
 
 
-  FractalHeap(H5header h5, String forWho, long address, MemTracker memTracker) throws IOException {
+  public FractalHeap(H5headerIF h5, String forWho, long address, MemTracker memTracker) throws IOException {
     this.h5 = h5;
-    this.raf = h5.raf;
+    this.raf = h5.getRandomAccessFile();
 
     // header information is in le byte order
     raf.order(RandomAccessFile.LITTLE_ENDIAN);
@@ -171,7 +171,7 @@ public class FractalHeap {
     long pos = raf.getFilePointer();
     if (debugDetail)
       debugOut.println("-- end FractalHeap position=" + raf.getFilePointer());
-    int hsize = 8 + 2 * h5.sizeLengths + h5.sizeOffsets;
+    int hsize = 8 + 2 * h5.getSizeLengths() + h5.getSizeOffsets();
     if (memTracker != null)
       memTracker.add("Group FractalHeap (" + forWho + ")", address, pos);
 
@@ -202,7 +202,7 @@ public class FractalHeap {
 
   }
 
-  void showDetails(Formatter f) {
+  public void showDetails(Formatter f) {
     f.format("FractalHeap version=" + version + " heapIdLen=" + heapIdLen + " ioFilterLen=" + ioFilterLen + " flags= "
         + flags + "%n");
     f.format(" maxSizeOfObjects=" + maxSizeOfObjects + " nextHugeObjectId=" + nextHugeObjectId + " btreeAddress="
@@ -217,11 +217,12 @@ public class FractalHeap {
   }
 
 
-  DHeapId getFractalHeapId(byte[] heapId) {
+  public DHeapId getFractalHeapId(byte[] heapId) {
     return new DHeapId(heapId);
   }
 
-  class DHeapId {
+  public class DHeapId {
+
     int type;
     int subtype; // 1 = indirect no filter, 2 = indirect, filter 3 = direct, no filter, 4 = direct, filter
     int n; // the offset field size
@@ -233,18 +234,18 @@ public class FractalHeap {
       type = (heapId[0] & 0x30) >> 4;
 
       if (type == 0) {
-        n = maxHeapSize / 8; // This field's size is the minimum number of bytes necessary to encode the Maximum Heap
-                             // Size value
-        m = h5.getNumBytesFromMax(maxDirectBlockSize - 1); // This field is the length of the object in the heap.
+        n = maxHeapSize
+            / 8; // This field's size is the minimum number of bytes necessary to encode the Maximum Heap
+        // Size value
+        m = h5.getNumBytesFromMax(
+            maxDirectBlockSize - 1); // This field is the length of the object in the heap.
         // It is determined by taking the minimum value of Maximum Direct Block Size and Maximum Size of Managed Objects
         // in the Fractal Heap Header.
         // Again, the minimum number of bytes needed to encode that value is used for the size of this field.
 
         offset = h5.makeIntFromBytes(heapId, 1, n);
         size = h5.makeIntFromBytes(heapId, 1 + n, m);
-      }
-
-      else if (type == 1) {
+      } else if (type == 1) {
         // how fun to guess the subtype
         boolean hasBtree = (btreeAddressHugeObjects > 0);
         boolean hasFilters = (ioFilterLen > 0);
@@ -268,16 +269,12 @@ public class FractalHeap {
          * the "extented" form is used.
          */
         subtype = (heapId.length <= 18) ? 1 : 2; // 0 == normal, 1 = extended
-      }
-
-      else {
+      } else {
         throw new UnsupportedOperationException(); // "DHeapId subtype ="+subtype);
       }
-
-
     }
 
-    long getPos() throws IOException {
+    public long getPos() throws IOException {
       switch (type) {
         case 0:
           return doublingTable.getPos(offset);
@@ -286,7 +283,8 @@ public class FractalHeap {
             case 1:
             case 2:
               if (btreeHugeObjects == null) {
-                btreeHugeObjects = new BTree2(h5, "FractalHeap btreeHugeObjects", btreeAddressHugeObjects);
+                btreeHugeObjects = new BTree2(h5, "FractalHeap btreeHugeObjects",
+                    btreeAddressHugeObjects);
                 assert btreeHugeObjects.btreeType == subtype;
               }
               BTree2.Record1 record1 = btreeHugeObjects.getEntry1(offset);
@@ -309,6 +307,11 @@ public class FractalHeap {
     public String toString() {
       return type + "," + n + "," + m + "," + offset + "," + size;
     }
+
+    public void show(Formatter f) throws IOException {
+      f.format("   %2d %2d %2d %6d %4d %8d",type,n,m,offset,size, getPos());
+    }
+
   }
 
   private class DoublingTable {
@@ -538,7 +541,7 @@ public class FractalHeap {
 
     dblock.extraBytes = 5; // keep track of how much room is taken out of block size, that is, how much is left for the
                            // object
-    dblock.extraBytes += h5.isOffsetLong ? 8 : 4;
+    dblock.extraBytes += h5.isOffsetLong() ? 8 : 4;
 
     int nbytes = maxHeapSize / 8;
     if (maxHeapSize % 8 != 0)
