@@ -19,11 +19,10 @@ import java.util.ServiceLoader;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
+import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.hdf5.H5header;
-import ucar.nc2.iosp.netcdf3.N3header;
-import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.nc2.iosp.netcdf3.SPFactory;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.EscapeStrings;
@@ -36,6 +35,7 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * Static helper methods for NetcdfFile objects.
+ * These use builders and new versions of Iosp's when available.
  *
  * @author caron
  * @since 10/3/2019.
@@ -57,6 +57,12 @@ public class NetcdfFiles {
     // Make sure RC gets loaded
     RC.initialize();
 
+    try {
+      registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
+    } catch (Throwable e) {
+      if (loadWarnings)
+        log.info("Cant load class H5iosp", e);
+    }
     try {
       registerIOProvider("ucar.nc2.stream.NcStreamIosp");
     } catch (Throwable e) {
@@ -110,7 +116,7 @@ public class NetcdfFiles {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
-  public static void registerIOProvider(Class iospClass, boolean last)
+  private static void registerIOProvider(Class iospClass, boolean last)
       throws IllegalAccessException, InstantiationException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
@@ -118,67 +124,6 @@ public class NetcdfFiles {
       registeredProviders.add(0, spi); // put user stuff first
     else
       registeredProviders.add(spi);
-  }
-
-  /**
-   * Register an IOServiceProvider. A new instance will be created when one of its files is opened.
-   * This differs from the above in that it specifically locates the target iosp and inserts
-   * the new one in front of it in order to override the target.
-   * If the iospclass is already registered, remove it and reinsert.
-   * If the target class is not present, then insert at front of the registry
-   *
-   * @param iospClass Class that implements IOServiceProvider.
-   * @param target Class to override
-   * @throws IllegalAccessException if class is not accessible.
-   * @throws InstantiationException if class doesnt have a no-arg constructor.
-   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
-   */
-  public static void registerIOProviderPreferred(Class iospClass, Class target)
-      throws IllegalAccessException, InstantiationException {
-    iospDeRegister(iospClass); // forcibly de-register
-    int pos = -1;
-    for (int i = 0; i < registeredProviders.size(); i++) {
-      IOServiceProvider candidate = registeredProviders.get(i);
-      if (candidate.getClass() == target) {
-        if (pos < i)
-          pos = i;
-        break; // this is where is must be placed
-      }
-    }
-    if (pos < 0)
-      pos = 0;
-    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
-    registeredProviders.add(pos, spi); // insert before target
-  }
-
-  /**
-   * See if a specific IOServiceProvider is registered
-   *
-   * @param iospClass Class for which to search
-   */
-  public static boolean iospRegistered(Class iospClass) {
-    for (IOServiceProvider spi : registeredProviders) {
-      if (spi.getClass() == iospClass)
-        return true;
-    }
-    return false;
-  }
-
-  /**
-   * See if a specific IOServiceProvider is registered and if so, remove it.
-   *
-   * @param iospClass Class for which to search and remove
-   * @return true if class was present
-   */
-  public static boolean iospDeRegister(Class iospClass) {
-    for (int i = 0; i < registeredProviders.size(); i++) {
-      IOServiceProvider spi = registeredProviders.get(i);
-      if (spi.getClass() == iospClass) {
-        registeredProviders.remove(i);
-        return true;
-      }
-    }
-    return false;
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,39 +207,6 @@ public class NetcdfFiles {
   }
 
   /**
-   * Find out if the file can be opened, but dont actually open it.
-   * Experimental.
-   *
-   * @param location same as open
-   * @return true if can be opened
-   * @throws IOException on read error
-   */
-  public static boolean canOpen(String location) throws IOException {
-    try (ucar.unidata.io.RandomAccessFile raf = getRaf(location, -1)) {
-      return (raf != null) && canOpen(raf);
-    }
-  }
-
-  private static boolean canOpen(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    if (N3header.isValidFile(raf)) {
-      return true;
-    } else {
-      for (IOServiceProvider iosp : ServiceLoader.load(IOServiceProvider.class)) {
-        log.info("ServiceLoader IOServiceProvider {}", iosp.getClass().getName());
-        System.out.printf("ServiceLoader IOServiceProvider found %s%n", iosp.getClass().getName());
-        if (iosp.isValidFile(raf)) {
-          return true;
-        }
-      }
-      for (IOServiceProvider registeredSpi : registeredProviders) {
-        if (registeredSpi.isValidFile(raf))
-          return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Open an existing file (read only), specifying which IOSP is to be used.
    *
    * @param location location of file
@@ -324,7 +236,7 @@ public class NetcdfFiles {
     ucar.unidata.io.RandomAccessFile raf =
         ucar.unidata.io.RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
 
-    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile result = build(spi, raf, location, cancelTask);
 
     // send after iosp is opened
     if (iospMessage != null)
@@ -546,40 +458,7 @@ public class NetcdfFiles {
     }
   }
 
-  /**
-   * Open an in-memory netcdf file, with a specific iosp.
-   *
-   * @param name name of the dataset. Typically use the filename or URI.
-   * @param data in-memory netcdf file
-   * @param iospClassName fully qualified class name of the IOSP class to handle this file
-   * @return NetcdfFile object, or null if cant find IOServiceProver
-   * @throws IOException if read error
-   * @throws ClassNotFoundException cannat find iospClassName in the class path
-   * @throws InstantiationException if class cannot be instantiated
-   * @throws IllegalAccessException if class is not accessible
-   */
-  public static NetcdfFile openInMemory(String name, byte[] data, String iospClassName)
-      throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-
-    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
-    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
-    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
-
-    return new NetcdfFile(spi, raf, name, null);
-  }
-
-  /**
-   * Open an in-memory netcdf file.
-   *
-   * @param name name of the dataset. Typically use the filename or URI.
-   * @param data in-memory netcdf file
-   * @return memory-resident NetcdfFile
-   * @throws java.io.IOException if error
-   */
-  public static NetcdfFile openInMemory(String name, byte[] data) throws IOException {
-    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
-    return open(raf, name, null, null);
-  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Read a local CDM file into memory. All reads are then done from memory.
@@ -608,6 +487,41 @@ public class NetcdfFiles {
     URL url = uri.toURL();
     byte[] contents = IO.readContentsToByteArray(url.openStream());
     return openInMemory(uri.toString(), contents);
+  }
+
+  /**
+   * Open an in-memory netcdf file.
+   *
+   * @param name name of the dataset. Typically use the filename or URI.
+   * @param data in-memory netcdf file
+   * @return memory-resident NetcdfFile
+   * @throws java.io.IOException if error
+   */
+  public static NetcdfFile openInMemory(String name, byte[] data) throws IOException {
+    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
+    return open(raf, name, null, null);
+  }
+
+  /**
+   * Open an in-memory netcdf file, with a specific iosp.
+   *
+   * @param name name of the dataset. Typically use the filename or URI.
+   * @param data in-memory netcdf file
+   * @param iospClassName fully qualified class name of the IOSP class to handle this file
+   * @return NetcdfFile object, or null if cant find IOServiceProver
+   * @throws IOException if read error
+   * @throws ClassNotFoundException cannat find iospClassName in the class path
+   * @throws InstantiationException if class cannot be instantiated
+   * @throws IllegalAccessException if class is not accessible
+   */
+  public static NetcdfFile openInMemory(String name, byte[] data, String iospClassName)
+      throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+
+    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
+    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
+    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
+
+    return build(spi, raf, name, null);
   }
 
   /**
@@ -648,11 +562,8 @@ public class NetcdfFiles {
       }
     }
 
-    if (N3header.isValidFile(raf)) {
-      spi = SPFactory.getServiceProvider();
-
-    } else if (H5header.isValidFile(raf)) {
-      spi = new ucar.nc2.iosp.hdf5.H5iosp();
+    if (N3headerNew.isValidFile(raf)) {
+      spi = new N3iospNew();
 
     } else {
 
@@ -686,13 +597,59 @@ public class NetcdfFiles {
     if (log.isDebugEnabled())
       log.debug("Using IOSP {}", spi.getClass().getName());
 
-    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile ncfile =
+        spi.isBuilder() ? build(spi, raf, location, cancelTask) : new NetcdfFile(spi, raf, location, cancelTask);
 
     // send iospMessage after iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
-    return result;
+    return ncfile;
+  }
+
+  private static NetcdfFile build(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
+      ucar.nc2.util.CancelTask cancelTask) throws IOException {
+
+    NetcdfFile.Builder builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);
+
+    try {
+      Group.Builder root = Group.builder().setName("");
+      spi.build(raf, root, cancelTask);
+      builder.setRootGroup(root);
+
+      String id = root.getAttributeContainer().findAttValueIgnoreCase("_Id", null);
+      if (id != null) {
+        builder.setId(id);
+      }
+      String title = root.getAttributeContainer().findAttValueIgnoreCase("_Title", null);
+      if (title != null) {
+        builder.setTitle(title);
+      }
+
+    } catch (IOException | RuntimeException e) {
+      try {
+        raf.close();
+      } catch (Throwable t2) {
+      }
+      try {
+        spi.close();
+      } catch (Throwable t1) {
+      }
+      throw e;
+
+    } catch (Throwable t) {
+      try {
+        spi.close();
+      } catch (Throwable t1) {
+      }
+      try {
+        raf.close();
+      } catch (Throwable t2) {
+      }
+      throw new RuntimeException(t);
+    }
+
+    return builder.build();
   }
 
   ///////////////////////////////////////////////////////////////////////

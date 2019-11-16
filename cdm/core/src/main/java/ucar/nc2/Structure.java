@@ -100,7 +100,7 @@ public class Structure extends Variable {
    * @return Structure containing just those members
    */
   public Structure select(List<String> memberNames) {
-    Structure result = (Structure) copy();
+    Structure result = copy();
     List<Variable> members = new ArrayList<>();
     for (String name : memberNames) {
       Variable m = findVariable(name);

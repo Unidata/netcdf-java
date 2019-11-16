@@ -6,11 +6,12 @@
 package ucar.nc2;
 
 /**
- * A Container of Attributes.
- * Use AttributeContainerHelper for a mutable contained.
+ * An Immutable Container of Attributes.
+ * Use AttributeContainerHelper if you want a mutable container.
  *
  * @author caron
  * @since 3/20/14
+ *        TODO will be Immutable in version 6
  */
 public interface AttributeContainer {
 

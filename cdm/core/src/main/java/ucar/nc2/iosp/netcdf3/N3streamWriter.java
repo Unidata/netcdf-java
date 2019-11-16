@@ -21,7 +21,9 @@ import java.io.DataOutputStream;
  * Experimental
  * 
  * @author john
+ * @deprecated do not use
  */
+@Deprecated
 public abstract class N3streamWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////

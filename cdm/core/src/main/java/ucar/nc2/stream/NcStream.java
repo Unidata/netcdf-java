@@ -45,7 +45,7 @@ import ucar.unidata.io.RandomAccessFile;
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
  */
 public class NcStream {
-  // must start with this "CDFS"`
+  // must start with this "CDFS"
   public static final byte[] MAGIC_START = {0x43, 0x44, 0x46, 0x53};
 
   public static final byte[] MAGIC_HEADER = {(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};

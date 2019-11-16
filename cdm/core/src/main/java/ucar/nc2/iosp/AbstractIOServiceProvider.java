@@ -43,7 +43,6 @@ import java.util.Formatter;
  *
  */
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
-
   /**
    * Subclasses that use AbstractIOServiceProvider.open(...) or .close()
    * should use this (instead of their own private variable).
@@ -51,6 +50,9 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   protected ucar.unidata.io.RandomAccessFile raf;
   protected String location;
   protected int rafOrder = RandomAccessFile.BIG_ENDIAN;
+
+  // In general, ncfile doesnt exist until after open is called.
+  // That argues for open() changing to a builder.
   protected NetcdfFile ncfile;
 
   @Override
@@ -60,9 +62,20 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     this.ncfile = ncfile;
   }
 
+  // TODO: Is there an alternative to making this method public? Maybe in 6?
+  public void setNetcdfFile(NetcdfFile ncfile) {
+    this.ncfile = ncfile;
+  }
+
   @Override
-  public void open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    open(raf, rootGroup.getNcfile(), cancelTask);
+  public boolean isBuilder() {
+    return false;
+  }
+
+  @Override
+  public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+    throw new UnsupportedOperationException(
+        String.format("Class %s does not implement build() method", this.getClass().getName()));
   }
 
   @Override

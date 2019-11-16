@@ -1,5 +1,5 @@
 /* Copyright Unidata */
-package ucar.nc2.iosp.netcdf3;
+package ucar.nc2.internal.iosp.netcdf3;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
-import ucar.nc2.iosp.netcdf3.N3headerNew.Vinfo;
+import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -33,7 +33,7 @@ import ucar.unidata.io.RandomAccessFile;
  * @since 9/29/2019.
  */
 public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
 
   /*
    * CLASSIC
@@ -79,7 +79,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    return N3header.isValidFile(raf);
+    return N3headerNew.isValidFile(raf);
   }
 
   @Override
@@ -124,7 +124,13 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     ncfile.finish();
   }
 
-  public void open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+  @Override
+  public boolean isBuilder() {
+    return true;
+  }
+
+  @Override
+  public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
     String location = raf.getLocation();
@@ -137,8 +143,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = new N3headerNew();
     header.read(raf, rootGroup, null);
-    ncfile.setRootGroup(rootGroup.build(null));
-    ncfile.finish();
   }
 
   /////////////////////////////////////////////////////////////////////////////

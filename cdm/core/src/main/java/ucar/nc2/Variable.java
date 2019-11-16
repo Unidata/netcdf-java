@@ -819,6 +819,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * }
    */
 
+  /** @deprecated do not use */
+  @Deprecated
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
       return IospHelper.copyToByteChannel(read(section), wbc);
@@ -1807,7 +1809,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     builder.setName(this.shortName).setGroup(this.group).setNcfile(this.ncfile)
         .setParentStructure(this.getParentStructure()).setDataType(this.dataType)
         .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
-        .addDimensions(this.dimensions).addAttributes(this.attributes.atts).setProxyReader(this.proxyReader)
+        .addDimensions(this.dimensions).addAttributes(this.attributes.getAttributes()).setProxyReader(this.proxyReader)
         .setSPobject(this.spiObject);
 
     if (this.cache.isMetadata) {
@@ -1896,10 +1898,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // Set dimensions by name. If set, supercedes addDimension()
-    /*
-     * WHY NOT List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
-     * v.addDimensions(varDims); //
-     */
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
       return self();
@@ -1932,7 +1930,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return Dimensions.makeDimensionsString(this.dimensions);
     }
 
-    // TODO reconsider when Dimensions are really immutable
+    @Deprecated
     public List<Dimension> copyDimensions() {
       return dimensions.stream().map(d -> new Dimension(d.toBuilder())).collect(Collectors.toList());
     }

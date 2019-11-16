@@ -2,12 +2,11 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.iosp.netcdf3;
+package ucar.nc2.internal.iosp.netcdf3;
 
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
 import java.util.*;
 import java.io.IOException;
@@ -19,15 +18,22 @@ import java.io.IOException;
 public class N3headerNew {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
 
+  private static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
+  private static final int MAGIC_DIM = 10;
+  private static final int MAGIC_VAR = 11;
+  private static final int MAGIC_ATT = 12;
+
+  public static boolean disallowFileTruncation; // see NetcdfFile.setDebugFlags
+  public static boolean debugHeaderSize; // see NetcdfFile.setDebugFlags
+
   public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    switch (NCheader.checkFileType(raf)) {
-      case NCheader.NC_FORMAT_NETCDF3:
-      case NCheader.NC_FORMAT_64BIT_OFFSET:
+    switch (NetcdfFileFormat.findNetcdfFormatType(raf)) {
+      case CLASSIC:
+      case OFFSET_64BIT:
         return true;
       default:
-        break;
+        return false;
     }
-    return false;
   }
 
   // variable info for reading/writing
@@ -96,7 +102,7 @@ public class N3headerNew {
     byte[] b = new byte[4];
     raf.readFully(b);
     for (int i = 0; i < 3; i++)
-      if (b[i] != N3header.MAGIC[i])
+      if (b[i] != MAGIC[i])
         throw new IOException("Not a netCDF file " + raf.getLocation());
     if ((b[3] != 1) && (b[3] != 2))
       throw new IOException("Not a netCDF file " + raf.getLocation());
@@ -117,7 +123,7 @@ public class N3headerNew {
     if (magic == 0) {
       raf.readInt(); // skip 32 bits
     } else {
-      if (magic != N3header.MAGIC_DIM)
+      if (magic != MAGIC_DIM)
         throw new IOException("Misformed netCDF file - dim magic number wrong " + raf.getLocation());
       numdims = raf.readInt();
       if (debugOut != null)
@@ -154,7 +160,7 @@ public class N3headerNew {
     if (magic == 0) {
       raf.readInt(); // skip 32 bits
     } else {
-      if (magic != N3header.MAGIC_VAR)
+      if (magic != MAGIC_VAR)
         throw new IOException("Misformed netCDF file  - var magic number wrong " + raf.getLocation());
       nvars = raf.readInt();
       if (debugOut != null)
@@ -268,7 +274,7 @@ public class N3headerNew {
       }
     }
 
-    if (N3header.debugHeaderSize) {
+    if (debugHeaderSize) {
       System.out.println("  filePointer = " + pos + " dataStart=" + dataStart);
       System.out
           .println("  recStart = " + recStart + " dataStart+nonRecordDataSize =" + (dataStart + nonRecordDataSize));
@@ -304,7 +310,7 @@ public class N3headerNew {
     // theres a "wart" that allows a file to be up to 3 bytes smaller than you expect.
     long calcSize = dataStart + nonRecordDataSize + recsize * numrecs;
     if (calcSize > actualSize + 3) {
-      if (N3header.disallowFileTruncation)
+      if (disallowFileTruncation)
         throw new IOException("File is truncated calculated size= " + calcSize + " actual = " + actualSize);
       else {
         // log.info("File is truncated calculated size= "+calcSize+" actual = "+actualSize);
@@ -375,7 +381,7 @@ public class N3headerNew {
    * try {
    * memberV = v.slice(0, 0); // set unlimited dimension to 0
    * } catch (InvalidRangeException e) {
-   * log.warn("N3header.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
+   * log.warn("makeRecordStructure cant slice variable " + v + " " + e.getMessage());
    * return false;
    * }
    * memberV.setParentStructure(recordStructure);
@@ -398,7 +404,7 @@ public class N3headerNew {
     if (magic == 0) {
       raf.readInt(); // skip 32 bits
     } else {
-      if (magic != N3header.MAGIC_ATT)
+      if (magic != MAGIC_ATT)
         throw new IOException("Misformed netCDF file  - att magic number wrong");
       natts = raf.readInt();
     }
