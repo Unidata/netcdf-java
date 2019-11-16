@@ -93,11 +93,6 @@ public class TestH4iospCompare {
     }
 
     @Override
-    public boolean varDataTypeCheckOk(Variable v) {
-      return true;
-    }
-
-    @Override
     public boolean checkDimensionsForFile(String filename) {
       for (String name : skipNames) {
         if (filename.endsWith(name))
