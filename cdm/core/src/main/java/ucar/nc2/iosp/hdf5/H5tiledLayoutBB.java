@@ -62,8 +62,7 @@ public class H5tiledLayoutBB implements LayoutBB {
    * @throws InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException on io error
    */
-  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf,
-      H5header.Filter[] filters,
+  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters,
       ByteOrder byteOrder) throws InvalidRangeException, IOException {
     wantSection = Section.fill(wantSection, v2.getShape());
 

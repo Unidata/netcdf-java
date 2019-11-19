@@ -1,7 +1,6 @@
 package ucar.nc2.iosp.hdf5;
 
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -21,8 +20,8 @@ public class TestH5iospNewProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename =
-        TestDir.cdmUnitTestDir + "/formats/hdf5/npoess/ExampleFiles/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
+    String filename = TestDir.cdmUnitTestDir
+        + "/formats/hdf5/npoess/ExampleFiles/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
     // showOrg(filename);
     // showNew(filename);
     compareWithBuilder(filename);

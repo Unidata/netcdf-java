@@ -47,8 +47,7 @@ public class DataBTree {
 
   private Object owner;
 
-  public DataBTree(H5headerIF h5, long rootNodeAddress, int[] varShape, int[] storageSize,
-      MemTracker memTracker) {
+  public DataBTree(H5headerIF h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) {
     this.h5 = h5;
     this.raf = h5.getRandomAccessFile();
     this.rootNodeAddress = rootNodeAddress;
@@ -158,8 +157,7 @@ public class DataBTree {
 
     Node(long address, long parent) throws IOException {
       if (debugDataBtree)
-        debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
-            " owner= " + owner);
+        debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent + " owner= " + owner);
 
       raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
       raf.seek(h5.getFileOffset(address));

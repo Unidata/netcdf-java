@@ -31,7 +31,8 @@ public class LayoutRegular implements Layout {
    * @param wantSection the wanted section of data, contains a List of Range objects.
    * @throws InvalidRangeException if ranges are misformed
    */
-  public LayoutRegular(long startPos, int elemSize, int[] varShape, @Nullable Section wantSection) throws InvalidRangeException {
+  public LayoutRegular(long startPos, int elemSize, int[] varShape, @Nullable Section wantSection)
+      throws InvalidRangeException {
     assert startPos >= 0;
     assert elemSize > 0;
 

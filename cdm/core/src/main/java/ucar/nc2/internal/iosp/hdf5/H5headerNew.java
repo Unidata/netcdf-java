@@ -918,8 +918,8 @@ public class H5headerNew implements H5headerIF {
           String fldName = memberName.substring(0, pos);
           String attName = memberName.substring(pos + 1);
           Array memberData = attData.extractMemberArray(sm);
-          sb.findMemberVariable(fldName).ifPresent( vb ->
-            vb.getAttributeContainer().addAttribute(new Attribute(attName, memberData)));
+          sb.findMemberVariable(fldName)
+              .ifPresent(vb -> vb.getAttributeContainer().addAttribute(new Attribute(attName, memberData)));
         }
 
       } else { // assign separate attribute for each member
@@ -1237,8 +1237,7 @@ public class H5headerNew implements H5headerIF {
     if (facade.dobj.mfp != null) {
       for (Filter f : facade.dobj.mfp.filters) {
         if (f.id == 4) {
-          log.debug("SKIPPING variable with SZIP Filter= " + facade.dobj.mfp + " for variable "
-              + facade.name);
+          log.debug("SKIPPING variable with SZIP Filter= " + facade.dobj.mfp + " for variable " + facade.name);
           return null;
         }
       }
@@ -1260,8 +1259,7 @@ public class H5headerNew implements H5headerIF {
       if (fillValue != null) {
         Object defFillValue = N3iosp.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
-          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue,
-              vinfo.typeInfo.unsigned);
+          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
       }
     }
 
@@ -1350,7 +1348,8 @@ public class H5headerNew implements H5headerIF {
       if (warnings)
         log.warn("transform region Reference: facade=" + facade.name + " variable name=" + vb.shortName);
 
-      /* TODO doesnt work yet
+      /*
+       * TODO doesnt work yet
        * int nelems = (int) vb.getSize();
        * int heapIdSize = 12;
        * for (int i = 0; i < nelems; i++) {
@@ -1404,7 +1403,8 @@ public class H5headerNew implements H5headerIF {
     return newData;
   }
 
-  private void addMembersToStructure(Group.Builder parent, Structure.Builder s, MessageDatatype mdt) throws IOException {
+  private void addMembersToStructure(Group.Builder parent, Structure.Builder s, MessageDatatype mdt)
+      throws IOException {
     for (StructureMember m : mdt.members) {
       Variable.Builder v = makeVariableMember(parent, m.name, m.offset, m.mdt);
       if (v != null) {
@@ -1470,8 +1470,8 @@ public class H5headerNew implements H5headerIF {
   }
 
   // set the type and shape of the Variable
-  private boolean makeVariableShapeAndType(Group.Builder parent, Variable.Builder v,
-      MessageDatatype mdt, MessageDataspace msd, Vinfo vinfo, String dims) {
+  private boolean makeVariableShapeAndType(Group.Builder parent, Variable.Builder v, MessageDatatype mdt,
+      MessageDataspace msd, Vinfo vinfo, String dims) {
 
     int[] dim = (msd != null) ? msd.dimLength : new int[0];
     if (dim == null)
@@ -1893,8 +1893,8 @@ public class H5headerNew implements H5headerIF {
       else if (warnings) {
         log.debug("WARNING HDF5 file " + raf.getLocation() + " not handling hdf integer type (" + hdfType
             + ") with size= " + size);
-        log.warn("HDF5 file " + raf.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= "
-            + size);
+        log.warn(
+            "HDF5 file " + raf.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         return null;
       }
 

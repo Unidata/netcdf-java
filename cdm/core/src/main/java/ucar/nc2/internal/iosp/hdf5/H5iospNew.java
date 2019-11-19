@@ -92,15 +92,17 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return "Hierarchical Data Format, version 5";
   }
 
-  /* public void getEosInfo(Formatter f) throws IOException {
-    NetcdfFile ncfile = headerParser.ncfile;
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
-    if (eosInfo != null) {
-      HdfEos.getEosInfo(ncfile, eosInfo, f);
-    } else {
-      f.format("Cant find GROUP '%s'", HdfEos.HDF5_GROUP);
-    }
-  } */
+  /*
+   * public void getEosInfo(Formatter f) throws IOException {
+   * NetcdfFile ncfile = headerParser.ncfile;
+   * Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+   * if (eosInfo != null) {
+   * HdfEos.getEosInfo(ncfile, eosInfo, f);
+   * } else {
+   * f.format("Cant find GROUP '%s'", HdfEos.HDF5_GROUP);
+   * }
+   * }
+   */
 
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
@@ -156,8 +158,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   }
 
   // all the work is here, so can be called recursively
-  private Array readData(Variable v2, long dataPos, Section wantSection)
-      throws IOException, InvalidRangeException {
+  private Array readData(Variable v2, long dataPos, Section wantSection) throws IOException, InvalidRangeException {
     H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
     Object data;
@@ -422,8 +423,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return hasHeap;
   }
 
-  void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm)
-      throws IOException, InvalidRangeException {
+  void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws IOException, InvalidRangeException {
     ByteBuffer bb = asbb.getByteBuffer();
     for (StructureMembers.Member m : sm.getMembers()) {
       if (m.getDataType() == DataType.STRING) {
@@ -578,42 +578,43 @@ public class H5iospNew extends AbstractIOServiceProvider {
   }
 
   /*
-  @Override
-  public String getDetailInfo() {
-    Formatter f = new Formatter();
-    ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-
-    try {
-      NetcdfFile ncfile = new NetcdfFileSubclass();
-      H5headerNew detailParser = new H5headerNew(raf, ncfile, this);
-      detailParser.read(pw);
-      f.format("%s", super.getDetailInfo());
-      f.format("%s", os.toString(CDM.UTF8));
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return f.toString();
-  }
-
-  @Override
-  public Object sendIospMessage(Object message) {
-    if (message.toString().equals(IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES)) {
-      includeOriginalAttributes = true;
-      return null;
-    }
-
-    if (message.toString().equals("header"))
-      return headerParser;
-
-    if (message.toString().equals("headerEmpty")) {
-      NetcdfFile ncfile = new NetcdfFileSubclass();
-      return new H5headerNew(raf, ncfile, this);
-    }
-
-    return super.sendIospMessage(message);
-  } */
+   * @Override
+   * public String getDetailInfo() {
+   * Formatter f = new Formatter();
+   * ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
+   * PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
+   * 
+   * try {
+   * NetcdfFile ncfile = new NetcdfFileSubclass();
+   * H5headerNew detailParser = new H5headerNew(raf, ncfile, this);
+   * detailParser.read(pw);
+   * f.format("%s", super.getDetailInfo());
+   * f.format("%s", os.toString(CDM.UTF8));
+   * 
+   * } catch (IOException e) {
+   * e.printStackTrace();
+   * }
+   * 
+   * return f.toString();
+   * }
+   * 
+   * @Override
+   * public Object sendIospMessage(Object message) {
+   * if (message.toString().equals(IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES)) {
+   * includeOriginalAttributes = true;
+   * return null;
+   * }
+   * 
+   * if (message.toString().equals("header"))
+   * return headerParser;
+   * 
+   * if (message.toString().equals("headerEmpty")) {
+   * NetcdfFile ncfile = new NetcdfFileSubclass();
+   * return new H5headerNew(raf, ncfile, this);
+   * }
+   * 
+   * return super.sendIospMessage(message);
+   * }
+   */
 
 }

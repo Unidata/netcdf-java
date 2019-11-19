@@ -286,10 +286,12 @@ class H5objects {
           f.format("%d,", len);
         f.format(");%n");
       }
-      /* for (MessageAttribute mess : getAttributes()) {
-        Attribute att = mess.getNcAttribute();
-        f.format("  :%s%n", att);
-      } */
+      /*
+       * for (MessageAttribute mess : getAttributes()) {
+       * Attribute att = mess.getNcAttribute();
+       * f.format("  :%s%n", att);
+       * }
+       */
       f.format("%n");
     }
 
@@ -406,8 +408,7 @@ class H5objects {
       }
     }
 
-    private void processAttributeInfoMessage(
-        MessageAttributeInfo attInfo, List<MessageAttribute> list)
+    private void processAttributeInfoMessage(MessageAttributeInfo attInfo, List<MessageAttribute> list)
         throws IOException {
       long btreeAddress =
           (attInfo.v2BtreeAddressCreationOrder > 0) ? attInfo.v2BtreeAddressCreationOrder : attInfo.v2BtreeAddress;
@@ -1466,7 +1467,8 @@ class H5objects {
 
     @Override
     public String toString() {
-      return "StructureMember" + "{name='" + name + '\'' + ", offset=" + offset + ", dims=" + dims + ", mdt=" + mdt + '}';
+      return "StructureMember" + "{name='" + name + '\'' + ", offset=" + offset + ", dims=" + dims + ", mdt=" + mdt
+          + '}';
     }
   }
 
@@ -2091,8 +2093,7 @@ class H5objects {
   /////////////////////////////////////////////////////////////////////////////////////////////////////
   // Groups
 
-  private void readGroupNew(
-      H5Group group, MessageGroupNew groupNewMessage, DataObject dobj) throws IOException {
+  private void readGroupNew(H5Group group, MessageGroupNew groupNewMessage, DataObject dobj) throws IOException {
     if (debug1) {
       log.debug("\n--> GroupNew read <{}>", group.displayName);
     }

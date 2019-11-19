@@ -2,7 +2,6 @@
 package ucar.nc2.iosp.hdf5;
 
 import static org.junit.Assert.fail;
-
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;

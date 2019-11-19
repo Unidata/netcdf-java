@@ -234,11 +234,9 @@ public class FractalHeap {
       type = (heapId[0] & 0x30) >> 4;
 
       if (type == 0) {
-        n = maxHeapSize
-            / 8; // This field's size is the minimum number of bytes necessary to encode the Maximum Heap
+        n = maxHeapSize / 8; // This field's size is the minimum number of bytes necessary to encode the Maximum Heap
         // Size value
-        m = h5.getNumBytesFromMax(
-            maxDirectBlockSize - 1); // This field is the length of the object in the heap.
+        m = h5.getNumBytesFromMax(maxDirectBlockSize - 1); // This field is the length of the object in the heap.
         // It is determined by taking the minimum value of Maximum Direct Block Size and Maximum Size of Managed Objects
         // in the Fractal Heap Header.
         // Again, the minimum number of bytes needed to encode that value is used for the size of this field.
@@ -283,8 +281,7 @@ public class FractalHeap {
             case 1:
             case 2:
               if (btreeHugeObjects == null) {
-                btreeHugeObjects = new BTree2(h5, "FractalHeap btreeHugeObjects",
-                    btreeAddressHugeObjects);
+                btreeHugeObjects = new BTree2(h5, "FractalHeap btreeHugeObjects", btreeAddressHugeObjects);
                 assert btreeHugeObjects.btreeType == subtype;
               }
               BTree2.Record1 record1 = btreeHugeObjects.getEntry1(offset);
@@ -309,7 +306,7 @@ public class FractalHeap {
     }
 
     public void show(Formatter f) throws IOException {
-      f.format("   %2d %2d %2d %6d %4d %8d",type,n,m,offset,size, getPos());
+      f.format("   %2d %2d %2d %6d %4d %8d", type, n, m, offset, size, getPos());
     }
 
   }
