@@ -109,7 +109,7 @@ public class H4header {
     return isEos;
   }
 
-  void build(RandomAccessFile myRaf, Group.Builder root, Formatter debugOut) throws IOException {
+  void read(RandomAccessFile myRaf, Group.Builder root, Formatter debugOut) throws IOException {
     this.raf = myRaf;
     this.root = root;
 

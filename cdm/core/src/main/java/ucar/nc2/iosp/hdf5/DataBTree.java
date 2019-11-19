@@ -45,7 +45,7 @@ public class DataBTree {
   private final Tiling tiling;
   private final int ndimStorage, wantType;
 
-  private Variable owner;
+  private Object owner;
 
   public DataBTree(H5headerIF h5, long rootNodeAddress, int[] varShape, int[] storageSize,
       MemTracker memTracker) {
@@ -59,7 +59,7 @@ public class DataBTree {
     wantType = 1;
   }
 
-  public void setOwner(Variable owner) {
+  public void setOwner(Object owner) {
     this.owner = owner;
   }
 
@@ -69,7 +69,7 @@ public class DataBTree {
   }
 
   // used by H5tiledLayout
-  LayoutTiled.DataChunkIterator getDataChunkIteratorNoFilter(Section want, int nChunkDim) throws IOException {
+  public LayoutTiled.DataChunkIterator getDataChunkIteratorNoFilter(Section want, int nChunkDim) throws IOException {
     return new DataChunkIteratorNoFilter(want, nChunkDim);
   }
 
@@ -158,8 +158,8 @@ public class DataBTree {
 
     Node(long address, long parent) throws IOException {
       if (debugDataBtree)
-        debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent + " owner= "
-            + owner.getNameAndDimensions());
+        debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
+            " owner= " + owner);
 
       raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
       raf.seek(h5.getFileOffset(address));

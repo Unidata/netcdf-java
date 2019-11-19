@@ -1499,8 +1499,9 @@ public class H5header extends NCheader implements H5headerIF {
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
-      // log.debug("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
-      Array newData = findReferenceObjectNames(v.read());
+      // System.out.println("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
+      Array oldData = v.read();
+      Array newData = findReferenceObjectNames(oldData);
       v.setDataType(DataType.STRING);
       v.setCachedData(newData, true); // so H5iosp.read() is never called
       v.addAttribute(new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
@@ -1548,7 +1549,6 @@ public class H5header extends NCheader implements H5headerIF {
   // convert an array of lons which are data object references to an array of strings,
   // the names of the data objects (dobj.who)
   private Array findReferenceObjectNames(Array data) throws IOException {
-    // Array data = v.read();
     IndexIterator ii = data.getIndexIterator();
 
     Array newData = Array.factory(DataType.STRING, data.getShape());
@@ -1734,7 +1734,7 @@ public class H5header extends NCheader implements H5headerIF {
       EnumTypedef enumTypedef = ncGroup.findEnumeration(mdt.enumTypeName);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
-        // LOOK ncGroup.addEnumeration(enumTypedef);
+        ncGroup.addEnumeration(enumTypedef);
       }
       v.setEnumTypedef(enumTypedef);
     }

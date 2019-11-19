@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import javax.annotation.Nullable;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 
@@ -30,7 +31,7 @@ public class LayoutRegular implements Layout {
    * @param wantSection the wanted section of data, contains a List of Range objects.
    * @throws InvalidRangeException if ranges are misformed
    */
-  public LayoutRegular(long startPos, int elemSize, int[] varShape, Section wantSection) throws InvalidRangeException {
+  public LayoutRegular(long startPos, int elemSize, int[] varShape, @Nullable Section wantSection) throws InvalidRangeException {
     assert startPos >= 0;
     assert elemSize > 0;
 

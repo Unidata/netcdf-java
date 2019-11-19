@@ -4,14 +4,9 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -25,10 +20,8 @@ import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -36,11 +29,9 @@ import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.hdf4.HdfEos;
-import ucar.nc2.iosp.hdf5.H5header;
-import ucar.nc2.iosp.hdf5.H5tiledLayout;
-import ucar.nc2.iosp.hdf5.H5tiledLayoutBB;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -82,10 +73,12 @@ public class H5iospNew extends AbstractIOServiceProvider {
       H5tiledLayoutBB.debugFilter = debugFilter;
   }
 
+  @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    return H5header.isValidFile(raf);
+    return H5headerNew.isValidFile(raf);
   }
 
+  @Override
   public String getFileTypeId() {
     if (isEos)
       return "HDF5-EOS";
@@ -94,11 +87,12 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return DataFormatType.HDF5.getDescription();
   }
 
+  @Override
   public String getFileTypeDescription() {
     return "Hierarchical Data Format, version 5";
   }
 
-  public void getEosInfo(Formatter f) throws IOException {
+  /* public void getEosInfo(Formatter f) throws IOException {
     NetcdfFile ncfile = headerParser.ncfile;
     Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
     if (eosInfo != null) {
@@ -106,26 +100,29 @@ public class H5iospNew extends AbstractIOServiceProvider {
     } else {
       f.format("Cant find GROUP '%s'", HdfEos.HDF5_GROUP);
     }
-  }
+  } */
 
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
   }
 
+  @Override
+  public boolean isBuilder() {
+    return false;
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
 
-  // private RandomAccessFile raf;
   private H5headerNew headerParser;
   private boolean isEos;
   boolean includeOriginalAttributes;
 
-  /////////////////////////////////////////////////////////////////////////////
-  // reading
+  @Override
+  public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+    super.open(raf, rootGroup.getNcfile(), cancelTask);
 
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask)
-      throws IOException {
-    super.open(raf, ncfile, cancelTask);
-    headerParser = new H5headerNew(this.raf, ncfile, this);
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    headerParser = new H5headerNew(raf, rootGroup, this);
     headerParser.read(null);
 
     // check if its an HDF5-EOS file
@@ -133,7 +130,21 @@ public class H5iospNew extends AbstractIOServiceProvider {
     if (eosInfo != null && useHdfEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
+  }
 
+  @Override
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
+    Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
+    headerParser = new H5headerNew(raf, rootGroup, this);
+    headerParser.read(null);
+    ncfile.setRootGroup(rootGroup.build(null));
+
+    // check if its an HDF5-EOS file
+    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    if (eosInfo != null && useHdfEos) {
+      isEos = HdfEos.amendFromODL(ncfile, eosInfo);
+    }
     ncfile.finish();
   }
 
@@ -235,23 +246,16 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return sa;
   }
 
-  /*
+  /**
    * Read data subset from file for a variable, return Array or java primitive array.
    *
    * @param v the variable to read.
-   *
    * @param layout handles skipping around in the file.
-   *
    * @param dataType dataType of the data to read
-   *
    * @param shape the shape of the output
-   *
    * @param fillValue fill value as a wrapped primitive
-   *
    * @return primitive array or Array with data read in
-   *
    * @throws java.io.IOException if read error
-   *
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   private Object readData(H5headerNew.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
@@ -313,28 +317,8 @@ public class H5iospNew extends AbstractIOServiceProvider {
       else {
         int[] newshape = new int[prefixrank];
         System.arraycopy(shape, 0, newshape, 0, prefixrank);
-        // result = Array.makeObjectArray(readType, data[0].getClass(), newshape, data);
         result = Array.makeVlenArray(newshape, data);
       }
-
-      /*
-       * else if (prefixrank == 1) // LOOK cant these two cases be combines - just differ in shape ??
-       * result = Array.makeObjectArray(readType, data[0].getClass(), new int[]{count}, data);
-       * else { // LOOK cant these two cases be combines - just differ in shape ??
-       * // Otherwise create and fill in an n-dimensional Array Of Arrays
-       * int[] newshape = new int[prefixrank];
-       * System.arraycopy(shape, 0, newshape, 0, prefixrank);
-       * Array ndimarray = Array.makeObjectArray(readType, Array.class, newshape, null);
-       * // Transfer the elements of data into the n-dim arrays
-       * IndexIterator iter = ndimarray.getIndexIterator();
-       * for(int i = 0;iter.hasNext();i++) {
-       * iter.setObjectNext(data[i]);
-       * }
-       * result = ndimarray;
-       * }
-       */
-      // return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
-      // return new ArrayObject(data[0].getClass(), shape, data);
       return result;
     }
 
@@ -438,22 +422,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return hasHeap;
   }
 
-  /*
-   * public static int setOffsets(StructureMembers members) {
-   * int offset = 0;
-   * for (StructureMembers.Member m : members.getMembers()) {
-   * m.setDataParam(offset);
-   * offset += m.getSizeBytes();
-   *
-   * // set inner offsets (starts again at 0)
-   * if (m.getStructureMembers() != null)
-   * setOffsets(m.getStructureMembers());
-   * }
-   * members.setStructureSize(offset);
-   * return offset;
-   * }
-   */
-
   void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm)
       throws IOException, InvalidRangeException {
     ByteBuffer bb = asbb.getByteBuffer();
@@ -505,26 +473,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
           // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
           result = Array.makeVlenArray(newshape, fieldarray);
         }
-
-        /*
-         * if (prefixrank == 1)
-         * result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
-         * else {
-         * // Otherwise create and fill in an n-dimensional Array Of Arrays
-         * int[] newshape = new int[prefixrank];
-         * System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-         * Array ndimarray = Array.makeObjectArray(m.getDataType(), Array.class, newshape, null);
-         * // Transfer the elements of data into the n-dim arrays
-         * IndexIterator iter = ndimarray.getIndexIterator();
-         * for(int i = 0;iter.hasNext();i++) {
-         * iter.setObjectNext(fieldarray[i]);
-         * }
-         * result = ndimarray;
-         * }
-         */
-
-        // Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
-
         int index = asbb.addObjectToHeap(result);
         bb.order(ByteOrder.nativeOrder());
         bb.putInt(startPos, index); // overwrite with the index into the Heap
@@ -532,23 +480,16 @@ public class H5iospNew extends AbstractIOServiceProvider {
     }
   }
 
-  /*
+  /**
    * Read data subset from file for a variable, create primitive array.
    *
    * @param layout handles skipping around in the file.
-   *
    * @param dataType dataType of the variable
-   *
    * @param shape the shape of the output
-   *
    * @param fillValue fill value as a wrapped primitive
-   *
    * @param endian byte order
-   *
    * @return primitive array with data read in
-   *
    * @throws java.io.IOException if read error
-   *
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian,
@@ -623,7 +564,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   @Override
   public void reacquire() throws IOException {
     super.reacquire();
-    headerParser.raf = this.raf;
+    // LOOK headerParser.raf = this.raf;
   }
 
   @Override
@@ -636,6 +577,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return null;
   }
 
+  /*
   @Override
   public String getDetailInfo() {
     Formatter f = new Formatter();
@@ -672,11 +614,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
     }
 
     return super.sendIospMessage(message);
-  }
-
-  // debug
-  NetcdfFile getNetcdfFile() {
-    return headerParser.ncfile;
-  }
+  } */
 
 }
