@@ -277,8 +277,6 @@ entries:
     - title: ToolsUI Reference
       url: /toolsui_ref.html
       output: web, pdf
-<<<<<<< HEAD
-=======
 
     - title: Unidata Defined System Properties
       url: /systemproperties.html
@@ -287,4 +285,4 @@ entries:
     - title: 5.0 Changes
       url: /upgrade_to_50.html
       output: web, pdf
->>>>>>> 941d025657... Documentation fixes
+
