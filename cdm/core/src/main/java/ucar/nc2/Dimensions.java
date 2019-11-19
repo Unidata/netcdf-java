@@ -76,6 +76,13 @@ public class Dimensions {
     return buf.toString();
   }
 
+  /**
+   * Make a list of Dimensions from a list of names.
+   * @param finder interface to find a Dikmension by name.
+   * @param dimString space seperated list of dimension names.
+   * @return equivalent list of Dimension objects.
+   * @throws IllegalArgumentException if cant find or parse the name.
+   */
   public static List<Dimension> makeDimensionsList(Find finder, String dimString) throws IllegalArgumentException {
     List<Dimension> newDimensions = new ArrayList<>();
     if (dimString == null) // scalar

@@ -416,7 +416,7 @@ public class CompareNetcdf2 {
   }
 
   // Theres a bug in old HDF4 (eg "MOD021KM.A2004328.1735.004.2004329164007.hdf) where dimensions
-  // no properly moved up (eg dim BAND_250M is in both root and Data_Fields).
+  // are not properly moved up (eg dim BAND_250M is in both root and Data_Fields).
   // So we are going to allow that to be ok (until proven otherwise) but we have to adjust
   // dimension comparision. Currently Dimension.equals() checks the Group.
   private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2, String where) {

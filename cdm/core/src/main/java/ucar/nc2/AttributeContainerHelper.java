@@ -116,7 +116,6 @@ public class AttributeContainerHelper implements AttributeContainer {
    * Replace an Attribute with a different name, same value.
    *
    * @param a remove this attribute
-   * @return true if was found and removed
    */
   public void replace(Attribute a, String newName) {
     atts.remove(a);
