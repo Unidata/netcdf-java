@@ -78,6 +78,7 @@ public class Dimensions {
 
   /**
    * Make a list of Dimensions from a list of names.
+   * 
    * @param finder interface to find a Dikmension by name.
    * @param dimString space seperated list of dimension names.
    * @return equivalent list of Dimension objects.
