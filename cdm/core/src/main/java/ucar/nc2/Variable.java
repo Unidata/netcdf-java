@@ -1842,8 +1842,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public Group parent; // set in Group.build()
     public Structure parentStruct; // set in Structure.build()
 
-    private String dimString; // if set, supercedes dimensions
-    private List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
+    public String dimString; // if set, supercedes dimensions
+    public List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
     public Object spiObject;
     public ProxyReader proxyReader;
     public Cache cache = new Cache(); // cache cannot be null
@@ -1894,6 +1894,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     public T addDimensions(Collection<Dimension> dims) {
       dimensions.addAll(dims);
+      return self();
+    }
+
+    public T setDimensions(List<Dimension> dims) {
+      this.dimensions = dims;
       return self();
     }
 
@@ -1960,6 +1965,11 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       result.addAll(v.dimensions);
     }
 
+    public T setIsScalar() {
+      this.dimensions = new ArrayList<>();
+      return self();
+    }
+
     public int getRank() {
       if (dimString != null) {
         Iterable<String> iter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
@@ -1990,7 +2000,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     public T setName(String shortName) {
-      this.shortName = shortName;
+      this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
       return self();
     }
 

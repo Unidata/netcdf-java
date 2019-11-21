@@ -54,7 +54,7 @@ class BuilderHelper {
 
     // dimensions
     for (Dimension d : src.getDimensions()) {
-      if (!targetGroup.findDimension(d.getShortName()).isPresent()) {
+      if (!targetGroup.findDimensionLocal(d.getShortName()).isPresent()) {
         Dimension newd = Dimension.builder(d.getShortName(), d.getLength()).setIsShared(d.isShared())
             .setIsUnlimited(unlimitedOK && d.isUnlimited()).setIsVariableLength(d.isVariableLength()).build();
         targetGroup.addDimension(newd);
@@ -96,7 +96,7 @@ class BuilderHelper {
     for (Group srcNested : src.getGroups()) {
       Optional<Builder> existing = targetGroup.findGroup(srcNested.getShortName());
       if (!existing.isPresent()) {
-        Group.Builder nested = Group.builder().setName(srcNested.getShortName());
+        Group.Builder nested = Group.builder(targetGroup).setName(srcNested.getShortName());
         targetGroup.addGroup(nested);
         transferGroup(ds, targetDs, srcNested, nested, replaceCheck);
       } else {

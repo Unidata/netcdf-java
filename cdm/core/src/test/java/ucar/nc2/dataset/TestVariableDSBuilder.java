@@ -3,9 +3,7 @@ package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
-import com.google.common.collect.ImmutableList;
 import java.io.IOException;
-import java.util.Formatter;
 import java.util.List;
 import org.junit.Test;
 import ucar.ma2.Array;
@@ -15,10 +13,8 @@ import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
-import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.CompareNetcdf2;
 
 /** Test VariableDS builders */
 public class TestVariableDSBuilder {
@@ -63,7 +59,7 @@ public class TestVariableDSBuilder {
     }
 
     Group group =
-        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+        Group.builder(null).addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
             .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
     List<Dimension> varDims = group.makeDimensionsList("dim1 dim2");
 
@@ -96,7 +92,7 @@ public class TestVariableDSBuilder {
   @Test
   public void testCopyFrom() {
     Group group =
-        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+        Group.builder(null).addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
             .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
     Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
         .setDimensionsByName("dim1 dim2").addAttribute(new Attribute("units", "flower"));
@@ -115,7 +111,7 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testMissingData() throws IOException {
-    Group parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+    Group parent = Group.builder(null).addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27)).build(null);
 
     VariableDS vds = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")

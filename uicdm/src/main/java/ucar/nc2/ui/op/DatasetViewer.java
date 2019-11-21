@@ -32,6 +32,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.ui.widget.BAMutil;
@@ -240,7 +241,7 @@ public class DatasetViewer extends JPanel {
 
     NetcdfFile compareFile = null;
     try {
-      compareFile = NetcdfDataset.openFile(data.name, null);
+      compareFile = ToolsUI.getToolsUI().openFile(data.name, false, null);
       Formatter f = new Formatter();
 
       CompareNetcdf2 cn = new CompareNetcdf2(f, data.showCompare, data.showDetails, data.readData);

@@ -70,7 +70,7 @@ public class NetcdfFiles {
         log.info("Cant load class NcStreamIosp", e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.hdf4.H4iosp");
+      registerIOProvider("ucar.nc2.internal.iosp.hdf4.H4iosp");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class H4iosp", e);
@@ -613,7 +613,7 @@ public class NetcdfFiles {
     NetcdfFile.Builder builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);
 
     try {
-      Group.Builder root = Group.builder().setName("");
+      Group.Builder root = Group.builder(null).setName("");
       spi.build(raf, root, cancelTask);
       builder.setRootGroup(root);
 

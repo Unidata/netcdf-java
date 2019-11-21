@@ -440,7 +440,7 @@ public class NcStream {
       g.addVariable(NcStream.decodeStructure(s));
 
     for (NcStreamProto.Group gp : proto.getGroupsList()) {
-      Group.Builder ng = Group.builder().setName(gp.getName()).setNcfile(ncfile);
+      Group.Builder ng = Group.builder(g).setName(gp.getName()).setNcfile(ncfile);
       g.addGroup(ng);
       readGroup(gp, ncfile, ng);
     }

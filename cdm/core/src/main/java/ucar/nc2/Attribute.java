@@ -725,8 +725,13 @@ public class Attribute extends CDMNode {
 
   /** Turn into a mutable Builder. Like a copy constructor. */
   public Builder toBuilder() {
-    return builder().setName(this.shortName).setStringValue(this.svalue).setValues(this.values)
-        .setDataType(this.dataType).setEnumType(this.enumtype);
+    Builder b = builder().setName(this.shortName).setDataType(this.dataType).setEnumType(this.enumtype);
+    if (this.svalue != null) {
+      b.setStringValue(this.svalue);
+    } else if (this.values != null) {
+      b.setValues(this.values);
+    }
+    return b;
   }
 
   public static Builder builder() {
@@ -749,7 +754,7 @@ public class Attribute extends CDMNode {
     private Builder() {}
 
     public Builder setName(String name) {
-      this.name = name;
+      this.name = NetcdfFiles.makeValidCdmObjectName(name);
       return this;
     }
 
@@ -800,7 +805,7 @@ public class Attribute extends CDMNode {
      * Set the values from a list of String or one of the primitives
      * Integer, Float, Double, Short, Long, Integer, Byte.
      */
-    public Builder setValues(List<Object> values) {
+    public Builder setValues(List<Object> values, boolean unsigned) {
       if (values == null || values.isEmpty())
         throw new IllegalArgumentException("Cannot determine attribute's type");
       int n = values.size();
@@ -814,7 +819,7 @@ public class Attribute extends CDMNode {
         for (int i = 0; i < n; i++)
           va[i] = (String) values.get(i);
       } else if (c == Integer.class) {
-        this.dataType = DataType.INT;
+        this.dataType = unsigned ? DataType.UINT : DataType.INT;
         int[] va = new int[n];
         pa = va;
         for (int i = 0; i < n; i++)
@@ -832,19 +837,19 @@ public class Attribute extends CDMNode {
         for (int i = 0; i < n; i++)
           va[i] = (Float) values.get(i);
       } else if (c == Short.class) {
-        this.dataType = DataType.SHORT;
+        this.dataType = unsigned ? DataType.USHORT : DataType.SHORT;
         short[] va = new short[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (Short) values.get(i);
       } else if (c == Byte.class) {
-        this.dataType = DataType.BYTE;
+        this.dataType = unsigned ? DataType.UBYTE : DataType.BYTE;
         byte[] va = new byte[n];
         pa = va;
         for (int i = 0; i < n; i++)
           va[i] = (Byte) values.get(i);
       } else if (c == Long.class) {
-        this.dataType = DataType.LONG;
+        this.dataType = unsigned ? DataType.ULONG : DataType.LONG;
         long[] va = new long[n];
         pa = va;
         for (int i = 0; i < n; i++)
@@ -852,6 +857,7 @@ public class Attribute extends CDMNode {
       } else {
         throw new IllegalArgumentException("Unknown type for Attribute = " + c.getName());
       }
+
       return setValues(Array.factory(this.dataType, new int[] {n}, pa));
     }
 

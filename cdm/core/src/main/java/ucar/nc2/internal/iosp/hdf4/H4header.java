@@ -2,18 +2,45 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.iosp.hdf4;
+package ucar.nc2.internal.iosp.hdf4;
 
-import java.nio.charset.StandardCharsets;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.NCheader;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.*;
-import ucar.ma2.*;
-import ucar.unidata.util.Format;
-import java.io.*;
-import java.util.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import javax.annotation.Nullable;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Group;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.iosp.netcdf3.NetcdfFileFormat;
+import ucar.nc2.iosp.hdf4.H4type;
+import ucar.nc2.iosp.hdf4.TagEnum;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Format;
 
 /**
  * Read the tags of an HDF4 file, construct CDM objects.
@@ -22,25 +49,16 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Jul 18, 2007
  */
-public class H4header extends NCheader {
+public class H4header {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   private static final byte[] head = {0x0e, 0x03, 0x13, 0x01};
   private static final String shead = new String(head, StandardCharsets.UTF_8);
   private static final long maxHeaderPos = 500000; // header's gotta be within this
 
-  static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    return checkFileType(raf) == NC_FORMAT_HDF4;
+  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    return NetcdfFileFormat.findNetcdfFormatType(raf) == NetcdfFileFormat.HDF4;
   }
-
-  /*
-   * replace space and / with underscore
-   * private static final char[] replace = new char[] {' ', '/'}; // , '.'};
-   * private static final String[] replaceWith = new String[] {"_", "_"}; // , ""};
-   * static String createValidObjectName(String name ) {
-   * return StringUtil2.replace( name, replace, replaceWith); // added 2/15/2010 , mod 2/18/2012
-   * }
-   */
 
   private static boolean debugDD; // DDH/DD
   private static boolean debugTag1; // show tags after read(), before read2().
@@ -76,8 +94,8 @@ public class H4header extends NCheader {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private ucar.nc2.NetcdfFile ncfile;
   RandomAccessFile raf;
+  private Group.Builder root;
   private boolean isEos;
 
   private List<Tag> alltags;
@@ -85,15 +103,15 @@ public class H4header extends NCheader {
   private Map<Short, Vinfo> refnoMap = new HashMap<>();
 
   private MemTracker memTracker;
-  private java.io.PrintWriter debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
+  private PrintWriter debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
 
   public boolean isEos() {
     return isEos;
   }
 
-  void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
+  void build(RandomAccessFile myRaf, Group.Builder root, Formatter debugOut) throws IOException {
     this.raf = myRaf;
-    this.ncfile = ncfile;
+    this.root = root;
 
     long actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
@@ -107,7 +125,7 @@ public class H4header extends NCheader {
     // header information is in big endian byte order
     raf.order(RandomAccessFile.BIG_ENDIAN);
     if (debugConstruct)
-      debugOut.println("H4header 0pened file to read:'" + raf.getLocation() + "', size=" + actualSize / 1000 + " Kb");
+      debugOut.format("H4header 0pened file to read:'" + raf.getLocation() + "', size=" + actualSize / 1000 + " Kb");
 
     // read the DDH and DD records
     alltags = new ArrayList<>();
@@ -116,7 +134,7 @@ public class H4header extends NCheader {
       link = readDDH(alltags, link);
 
     // now read the individual tags where needed
-    for (Tag tag : alltags) {// LOOK could sort by file offset to minimize I/O
+    for (Tag tag : alltags) { // LOOK could sort by file offset to minimize I/O
       tag.read();
       tagMap.put(tagid(tag.refno, tag.code), tag); // track all tags in a map, key is the "tag id".
       if (debugTag1)
@@ -124,22 +142,20 @@ public class H4header extends NCheader {
     }
 
     // construct the netcdf objects
-    ncfile.setLocation(myRaf.getLocation());
-    construct(ncfile, alltags);
+    construct(alltags);
 
     if (useHdfEos) {
-      isEos = HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
+      isEos = HdfEos.amendFromODL(this, root);
       if (isEos) {
         adjustDimensions();
-        String history = ncfile.findAttValueIgnoreCase(null, "_History", "");
-        ncfile.addAttribute(null, new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
-
+        String history = root.getAttributeContainer().findAttValueIgnoreCase("_History", "");
+        root.addAttribute(new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
       }
     }
 
     if (debugTag2) {
       for (Tag tag : alltags)
-        debugOut.println(debugTagDetail ? tag.detail() : tag);
+        debugOut.format("%s", debugTagDetail ? tag.detail() : tag);
     }
 
     if (debugTracker)
@@ -147,7 +163,7 @@ public class H4header extends NCheader {
   }
 
   public void getEosInfo(Formatter f) throws IOException {
-    HdfEos.getEosInfo(ncfile, ncfile.getRootGroup(), f);
+    HdfEos.getEosInfo(root, f);
   }
 
   private static int tagid(short refno, short code) {
@@ -157,24 +173,23 @@ public class H4header extends NCheader {
     return result;
   }
 
-  private void construct(ucar.nc2.NetcdfFile ncfile, List<Tag> alltags) throws IOException {
-    List<Variable> vars = new ArrayList<>();
-    List<Group> groups = new ArrayList<>();
+  private void construct(List<Tag> alltags) throws IOException {
+    List<Variable.Builder<?>> vars = new ArrayList<>();
 
     // pass 1 : Vgroups with special classes
     for (Tag t : alltags) {
       if (t.code == 306) { // raster image
-        Variable v = makeImage((TagGroup) t);
+        Variable.Builder v = makeImage((TagGroup) t);
         if (v != null)
           vars.add(v);
 
-      } else if (t.code == 1965) { // Vgroup
+      } else if (t.code == 1965) {
         TagVGroup vgroup = (TagVGroup) t;
         if (vgroup.className.startsWith("Dim") || vgroup.className.startsWith("UDim"))
           makeDimension(vgroup);
 
         else if (vgroup.className.startsWith("Var")) {
-          Variable v = makeVariable(vgroup);
+          Variable.Builder v = makeVariable(vgroup);
           if (v != null)
             vars.add(v);
 
@@ -191,15 +206,14 @@ public class H4header extends NCheader {
       if (t.code == 1962) { // VHeader
         TagVH tagVH = (TagVH) t;
         if (tagVH.className.startsWith("Data")) {
-          Variable v = makeVariable(tagVH);
+          Variable.Builder v = makeVariable(tagVH);
           if (v != null)
             vars.add(v);
         }
 
       } else if (t.code == 720) { // numeric data group
-        Variable v = makeVariable((TagGroup) t);
-        if (v != null)
-          vars.add(v);
+        Variable.Builder v = makeVariable((TagGroup) t);
+        vars.add(v);
       }
     }
 
@@ -211,7 +225,7 @@ public class H4header extends NCheader {
       if (t.code == 1962) { // VHeader
         TagVH vh = (TagVH) t;
         if (!vh.className.startsWith("Att") && !vh.className.startsWith("_HDF_CHK_TBL")) {
-          Variable v = makeVariable(vh);
+          Variable.Builder v = makeVariable(vh);
           if (v != null)
             vars.add(v);
         }
@@ -225,21 +239,18 @@ public class H4header extends NCheader {
 
       if (t.code == 1965) { // VGroup
         TagVGroup vgroup = (TagVGroup) t;
-        Group g = makeGroup(vgroup, null);
-        if (g != null)
-          groups.add(g);
+        makeGroup(vgroup, root);
       }
     }
-    for (Group g : groups) {
-      if (g.getParentGroup() == ncfile.getRootGroup())
-        ncfile.addGroup(null, g);
-    }
 
-    // not in a group
-    Group root = ncfile.getRootGroup();
-    for (Variable v : vars) {
-      if ((v.getParentGroup() == root) && root.findVariable(v.getShortName()) == null)
+    // not already assigned to a group : put in root group.
+    for (Variable.Builder v : vars) {
+      Vinfo vinfo = (Vinfo) v.spiObject;
+      // if (vinfo.group == null) {
+      if (vinfo.group == null && !root.findVariable(v.shortName).isPresent()) {
         root.addVariable(v);
+        vinfo.group = root;
+      }
     }
 
     // annotations become attributes
@@ -255,18 +266,18 @@ public class H4header extends NCheader {
     }
 
     // misc global attributes
-    ncfile.addAttribute(null, new Attribute("_History", "Direct read of HDF4 file through CDM library"));
+    root.addAttribute(new Attribute("_History", "Direct read of HDF4 file through CDM library"));
     for (Tag t : alltags) {
       if (t.code == 30) {
-        ncfile.addAttribute(null, new Attribute("HDF4_Version", ((TagVersion) t).value()));
+        root.addAttribute(new Attribute("HDF4_Version", ((TagVersion) t).value()));
         t.used = true;
 
       } else if (t.code == 100) {
-        ncfile.addAttribute(null, new Attribute("Title-" + t.refno, ((TagText) t).text));
+        root.addAttribute(new Attribute("Title-" + t.refno, ((TagText) t).text));
         t.used = true;
 
       } else if (t.code == 101) {
-        ncfile.addAttribute(null, new Attribute("Description-" + t.refno, ((TagText) t).text));
+        root.addAttribute(new Attribute("Description-" + t.refno, ((TagText) t).text));
         t.used = true;
       }
     }
@@ -274,49 +285,41 @@ public class H4header extends NCheader {
   }
 
   private void adjustDimensions() {
-    Map<Dimension, List<Variable>> dimUsedMap = new HashMap<>();
-    findUsedDimensions(ncfile.getRootGroup(), dimUsedMap);
+    Multimap<Dimension, Variable.Builder<?>> dimUsedMap = ArrayListMultimap.create();
+    root.makeDimensionMap(root, dimUsedMap);
     Set<Dimension> dimUsed = dimUsedMap.keySet();
 
-    // remove unused dimensions
-    Iterator iter = ncfile.getRootGroup().getDimensions().iterator();
+    // remove unused dimensions from root group
+    Iterator iter = root.getDimensionIterator();
     while (iter.hasNext()) {
       Dimension dim = (Dimension) iter.next();
-      if (!dimUsed.contains(dim))
+      if (!dimUsed.contains(dim)) {
         iter.remove();
+      }
     }
 
     // push used dimensions to the lowest group that contains all variables
     for (Dimension dim : dimUsed) {
-      Group lowest = null;
-      List<Variable> vlist = dimUsedMap.get(dim);
-      for (Variable v : vlist) {
-        if (lowest == null)
-          lowest = v.getParentGroup();
-        else {
-          lowest = lowest.commonParent(v.getParentGroup());
+      Group.Builder lowest = null;
+      Collection<Variable.Builder<?>> vlist = dimUsedMap.get(dim);
+      for (Variable.Builder<?> v : vlist) {
+        Vinfo vinfo = (Vinfo) v.spiObject;
+        if (vinfo == null) {
+          System.out.printf("adjustDimensions %s missing vinfo (new)%n", v.shortName);
+          continue;
+        }
+        Group.Builder gb = vinfo.group;
+        if (lowest == null) {
+          lowest = gb;
+        } else {
+          lowest = lowest.commonParent(gb);
         }
       }
-      Group current = dim.getGroup();
-      if (lowest != null && current != lowest) {
-        lowest.addDimension(dim);
-        current.remove(dim);
+      if (lowest != null) {
+        root.removeFromAny(root, dim);
+        lowest.addDimensionIfNotExists(dim);
       }
     }
-  }
-
-  private void findUsedDimensions(Group parent, Map<Dimension, List<Variable>> dimUsedMap) {
-    for (Variable v : parent.getVariables()) {
-      for (Dimension d : v.getDimensions()) {
-        if (!d.isShared())
-          continue;
-        List<Variable> vlist = dimUsedMap.computeIfAbsent(d, k -> new ArrayList<>());
-        vlist.add(v);
-      }
-    }
-
-    for (Group g : parent.getGroups())
-      findUsedDimensions(g, dimUsedMap);
   }
 
   private void makeDimension(TagVGroup group) throws IOException {
@@ -371,12 +374,11 @@ public class H4header extends NCheader {
     }
 
     boolean isUnlimited = (length == 0);
-    Dimension dim = new Dimension(group.name, length, true, isUnlimited, false);
-    ncfile.addDimension(null, dim);
+    Dimension dim = Dimension.builder(group.name, length).setIsUnlimited(isUnlimited).build();
+    root.addDimension(dim);
   }
 
   private void addGlobalAttributes(TagVGroup group) throws IOException {
-
     // look for attributes
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
@@ -390,11 +392,11 @@ public class H4header extends NCheader {
               && ((vh.fld_isize[0] > 4000) || lowername.startsWith("archivemetadata")
                   || lowername.startsWith("coremetadata") || lowername.startsWith("productmetadata")
                   || lowername.startsWith("structmetadata"))) {
-            ncfile.addVariable(null, makeVariable(vh)); // // large EOS metadata - make into variable in root group
+            root.addVariable(makeVariable(vh)); // // large EOS metadata - make into variable in root group
           } else {
             Attribute att = makeAttribute(vh);
             if (null != att)
-              ncfile.addAttribute(null, att); // make into attribute in root group
+              root.addAttribute(att); // make into attribute in root group
           }
         }
       }
@@ -505,11 +507,12 @@ public class H4header extends NCheader {
     return att;
   }
 
-  private Group makeGroup(TagVGroup tagGroup, Group parent) throws IOException {
+  private Optional<Group.Builder> makeGroup(TagVGroup tagGroup, Group.Builder parent) throws IOException {
     if (tagGroup.nelems < 1)
-      return null;
+      return Optional.empty();
 
-    Group group = new Group(ncfile, parent, tagGroup.name);
+    Group.Builder group = Group.builder(parent).setName(tagGroup.name);
+    parent.addGroup(group);
     tagGroup.used = true;
     tagGroup.group = group;
 
@@ -523,7 +526,7 @@ public class H4header extends NCheader {
 
       if (tag.code == 720) { // NG - prob var
         if (tag.vinfo != null) {
-          Variable v = tag.vinfo.v;
+          Variable.Builder v = tag.vinfo.v;
           if (v != null)
             addVariableToGroup(group, v, tag);
           else
@@ -538,50 +541,60 @@ public class H4header extends NCheader {
           if (null != att)
             group.addAttribute(att);
         } else if (tag.vinfo != null) {
-          Variable v = tag.vinfo.v;
+          Variable.Builder v = tag.vinfo.v;
           addVariableToGroup(group, v, tag);
         }
       }
 
+      /*
+       * original
+       * if (tag.code == 1965) { // VGroup - prob a Group
+       * TagVGroup vg = (TagVGroup) tag;
+       * if ((vg.group != null) && (vg.group.getParentGroup() == ncfile.getRootGroup())) {
+       * addGroupToGroup(group, vg.group, vg);
+       * vg.group.setParentGroup(group);
+       * } else {
+       * Group nested = makeGroup(vg, group); // danger - loops
+       * if (nested != null)
+       * addGroupToGroup(group, nested, vg);
+       * }
+       * }
+       */
+
       if (tag.code == 1965) { // VGroup - prob a Group
         TagVGroup vg = (TagVGroup) tag;
-        if ((vg.group != null) && (vg.group.getParentGroup() == ncfile.getRootGroup())) {
+        if ((vg.group != null) && (vg.group.parentGroup == root)) {
           addGroupToGroup(group, vg.group, vg);
-          vg.group.setParentGroup(group);
         } else {
-          Group nested = makeGroup(vg, group); // danger - loops
-          if (nested != null)
-            addGroupToGroup(group, nested, vg);
+          // makeGroup adds the nested group.
+          makeGroup(vg, group);
         }
       }
     }
 
     if (debugConstruct) {
-      System.out.println("added group " + group.getFullName() + " from VG " + tagGroup.refno);
+      System.out.println("added group " + group.shortName + " from VG " + tagGroup.refno);
     }
 
-    return group;
+    return Optional.of(group);
   }
 
-  private void addVariableToGroup(Group g, Variable v, Tag tag) {
-    Variable varExisting = g.findVariable(v.getShortName());
-    if (varExisting != null) {
-      // Vinfo vinfo = (Vinfo) v.getSPobject();
-      // varExisting.setName(varExisting.getShortName()+vinfo.refno);
-      v.setName(v.getShortName() + tag.refno);
-    }
+  private void addVariableToGroup(Group.Builder g, Variable.Builder v, Tag tag) {
+    g.findVariable(v.shortName).ifPresent(varExisting -> v.setName(v.shortName + tag.refno)); // disambiguate
     g.addVariable(v);
+    tag.vinfo.group = g;
   }
 
-  private void addGroupToGroup(Group parent, Group g, Tag tag) {
-    Group groupExisting = parent.findGroup(g.getShortName());
-    if (groupExisting != null) {
-      g.setName(g.getShortName() + tag.refno);
-    }
+  private void addGroupToGroup(Group.Builder parent, Group.Builder g, Tag tag) {
+    // may have to reparent the group
+    root.removeGroup(g.shortName);
+
+    parent.findGroup(g.shortName).ifPresent(groupExisting -> g.setName(g.shortName + tag.refno)); // disambiguate name
+
     parent.addGroup(g);
   }
 
-  private Variable makeImage(TagGroup group) {
+  private Variable.Builder makeImage(TagGroup group) {
     TagRIDimension dimTag = null;
     TagRIPalette palette;
     TagNumberType ntag;
@@ -641,37 +654,19 @@ public class H4header extends NCheader {
       dimTag.dims.add(makeDimensionUnshared("xdim", dimTag.xdim));
     }
 
-    Variable v = new Variable(ncfile, null, null, "Image-" + group.refno);
-    H4type.setDataType(ntag.type, v);
-    v.setDimensions(dimTag.dims);
-    vinfo.setVariable(v);
+    Variable.Builder vb = Variable.builder().setName("Image-" + group.refno);
+    vb.setDataType(H4type.setDataType(ntag.type, null));
+    vb.addDimensions(dimTag.dims);
+    vinfo.setVariable(vb);
 
-    return v;
+    return vb;
   }
 
   private Dimension makeDimensionUnshared(String dimName, int len) {
-    // create new dimension and add it
-    return new Dimension(dimName, len, false);
+    return Dimension.builder(dimName, len).setIsShared(false).build();
   }
 
-  private Dimension makeDimensionShared(String dimName, int len) {
-    Group root = ncfile.getRootGroup();
-    Dimension d = root.findDimension(dimName);
-    if ((d != null) && (d.getLength() == len))
-      return d;
-
-    if (d != null) { // different length
-      dimName = dimName + len;
-      d = root.findDimension(dimName);
-      if ((d != null) && (d.getLength() == len))
-        return d;
-    }
-
-    // create new dimension and add it
-    return ncfile.addDimension(null, new Dimension(dimName, len));
-  }
-
-  private Variable makeVariable(TagVH vh) {
+  private Structure makeChunkVariable(NetcdfFile ncfile, TagVH vh) {
     Vinfo vinfo = new Vinfo(vh.refno);
     vinfo.tags.add(vh);
     vh.vinfo = vinfo;
@@ -689,80 +684,120 @@ public class H4header extends NCheader {
     if (vh.nfields < 1)
       throw new IllegalStateException();
 
-    Variable v;
-    if (vh.nfields == 1) {
-      // String name = createValidObjectName(vh.name);
-      v = new Variable(ncfile, null, null, vh.name);
-      vinfo.setVariable(v);
-      H4type.setDataType(vh.fld_type[0], v);
+    try {
+      Structure.Builder sb = Structure.builder().setName(vh.name);
+      vinfo.setVariable(sb);
+      Structure s = new Structure(ncfile, null, null, vh.name); // LOOK cheating
+      s.setSPobject(vinfo);
 
-      try {
-        if (vh.nvert > 1) {
+      if (vh.nvert > 1)
+        s.setDimensionsAnonymous(new int[] {vh.nvert});
+      else
+        s.setIsScalar();
 
-          if (vh.fld_order[0] > 1)
-            v.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_order[0]});
-          else if (vh.fld_order[0] < 0)
-            v.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_isize[0]});
-          else
-            v.setDimensionsAnonymous(new int[] {vh.nvert});
-
-        } else {
-
-          if (vh.fld_order[0] > 1)
-            v.setDimensionsAnonymous(new int[] {vh.fld_order[0]});
-          else if (vh.fld_order[0] < 0)
-            v.setDimensionsAnonymous(new int[] {vh.fld_isize[0]});
-          else
-            v.setIsScalar();
-        }
-
-      } catch (InvalidRangeException e) {
-        throw new IllegalStateException();
-      }
-
-      vinfo.setData(data, v.getElementSize());
-
-    } else {
-
-      Structure s;
-      try {
-        // String name = createValidObjectName(vh.name);
-        s = new Structure(ncfile, null, null, vh.name);
-        vinfo.setVariable(s);
-        // vinfo.recsize = vh.ivsize;
-
-        if (vh.nvert > 1)
-          s.setDimensionsAnonymous(new int[] {vh.nvert});
+      for (int fld = 0; fld < vh.nfields; fld++) {
+        Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
+        short type = vh.fld_type[fld];
+        short nelems = vh.fld_order[fld];
+        H4type.setDataType(type, m);
+        if (nelems > 1)
+          m.setDimensionsAnonymous(new int[] {nelems});
         else
-          s.setIsScalar();
+          m.setIsScalar();
 
-        for (int fld = 0; fld < vh.nfields; fld++) {
-          Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
-          short type = vh.fld_type[fld];
-          short nelems = vh.fld_order[fld];
-          H4type.setDataType(type, m);
-          if (nelems > 1)
-            m.setDimensionsAnonymous(new int[] {nelems});
-          else
-            m.setIsScalar();
-
-          m.setSPobject(new Minfo(vh.fld_offset[fld]));
-          s.addMemberVariable(m);
-        }
-
-      } catch (InvalidRangeException e) {
-        throw new IllegalStateException(e.getMessage());
+        m.setSPobject(new Minfo(vh.fld_offset[fld]));
+        s.addMemberVariable(m);
       }
 
       vinfo.setData(data, vh.ivsize);
-      v = s;
+      return s;
+
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  @Nullable
+  private Variable.Builder makeVariable(TagVH vh) {
+    Vinfo vinfo = new Vinfo(vh.refno);
+    vinfo.tags.add(vh);
+    vh.vinfo = vinfo;
+    vh.used = true;
+
+    TagData data = (TagData) tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
+    if (data == null) {
+      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail());
+      return null;
+    }
+    vinfo.tags.add(data);
+    data.used = true;
+    data.vinfo = vinfo;
+
+    if (vh.nfields < 1)
+      throw new IllegalStateException();
+
+    Variable.Builder vb;
+    if (vh.nfields == 1) {
+      // String name = createValidObjectName(vh.name);
+      vb = Variable.builder().setName(vh.name);
+      vinfo.setVariable(vb);
+      vb.setDataType(H4type.setDataType(vh.fld_type[0], null));
+
+      if (vh.nvert > 1) {
+
+        if (vh.fld_order[0] > 1)
+          vb.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_order[0]});
+        else if (vh.fld_order[0] < 0)
+          vb.setDimensionsAnonymous(new int[] {vh.nvert, vh.fld_isize[0]});
+        else
+          vb.setDimensionsAnonymous(new int[] {vh.nvert});
+
+      } else {
+
+        if (vh.fld_order[0] > 1)
+          vb.setDimensionsAnonymous(new int[] {vh.fld_order[0]});
+        else if (vh.fld_order[0] < 0)
+          vb.setDimensionsAnonymous(new int[] {vh.fld_isize[0]});
+        else
+          vb.setIsScalar();
+      }
+
+      vinfo.setData(data, vb.dataType.getSize());
+
+    } else {
+
+      Structure.Builder s = Structure.builder().setName(vh.name);
+      vinfo.setVariable(s);
+      // vinfo.recsize = vh.ivsize;
+
+      if (vh.nvert > 1)
+        s.setDimensionsAnonymous(new int[] {vh.nvert});
+      else
+        s.setIsScalar();
+
+      for (int fld = 0; fld < vh.nfields; fld++) {
+        Variable.Builder m = Variable.builder().setName(vh.fld_name[fld]);
+        short type = vh.fld_type[fld];
+        short nelems = vh.fld_order[fld];
+        m.setDataType(H4type.setDataType(type, null));
+        if (nelems > 1)
+          m.setDimensionsAnonymous(new int[] {nelems});
+        else
+          m.setIsScalar();
+
+        m.setSPobject(new Minfo(vh.fld_offset[fld]));
+        s.addMemberVariable(m);
+      }
+
+      vinfo.setData(data, vh.ivsize);
+      vb = s;
     }
 
     if (debugConstruct) {
-      System.out.println("added variable " + v.getNameAndDimensions() + " from VH " + vh);
+      System.out.println("added variable " + vb.shortName + " from VH " + vh);
     }
 
-    return v;
+    return vb;
   }
 
   // member info
@@ -775,7 +810,7 @@ public class H4header extends NCheader {
     }
   }
 
-  private Variable makeVariable(TagVGroup group) throws IOException {
+  private Variable.Builder makeVariable(TagVGroup group) throws IOException {
     Vinfo vinfo = new Vinfo(group.refno);
     vinfo.tags.add(group);
     group.used = true;
@@ -805,10 +840,8 @@ public class H4header extends NCheader {
       if (tag.code == 1965) {
         TagVGroup vg = (TagVGroup) tag;
         if (vg.className.startsWith("Dim") || vg.className.startsWith("UDim")) {
-          String dimName = NetcdfFile.makeValidCdmObjectName(vg.name);
-          Dimension d = ncfile.getRootGroup().findDimension(dimName);
-          if (d == null)
-            throw new IllegalStateException();
+          String dimName = NetcdfFiles.makeValidCdmObjectName(vg.name);
+          Dimension d = root.findDimension(dimName).orElseThrow(IllegalStateException::new);
           dims.add(d);
         }
       }
@@ -825,36 +858,34 @@ public class H4header extends NCheader {
       log.warn("data tag missing vgroup= " + group.refno + " " + group.name);
       // return null;
     }
-    Variable v = new Variable(ncfile, null, null, group.name);
-    v.setDimensions(dims);
-    H4type.setDataType(ntag.type, v);
+    Variable.Builder<?> vb = Variable.builder().setName(group.name);
+    vb.addDimensions(dims);
+    vb.setDataType(H4type.setDataType(ntag.type, null));
 
-    vinfo.setVariable(v);
-    vinfo.setData(data, v.getElementSize());
+    vinfo.setVariable(vb);
+    vinfo.setData(data, vb.dataType.getSize());
 
     // apparently the 701 SDdimension tag overrides the VGroup dimensions
-    assert dim.shape.length == v.getRank();
+    assert dim.shape.length == vb.getRank();
     boolean ok = true;
-    for (int i = 0; i < dim.shape.length; i++)
-      if (dim.shape[i] != v.getDimension(i).getLength()) {
+    for (int i = 0; i < dim.shape.length; i++) {
+      Dimension vdim = vb.dimensions.get(i);
+      if (dim.shape[i] != vdim.getLength()) {
         if (warnings)
-          log.info(dim.shape[i] + " != " + v.getDimension(i).getLength() + " for " + v.getFullName());
+          log.info(dim.shape[i] + " != " + vdim.getLength() + " for " + vb.shortName);
         ok = false;
       }
+    }
 
     if (!ok) {
-      try {
-        v.setDimensionsAnonymous(dim.shape);
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-      }
+      vb.setDimensionsAnonymous(dim.shape);
     }
 
     // look for attributes
     addVariableAttributes(group, vinfo);
 
     if (debugConstruct) {
-      System.out.println("added variable " + v.getNameAndDimensions() + " from VG " + group.refno);
+      System.out.println("added variable " + vb.shortName + " from VG " + group.refno);
       System.out.println("  SDdim= " + dim.detail());
       System.out.print("  VGdim= ");
       for (Dimension vdim : dims)
@@ -862,10 +893,10 @@ public class H4header extends NCheader {
       System.out.println();
     }
 
-    return v;
+    return vb;
   }
 
-  private Variable makeVariable(TagGroup group) throws IOException {
+  private Variable.Builder makeVariable(TagGroup group) throws IOException {
     Vinfo vinfo = new Vinfo(group.refno);
     vinfo.tags.add(group);
     group.used = true;
@@ -894,16 +925,13 @@ public class H4header extends NCheader {
     if (null == nt)
       throw new IllegalStateException();
 
-    Variable v = new Variable(ncfile, null, null, "SDS-" + group.refno);
-    try {
-      v.setDimensionsAnonymous(dim.shape);
-    } catch (InvalidRangeException e) {
-      throw new IllegalStateException();
-    }
-    DataType dataType = H4type.setDataType(nt.type, v);
+    Variable.Builder vb = Variable.builder().setName("SDS-" + group.refno);
+    vb.setDimensionsAnonymous(dim.shape);
+    DataType dataType = H4type.setDataType(nt.type, null);
+    vb.setDataType(dataType);
 
-    vinfo.setVariable(v);
-    vinfo.setData(data, v.getElementSize());
+    vinfo.setVariable(vb);
+    vinfo.setData(data, vb.dataType.getSize());
 
     // now that we know n, read attribute tags
     for (int i = 0; i < group.nelems; i++) {
@@ -915,25 +943,25 @@ public class H4header extends NCheader {
         TagTextN labels = (TagTextN) tag;
         labels.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute(CDM.LONG_NAME, labels.getList(), false));
+        vb.addAttribute(Attribute.builder().setName(CDM.LONG_NAME).setValues((List) labels.getList(), false).build());
       }
       if (tag.code == 705) {
         TagTextN units = (TagTextN) tag;
         units.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute(CDM.UNITS, units.getList(), false));
+        vb.addAttribute(Attribute.builder().setName(CDM.UNITS).setValues((List) units.getList(), false).build());
       }
       if (tag.code == 706) {
         TagTextN formats = (TagTextN) tag;
         formats.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute("formats", formats.getList(), false));
+        vb.addAttribute(Attribute.builder().setName("formats").setValues((List) formats.getList(), false).build());
       }
       if (tag.code == 707) {
         TagSDminmax minmax = (TagSDminmax) tag;
         tag.used = true;
-        v.addAttribute(new Attribute("min", minmax.getMin(dataType)));
-        v.addAttribute(new Attribute("max", minmax.getMax(dataType)));
+        vb.addAttribute(new Attribute("min", minmax.getMin(dataType)));
+        vb.addAttribute(new Attribute("max", minmax.getMax(dataType)));
       }
     }
 
@@ -941,11 +969,11 @@ public class H4header extends NCheader {
     addVariableAttributes(group, vinfo);
 
     if (debugConstruct) {
-      System.out.println("added variable " + v.getNameAndDimensions() + " from Group " + group);
+      System.out.println("added variable " + vb.shortName + " from Group " + group);
       System.out.println("  SDdim= " + dim.detail());
     }
 
-    return v;
+    return vb;
   }
 
   private void addVariableAttributes(TagGroup group, Vinfo vinfo) throws IOException {
@@ -970,9 +998,14 @@ public class H4header extends NCheader {
 
   //////////////////////////////////////////////////////////////////////
 
+  Vinfo makeVinfo(short refno) {
+    return new Vinfo(refno);
+  }
+
   class Vinfo implements Comparable<Vinfo> {
     short refno;
-    Variable v;
+    Variable.Builder<?> v;
+    Group.Builder group;
     List<Tag> tags = new ArrayList<>();
 
     // info about reading the data
@@ -997,10 +1030,12 @@ public class H4header extends NCheader {
 
     Vinfo(short refno) {
       this.refno = refno;
-      refnoMap.put(refno, this);
+      if (refno >= 0) {
+        refnoMap.put(refno, this);
+      }
     }
 
-    void setVariable(Variable v) {
+    void setVariable(Variable.Builder v) {
       this.v = v;
       v.setSPobject(this);
     }
@@ -1017,12 +1052,12 @@ public class H4header extends NCheader {
 
     void setFillValue(Attribute att) {
       // see IospHelper.makePrimitiveArray(int size, DataType dataType, Object fillValue)
-      fillValue = (v.getDataType() == DataType.STRING) ? att.getStringValue() : att.getNumericValue();
+      fillValue = (v.dataType == DataType.STRING) ? att.getStringValue() : att.getNumericValue();
     }
 
     // make sure needed info is present : call this when variable needs to be read
     // this allows us to defer getting layout info until then
-    void setLayoutInfo() throws IOException {
+    void setLayoutInfo(NetcdfFile ncfile) throws IOException {
       if (data == null)
         return;
 
@@ -1045,7 +1080,7 @@ public class H4header extends NCheader {
 
       } else if (null != data.chunked) {
         isChunked = true;
-        chunks = data.chunked.getDataChunks();
+        chunks = data.chunked.getDataChunks(ncfile);
         chunkSize = data.chunked.chunk_length;
         isCompressed = data.chunked.isCompressed;
 
@@ -1079,9 +1114,18 @@ public class H4header extends NCheader {
       }
     }
 
+    List<DataChunk> readChunks(NetcdfFile ncfile) throws IOException {
+      return data.chunked.getDataChunks(ncfile);
+    }
+
+    String read() throws IOException {
+      raf.seek(data.offset);
+      return raf.readString(data.length);
+    }
+
     public String toString() {
       Formatter sbuff = new Formatter();
-      sbuff.format("refno=%d name=%s fillValue=%s %n", refno, v.getShortName(), fillValue);
+      sbuff.format("refno=%d name=%s fillValue=%s %n", refno, v.shortName, fillValue);
       sbuff.format(" isChunked=%s isCompressed=%s isLinked=%s hasNoData=%s %n", isChunked, isCompressed, isLinked,
           hasNoData);
       sbuff.format(" elemSize=%d data start=%d length=%s %n%n", elemSize, start, length);
@@ -1194,7 +1238,7 @@ public class H4header extends NCheader {
 
     public String detail() {
       return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "") + " offset=" + offset
-          + " length=" + length + (((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getFullName() : "");
+          + " length=" + length + (((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.shortName : "");
     }
 
     public String toString() {
@@ -1304,7 +1348,7 @@ public class H4header extends NCheader {
 
     short sp_tag_desc; // SPECIAL_XXX constant
     byte[] sp_tag_header;
-
+    List<DataChunk> dataChunks;
 
     private void read() throws IOException {
       head_len = raf.readInt();
@@ -1340,9 +1384,7 @@ public class H4header extends NCheader {
       raf.readFully(sp_tag_header);
     }
 
-    List<DataChunk> dataChunks;
-
-    List<DataChunk> getDataChunks() throws IOException {
+    private List<DataChunk> getDataChunks(NetcdfFile ncfile) throws IOException {
       if (dataChunks == null) {
         dataChunks = new ArrayList<>();
 
@@ -1350,7 +1392,7 @@ public class H4header extends NCheader {
         if (debugChunkTable)
           System.out.println(" TagData getChunkedTable " + detail());
         TagVH chunkTableTag = (TagVH) tagMap.get(tagid(chunk_tbl_ref, chunk_tbl_tag));
-        Structure s = (Structure) makeVariable(chunkTableTag);
+        Structure s = makeChunkVariable(ncfile, chunkTableTag);
         if (s == null)
           throw new IllegalStateException("cant parse " + chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
@@ -1398,7 +1440,6 @@ public class H4header extends NCheader {
   }
 
   static class DataChunk {
-
     int[] origin;
     TagData data;
 
@@ -1877,7 +1918,7 @@ public class H4header extends NCheader {
   private class TagVGroup extends TagGroup {
     short extag, exref, version;
     String name, className;
-    Group group;
+    Group.Builder group;
 
     TagVGroup(short code) throws IOException {
       super(code);
@@ -1913,7 +1954,7 @@ public class H4header extends NCheader {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(used ? " " : "*").append("refno=").append(refno).append(" tag= ").append(t)
           .append(extended ? " EXTENDED" : "").append(" offset=").append(offset).append(" length=").append(length)
-          .append(((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getFullName() : "");
+          .append(((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.shortName : "");
       sbuff.append(" class= ").append(className);
       sbuff.append(" extag= ").append(extag);
       sbuff.append(" exref= ").append(exref);
@@ -1927,7 +1968,6 @@ public class H4header extends NCheader {
         sbuff.append(elem_ref[i]).append(" ");
         sbuff.append("\n   ");
       }
-
       return sbuff.toString();
     }
   }

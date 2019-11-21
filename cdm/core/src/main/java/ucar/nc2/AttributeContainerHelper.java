@@ -36,6 +36,7 @@ public class AttributeContainerHelper implements AttributeContainer {
     return name;
   }
 
+  @Deprecated
   public void setImmutable() {
     this.atts = Collections.unmodifiableList(atts);
   }
@@ -107,9 +108,19 @@ public class AttributeContainerHelper implements AttributeContainer {
    * @param a remove this attribute
    * @return true if was found and removed
    */
-  @Override
   public boolean remove(Attribute a) {
     return a != null && atts.remove(a);
+  }
+
+  /**
+   * Replace an Attribute with a different name, same value.
+   *
+   * @param a remove this attribute
+   */
+  public void replace(Attribute a, String newName) {
+    atts.remove(a);
+    Attribute newAtt = a.toBuilder().setName(newName).build();
+    addAttribute(newAtt);
   }
 
   /**
@@ -118,7 +129,6 @@ public class AttributeContainerHelper implements AttributeContainer {
    * @param attName if exists, remove this attribute
    * @return true if was found and removed
    */
-  @Override
   public boolean removeAttribute(String attName) {
     Attribute att = findAttribute(attName);
     return att != null && atts.remove(att);
@@ -130,7 +140,6 @@ public class AttributeContainerHelper implements AttributeContainer {
    * @param attName if exists, remove this attribute
    * @return true if was found and removed
    */
-  @Override
   public boolean removeAttributeIgnoreCase(String attName) {
     Attribute att = findAttributeIgnoreCase(attName);
     return att != null && atts.remove(att);
