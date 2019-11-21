@@ -31,13 +31,23 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   double latv, lonv, elev;
   DateFormatter formatter = new DateFormatter();
 
+
+  static private boolean isNEXRAD2Format(String format) {
+    // somewhat duplicated in Nexrad2IOServiceProvider - so if chaing something here, also
+    // look in cdm-radial module's Nexrad2IOServiceProvider.isNEXRAD2Format
+    // TODO: find a home for this method to be shared
+    return format != null && (format.equals("ARCHIVE2") || format.startsWith("AR2V"));
+    // log message about Trying to handle unknown but valid-looking format handled in Nexrad2IOServiceProvider
+  }
+
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if (_Coordinate.Convention.equals(convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
-      if (format != null && (Nexrad2IOServiceProvider.isNEXRAD2Format(format) || format.equals("CINRAD-SA"))
+      if (format != null && (isNEXRAD2Format(format) || format.equals("CINRAD-SA"))) {
         return this;
+      }
     }
     return null;
   }
