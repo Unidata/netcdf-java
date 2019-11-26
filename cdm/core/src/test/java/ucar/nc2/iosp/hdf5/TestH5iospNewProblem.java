@@ -20,14 +20,13 @@ public class TestH5iospNewProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir
-        + "/formats/hdf5/npoess/ExampleFiles/GATRO-SATMR_npp_d20020906_t0409572_e0410270_b19646_c20090720223122943227_devl_int.h5";
+    String filename = TestDir.cdmUnitTestDir + "/formats/hdf5/IASI/IASI.h5";
     // showOrg(filename);
     // showNew(filename);
-    compareWithBuilder(filename);
+    assert compareWithBuilder(filename);
   }
 
-  private void compareWithBuilder(String filename) throws IOException {
+  private boolean compareWithBuilder(String filename) throws IOException {
     logger.info("TestBuilders on {}%n", filename);
     try (NetcdfFile org = NetcdfFile.open(filename)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
@@ -36,13 +35,14 @@ public class TestH5iospNewProblem {
         if (!compare.compare(org, withBuilder, null)) {
           System.out.printf("Compare %s%n%s%n", filename, f);
           fail();
+          return false;
         }
       }
     }
+    return true;
   }
 
   private void showOrg(String filename) throws IOException {
-
     try (NetcdfFile org = NetcdfFile.open(filename)) {
       // Variable v = org.findVariable("catchments_part_node_count");
       // Array data = v.read();
@@ -51,7 +51,6 @@ public class TestH5iospNewProblem {
   }
 
   private void showNew(String filename) throws IOException {
-
     try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
       // Variable v = withBuilder.findVariable("catchments_x");
       // Array data = v.read();

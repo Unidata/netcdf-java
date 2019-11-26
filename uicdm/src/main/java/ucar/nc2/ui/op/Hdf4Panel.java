@@ -18,16 +18,10 @@ import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class Hdf4Panel extends OpPanel {
   private RandomAccessFile raf;
   private Hdf4Table hdf4Table;
 
-  /**
-   *
-   */
   public Hdf4Panel(PreferencesExt p) {
     super(p, "file:", true, false);
     hdf4Table = new Hdf4Table(prefs);
@@ -50,7 +44,6 @@ public class Hdf4Panel extends OpPanel {
     buttPanel.add(eosdump);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -77,13 +70,11 @@ public class Hdf4Panel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     hdf4Table.closeOpenFiles();
   }
 
-  /** */
   @Override
   public void save() {
     hdf4Table.save();

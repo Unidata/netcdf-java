@@ -23,12 +23,12 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutRegular;
-import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
@@ -39,7 +39,6 @@ import ucar.unidata.io.RandomAccessFile;
  *
  * @author caron
  */
-
 public class H5iospNew extends AbstractIOServiceProvider {
   public static final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
 
@@ -82,7 +81,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   public String getFileTypeId() {
     if (isEos)
       return "HDF5-EOS";
-    if (headerParser.isNetcdf4())
+    if (header.isNetcdf4())
       return DataFormatType.NETCDF4.getDescription();
     return DataFormatType.HDF5.getDescription();
   }
@@ -92,30 +91,18 @@ public class H5iospNew extends AbstractIOServiceProvider {
     return "Hierarchical Data Format, version 5";
   }
 
-  /*
-   * public void getEosInfo(Formatter f) throws IOException {
-   * NetcdfFile ncfile = headerParser.ncfile;
-   * Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
-   * if (eosInfo != null) {
-   * HdfEos.getEosInfo(ncfile, eosInfo, f);
-   * } else {
-   * f.format("Cant find GROUP '%s'", HdfEos.HDF5_GROUP);
-   * }
-   * }
-   */
-
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
   }
 
   @Override
   public boolean isBuilder() {
-    return false;
+    return true;
   }
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private H5headerNew headerParser;
+  private H5headerNew header;
   private boolean isEos;
   boolean includeOriginalAttributes;
 
@@ -124,13 +111,18 @@ public class H5iospNew extends AbstractIOServiceProvider {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    headerParser = new H5headerNew(raf, rootGroup, this);
-    headerParser.read(null);
+    header = new H5headerNew(raf, rootGroup, this);
+    header.read(null);
 
     // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
-    if (eosInfo != null && useHdfEos) {
-      isEos = HdfEos.amendFromODL(ncfile, eosInfo);
+    if (useHdfEos) {
+      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent( eosGroup -> {
+        try {
+          isEos = HdfEos.amendFromODL(header, eosGroup);
+        } catch (IOException e) {
+          log.warn(" HdfEos.amendFromODL failed");
+        }
+      });
     }
   }
 
@@ -138,15 +130,21 @@ public class H5iospNew extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
     Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
-    headerParser = new H5headerNew(raf, rootGroup, this);
-    headerParser.read(null);
+    header = new H5headerNew(raf, rootGroup, this);
+    header.read(null);
     ncfile.setRootGroup(rootGroup.build(null));
 
     // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
-    if (eosInfo != null && useHdfEos) {
-      isEos = HdfEos.amendFromODL(ncfile, eosInfo);
+    if (useHdfEos) {
+      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent( eosGroup -> {
+        try {
+          isEos = HdfEos.amendFromODL(header, eosGroup);
+        } catch (IOException e) {
+          log.warn(" HdfEos.amendFromODL failed");
+        }
+      });
     }
+
     ncfile.finish();
   }
 
@@ -229,7 +227,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
       return Array.factory(dataType, wantSection.getShape(), data);
   }
 
-  public String[] readFilteredStringData(LayoutBB layout) throws IOException {
+  private String[] readFilteredStringData(LayoutBB layout) throws IOException {
     int size = (int) layout.getTotalNelems();
     String[] sa = new String[size];
     while (layout.hasNext()) {
@@ -240,7 +238,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
         System.out.printf("readFilteredStringData chunk=%s%n", chunk);
       int destPos = (int) chunk.getDestElem();
       for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
-        sa[destPos++] = headerParser.readHeapString(bb, (chunk.getSrcElem() + i) * 16); // LOOK does this handle section
+        sa[destPos++] = header.readHeapString(bb, (chunk.getSrcElem() + i) * 16); // LOOK does this handle section
                                                                                         // correctly ??
       }
     }
@@ -301,7 +299,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
           continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
           long address = chunk.getSrcPos() + layout.getElemSize() * i;
-          Array vlenArray = headerParser.getHeapDataArray(address, readType, endian);
+          Array vlenArray = header.getHeapDataArray(address, readType, endian);
           data[count++] = (typeInfo.base.hdfType == 7) ? convertReference(vlenArray) : vlenArray;
         }
       }
@@ -353,7 +351,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     String[] result = new String[nelems];
     for (int i = 0; i < nelems; i++) {
       long reference = refArray.getLong(ima.set(i));
-      String name = headerParser.getDataObjectName(reference);
+      String name = header.getDataObjectName(reference);
       result[i] = name != null ? name : Long.toString(reference);
       if (debugVlen)
         System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
@@ -432,7 +430,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
         int destPos = pos + m.getDataParam();
         String[] result = new String[size];
         for (int i = 0; i < size; i++)
-          result[i] = headerParser.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
+          result[i] = header.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
 
         int index = asbb.addObjectToHeap(result);
         bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
@@ -460,7 +458,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
         int destPos = startPos;
         for (int i = 0; i < size; i++) {
           // vlenarray extracts the i'th vlen contents (struct not supported).
-          Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
+          Array vlenArray = header.readHeapVlen(bb, destPos, m.getDataType(), endian);
           fieldarray[i] = vlenArray;
           destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
         }
@@ -504,7 +502,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
         if (chunk == null)
           continue;
         for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
-          sa[count++] = headerParser.readHeapString(chunk.getSrcPos() + layout.getElemSize() * i);
+          sa[count++] = header.readHeapString(chunk.getSrcPos() + layout.getElemSize() * i);
         }
       }
       return sa;
@@ -558,7 +556,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   @Override
   public void close() throws IOException {
     super.close();
-    headerParser.close();
+    header.close();
   }
 
   @Override

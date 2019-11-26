@@ -27,7 +27,6 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.iosp.hdf4.H4header.Vinfo;
 import ucar.nc2.iosp.hdf4.ODLparser;
 
 /**
@@ -86,20 +85,20 @@ public class HdfEos {
    * @return true if HDF-EOS info was found
    * @throws IOException on read error
    */
-  public static boolean amendFromODL(H4header h4Header, Group.Builder eosGroup) throws IOException {
-    String smeta = getStructMetadata(eosGroup);
+  public static boolean amendFromODL(HdfHeaderIF header, Group.Builder eosGroup) throws IOException {
+    String smeta = getStructMetadata(header, eosGroup);
     if (smeta == null) {
       return false;
     }
 
     HdfEos fixer = new HdfEos();
     fixer.fixAttributes(eosGroup);
-    fixer.amendFromODL(h4Header, eosGroup, smeta);
+    fixer.amendFromODL(header, header.getRootGroup(), smeta);
     return true;
   }
 
-  public static boolean getEosInfo(Group.Builder eosGroup, Formatter f) throws IOException {
-    String smeta = getStructMetadata(eosGroup);
+  public static boolean getEosInfo(HdfHeaderIF header, Group.Builder eosGroup, Formatter f) throws IOException {
+    String smeta = getStructMetadata(header, eosGroup);
     if (smeta == null) {
       f.format("No StructMetadata variables in group %s %n", eosGroup.shortName);
       return false;
@@ -113,7 +112,7 @@ public class HdfEos {
     return true;
   }
 
-  private static String getStructMetadata(Group.Builder eosGroup) throws IOException {
+  private static String getStructMetadata(HdfHeaderIF header, Group.Builder eosGroup) throws IOException {
     StringBuilder sbuff = null;
     String structMetadata = null;
 
@@ -129,22 +128,7 @@ public class HdfEos {
       }
 
       // Since we dont have a Variable yet, we have to do something low-level
-      Vinfo vinfo = (Vinfo) structMetadataVar.spiObject;
-      structMetadata = vinfo.read();
-
-      /*
-       * read and parse the ODL
-       * Array A = structMetadataVar.read();
-       * if (A instanceof ArrayChar.D1) {
-       * ArrayChar ca = (ArrayChar) A;
-       * structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
-       * } else if (A instanceof ArrayObject.D0) {
-       * ArrayObject ao = (ArrayObject) A;
-       * structMetadata = (String) ao.getObject(0);
-       * } else {
-       * log.error("Unsupported array type {} for StructMetadata", A.getElementType());
-       * }
-       */
+      structMetadata = header.readStructMetadata(structMetadataVar);
 
       if (sbuff != null) {
         sbuff.append(structMetadata);
@@ -155,8 +139,8 @@ public class HdfEos {
   }
 
   ///////////////////////////////////////////
-  String location;
-  H4header h4Header;
+  private String location;
+  private HdfHeaderIF header;
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata
@@ -164,8 +148,8 @@ public class HdfEos {
    * @param rootg Amend this
    * @param structMetadata structMetadata as String
    */
-  private void amendFromODL(H4header h4Header, Group.Builder rootg, String structMetadata) {
-    this.h4Header = h4Header;
+  private void amendFromODL(HdfHeaderIF header, Group.Builder rootg, String structMetadata) {
+    this.header = header;
     ODLparser parser = new ODLparser();
     Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
     FeatureType featureType = null;
@@ -183,7 +167,7 @@ public class HdfEos {
         String swathName = NetcdfFiles.makeValidCdmObjectName(swathNameElem.getText().trim());
         Group.Builder swathGroup = findGroupNested(rootg, swathName);
         // if (swathGroup == null)
-        // swathGroup = findGroupNested(rootg, H4header.createValidObjectName(swathName));
+        // swathGroup = findGroupNested(rootg, HdfHeaderIF.createValidObjectName(swathName));
 
         if (swathGroup != null) {
           featureType = amendSwath(elemSwath, swathGroup);
@@ -206,7 +190,7 @@ public class HdfEos {
         String gridName = NetcdfFiles.makeValidCdmObjectName(gridNameElem.getText().trim());
         Group.Builder gridGroup = findGroupNested(rootg, gridName);
         // if (gridGroup == null)
-        // gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
+        // gridGroup = findGroupNested(rootg, HdfHeaderIF.createValidObjectName(gridName));
         if (gridGroup != null) {
           featureType = amendGrid(elemGrid, gridGroup, location);
         } else {
@@ -228,7 +212,7 @@ public class HdfEos {
         String name = nameElem.getText().trim();
         Group.Builder ptGroup = findGroupNested(rootg, name);
         // if (ptGroup == null)
-        // ptGroup = findGroupNested(rootg, H4header.createValidObjectName(name));
+        // ptGroup = findGroupNested(rootg, HdfHeaderIF.createValidObjectName(name));
         if (ptGroup != null) {
           featureType = FeatureType.POINT;
         } else {
@@ -308,9 +292,7 @@ public class HdfEos {
       v.setAutoGen(offset, incr);
       v.addAttribute(new Attribute("_DimensionMap", ""));
       parent.addVariable(v);
-      Vinfo vinfo = h4Header.makeVinfo((short) -1);
-      vinfo.group = parent;
-      vinfo.setVariable(v);
+      header.makeVinfoForDimensionMapVariable(parent, v);
 
       if (showWork) {
         log.debug(" Add dimensionMap {}", v);
@@ -576,7 +558,7 @@ public class HdfEos {
     return FeatureType.GRID;
   }
 
-  private void addAttributeIfExists(Element elem, String name, Variable.Builder v, boolean isDoubleArray) {
+  private void addAttributeIfExists(Element elem, String name, Variable.Builder<?> v, boolean isDoubleArray) {
     Element child = elem.getChild(name);
     if (child == null) {
       return;
@@ -602,7 +584,7 @@ public class HdfEos {
   }
 
   // convert to shared dimensions
-  private void setSharedDimensions(Group.Builder group, Variable.Builder v, List<Element> values,
+  private void setSharedDimensions(Group.Builder group, Variable.Builder<?> v, List<Element> values,
       List<Dimension> unknownDims, String location) {
     if (values.isEmpty()) {
       return;
@@ -621,7 +603,7 @@ public class HdfEos {
     // gotta have same number of dimensions
     List<Dimension> oldDims = v.dimensions;
     if (oldDims.size() != values.size()) {
-      log.error("Different number of dimensions for {} {}", v, location);
+      log.error("Different number of dimensions for {} {}", v.shortName, location);
       return;
     }
 

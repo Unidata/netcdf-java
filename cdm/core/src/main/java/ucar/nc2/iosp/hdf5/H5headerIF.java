@@ -3,6 +3,10 @@ package ucar.nc2.iosp.hdf5;
 import java.io.IOException;
 import ucar.unidata.io.RandomAccessFile;
 
+/**
+ * Temporary workaround to share code between H5header and internal/iosp/H5headerNew.
+ * Should go away in version 6.
+ */
 public interface H5headerIF {
 
   RandomAccessFile getRandomAccessFile();

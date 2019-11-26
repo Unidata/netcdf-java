@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
+ Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ See LICENSE for license information.
  */
 
 package ucar.nc2.ui.op;
@@ -9,6 +9,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf4.H4iosp;
+import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -24,9 +25,9 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 /**
- * ToolsUI/Iosp/Hdf4
+ ToolsUI/Iosp/Hdf4
  *
- * @author caron
+ @author caron
  */
 public class Hdf4Table extends JPanel {
   private PreferencesExt prefs;
@@ -43,9 +44,6 @@ public class Hdf4Table extends JPanel {
   private H4header header;
   private String location;
 
-  /**
-   *
-   */
   public Hdf4Table(PreferencesExt prefs) {
     this.prefs = prefs;
 
@@ -64,12 +62,12 @@ public class Hdf4Table extends JPanel {
      * MessageBean mb = (MessageBean) messTable.getSelectedBean();
      * dumpTA.setText( mb.m.toString());
      * });
-     * 
+     *
      * thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(messTable.getJTable(), "Options");
      * varPopup.addAction("Show FractalHeap", new AbstractAction() {
      * public void actionPerformed(ActionEvent e) {
      * MessageBean mb = (MessageBean) messTable.getSelectedBean();
-     * 
+     *
      * if (infoTA == null) {
      * infoTA = new TextHistoryPane();
      * infoWindow = new IndependentWindow("Extra", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
@@ -78,13 +76,13 @@ public class Hdf4Table extends JPanel {
      * infoTA.clear();
      * Formatter f = new Formatter();
      * mb.m.showFractalHeap(f);
-     * 
+     *
      * infoTA.appendLine(f.toString());
      * infoTA.gotoTop();
      * infoWindow.showIfNotIconified();
      * }
      * });
-     * 
+     *
      * attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false);
      * attTable.addListSelectionListener(e -> {
      * AttributeBean mb = (AttributeBean) attTable.getSelectedBean();
@@ -108,9 +106,6 @@ public class Hdf4Table extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public void save() {
     tagTable.saveState(false);
     // messTable.saveState(false);
@@ -121,9 +116,6 @@ public class Hdf4Table extends JPanel {
     // prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {
     if (iosp != null) {
       iosp.close();
@@ -131,9 +123,6 @@ public class Hdf4Table extends JPanel {
     iosp = null;
   }
 
-  /**
-   *
-   */
   public void setHdf4File(RandomAccessFile raf) throws IOException {
     closeOpenFiles();
 
@@ -159,28 +148,15 @@ public class Hdf4Table extends JPanel {
     tagTable.setBeans(beanList);
   }
 
-  /**
-   *
-   */
   public void getEosInfo(Formatter f) throws IOException {
     header.getEosInfo(f);
   }
 
-  /**
-   *
-   */
   public static class TagBean {
     H4header.Tag tag;
-
-    /**
-     * no-arg constructor
-     */
     public TagBean() {}
 
-    /**
-     * create from a tag
-     */
-    public TagBean(H4header.Tag tag) {
+    TagBean(H4header.Tag tag) {
       this.tag = tag;
     }
 

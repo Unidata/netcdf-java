@@ -36,10 +36,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.unidata.io.RandomAccessFile;
 
-/**
- * @author caron
- * @since Dec 17, 2007
- */
+/** HDF4 iosp */
 public class H4iosp extends AbstractIOServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
   private static boolean showLayoutTypes;
