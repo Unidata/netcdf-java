@@ -116,7 +116,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     if (useHdfEos) {
-      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent( eosGroup -> {
+      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
           isEos = HdfEos.amendFromODL(header, eosGroup);
         } catch (IOException e) {
@@ -136,7 +136,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     if (useHdfEos) {
-      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent( eosGroup -> {
+      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
           isEos = HdfEos.amendFromODL(header, eosGroup);
         } catch (IOException e) {
@@ -239,7 +239,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
       int destPos = (int) chunk.getDestElem();
       for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
         sa[destPos++] = header.readHeapString(bb, (chunk.getSrcElem() + i) * 16); // LOOK does this handle section
-                                                                                        // correctly ??
+                                                                                  // correctly ??
       }
     }
     return sa;

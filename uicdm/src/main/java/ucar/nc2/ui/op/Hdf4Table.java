@@ -1,6 +1,6 @@
 /*
- Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
- See LICENSE for license information.
+ * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package ucar.nc2.ui.op;
@@ -25,9 +25,9 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 /**
- ToolsUI/Iosp/Hdf4
+ * ToolsUI/Iosp/Hdf4
  *
- @author caron
+ * @author caron
  */
 public class Hdf4Table extends JPanel {
   private PreferencesExt prefs;
@@ -154,6 +154,7 @@ public class Hdf4Table extends JPanel {
 
   public static class TagBean {
     H4header.Tag tag;
+
     public TagBean() {}
 
     TagBean(H4header.Tag tag) {
