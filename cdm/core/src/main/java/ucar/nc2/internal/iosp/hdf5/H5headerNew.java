@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -38,9 +39,12 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
+import ucar.nc2.Group.Builder;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.iosp.hdf4.HdfEos;
+import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObject;
 import ucar.nc2.internal.iosp.hdf5.H5objects.DataObjectFacade;
 import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
@@ -69,7 +73,7 @@ import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.unidata.io.RandomAccessFile;
 
 /** Read all of the metadata of an HD5 file. */
-public class H5headerNew implements H5headerIF {
+public class H5headerNew implements H5headerIF, HdfHeaderIF {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5headerNew.class);
 
   // special attribute names in HDF5
@@ -1338,7 +1342,7 @@ public class H5headerNew implements H5headerIF {
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
       // System.out.printf("new transform object Reference: facade= %s variable name=%s%n", facade.name, vb.shortName);
       vb.setDataType(DataType.STRING);
-      Array rawData = vinfo.read();
+      Array rawData = vinfo.readArray();
       Array refData = findReferenceObjectNames(rawData);
       vb.setCachedData(refData, true); // so H5iosp.read() is never called
       vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
@@ -1550,6 +1554,24 @@ public class H5headerNew implements H5headerIF {
     return true;
   }
 
+  @Override
+  public Builder getRootGroup() {
+    return root;
+  }
+
+  @Override
+  public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
+    // this is a self contained variable, doesnt need any extra info
+    Vinfo vinfo = new Vinfo();
+    vinfo.owner = v;
+  }
+
+  @Override
+  public String readStructMetadata(Variable.Builder<?> structMetadataVar) throws IOException {
+    Vinfo vinfo = (Vinfo) structMetadataVar.spiObject;
+    return vinfo.readString();
+  }
+
   // Holder of all H5 specific information for a Variable, needed to do IO.
   public class Vinfo {
     Variable.Builder owner; // debugging
@@ -1627,6 +1649,9 @@ public class H5headerNew implements H5headerIF {
       return result;
     }
 
+    Vinfo() {
+      // nuthing
+    }
 
     /**
      * Constructor
@@ -1859,7 +1884,7 @@ public class H5headerNew implements H5headerIF {
     }
 
     // limited reader; Variable is not built yet.
-    Array read() throws IOException {
+    Array readArray() throws IOException {
       int[] shape = mds.dimLength;
       DataType dataType = typeInfo.dataType;
       Layout layout;
@@ -1875,6 +1900,38 @@ public class H5headerNew implements H5headerIF {
       }
       Object data = IospHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, false);
       return Array.factory(dataType, shape, data);
+    }
+
+    // limited reader; Variable is not built yet.
+    String readString() throws IOException {
+      int[] shape = new int[] {mdt.byteSize};
+      DataType dataType = typeInfo.dataType;
+      Layout layout;
+      try {
+        if (isChunked) {
+          layout = new H5tiledLayout(this, dataType, new Section(shape));
+        } else {
+          layout = new LayoutRegular(dataPos, dataType.getSize(), shape, null);
+        }
+      } catch (InvalidRangeException e) {
+        // cant happen because we use null for wantSection
+        throw new IllegalStateException();
+      }
+      Object data = IospHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, true);
+      Array dataArray = Array.factory(dataType, shape, data);
+
+      // read and parse the ODL
+      String result = "";
+      if (dataArray instanceof ArrayChar.D1) {
+        ArrayChar ca = (ArrayChar) dataArray;
+        result = ca.getString(); // common case only StructMetadata.0, avoid extra copy
+      } else if (dataArray instanceof ArrayObject.D0) {
+        ArrayObject ao = (ArrayObject) dataArray;
+        result = (String) ao.getObject(0);
+      } else {
+        log.error("Unsupported array type {} for StructMetadata", dataArray.getElementType());
+      }
+      return result;
     }
   }
 
@@ -2230,6 +2287,10 @@ public class H5headerNew implements H5headerIF {
       memTracker.report(f);
       log.debug("{}", f);
     }
+  }
+
+  public void getEosInfo(Formatter f) throws IOException {
+    HdfEos.getEosInfo(this, root, f);
   }
 
 }

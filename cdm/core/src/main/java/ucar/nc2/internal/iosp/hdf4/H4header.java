@@ -30,6 +30,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
+import ucar.nc2.Group.Builder;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -49,7 +50,7 @@ import ucar.unidata.util.Format;
  * @author caron
  * @since Jul 18, 2007
  */
-public class H4header {
+public class H4header implements HdfHeaderIF {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   private static final byte[] head = {0x0e, 0x03, 0x13, 0x01};
@@ -163,7 +164,7 @@ public class H4header {
   }
 
   public void getEosInfo(Formatter f) throws IOException {
-    HdfEos.getEosInfo(root, f);
+    HdfEos.getEosInfo(this, root, f);
   }
 
   private static int tagid(short refno, short code) {
@@ -800,8 +801,25 @@ public class H4header {
     return vb;
   }
 
-  // member info
+  @Override
+  public Builder getRootGroup() {
+    return root;
+  }
 
+  @Override
+  public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
+    Vinfo vinfo = makeVinfo((short) -1);
+    vinfo.group = parent;
+    vinfo.setVariable(v);
+  }
+
+  @Override
+  public String readStructMetadata(Variable.Builder<?> structMetadataVar) throws IOException {
+    Vinfo vinfo = (Vinfo) structMetadataVar.spiObject;
+    return vinfo.read();
+  }
+
+  // member info
   static class Minfo {
     int offset;
 
