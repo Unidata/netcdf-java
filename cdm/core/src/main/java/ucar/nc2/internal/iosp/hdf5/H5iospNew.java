@@ -148,6 +148,10 @@ public class H5iospNew extends AbstractIOServiceProvider {
     ncfile.finish();
   }
 
+  public H5headerNew getHeader() {
+    return header;
+  }
+
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
     if (debugRead)

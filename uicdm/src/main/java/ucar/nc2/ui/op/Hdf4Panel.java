@@ -22,9 +22,9 @@ public class Hdf4Panel extends OpPanel {
   private RandomAccessFile raf;
   private Hdf4Table hdf4Table;
 
-  public Hdf4Panel(PreferencesExt p) {
+  public Hdf4Panel(PreferencesExt p, boolean useBuilders) {
     super(p, "file:", true, false);
-    hdf4Table = new Hdf4Table(prefs);
+    hdf4Table = useBuilders ? new Hdf4NewTable(prefs) : new Hdf4Table(prefs);
     add(hdf4Table, BorderLayout.CENTER);
 
     AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);

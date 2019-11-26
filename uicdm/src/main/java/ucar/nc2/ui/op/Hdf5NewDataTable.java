@@ -9,9 +9,10 @@ import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Variable;
+import ucar.nc2.internal.iosp.hdf5.H5diagNew;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
+import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.nc2.iosp.hdf5.H5diag;
-import ucar.nc2.iosp.hdf5.H5header;
-import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
@@ -37,28 +38,24 @@ import javax.swing.JSplitPane;
  * @author caron
  * @since 6/26/12
  */
-public class Hdf5DataTable extends JPanel {
-  protected PreferencesExt prefs;
-
-  private BeanTable objectTable;
+public class Hdf5NewDataTable extends Hdf5DataTable {
+  private BeanTable<VarBean> objectTable;
   private JSplitPane splitH;
 
   private TextHistoryPane infoTA;
 
-  private H5iosp iosp;
+  private NetcdfFile ncfile;
+  private H5iospNew iosp;
   private String location;
 
-  public Hdf5DataTable(PreferencesExt prefs, JPanel buttPanel) {
-    this.prefs = prefs;
-    if (buttPanel == null)
-      return;
-
+  public Hdf5NewDataTable(PreferencesExt prefs, JPanel buttPanel) {
+    super(prefs, null);
     PopupMenu varPopup;
 
-    objectTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject",
-        "Level 2A data object header", null);
+    objectTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
+        "H5headerNew.DataObject", "Level 2A data object header", null);
     objectTable.addListSelectionListener(e -> {
-      VarBean vb = (VarBean) objectTable.getSelectedBean();
+      VarBean vb = objectTable.getSelectedBean();
       vb.count(true);
       vb.show();
     });
@@ -123,31 +120,15 @@ public class Hdf5DataTable extends JPanel {
     splitH = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, objectTable, infoTA);
     splitH.setDividerLocation(prefs.getInt("splitPosH", 600));
 
-    /*
-     * split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitH, messTable);
-     * split.setDividerLocation(prefs.getInt("splitPos", 500));
-     * 
-     * split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, attTable);
-     * split2.setDividerLocation(prefs.getInt("splitPos2", 500));
-     */
-
     setLayout(new BorderLayout());
     add(splitH, BorderLayout.CENTER);
   }
 
   public void save() {
     objectTable.saveState(false);
-    // messTable.saveState(false);
-    // attTable.saveState(false);
-    // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    // prefs.putInt("splitPos", split.getDividerLocation());
-    // prefs.putInt("splitPos2", split2.getDividerLocation());
     prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {
     if (iosp != null) {
       iosp.close();
@@ -161,8 +142,8 @@ public class Hdf5DataTable extends JPanel {
     this.location = raf.getLocation();
     List<VarBean> beanList = new ArrayList<>();
 
-    iosp = new H5iosp();
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
+    iosp = new H5iospNew();
+    ncfile = new NetcdfFileSubclass(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -182,7 +163,7 @@ public class Hdf5DataTable extends JPanel {
     if (iosp == null) {
       return;
     }
-    H5diag header = new H5diag(iosp);
+    H5diagNew header = new H5diagNew(ncfile, iosp);
     header.showCompress(f);
   }
 
@@ -222,9 +203,9 @@ public class Hdf5DataTable extends JPanel {
   }
 
   private void deflate(Formatter f, VarBean bean) {
-    H5diag header = new H5diag(iosp);
+    H5diagNew diag = new H5diagNew(ncfile, iosp);
     try {
-      header.showCompress(f);
+      diag.showCompress(f);
     } catch (IOException e) {
       e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
     }
@@ -265,14 +246,14 @@ public class Hdf5DataTable extends JPanel {
 
   public class VarBean {
     Variable v;
-    H5header.Vinfo vinfo;
+    H5headerNew.Vinfo vinfo;
     long[] countResult;
 
     public VarBean() {}
 
     public VarBean(Variable v) {
       this.v = v;
-      this.vinfo = (H5header.Vinfo) v.getSPobject();
+      this.vinfo = (H5headerNew.Vinfo) v.getSPobject();
     }
 
     public String getName() {

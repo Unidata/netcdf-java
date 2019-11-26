@@ -183,7 +183,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     this.h5iosp = h5iosp;
   }
 
-  void read(PrintWriter debugPS) throws IOException {
+  public void read(PrintWriter debugPS) throws IOException {
     if (debugPS != null) {
       debugOut = debugPS;
     } else if (debug1 || debugContinueMessage || debugCreationOrder || debugDetail || debugDimensionScales
@@ -2291,6 +2291,13 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   public void getEosInfo(Formatter f) throws IOException {
     HdfEos.getEosInfo(this, root, f);
+  }
+
+  // debug - hdf5Table
+  public List<DataObject> getDataObjects() {
+    ArrayList<DataObject> result = new ArrayList<>(addressMap.values());
+    result.sort((o1, o2) -> Long.compare(o1.address, o2.address));
+    return result;
   }
 
 }

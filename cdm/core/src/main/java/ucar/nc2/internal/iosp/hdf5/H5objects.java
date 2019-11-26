@@ -23,7 +23,7 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
 /** The low-level HDF5 data objects. */
-class H5objects {
+public class H5objects {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5objects.class);
 
   // debugging
