@@ -109,7 +109,7 @@ public class H4header {
     return isEos;
   }
 
-  void build(RandomAccessFile myRaf, Group.Builder root, Formatter debugOut) throws IOException {
+  void read(RandomAccessFile myRaf, Group.Builder root, Formatter debugOut) throws IOException {
     this.raf = myRaf;
     this.root = root;
 
@@ -305,7 +305,7 @@ public class H4header {
       for (Variable.Builder<?> v : vlist) {
         Vinfo vinfo = (Vinfo) v.spiObject;
         if (vinfo == null) {
-          System.out.printf("adjustDimensions %s missing vinfo (new)%n", v.shortName);
+          log.warn(String.format("adjustDimensions %s missing vinfo (new)%n", v.shortName));
           continue;
         }
         Group.Builder gb = vinfo.group;

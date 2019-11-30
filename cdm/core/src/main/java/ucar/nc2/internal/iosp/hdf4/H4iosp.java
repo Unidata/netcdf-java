@@ -46,24 +46,28 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   private H4header header = new H4header();
 
+  @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return H4header.isValidFile(raf);
   }
 
+  @Override
   public String getFileTypeId() {
     if (header.isEos())
       return "HDF4-EOS";
     return DataFormatType.HDF4.getDescription();
   }
 
+  @Override
   public String getFileTypeDescription() {
     return "Hierarchical Data Format, version 4";
   }
 
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
     Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
-    header.build(raf, rootGroup, null);
+    header.read(raf, rootGroup, null);
     ncfile.setRootGroup(rootGroup.build(null));
     ncfile.finish();
   }
@@ -79,7 +83,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = new H4header();
-    header.build(raf, rootGroup, null);
+    header.read(raf, rootGroup, null);
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {

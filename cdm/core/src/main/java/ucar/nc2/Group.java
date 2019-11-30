@@ -997,6 +997,10 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
+    public Optional<EnumTypedef> findEnumTypedef(String name) {
+      return this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
+    }
+
     /**
      * Add a Variable, replacing one of same name if its exists.
      */

@@ -115,7 +115,7 @@ public enum NetcdfFileFormat {
     return format == null ? INVALID : format;
   }
 
-  private static boolean memequal(byte[] b1, byte[] b2, int len) {
+  public static boolean memequal(byte[] b1, byte[] b2, int len) {
     if (b1 == b2)
       return true;
     if (b1 == null || b2 == null)

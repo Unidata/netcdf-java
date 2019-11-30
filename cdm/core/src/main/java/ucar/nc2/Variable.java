@@ -1773,7 +1773,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     }
 
     // calculated fields
-    this.elementSize = getDataType().getSize();
+    this.elementSize = builder.elementSize > 0 ? builder.elementSize : getDataType().getSize();
     this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
     try {
       List<Range> list = new ArrayList<>();
@@ -1837,6 +1837,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public static abstract class Builder<T extends Builder<T>> {
     public String shortName;
     public DataType dataType;
+    private int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
     public Group parent; // set in Group.build()
@@ -1984,6 +1985,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
+    public String getEnumTypeName() {
+      return this.enumTypeName;
+    }
+
+    // In some case we need to override standard element size.
+    public T setElementSize(int elementSize) {
+      this.elementSize = elementSize;
+      return self();
+    }
+
     public T setEnumTypeName(String enumTypeName) {
       this.enumTypeName = enumTypeName;
       return self();
@@ -2004,6 +2015,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
+    // Generally this is not directly set.
     public T setGroup(Group parent) {
       this.parent = parent;
       return self();

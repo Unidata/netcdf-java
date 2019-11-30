@@ -2,23 +2,25 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.iosp.hdf5;
+package ucar.nc2.internal.iosp.hdf5;
 
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.nc2.Variable;
-import ucar.nc2.iosp.LayoutBB;
-import ucar.nc2.iosp.LayoutBBTiled;
-import ucar.nc2.util.IO;
-import ucar.unidata.io.RandomAccessFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.nc2.Variable;
+import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
+import ucar.nc2.iosp.LayoutBB;
+import ucar.nc2.iosp.LayoutBBTiled;
+import ucar.nc2.iosp.hdf5.DataBTree;
+import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Iterator to read/write subsets of an array.
@@ -39,7 +41,7 @@ public class H5tiledLayoutBB implements LayoutBB {
   private LayoutBBTiled delegate;
 
   private RandomAccessFile raf;
-  private H5header.Filter[] filters;
+  private Filter[] filters;
   private ByteOrder byteOrder;
 
   private Section want;
@@ -60,13 +62,13 @@ public class H5tiledLayoutBB implements LayoutBB {
    * @param raf the RandomAccessFile
    * @param filters set of filters that have been applied to the data
    * @throws InvalidRangeException if section invalid for this variable
-   * @throws java.io.IOException on io error
+   * @throws IOException on io error
    */
-  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters,
-      ByteOrder byteOrder) throws InvalidRangeException, IOException {
+  public H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, Filter[] filters, ByteOrder byteOrder)
+      throws InvalidRangeException, IOException {
     wantSection = Section.fill(wantSection, v2.getShape());
 
-    H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
+    H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
     assert vinfo.isChunked;
     assert vinfo.btree != null;
 
@@ -98,11 +100,11 @@ public class H5tiledLayoutBB implements LayoutBB {
       try {
         int size = Integer.parseInt(System.getProperty(INFLATEBUFFERSIZE));
         if (size <= 0)
-          H5iosp.log.warn(String.format("-D%s must be > 0", INFLATEBUFFERSIZE));
+          H5iospNew.log.warn(String.format("-D%s must be > 0", INFLATEBUFFERSIZE));
         else
           this.inflatebuffersize = size;
       } catch (NumberFormatException nfe) {
-        H5iosp.log.warn(String.format("-D%s is not an integer", INFLATEBUFFERSIZE));
+        H5iospNew.log.warn(String.format("-D%s is not an integer", INFLATEBUFFERSIZE));
       }
     }
     if (debugFilter)
@@ -158,7 +160,7 @@ public class H5tiledLayoutBB implements LayoutBB {
     }
   }
 
-  private class DataChunk implements ucar.nc2.iosp.LayoutBBTiled.DataChunk {
+  private class DataChunk implements LayoutBBTiled.DataChunk {
     // Copied from ArrayList.
     private static final int MAX_ARRAY_LEN = Integer.MAX_VALUE - 8;
 
@@ -206,7 +208,7 @@ public class H5tiledLayoutBB implements LayoutBB {
 
         // apply filters backwards
         for (int i = filters.length - 1; i >= 0; i--) {
-          H5header.Filter f = filters[i];
+          Filter f = filters[i];
           if (isBitSet(delegate.filterMask, i)) {
             if (debug)
               System.out.println("skip for chunk " + delegate);

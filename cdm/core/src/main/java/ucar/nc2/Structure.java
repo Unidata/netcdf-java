@@ -715,6 +715,10 @@ public class Structure extends Variable {
       return want.isPresent();
     }
 
+    public Optional<Variable.Builder> findMemberVariable(String name) {
+      return vbuilders.stream().filter(d -> d.shortName.equals(name)).findFirst();
+    }
+
     /** Normally this is called by Group.build() */
     public Structure build() {
       if (built)

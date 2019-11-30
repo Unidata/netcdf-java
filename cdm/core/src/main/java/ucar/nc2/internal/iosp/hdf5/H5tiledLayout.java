@@ -2,13 +2,13 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.iosp.hdf5;
+package ucar.nc2.internal.iosp.hdf5;
 
+import java.io.IOException;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
-import ucar.nc2.iosp.LayoutTiled;
 import ucar.nc2.iosp.Layout;
-import java.io.IOException;
+import ucar.nc2.iosp.LayoutTiled;
 
 /**
  * Iterator to read/write subsets of an array.
@@ -34,9 +34,9 @@ public class H5tiledLayout implements Layout {
    * @param vinfo the vinfo object for this variable
    * @param dtype type of data. may be different from v2.
    * @param wantSection the wanted section of data, contains a List of Range objects, must be complete
-   * @throws java.io.IOException on io error
+   * @throws IOException on io error
    */
-  public H5tiledLayout(H5header.Vinfo vinfo, DataType dtype, Section wantSection) throws IOException {
+  public H5tiledLayout(H5headerNew.Vinfo vinfo, DataType dtype, Section wantSection) throws IOException {
     assert vinfo.isChunked;
     assert vinfo.btree != null;
 

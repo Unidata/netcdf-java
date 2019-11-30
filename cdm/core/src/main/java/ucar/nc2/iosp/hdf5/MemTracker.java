@@ -16,24 +16,24 @@ import java.util.List;
  * @author caron
  * @since 6/27/12
  */
-class MemTracker {
+public class MemTracker {
   private List<Mem> memList = new ArrayList<>();
 
   private long fileSize;
 
-  MemTracker(long fileSize) {
+  public MemTracker(long fileSize) {
     this.fileSize = fileSize;
   }
 
-  void add(String name, long start, long end) {
+  public void add(String name, long start, long end) {
     memList.add(new Mem(name, start, end));
   }
 
-  void addByLen(String name, long start, long size) {
+  public void addByLen(String name, long start, long size) {
     memList.add(new Mem(name, start, start + size));
   }
 
-  void report(Formatter f) {
+  public void report(Formatter f) {
     f.format("Memory used file size= %d%n", fileSize);
     f.format("  start    end   size   name");
     Collections.sort(memList);
