@@ -6,11 +6,11 @@
 package ucar.nc2.ui.op;
 
 import java.nio.charset.StandardCharsets;
-import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.iosp.hdf5.H5header;
-import ucar.nc2.iosp.hdf5.H5iosp;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
+import ucar.nc2.internal.iosp.hdf5.H5iospNew;
+import ucar.nc2.internal.iosp.hdf5.H5objects;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
@@ -33,44 +33,37 @@ import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-/**
- * ToolsUI/Iosp/Hdf5 raw file objects
- *
- * @author caron
- */
-public class Hdf5ObjectTable extends JPanel {
-  protected PreferencesExt prefs;
-
-  private BeanTable objectTable, messTable, attTable;
+/** ToolsUI/Iosp/Hdf5 raw file objects */
+public class Hdf5NewObjectTable extends Hdf5ObjectTable {
+  private BeanTable<ObjectBean> objectTable;
+  private BeanTable<MessageBean> messTable;
+  private BeanTable<AttributeBean> attTable;
   private JSplitPane splitH, split, split2;
 
   private TextHistoryPane dumpTA, infoTA;
   private IndependentWindow infoWindow;
 
-  private H5iosp iosp;
+  private H5iospNew iosp;
   private String location;
 
-  /**
-   *
-   */
-  public Hdf5ObjectTable(PreferencesExt prefs) {
-    this.prefs = prefs;
+  public Hdf5NewObjectTable(PreferencesExt prefs) {
+    super(prefs);
     PopupMenu varPopup;
 
     objectTable = new BeanTable(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
-        "H5header.DataObject", "Level 2A data object header", null);
+        "H5headerNew.DataObject", "Level 2A data object header", null);
     objectTable.addListSelectionListener(e -> {
-      messTable.setBeans(new ArrayList());
+      messTable.setBeans(new ArrayList<>());
 
-      ArrayList<Object> beans = new ArrayList<>();
-      ObjectBean ob = (ObjectBean) objectTable.getSelectedBean();
-      for (H5header.HeaderMessage m : ob.m.getMessages()) {
+      ArrayList<MessageBean> beans = new ArrayList<>();
+      ObjectBean ob = objectTable.getSelectedBean();
+      for (H5objects.HeaderMessage m : ob.m.getMessages()) {
         beans.add(new MessageBean(m));
       }
       messTable.setBeans(beans);
 
-      ArrayList<Object> attBeans = new ArrayList<>();
-      for (H5header.MessageAttribute m : ob.m.getAttributes()) {
+      ArrayList<AttributeBean> attBeans = new ArrayList<>();
+      for (H5objects.MessageAttribute m : ob.m.getAttributes()) {
         attBeans.add(new AttributeBean(m));
       }
       attTable.setBeans(attBeans);
@@ -79,7 +72,7 @@ public class Hdf5ObjectTable extends JPanel {
     varPopup = new PopupMenu(objectTable.getJTable(), "Options");
     varPopup.addAction("show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ObjectBean mb = (ObjectBean) objectTable.getSelectedBean();
+        ObjectBean mb = objectTable.getSelectedBean();
         if (mb == null) {
           return;
         }
@@ -89,7 +82,6 @@ public class Hdf5ObjectTable extends JPanel {
         try {
           mb.show(f);
         } catch (IOException exc) {
-          // To change body of catch statement use File | Settings | File Templates.
           exc.printStackTrace();
         }
         dumpTA.appendLine(f.toString());
@@ -99,16 +91,16 @@ public class Hdf5ObjectTable extends JPanel {
 
 
     messTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false,
-        "H5header.HeaderMessage", "Level 2A1 and 2A2 (part of Data Object)", null);
+        "H5headerNew.HeaderMessage", "Level 2A1 and 2A2 (part of Data Object)", null);
     messTable.addListSelectionListener(e -> {
-      MessageBean mb = (MessageBean) messTable.getSelectedBean();
+      MessageBean mb = messTable.getSelectedBean();
       dumpTA.setText(mb.m.toString());
     });
 
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show FractalHeap", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messTable.getSelectedBean();
+        MessageBean mb = messTable.getSelectedBean();
         if (mb == null)
           return;
         if (infoTA == null)
@@ -124,9 +116,9 @@ public class Hdf5ObjectTable extends JPanel {
     });
 
     attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false,
-        "H5header.HeaderAttribute", "Message Type 12/0xC : define an Atribute", null);
+        "H5headerNew.HeaderAttribute", "Message Type 12/0xC : define an Atribute", null);
     attTable.addListSelectionListener(e -> {
-      AttributeBean mb = (AttributeBean) attTable.getSelectedBean();
+      AttributeBean mb = attTable.getSelectedBean();
       Formatter f = new Formatter();
       mb.show(f);
       dumpTA.setText(f.toString());
@@ -148,9 +140,6 @@ public class Hdf5ObjectTable extends JPanel {
     add(split2, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public void save() {
     objectTable.saveState(false);
     messTable.saveState(false);
@@ -161,25 +150,17 @@ public class Hdf5ObjectTable extends JPanel {
     prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
-  /**
-   *
-   */
   private void makeInfoWindow() {
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
   }
 
-  /**
-   *
-   */
   public void getEosInfo(Formatter f) throws IOException {
-    iosp.getEosInfo(f);
+    H5headerNew header = iosp.getHeader();
+    header.getEosInfo(f);
   }
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {
     if (iosp != null) {
       iosp.close();
@@ -191,18 +172,15 @@ public class Hdf5ObjectTable extends JPanel {
     dumpTA.clear();
   }
 
-  /**
-   *
-   */
   public void setHdf5File(RandomAccessFile raf) throws IOException {
     closeOpenFiles();
 
     this.location = raf.getLocation();
     List<ObjectBean> beanList = new ArrayList<>();
 
-    iosp = new H5iosp();
+    iosp = new H5iospNew();
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
-    ncfile.sendIospMessage(H5iosp.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
+    ncfile.sendIospMessage(H5iospNew.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
 
     try {
       iosp.open(raf, ncfile, null);
@@ -213,63 +191,45 @@ public class Hdf5ObjectTable extends JPanel {
       dumpTA.setText(sw.toString());
     }
 
-    H5header header = (H5header) iosp.sendIospMessage("header");
-    for (H5header.DataObject dataObj : header.getDataObjects()) {
+    H5headerNew header = iosp.getHeader();
+    for (H5objects.DataObject dataObj : header.getDataObjects()) {
       beanList.add(new ObjectBean(dataObj));
     }
 
     objectTable.setBeans(beanList);
   }
 
-  /**
-   *
-   */
   public void showInfo(Formatter f) throws IOException {
     if (iosp == null) {
       return;
     }
-
-    List<Object> objs = objectTable.getBeans();
-    for (Object obj : objs) {
-      ObjectBean bean = (ObjectBean) obj;
+    for (ObjectBean bean : objectTable.getBeans()) {
       bean.m.show(f);
     }
   }
 
-  /**
-   *
-   */
   public void showInfo2(Formatter f) throws IOException {
     if (iosp == null)
       return;
 
     ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
     PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(
-        "H5header/header H5header/headerDetails H5header/symbolTable H5header/memTracker"));
-    H5header headerEmpty = (H5header) iosp.sendIospMessage("headerEmpty");
+    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(
+        "H5headerNew/header H5headerNew/headerDetails H5headerNew/symbolTable H5headerNew/memTracker"));
+    H5headerNew headerEmpty = (H5headerNew) iosp.sendIospMessage("headerEmpty");
     headerEmpty.read(pw);
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
+    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
     pw.flush();
     f.format("%s", os.toString(StandardCharsets.UTF_8.name()));
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
+    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
   }
 
-  /**
-   *
-   */
   public static class ObjectBean {
-    H5header.DataObject m;
+    H5objects.DataObject m;
 
-    /**
-     * no-arg constructor
-     */
     public ObjectBean() {}
 
-    /**
-     * create from a dataset
-     */
-    public ObjectBean(H5header.DataObject m) {
+    ObjectBean(H5objects.DataObject m) {
       this.m = m;
     }
 
@@ -283,32 +243,18 @@ public class Hdf5ObjectTable extends JPanel {
 
     void show(Formatter f) throws IOException {
       f.format("HDF5 object name '%s'%n", m.getName());
-      // for ( H5header.HeaderMessage mess : m.getMessages()) {
-      // if (mess. instanceof H5header.MessageDatatype)
-      // }
-
-      for (H5header.MessageAttribute mess : m.getAttributes()) {
-        Attribute att = mess.getNcAttribute();
-        f.format("  %s%n", att);
+      for (H5objects.MessageAttribute mess : m.getAttributes()) {
+        f.format("  %s%n", mess);
       }
     }
   }
 
-  /**
-   *
-   */
   public static class MessageBean {
-    H5header.HeaderMessage m;
+    H5objects.HeaderMessage m;
 
-    /**
-     * no-arg constructor
-     */
     public MessageBean() {}
 
-    /**
-     * create from a message
-     */
-    public MessageBean(H5header.HeaderMessage m) {
+    MessageBean(H5objects.HeaderMessage m) {
       this.m = m;
     }
 
@@ -333,21 +279,12 @@ public class Hdf5ObjectTable extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public static class AttributeBean {
-    H5header.MessageAttribute att;
+    H5objects.MessageAttribute att;
 
-    /**
-     * no-arg constructor
-     */
     public AttributeBean() {}
 
-    /**
-     * create from an attribute
-     */
-    public AttributeBean(H5header.MessageAttribute att) {
+    AttributeBean(H5objects.MessageAttribute att) {
       this.att = att;
     }
 
@@ -373,12 +310,6 @@ public class Hdf5ObjectTable extends JPanel {
 
     void show(Formatter f) {
       f.format("hdf5 att = %s%n%n", att);
-      try {
-        f.format("netcdf attribute%n %s;%n", att.getNcAttribute());
-      } catch (IOException e) {
-        // To change body of catch statement use File | Settings | File Templates.
-        e.printStackTrace();
-      }
     }
   }
 }

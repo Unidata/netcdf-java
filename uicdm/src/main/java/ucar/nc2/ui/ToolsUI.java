@@ -530,12 +530,12 @@ public class ToolsUI extends JPanel {
         break;
 
       case "HDF5-Objects":
-        hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
+        hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"), useBuilders);
         c = hdf5ObjectPanel;
         break;
 
       case "HDF5-Data":
-        hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
+        hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"), useBuilders);
         c = hdf5DataPanel;
         break;
 
@@ -545,7 +545,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "HDF4":
-        hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
+        hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"), useBuilders);
         c = hdf4Panel;
         break;
 
@@ -688,6 +688,10 @@ public class ToolsUI extends JPanel {
 
   public void setUseBuilders(boolean use) {
     useBuilders = use;
+  }
+
+  public boolean getUseBuilders() {
+    return useBuilders;
   }
 
   public void setGribDiskCache() {

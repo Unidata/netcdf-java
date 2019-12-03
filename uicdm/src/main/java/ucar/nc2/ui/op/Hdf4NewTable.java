@@ -1,14 +1,10 @@
-/*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
- */
-
+/* Copyright Unidata */
 package ucar.nc2.ui.op;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.iosp.hdf4.H4header;
-import ucar.nc2.iosp.hdf4.H4iosp;
+import ucar.nc2.internal.iosp.hdf4.H4header;
+import ucar.nc2.internal.iosp.hdf4.H4iosp;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -20,13 +16,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 /** ToolsUI/Iosp/Hdf4 */
-public class Hdf4Table extends JPanel {
-  protected PreferencesExt prefs;
-
+public class Hdf4NewTable extends Hdf4Table {
   private BeanTable<TagBean> tagTable;
   private JSplitPane split;
 
@@ -36,8 +29,8 @@ public class Hdf4Table extends JPanel {
   private H4header header;
   private String location;
 
-  Hdf4Table(PreferencesExt prefs) {
-    this.prefs = prefs;
+  Hdf4NewTable(PreferencesExt prefs) {
+    super(prefs);
 
     tagTable = new BeanTable(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
     tagTable.addListSelectionListener(e -> {
