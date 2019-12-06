@@ -251,8 +251,9 @@ public class HdfEos {
         Dimension dim = parent.findDimensionLocal(name).orElse(null);
         if (dim != null) { // already added - may be dimension scale ?
           if (dim.getLength() != length) { // ok as long as it matches
-            log.error("Conflicting Dimensions = {} {}", dim, location);
-            throw new IllegalStateException("Conflicting Dimensions = " + name);
+            log.error("Conflicting Dimensions = {} != {} in location {}", dim, length, location);
+            // Assume that the ODL is incorrect.
+            // throw new IllegalStateException("Conflicting Dimensions = " + name);
           }
         } else {
           dim = new Dimension(name, length);
@@ -336,14 +337,14 @@ public class HdfEos {
         // This could/should be expanded to consider other FTs.
         if ((latAxis != null) && (lonAxis != null)) {
           log.debug("found lonAxis and latAxis -- testing XY domain");
-          int xyDomainSize = CoordSystemBuilder.countDomainSize(latAxis, lonAxis);
+          int xyDomainSize = CoordSystemBuilder.countDomainSize(geoFieldsG, latAxis, lonAxis);
           log.debug("xyDomain size {}", xyDomainSize);
           if (xyDomainSize < 2) {
             if (timeAxis != null) {
               log.debug("found timeAxis -- testing if trajectory");
-              Dimension dd1 = timeAxis.dimensions.get(0);
-              Dimension dd2 = latAxis.dimensions.get(0);
-              Dimension dd3 = lonAxis.dimensions.get(0);
+              String dd1 = timeAxis.getFirstDimensionName();
+              String dd2 = latAxis.getFirstDimensionName();
+              String dd3 = lonAxis.getFirstDimensionName();
 
               if (dd1.equals(dd2) && dd1.equals(dd3)) {
                 featureType = FeatureType.TRAJECTORY;
@@ -601,7 +602,7 @@ public class HdfEos {
     }
 
     // gotta have same number of dimensions
-    List<Dimension> oldDims = v.dimensions;
+    List<Dimension> oldDims = v.getDimensions(group);
     if (oldDims.size() != values.size()) {
       log.error("Different number of dimensions for {} {}", v.shortName, location);
       return;

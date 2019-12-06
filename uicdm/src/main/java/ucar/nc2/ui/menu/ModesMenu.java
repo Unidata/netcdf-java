@@ -59,7 +59,7 @@ public class ModesMenu extends JMenu {
         toolsui.setUseBuilders(state);
       }
     };
-    BAMutil.setActionPropertiesToggle(a, null, "use builders", false, 'B', -1);
+    BAMutil.setActionPropertiesToggle(a, null, "use builders", true, 'B', -1);
     BAMutil.addActionToMenu(ncMenu, a);
 
     // Add the submenu

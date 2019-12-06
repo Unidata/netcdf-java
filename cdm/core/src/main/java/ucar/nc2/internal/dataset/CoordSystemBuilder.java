@@ -84,10 +84,10 @@ public class CoordSystemBuilder {
     return false;
   }
 
-  public static int countDomainSize(Variable.Builder... axes) {
+  public static int countDomainSize(Group.Builder gb, Variable.Builder<?>... axes) {
     Set<Dimension> domain = new HashSet<>();
-    for (Variable.Builder axis : axes) {
-      domain.addAll(axis.dimensions);
+    for (Variable.Builder<?> axis : axes) {
+      domain.addAll(axis.getDimensions(gb));
     }
     return domain.size();
   }

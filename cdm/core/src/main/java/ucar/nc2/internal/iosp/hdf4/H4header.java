@@ -822,7 +822,6 @@ public class H4header implements HdfHeaderIF {
   // member info
   static class Minfo {
     int offset;
-
     Minfo(int offset) {
       this.offset = offset;
     }
@@ -883,11 +882,12 @@ public class H4header implements HdfHeaderIF {
     vinfo.setVariable(vb);
     vinfo.setData(data, vb.dataType.getSize());
 
-    // apparently the 701 SDdimension tag overrides the VGroup dimensions
+    // apparently the 701 SDDimension tag overrides the VGroup dimensions
     assert dim.shape.length == vb.getRank();
     boolean ok = true;
+    List<Dimension> vdimensions = vb.getDimensions(null);
     for (int i = 0; i < dim.shape.length; i++) {
-      Dimension vdim = vb.dimensions.get(i);
+      Dimension vdim = vdimensions.get(i);
       if (dim.shape[i] != vdim.getLength()) {
         if (warnings)
           log.info(dim.shape[i] + " != " + vdim.getLength() + " for " + vb.shortName);

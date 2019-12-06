@@ -1,6 +1,7 @@
 /* Copyright Unidata */
 package ucar.nc2;
 
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -84,14 +85,14 @@ public class Dimensions {
    * @return equivalent list of Dimension objects.
    * @throws IllegalArgumentException if cant find or parse the name.
    */
-  public static List<Dimension> makeDimensionsList(Find finder, String dimString) throws IllegalArgumentException {
-    List<Dimension> newDimensions = new ArrayList<>();
+  public static ImmutableList<Dimension> makeDimensionsList(Find finder, String dimString) throws IllegalArgumentException {
     if (dimString == null) // scalar
-      return newDimensions; // empty list
+      return ImmutableList.of(); // empty list
     dimString = dimString.trim();
     if (dimString.isEmpty()) // scalar
-      return newDimensions; // empty list
+      return ImmutableList.of(); // empty list
 
+    ImmutableList.Builder<Dimension> newDimensions = ImmutableList.builder();
     StringTokenizer stoke = new StringTokenizer(dimString);
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();
@@ -114,7 +115,7 @@ public class Dimensions {
       newDimensions.add(d);
     }
 
-    return newDimensions;
+    return newDimensions.build();
   }
 
   /** Make a list of private dimensions from an array of lengths */

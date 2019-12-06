@@ -5,6 +5,7 @@
 package ucar.nc2;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.Iterator;
@@ -1060,7 +1061,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return this.ncfile;
     }
 
-    public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
+    public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
       return Dimensions.makeDimensionsList(dimName -> this.findDimension(dimName).orElse(null), dimString);
     }
 
@@ -1075,19 +1076,18 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     // utility methods
-
     public void removeFromAny(Group.Builder group, Dimension want) {
       group.dimensions.removeIf(dim -> dim.equals(want));
       group.gbuilders.forEach(g -> removeFromAny(g, want));
     }
 
-    // this deals with vbuilders having dimString or dimensions
+    /** Make a multimap of Dimensions and all the variables that reference them, in this group and its nested groups. */
     public void makeDimensionMap(Group.Builder parent, Multimap<Dimension, Variable.Builder<?>> dimUsedMap) {
       for (Variable.Builder<?> v : parent.vbuilders) {
         for (Dimension d : getDimensionsFor(parent, v)) {
-          if (!d.isShared())
-            continue;
-          dimUsedMap.put(d, v);
+          if (d.isShared()) {
+            dimUsedMap.put(d, v);
+          }
         }
       }
       for (Group.Builder g : parent.gbuilders) {
@@ -1096,13 +1096,13 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     private List<Dimension> getDimensionsFor(Group.Builder gb, Variable.Builder<?> vb) {
-      if (vb.dimString != null && !vb.dimString.isEmpty()) {
-        return gb.makeDimensionsList(vb.dimString);
+      if (vb.getDimensionString() != null && !vb.getDimensionString().isEmpty()) {
+        return gb.makeDimensionsList(vb.getDimensionString());
       }
 
       // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
       List<Dimension> dims = new ArrayList<>();
-      for (Dimension dim : vb.dimensions) {
+      for (Dimension dim : vb.getDimensions(this)) {
         if (dim.isShared()) {
           Dimension sharedDim = gb.findDimension(dim.getShortName()).orElse(null);
           if (sharedDim == null) {
