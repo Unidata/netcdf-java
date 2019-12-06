@@ -118,8 +118,8 @@ public class GeoGridPanel extends OpPanel {
     NetcdfDataset newds;
     try {
       boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
-      newds = useBuilders ? NetcdfDatasets.openDataset(command, true, null) :
-          NetcdfDataset.openDataset(command, true, null);
+      newds = useBuilders ? NetcdfDatasets.openDataset(command, true, null)
+          : NetcdfDataset.openDataset(command, true, null);
       if (newds == null) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command);
         return false;

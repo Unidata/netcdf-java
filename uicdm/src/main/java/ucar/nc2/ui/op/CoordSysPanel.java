@@ -90,8 +90,8 @@ public class CoordSysPanel extends OpPanel {
 
     try {
       boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
-      ds = useBuilders ? NetcdfDatasets.openDataset(command, true, -1, null, null) :
-          NetcdfDataset.openDataset(command, true, -1, null, null);
+      ds = useBuilders ? NetcdfDatasets.openDataset(command, true, -1, null, null)
+          : NetcdfDataset.openDataset(command, true, -1, null, null);
       if (ds == null) {
         JOptionPane.showMessageDialog(null, "Failed to open <" + command + ">");
       } else {
