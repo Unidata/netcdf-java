@@ -6,6 +6,7 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ui.OpPanel;
@@ -30,9 +31,6 @@ import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class GeoGridPanel extends OpPanel {
 
   private static final org.slf4j.Logger logger =
@@ -46,9 +44,6 @@ public class GeoGridPanel extends OpPanel {
 
   private NetcdfDataset ds;
 
-  /**
-   *
-   */
   public GeoGridPanel(PreferencesExt prefs) {
     super(prefs, "dataset:", true, false);
     dsTable = new GeoGridTable(prefs, true);
@@ -86,9 +81,6 @@ public class GeoGridPanel extends OpPanel {
     dsTable.addExtra(buttPanel, fileChooser);
   }
 
-  /**
-   *
-   */
   private void makeGridUI() {
     // a little tricky to get the parent right for GridUI
     viewerWindow = new IndependentWindow("Grid Viewer", BAMutil.getImage("nj22/NetcdfUI"));
@@ -110,9 +102,6 @@ public class GeoGridPanel extends OpPanel {
     viewerWindow.setBounds(bounds);
   }
 
-  /**
-   *
-   */
   private void makeImageWindow() {
     imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
     imageViewer = new ImageViewPanel(null);
@@ -121,7 +110,6 @@ public class GeoGridPanel extends OpPanel {
         .setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -129,7 +117,9 @@ public class GeoGridPanel extends OpPanel {
 
     NetcdfDataset newds;
     try {
-      newds = NetcdfDataset.openDataset(command, true, null);
+      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
+      newds = useBuilders ? NetcdfDatasets.openDataset(command, true, null) :
+          NetcdfDataset.openDataset(command, true, null);
       if (newds == null) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command);
         return false;
@@ -151,7 +141,6 @@ public class GeoGridPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (ds != null) {
@@ -164,9 +153,6 @@ public class GeoGridPanel extends OpPanel {
     }
   }
 
-  /**
-   *
-   */
   public void setDataset(NetcdfDataset newds) {
     if (newds == null) {
       return;
@@ -195,9 +181,6 @@ public class GeoGridPanel extends OpPanel {
     setSelectedItem(newds.getLocation());
   }
 
-  /**
-   *
-   */
   public void setDataset(GridDataset gds) {
     if (gds == null) {
       return;

@@ -1843,8 +1843,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public Group parent; // set in Group.build()
     public Structure parentStruct; // set in Structure.build()
 
-    public String dimString; // if set, supercedes dimensions
-    public List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
+    private String dimString; // if set, supercedes dimensions
+    private List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
     public Object spiObject;
     public ProxyReader proxyReader;
     public Cache cache = new Cache(); // cache cannot be null
@@ -1881,8 +1881,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
      * For 6.0, Dimensions become value objects, without a reference to containing Group.
      *
      * A VariableBuilder does not know its Group.Builder, so searching for "parent dimensions", must be done with the
-     * Group.Builder
-     * object, not the Variable.Builder.
+     * Group.Builder object, not the Variable.Builder.
      *
      * Havent dealt with structure yet, eg getDimensionsAll(), but should be ok because Variable.Builder does know its
      * parent structure.
@@ -1950,6 +1949,17 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     public T setDimensionsAnonymous(int[] shape) {
       this.dimensions = Dimensions.makeDimensionsAnon(shape);
       return self();
+    }
+
+    String getDimensionString() {
+      return this.dimString;
+    }
+
+    public ImmutableList<Dimension> getDimensions(@Nullable Group.Builder gb) {
+      if (this.dimString != null && !this.dimString.isEmpty() && gb != null) {
+        return gb.makeDimensionsList(this.dimString);
+      }
+      return ImmutableList.copyOf(this.dimensions);
     }
 
     // TODO what about dimString?

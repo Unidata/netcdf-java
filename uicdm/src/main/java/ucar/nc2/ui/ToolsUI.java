@@ -155,7 +155,7 @@ public class ToolsUI extends JPanel {
   private final DataFactory threddsDataFactory = new DataFactory();
 
   private boolean useRecordStructure;
-  private boolean useBuilders;
+  private boolean useBuilders = true;
   private DiskCache2Form diskCache2Form;
 
   // debugging
@@ -933,17 +933,11 @@ public class ToolsUI extends JPanel {
     mainPrefs.putBean(key, newVal);
   }
 
-  ///
-  ///
-  ///
-
-
   public void openNetcdfFile(String datasetName) {
     makeComponent(tabbedPane, "Viewer");
     viewerPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(viewerPanel);
   }
-
 
   public void openNetcdfFile(NetcdfFile ncfile) {
     makeComponent(tabbedPane, "Viewer");
@@ -951,13 +945,11 @@ public class ToolsUI extends JPanel {
     tabbedPane.setSelectedComponent(viewerPanel);
   }
 
-
   public void openCoordSystems(String datasetName) {
     makeComponent(tabbedPane, "CoordSys");
     coordSysPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(coordSysPanel);
   }
-
 
   public void openCoordSystems(NetcdfDataset dataset) {
     makeComponent(tabbedPane, "CoordSys");
