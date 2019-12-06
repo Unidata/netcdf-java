@@ -90,12 +90,11 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
     try {
       boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
       if (addCoords) {
-        ncfile = useBuilders ? NetcdfDatasets.openDataset(filename, true, null) :
-            NetcdfDataset.openDataset(filename, true, null);
+        ncfile = useBuilders ? NetcdfDatasets.openDataset(filename, true, null)
+            : NetcdfDataset.openDataset(filename, true, null);
       } else {
         DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
-        ncfile = useBuilders ? NetcdfDatasets.openFile(durl, -1, null, null) :
-            NetcdfDataset.openFile(filename, null);
+        ncfile = useBuilders ? NetcdfDatasets.openFile(durl, -1, null, null) : NetcdfDataset.openFile(filename, null);
       }
 
       StringWriter sw = new StringWriter(50000);

@@ -822,6 +822,7 @@ public class H4header implements HdfHeaderIF {
   // member info
   static class Minfo {
     int offset;
+
     Minfo(int offset) {
       this.offset = offset;
     }

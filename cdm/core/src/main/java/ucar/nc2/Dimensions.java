@@ -85,7 +85,8 @@ public class Dimensions {
    * @return equivalent list of Dimension objects.
    * @throws IllegalArgumentException if cant find or parse the name.
    */
-  public static ImmutableList<Dimension> makeDimensionsList(Find finder, String dimString) throws IllegalArgumentException {
+  public static ImmutableList<Dimension> makeDimensionsList(Find finder, String dimString)
+      throws IllegalArgumentException {
     if (dimString == null) // scalar
       return ImmutableList.of(); // empty list
     dimString = dimString.trim();
