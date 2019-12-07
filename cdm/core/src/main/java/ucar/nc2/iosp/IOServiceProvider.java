@@ -63,8 +63,6 @@ public interface IOServiceProvider {
 
   /**
    * If this iosp implements build().
-   * 
-   * @return
    */
   boolean isBuilder();
 
