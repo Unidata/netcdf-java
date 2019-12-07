@@ -26,9 +26,6 @@ import java.util.Map;
  * <p>
  * Use a NetcdfFileWriter object for a lower level API.
  *
- * @see ucar.nc2.dt.grid.CFGridWriter2
- * @see ucar.nc2.ft.point.writer.CFPointWriter
- *
  * @deprecated use ucar.nc2.writer.FileWriter
  */
 public class FileWriter2 {

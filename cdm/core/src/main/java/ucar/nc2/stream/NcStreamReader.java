@@ -329,7 +329,7 @@ public class NcStreamReader {
 
     NcStreamProto.Group root = proto.getRoot();
     Group.Builder rootBuilder = Group.builder(null).setNcfile(ncfile).setName("");
-    NcStream.readGroup(root, ncfile, rootBuilder);
+    NcStream.readGroup(root, rootBuilder);
     ncfile.setRootGroup(rootBuilder.build(null));
     ncfile.finish();
     return ncfile;
