@@ -1,7 +1,6 @@
 package ucar.nc2.grib;
 
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -21,8 +20,7 @@ import ucar.unidata.util.test.TestDir;
 @RunWith(Parameterized.class)
 public class TestGribCompareBuilders {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static String testDir = "../grib/src/test/data/";
 
   @Parameterized.Parameters(name = "{0}")
@@ -30,11 +28,9 @@ public class TestGribCompareBuilders {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
       TestDir.actOnAllParameterized(testDir,
-          (file) -> file.getPath().endsWith(".grib1") || file.getPath().endsWith(".grib2"),
-          filenames,
-          true);
+          (file) -> file.getPath().endsWith(".grib1") || file.getPath().endsWith(".grib2"), filenames, true);
     } catch (IOException e) {
-      filenames.add(new Object[]{e.getMessage()});
+      filenames.add(new Object[] {e.getMessage()});
     }
     return filenames;
   }
