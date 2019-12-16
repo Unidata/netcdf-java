@@ -3,6 +3,7 @@ package dap4.test;
 import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import java.util.List;
 /**
  * Test OpenDap Server at the NetcdfDataset level
  */
+
 @Ignore
 public class TestHyrax extends DapTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
