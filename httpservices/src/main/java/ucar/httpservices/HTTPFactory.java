@@ -44,7 +44,7 @@ public class HTTPFactory {
 
   @Deprecated
   public static HTTPSession newSession(AuthScope scope) throws HTTPException {
-    HttpHost hh = new HttpHost(scope.getHost(), scope.getPort(), null);
+    HttpHost hh = new HttpHost(scope.getHost(), scope.getPort(), HttpHost.DEFAULT_SCHEME_NAME);
     return new HTTPSession(hh);
   }
 
