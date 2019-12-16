@@ -28,10 +28,19 @@ public class CompareNetcdf2 {
 
   public interface ObjFilter {
     // if true, compare attribute, else skip comparision
-    boolean attCheckOk(Variable v, Attribute att);
+    default boolean attCheckOk(Variable v, Attribute att) {
+      return true;
+    }
 
     // if true, compare variable, else skip comparision
-    boolean varDataTypeCheckOk(Variable v);
+    default boolean varDataTypeCheckOk(Variable v) {
+      return true;
+    }
+
+    // if true, compare dimension, else skip comparision
+    default boolean checkDimensionsForFile(String filename) {
+      return true;
+    }
   }
 
   public static class Netcdf4ObjectFilter implements ObjFilter {
@@ -127,6 +136,10 @@ public class CompareNetcdf2 {
     return compare(org, copy, showCompare, showEach, compareData);
   }
 
+  public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter) {
+    return compare(org, copy, filter, showCompare, showEach, compareData);
+  }
+
   public boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
     return compare(org, copy, null, showCompare, showEach, compareData);
   }
@@ -153,12 +166,15 @@ public class CompareNetcdf2 {
       NetcdfDataset orgds = (NetcdfDataset) org;
       NetcdfDataset copyds = (NetcdfDataset) copy;
 
-      List matches = new ArrayList();
-      ok &= checkAll("Dataset CS:", orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
-      for (int i = 0; i < matches.size(); i += 2) {
-        CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
-        CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
-        ok &= compareCoordinateSystem(orgCs, copyCs, filter);
+      // coordinate systems
+      for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
+        CoordinateSystem cs2 = copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
+        if (cs2 == null) {
+          f.format("  ** Cant find CoordinateSystem=%s in file2 %n", cs1.getName());
+        } else {
+          ok &= compareCoordinateSystem(cs1, cs2, filter);
+        }
       }
     }
 
@@ -219,8 +235,10 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "copy");
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "org");
+    if (filter == null || filter.checkDimensionsForFile(org.getNetcdfFile().getLocation())) {
+      ok &= checkGroupDimensions(org, copy, "copy");
+      ok &= checkGroupDimensions(copy, org, "org");
+    }
 
     // attributes
     ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);
@@ -323,15 +341,17 @@ public class CompareNetcdf2 {
 
     // coordinate systems
     if (org instanceof VariableEnhanced && copy instanceof VariableEnhanced) {
-      VariableEnhanced orgds = (VariableEnhanced) org;
-      VariableEnhanced copyds = (VariableEnhanced) copy;
+      VariableEnhanced orge = (VariableEnhanced) org;
+      VariableEnhanced copye = (VariableEnhanced) copy;
 
-      List matches = new ArrayList();
-      ok &= checkAll(orgds.getFullName(), orgds.getCoordinateSystems(), copyds.getCoordinateSystems(), matches);
-      for (int i = 0; i < matches.size(); i += 2) {
-        CoordinateSystem orgCs = (CoordinateSystem) matches.get(i);
-        CoordinateSystem copyCs = (CoordinateSystem) matches.get(i + 1);
-        ok &= compareCoordinateSystem(orgCs, copyCs, filter);
+      for (CoordinateSystem cs1 : orge.getCoordinateSystems()) {
+        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
+        if (cs2 == null) {
+          f.format("  ** Cant find cs %s in file2 var %s %n", cs1.getName(), org.getShortName());
+        } else {
+          ok &= compareCoordinateSystem(cs1, cs2, filter);
+        }
       }
     }
 
@@ -351,8 +371,16 @@ public class CompareNetcdf2 {
       ok &= compareCoordinateAxis(orgCs, copyCs, filter);
     }
 
-    List matchTransforms = new ArrayList();
-    ok &= checkAll(cs1.getName(), cs1.getCoordinateTransforms(), cs2.getCoordinateTransforms(), matchTransforms);
+    for (CoordinateTransform ct1 : cs1.getCoordinateTransforms()) {
+      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream().filter(ct -> ct.getName().equals(ct1.getName()))
+          .findFirst().orElse(null);
+      if (ct2 == null) {
+        f.format("  ** Cant find transform %s in file2 %n", ct1.getName());
+      } else {
+        ok &= ct1.equals(ct2);
+      }
+    }
+
     return ok;
   }
 
@@ -387,14 +415,19 @@ public class CompareNetcdf2 {
     return ok;
   }
 
+  // Theres a bug in old HDF4 (eg "MOD021KM.A2004328.1735.004.2004329164007.hdf) where dimensions
+  // are not properly moved up (eg dim BAND_250M is in both root and Data_Fields).
+  // So we are going to allow that to be ok (until proven otherwise) but we have to adjust
+  // dimension comparision. Currently Dimension.equals() checks the Group.
   private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2, String where) {
     boolean ok = true;
 
     for (Dimension d1 : list1) {
       if (d1.isShared()) {
-        boolean hasit = list2.contains(d1);
-        if (!hasit)
-          f.format("  ** Missing dim %s not in %s %n", d1, where);
+        boolean hasit = listContains(list2, d1);
+        if (!hasit) {
+          f.format("  ** Missing Variable dim %s not in %s %n", d1, where);
+        }
         ok &= hasit;
       }
     }
@@ -402,6 +435,59 @@ public class CompareNetcdf2 {
     return ok;
   }
 
+  // Check contains not using Group
+  private boolean listContains(List<Dimension> list, Dimension d2) {
+    for (Dimension d1 : list) {
+      if (equalInValue(d1, d2)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Dimension findDimension(Group g, Dimension dim) {
+    if (dim == null) {
+      return null;
+    }
+    for (Dimension d : g.getDimensions()) {
+      if (equalInValue(d, dim)) {
+        return d;
+      }
+    }
+    Group parent = g.getParentGroup();
+    if (parent != null) {
+      return findDimension(parent, dim);
+    }
+    return null;
+  }
+
+  // values equal, not using Group
+  private boolean equalInValue(Dimension d1, Dimension other) {
+    if ((d1.getShortName() == null) && (other.getShortName() != null))
+      return false;
+    if ((d1.getShortName() != null) && !d1.getShortName().equals(other.getShortName()))
+      return false;
+    return (d1.getLength() == other.getLength()) && (d1.isUnlimited() == other.isUnlimited())
+        && (d1.isVariableLength() == other.isVariableLength()) && (d1.isShared() == other.isShared());
+  }
+
+  private boolean checkGroupDimensions(Group group1, Group group2, String where) {
+    boolean ok = true;
+    for (Dimension d1 : group1.getDimensions()) {
+      if (d1.isShared()) {
+        if (!group2.getDimensions().contains(d1)) {
+          // not in local, is it in a parent?
+          if (findDimension(group2, d1) != null) {
+            f.format("  ** Dimension %s in parent group %s %n", d1, where);
+          } else {
+            f.format("  ** Missing Group dim %s not in %s %n", d1, where);
+            ok = false;
+          }
+        }
+      }
+    }
+    return ok;
+  }
 
   // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.

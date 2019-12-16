@@ -4,9 +4,6 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
 import ucar.nc2.util.Indent;
 import java.util.Formatter;
 import java.util.List;
@@ -27,9 +24,11 @@ import java.util.StringTokenizer;
  * <p>
  * Note: this class has a natural ordering that is inconsistent with equals.
  *
+ * TODO Dimensions will be immutable in 6.
+ * TODO Dimensions will not have a reference to their owning Group in 6.
+ *
  * @author caron
  */
-
 public class Dimension extends CDMNode implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
   public static Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
@@ -327,9 +326,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    *
    * @param name name must be unique within group
    * @param length length of Dimension
-   * @deprecated Use Dimension.builder()
    */
-  @Deprecated
   public Dimension(String name, int length) {
     this(name, length, true, false, false);
   }
@@ -507,7 +504,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   }
 
   public static Builder builder(String name, int length) {
-    return new Builder(name, length);
+    return new Builder().setName(name).setLength(length);
   }
 
   public static class Builder {
@@ -520,11 +517,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     private boolean built;
 
     private Builder() {}
-
-    private Builder(String name, int length) {
-      this.shortName = name;
-      this.length = length;
-    }
 
     /**
      * Set is unlimited.
@@ -581,7 +573,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     }
 
     public Builder setName(String shortName) {
-      this.shortName = shortName;
+      this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
       return this;
     }
 

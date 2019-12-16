@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.time.*;
 import ucar.nc2.units.TimeUnit;
-import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.util.NamedAnything;
@@ -393,14 +392,17 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     super(builder);
   }
 
+  public CoordinateAxis1DTime(VariableDS.Builder<?> builder) {
+    super(builder);
+  }
+
   public Builder<?> toBuilder() {
-    CoordinateAxis1DTime.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (CoordinateAxis1DTime.Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b;
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   /**

@@ -39,7 +39,7 @@ import javax.swing.JSplitPane;
  * @author caron
  */
 public class Hdf5ObjectTable extends JPanel {
-  private PreferencesExt prefs;
+  protected PreferencesExt prefs;
 
   private BeanTable objectTable, messTable, attTable;
   private JSplitPane splitH, split, split2;

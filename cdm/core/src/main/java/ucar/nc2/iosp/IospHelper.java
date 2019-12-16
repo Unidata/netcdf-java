@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * @since Jan 3, 2008
  */
 public class IospHelper {
-  private static boolean showLayoutTypes;
+  private static boolean showLayoutTypes = false;
 
   /**
    * Read data subset from RandomAccessFile, create primitive array of size Layout.getTotalNelems.

@@ -15,8 +15,9 @@ package ucar.nc2.dataset;
  * if those "standard attributes" are present.
  *
  * @author caron
+ * @deprecated do not use
  */
-
+@Deprecated
 public interface Enhancements {
 
   /**

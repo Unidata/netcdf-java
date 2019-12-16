@@ -15,7 +15,7 @@ import ucar.unidata.util.Parameter;
  * @author caron
  */
 public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
-  private CoordinateSystem cs;
+  private CoordinateSystem cs; // can we figure out cs from ds?
 
   public WRFEtaTransformBuilder(CoordinateSystem cs) {
     this.cs = cs;

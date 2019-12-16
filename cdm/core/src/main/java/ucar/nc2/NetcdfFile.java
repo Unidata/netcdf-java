@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.annotation.Nonnull;
 import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -1565,8 +1564,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       log.info("NetcdfFile uses iosp = {}", spi.getClass().getName());
 
     try {
-      Group.Builder root = Group.builder().setName("").setNcfile(this);
-      spi.open(raf, root, cancelTask);
+      spi.open(raf, this, cancelTask);
 
     } catch (IOException | RuntimeException e) {
       try {
@@ -1802,7 +1800,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (g == null)
       g = rootGroup;
     String dimName = shortName + "_strlen";
-    addDimension(g, Dimension.builder().setName(dimName).setLength(strlen).build());
+    addDimension(g, new Dimension(dimName, strlen));
     Variable v = new Variable(this, g, null, shortName);
     v.setDataType(DataType.CHAR);
     v.setDimensions(dims + " " + dimName);
@@ -2002,7 +2000,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   private Group makeRootGroup() {
-    return Group.builder().setNcfile(this).setName("").build(null);
+    return Group.builder(null).setNcfile(this).setName("").build(null);
   }
 
   /**
@@ -2137,8 +2135,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return the number of bytes written to the channel
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
+   * @deprecated do not use
    */
-
+  @Deprecated
   protected long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
@@ -2150,7 +2149,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
     return iosp.readToByteChannel(v, section, wbc);
   }
-
 
   protected long readToOutputStream(ucar.nc2.Variable v, Section section, OutputStream out)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
@@ -2314,7 +2312,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return registered id of the file type
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  @Nonnull
   public String getFileTypeId() {
     if (iosp != null)
       return iosp.getFileTypeId();
@@ -2541,6 +2538,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       builder.rootGroup.setNcfile(this);
       this.rootGroup = builder.rootGroup.build(null);
     }
+    if (builder.iosp != null) {
+      builder.iosp.setNetcdfFile(this);
+      this.iosp = builder.iosp;
+    }
     finish(); // LOOK
   }
 
@@ -2551,7 +2552,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     return b.setLocation(this.location).setId(this.id).setTitle(this.title).setRootGroup(this.rootGroup.toBuilder())
-        .setIosp(this.iosp);
+        .setIosp((AbstractIOServiceProvider) this.iosp);
   }
 
   /**
@@ -2571,11 +2572,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   public static abstract class Builder<T extends Builder<T>> {
-    public Group.Builder rootGroup = Group.builder().setName("");
+    public Group.Builder rootGroup = Group.builder(null).setName("");
     private String id;
     private String title;
     public String location;
-    protected IOServiceProvider iosp;
+    protected AbstractIOServiceProvider iosp;
     private boolean built;
 
     protected abstract T self();
@@ -2585,7 +2586,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       return self();
     }
 
-    public T setIosp(IOServiceProvider iosp) {
+    public T setIosp(AbstractIOServiceProvider iosp) {
       this.iosp = iosp;
       return self();
     }

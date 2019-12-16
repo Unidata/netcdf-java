@@ -38,7 +38,7 @@ import javax.swing.JSplitPane;
  * @since 6/26/12
  */
 public class Hdf5DataTable extends JPanel {
-  private PreferencesExt prefs;
+  protected PreferencesExt prefs;
 
   private BeanTable objectTable;
   private JSplitPane splitH;
@@ -48,11 +48,11 @@ public class Hdf5DataTable extends JPanel {
   private H5iosp iosp;
   private String location;
 
-  /**
-   *
-   */
   public Hdf5DataTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
+    if (buttPanel == null)
+      return;
+
     PopupMenu varPopup;
 
     objectTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject",
@@ -135,9 +135,6 @@ public class Hdf5DataTable extends JPanel {
     add(splitH, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public void save() {
     objectTable.saveState(false);
     // messTable.saveState(false);
@@ -158,9 +155,6 @@ public class Hdf5DataTable extends JPanel {
     iosp = null;
   }
 
-  /**
-   *
-   */
   public void setHdf5File(RandomAccessFile raf) throws IOException {
     closeOpenFiles();
 
@@ -184,9 +178,6 @@ public class Hdf5DataTable extends JPanel {
     objectTable.setBeans(beanList);
   }
 
-  /**
-   *
-   */
   public void showInfo(Formatter f) throws IOException {
     if (iosp == null) {
       return;
@@ -195,9 +186,6 @@ public class Hdf5DataTable extends JPanel {
     header.showCompress(f);
   }
 
-  /**
-   *
-   */
   public void calcStorage() {
     if (iosp == null) {
       return;
@@ -233,9 +221,6 @@ public class Hdf5DataTable extends JPanel {
     infoTA.setText(f.toString());
   }
 
-  /**
-   *
-   */
   private void deflate(Formatter f, VarBean bean) {
     H5diag header = new H5diag(iosp);
     try {
@@ -245,9 +230,6 @@ public class Hdf5DataTable extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void showStorage(Formatter f, VarBean bean) {
     try {
       bean.vinfo.countStorageSize(f);
@@ -256,9 +238,6 @@ public class Hdf5DataTable extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void showVlen(Formatter f, VarBean bean) {
     if (!bean.v.isVariableLength()) {
       f.format("Variable %s must be variable length", bean.v.getFullName());
@@ -284,30 +263,18 @@ public class Hdf5DataTable extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public class VarBean {
     Variable v;
     H5header.Vinfo vinfo;
     long[] countResult;
 
-    /**
-     * no-arg constructor
-     */
     public VarBean() {}
 
-    /**
-     * create from a dataset
-     */
     public VarBean(Variable v) {
       this.v = v;
       this.vinfo = (H5header.Vinfo) v.getSPobject();
     }
 
-    /**
-     *
-     */
     public String getName() {
       return v.getShortName();
     }
@@ -392,8 +359,6 @@ public class Hdf5DataTable extends JPanel {
       }
       if (vinfo.useFillValue()) {
         countResult = new long[2];
-        countResult[0] = 0;
-        countResult[1] = 0;
         return;
       }
       if (!vinfo.isChunked()) {

@@ -308,6 +308,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   /**
    * get the Projection.
+   * 
+   * @deprecated this will return Projection, not ProjectionImpl in 6.
    */
   public ProjectionImpl getProjection() {
     return gcs.getProjection();

@@ -70,7 +70,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   public List<Dimension> getDimensions() {
     List<Dimension> result = new ArrayList<>(getRank());
     for (int aShape : getShape())
-      result.add(new Dimension(null, aShape, false));
+      result.add(Dimension.builder().setLength(aShape).setIsShared(false).build());
     return result;
   }
 

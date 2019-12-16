@@ -51,7 +51,7 @@ public class TestNcmlReadersCompare {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     System.out.printf("Compare %s%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
-      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null)) {
+      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         if (!compare.compare(org, withBuilder)) {
@@ -64,20 +64,19 @@ public class TestNcmlReadersCompare {
     }
   }
 
-  static class MyFileFilter implements FileFilter {
+  private static class MyFileFilter implements FileFilter {
 
     @Override
     public boolean accept(File pathname) {
       String name = pathname.getName();
-
-      // Temporarily remove these until they're working
+      // NcMLReader does not change variable to type int, so fails.
       if (name.contains("aggSynthetic.xml"))
         return false;
-      if (name.contains("aggUnionRename.xml"))
-        return false;
-      if (name.contains("testAggFmrc"))
-        return false;
-      return name.endsWith("ml");
+      if (name.contains("AggFmrc"))
+        return false; // not implemented
+      if (name.endsWith("ml"))
+        return true; // .xml or .ncml
+      return false;
     }
   }
 

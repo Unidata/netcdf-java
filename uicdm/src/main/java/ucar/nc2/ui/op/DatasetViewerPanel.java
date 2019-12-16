@@ -24,9 +24,6 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class DatasetViewerPanel extends OpPanel {
 
   private static final org.slf4j.Logger logger =
@@ -37,9 +34,6 @@ public class DatasetViewerPanel extends OpPanel {
   private NetcdfFile ncfile;
   private boolean jni;
 
-  /**
-  *
-  */
   public DatasetViewerPanel(PreferencesExt dbPrefs, boolean jni) {
     super(dbPrefs, "dataset:");
     this.jni = jni;
@@ -73,7 +67,6 @@ public class DatasetViewerPanel extends OpPanel {
     dsViewer.addActions(buttPanel);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String location = (String) o;
@@ -111,7 +104,6 @@ public class DatasetViewerPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (ncfile != null) {
@@ -121,9 +113,6 @@ public class DatasetViewerPanel extends OpPanel {
     dsViewer.clear();
   }
 
-  /**
-   *
-   */
   public void setDataset(NetcdfFile nc) {
     try {
       if (ncfile != null) {
@@ -141,23 +130,16 @@ public class DatasetViewerPanel extends OpPanel {
     }
   }
 
-  /** */
   @Override
   public void save() {
     super.save();
     dsViewer.save();
   }
 
-  /**
-   *
-   */
   public void setText(String text) {
     detailTA.setText(text);
   }
 
-  /**
-   *
-   */
   public void appendLine(String text) {
     detailTA.appendLine(text);
   }

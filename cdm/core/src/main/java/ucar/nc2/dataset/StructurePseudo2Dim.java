@@ -149,7 +149,14 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends StructurePseudoDS.Builder<T> {
+    private boolean built;
+
+    /** Normally this is called by Group.build() */
     public StructurePseudo2Dim build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      this.setDataType(DataType.STRUCTURE);
       return new StructurePseudo2Dim(this);
     }
   }

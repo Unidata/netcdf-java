@@ -35,15 +35,21 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   private static final int MISSING_INT = -9999;
   private static final float MISSING_FLOAT = Float.NaN;
 
+  static private boolean isNEXRAD2Format(String format) {
+    // somewhat duplicated in Nexrad2RadialAdapter - so if changing something here, also
+    // look in cdm-core module's Nexrad2RadialAdapter.isNEXRAD2Format
+    if (format != null && (format.equals("ARCHIVE2") || format.startsWith("AR2V"))) {
+      if (Integer.parseInt(format.substring(4)) > 8)
+        logger.warn("Trying to handle unknown but valid-looking format: " + format);
+      return true;
+    }
+    return false;
+  }
 
   public boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
-      String test = raf.readString(8);
-      return test.equals(Level2VolumeScan.ARCHIVE2) || test.equals(Level2VolumeScan.AR2V0001)
-          || test.equals(Level2VolumeScan.AR2V0003) || test.equals(Level2VolumeScan.AR2V0004)
-          || test.equals(Level2VolumeScan.AR2V0002) || test.equals(Level2VolumeScan.AR2V0006)
-          || test.equals(Level2VolumeScan.AR2V0007);
+      return isNEXRAD2Format(raf.readString(8));
     } catch (IOException ioe) {
       return false;
     }

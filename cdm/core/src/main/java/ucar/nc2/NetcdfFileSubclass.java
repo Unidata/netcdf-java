@@ -39,7 +39,4 @@ public class NetcdfFileSubclass extends NetcdfFile {
 
     super(iospClassName, iospParam, location, buffer_size, cancelTask);
   }
-
-
-
 }

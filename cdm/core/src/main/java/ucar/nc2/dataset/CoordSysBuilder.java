@@ -71,9 +71,10 @@ import java.util.*;
  * _CoordinateTransforms = "LambertProjection HybridSigmaVerticalTransform"
  * 
  * B. You could explicitly add it by overriding assignCoordinateTransforms()
+ * 
+ * @deprecated do not use
  */
-
-
+@Deprecated
 public class CoordSysBuilder implements CoordSysBuilderIF {
   public static final String resourcesDir = "resources/nj22/coords/"; // resource path
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
