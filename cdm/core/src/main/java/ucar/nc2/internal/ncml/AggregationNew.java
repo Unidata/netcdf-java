@@ -42,7 +42,7 @@ public class AggregationNew extends AggregationOuter {
 
     // create aggregation dimension
     String dimName = getDimensionName();
-    Dimension aggDim = Dimension.builder(dimName, getTotalCoords()).build();
+    Dimension aggDim = new Dimension(dimName, getTotalCoords());
     Group.Builder root = ncDataset.rootGroup;
     root.removeDimension(dimName); // remove previous declaration, if any
     root.addDimension(aggDim);
@@ -52,7 +52,7 @@ public class AggregationNew extends AggregationOuter {
     List<String> aggVarNames = getAggVariableNames();
 
     // Look for a variable matching the new aggregation dimension
-    Optional<Variable.Builder> joinAggCoord = root.findVariable(dimName);
+    Optional<Variable.Builder<?>> joinAggCoord = root.findVariable(dimName);
 
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
@@ -62,7 +62,7 @@ public class AggregationNew extends AggregationOuter {
       root.addVariable(joinAggCoordVar);
       joinAggCoordVar.setProxyReader(this);
       if (isDate)
-        joinAggCoordVar.addAttribute(Attribute.builder(_Coordinate.AxisType).setStringValue("Time").build());
+        joinAggCoordVar.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
 
       // if speced externally, this variable will get replaced
       // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType,
@@ -98,7 +98,7 @@ public class AggregationNew extends AggregationOuter {
     // now we can create all the aggNew variables
     // use only named variables
     for (String varname : aggVarNames) {
-      Optional<Variable.Builder> aggVarOpt = root.findVariable(varname);
+      Optional<Variable.Builder<?>> aggVarOpt = root.findVariable(varname);
       if (!aggVarOpt.isPresent()) {
         logger.error(ncDataset.location + " aggNewDimension cant find variable " + varname);
         continue;
@@ -108,7 +108,7 @@ public class AggregationNew extends AggregationOuter {
       // construct new variable, replace old one LOOK what about Structures?
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(ncDataset, aggVar.getParentGroup());
       VariableDS.Builder vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
-          .setDimensionsByName(dimName + " " + Dimensions.makeDimensionsString(aggVar.dimensions));
+          .setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(aggVar.getAttributeContainer(), vagg.getAttributeContainer());
 
@@ -119,8 +119,7 @@ public class AggregationNew extends AggregationOuter {
         vagg.addAttribute(new Attribute(_Coordinate.Axes, axes));
       }
 
-      root.removeVariable(aggVar.shortName);
-      root.addVariable(vagg);
+      root.replaceVariable(vagg);
       aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel())

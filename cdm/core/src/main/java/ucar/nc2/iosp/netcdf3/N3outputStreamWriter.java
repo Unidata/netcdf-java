@@ -20,7 +20,9 @@ import java.io.BufferedOutputStream;
  * Experimental.
  * 
  * @author john
+ * @deprecated do not use
  */
+@Deprecated
 public class N3outputStreamWriter extends N3streamWriter {
 
   public N3outputStreamWriter(ucar.nc2.NetcdfFile ncfile) {

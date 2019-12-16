@@ -108,7 +108,7 @@ The time and satellite ephemeris data:
    float satEphemAltitude(numScans=691);
    float satEphemHeading(numScans=691);
 ~~~
-The remaining data from the dataset maps into the netCDF data model easily ({% include link_file.html file="/netcdfJava_tutorial/writingiosp/IospDmsp.cdl" text="resulting CDL" %}.
+The remaining data from the dataset maps into the netCDF data model easily ({% include link_file.html file="/netcdfJava_tutorial/writingiosp/IospDmsp.sample.cdl" text="resulting CDL" %}).
 
 ### Mapping the Data into a netCDF-3 Convention
 

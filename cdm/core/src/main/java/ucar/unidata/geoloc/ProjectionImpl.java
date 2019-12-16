@@ -35,6 +35,7 @@ import java.util.*;
  *
  * @author John Caron
  * @see Projection
+ * @deprecated only use Projection interface in 6.
  */
 public abstract class ProjectionImpl implements Projection, java.io.Serializable {
   /**
@@ -684,6 +685,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @return minimum enclosing box in world coordinates, or null if no part of the LatLonRect intersects the projection
    *         plane
    */
+  @Override
   public ProjectionRect latLonToProjBB(LatLonRect latlonRect) {
     if (isLatLon) {
       LatLonProjection llp = (LatLonProjection) this;

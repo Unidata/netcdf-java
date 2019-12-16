@@ -331,7 +331,7 @@ NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
 
 #### Q: I want to convert a GRIB file to netCDF. How do I do that?
 
-If you are converting the entire file, you can do it on the [command line](cdm_utility_programs.html#nccopy).
+If you are converting the entire file, you can do it on the [command line](cdm_utility_programs.html).
 
 You can do it from a Java program like this:
 

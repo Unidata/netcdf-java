@@ -23,8 +23,9 @@ import java.util.Formatter;
  *
  * @author caron
  * @see N3raf concrete class
+ * @deprecated do not use
  */
-
+@Deprecated
 public abstract class N3iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
 

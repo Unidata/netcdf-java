@@ -7,6 +7,7 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.util.prefs.PreferencesExt;
@@ -19,16 +20,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class AggPanel extends OpPanel {
   private AggTable aggTable;
   private NetcdfDataset ncd;
 
-  /**
-   *
-   */
   public AggPanel(PreferencesExt p) {
     super(p, "file:", true, false);
     aggTable = new AggTable(prefs, buttPanel);
@@ -75,7 +70,6 @@ public class AggPanel extends OpPanel {
     add(aggTable, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -89,8 +83,8 @@ public class AggPanel extends OpPanel {
           ioe.printStackTrace();
         }
       }
-
-      ncd = NetcdfDataset.openDataset(command);
+      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
+      ncd = useBuilders ? NetcdfDatasets.openDataset(command) : NetcdfDataset.openDataset(command);
       aggTable.setAggDataset(ncd);
     } catch (FileNotFoundException ioe) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());
@@ -108,7 +102,6 @@ public class AggPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (ncd != null) {
@@ -118,7 +111,6 @@ public class AggPanel extends OpPanel {
     aggTable.clear();
   }
 
-  /** */
   @Override
   public void save() {
     aggTable.save();

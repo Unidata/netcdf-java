@@ -20,16 +20,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 
-/**
- *
- */
 public class ModesMenu extends JMenu {
 
   private ToolsUI toolsui;
 
-  /**
-   *
-   */
   public ModesMenu(ToolsUI tui) {
     super("Modes");
     setMnemonic('M');
@@ -43,9 +37,6 @@ public class ModesMenu extends JMenu {
     addFmrcSubmenu();
   }
 
-  /**
-   *
-   */
   private void addNetcdfFileSubmenu() {
     JMenu ncMenu = new JMenu("NetcdfFile");
 
@@ -58,20 +49,25 @@ public class ModesMenu extends JMenu {
         toolsui.setUseRecordStructure(state);
       }
     };
-    BAMutil.setActionPropertiesToggle(a, null, "nc3UseRecords", false, 'V', -1);
+    BAMutil.setActionPropertiesToggle(a, null, "Netcdf3: use records", false, 'V', -1);
+    BAMutil.addActionToMenu(ncMenu, a);
+
+    a = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boolean state = (Boolean) getValue(BAMutil.STATE);
+        toolsui.setUseBuilders(state);
+      }
+    };
+    BAMutil.setActionPropertiesToggle(a, null, "use builders", true, 'B', -1);
     BAMutil.addActionToMenu(ncMenu, a);
 
     // Add the submenu
     add(ncMenu);
   }
 
-  /**
-   *
-   */
   private void addNetcdfDatasetSubmenu() {
-
     JMenu dsMenu = new JMenu("NetcdfDataset");
-
     AbstractAction a;
 
     a = new AbstractAction() {
@@ -122,9 +118,7 @@ public class ModesMenu extends JMenu {
     add(dsMenu);
   }
 
-  /**
-   *
-   */
+
   private void addHdfeosSubmenu() {
     JMenu subMenu = new JMenu("HDF-EOS");
 
@@ -167,9 +161,7 @@ public class ModesMenu extends JMenu {
     add(subMenu);
   }
 
-  /**
-   *
-   */
+
   private void addGribSubmenu() {
     JMenu subMenu = new JMenu("GRIB");
 
@@ -254,9 +246,7 @@ public class ModesMenu extends JMenu {
     add(subMenu);
   }
 
-  /**
-   *
-   */
+
   private void addFmrcSubmenu() {
     JMenu subMenu = new JMenu("FMRC");
 

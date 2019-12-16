@@ -32,8 +32,6 @@ import ucar.unidata.io.RandomAccessFile;
  * IOServiceProvider class (until one returns true, which means it can read the file).</li>
  * <li>the open() method on the resulting IOServiceProvider class is handed the file.</li>
  *
- * @see ucar.nc2.NetcdfFile#registerIOProvider(Class) ;
- *
  * @author caron
  */
 public interface IOServiceProvider {
@@ -64,14 +62,22 @@ public interface IOServiceProvider {
   void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;
 
   /**
-   * Open existing file, and populate it.
+   * If this iosp implements build().
+   * 
+   * @return
+   */
+  boolean isBuilder();
+
+  /**
+   * Open existing file, and populate it. Note that you cannot reference the NetcdfFile within this routine.
+   * This is the bridge to immutable objects that will be used exclusively in version 6.
    *
    * @param raf the file to work on, it has already passed the isValidFile() test.
    * @param rootGroup add objects to the root group.
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
    */
-  void open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
+  void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
 
   /**
    * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the
@@ -101,13 +107,32 @@ public interface IOServiceProvider {
    * @return the number of bytes written to the channel
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
+   * @deprecated do not use
    */
+  @Deprecated
   long readToByteChannel(Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
+  /** @deprecated do not use */
+  @Deprecated
   long streamToByteChannel(Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
+  /**
+   * Read data from a top level Variable and send data to a OutputStream.
+   * Must be in big-endian order, following ncstream conventions.
+   * Default implementation just reads to memory and writes to stream.
+   * Allow override for possible performance improvements.
+   *
+   * @param v2 a top-level Variable
+   * @param section the section of data to read.
+   *        There must be a Range for each Dimension in the variable, in order.
+   *        Note: no nulls allowed. IOSP may not modify.
+   * @param out write data to this OutputStream
+   * @return the number of bytes written to the channel
+   * @throws java.io.IOException if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
+   */
   long readToOutputStream(Variable v2, Section section, OutputStream out)
       throws java.io.IOException, ucar.ma2.InvalidRangeException;
 

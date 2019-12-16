@@ -18,7 +18,7 @@ import java.io.IOException;
  *
  * @author caron
  */
-class H5tiledLayout implements Layout {
+public class H5tiledLayout implements Layout {
   private LayoutTiled delegate;
 
   private Section want;
@@ -36,7 +36,7 @@ class H5tiledLayout implements Layout {
    * @param wantSection the wanted section of data, contains a List of Range objects, must be complete
    * @throws java.io.IOException on io error
    */
-  H5tiledLayout(H5header.Vinfo vinfo, DataType dtype, Section wantSection) throws IOException {
+  public H5tiledLayout(H5header.Vinfo vinfo, DataType dtype, Section wantSection) throws IOException {
     assert vinfo.isChunked;
     assert vinfo.btree != null;
 

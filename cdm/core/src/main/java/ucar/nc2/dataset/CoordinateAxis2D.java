@@ -448,14 +448,18 @@ public class CoordinateAxis2D extends CoordinateAxis {
     super(builder);
   }
 
+  public CoordinateAxis2D(VariableDS.Builder<?> builder) {
+    super(builder);
+  }
+
   public Builder<?> toBuilder() {
-    CoordinateAxis2D.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (CoordinateAxis2D.Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b;
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
+
   }
 
   /**

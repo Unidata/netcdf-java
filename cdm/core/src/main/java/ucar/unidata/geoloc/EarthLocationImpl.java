@@ -8,6 +8,7 @@ package ucar.unidata.geoloc;
  * A location on the Earth.
  *
  * @author caron
+ * @deprecated only use EarthLocation in 6.
  */
 public class EarthLocationImpl implements EarthLocation {
   protected double lat, lon, alt;

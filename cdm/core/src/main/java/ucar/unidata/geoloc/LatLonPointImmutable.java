@@ -5,12 +5,15 @@
 
 package ucar.unidata.geoloc;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * An immutable {@link LatLonPoint}.
  *
  * @author caron
  * @since 7/29/2014
  */
+@Immutable
 public class LatLonPointImmutable extends LatLonPointImpl {
   public static final LatLonPointImmutable INVALID =
       new LatLonPointImmutable(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);

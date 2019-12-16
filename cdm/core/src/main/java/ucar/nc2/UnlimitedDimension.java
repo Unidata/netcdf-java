@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 /**
  * A dimension whose length can change, thus mutable.
  * Only use when writing.
+ * Experimental.
  */
 public class UnlimitedDimension extends Dimension {
   private int ulength;

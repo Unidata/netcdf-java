@@ -15,8 +15,9 @@ import java.nio.channels.WritableByteChannel;
  * Use our RandomAccessFile class to read and write.
  * 
  * @author caron
+ * @deprecated do not use
  */
-
+@Deprecated
 public class N3raf extends N3iosp {
 
   protected void _open(ucar.unidata.io.RandomAccessFile raf) {}

@@ -17,8 +17,9 @@ import java.io.IOException;
  * This is used by N3iosp.
  *
  * @author caron
+ * @deprecated do not use
  */
-
+@Deprecated
 public class N3header extends NCheader {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
 

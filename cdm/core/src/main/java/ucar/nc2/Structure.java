@@ -100,7 +100,7 @@ public class Structure extends Variable {
    * @return Structure containing just those members
    */
   public Structure select(List<String> memberNames) {
-    Structure result = (Structure) copy();
+    Structure result = copy();
     List<Variable> members = new ArrayList<>();
     for (String name : memberNames) {
       Variable m = findVariable(name);
@@ -662,7 +662,7 @@ public class Structure extends Variable {
 
   protected Structure(Builder<?> builder) {
     super(builder);
-    builder.vbuilders.forEach(v -> v.setParentStructure(this));
+    builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile).setGroup(builder.parent));
     this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
@@ -670,14 +670,13 @@ public class Structure extends Variable {
 
   @Override
   public Builder<?> toBuilder() {
-    Structure.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     this.members.forEach(m -> b.addMemberVariable(m.toBuilder()));
-    return b;
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   /**
@@ -697,7 +696,7 @@ public class Structure extends Variable {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
-    private List<Variable.Builder> vbuilders = new ArrayList<>();
+    public List<Variable.Builder> vbuilders = new ArrayList<>();
     private boolean built;
 
     public T addMemberVariable(Variable.Builder v) {
@@ -716,6 +715,11 @@ public class Structure extends Variable {
       return want.isPresent();
     }
 
+    public Optional<Variable.Builder> findMemberVariable(String name) {
+      return vbuilders.stream().filter(d -> d.shortName.equals(name)).findFirst();
+    }
+
+    /** Normally this is called by Group.build() */
     public Structure build() {
       if (built)
         throw new IllegalStateException("already built");

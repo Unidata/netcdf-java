@@ -18,19 +18,13 @@ import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class Hdf5DataPanel extends OpPanel {
   private RandomAccessFile raf;
   private Hdf5DataTable hdf5Table;
 
-  /**
-   *
-   */
-  public Hdf5DataPanel(PreferencesExt p) {
+  public Hdf5DataPanel(PreferencesExt p, boolean useBuilders) {
     super(p, "file:", true, false);
-    hdf5Table = new Hdf5DataTable(prefs, buttPanel);
+    hdf5Table = useBuilders ? new Hdf5NewDataTable(prefs, buttPanel) : new Hdf5DataTable(prefs, buttPanel);
     add(hdf5Table, BorderLayout.CENTER);
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
@@ -52,7 +46,6 @@ public class Hdf5DataPanel extends OpPanel {
     buttPanel.add(infoButton);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -81,13 +74,11 @@ public class Hdf5DataPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     hdf5Table.closeOpenFiles();
   }
 
-  /** */
   @Override
   public void save() {
     hdf5Table.save();

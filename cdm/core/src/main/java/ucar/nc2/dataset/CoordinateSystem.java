@@ -702,7 +702,7 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
-  protected NetcdfDataset ds;
+  protected NetcdfDataset ds; // needed?
   protected List<CoordinateAxis> coordAxes = new ArrayList<>();
   protected List<CoordinateTransform> coordTrans = new ArrayList<>();
 
@@ -714,10 +714,21 @@ public class CoordinateSystem {
   protected boolean isImplicit; // where set?
   protected String dataType; // Grid, Station, etc. where set?
 
-  protected CoordinateSystem(Builder<?> builder) {
-    this.ds = builder.ncd;
-    this.coordAxes = builder.coordAxes;
-    this.coordTrans = builder.coordTrans;
+  protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axes,
+      List<CoordinateTransform> allTransforms) {
+    this.ds = ncd;
+    this.isImplicit = builder.isImplicit;
+
+    // find referenced coordinate axes
+    List<CoordinateAxis> axesList = new ArrayList<>();
+    StringTokenizer stoker = new StringTokenizer(builder.coordAxesNames);
+    while (stoker.hasMoreTokens()) {
+      String vname = stoker.nextToken();
+      CoordinateAxis axis = axes.stream().filter(a -> a.getShortName().equals(vname)).findFirst()
+          .orElseThrow(() -> new IllegalStateException("Cant find vname " + vname));
+      axesList.add(axis);
+    }
+    this.coordAxes = axesList;
 
     // calculated
     this.name = makeName(coordAxes);
@@ -755,6 +766,14 @@ public class CoordinateSystem {
       // collect dimensions
       List<Dimension> dims = axis.getDimensionsAll();
       domain.addAll(dims);
+
+      // Find the named coordinate transforms in allTransforms.
+      for (String wantTrans : builder.transNames) {
+        CoordinateTransform got = allTransforms.stream().filter(ct -> ct.name.equals(wantTrans)).findFirst()
+            .orElseThrow(() -> new IllegalStateException("Cant find transform " + wantTrans));
+        coordTrans.add(got);
+      }
+
     }
   }
 
@@ -764,7 +783,7 @@ public class CoordinateSystem {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.setNetcdfDataset(this.ds).addCoordinateAxes(this.coordAxes).addCoordinateTransforms(this.coordTrans);
+    return b.setImplicit(this.isImplicit).setCoordAxesNames(this.name).addCoordinateTransforms(this.coordTrans);
   }
 
   /**
@@ -784,43 +803,40 @@ public class CoordinateSystem {
   }
 
   public static abstract class Builder<T extends Builder<T>> {
-    private NetcdfDataset ncd;
-    private List<CoordinateAxis> coordAxes = new ArrayList<>();
-    private List<CoordinateTransform> coordTrans = new ArrayList<>();
+    public String coordAxesNames; // canonicalized list of names
+    private List<String> transNames = new ArrayList<>();
+    private boolean isImplicit;
     private boolean built;
 
     protected abstract T self();
 
-    public T setNetcdfDataset(NetcdfDataset ncd) {
-      this.ncd = ncd;
+    // LOOK need to be canonicalized
+    public T setCoordAxesNames(String names) {
+      this.coordAxesNames = names;
       return self();
     }
 
-    public T addCoordinateAxis(CoordinateAxis axis) {
-      coordAxes.add(axis);
-      return self();
-    }
-
-    public T addCoordinateAxes(Collection<CoordinateAxis> axes) {
-      coordAxes.addAll(axes);
-      return self();
-    }
-
-    public T addCoordinateTransform(CoordinateTransform ct) {
-      coordTrans.add(ct);
+    public T addCoordinateTransformByName(String ct) {
+      transNames.add(ct);
       return self();
     }
 
     public T addCoordinateTransforms(Collection<CoordinateTransform> axes) {
-      coordTrans.addAll(axes);
+      axes.forEach(axis -> addCoordinateTransformByName(axis.name));
       return self();
     }
 
-    public CoordinateSystem build() {
+    public T setImplicit(boolean isImplicit) {
+      this.isImplicit = isImplicit;
+      return self();
+    }
+
+    // LOOK do we really need NetcdfDataset?
+    public CoordinateSystem build(NetcdfDataset ncd, List<CoordinateAxis> axes, List<CoordinateTransform> transforms) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateSystem(this);
+      return new CoordinateSystem(this, ncd, axes, transforms);
     }
   }
 

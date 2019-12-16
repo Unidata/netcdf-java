@@ -41,7 +41,7 @@ import java.nio.*;
  * 2) they all have the same length as the dimension
  * 3) all variables' dimensions have a dimension scale
  */
-public class H5header extends NCheader {
+public class H5header extends NCheader implements H5headerIF {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // special attribute names in HDF5
@@ -124,8 +124,14 @@ public class H5header extends NCheader {
     this.h5iosp = h5iosp;
   }
 
+  @Override
   public byte getSizeOffsets() {
     return sizeOffsets;
+  }
+
+  @Override
+  public byte getSizeLengths() {
+    return sizeLengths;
   }
 
   boolean isNetcdf4() {
@@ -1493,8 +1499,9 @@ public class H5header extends NCheader {
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
-      // log.debug("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
-      Array newData = findReferenceObjectNames(v.read());
+      // System.out.println("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
+      Array oldData = v.read();
+      Array newData = findReferenceObjectNames(oldData);
       v.setDataType(DataType.STRING);
       v.setCachedData(newData, true); // so H5iosp.read() is never called
       v.addAttribute(new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
@@ -1542,7 +1549,6 @@ public class H5header extends NCheader {
   // convert an array of lons which are data object references to an array of strings,
   // the names of the data objects (dobj.who)
   private Array findReferenceObjectNames(Array data) throws IOException {
-    // Array data = v.read();
     IndexIterator ii = data.getIndexIterator();
 
     Array newData = Array.factory(DataType.STRING, data.getShape());
@@ -1728,7 +1734,7 @@ public class H5header extends NCheader {
       EnumTypedef enumTypedef = ncGroup.findEnumeration(mdt.enumTypeName);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
-        // LOOK ncGroup.addEnumeration(enumTypedef);
+        ncGroup.addEnumeration(enumTypedef);
       }
       v.setEnumTypedef(enumTypedef);
     }
@@ -5003,7 +5009,8 @@ public class H5header extends NCheader {
   //////////////////////////////////////////////////////////////
   // utilities
 
-  int makeIntFromBytes(byte[] bb, int start, int n) {
+  @Override
+  public int makeIntFromBytes(byte[] bb, int start, int n) {
     int result = 0;
     for (int i = start + n - 1; i >= start; i--) {
       result <<= 8;
@@ -5011,6 +5018,11 @@ public class H5header extends NCheader {
       result += (b < 0) ? b + 256 : b;
     }
     return result;
+  }
+
+  @Override
+  public boolean isOffsetLong() {
+    return isOffsetLong;
   }
 
   /**
@@ -5070,20 +5082,24 @@ public class H5header extends NCheader {
     return raf.readString(size);
   }
 
-  long readLength() throws IOException {
+  @Override
+  public long readLength() throws IOException {
     return isLengthLong ? raf.readLong() : (long) raf.readInt();
   }
 
-  long readOffset() throws IOException {
+  @Override
+  public long readOffset() throws IOException {
     return isOffsetLong ? raf.readLong() : (long) raf.readInt();
   }
 
-  long readAddress() throws IOException {
+  @Override
+  public long readAddress() throws IOException {
     return getFileOffset(readOffset());
   }
 
   // size of data depends on "maximum possible number"
-  int getNumBytesFromMax(long maxNumber) {
+  @Override
+  public int getNumBytesFromMax(long maxNumber) {
     int size = 0;
     while (maxNumber != 0) {
       size++;
@@ -5103,7 +5119,8 @@ public class H5header extends NCheader {
     return readVariableSizeUnsigned(size);
   }
 
-  long readVariableSizeUnsigned(int size) throws IOException {
+  @Override
+  public long readVariableSizeUnsigned(int size) throws IOException {
     long vv;
     if (size == 1) {
       vv = DataType.unsignedByteToShort(raf.readByte());
@@ -5150,7 +5167,13 @@ public class H5header extends NCheader {
     return result;
   }
 
-  long getFileOffset(long address) {
+  @Override
+  public RandomAccessFile getRandomAccessFile() {
+    return raf;
+  }
+
+  @Override
+  public long getFileOffset(long address) {
     return baseAddress + address;
   }
 

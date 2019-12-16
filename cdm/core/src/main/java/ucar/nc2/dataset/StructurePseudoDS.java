@@ -193,13 +193,13 @@ public class StructurePseudoDS extends StructureDS {
 
   @Override
   public Builder<?> toBuilder() {
-    StructurePseudoDS.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.addOriginalVariables(this.orgVariables);
+    b.addOriginalVariables(this.orgVariables);
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   public static Builder<?> builder() {
@@ -215,6 +215,7 @@ public class StructurePseudoDS extends StructureDS {
 
   public static abstract class Builder<T extends Builder<T>> extends StructureDS.Builder<T> {
     private List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
+    private boolean built;
 
     public T addOriginalVariable(Variable orgVar) {
       orgVariables.add(orgVar);
@@ -226,7 +227,12 @@ public class StructurePseudoDS extends StructureDS {
       return self();
     }
 
+    /** Normally this is called by Group.build() */
     public StructurePseudoDS build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      this.setDataType(DataType.STRUCTURE);
       return new StructurePseudoDS(this);
     }
   }

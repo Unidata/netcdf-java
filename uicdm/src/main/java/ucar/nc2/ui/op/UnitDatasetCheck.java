@@ -8,6 +8,7 @@ package ucar.nc2.ui.op;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
@@ -17,33 +18,23 @@ import java.awt.BorderLayout;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-/**
- *
- */
 public class UnitDatasetCheck extends OpPanel {
   private TextHistoryPane ta;
 
-  /**
-   *
-   */
   UnitDatasetCheck(PreferencesExt p) {
     super(p, "dataset:");
     ta = new TextHistoryPane(true);
     add(ta, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
     boolean err = false;
 
-    try (NetcdfFile ncfile = NetcdfDataset.openDataset(command, addCoords, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(command, addCoords, null)) {
       ta.setText("Variables for " + command + ":");
-      for (Variable o1 : ncfile.getVariables()) {
-        VariableEnhanced vs = (VariableEnhanced) o1;
+      for (Variable vs : ncfile.getVariables()) {
         String units = vs.getUnitsString();
         StringBuilder sb = new StringBuilder();
         sb.append("   ").append(vs.getShortName()).append(" has unit= <").append(units).append(">");
@@ -73,9 +64,6 @@ public class UnitDatasetCheck extends OpPanel {
     return !err;
   }
 
-  /**
-   *
-   */
   @Override
   public void closeOpenFiles() throws IOException {
     ta.clear();

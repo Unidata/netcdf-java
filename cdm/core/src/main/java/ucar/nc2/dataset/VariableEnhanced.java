@@ -10,10 +10,13 @@ import java.util.Set;
  * interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package.
  * 
  * @author john caron
+ * @deprecated do not use
  */
-
+@Deprecated
 public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
 
+  /** @deprecated do not use */
+  @Deprecated
   ucar.nc2.Variable getOriginalVariable();
 
   /** @deprecated do not use */

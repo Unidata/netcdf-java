@@ -440,7 +440,7 @@ public class NcStream {
       g.addVariable(NcStream.decodeStructure(s));
 
     for (NcStreamProto.Group gp : proto.getGroupsList()) {
-      Group.Builder ng = Group.builder().setName(gp.getName()).setNcfile(ncfile);
+      Group.Builder ng = Group.builder(g).setName(gp.getName()).setNcfile(ncfile);
       g.addGroup(ng);
       readGroup(gp, ncfile, ng);
     }
@@ -478,18 +478,18 @@ public class NcStream {
       if (lenp != len)
         System.out.println("HEY lenp != len");
       if (lenp == 1)
-        return Attribute.builder(attp.getName()).setStringValue(attp.getSdata(0)).build();
+        return new Attribute(attp.getName(), attp.getSdata(0));
       else {
         Array data = Array.factory(dtUse, new int[] {lenp});
         for (int i = 0; i < lenp; i++)
           data.setObject(i, attp.getSdata(i));
-        return Attribute.builder(attp.getName()).setValues(data).build();
+        return new Attribute(attp.getName(), data);
       }
     } else {
       ByteString bs = attp.getData();
       ByteBuffer bb = ByteBuffer.wrap(bs.toByteArray());
       // if null, then use int[]{bb.limit()}
-      return Attribute.builder(attp.getName()).setValues(Array.factory(dtUse, (int[]) null, bb)).build();
+      return new Attribute(attp.getName(), Array.factory(dtUse, (int[]) null, bb));
     }
   }
 

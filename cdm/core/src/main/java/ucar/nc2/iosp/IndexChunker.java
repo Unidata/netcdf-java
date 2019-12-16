@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import javax.annotation.Nullable;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -67,7 +68,7 @@ public class IndexChunker {
    * @param wantSection the wanted section in srcShape, ie must be subset of srcShape.
    * @throws InvalidRangeException if wantSection is incorrect
    */
-  public IndexChunker(int[] srcShape, Section wantSection) throws InvalidRangeException {
+  public IndexChunker(int[] srcShape, @Nullable Section wantSection) throws InvalidRangeException {
 
     wantSection = Section.fill(wantSection, srcShape); // will throw InvalidRangeException if illegal section
 

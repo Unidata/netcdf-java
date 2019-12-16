@@ -7,7 +7,9 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.OpPanel;
+import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
@@ -21,20 +23,14 @@ import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class CoordSysPanel extends OpPanel {
 
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private NetcdfDataset ds;
-  private CoordSysTable coordSysTable;
+  private final CoordSysTable coordSysTable;
 
-  /**
-   *
-   */
   public CoordSysPanel(PreferencesExt p) {
     super(p, "dataset:", true, false);
     coordSysTable = new CoordSysTable(prefs, buttPanel);
@@ -78,9 +74,6 @@ public class CoordSysPanel extends OpPanel {
     buttPanel.add(dsButton);
   }
 
-  /**
-   *
-   */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -96,7 +89,9 @@ public class CoordSysPanel extends OpPanel {
     }
 
     try {
-      ds = NetcdfDataset.openDataset(command, true, -1, null, null);
+      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
+      ds = useBuilders ? NetcdfDatasets.openDataset(command, true, -1, null, null)
+          : NetcdfDataset.openDataset(command, true, -1, null, null);
       if (ds == null) {
         JOptionPane.showMessageDialog(null, "Failed to open <" + command + ">");
       } else {
@@ -117,9 +112,6 @@ public class CoordSysPanel extends OpPanel {
     return !err;
   }
 
-  /**
-   *
-   */
   @Override
   public void closeOpenFiles() throws IOException {
     if (ds != null) {
@@ -129,9 +121,6 @@ public class CoordSysPanel extends OpPanel {
     coordSysTable.clear();
   }
 
-  /**
-   *
-   */
   public void setDataset(NetcdfDataset ncd) {
     try {
       if (ds != null)
@@ -146,9 +135,6 @@ public class CoordSysPanel extends OpPanel {
     setSelectedItem(ds.getLocation());
   }
 
-  /**
-   *
-   */
   @Override
   public void save() {
     coordSysTable.save();

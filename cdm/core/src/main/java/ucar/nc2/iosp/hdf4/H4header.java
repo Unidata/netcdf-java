@@ -372,8 +372,6 @@ public class H4header extends NCheader {
 
     boolean isUnlimited = (length == 0);
     Dimension dim = new Dimension(group.name, length, true, isUnlimited, false);
-    if (debugConstruct)
-      System.out.println("added dimension " + dim + " from VG " + group.refno);
     ncfile.addDimension(null, dim);
   }
 

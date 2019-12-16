@@ -54,7 +54,9 @@ public class CoordinateAxis extends VariableDS {
    * @param ncd the containing dataset
    * @param vds an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
+   * @deprecated Use CoordinateAxis.builder()
    */
+  @Deprecated
   public static CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
     if ((vds.getRank() == 0) || (vds.getRank() == 1) || (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR)) {
       return new CoordinateAxis1D(ncd, vds);
@@ -62,6 +64,17 @@ public class CoordinateAxis extends VariableDS {
       return new CoordinateAxis2D(ncd, vds);
     else
       return new CoordinateAxis(ncd, vds);
+  }
+
+  // experimental
+  public static CoordinateAxis.Builder fromVariableDS(VariableDS.Builder vdsBuilder) {
+    if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
+        || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == DataType.CHAR)) {
+      return new CoordinateAxis1D(vdsBuilder).toBuilder();
+    } else if (vdsBuilder.getRank() == 2)
+      return new CoordinateAxis2D(vdsBuilder).toBuilder();
+    else
+      return new CoordinateAxis(vdsBuilder).toBuilder();
   }
 
   /**
@@ -403,7 +416,7 @@ public class CoordinateAxis extends VariableDS {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
-  protected NetcdfDataset ncd; // container dataset
+  protected NetcdfDataset ncd; // needed?
   protected AxisType axisType;
   protected String positive;
   protected String boundaryRef;
@@ -411,7 +424,7 @@ public class CoordinateAxis extends VariableDS {
 
   protected CoordinateAxis(Builder<?> builder) {
     super(builder);
-    this.ncd = builder.ncd;
+    this.ncd = (NetcdfDataset) this.ncfile;
     this.axisType = builder.axisType;
     this.positive = builder.positive;
     this.boundaryRef = builder.boundaryRef;
@@ -419,14 +432,19 @@ public class CoordinateAxis extends VariableDS {
   }
 
   public Builder<?> toBuilder() {
-    CoordinateAxis.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (CoordinateAxis.Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  public CoordinateAxis(VariableDS.Builder<?> builder) {
+    super(builder);
   }
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.setNetcdfDataset(this.ncd).setAxisType(this.axisType).setPositive(this.positive)
-        .setBoundary(this.boundaryRef).setIsContiguous(this.isContiguous);
+    b.setAxisType(this.axisType).setPositive(this.positive).setBoundary(this.boundaryRef)
+        .setIsContiguous(this.isContiguous);
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
+
   }
 
   /**
@@ -446,7 +464,6 @@ public class CoordinateAxis extends VariableDS {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
-    private NetcdfDataset ncd;
     protected AxisType axisType;
     protected String positive;
     protected String boundaryRef;
@@ -454,11 +471,6 @@ public class CoordinateAxis extends VariableDS {
     private boolean built;
 
     protected abstract T self();
-
-    public T setNetcdfDataset(NetcdfDataset ncd) {
-      this.ncd = ncd;
-      return self();
-    }
 
     public T setAxisType(AxisType axisType) {
       this.axisType = axisType;

@@ -10,6 +10,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
@@ -67,10 +68,10 @@ import java.util.*;
  * 3) NcML explicit
  * NcML location is read in, then transferred to new NetcdfDataset as needed
  * orgFile = file defined by NcML location
+ * NetcdfDataset defined only by NcML, data is set to FillValue unless explicitly defined
  * 4) NcML new
  * NcML location = null
  * orgFile = null
- * NetcdfDataset defined only by NcML, data is set to FillValue unless explicitly defined
  */
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
@@ -83,8 +84,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     /** Convert enums to Strings. */
     ConvertEnums,
     /**
-     * For {@link ucar.nc2.constants.CDM#UNSIGNED} variables, reinterpret the bit patterns of any negative values as
-     * unsigned. The result will be positive values that must be stored in a
+     * Convert unsigned values to signed values.
+     * For {@link ucar.nc2.constants.CDM#UNSIGNED} variables, reinterpret the bit patterns of any
+     * negative values as unsigned. The result will be positive values that must be stored in a
      * {@link EnhanceScaleMissingUnsignedImpl#nextLarger larger data type}.
      */
     ConvertUnsigned,
@@ -237,7 +239,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Set if _FillValue attribute is considered isMissing()
    *
    * @param b true if _FillValue are missing (default true)
+   * @deprecated do not use
    */
+  @Deprecated
   public static void setFillValueIsMissing(boolean b) {
     fillValueIsMissing = b;
   }
@@ -246,7 +250,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Get if _FillValue attribute is considered isMissing()
    *
    * @return if _FillValue attribute is considered isMissing()
+   * @deprecated do not use
    */
+  @Deprecated
   public static boolean getFillValueIsMissing() {
     return fillValueIsMissing;
   }
@@ -255,7 +261,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Set if valid_range attribute is considered isMissing()
    *
    * @param b true if valid_range are missing (default true)
+   * @deprecated do not use
    */
+  @Deprecated
   public static void setInvalidDataIsMissing(boolean b) {
     invalidDataIsMissing = b;
   }
@@ -264,7 +272,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Get if valid_range attribute is considered isMissing()
    *
    * @return if valid_range attribute is considered isMissing()
+   * @deprecated do not use
    */
+  @Deprecated
   public static boolean getInvalidDataIsMissing() {
     return invalidDataIsMissing;
   }
@@ -273,7 +283,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Set if missing_data attribute is considered isMissing()
    *
    * @param b true if missing_data are missing (default true)
+   * @deprecated do not use
    */
+  @Deprecated
   public static void setMissingDataIsMissing(boolean b) {
     missingDataIsMissing = b;
   }
@@ -282,7 +294,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Get if missing_data attribute is considered isMissing()
    *
    * @return if missing_data attribute is considered isMissing()
+   * @deprecated do not use
    */
+  @Deprecated
   public static boolean getMissingDataIsMissing() {
     return missingDataIsMissing;
   }
@@ -1233,6 +1247,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return orgFile;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public IOServiceProvider getIosp() {
     return (orgFile == null) ? null : orgFile.getIosp();
@@ -1495,7 +1511,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param out write here
    * @param ncd info about this
+   * @deprecated do not use
    */
+  @Deprecated
   public static void debugDump(PrintWriter out, NetcdfDataset ncd) {
     String referencedLocation = ncd.orgFile == null ? "(null)" : ncd.orgFile.getLocation();
     out.println("\nNetcdfDataset dump = " + ncd.getLocation() + " url= " + referencedLocation + "\n");
@@ -1520,6 +1538,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return "N/A";
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public void check(Formatter f) {
     for (Variable v : getVariables()) {
       VariableDS vds = (VariableDS) v;
@@ -1545,22 +1565,39 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private String convUsed;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
   private ucar.nc2.ncml.AggregationIF agg;
+  private CoordinatesHelper coords;
 
   private NetcdfDataset(Builder<?> builder) {
     super(builder);
     this.orgFile = builder.orgFile;
-    this.coordAxes = builder.coordAxes;
-    this.coordSys = builder.coordSys;
-    this.coordTransforms = builder.coordTransforms;
     this.convUsed = builder.convUsed;
     this.enhanceMode = builder.enhanceMode;
     this.agg = builder.agg;
+
+    // LOOK the need to reference the NetcdfDataset means we cant build the axes or system until now.
+    this.coords = builder.coords.build(this);
+    this.coordAxes = coords.getCoordAxes();
+    this.coordSys = coords.getCoordSystems();
+    this.coordTransforms = coords.getCoordTransforms();
+
+    // TODO goes away in version 6
+    // LOOK how do we get the variableDS to reference the coordinate system?
+    // CoordinatesHelper has to wire the coordinate systems together
+    for (Variable v : this.variables) {
+      if (!(v instanceof VariableDS)) {
+        System.out.printf("WTF");
+      }
+      if (v instanceof VariableDS) {
+        VariableDS vds = (VariableDS) v;
+        vds.setCoordinateSystems(coords);
+      }
+    }
+
     finish(); // LOOK
   }
 
   public Builder<?> toBuilder() {
-    NetcdfDataset.Builder<?> r2 = addLocalFieldsToBuilder(builder());
-    return (NetcdfDataset.Builder<?>) super.addLocalFieldsToBuilder(r2);
+    return addLocalFieldsToBuilder(builder());
   }
 
   public NetcdfDataset(NetcdfFile.Builder<?> builder) {
@@ -1569,12 +1606,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     finish(); // LOOK
   }
 
-
   // Add local fields to the passed - in builder.
   private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.setOrgFile(this.orgFile).addCoordinateAxes(this.coordAxes).addCoordinateSystems(this.coordSys)
-        .addCoordinateTransforms(this.coordTransforms).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
+    this.coordAxes.forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
+    this.coordSys.forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
+    this.coordTransforms.forEach(trans -> b.coords.addCoordinateTransform(trans.toBuilder()));
+
+    b.setOrgFile(this.orgFile).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
         .setAggregation(this.agg);
+
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
   /**
@@ -1586,6 +1627,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return new Builder2();
   }
 
+  // LOOK this is wrong, cant do it this way.
+  public static NetcdfDataset.Builder builder(NetcdfFile from) {
+    NetcdfDataset.Builder builder = NetcdfDataset.builder().copyFrom(from).setOrgFile(from);
+    return builder;
+  }
+
   private static class Builder2 extends Builder<Builder2> {
     @Override
     protected Builder2 self() {
@@ -1594,50 +1641,29 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
-    private NetcdfFile orgFile;
-    private List<CoordinateAxis> coordAxes = new ArrayList<>();
-    private List<CoordinateSystem> coordSys = new ArrayList<>();
-    private List<CoordinateTransform> coordTransforms = new ArrayList<>();
-    private String convUsed;
-    private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
-    private ucar.nc2.ncml.AggregationIF agg; // If its an aggregation
+    public NetcdfFile orgFile;
+    public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
+    public String convUsed;
+    public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
+    public ucar.nc2.ncml.AggregationIF agg; // If its an aggregation
+
     private boolean built;
 
     protected abstract T self();
 
+    /**
+     * Add a CoordinateAxis to the dataset coordinates and to the list of variables.
+     * Replaces any existing Variable and CoordinateAxis with the same name.
+     */
+    public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder axis) {
+      if (axis == null)
+        return;
+      coords.replaceCoordinateAxis(axis);
+      group.replaceVariable(axis);
+    }
+
     public T setOrgFile(NetcdfFile orgFile) {
       this.orgFile = orgFile;
-      return self();
-    }
-
-    public T addCoordinateAxis(CoordinateAxis axis) {
-      coordAxes.add(axis);
-      return self();
-    }
-
-    public T addCoordinateAxes(Collection<CoordinateAxis> axes) {
-      coordAxes.addAll(axes);
-      return self();
-    }
-
-    public T addCoordinateSystem(CoordinateSystem cs) {
-      coordSys.add(cs);
-      return self();
-    }
-
-    public T addCoordinateSystems(Collection<CoordinateSystem> systems) {
-      coordSys.addAll(systems);
-      return self();
-    }
-
-    public T addCoordinateTransform(CoordinateTransform ct) {
-      if (!coordTransforms.contains(ct))
-        coordTransforms.add(ct);
-      return self();
-    }
-
-    public T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
-      coordTransforms.addAll(transforms);
       return self();
     }
 
@@ -1656,20 +1682,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return self();
     }
 
-    public NetcdfDataset build() {
-      if (built)
-        throw new IllegalStateException("already built");
-      built = true;
-      return new NetcdfDataset(this);
-    }
-
     /** Copy metadata from orgFile. Do not copy the coordinates, etc */
     public T copyFrom(NetcdfFile orgFile) {
       setLocation(orgFile.getLocation());
       setId(orgFile.getId());
       setTitle(orgFile.getTitle());
 
-      Group.Builder root = Group.builder().setName("");
+      Group.Builder root = Group.builder(null).setName("");
       convertGroup(root, orgFile.getRootGroup());
       setRootGroup(root);
 
@@ -1690,7 +1709,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         g.addVariable(convertVariable(v)); // convert
 
       for (Group nested : from.getGroups()) {
-        Group.Builder nnested = Group.builder();
+        Group.Builder nnested = Group.builder(g);
         g.addGroup(nnested);
         convertGroup(nnested, nested); // convert
       }
@@ -1701,11 +1720,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       if (v instanceof Sequence) {
         newVar = SequenceDS.builder().copyFrom((Sequence) v);
       } else if (v instanceof Structure) {
-        newVar = StructureDS.builder().copyFrom((StructureDS) v);
+        newVar = StructureDS.builder().copyFrom((Structure) v);
       } else {
         newVar = VariableDS.builder().copyFrom(v);
       }
       return newVar;
+    }
+
+    public NetcdfDataset build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new NetcdfDataset(this);
     }
 
   }
