@@ -17,9 +17,10 @@ import java.util.ArrayList;
  * @since Feb 23, 2008
  */
 public class Sequence extends Structure {
-  /*
+
+  /**
    * Sequence Constructor
-   *
+   * 
    * @param ncfile the containing NetcdfFile.
    * @param group the containing group; if null, use rootGroup
    * @param parent parent Structure, may be null

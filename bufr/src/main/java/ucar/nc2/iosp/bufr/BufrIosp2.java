@@ -67,7 +67,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
 
     // this fills the netcdf object
-    BufrIospBuilder construct = new BufrIospBuilder(protoMessage, config, rootGroup, raf.getLocation());
+    new BufrIospBuilder(protoMessage, config, rootGroup, raf.getLocation());
     isSingle = false;
   }
 
@@ -90,7 +90,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     }
   }
 
-  Optional<DataDescriptor> findDataDescriptor(List<DataDescriptor> dataDescriptors, String name) {
+  private Optional<DataDescriptor> findDataDescriptor(List<DataDescriptor> dataDescriptors, String name) {
     Optional<DataDescriptor> ddsOpt = dataDescriptors.stream().filter(d -> name.equals(d.name)).findFirst();
     if (ddsOpt.isPresent()) {
       return ddsOpt;

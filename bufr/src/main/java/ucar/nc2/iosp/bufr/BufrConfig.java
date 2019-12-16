@@ -32,11 +32,11 @@ import java.util.*;
 public class BufrConfig {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrConfig.class);
 
-  public static BufrConfig scanEntireFile(RandomAccessFile raf) throws IOException {
+  public static BufrConfig scanEntireFile(RandomAccessFile raf) {
     return new BufrConfig(raf);
   }
 
-  public static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
+  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
     BufrConfig config = new BufrConfig(raf, m);
     if (iospParam != null)
       config.merge(iospParam);
@@ -307,11 +307,6 @@ public class BufrConfig {
     BufrStation station = new BufrStation();
     station.read(parent, sdata);
 
-    if (station.getName() == null) {
-      log.warn("bad station name: " + station);
-      return;
-    }
-
     BufrStation check = map.get(station.getName());
     if (check == null)
       map.put(station.getName(), station);
@@ -535,7 +530,7 @@ public class BufrConfig {
       return null;
     }
 
-    public FieldConverter getChild(int i) {
+    FieldConverter getChild(int i) {
       return flds.get(i);
     }
 
