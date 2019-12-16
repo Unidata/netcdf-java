@@ -101,7 +101,7 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(message.getLookup().getCategoryFullName());
       staxWriter.writeEndElement();
 
-      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
+      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecordName);
       StructureDataIterator sdataIter = obs.getStructureIterator(-1);
 
       writeSequence(obs, sdataIter);

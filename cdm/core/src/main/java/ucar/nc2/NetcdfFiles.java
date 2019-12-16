@@ -600,6 +600,7 @@ public class NetcdfFiles {
 
     NetcdfFile ncfile =
         spi.isBuilder() ? build(spi, raf, location, cancelTask) : new NetcdfFile(spi, raf, location, cancelTask);
+    spi.buildFinish(ncfile);
 
     // send iospMessage after iosp is opened
     if (iospMessage != null)

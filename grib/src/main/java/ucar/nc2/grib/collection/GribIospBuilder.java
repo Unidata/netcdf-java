@@ -38,14 +38,14 @@ import java.util.List;
 /**
  * Grib Collection IOSP helper, for builders.
  */
-class GribIospHelper {
+class GribIospBuilder {
   final private GribIosp iosp;
   final private boolean isGrib1;
   final private org.slf4j.Logger logger;
   final private GribCollectionImmutable gribCollection;
   final private ucar.nc2.grib.GribTables gribTable;
 
-  GribIospHelper(GribIosp iosp, boolean isGrib1, Logger logger, GribCollectionImmutable gribCollection,
+  GribIospBuilder(GribIosp iosp, boolean isGrib1, Logger logger, GribCollectionImmutable gribCollection,
       GribTables gribTable) {
     this.iosp = iosp;
     this.isGrib1 = isGrib1;

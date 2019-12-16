@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -983,9 +984,6 @@ public class Group extends CDMNode implements AttributeContainer {
       return other;
     }
 
-    /**
-     * Add an EnumTypedef.
-     */
     public Builder addEnumTypedef(EnumTypedef typedef) {
       Preconditions.checkNotNull(typedef);
       enumTypedefs.add(typedef);
@@ -996,6 +994,21 @@ public class Group extends CDMNode implements AttributeContainer {
       Preconditions.checkNotNull(typedefs);
       enumTypedefs.addAll(typedefs);
       return this;
+    }
+
+    /**
+     * Add a EnumTypedef if it does not already exist.
+     * Return new or existing.
+     */
+    public EnumTypedef findOrAddEnumTypedef(String name, Map<Integer, String> map) {
+      Optional<EnumTypedef> opt = findEnumTypedef(name);
+      if (opt.isPresent()) {
+        return opt.get();
+      } else {
+        EnumTypedef enumTypedef = new EnumTypedef(name, map);
+        addEnumTypedef(enumTypedef);
+        return enumTypedef;
+      }
     }
 
     public Optional<EnumTypedef> findEnumTypedef(String name) {

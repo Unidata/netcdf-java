@@ -77,6 +77,9 @@ public interface IOServiceProvider {
    */
   void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
 
+  /** Sometimes the builder needs access to the finished objects. This is called after ncfile.build() */
+  void buildFinish(NetcdfFile ncfile);
+
   /**
    * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the
    * Variable, and the

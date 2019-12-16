@@ -58,7 +58,7 @@ public class WriteT41_ncRect {
       }
 
       // Variables
-      Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecord);
+      Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecordName);
       for (Variable oldVar : recordStruct.getVariables()) {
         if (oldVar.getDataType() == DataType.SEQUENCE)
           continue;

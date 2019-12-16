@@ -35,7 +35,7 @@ public class TestNestedStructuresEnhancement {
     String filename = TestDir.cdmLocalFromTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openFile(filename, null)) {
       logger.debug("Open {}", ncfile.getLocation());
-      Sequence outer = (Sequence) ncfile.findVariable(BufrIosp2.obsRecord);
+      Sequence outer = (Sequence) ncfile.findVariable(BufrIosp2.obsRecordName);
       assert outer != null;
 
       try (StructureDataIterator iter = outer.getStructureIterator()) {
@@ -60,7 +60,7 @@ public class TestNestedStructuresEnhancement {
     String filename = TestDir.cdmLocalFromTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openDataset(filename)) {
       logger.debug("Open {}", ncfile.getLocation());
-      SequenceDS outer = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
+      SequenceDS outer = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecordName);
       assert outer != null;
 
       try (StructureDataIterator iter = outer.getStructureIterator()) {

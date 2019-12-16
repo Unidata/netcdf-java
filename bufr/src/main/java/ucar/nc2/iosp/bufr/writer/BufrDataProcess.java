@@ -131,7 +131,7 @@ public class BufrDataProcess {
   private void processBufrMessageAsDataset(MessageScanner scan, Message m, Counter counter) throws Exception {
     byte[] mbytes = scan.getMessageBytes(m);
     NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
-    Sequence obs = (Sequence) ncfile.findVariable(BufrIosp2.obsRecord);
+    Sequence obs = (Sequence) ncfile.findVariable(BufrIosp2.obsRecordName);
     StructureDataIterator sdataIter = obs.getStructureIterator(-1);
     processSequence(obs, sdataIter, counter);
   }

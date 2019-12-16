@@ -5,6 +5,7 @@
 package ucar.nc2.iosp.bufr;
 
 import java.util.Objects;
+import ucar.nc2.Sequence;
 import ucar.nc2.iosp.bufr.tables.TableC;
 import ucar.nc2.iosp.bufr.tables.TableB;
 import java.util.List;
@@ -28,9 +29,10 @@ public class DataDescriptor {
   // from the TableB.Descriptor
   short fxy;
   int f, x, y;
-  String name, units, desc, source;
+  String name;
+  private String units, desc, source;
+  private boolean localOverride;
   boolean bad; // no descriptor found
-  boolean localOverride;
 
   // may get modified by TableC operators
   int scale;
@@ -45,7 +47,7 @@ public class DataDescriptor {
   int repetitionCountSize; // for delayed repetition
 
   AssociatedField assField; // associated field == 02 04 Y, Y number of extra bits
-  Object refersTo; // temporary place to put a sequence object
+  Sequence refersTo; // needed for nested sequence objects
   DataDescriptorTreeConstructor.DataPresentIndicator dpi;
 
   DataDescriptor() {}
@@ -140,7 +142,7 @@ public class DataDescriptor {
     return subKeys;
   }
 
-  public boolean isOkForVariable() {
+  boolean isOkForVariable() {
     return (f == 0) || (f == 1) || ((f == 2) && (x == 5) || ((f == 2) && (x == 24) && (y == 255)));
   }
 
@@ -220,8 +222,8 @@ public class DataDescriptor {
    * @param fromList transfer from here
    * @param toList to here
    */
-  public static void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) { // get info from proto
-                                                                                                // message
+  static void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) { // get info from proto
+                                                                                         // message
     if (fromList.size() != toList.size())
       throw new IllegalArgumentException("list sizes dont match " + fromList.size() + " != " + toList.size());
 
@@ -278,7 +280,7 @@ public class DataDescriptor {
    *
    * @return the number of bytes the CDM datatype will take
    */
-  public int getByteWidthCDM() {
+  int getByteWidthCDM() {
     if (type == 1) // string
       return bitWidth / 8;
 

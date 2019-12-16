@@ -79,6 +79,11 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
+  public void buildFinish(NetcdfFile ncfile) {
+    // No op
+  }
+
+  @Override
   public void close() throws java.io.IOException {
     if (raf != null)
       raf.close();

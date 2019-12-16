@@ -126,7 +126,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
       // create the list of data variables
       munger = new Munge();
-      obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
+      obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecordName);
       this.dataVariables = munger.makeDataVariables(index, obs);
 
       BufrStationCollection bufrCollection = new BufrStationCollection(ncfile.getLocation());

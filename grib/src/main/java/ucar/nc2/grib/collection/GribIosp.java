@@ -138,7 +138,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         isPartitioned = true;
       }
       gribTable = createCustomizer();
-      GribIospHelper helper = new GribIospHelper(this, isGrib1, logger, gribCollection, gribTable);
+      GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
 
       helper.addGroup(rootGroup, gHcs, gtype, false);
 
@@ -152,7 +152,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       isPartitioned = (this.gribCollection instanceof PartitionCollectionImmutable);
       gribTable = createCustomizer();
-      GribIospHelper helper = new GribIospHelper(this, isGrib1, logger, gribCollection, gribTable);
+      GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
 
       boolean useDatasetGroup = gribCollection.getDatasets().size() > 1;
       for (GribCollectionImmutable.Dataset ds : gribCollection.getDatasets()) {
