@@ -61,6 +61,24 @@ public class AttributeContainerHelper implements AttributeContainer {
     return att;
   }
 
+  // Add Attribute; name and value must not be null;
+  public Attribute addAttribute(String name, String value) {
+    if (name == null || value == null) {
+      return null;
+    }
+    Attribute att = new Attribute(name, value);
+    return addAttribute(att);
+  }
+
+  // Add Attribute; name and value must not be null;
+  public Attribute addAttribute(String name, Number value) {
+    if (name == null || value == null) {
+      return null;
+    }
+    Attribute att = new Attribute(name, value);
+    return addAttribute(att);
+  }
+
   /**
    * Add all; replace old if has same name
    */

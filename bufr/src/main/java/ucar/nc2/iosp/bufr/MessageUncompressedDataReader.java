@@ -320,8 +320,7 @@ public class MessageUncompressedDataReader {
     StructureMembers members = null;
 
     if (req.wantRow()) {
-      Sequence seq = (Sequence) seqdd.refersTo;
-
+      Sequence seq = seqdd.refersTo;
       assert seq != null;
 
       // for the obs structure

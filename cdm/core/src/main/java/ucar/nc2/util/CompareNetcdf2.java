@@ -327,15 +327,28 @@ public class CompareNetcdf2 {
 
       } else {
         Structure orgS = (Structure) org;
-        Structure ncmlS = (Structure) copy;
+        Structure copyS = (Structure) copy;
 
-        List vars = new ArrayList();
-        ok &= checkAll("struct " + orgS.getNameAndDimensions(), orgS.getVariables(), ncmlS.getVariables(), vars);
-        for (int i = 0; i < vars.size(); i += 2) {
-          Variable orgV = (Variable) vars.get(i);
-          Variable ncmlV = (Variable) vars.get(i + 1);
-          ok &= compareVariables(orgV, ncmlV, filter, false, true);
+        for (Variable orgV : orgS.getVariables()) {
+          Variable copyVar = copyS.findVariable(orgV.getShortName());
+          if (copyVar == null) {
+            f.format(" ** cant find variable %s in 2nd file%n", orgV.getFullName());
+            ok = false;
+          } else {
+            boolean compareStructData = compareData && !(orgV instanceof Sequence);
+            ok &= compareVariables(orgV, copyVar, filter, compareStructData, true);
+          }
         }
+
+        /*
+         * List vars = new ArrayList();
+         * ok &= checkAll("struct " + orgS.getNameAndDimensions(), orgS.getVariables(), copyS.getVariables(), vars);
+         * for (int i = 0; i < vars.size(); i += 2) {
+         * Variable orgV = (Variable) vars.get(i);
+         * Variable ncmlV = (Variable) vars.get(i + 1);
+         * ok &= compareVariables(orgV, ncmlV, filter, false, true);
+         * }
+         */
       }
     }
 
@@ -575,6 +588,7 @@ public class CompareNetcdf2 {
     } catch (Throwable t) {
       t.printStackTrace();
       f.format(" *** Throwable= %s %n", t.getMessage());
+      ok = false;
     }
 
     return ok;
@@ -773,7 +787,7 @@ public class CompareNetcdf2 {
         Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
   }
 
-  public boolean compareStructureData(StructureData sdata1, StructureData sdata2, boolean justOne) {
+  private boolean compareStructureData(StructureData sdata1, StructureData sdata2, boolean justOne) {
     boolean ok = true;
 
     StructureMembers sm1 = sdata1.getStructureMembers();
@@ -784,7 +798,6 @@ public class CompareNetcdf2 {
     }
 
     for (StructureMembers.Member m1 : sm1.getMembers()) {
-      // if (m1.getName().equals("time")) continue;
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);

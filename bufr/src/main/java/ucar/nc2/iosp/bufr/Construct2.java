@@ -85,7 +85,7 @@ class Construct2 {
   }
 
   private void makeObsRecord(BufrConfig bufrConfig) {
-    recordStructure = new Sequence(ncfile, null, null, BufrIosp2.obsRecord);
+    recordStructure = new Sequence(ncfile, null, null, BufrIosp2.obsRecordName);
     ncfile.addVariable(null, recordStructure);
 
     BufrConfig.FieldConverter root = bufrConfig.getRootConverter();
@@ -142,8 +142,6 @@ class Construct2 {
 
     parent.addMemberVariable(struct);
     struct.setSPobject(fld);
-
-    dkey.refersTo = struct;
   }
 
   private void addSequence(Structure parent, BufrConfig.FieldConverter fld) {
@@ -216,8 +214,6 @@ class Construct2 {
 
     parent.addMemberVariable(struct);
     struct.setSPobject(dpiField); // ??
-
-    dpiKey.refersTo = struct;
 
     // add some fake dkeys corresponding to above
     // DataDescriptor nameDD = new DataDescriptor();
