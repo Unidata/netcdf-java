@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -43,8 +44,8 @@ import ucar.unidata.util.StringUtil2;
 /**
  * <p>
  * Read-only scientific datasets that are accessible through the netCDF API.
- * Immutable after {@code setImmutable()} is called. However, reading data is not
- * thread-safe.
+ * Immutable after {@code setImmutable()} is called. Reading data is not
+ * thread-safe because of the use of RandomAccessFile.
  * </p>
  *
  * <p>
@@ -870,7 +871,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Get the name used in the cache, if any.
    *
    * @return name in the cache.
+   * @deprecated
    */
+  @Deprecated
   public String getCacheName() {
     return cacheName;
   }
@@ -899,6 +902,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @return id, or null if none.
    */
+  @Nullable
   public String getId() {
     return id;
   }
@@ -908,6 +912,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @return title, or null if none.
    */
+  @Nullable
   public String getTitle() {
     return title;
   }
@@ -957,6 +962,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param fullName eg "/group/subgroup/wantGroup". Null or empty string returns the root group.
    * @return Group or null if not found.
    */
+  @Nullable
   public Group findGroup(String fullName) {
     if (fullName == null || fullName.isEmpty())
       return rootGroup;
@@ -972,6 +978,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return g;
   }
 
+  /**
+   * Find a Variable by short name, in the given group.
+   * @param g A groyp in this file. Null for root group.
+   * @param shortName short name of the Variable.
+   * @return Variable if found, else null.
+   */
+  @Nullable
   public Variable findVariable(Group g, String shortName) {
     if (g == null)
       return findVariable(shortName);
@@ -989,6 +1002,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
    */
+  @Nullable
   public Variable findVariable(String fullNameEscaped) {
     if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
       return null;
@@ -1033,6 +1047,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return v;
   }
 
+  @Nullable
   public Variable findVariableByAttribute(Group g, String attName, String attValue) {
     if (g == null)
       g = getRootGroup();
@@ -1073,6 +1088,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param fullName Dimension full name, e.g. "/group/subgroup/dim".
    * @return the Dimension or {@code null} if it wasn't found.
    */
+  @Nullable
   public Dimension findDimension(String fullName) {
     if (fullName == null || fullName.isEmpty()) {
       return null;
@@ -1116,6 +1132,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @return the unlimited Dimension, or null if none.
    */
+  @Nullable
   public Dimension getUnlimitedDimension() {
     for (Dimension d : dimensions) {
       if (d.isUnlimited())
@@ -1141,6 +1158,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param name the name of the attribute
    * @return the attribute, or null if not found
    */
+  @Nullable
   public Attribute findGlobalAttribute(String name) {
     for (Attribute a : gattributes) {
       if (name.equals(a.getShortName()))
@@ -1155,6 +1173,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param name the name of the attribute
    * @return the attribute, or null if not found
    */
+  @Nullable
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     for (Attribute a : gattributes) {
       if (name.equalsIgnoreCase(a.getShortName()))
@@ -1175,6 +1194,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
    * @return Attribute or null if not found.
    */
+  @Nullable
   public Attribute findAttribute(String fullNameEscaped) {
     if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
       return null;
@@ -1230,7 +1250,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return v.findAttribute(attName);
   }
 
-
   /**
    * Find a String-valued global or variable Attribute by
    * Attribute name (ignore case), return the Value of the Attribute.
@@ -1259,6 +1278,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return attValue;
   }
 
+  /** @deprecated use Group.findAttributeDouble */
+  @Deprecated
   public double readAttributeDouble(Variable v, String attName, double defValue) {
     Attribute att;
 
@@ -1275,6 +1296,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       return att.getNumericValue().doubleValue();
   }
 
+  /** @deprecated use Group.findAttributeInteger */
+  @Deprecated
   public int readAttributeInteger(Variable v, String attName, int defValue) {
     Attribute att;
 
@@ -1290,7 +1313,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     else
       return att.getNumericValue().intValue();
   }
-
 
   //////////////////////////////////////////////////////////////////////////////////////
 
@@ -1343,13 +1365,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     pw.flush();
   }
 
-  public void toStringStart(PrintWriter pw, boolean strict) {
+  void toStringStart(PrintWriter pw, boolean strict) {
     Formatter f = new Formatter();
     toStringStart(f, new Indent(2), strict);
     pw.write(f.toString());
   }
 
-  public void toStringEnd(PrintWriter pw) {
+  void toStringEnd(PrintWriter pw) {
     pw.print("}\n");
   }
 
@@ -1361,7 +1383,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     f.format("%s}%n", indent);
   }
 
-  protected void toStringStart(Formatter f, Indent indent, boolean strict) {
+  private void toStringStart(Formatter f, Indent indent, boolean strict) {
     String name = getLocation();
     if (strict) {
       if (name.endsWith(".nc"))
@@ -1377,13 +1399,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * Write the NcML representation: dont show coodinate values
+   * Write the NcML representation: dont show coordinate values
    *
    * @param os : write to this OutputStream. Will be closed at end of the method.
    * @param uri use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException if error
    * @see NcMLWriter#writeToStream
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
     NcMLWriter ncmlWriter = new NcMLWriter();
     Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
@@ -1391,14 +1415,16 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * Write the NcML representation: dont show coodinate values
+   * Write the NcML representation: dont show coordinate values
    *
    * @param writer : write to this Writer, should have encoding of UTF-8 if applicable. Will be closed at end of the
    *        method.
    * @param uri use this for the url attribute; if null use getLocation().
    * @throws IOException if error
    * @see NcMLWriter#writeToWriter
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public void writeNcML(java.io.Writer writer, String uri) throws IOException {
     NcMLWriter ncmlWriter = new NcMLWriter();
     Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
@@ -1432,8 +1458,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * unlocked = false;
    * return (spi != null) && spi.sync();
    * }
+   * @deprecated
    */
-
+  @Deprecated
   @Override
   public long getLastModified() {
     if (iosp != null && iosp instanceof AbstractIOServiceProvider) {
@@ -1989,7 +2016,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Completely empty the objects in the netcdf file.
    * Used for rereading the file on a sync().
    * 
-   * @deprecated ???
+   * @deprecated
    */
   @Deprecated
   public void empty() {
@@ -2165,7 +2192,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return iosp.readToOutputStream(v, section, out);
   }
 
-
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return iosp.getStructureIterator(s, bufferSize);
   }
@@ -2183,7 +2209,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param variables List of type Variable
    * @return List of Array, one for each Variable in the input.
    * @throws IOException if read error
+   * @deprecated will be moved to DODSNetcdfFile in version 6.
    */
+  @Deprecated
   public java.util.List<Array> readArrays(java.util.List<Variable> variables) throws IOException {
     java.util.List<Array> result = new java.util.ArrayList<>();
     for (Variable variable : variables)
@@ -2203,6 +2231,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *      "http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    * @deprecated use readSection(), flatten=false no longer supported
    */
+  @Deprecated
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
     if (!flatten)
       throw new UnsupportedOperationException("NetdfFile.read(String variableSection, boolean flatten=false)");
@@ -2301,10 +2330,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * DO NOT USE - public by accident
-   *
-   * @return the IOSP for this NetcdfFile
+   * @deprecated do not use.
    */
+  @Deprecated
   public IOServiceProvider getIosp() {
     return iosp;
   }
@@ -2559,8 +2587,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * Get Builder for this class that allows subclassing.
-   * 
+   * Get Builder for this class.
+   * Allows subclassing.
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {

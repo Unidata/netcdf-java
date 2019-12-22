@@ -66,7 +66,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
     super(ncd, org);
     this.orgName = org.orgName;
-    this.cache = new Variable.Cache(); // decouple cache
+    this.cache.reset(); // decouple cache
     org.setCaching(true);
 
     // copy rest of state
@@ -191,7 +191,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     axis.isContiguous = this.isContiguous;
     axis.positive = this.positive;
 
-    axis.cache = new Variable.Cache(); // decouple cache
+    axis.cache.reset(); // decouple cache
     return axis;
   }
 

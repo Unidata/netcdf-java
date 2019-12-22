@@ -42,9 +42,9 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
     for (Variable v : ds.getVariables())
       checkIfAxis(v);
 
-    int year = ds.readAttributeInteger(null, "YEAR", -1);
-    int doy = ds.readAttributeInteger(null, "DAY", -1);
-    double time = ds.readAttributeDouble(null, "TIME", Double.NaN);
+    int year = ds.getRootGroup().findAttributeInteger("YEAR", -1);
+    int doy = ds.getRootGroup().findAttributeInteger("DAY", -1);
+    double time = ds.getRootGroup().findAttributeDouble("TIME", Double.NaN);
 
     if ((year > 0) && (doy > 0) && !Double.isNaN(time)) {
       Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));

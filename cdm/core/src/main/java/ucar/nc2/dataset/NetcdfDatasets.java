@@ -291,6 +291,11 @@ public class NetcdfDatasets {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  public static NetcdfFile openFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+    return openFile(durl, -1, cancelTask, null);
+  }
+
   /**
    * Factory method for opening a NetcdfFile through the netCDF API. May be any kind of file that
    * can be read through the netCDF API, including OpenDAP and NcML.

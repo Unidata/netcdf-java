@@ -68,12 +68,12 @@ public class Cosmic1Convention extends CoordSysBuilder {
     if (leoAtt == null) {
       if (ds.findVariable("time") == null) {
         // create a time variable - assume its linear along the vertical dimension
-        double start = ds.readAttributeDouble(null, "start_time", Double.NaN);
-        double stop = ds.readAttributeDouble(null, "stop_time", Double.NaN);
+        double start = ds.getRootGroup().findAttributeDouble("start_time", Double.NaN);
+        double stop = ds.getRootGroup().findAttributeDouble("stop_time", Double.NaN);
 
         if (Double.isNaN(start) && Double.isNaN(stop)) {
-          double top = ds.readAttributeDouble(null, "toptime", Double.NaN);
-          double bot = ds.readAttributeDouble(null, "bottime", Double.NaN);
+          double top = ds.getRootGroup().findAttributeDouble("toptime", Double.NaN);
+          double bot = ds.getRootGroup().findAttributeDouble("bottime", Double.NaN);
 
           this.conventionName = "Cosmic2";
           if (top > bot) {
@@ -98,7 +98,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
         ds.addVariable(null, timeVar);
         timeVar.addAttribute(new Attribute(CDM.UNITS, timeUnits));
         timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-        int dir = ds.readAttributeInteger(null, "irs", 1);
+        int dir = ds.getRootGroup().findAttributeInteger("irs", 1);
         ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
         if (inscr == 0) {
           if (dir == 1) {
@@ -148,15 +148,15 @@ public class Cosmic1Convention extends CoordSysBuilder {
       ArrayDouble.D1 timeData = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
       this.conventionName = "Cosmic3";
 
-      int iyr = ds.readAttributeInteger(null, "year", 2009);
-      int mon = ds.readAttributeInteger(null, "month", 0);
-      int iday = ds.readAttributeInteger(null, "day", 0);
-      int ihr = ds.readAttributeInteger(null, "hour", 0);
-      int min = ds.readAttributeInteger(null, "minute", 0);
-      int sec = ds.readAttributeInteger(null, "second", 0);
+      int iyr = ds.getRootGroup().findAttributeInteger("year", 2009);
+      int mon = ds.getRootGroup().findAttributeInteger("month", 0);
+      int iday = ds.getRootGroup().findAttributeInteger("day", 0);
+      int ihr = ds.getRootGroup().findAttributeInteger("hour", 0);
+      int min = ds.getRootGroup().findAttributeInteger("minute", 0);
+      int sec = ds.getRootGroup().findAttributeInteger("second", 0);
 
-      double start = ds.readAttributeDouble(null, "startTime", Double.NaN);
-      double stop = ds.readAttributeDouble(null, "stopTime", Double.NaN);
+      double start = ds.getRootGroup().findAttributeDouble("startTime", Double.NaN);
+      double stop = ds.getRootGroup().findAttributeDouble("stopTime", Double.NaN);
       double incr = (stop - start) / n;
       int t = 0;
       // double julian = juday(mon, iday, iyr);

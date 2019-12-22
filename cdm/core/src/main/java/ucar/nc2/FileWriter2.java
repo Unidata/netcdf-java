@@ -23,8 +23,7 @@ import java.util.Map;
  * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
  * then the new file is filled with fill values, like ncgen.
  * <p/>
- * <p>
- * Use a NetcdfFileWriter object for a lower level API.
+ * Use NetcdfFileWriter object for a lower level API.
  *
  * @deprecated use ucar.nc2.writer.FileWriter
  */

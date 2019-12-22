@@ -31,7 +31,7 @@ import java.util.StringTokenizer;
  */
 public class Dimension extends CDMNode implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
-  public static Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
+  public static final Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
 
   /**
    * Make a space-delineated String from a list of Dimension names.
@@ -173,7 +173,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   private boolean isShared; // shared means its in a group dimension list.
   private int length;
 
-  public Dimension(Builder builder) {
+  private Dimension(Builder builder) {
     super(builder.shortName);
     setParentGroup(builder.parent);
     this.isShared = builder.isShared;
@@ -182,7 +182,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     this.length = builder.length;
   }
 
-  /** Turn into a mutable Builder. Like a copy constructor. */
+  /** Turn into a mutable Builder, use toBuilder().build() to make a copy. */
   public Builder toBuilder() {
     return builder().setName(this.shortName).setGroup(this.getGroup()).setIsUnlimited(this.isUnlimited)
         .setIsVariableLength(this.isVariableLength).setIsShared(this.isShared).setLength(this.length);
@@ -279,9 +279,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return result;
   }
 
-  /**
-   * CDL representation, not strict.
-   */
+  /** CDL representation, not strict. */
   @Override
   public String toString() {
     return writeCDL(false);
@@ -310,8 +308,8 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return f.toString();
   }
 
-  protected void writeCDL(Formatter out, Indent indent, boolean strict) {
-    String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
+  void writeCDL(Formatter out, Indent indent, boolean strict) {
+    String name = strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName();
     out.format("%s%s", indent, name);
     if (isUnlimited())
       out.format(" = UNLIMITED;   // (%d currently)", getLength());
@@ -507,6 +505,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return new Builder().setName(name).setLength(length);
   }
 
+  /** A builder of Dimensions. */
   public static class Builder {
     private Group parent;
     private String shortName;

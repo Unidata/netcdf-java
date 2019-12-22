@@ -5,13 +5,14 @@
 
 package ucar.nc2;
 
+import javax.annotation.Nullable;
+
 /**
- * An Immutable Container of Attributes.
+ * An immutable Container of Attributes.
  * Use AttributeContainerHelper if you want a mutable container.
  *
  * @author caron
  * @since 3/20/14
- *        TODO will be Immutable in version 6
  */
 public interface AttributeContainer {
 
@@ -22,8 +23,37 @@ public interface AttributeContainer {
   java.util.List<Attribute> getAttributes();
 
   /**
+   * Find a String-valued Attribute by name (ignore case), return the String value of the Attribute.
+   * @return the attribute value, or defaultValue if not found
+   */
+  String findAttValueIgnoreCase(String attName, String defaultValue);
+
+  /**
+   * Find a Numeric Attribute by name (ignore case), return the double value of the Attribute.
+   * @return the attribute value, or defaultValue if not found
+   */
+  double findAttributeDouble(String attName, double defaultValue);
+
+  /**
+   * Find a Numeric Attribute by name (ignore case), return the integer value of the Attribute.
+   * @return the attribute value, or defaultValue if not found
+   */
+  int findAttributeInteger(String attName, int defaultValue);
+
+  /** Find an Attribute by name */
+  @Nullable Attribute findAttribute(String attName);
+
+  /** Find an Attribute by name, ignoring case. */
+  @Nullable Attribute findAttributeIgnoreCase(String attName);
+
+  /** Get the (optional) name of the AttributeContainer. */
+  @Nullable String getName();
+
+  ///// will be removed in version 6 to make AttributeContainer immutable
+
+  /**
    * Add all; replace old if has same name
-   * 
+   *
    * @deprecated will be removed in version 6.
    */
   @Deprecated
@@ -31,26 +61,13 @@ public interface AttributeContainer {
 
   /**
    * Add new or replace old if has same name
-   * 
+   *
    * @param att add this Attribute
    * @return the added attribute
    * @deprecated will be removed in version 6.
    */
   @Deprecated
   Attribute addAttribute(Attribute att);
-
-  /**
-   * Find a String-valued Attribute by Attribute name (ignore case), return the (string) value of the Attribute.
-   * 
-   * @return the attribute value, or defaultValue if not found
-   */
-  String findAttValueIgnoreCase(String attName, String defaultValue);
-
-  Attribute findAttribute(String attName);
-
-  Attribute findAttributeIgnoreCase(String attName);
-
-  String getName();
 
   /**
    * Remove an Attribute : uses the attribute hashCode to find it.
@@ -81,5 +98,4 @@ public interface AttributeContainer {
    */
   @Deprecated
   boolean removeAttributeIgnoreCase(String attName);
-
 }

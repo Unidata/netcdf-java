@@ -25,7 +25,9 @@ public class Sequence extends Structure {
    * @param group the containing group; if null, use rootGroup
    * @param parent parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
+   * @deprecated use Builder.
    */
+  @Deprecated
   public Sequence(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     super(ncfile, group, parent, shortName);
 
