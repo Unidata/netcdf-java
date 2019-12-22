@@ -135,7 +135,7 @@ public class CoordinateAxis extends VariableDS {
     axis.isContiguous = this.isContiguous;
     axis.positive = this.positive;
 
-    axis.cache = new Variable.Cache(); // decouple cache
+    axis.cache.reset(); // decouple cache
     return axis;
   }
 

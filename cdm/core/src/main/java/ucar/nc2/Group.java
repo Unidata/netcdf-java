@@ -69,6 +69,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the Variables contained directly in this group.
    *
    * @return List of type Variable; may be empty, not null.
+   * Will return ImmutableList<> in version 6
    */
   public java.util.List<Variable> getVariables() {
     return variables;
@@ -112,6 +113,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the Groups contained directly in this Group.
    *
    * @return List of type Group; may be empty, not null.
+   * Will return ImmutableList<> in version 6
    */
   public java.util.List<Group> getGroups() {
     return groups;
@@ -147,8 +149,8 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /**
    * Get the shared Dimensions contained directly in this group.
-   *
    * @return List of type Dimension; may be empty, not null.
+   * Will return ImmutableList<> in version 6
    */
   public java.util.List<Dimension> getDimensions() {
     return dimensions;
@@ -161,6 +163,7 @@ public class Group extends CDMNode implements AttributeContainer {
    *        dimension. null or empty String is a scalar.
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
+   * Will return ImmutableList<> in version 6
    */
   public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
     return Dimensions.makeDimensionsList(this::findDimension, dimString);
@@ -170,6 +173,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the enumerations contained directly in this group.
    *
    * @return List of type EnumTypedef; may be empty, not null.
+   * Will return ImmutableList<> in version 6
    */
   public java.util.List<EnumTypedef> getEnumTypedefs() {
     return enumTypedefs;
@@ -238,20 +242,34 @@ public class Group extends CDMNode implements AttributeContainer {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // AttributeHelper
 
+  @Override
   public java.util.List<Attribute> getAttributes() {
     return AttributeContainerHelper.filter(attributes, Attribute.SPECIALS).getAttributes();
   }
 
+  @Override
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
   }
 
+  @Override
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
   }
 
+  @Override
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
+  @Override
+  public double findAttributeDouble(String attName, double defaultValue) {
+    return attributes.findAttributeDouble(attName, defaultValue);
+  }
+
+  @Override
+  public int findAttributeInteger(String attName, int defaultValue) {
+    return attributes.findAttributeInteger(attName, defaultValue);
   }
 
   /** @deprecated Use Group.builder() */
@@ -370,7 +388,7 @@ public class Group extends CDMNode implements AttributeContainer {
     return buf.toString();
   }
 
-  protected void writeCDL(Formatter out, Indent indent, boolean strict) {
+  void writeCDL(Formatter out, Indent indent, boolean strict) {
     boolean hasE = (!enumTypedefs.isEmpty());
     boolean hasD = (!dimensions.isEmpty());
     boolean hasV = (!variables.isEmpty());
@@ -409,7 +427,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     for (Group g : groups) {
-      String gname = strict ? NetcdfFile.makeValidCDLName(g.getShortName()) : g.getShortName();
+      String gname = strict ? NetcdfFiles.makeValidCDLName(g.getShortName()) : g.getShortName();
       out.format("%sgroup: %s {%n", indent, gname);
       indent.incr();
       g.writeCDL(out, indent, strict);
@@ -830,7 +848,6 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   public static class Builder {
-
     static private final Logger logger = LoggerFactory.getLogger(Builder.class);
 
     public @Nullable Group.Builder parentGroup; // ignored during build()

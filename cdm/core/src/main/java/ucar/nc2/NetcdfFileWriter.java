@@ -539,7 +539,7 @@ public class NetcdfFileWriter implements Closeable {
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, String dimString) {
     Group parent = (g == null) ? ncfile.getRootGroup() : g;
-    return addVariable(g, null, shortName, dataType, Dimension.makeDimensionsList(parent, dimString));
+    return addVariable(g, null, shortName, dataType, Dimensions.makeDimensionsList(parent::findDimension, dimString));
   }
 
   public Variable addVariable(String shortName, DataType dataType, List<Dimension> dims) {

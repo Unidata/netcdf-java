@@ -240,7 +240,7 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * CDL representation, not strict
+   * CDL representation, not strict.
    *
    * @return CDL representation
    */
@@ -250,12 +250,11 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * CDL representation, may be strict
+   * CDL representation, may be strict.
    * 
    * @param strict if true, create strict CDL, escaping names
    * @return CDL representation
    */
-
   public String toString(boolean strict) {
     Formatter f = new Formatter();
     writeCDL(f, strict, null);
@@ -263,7 +262,7 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * Write CDL representation into f
+   * Write CDL representation into a Formatter.
    *
    * @param f write into this
    * @param strict if true, create strict CDL, escaping names
@@ -273,9 +272,9 @@ public class Attribute extends CDMNode {
       // Force type explicitly for string.
       f.format("string "); // note lower case and trailing blank
     if (strict && parentname != null)
-      f.format(NetcdfFile.makeValidCDLName(parentname));
+      f.format(NetcdfFiles.makeValidCDLName(parentname));
     f.format(":");
-    f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
+    f.format("%s", strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName());
     if (isString()) {
       f.format(" = ");
       for (int i = 0; i < getLength(); i++) {
@@ -379,7 +378,7 @@ public class Attribute extends CDMNode {
   }
 
   /**
-   * Create a scalar numeric-valued Attribute.
+   * Create a scalar, signed, numeric-valued Attribute.
    *
    * @param name name of Attribute
    * @param val value of Attribute
@@ -388,6 +387,13 @@ public class Attribute extends CDMNode {
     this(name, val, false);
   }
 
+  /**
+   * Create a scalar numeric-valued Attribute, possibly unsigned.
+   *
+   * @param name name of Attribute
+   * @param val value of Attribute
+   * @param isUnsigned if value is unsigned, used only for integer types.
+   */
   public Attribute(String name, Number val, boolean isUnsigned) {
     super(name);
     if (name == null)
@@ -668,9 +674,9 @@ public class Attribute extends CDMNode {
     if (dataType != att.dataType)
       return false;
 
-    if (isString())
+    if (isString()) {
       return att.getStringValue().equals(getStringValue());
-    // if (svalue != null) return svalue.equals(att.getStringValue());
+    }
 
     if (values != null) {
       for (int i = 0; i < getLength(); i++) {
@@ -723,7 +729,7 @@ public class Attribute extends CDMNode {
     this.nelems = (svalue != null) ? 1 : (this.values != null) ? (int) this.values.getSize() : 0;
   }
 
-  /** Turn into a mutable Builder. Like a copy constructor. */
+  /** Turn into a mutable Builder, use toBuilder().build() to make a copy. */
   public Builder toBuilder() {
     Builder b = builder().setName(this.shortName).setDataType(this.dataType).setEnumType(this.enumtype);
     if (this.svalue != null) {
@@ -734,14 +740,17 @@ public class Attribute extends CDMNode {
     return b;
   }
 
+  /** Create an Attribute builder. */
   public static Builder builder() {
     return new Builder();
   }
 
+  /** Create an Attribute builder with the given name. */
   public static Builder builder(String name) {
     return new Builder().setName(name);
   }
 
+  /** A builder for Attributes */
   public static class Builder {
     private String name;
     private DataType dataType;

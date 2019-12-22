@@ -903,7 +903,7 @@ public class NcMLReaderNew {
           .setIsVariableLength(isVariableLength).build());
 
     } else { // existing - modify it
-      Dimension.Builder newDim = new Dimension(dim.toBuilder()).toBuilder(); // copy old one
+      Dimension.Builder newDim = dim.toBuilder();
       newDim.setName(name);
 
       String lengthS = dimElem.getAttributeValue("length");

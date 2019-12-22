@@ -14,7 +14,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**
- * Enumeration Typedef map integers to Strings.
+ * Enumeration Typedef is a map from integers to Strings.
  * For ENUM1, ENUM2, ENUM4 enumeration types.
  * Immutable.
  *
@@ -45,14 +45,17 @@ public class EnumTypedef extends CDMNode {
     this.basetype = basetype;
   }
 
+  @Deprecated
   public ImmutableList<String> getEnumStrings() {
     return enumStrings;
   }
 
+  /** Will return ImmutableMap in version 6. */
   public Map<Integer, String> getMap() {
     return map;
   }
 
+  /** One of DataType.ENUM1, DataType.ENUM2, or DataType.ENUM4. */
   public DataType getBaseType() {
     return this.basetype;
   }
@@ -80,11 +83,13 @@ public class EnumTypedef extends CDMNode {
     return true;
   }
 
+  /** Get the name corresponding to the enum value. */
   public String lookupEnumString(int e) {
     String result = map.get(e);
     return (result == null) ? "Unknown enum value=" + e : result;
   }
 
+  /** Get the enum value corresponding to the name. */
   public Integer lookupEnumInt(String name) {
     for (Map.Entry<Integer, String> entry : map.entrySet()) {
       if (entry.getValue().equalsIgnoreCase(name))
@@ -94,7 +99,7 @@ public class EnumTypedef extends CDMNode {
   }
 
   /**
-   * String representation.
+   * CDL string representation.
    *
    * @param strict if true, write in strict adherence to CDL definition.
    * @return CDL representation.

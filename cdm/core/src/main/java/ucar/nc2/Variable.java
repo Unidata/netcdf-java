@@ -1123,7 +1123,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     this(ncfile, group, parent, shortName, dtype, (List<Dimension>) null);
     if (group == null)
       group = ncfile.getRootGroup();
-    setDimensions(Dimension.makeDimensionsList(group, dims));
+    setDimensions(Dimensions.makeDimensionsList(group::findDimension, dims));
   }
 
   /**
@@ -1233,25 +1233,40 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // AttributeHelper
 
-  // TODO will return ImmutableList<Attribute> in version 6
-  public java.util.List<Attribute> getAttributes() {
-    return attributes.getAttributes();
-  }
-
   public AttributeContainer getAttributeContainer() {
     return new AttributeContainerHelper(getFullName(), attributes.getAttributes());
   }
 
+  // TODO will return ImmutableList<Attribute> in version 6
+  @Override
+  public java.util.List<Attribute> getAttributes() {
+    return attributes.getAttributes();
+  }
+
+
+  @Override
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
   }
 
+  @Override
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
   }
 
+  @Override
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
+  @Override
+  public double findAttributeDouble(String attName, double defaultValue) {
+    return attributes.findAttributeDouble(attName, defaultValue);
+  }
+
+  @Override
+  public int findAttributeInteger(String attName, int defaultValue) {
+    return attributes.findAttributeInteger(attName, defaultValue);
   }
 
   /** @deprecated Use Variable.builder() */
@@ -1341,7 +1356,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (immutable)
       throw new IllegalStateException("Cant modify");
     try {
-      setDimensions(Dimension.makeDimensionsList(getParentGroup(), dimString));
+      setDimensions(Dimensions.makeDimensionsList(getParentGroup()::findDimension, dimString));
       // this.dimensions = Dimension.makeDimensionsList(getParentGroup(), dimString);
       resetShape();
     } catch (IllegalStateException e) {
@@ -1580,17 +1595,20 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   // this indirection allows us to share the cache among the variable's sections and copies
-
-  /**
-   * Public by accident.
-   */
   protected static class Cache {
-    public Array data;
-    public boolean isCaching;
-    public boolean cachingSet;
-    public boolean isMetadata;
+    private Array data;
+    protected boolean isCaching;
+    protected boolean cachingSet;
+    private boolean isMetadata;
 
-    public Cache() {}
+    private Cache() {}
+
+    public void reset() {
+      this.data = null;
+      this.isCaching = false;
+      this.cachingSet = false;
+      this.isMetadata = false;
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////
@@ -1707,7 +1725,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected DataType dataType;
   private EnumTypedef enumTypedef;
   protected List<Dimension> dimensions = new ArrayList<>(5);
-  protected AttributeContainerHelper attributes;
+  protected AttributeContainerHelper attributes; // TODO immutable in ver 6
   protected ProxyReader proxyReader = this;
   protected Object spiObject;
 
@@ -1937,7 +1955,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     @Deprecated
     public List<Dimension> copyDimensions() {
-      return dimensions.stream().map(d -> new Dimension(d.toBuilder())).collect(Collectors.toList());
+      return dimensions.stream().map(d -> d.toBuilder().build()).collect(Collectors.toList());
     }
 
     /**

@@ -572,7 +572,7 @@ public abstract class CFPointWriter implements Closeable {
   // added as members of the given structure
   protected void addCoordinatesExtended(Structure parent, List<VariableSimpleIF> coords) {
     for (VariableSimpleIF vs : coords) {
-      String dims = Dimension.makeDimensionsString(vs.getDimensions());
+      String dims = Dimensions.makeDimensionsString(vs.getDimensions());
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
 
       if (member == null) {

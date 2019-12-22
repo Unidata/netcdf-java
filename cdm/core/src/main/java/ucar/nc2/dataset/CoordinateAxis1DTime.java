@@ -318,8 +318,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         count2++;
       }
 
-      // here we have to decouple from the original variable
-      cache = new Cache();
+      // we have to decouple from the original variable
+      cache.reset();
       setCachedData(shortData, true);
     }
 
