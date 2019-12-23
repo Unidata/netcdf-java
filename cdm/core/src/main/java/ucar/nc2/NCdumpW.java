@@ -729,7 +729,7 @@ public class NCdumpW {
     // pull out the filename from the command
     String filename = args[0];
     try (Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
-      NetcdfFile nc = NetcdfDatasets.openFile(filename, null)) {
+        NetcdfFile nc = NetcdfDatasets.openFile(filename, null)) {
       // the rest of the command
       StringBuilder command = new StringBuilder();
       for (int i = 1; i < args.length; i++) {

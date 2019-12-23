@@ -18,7 +18,8 @@ import java.util.List;
 public class AttributeContainerHelper implements AttributeContainer {
 
   /**
-   * Create a new AttributeContainer, removing any whose name that starts with the given list.
+   * Create a new AttributeContainer, removing any whose name starts with one in the given list.
+   * 
    * @param atts Start with this set of Attributes.
    * @param remove Remove any whose name starts with one of these.
    * @return new AttributeContainer with attributes removed.

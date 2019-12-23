@@ -69,7 +69,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the Variables contained directly in this group.
    *
    * @return List of type Variable; may be empty, not null.
-   * Will return ImmutableList<> in version 6
+   *         Will return ImmutableList<> in version 6
    */
   public java.util.List<Variable> getVariables() {
     return variables;
@@ -113,7 +113,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the Groups contained directly in this Group.
    *
    * @return List of type Group; may be empty, not null.
-   * Will return ImmutableList<> in version 6
+   *         Will return ImmutableList<> in version 6
    */
   public java.util.List<Group> getGroups() {
     return groups;
@@ -149,8 +149,9 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /**
    * Get the shared Dimensions contained directly in this group.
+   * 
    * @return List of type Dimension; may be empty, not null.
-   * Will return ImmutableList<> in version 6
+   *         Will return ImmutableList<> in version 6
    */
   public java.util.List<Dimension> getDimensions() {
     return dimensions;
@@ -161,9 +162,8 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
    *        dimension. null or empty String is a scalar.
-   * @return list of dimensions
+   * @return list of dimensions, will return ImmutableList<> in version 6
    * @throws IllegalArgumentException if cant find dimension or parse error.
-   * Will return ImmutableList<> in version 6
    */
   public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
     return Dimensions.makeDimensionsList(this::findDimension, dimString);
@@ -173,7 +173,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the enumerations contained directly in this group.
    *
    * @return List of type EnumTypedef; may be empty, not null.
-   * Will return ImmutableList<> in version 6
+   *         Will return ImmutableList<> in version 6
    */
   public java.util.List<EnumTypedef> getEnumTypedefs() {
     return enumTypedefs;
