@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -47,7 +47,6 @@ public class MultipleAxisChart extends JPanel {
     // chart.addSubtitle(new TextTitle("Four datasets and four range axes."));
     XYPlot plot = (XYPlot) chart.getPlot();
     plot.setOrientation(PlotOrientation.VERTICAL);
-    plot.getRangeAxis().setFixedDimension(15.0);
 
     this.setLayout(new BorderLayout());
     this.add(new ChartPanel(chart), BorderLayout.CENTER);
@@ -57,7 +56,6 @@ public class MultipleAxisChart extends JPanel {
 
   public void addSeries(String yaxisName, TimeSeries series) {
     NumberAxis axis2 = new NumberAxis(yaxisName);
-    axis2.setFixedDimension(10.0);
     axis2.setAutoRangeIncludesZero(false);
 
     XYPlot plot = (XYPlot) chart.getPlot();
