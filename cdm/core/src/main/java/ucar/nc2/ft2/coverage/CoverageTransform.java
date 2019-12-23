@@ -91,6 +91,15 @@ public class CoverageTransform implements AttributeContainer {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
+  @Override
+  public double findAttributeDouble(String attName, double defaultValue) {
+    return attributes.findAttributeDouble(attName, defaultValue);
+  }
+
+  @Override
+  public int findAttributeInteger(String attName, int defaultValue) {
+    return attributes.findAttributeInteger(attName, defaultValue);
+  }
 
   @Override
   public String getName() {

@@ -327,7 +327,7 @@ public class Format {
 
 
   /**
-   * Nicely formatted representation of bytes, eg turn 5.636E7 into
+   * Nicely formatted representation of bytes, eg turn 5.636E7 into 
    *
    * @param size the size in bytes
    * @return formatted string
