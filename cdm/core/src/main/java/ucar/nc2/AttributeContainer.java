@@ -5,6 +5,7 @@
 
 package ucar.nc2;
 
+import java.util.Iterator;
 import javax.annotation.Nullable;
 
 /**
@@ -14,42 +15,55 @@ import javax.annotation.Nullable;
  * @author caron
  * @since 3/20/14
  */
-public interface AttributeContainer {
-
-  /**
-   * Returns immutable list of attributes.
-   * TODO will return ImmutableList<Attribute> in version 6
-   */
-  java.util.List<Attribute> getAttributes();
+public interface AttributeContainer extends Iterable<Attribute> {
 
   /**
    * Find a String-valued Attribute by name (ignore case), return the String value of the Attribute.
+   * 
    * @return the attribute value, or defaultValue if not found
    */
   String findAttValueIgnoreCase(String attName, String defaultValue);
 
   /**
    * Find a Numeric Attribute by name (ignore case), return the double value of the Attribute.
+   * 
    * @return the attribute value, or defaultValue if not found
    */
   double findAttributeDouble(String attName, double defaultValue);
 
   /**
    * Find a Numeric Attribute by name (ignore case), return the integer value of the Attribute.
+   * 
    * @return the attribute value, or defaultValue if not found
    */
   int findAttributeInteger(String attName, int defaultValue);
 
   /** Find an Attribute by name */
-  @Nullable Attribute findAttribute(String attName);
+  @Nullable
+  Attribute findAttribute(String attName);
 
   /** Find an Attribute by name, ignoring case. */
-  @Nullable Attribute findAttributeIgnoreCase(String attName);
+  @Nullable
+  Attribute findAttributeIgnoreCase(String attName);
 
   /** Get the (optional) name of the AttributeContainer. */
-  @Nullable String getName();
+  @Nullable
+  String getName();
+
+  @Override
+  default Iterator<Attribute> iterator() {
+    return getAttributes().iterator();
+  }
 
   ///// will be removed in version 6 to make AttributeContainer immutable
+
+  /**
+   * Returns immutable list of attributes.
+   *
+   * @deprecated use Iterable<Attribute>
+   */
+  @Deprecated
+  java.util.List<Attribute> getAttributes();
 
   /**
    * Add all; replace old if has same name

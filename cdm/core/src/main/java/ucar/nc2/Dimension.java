@@ -31,7 +31,8 @@ import java.util.StringTokenizer;
  */
 public class Dimension extends CDMNode implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
-  public static final Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
+  public static final Dimension VLEN =
+      Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
 
   /**
    * Make a space-delineated String from a list of Dimension names.

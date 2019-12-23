@@ -977,6 +977,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   /**
    * Find a Variable by short name, in the given group.
+   * 
    * @param g A groyp in this file. Null for root group.
    * @param shortName short name of the Variable.
    * @return Variable if found, else null.
@@ -1449,12 +1450,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @return true if file was changed.
    * 
-   * @throws IOException if error
-   *
-   * public boolean sync() throws IOException {
-   * unlocked = false;
-   * return (spi != null) && spi.sync();
-   * }
    * @deprecated
    */
   @Deprecated
@@ -2586,6 +2581,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Get Builder for this class.
    * Allows subclassing.
+   * 
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
