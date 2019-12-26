@@ -1233,6 +1233,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Attributes
 
+  @Override
   public AttributeContainer attributes() {
     return attributes;
   }

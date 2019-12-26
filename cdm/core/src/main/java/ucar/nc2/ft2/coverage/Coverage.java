@@ -9,6 +9,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
@@ -75,6 +76,11 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   @Override
   public DataType getDataType() {
     return dataType;
+  }
+
+  @Override
+  public AttributeContainer attributes() {
+    return atts;
   }
 
   @Override

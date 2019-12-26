@@ -141,10 +141,14 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
     return name;
   }
 
-
   @Override
   public DataType getDataType() {
     return dataType;
+  }
+
+  @Override
+  public AttributeContainer attributes() {
+    return atts;
   }
 
   @Override
