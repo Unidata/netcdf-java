@@ -31,8 +31,8 @@ import java.util.Collections;
  * <p>
  * Immutable if setImmutable() was called.
  *
- * TODO Groups will be immutable in 6.
- * TODO Groups will not have a reference to their owning NetcdfFile in 6.
+ * TODO Group will be immutable in 6.
+ * TODO Group will not implement AttributeContainer in 6.
  * 
  * @author caron
  */
@@ -108,6 +108,16 @@ public class Group extends CDMNode implements AttributeContainer {
     if ((v == null) && (parent != null))
       v = parent.findVariableOrInParent(varShortName);
     return v;
+  }
+
+  /**
+   * Get its parent Group, or null if its the root group.
+   *
+   * @return parent Group
+   */
+  @Nullable
+  public Group getParentGroup() {
+    return this.group;
   }
 
   /**
@@ -844,8 +854,7 @@ public class Group extends CDMNode implements AttributeContainer {
   public Builder toBuilder() {
     Builder parentBuilder = (this.getParentGroup() == null) ? null : this.getParentGroup().toBuilder();
     Builder builder = builder(parentBuilder).setName(this.shortName).setNcfile(this.ncfile)
-        .addAttributes(this.attributes).addDimensions(this.dimensions)
-        .addEnumTypedefs(this.enumTypedefs);
+        .addAttributes(this.attributes).addDimensions(this.dimensions).addEnumTypedefs(this.enumTypedefs);
 
     this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
     this.variables.forEach(v -> builder.addVariable(v.toBuilder()));

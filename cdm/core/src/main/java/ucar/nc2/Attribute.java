@@ -370,9 +370,9 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, String val) {
     super(name);
-    setDataType(DataType.STRING);
     if (name == null)
       throw new IllegalArgumentException("Trying to set name to null on " + this);
+    this.dataType = DataType.STRING;
     setStringValue(val);
     setImmutable();
   }
@@ -402,11 +402,11 @@ public class Attribute extends CDMNode {
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass(), isUnsigned);
-    setDataType(dt);
+    this.dataType = dt;
     Array vala = Array.factory(dt, shape);
     Index ima = vala.getIndex();
     vala.setObject(ima.set0(0), val);
-    setValues(vala);
+    setValues(vala); // make private
     setImmutable();
   }
 
@@ -418,7 +418,7 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, Array values) {
     this(name, values.getDataType());
-    setValues(values);
+    setValues(values); // make private
     setImmutable();
   }
 
@@ -446,16 +446,14 @@ public class Attribute extends CDMNode {
    * @param name name of attribute
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    * @param isUnsigned if the data type is unsigned.
-   * @deprecated Use Attribute.builder()
    */
-  @Deprecated
   public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
     if (values == null || values.isEmpty())
       throw new IllegalArgumentException("Cannot determine attribute's type");
     Class c = values.get(0).getClass();
-    setDataType(DataType.getType(c, isUnsigned));
-    setValues(values);
+    this.dataType = DataType.getType(c, isUnsigned);
+    setValues(values); // make private
     setImmutable();
   }
 
@@ -464,9 +462,7 @@ public class Attribute extends CDMNode {
    * Need to do this so ucar.unidata.geoloc package doesnt depend on ucar.nc2 library
    *
    * @param param copy info from here.
-   * @deprecated Use Attribute.builder()
    */
-  @Deprecated
   public Attribute(ucar.unidata.util.Parameter param) {
     this(param.getName());
 
@@ -477,7 +473,7 @@ public class Attribute extends CDMNode {
       double[] values = param.getNumericValues();
       int n = values.length;
       Array vala = Array.factory(DataType.DOUBLE, new int[] {n}, values);
-      setValues(vala);
+      setValues(vala); // make private
     }
     setImmutable();
   }
@@ -486,9 +482,7 @@ public class Attribute extends CDMNode {
    * Set the value as a String, trimming trailing zeros
    * 
    * @param val value of Attribute
-   * @deprecated Use Attribute.builder()
    */
-  @Deprecated
   private void setStringValue(String val) {
     if (val == null)
       throw new IllegalArgumentException("Attribute value cannot be null");
@@ -503,12 +497,7 @@ public class Attribute extends CDMNode {
     this.svalue = val;
     this.nelems = 1;
     this.dataType = DataType.STRING;
-
-    // values = Array.factory(String.class, new int[]{1});
-    // values.setObject(values.getIndex(), val);
-    // setValues(values);
   }
-
 
   //////////////////////////////////////////
   // the following make this mutable, but its restricted to subclasses, namely DODSAttribute
@@ -583,7 +572,7 @@ public class Attribute extends CDMNode {
 
 
   /**
-   * set the values from an Array
+   * Set the values from an Array
    *
    * @param arr value of Attribute
    * @deprecated Use Attribute.builder()
@@ -729,7 +718,7 @@ public class Attribute extends CDMNode {
     this.nelems = (svalue != null) ? 1 : (this.values != null) ? (int) this.values.getSize() : 0;
   }
 
-  /** Turn into a mutable Builder, use toBuilder().build() to make a copy. */
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder toBuilder() {
     Builder b = builder().setName(this.shortName).setDataType(this.dataType).setEnumType(this.enumtype);
     if (this.svalue != null) {
