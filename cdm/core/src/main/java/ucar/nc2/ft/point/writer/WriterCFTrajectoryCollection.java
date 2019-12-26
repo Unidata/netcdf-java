@@ -63,10 +63,8 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
-    coords.add(
-        VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
-    coords.add(
-        VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
+    coords.add(VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
+    coords.add(VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (altUnits != null) {
       coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
@@ -87,9 +85,8 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     featureVars.add(VariableSimpleBuilder.makeString(trajIdName, "trajectory identifier", null, id_strlen)
         .addAttribute(CF.CF_ROLE, CF.TRAJECTORY_ID).build());
 
-    featureVars
-        .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
-            .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
+    featureVars.add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
+        .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
 
     for (StructureMembers.Member m : featureData.getMembers()) {
       VariableSimpleIF dv = getDataVar(m.getName());

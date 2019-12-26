@@ -208,13 +208,12 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
         .addAttribute(CF.CF_ROLE, CF.PROFILE_ID) // profileId:cf_role = "profile_id";
         .addAttribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue)).build());
 
-    profileVars
-        .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
-            .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build()); // rowSize:sample_dimension = "obs"
+    profileVars.add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
+        .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build()); // rowSize:sample_dimension = "obs"
 
-    profileVars.add(VariableSimpleBuilder
-        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
-        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+    profileVars.add(
+        VariableSimpleBuilder.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+            .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     profileVars
         .add(VariableSimpleBuilder.makeScalar(stationIndexName, "station index for this profile", null, DataType.INT)
