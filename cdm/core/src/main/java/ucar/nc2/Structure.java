@@ -622,7 +622,7 @@ public class Structure extends Variable {
     sbuff.format("Structure ");
     getNameAndDimensions(sbuff, false, true);
     sbuff.format("%n");
-    for (Attribute att : attributes.getAttributes()) {
+    for (Attribute att : attributes) {
       sbuff.format("  %s:%s;%n", getShortName(), att.toString());
     }
     return sbuff.toString();
@@ -641,7 +641,7 @@ public class Structure extends Variable {
     getNameAndDimensions(buf, useFullName, strict);
     buf.format(";%s%n", extraInfo());
 
-    for (Attribute att : getAttributes()) {
+    for (Attribute att : attributes()) {
       if (Attribute.isspecial(att))
         continue;
       buf.format("%s", indent);

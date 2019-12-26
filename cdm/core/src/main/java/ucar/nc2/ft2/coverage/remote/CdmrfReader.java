@@ -10,7 +10,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
@@ -123,31 +123,30 @@ public class CdmrfReader {
     ProjectionRect projBoundingBox = decodeProjRectangle(proto.getProjRect());
     CalendarDateRange calendarDateRange = proto.hasDateRange() ? decodeDateRange(proto.getDateRange()) : null;
 
-    AttributeContainerHelper gatts = new AttributeContainerHelper(name);
-    for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
+    AttributeContainerMutable gatts = new AttributeContainerMutable(name);
+    for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList()) {
       gatts.addAttribute(NcStream.decodeAtt(patt));
+    }
 
     List<CoverageCoordSys> coordSys = new ArrayList<>();
-    for (CdmrFeatureProto.CoordSys pgrid : proto.getCoordSysList())
+    for (CdmrFeatureProto.CoordSys pgrid : proto.getCoordSysList()) {
       coordSys.add(decodeCoordSys(pgrid));
+    }
 
     List<CoverageTransform> transforms = new ArrayList<>();
-    for (CdmrFeatureProto.CoordTransform ptransform : proto.getCoordTransformsList())
+    for (CdmrFeatureProto.CoordTransform ptransform : proto.getCoordTransformsList()) {
       transforms.add(decodeCoordTransform(ptransform));
+    }
 
     List<CoverageCoordAxis> axes = new ArrayList<>();
-    for (CdmrFeatureProto.CoordAxis paxes : proto.getCoordAxesList())
+    for (CdmrFeatureProto.CoordAxis paxes : proto.getCoordAxesList()) {
       axes.add(decodeCoordAxis(paxes, reader));
+    }
 
     List<Coverage> coverages = new ArrayList<>();
-    for (CdmrFeatureProto.Coverage pgrid : proto.getGridsList())
+    for (CdmrFeatureProto.Coverage pgrid : proto.getGridsList()) {
       coverages.add(decodeGrid(pgrid, reader));
-
-    // public CoverageDataset(String name, AttributeContainerHelper atts, LatLonRect latLonBoundingBox, ProjectionRect
-    // projBoundingBox,
-    // CalendarDateRange calendarDateRange, List<CoverageCoordSys > coordSys, List< CoverageCoordTransform >
-    // coordTransforms,
-    // List< CoverageCoordAxis > coordAxes, List< Coverage > coverages) {
+    }
 
     return new CoverageCollection(name, csysType, gatts, latLonBoundingBox, projBoundingBox, calendarDateRange,
         coordSys, transforms, axes, coverages, reader);
@@ -202,11 +201,10 @@ public class CdmrfReader {
   CoverageTransform decodeCoordTransform(CdmrFeatureProto.CoordTransform proto) {
 
     String name = proto.getName();
-    AttributeContainerHelper atts = new AttributeContainerHelper(name);
+    AttributeContainerMutable atts = new AttributeContainerMutable(name);
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getParamsList())
       atts.addAttribute(NcStream.decodeAtt(patt));
 
-    // public CoverageCoordTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
     return new CoverageTransform(name, atts, proto.getIsHoriz());
   }
 
@@ -242,7 +240,7 @@ public class CdmrfReader {
       result.format("%s ", s);
     String dependsOn = result.toString().trim();
 
-    AttributeContainerHelper atts = new AttributeContainerHelper("axis atts");
+    AttributeContainerMutable atts = new AttributeContainerMutable("axis atts");
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
       atts.addAttribute(NcStream.decodeAtt(patt));
 

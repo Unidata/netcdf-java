@@ -979,7 +979,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     buf.format("%n");
 
     indent.incr();
-    for (Attribute att : getAttributes()) {
+    for (Attribute att : attributes()) {
       if (Attribute.isspecial(att))
         continue;
       buf.format("%s", indent);
@@ -1104,7 +1104,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       setParentGroup((group == null) ? ncfile.getRootGroup() : group);
     else
       setParentStructure(parent);
-    attributes = new AttributeContainerHelper(shortName);
+    attributes = new AttributeContainerMutable(shortName);
   }
 
   /**
@@ -1159,7 +1159,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   @Deprecated
   public Variable(Variable from) {
     super(from.getShortName());
-    this.attributes = new AttributeContainerHelper(from.getShortName(), from.getAttributes());
+    this.attributes = new AttributeContainerMutable(from.getShortName(), from.attributes());
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
     setDataType(from.getDataType());
     this.dimensions = new ArrayList<>(from.dimensions); // dimensions are shared
@@ -1231,40 +1231,44 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  // AttributeHelper
+  // Attributes
 
-  public AttributeContainer getAttributeContainer() {
-    return new AttributeContainerHelper(getFullName(), attributes.getAttributes());
+  public AttributeContainer attributes() {
+    return attributes;
   }
 
-  // TODO will return ImmutableList<Attribute> in version 6
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public java.util.List<Attribute> getAttributes() {
     return attributes.getAttributes();
   }
 
-
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public double findAttributeDouble(String attName, double defaultValue) {
     return attributes.findAttributeDouble(attName, defaultValue);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public int findAttributeInteger(String attName, int defaultValue) {
     return attributes.findAttributeInteger(attName, defaultValue);
   }
@@ -1725,7 +1729,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected DataType dataType;
   private EnumTypedef enumTypedef;
   protected List<Dimension> dimensions = new ArrayList<>(5);
-  protected AttributeContainerHelper attributes; // TODO immutable in ver 6
+  protected AttributeContainerMutable attributes; // TODO immutable in ver 6
   protected ProxyReader proxyReader = this;
   protected Object spiObject;
 
@@ -1827,7 +1831,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     builder.setName(this.shortName).setGroup(this.group).setNcfile(this.ncfile)
         .setParentStructure(this.getParentStructure()).setDataType(this.dataType)
         .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
-        .addDimensions(this.dimensions).addAttributes(this.attributes.getAttributes()).setProxyReader(this.proxyReader)
+        .addDimensions(this.dimensions).addAttributes(this.attributes).setProxyReader(this.proxyReader)
         .setSPobject(this.spiObject);
 
     if (this.cache.isMetadata) {
@@ -1869,7 +1873,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     private String enumTypeName;
     private AutoGen autoGen;
-    private AttributeContainerHelper attributes = new AttributeContainerHelper("");
+    private AttributeContainerMutable attributes = new AttributeContainerMutable("");
 
     private boolean built;
 
@@ -1885,7 +1889,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       return self();
     }
 
-    public AttributeContainerHelper getAttributeContainer() {
+    public AttributeContainerMutable getAttributeContainer() {
       return attributes;
     }
 
@@ -2093,7 +2097,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       setGroup(orgVar.getParentGroup());
       setSPobject(orgVar.getSPobject());
       addDimensions(orgVar.getDimensions());
-      addAttributes(orgVar.getAttributes()); // copy
+      addAttributes(orgVar); // copy
 
       return self();
     }

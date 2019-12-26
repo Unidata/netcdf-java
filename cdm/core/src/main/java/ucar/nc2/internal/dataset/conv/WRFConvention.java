@@ -694,7 +694,7 @@ public class WRFConvention extends CoordSystemBuilder {
       return CoordinateAxis.fromVariableDS(coordVarB);
     }
 
-    String units = coordVar.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, "");
+    String units = coordVar.attributes().findAttValueIgnoreCase(CDM.UNITS, "");
 
     CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("soilDepth").setDataType(DataType.DOUBLE)
         .setDimensionsByName(soilDim.getShortName()).setUnits(units).setDesc("soil depth");

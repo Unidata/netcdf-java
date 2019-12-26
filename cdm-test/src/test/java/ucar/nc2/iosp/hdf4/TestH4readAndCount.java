@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.hdf4;
 
+import com.google.common.collect.Iterables;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -129,11 +130,11 @@ public class TestH4readAndCount {
     private void count(Group g) {
       ndims += g.getDimensions().size();
       nvars += g.getVariables().size();
-      ngatts += g.getAttributes().size();
+      ngatts += Iterables.size(g.attributes());
       ngroups += g.getGroups().size();
 
       for (Variable v : g.getVariables()) {
-        natts += v.getAttributes().size();
+        natts += Iterables.size(v.attributes());
         if (v instanceof Structure) {
           nstructFields += ((Structure) v).getVariables().size();
         }

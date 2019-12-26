@@ -542,8 +542,9 @@ public class CoverageTable extends JPanel {
       this.isHoriz = gcs.isHoriz();
 
       Formatter buff = new Formatter();
-      for (Attribute att : gcs.getAttributes())
+      for (Attribute att : gcs.attributes()) {
         buff.format("%s, ", att);
+      }
       params = buff.toString();
     }
 

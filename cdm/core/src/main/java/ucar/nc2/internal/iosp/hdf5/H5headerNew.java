@@ -35,7 +35,7 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
@@ -897,7 +897,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
    * @throws IOException on io error
    * @throws InvalidRangeException on shape error
    */
-  private void makeAttributes(Structure.Builder<?> sb, MessageAttribute matt, AttributeContainerHelper attContainer)
+  private void makeAttributes(Structure.Builder<?> sb, MessageAttribute matt, AttributeContainerMutable attContainer)
       throws IOException, InvalidRangeException {
     MessageDatatype mdt = matt.mdt;
 
@@ -1316,7 +1316,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       }
     }
 
-    AttributeContainerHelper atts = vb.getAttributeContainer();
+    AttributeContainerMutable atts = vb.getAttributeContainer();
     processSystemAttributes(facade.dobj.messages, atts);
     if (fillAttribute != null && atts.findAttribute(CDM.FILL_VALUE) == null)
       vb.addAttribute(fillAttribute);

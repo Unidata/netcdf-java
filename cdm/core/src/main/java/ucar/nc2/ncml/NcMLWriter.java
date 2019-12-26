@@ -283,7 +283,7 @@ public class NcMLWriter {
     }
 
     // attributes
-    for (Attribute att : group.getAttributes()) {
+    for (Attribute att : group.attributes()) {
       elem.addContent(makeAttributeElement(att));
     }
 
@@ -355,7 +355,7 @@ public class NcMLWriter {
 
 
     // attributes
-    for (Attribute att : var.getAttributes()) {
+    for (Attribute att : var.attributes()) {
       varElem.addContent(makeAttributeElement(att));
     }
 

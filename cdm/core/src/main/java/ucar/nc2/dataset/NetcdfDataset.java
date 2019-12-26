@@ -1123,7 +1123,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     for (Dimension d : from.getDimensions())
       g.addDimension(new Dimension(d.getShortName(), d));
 
-    for (Attribute a : from.getAttributes())
+    for (Attribute a : from.attributes())
       g.addAttribute(a);
 
     for (Variable v : from.getVariables())
@@ -1479,7 +1479,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     out.println("Atributes:");
-    for (Attribute a : g.getAttributes()) {
+    for (Attribute a : g.attributes()) {
       out.println("  " + a.getShortName() + " " + a.getClass().getName());
     }
 
@@ -1704,7 +1704,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         g.addDimension(d.toBuilder().build()); // can use without copy after ver 6.
       }
 
-      g.addAttributes(from.getAttributes()); // copy
+      g.addAttributes(from.attributes()); // copy
 
       for (Variable v : from.getVariables()) {
         g.addVariable(convertVariable(v)); // convert

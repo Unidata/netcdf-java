@@ -6,6 +6,7 @@ package ucar.nc2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.Iterator;
@@ -240,34 +241,44 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  // AttributeHelper
+  // Attributes
 
-  @Override
+  public AttributeContainer attributes() {
+    return attributes;
+  }
+
+  /** @deprecated Use attributes() */
+  @Deprecated
   public java.util.List<Attribute> getAttributes() {
     return AttributeContainerHelper.filter(attributes, Attribute.SPECIALS).getAttributes();
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public double findAttributeDouble(String attName, double defaultValue) {
     return attributes.findAttributeDouble(attName, defaultValue);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public int findAttributeInteger(String attName, int defaultValue) {
     return attributes.findAttributeInteger(attName, defaultValue);
   }
@@ -367,7 +378,7 @@ public class Group extends CDMNode implements AttributeContainer {
     sbuff.append("Group ");
     sbuff.append(getShortName());
     sbuff.append("\n");
-    for (Attribute att : attributes.getAttributes()) {
+    for (Attribute att : attributes) {
       sbuff.append("  ").append(getShortName()).append(":");
       sbuff.append(att);
       sbuff.append(";");
@@ -393,7 +404,7 @@ public class Group extends CDMNode implements AttributeContainer {
     boolean hasD = (!dimensions.isEmpty());
     boolean hasV = (!variables.isEmpty());
     // boolean hasG = (groups.size() > 0);
-    boolean hasA = (!attributes.getAttributes().isEmpty());
+    boolean hasA = (!Iterables.isEmpty(attributes));
 
     if (hasE) {
       out.format("%stypes:%n", indent);
@@ -444,7 +455,7 @@ public class Group extends CDMNode implements AttributeContainer {
       else
         out.format("%s// group attributes:%n", indent);
 
-      for (Attribute att : attributes.getAttributes()) {
+      for (Attribute att : attributes) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
         if (!Attribute.isspecial(att)) {
           out.format("%s", indent);
@@ -472,7 +483,7 @@ public class Group extends CDMNode implements AttributeContainer {
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
     super(shortName);
     this.ncfile = ncfile;
-    this.attributes = new AttributeContainerHelper(shortName);
+    this.attributes = new AttributeContainerMutable(shortName);
     setParentGroup(parent == null ? ncfile.getRootGroup() : parent);
   }
 
@@ -713,7 +724,6 @@ public class Group extends CDMNode implements AttributeContainer {
     variables = Collections.unmodifiableList(variables);
     dimensions = Collections.unmodifiableList(dimensions);
     groups = Collections.unmodifiableList(groups);
-    attributes.setImmutable();
     return this;
   }
 
@@ -795,7 +805,7 @@ public class Group extends CDMNode implements AttributeContainer {
   protected List<Variable> variables = new ArrayList<>();
   protected List<Dimension> dimensions = new ArrayList<>();
   protected List<Group> groups = new ArrayList<>();
-  protected AttributeContainerHelper attributes;
+  protected AttributeContainer attributes;
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
   private int hashCode;
 
@@ -834,7 +844,7 @@ public class Group extends CDMNode implements AttributeContainer {
   public Builder toBuilder() {
     Builder parentBuilder = (this.getParentGroup() == null) ? null : this.getParentGroup().toBuilder();
     Builder builder = builder(parentBuilder).setName(this.shortName).setNcfile(this.ncfile)
-        .addAttributes(this.attributes.getAttributes()).addDimensions(this.dimensions)
+        .addAttributes(this.attributes).addDimensions(this.dimensions)
         .addEnumTypedefs(this.enumTypedefs);
 
     this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
@@ -855,7 +865,7 @@ public class Group extends CDMNode implements AttributeContainer {
     public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     public String shortName;
     private NetcdfFile ncfile; // set by NetcdfFile.build()
-    private AttributeContainerHelper attributes = new AttributeContainerHelper("");
+    private AttributeContainerMutable attributes = new AttributeContainerMutable("");
     private List<Dimension> dimensions = new ArrayList<>();
     private List<EnumTypedef> enumTypedefs = new ArrayList<>();
     private boolean built;
@@ -877,7 +887,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
-    public AttributeContainerHelper getAttributeContainer() {
+    public AttributeContainerMutable getAttributeContainer() {
       return attributes;
     }
 

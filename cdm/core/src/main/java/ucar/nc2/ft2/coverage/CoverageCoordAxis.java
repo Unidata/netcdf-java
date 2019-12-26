@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
@@ -155,7 +154,7 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   }
 
   public AttributeContainer getAttributeContainer() {
-    return new AttributeContainerHelper(name, attributes.getAttributes());
+    return attributes;
   }
 
   public int getNcoords() {
@@ -275,7 +274,9 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
       f.format(" refDate=%s", timeHelper.getRefDate());
     f.format("%n");
 
-    AttributeContainerHelper.show(attributes, indent, f);
+    for (Attribute att : attributes) {
+      f.format("%s%s%n", indent, att);
+    }
 
     f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (getResolution() != 0.0)

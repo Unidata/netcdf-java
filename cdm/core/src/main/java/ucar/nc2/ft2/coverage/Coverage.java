@@ -9,7 +9,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.util.Indent;
@@ -29,7 +29,7 @@ import java.util.List;
 public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   private final String name;
   private final DataType dataType;
-  private final AttributeContainerHelper atts;
+  private final AttributeContainerMutable atts;
   private final String units, description;
   private final String coordSysName;
   protected final CoverageReader reader;
@@ -37,11 +37,11 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
 
   private CoverageCoordSys coordSys; // almost immutable
 
-  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units,
+  public Coverage(String name, DataType dataType, Iterable<Attribute> atts, String coordSysName, String units,
       String description, CoverageReader reader, Object user) {
     this.name = name;
     this.dataType = dataType;
-    this.atts = new AttributeContainerHelper(name, atts);
+    this.atts = new AttributeContainerMutable(name, atts);
     this.coordSysName = coordSysName;
     this.units = units;
     this.description = description;
@@ -117,7 +117,7 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
     indent.incr();
     f.format("%n%s  %s %s(%s) desc='%s' units='%s'%n", indent, dataType, name, coordSysName, description, units);
     f.format("%s    attributes:%n", indent);
-    for (Attribute att : atts.getAttributes())
+    for (Attribute att : atts)
       f.format("%s     %s%n", indent, att);
     indent.decr();
   }

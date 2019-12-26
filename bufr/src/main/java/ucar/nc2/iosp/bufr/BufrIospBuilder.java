@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFiles;
@@ -41,7 +41,7 @@ class BufrIospBuilder {
     this.rootGroup.addVariable(recordStructure);
 
     // global Attributes
-    AttributeContainerHelper atts = root.getAttributeContainer();
+    AttributeContainerMutable atts = root.getAttributeContainer();
     atts.addAttribute(CDM.HISTORY, "Read using CDM BufrIosp2");
     if (bufrConfig.getFeatureType() != null) {
       atts.addAttribute(CF.FEATURE_TYPE, bufrConfig.getFeatureType().toString());

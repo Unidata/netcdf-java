@@ -3,7 +3,8 @@ package ucar.nc2.ft2.simpgeometry;
 import java.util.Arrays;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -25,7 +26,7 @@ import java.util.List;
 public class SimpleGeometryFeature implements VariableSimpleIF {
   private final String name;
   private final DataType dataType;
-  private final AttributeContainerHelper atts;
+  private final AttributeContainer atts;
   private final String units, description;
   private final String coordSysName;
   protected final Object user;
@@ -51,7 +52,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
       String description, Object user, GeometryType geometryType) {
     this.name = name;
     this.dataType = dataType;
-    this.atts = new AttributeContainerHelper(name, atts);
+    this.atts = new AttributeContainerMutable(name, atts).toImmutable();
     this.coordSysName = coordSysName;
     this.units = units;
     this.description = description;

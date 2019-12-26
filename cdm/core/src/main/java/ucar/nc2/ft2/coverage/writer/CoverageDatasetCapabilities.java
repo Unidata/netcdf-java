@@ -278,7 +278,7 @@ public class CoverageDatasetCapabilities {
     Element ctElem = new Element("coordTransform");
     ctElem.setAttribute("name", ct.getName());
     ctElem.setAttribute("transformType", ct.isHoriz() ? "Projection" : "Vertical");
-    for (Attribute param : ct.getAttributes()) {
+    for (Attribute param : ct.attributes()) {
       Element pElem = ncmlWriter.makeAttributeElement(param);
       pElem.setName("parameter");
       ctElem.addContent(pElem);

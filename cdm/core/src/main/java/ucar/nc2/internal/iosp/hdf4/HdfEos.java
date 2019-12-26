@@ -15,7 +15,7 @@ import java.util.List;
 import org.jdom2.Element;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -676,7 +676,7 @@ public class HdfEos {
 
   private void fixAttributes(Group.Builder g) {
     for (Variable.Builder v : g.vbuilders) {
-      AttributeContainerHelper attHelper = v.getAttributeContainer();
+      AttributeContainerMutable attHelper = v.getAttributeContainer();
       for (Attribute a : ImmutableList.copyOf(attHelper.getAttributes())) {
         if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS")) {
           attHelper.replace(a, CDM.UNITS);

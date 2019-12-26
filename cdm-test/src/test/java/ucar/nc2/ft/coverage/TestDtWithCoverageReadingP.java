@@ -138,7 +138,7 @@ public class TestDtWithCoverageReadingP {
         readAllTimes1D(cover, dt, runtimeAxis.getCalendarDate(i), i, timeAxis1D, ensAxis, vertAxis);
 
     } else { // 2D time
-      TimeHelper helper = TimeHelper.factory(timeAxis.getUnitsString(), timeAxis.getAttributeContainer());
+      TimeHelper helper = TimeHelper.factory(timeAxis.getUnitsString(), timeAxis.attributes());
 
       if (timeAxis2D.isInterval()) {
         ArrayDouble.D3 bounds = timeAxis2D.getCoordBoundsArray();

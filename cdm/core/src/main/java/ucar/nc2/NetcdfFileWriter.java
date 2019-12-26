@@ -646,7 +646,7 @@ public class NetcdfFileWriter implements Closeable {
       Variable nest = new Variable(ncfile, g, s, m.getShortName());
       nest.setDataType(m.getDataType());
       nest.setDimensions(m.getDimensions());
-      nest.addAll(m.getAttributes());
+      nest.addAll(m.attributes());
       s.addMemberVariable(nest);
     }
 

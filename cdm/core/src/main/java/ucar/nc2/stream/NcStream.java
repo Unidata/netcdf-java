@@ -68,7 +68,7 @@ public class NcStream {
     for (Dimension dim : g.getDimensions())
       groupBuilder.addDims(NcStream.encodeDim(dim));
 
-    for (Attribute att : g.getAttributes())
+    for (Attribute att : g.attributes())
       groupBuilder.addAtts(NcStream.encodeAtt(att));
 
     for (EnumTypedef enumType : g.getEnumTypedefs())
@@ -151,7 +151,7 @@ public class NcStream {
       builder.addShape(encodeDim(dim));
     }
 
-    for (Attribute att : var.getAttributes()) {
+    for (Attribute att : var.attributes()) {
       builder.addAtts(encodeAtt(att));
     }
 
@@ -175,7 +175,7 @@ public class NcStream {
     for (Dimension dim : s.getDimensions())
       builder.addShape(encodeDim(dim));
 
-    for (Attribute att : s.getAttributes())
+    for (Attribute att : s.attributes())
       builder.addAtts(encodeAtt(att));
 
     for (Variable v : s.getVariables()) {

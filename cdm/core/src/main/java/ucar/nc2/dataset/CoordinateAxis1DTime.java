@@ -214,8 +214,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     else
       cdates = makeTimesFromStrings(org, errMessages);
 
-    List<Attribute> atts = org.getAttributes();
-    for (Attribute att : atts) {
+    for (Attribute att : org.attributes()) {
       addAttribute(att);
     }
   }
