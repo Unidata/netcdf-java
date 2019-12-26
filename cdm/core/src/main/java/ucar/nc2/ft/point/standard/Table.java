@@ -189,8 +189,8 @@ public abstract class Table {
       // only keep the last n
       int n = m.getShape().length;
       List<Dimension> dims = orgDims.subList(rank - n, rank);
-      VariableSimpleBuilder result = new VariableSimpleBuilder(org.getShortName(), org.getDescription(),
-          org.getUnitsString(), org.getDataType(), dims);
+      VariableSimpleBuilder result = new VariableSimpleBuilder(org.getShortName(), org.getDescription(), org.getUnitsString(),
+          org.getDataType(), dims);
       for (Attribute att : org.attributes())
         result.addAttribute(att);
       this.cols.put(m.getName(), result.build());

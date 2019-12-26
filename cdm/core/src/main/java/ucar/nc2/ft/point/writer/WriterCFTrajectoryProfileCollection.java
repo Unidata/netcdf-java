@@ -146,21 +146,18 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
         .addAttribute(CF.CF_ROLE, CF.PROFILE_ID) // profileId:cf_role = "profile_id";
         .addAttribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue)).build());
 
-    profileVars
-        .add(VariableSimpleBuilder.makeScalar(latName, "profile latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
-    profileVars
-        .add(VariableSimpleBuilder.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
-    profileVars.add(VariableSimpleBuilder
-        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
-        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
-
+    profileVars.add(VariableSimpleBuilder.makeScalar(latName, "profile latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
+    profileVars.add(VariableSimpleBuilder.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
     profileVars.add(
-        VariableSimpleBuilder.makeScalar(trajectoryIndexName, "trajectory index for this profile", null, DataType.INT)
+        VariableSimpleBuilder.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+            .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+
+    profileVars
+        .add(VariableSimpleBuilder.makeScalar(trajectoryIndexName, "trajectory index for this profile", null, DataType.INT)
             .addAttribute(CF.INSTANCE_DIMENSION, trajDimName).build());
 
-    profileVars
-        .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
-            .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
+    profileVars.add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
+        .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
 
     for (StructureMembers.Member m : profileData.getMembers()) {
       VariableSimpleIF dv = getDataVar(m.getName());
