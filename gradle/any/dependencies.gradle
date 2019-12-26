@@ -219,6 +219,9 @@ libraries["jfreechart"] = "org.jfree:jfreechart:1.0.19"
 // http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
 libraries["jgoodies-forms"] = "com.jgoodies:jgoodies-forms:1.6.0"
 
+// LGoodDatePicker - swing calendar widget used in TdsMonitor
+libraries["lgooddatepicker"] = "com.github.lgooddatepicker:LGoodDatePicker:10.3.1"
+
 /////////////////////////////// Servlets to run tests against ////////////////////////////////
 
 // used by :dap4 test
