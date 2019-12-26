@@ -17,7 +17,7 @@ import ucar.nc2.constants.CDM;
 public class VariableSimpleBuilder {
 
   public static VariableSimpleBuilder fromMember(StructureMembers.Member m) {
-    return new VariableSimpleBuilder( m.getName(),  m.getDescription(), m.getUnitsString(), m.getDataType(),
+    return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(), m.getDataType(),
         Dimensions.makeDimensionsAnon(m.getShape()));
   }
 
@@ -61,7 +61,7 @@ public class VariableSimpleBuilder {
     return this;
   }
 
-    public VariableSimpleIF build() {
+  public VariableSimpleIF build() {
     return new VariableSimple(this);
   }
 
@@ -72,7 +72,7 @@ public class VariableSimpleBuilder {
     private final AttributeContainer atts;
     private final ImmutableList<Dimension> dims;
 
-    private VariableSimple( VariableSimpleBuilder builder) {
+    private VariableSimple(VariableSimpleBuilder builder) {
       this.name = builder.name;
       this.desc = builder.desc;
       this.units = builder.units;

@@ -14,7 +14,9 @@ import java.util.List;
  *
  * @author caron
  * @since 5/5/2015
+ * @deprecated Use AttributeContainerMutable.
  */
+@Deprecated
 public class AttributeContainerHelper implements AttributeContainer {
 
   /**

@@ -147,7 +147,7 @@ public class CFPointObWriter {
 
     @Override
     public AttributeContainer attributes() {
-      return new AttributeContainerMutable( getName(), atts).toImmutable();
+      return new AttributeContainerMutable(getName(), atts).toImmutable();
     }
 
     public List<Attribute> getAttributes() {

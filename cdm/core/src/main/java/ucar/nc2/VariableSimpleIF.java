@@ -85,7 +85,7 @@ public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
    */
   DataType getDataType();
 
-   /** Attributes for the variable. */
+  /** Attributes for the variable. */
   AttributeContainer attributes();
 
   /**
