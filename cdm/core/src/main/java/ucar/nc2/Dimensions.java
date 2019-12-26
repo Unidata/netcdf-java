@@ -48,6 +48,10 @@ public class Dimensions {
     }
   }
 
+  public static int[] makeShape(Iterable<Dimension> dimensions) {
+    return makeSectionFromDimensions(dimensions).getShape();
+  }
+
   /**
    * Make a space-delineated String from a list of Dimension names. Inverse of makeDimensionsList().
    *
