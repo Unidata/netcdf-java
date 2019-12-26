@@ -1078,8 +1078,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     String coordSysName = CoverageCoordSys.makeCoordSysName(makeAxisNameList(gribVar, coord2axisMap));
 
-    return new Coverage(gribVar.makeVariableName(), DataType.FLOAT, atts, coordSysName,
-        gribVar.makeVariableUnits(), gribVar.makeVariableDescription(), this, gribVar);
+    return new Coverage(gribVar.makeVariableName(), DataType.FLOAT, atts, coordSysName, gribVar.makeVariableUnits(),
+        gribVar.makeVariableDescription(), this, gribVar);
   }
 
   //////////////////////////////////////////////////////

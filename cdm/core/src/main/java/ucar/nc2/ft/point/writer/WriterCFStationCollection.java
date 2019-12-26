@@ -88,9 +88,9 @@ public class WriterCFStationCollection extends CFPointWriter {
     coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
-    coords.add(
-        VariableSimpleBuilder.makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
-            .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
+    coords.add(VariableSimpleBuilder
+        .makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
+        .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
 
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (useAlt)

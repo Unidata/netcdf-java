@@ -31,7 +31,8 @@ import java.nio.channels.WritableByteChannel;
  * Data access is done through the read() methods, which return a memory resident Array.
  * <p>
  * Immutable if setImmutable() was called.
- * TODO Variables will be immutable in 6.
+ * TODO Variable will be immutable in 6.
+ * TODO Variable will not implement AttributeContainer in 6.
  *
  * @author caron
  * @see ucar.ma2.Array
@@ -140,20 +141,12 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return elementSize;
   }
 
-  /**
-   * Get the number of dimensions of the Variable.
-   *
-   * @return the rank
-   */
+  /** Get the number of dimensions of the Variable, aka the rank. */
   public int getRank() {
     return shape.length;
   }
 
-  /**
-   * Get the parent group.
-   *
-   * @return group of this variable; if null return rootgroup
-   */
+  /** Get the parent group. */
   public Group getParentGroup() {
     Group g = super.getParentGroup();
     if (g == null) {
@@ -212,7 +205,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * The most slowly varying (leftmost for Java and C programmers) dimension is first.
    * For scalar variables, the list is empty.
    *
-   * @return List<Dimension>, immutable
+   * @return List<Dimension>, will be ImmutableList in ver 6.
    */
   public java.util.List<Dimension> getDimensions() {
     return dimensions;
@@ -466,6 +459,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return new Variable(this);
   }
 
+  @Nullable
   public NetcdfFile getNetcdfFile() {
     return ncfile;
   }
@@ -1013,6 +1007,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return showSize ? " // " + getElementSize() + " " + getSize() : "";
   }
 
+  /** The location of the dataset this belongs to. Labeling purposes only. */
   public String getDatasetLocation() {
     if (ncfile != null)
       return ncfile.getLocation();

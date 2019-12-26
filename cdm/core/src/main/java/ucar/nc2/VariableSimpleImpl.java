@@ -110,7 +110,7 @@ public class VariableSimpleImpl implements VariableSimpleIF {
 
   @Override
   public AttributeContainer attributes() {
-    return new AttributeContainerMutable( name, atts).toImmutable();
+    return new AttributeContainerMutable(name, atts).toImmutable();
   }
 
   @Override

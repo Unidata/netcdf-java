@@ -81,7 +81,7 @@ public class VariableSimpleSubclass implements VariableSimpleIF {
 
   @Override
   public AttributeContainer attributes() {
-    return new AttributeContainerMutable( getName(), getAttributes()).toImmutable();
+    return new AttributeContainerMutable(getName(), getAttributes()).toImmutable();
   }
 
   /**

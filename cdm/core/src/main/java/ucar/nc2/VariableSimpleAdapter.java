@@ -55,7 +55,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
 
   @Override
   public AttributeContainer attributes() {
-    return new AttributeContainerMutable( getName(), getAttributes());
+    return new AttributeContainerMutable(getName(), getAttributes());
   }
 
   public String getDescription() {
