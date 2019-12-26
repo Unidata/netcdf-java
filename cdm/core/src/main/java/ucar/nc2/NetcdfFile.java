@@ -725,7 +725,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   @Deprecated
   public static NetcdfFile openInMemory(URI uri) throws IOException {
     URL url = uri.toURL();
-    byte[] contents = IO.readContentsToByteArray(url.openStream());
+    byte[] contents;
+    try (InputStream in = url.openStream()) {
+      contents = IO.readContentsToByteArray(in);
+    }
     return openInMemory(uri.toString(), contents);
   }
 
