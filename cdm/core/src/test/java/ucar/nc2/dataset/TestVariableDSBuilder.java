@@ -45,7 +45,7 @@ public class TestVariableDSBuilder {
         .setOriginalDataType(DataType.INT).setOriginalVariable(orgVar).build();
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.INT);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
-    assertThat(var.getOriginalVariable()).isEqualTo(orgVar);
+    assertThat((Object) var.getOriginalVariable()).isEqualTo(orgVar);
   }
 
   @Test
