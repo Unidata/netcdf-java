@@ -308,6 +308,18 @@ public class TdsMonitor extends JPanel {
       manager = new LogLocalManager(server, isAccess);
       manager.getLocalFiles(null, null);
       setLocalManager(manager);
+
+      // if there are log files associated with this server,
+      // make sure the server is in the list of choices
+      // in the combo box (and if not, add it)
+      if (manager.getStartDate() != null) {
+        DefaultComboBoxModel cbm = (DefaultComboBoxModel) serverCB.getModel();
+        if (cbm.getIndexOf(server) == -1) {
+          // add server to combo box
+          serverCB.addItem(server);
+        }
+      }
+
       initDateTimeWidget();
     }
 
