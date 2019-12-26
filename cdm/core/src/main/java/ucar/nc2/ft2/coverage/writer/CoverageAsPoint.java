@@ -13,8 +13,8 @@ import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataScalar;
+import ucar.nc2.VariableSimpleBuilder;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.VariableSimpleImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
@@ -106,8 +106,8 @@ public class CoverageAsPoint {
 
       List<VariableSimpleIF> dataVars = new ArrayList<>();
       for (VarData vd : varData) { // String name, String desc, String units, DataType dt
-        VariableSimpleIF simple = VariableSimpleImpl.makeScalar(vd.cov.getName(), vd.cov.getDescription(),
-            vd.cov.getUnitsString(), vd.cov.getDataType());
+        VariableSimpleIF simple = VariableSimpleBuilder.makeScalar(vd.cov.getName(), vd.cov.getDescription(),
+            vd.cov.getUnitsString(), vd.cov.getDataType()).build();
         dataVars.add(simple);
       }
       this.dataVariables = dataVars;

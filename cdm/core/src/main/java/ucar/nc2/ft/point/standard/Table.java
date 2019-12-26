@@ -189,11 +189,11 @@ public abstract class Table {
       // only keep the last n
       int n = m.getShape().length;
       List<Dimension> dims = orgDims.subList(rank - n, rank);
-      VariableSimpleImpl result = new VariableSimpleImpl(org.getShortName(), org.getDescription(), org.getUnitsString(),
+      VariableSimpleBuilder result = new VariableSimpleBuilder(org.getShortName(), org.getDescription(), org.getUnitsString(),
           org.getDataType(), dims);
-      for (Attribute att : org.getAttributes())
-        result.add(att);
-      this.cols.put(m.getName(), result);
+      for (Attribute att : org.attributes())
+        result.addAttribute(att);
+      this.cols.put(m.getName(), result.build());
     }
   }
 
@@ -377,7 +377,7 @@ public abstract class Table {
       this.dim = new Dimension(config.structName, (int) config.as.getSize(), false);
 
       for (StructureMembers.Member m : config.as.getStructureMembers().getMembers())
-        cols.put(m.getName(), new VariableSimpleAdapter(m));
+        cols.put(m.getName(), VariableSimpleBuilder.fromMember(m).build());
     }
 
     @Override
@@ -1110,7 +1110,7 @@ public abstract class Table {
         sdata = StructureData.EMPTY;
 
       for (StructureMembers.Member m : sdata.getStructureMembers().getMembers())
-        cols.put(m.getName(), new VariableSimpleAdapter(m));
+        cols.put(m.getName(), VariableSimpleBuilder.fromMember(m).build());
     }
 
     @Override

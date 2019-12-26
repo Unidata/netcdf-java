@@ -42,15 +42,15 @@ public class WriterCFPointCollection extends CFPointWriter {
 
   public void writeHeader(PointFeature pf) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
-        .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
+    coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
-    coords.add(VariableSimpleImpl.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
-    coords.add(VariableSimpleImpl.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE));
+    coords.add(VariableSimpleBuilder.makeScalar(latName, "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE).build());
+    coords.add(VariableSimpleBuilder.makeScalar(lonName, "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE).build());
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (altUnits != null) {
-      coords.add(VariableSimpleImpl.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+      coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
       coordNames.format(" %s", altName);
     }
 

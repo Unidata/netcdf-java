@@ -19,6 +19,8 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
@@ -141,6 +143,11 @@ public class CFPointObWriter {
 
     public DataType getDataType() {
       return (pov.getDataType() == DataType.STRING) ? DataType.CHAR : pov.getDataType();
+    }
+
+    @Override
+    public AttributeContainer attributes() {
+      return new AttributeContainerMutable( getName(), atts).toImmutable();
     }
 
     public List<Attribute> getAttributes() {

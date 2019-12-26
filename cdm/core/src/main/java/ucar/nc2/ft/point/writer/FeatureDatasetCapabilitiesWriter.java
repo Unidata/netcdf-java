@@ -13,6 +13,8 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -415,6 +417,11 @@ public class FeatureDatasetCapabilitiesWriter {
           return att;
       }
       return null;
+    }
+
+    @Override
+    public AttributeContainer attributes() {
+      return new AttributeContainerMutable( name, atts).toImmutable();
     }
 
     @Override

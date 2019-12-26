@@ -72,7 +72,7 @@ public class TestVariableBuilder {
     assertThat(copy.getShape()).isEqualTo(new int[] {7, 27});
     assertThat(copy.getShapeAsSection()).isEqualTo(new Section(new int[] {7, 27}));
 
-    assertThat(copy).isEqualTo(var);
+    assertThat((Object) copy).isEqualTo(var);
   }
 
 }

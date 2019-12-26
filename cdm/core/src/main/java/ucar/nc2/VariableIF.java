@@ -7,12 +7,7 @@ package ucar.nc2;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 
-/**
- * The interface to a Variable.
- * 
- * @author caron
- */
-
+/** The public interface to a Variable. */
 public interface VariableIF extends VariableSimpleIF {
   String getFullName();
 
@@ -44,11 +39,9 @@ public interface VariableIF extends VariableSimpleIF {
 
   int findDimensionIndex(String dimName);
 
-  java.util.List<Attribute> getAttributes();
-
+  /** @deprecated Use attributes() */
+  @Deprecated
   ucar.nc2.Attribute findAttribute(String attName);
-
-  ucar.nc2.Attribute findAttributeIgnoreCase(String attName);
 
   ucar.nc2.Group getParentGroup();
 
