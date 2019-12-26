@@ -1,10 +1,20 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.ui.monitor;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.lgooddatepicker.components.TimePickerSettings;
+import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
+import com.github.lgooddatepicker.optionalusertools.DateVetoPolicy;
+import com.github.lgooddatepicker.zinternaltools.DateVetoPolicyMinimumMaximumDate;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.AuthSchemes;
 import ucar.httpservices.*;
@@ -117,46 +127,6 @@ public class TdsMonitor extends JPanel {
   private static TdsMonitor ui;
   private static boolean done;
 
-  private static File ehLocation = LogLocalManager.getDirectory("cache", "dns");
-
-  /*
-   * private static String ehLocation = "C:\\data\\ehcache";
-   * //private static String ehLocation = "/machine/data/thredds/ehcache/";
-   * private static String config =
-   * "<ehcache>\n" +
-   * "    <diskStore path='" + ehLocation.getPath() + "'/>\n" +
-   * "    <defaultCache\n" +
-   * "              maxElementsInMemory='10000'\n" +
-   * "              eternal='false'\n" +
-   * "              timeToIdleSeconds='120'\n" +
-   * "              timeToLiveSeconds='120'\n" +
-   * "              overflowToDisk='true'\n" +
-   * "              maxElementsOnDisk='10000000'\n" +
-   * "              diskPersistent='false'\n" +
-   * "              diskExpiryThreadIntervalSeconds='120'\n" +
-   * "              memoryStoreEvictionPolicy='LRU'\n" +
-   * "              />\n" +
-   * "    <cache name='dns'\n" +
-   * "            maxElementsInMemory='5000'\n" +
-   * "            eternal='false'\n" +
-   * "            timeToIdleSeconds='86400'\n" +
-   * "            timeToLiveSeconds='864000'\n" +
-   * "            overflowToDisk='true'\n" +
-   * "            maxElementsOnDisk='0'\n" +
-   * "            diskPersistent='true'\n" +
-   * "            diskExpiryThreadIntervalSeconds='3600'\n" +
-   * "            memoryStoreEvictionPolicy='LRU'\n" +
-   * "            />\n" +
-   * "</ehcache>";
-   * 
-   * private CacheManager cacheManager;
-   * private Cache dnsCache;
-   * 
-   * void makeCache() {
-   * cacheManager = new CacheManager(new StringBufferInputStream(config));
-   * dnsCache = cacheManager.getCache("dns");
-   * }
-   */
 
   /////////////////////////
 
@@ -236,13 +206,14 @@ public class TdsMonitor extends JPanel {
     TextHistoryPane ta;
     IndependentWindow infoWindow;
     JComboBox serverCB;
-    JTextArea startDateField, endDateField;
+    DateTimePicker dateTimePickerStart, dateTimePickerEnd;
     JPanel topPanel;
     boolean isAccess;
     boolean removeTestReq;
     boolean problemsOnly;
 
     OpPanel(PreferencesExt prefs, boolean isAccess) {
+
       this.prefs = prefs;
       this.isAccess = isAccess;
       ta = new TextHistoryPane(true);
@@ -264,14 +235,31 @@ public class TdsMonitor extends JPanel {
       topPanel.add(new JLabel("server:"));
       topPanel.add(serverCB);
 
-      // the date selectors
-      startDateField = new JTextArea("                    ");
-      endDateField = new JTextArea("                    ");
+      // the date and time selectors
+
+      DatePickerSettings dateSettingsStart = new DatePickerSettings();
+      DatePickerSettings dateSettingsEnd = new DatePickerSettings();
+      TimePickerSettings timeSettingsStart = new TimePickerSettings();
+      TimePickerSettings timeSettingsEnd = new TimePickerSettings();
+
+      timeSettingsStart.generatePotentialMenuTimes(TimeIncrement.ThirtyMinutes, null, null);
+      timeSettingsStart.setFormatForDisplayTime("HH:mm:ss");
+      timeSettingsStart.setFormatForMenuTimes("HH:mm:ss");
+      timeSettingsEnd.generatePotentialMenuTimes(TimeIncrement.ThirtyMinutes, null, null);
+      timeSettingsEnd.setFormatForDisplayTime("HH:mm:ss");
+      timeSettingsEnd.setFormatForMenuTimes("HH:mm:ss");
+
+      dateTimePickerStart = new DateTimePicker(dateSettingsStart, timeSettingsStart);
+      dateTimePickerEnd = new DateTimePicker(dateSettingsEnd, timeSettingsEnd);
+
+      // disable time pickers by default
+      dateTimePickerStart.setEnabled(false);
+      dateTimePickerEnd.setEnabled(false);
 
       topPanel.add(new JLabel("Start Date:"));
-      topPanel.add(startDateField);
+      topPanel.add(dateTimePickerStart);
       topPanel.add(new JLabel("End Date:"));
-      topPanel.add(endDateField);
+      topPanel.add(dateTimePickerEnd);
 
       AbstractAction showAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -320,6 +308,69 @@ public class TdsMonitor extends JPanel {
       manager = new LogLocalManager(server, isAccess);
       manager.getLocalFiles(null, null);
       setLocalManager(manager);
+      initDateTimeWidget();
+    }
+
+    /**
+     * Setup the Date/Time widget based on the availability of logs as seen by the current LogLocalManager.
+     */
+    private void initDateTimeWidget() {
+
+      LocalDateTime startDate = null;
+      LocalDateTime endDate = null;
+
+      // default: allow all log dates to be selected
+      // must have at least a start date or an end date to enable a DateVetoPolicy
+      boolean enableDateVetoPolicy = false;
+
+      Date logStart = manager.getStartDate();
+      Date logEnd = manager.getEndDate();
+
+      if (logStart != null)
+        startDate = logStart.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+      if (logEnd != null)
+        endDate = logEnd.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+      // default - disable widgets until we know there are available dates/times
+      dateTimePickerStart.setEnabled(false);
+      dateTimePickerEnd.setEnabled(false);
+
+      if (startDate != null) {
+        // we have a start date - enable widget
+        dateTimePickerStart.setEnabled(true);
+        // we have a start date, so we will set a DateVetoPolicy to limit the date selector
+        // widget to what is available
+        enableDateVetoPolicy = true;
+      }
+
+      if (logStart != null) {
+        // we have an end date, enable widget
+        dateTimePickerEnd.setEnabled(true);
+        // we have an end date, so we will set a DateVetoPolicy to limit the date selector
+        // widget to what is available
+        enableDateVetoPolicy = true;
+      }
+
+      if (enableDateVetoPolicy) {
+        setDateVetoPolicy(dateTimePickerStart, startDate.toLocalDate(), endDate.toLocalDate());
+        setDateVetoPolicy(dateTimePickerEnd, startDate.toLocalDate(), endDate.toLocalDate());
+        // must set DateVetoPolicy first
+        dateTimePickerStart.setDateTimePermissive(startDate);
+        dateTimePickerEnd.setDateTimePermissive(endDate);
+      } else {
+        dateTimePickerStart.setDateTimePermissive(null);
+        dateTimePickerEnd.setDateTimePermissive(null);
+      }
+
+    }
+
+    private void setDateVetoPolicy(DateTimePicker dateTimePicker, LocalDate startDate, LocalDate endDate) {
+      DatePicker datePicker = dateTimePicker.getDatePicker();
+      DatePickerSettings datePickerSettings = datePicker.getSettings();
+
+      DateVetoPolicy dvp = new DateVetoPolicyMinimumMaximumDate(startDate, endDate);
+
+      datePickerSettings.setVetoPolicy(dvp);
     }
 
     abstract void setLocalManager(LogLocalManager manager);
@@ -345,7 +396,7 @@ public class TdsMonitor extends JPanel {
 
     AccessLogPanel(PreferencesExt p) {
       super(p, true);
-      logTable = new AccessLogTable(startDateField, endDateField, p, dnsLookup);
+      logTable = new AccessLogTable(dateTimePickerStart, dateTimePickerEnd, p, dnsLookup);
       logTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
           if (e.getPropertyName().equals("UrlDump")) {
@@ -415,7 +466,7 @@ public class TdsMonitor extends JPanel {
 
     ServletLogPanel(PreferencesExt p) {
       super(p, false);
-      logTable = new ServletLogTable(startDateField, endDateField, p, dnsLookup);
+      logTable = new ServletLogTable(dateTimePickerStart, dateTimePickerEnd, p, dnsLookup);
       add(logTable, BorderLayout.CENTER);
     }
 
