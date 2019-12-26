@@ -671,7 +671,7 @@ public class AccessLogTable extends JPanel {
     total_count += count;
     System.out.printf("showTimeSeriesAll: total_count = %d logs = %d%n", total_count, logs.size());
 
-    MultipleAxisChart mc = new MultipleAxisChart("Access Logs", intervalS + " average", "Mbytes Sent", bytesSentData);
+    MultipleAxisChart mc = new MultipleAxisChart("Access Logs", intervalS + " window", "Mbytes Sent", bytesSentData);
     mc.addSeries("Number of Requests", nreqData);
     mc.addSeries("Average Latency (secs)", timeTookData);
     mc.finish(new java.awt.Dimension(1000, 1000));
