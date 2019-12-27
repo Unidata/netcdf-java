@@ -289,9 +289,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public String getUnitsString() {
     String units = null;
-    Attribute att = findAttribute(CDM.UNITS);
-    if (att == null)
-      att = findAttributeIgnoreCase(CDM.UNITS);
+    Attribute att = attributes().findAttributeIgnoreCase(CDM.UNITS);
     if ((att != null) && att.isString()) {
       units = att.getStringValue();
       if (units != null)
@@ -1233,16 +1231,16 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return attributes;
   }
 
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public java.util.List<Attribute> getAttributes() {
-    return attributes.getAttributes();
+  /** Find the attribute by name, return null if not exist */
+  @Nullable
+  public Attribute findAttribute(String name) {
+    return attributes.findAttribute(name);
   }
 
   /** @deprecated Use attributes() */
   @Deprecated
-  public Attribute findAttribute(String name) {
-    return attributes.findAttribute(name);
+  public java.util.List<Attribute> getAttributes() {
+    return attributes.getAttributes();
   }
 
   /** @deprecated Use attributes() */

@@ -197,7 +197,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     int rnk = var.getRank();
 
     if (rnk == 3) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
       rsvar = makeRadialVariable(nds, v, var);
     }
 
@@ -223,8 +223,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     String name;
 
     private UF2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
-
+      super(v.getShortName(), v0.attributes());
 
       sweeps = new ArrayList<>();
       name = v.getShortName();
@@ -295,9 +294,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
         this.sweepno = sweepno;
         this.nrays = rays;
         this.ngates = gates;
-
-        Attribute att = sweepVar.findAttribute("abbrev");
-        abbrev = att.getStringValue();
+        abbrev = sweepVar.attributes().findAttValueIgnoreCase("abbrev", null);
       }
 
       public Variable getsweepVar() {

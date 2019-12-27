@@ -312,7 +312,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
     int ptsIdx = var.findDimensionIndex("n_points");
 
     if (((tIdx == 0) && (rIdx == 1)) || (ptsIdx == 0)) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
       rsvar = makeRadialVariable(nds, v, var);
     }
 
@@ -338,7 +338,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
     private boolean flattened;
 
     private CFRadial2Variable(NetcdfDataset nds, Variable v0) {
-      super(v0.getShortName(), v0.getAttributes());
+      super(v0.getShortName(), v0.attributes());
 
       sweeps = new ArrayList<>();
       name = v0.getShortName();
@@ -380,8 +380,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
       Array allData;
       Sweep spn = sweeps.get(0);
       Variable v = spn.getsweepVar();
-      Attribute missing = v.findAttribute("_FillValue");
-      float missingVal = missing == null ? Float.NaN : missing.getNumericValue().floatValue();
+      float missingVal = (float) v.attributes().findAttributeDouble("_FillValue", Double.NaN);
 
       int minRadial = getMinRadialNumber();
       int radials = getNumRadials();
@@ -496,10 +495,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
             float[] tempD = (float[]) tempArray.get1DJavaArray(Float.TYPE);
 
             // Figure out what to use as the initializer
-            float missingVal = Float.NaN;
-            Attribute missing = sweepVar.findAttribute("_FillValue");
-            if (missing != null)
-              missingVal = missing.getNumericValue().floatValue();
+            float missingVal = (float) sweepVar.attributes().findAttributeDouble("_FillValue", Double.NaN);
 
             // Create evenly strided output array and fill
             float[] ret = new float[ngates * numRays];

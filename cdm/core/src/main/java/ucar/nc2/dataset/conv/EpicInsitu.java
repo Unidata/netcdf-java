@@ -44,10 +44,9 @@ public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   private void checkIfAxis(Variable v) {
-    Attribute att = v.findAttributeIgnoreCase("axis");
-    if (att == null)
+    String axisType = v.attributes().findAttValueIgnoreCase("axis", null);
+    if (axisType == null)
       return;
-    String axisType = att.getStringValue();
     if (axisType.equalsIgnoreCase("X"))
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     else if (axisType.equalsIgnoreCase("Y"))

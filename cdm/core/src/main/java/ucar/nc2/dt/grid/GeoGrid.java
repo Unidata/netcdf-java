@@ -237,7 +237,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
-    return vs.findAttributeIgnoreCase(name);
+    return vs.attributes().findAttributeIgnoreCase(name);
   }
 
   /**
@@ -248,7 +248,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return Attribute string value, or default if not found.
    */
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return dataset.getNetcdfDataset().findAttValueIgnoreCase(vs, attName, defaultValue);
+    return vs.attributes().findAttValueIgnoreCase(attName, defaultValue);
   }
 
   // implementation of GridDatatype interface

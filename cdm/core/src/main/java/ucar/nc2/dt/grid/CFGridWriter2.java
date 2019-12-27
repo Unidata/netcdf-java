@@ -358,14 +358,14 @@ public class CFGridWriter2 {
       if (pct != null) {
         Variable v = writer.findVariable(pct.getName()); // look for the ctv
         if ((v != null) && !ctvList.contains(v)) {
-          convertProjectionCTV((NetcdfDataset) gds.getNetcdfFile(), v);
+          convertProjectionCTV((NetcdfDataset) gds.getNetcdfFile(), v.attributes());
           ctvList.add(v);
         }
       }
     }
   }
 
-  private void convertProjectionCTV(NetcdfDataset ds, Variable ctv) {
+  private void convertProjectionCTV(NetcdfDataset ds, AttributeContainer ctv) {
     Attribute att = ctv.findAttribute(_Coordinate.TransformType);
     if ((null != att) && att.getStringValue().equals("Projection")) {
       Attribute east = ctv.findAttribute("false_easting");
@@ -380,7 +380,7 @@ public class CFGridWriter2 {
     }
   }
 
-  private void convertAttribute(Variable ctv, Attribute att, double scalef) {
+  private void convertAttribute(AttributeContainer ctv, Attribute att, double scalef) {
     if (att == null)
       return;
     double val = scalef * att.getNumericValue().doubleValue();
@@ -502,12 +502,9 @@ public class CFGridWriter2 {
     // see https://github.com/Unidata/python-workshop/issues/372
     for (String varName : varNameList) {
       Variable v = ncd.findVariable(varName);
-      Attribute gridMapping = v.findAttributeIgnoreCase(CF.GRID_MAPPING);
-      if (gridMapping != null) {
-        String gridMappingName = gridMapping.getStringValue();
-        if ((gridMappingName != null) && (!coordTransformNames.contains(gridMappingName))) {
-          coordTransformNames.add(gridMappingName);
-        }
+      String gridMappingName = v.attributes().findAttValueIgnoreCase(CF.GRID_MAPPING, null);
+      if (gridMappingName != null && (!coordTransformNames.contains(gridMappingName))) {
+        coordTransformNames.add(gridMappingName);
       }
     }
 

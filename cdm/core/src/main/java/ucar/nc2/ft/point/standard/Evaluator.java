@@ -56,8 +56,8 @@ public abstract class Evaluator {
         Structure s = (Structure) v;
         if (s.getRank() > 0 && s.getDimension(0).equals(outer) || (s.getRank() == 0 && outer == null)) {
           for (Variable vs : s.getVariables()) {
-            Attribute att = vs.findAttributeIgnoreCase(att_name);
-            if ((att != null) && att.isString() && att.getStringValue().equalsIgnoreCase(att_value))
+            String attValue = vs.attributes().findAttValueIgnoreCase(att_name, null);
+            if ((attValue != null) && attValue.equalsIgnoreCase(att_value))
               return vs;
           }
         }
@@ -81,7 +81,7 @@ public abstract class Evaluator {
    */
   public static VarAtt findVariableWithAttribute(NetcdfDataset ds, String attName) {
     for (Variable v : ds.getVariables()) {
-      Attribute att = v.findAttributeIgnoreCase(attName);
+      Attribute att = v.attributes().findAttributeIgnoreCase(attName);
       if (att != null)
         return new VarAtt(v, att);
     }
@@ -91,7 +91,7 @@ public abstract class Evaluator {
       if (v instanceof Structure) {
         Structure s = (Structure) v;
         for (Variable vs : s.getVariables()) {
-          Attribute att = vs.findAttributeIgnoreCase(attName);
+          Attribute att = vs.attributes().findAttributeIgnoreCase(attName);
           if (att != null)
             return new VarAtt(vs, att);
         }
@@ -150,8 +150,8 @@ public abstract class Evaluator {
    */
   public static Variable findVariableWithAttributeValue(Structure struct, String attName, String attValue) {
     for (Variable v : struct.getVariables()) {
-      Attribute att = v.findAttributeIgnoreCase(attName);
-      if ((att != null) && att.getStringValue().equals(attValue))
+      String att = v.attributes().findAttValueIgnoreCase(attName, null);
+      if ((att != null) && att.equals(attValue))
         return v;
     }
     return null;

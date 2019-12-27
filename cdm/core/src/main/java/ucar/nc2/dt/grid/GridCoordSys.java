@@ -405,7 +405,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     // WRF NMM
-    Attribute att = getXHorizAxis().findAttribute(_Coordinate.Stagger);
+    Attribute att = getXHorizAxis().attributes().findAttribute(_Coordinate.Stagger);
     if (att != null)
       setHorizStaggerType(att.getStringValue());
   }

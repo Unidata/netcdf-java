@@ -220,10 +220,10 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
     setIsVolume(nds);
 
     if (isVolume && rnk == 3) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
       rsvar = makeRadialVariable(nds, v, var);
     } else if (!isVolume && rnk == 2) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
       rsvar = makeRadialVariable(nds, v, var);
     }
 
@@ -254,7 +254,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
     String name;
 
     private Netcdf2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
+      super(v.getShortName(), v0.attributes());
 
       sweeps = new ArrayList<>();
       nsweeps = 0;

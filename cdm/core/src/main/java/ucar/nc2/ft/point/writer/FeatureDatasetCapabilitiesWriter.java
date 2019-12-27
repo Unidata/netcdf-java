@@ -223,7 +223,7 @@ public class FeatureDatasetCapabilitiesWriter {
       varElem.setAttribute("type", dt.toString());
 
     // attributes
-    for (Attribute att : v.getAttributes()) {
+    for (Attribute att : v.attributes()) {
       varElem.addContent(ncMLWriter.makeAttributeElement(att));
     }
 

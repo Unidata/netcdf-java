@@ -252,7 +252,7 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
   public Coverage findCoverageByAttribute(String attName, String attValue) {
     for (Coverage cov : coverageMap.values()) {
-      for (Attribute att : cov.getAttributes())
+      for (Attribute att : cov.attributes())
         if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return cov;
     }

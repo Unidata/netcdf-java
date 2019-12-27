@@ -316,7 +316,7 @@ public class CoverageDatasetCapabilities {
     // varElem.setAttribute("coordSys", cs.getName());
 
     // attributes
-    for (ucar.nc2.Attribute att : grid.getAttributes()) {
+    for (ucar.nc2.Attribute att : grid.attributes()) {
       varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 

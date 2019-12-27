@@ -58,7 +58,7 @@ public class StructurePseudo extends Structure {
         Variable memberV = new Variable(ncfile, group, this, orgV.getShortName());
         memberV.setDataType(orgV.getDataType());
         memberV.setSPobject(orgV.getSPobject()); // ??
-        memberV.attributes.addAll(orgV.getAttributes());
+        memberV.attributes.addAll(orgV.attributes());
 
         List<Dimension> dims = new ArrayList<Dimension>(orgV.dimensions);
         dims.remove(0); // remove outer dimension
@@ -104,7 +104,7 @@ public class StructurePseudo extends Structure {
       Variable memberV = new Variable(ncfile, group, this, orgV.getShortName());
       memberV.setDataType(orgV.getDataType());
       memberV.setSPobject(orgV.getSPobject()); // ??
-      memberV.attributes.addAll(orgV.getAttributes());
+      memberV.attributes.addAll(orgV.attributes());
 
       List<Dimension> dims = new ArrayList<Dimension>(orgV.dimensions);
       dims.remove(0); // remove outer dimension

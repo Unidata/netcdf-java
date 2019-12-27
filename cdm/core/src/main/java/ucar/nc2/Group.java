@@ -257,16 +257,16 @@ public class Group extends CDMNode implements AttributeContainer {
     return attributes;
   }
 
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public java.util.List<Attribute> getAttributes() {
-    return AttributeContainerHelper.filter(attributes, Attribute.SPECIALS).getAttributes();
+  /** Find the attribute by name, return null if not exist */
+  @Nullable
+  public Attribute findAttribute(String name) {
+    return attributes.findAttribute(name);
   }
 
   /** @deprecated Use attributes() */
   @Deprecated
-  public Attribute findAttribute(String name) {
-    return attributes.findAttribute(name);
+  public java.util.List<Attribute> getAttributes() {
+    return AttributeContainerHelper.filter(attributes, Attribute.SPECIALS).getAttributes();
   }
 
   /** @deprecated Use attributes() */
