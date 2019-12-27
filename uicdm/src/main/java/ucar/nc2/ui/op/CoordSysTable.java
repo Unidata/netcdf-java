@@ -734,19 +734,16 @@ public class CoordSysTable extends JPanel {
 
     @Nullable
     public String getAbbrev() {
-      Attribute att = ve.findAttributeIgnoreCase(CDM.ABBREV);
-      return (att == null) ? null : att.getStringValue();
+      return ve.attributes().findAttValueIgnoreCase(CDM.ABBREV, null);
     }
 
     public String getCoordSys() {
       return (coordSysBean == null) ? "" : coordSysBean.getCoordSys();
     }
 
-
     public String getDataType() {
       return (coordSysBean == null) ? "" : coordSysBean.getDataType();
     }
-
 
     public String getCoverage() {
       if (coordSysBean == null)

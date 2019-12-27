@@ -150,10 +150,9 @@ public class CFPoint implements Point {
     CoordinateAxis x = null;
     CoordinateAxis y = null;
 
-    String[] nodeCoords = vari.findAttributeIgnoreCase(CF.NODE_COORDINATES).getStringValue().split(" ");
+    String[] nodeCoords = vari.attributes().findAttValueIgnoreCase(CF.NODE_COORDINATES, "").split(" ");
 
     // Look for x and y
-
     for (CoordinateAxis ax : axes) {
 
       if (ax.getFullName().equals(nodeCoords[0]))

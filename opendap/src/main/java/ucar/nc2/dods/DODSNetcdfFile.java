@@ -611,7 +611,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   @Deprecated
-  protected void reGroupVariable(Group rootgroup, DODSVariable dodsv) throws opendap.dap.DAP2Exception {
+  protected void reGroupVariable(Group rootgroup, DODSVariable dodsv) {
     String dodsname = dodsv.getDODSName();
     NamePieces pieces = parseName(dodsname);
     if (pieces.prefix != null) {
@@ -631,12 +631,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
   }
 
-  protected void reGroupVariableAttributes(Group rootgroup, Variable v) throws opendap.dap.DAP2Exception {
+  private void reGroupVariableAttributes(Group rootgroup, Variable v) {
     String vname = v.getShortName();
     Group vgroup = v.getParentGroup();
-    Object[] attlist = v.getAttributes().toArray();
-    for (Object att : attlist) {
-      Attribute ncatt = (Attribute) att;
+    for (Attribute ncatt : v.attributes()) {
       String adodsname = ncatt.getDODSName();
       NamePieces pieces = parseName(adodsname);
       Group agroup = null;

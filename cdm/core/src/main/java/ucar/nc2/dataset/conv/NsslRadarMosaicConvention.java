@@ -77,7 +77,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     assert var != null;
 
     float scale_factor = Float.NaN;
-    Attribute att = var.findAttributeIgnoreCase("Scale");
+    Attribute att = var.attributes().findAttributeIgnoreCase("Scale");
     if (att != null) {
       scale_factor = att.getNumericValue().floatValue();
       var.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0f / scale_factor));
@@ -117,13 +117,13 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     for (Variable var : ds.getVariables()) {
       // boolean need_enhance = false;
       float scale_factor = Float.NaN;
-      Attribute att = var.findAttributeIgnoreCase("Scale");
+      Attribute att = var.attributes().findAttributeIgnoreCase("Scale");
       if (att != null) {
         scale_factor = att.getNumericValue().floatValue();
         var.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0f / scale_factor));
         // need_enhance = true;
       }
-      att = var.findAttributeIgnoreCase("MissingData");
+      att = var.attributes().findAttributeIgnoreCase("MissingData");
       if (null != att) {
         float val = att.getNumericValue().floatValue();
         if (!Float.isNaN(scale_factor))

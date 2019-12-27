@@ -32,7 +32,7 @@ public class TestSimpleGeometryCSAll {
     Variable hru_test = data.findVariable("hru_soil_moist");
 
     SimpleGeometryFeature sgc =
-        new SimpleGeometryFeature(hru_test.getFullNameEscaped(), hru_test.getDataType(), hru_test.getAttributes(),
+        new SimpleGeometryFeature(hru_test.getFullNameEscaped(), hru_test.getDataType(), hru_test.attributes(),
             csl.get(0).getName(), hru_test.getUnitsString(), hru_test.getDescription(), null, GeometryType.POLYGON);
     sgc.setCoordSys(builder.makeCoordSys());
 

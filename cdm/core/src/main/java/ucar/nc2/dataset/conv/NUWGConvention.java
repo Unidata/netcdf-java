@@ -410,7 +410,7 @@ public class NUWGConvention extends CoordSysBuilder {
     }
 
     public String getDescription() {
-      Attribute att = ncvar.findAttributeIgnoreCase(CDM.LONG_NAME);
+      Attribute att = ncvar.attributes().findAttributeIgnoreCase(CDM.LONG_NAME);
       return (att == null) ? getName() : att.getStringValue();
     }
 

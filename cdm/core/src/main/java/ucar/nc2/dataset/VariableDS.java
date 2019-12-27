@@ -912,9 +912,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     private String getUnitsString(Variable orgVar) {
       String result = units;
       if ((result == null) && (orgVar != null)) {
-        Attribute att = orgVar.findAttribute(CDM.UNITS);
-        if (att == null)
-          att = orgVar.findAttributeIgnoreCase(CDM.UNITS);
+        Attribute att = orgVar.attributes().findAttributeIgnoreCase(CDM.UNITS);
         if ((att != null) && att.isString())
           result = att.getStringValue();
       }

@@ -327,9 +327,9 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     private int[] shape;
     private String name;
     private String desp;
-    private List<Attribute> attributes;
+    private AttributeContainer attributes;
 
-    public MyRadialVariableAdapter(String vName, List<Attribute> atts) {
+    public MyRadialVariableAdapter(String vName, AttributeContainer atts) {
       rank = 1;
       shape = new int[] {1};
       name = vName;
@@ -388,19 +388,13 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
       return null;
     }
 
+    @Deprecated
     public List<Attribute> getAttributes() {
-      return attributes;
+      return attributes.getAttributes();
     }
 
     public ucar.nc2.Attribute findAttributeIgnoreCase(String attName) {
-      Iterator it = attributes.iterator();
-      Attribute at = null;
-      while (it.hasNext()) {
-        at = (Attribute) it.next();
-        if (attName.equalsIgnoreCase(at.getShortName()))
-          break;
-      }
-      return at;
+      return attributes.findAttributeIgnoreCase(attName);
     }
 
     @Override

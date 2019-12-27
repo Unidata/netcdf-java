@@ -188,7 +188,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
     int rnk = var.getRank();
 
     if (!var.getShortName().endsWith("RAW") && rnk == 2) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
       rsvar = new Nids2Variable(nds, v, var);
     }
 
@@ -220,7 +220,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
     String name;
 
     private Nids2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
+      super(v.getShortName(), v0.attributes());
       sweeps = new ArrayList<>();
       name = v.getShortName();
 

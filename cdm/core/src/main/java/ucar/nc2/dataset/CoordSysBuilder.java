@@ -1132,22 +1132,21 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       this.ds = ds;
       this.v = v;
       VariableEnhanced ve = (VariableEnhanced) v;
-      isCoordinateVariable = v.isCoordinateVariable() || null != v.findAttribute(_Coordinate.AliasForDimension);
+      isCoordinateVariable = v.isCoordinateVariable() || v.attributes().hasAttribute(_Coordinate.AliasForDimension);
       if (isCoordinateVariable) {
         v.isCoordinateVariable(); // DEBUG
         addCoordinateVariable(v.getDimension(0), this);
         parseInfo.format(" Coordinate Variable added = %s for dimension %s%n", v.getFullName(), v.getDimension(0));
       }
 
-      Attribute att = v.findAttributeIgnoreCase(_Coordinate.AxisType);
-      if (att != null) {
-        String axisName = att.getStringValue();
+      String axisName = v.attributes().findAttValueIgnoreCase(_Coordinate.AxisType, null);
+      if (axisName != null) {
         axisType = AxisType.getType(axisName);
         isCoordinateAxis = true;
         parseInfo.format(" Coordinate Axis added = %s type= %s%n", v.getFullName(), axisName);
       }
 
-      coordVarAlias = ds.findAttValueIgnoreCase(v, _Coordinate.AliasForDimension, null);
+      coordVarAlias = v.attributes().findAttValueIgnoreCase(_Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {

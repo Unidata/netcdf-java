@@ -207,11 +207,7 @@ public class WriterStationObsDataset {
           dimNames.append(" ").append(d.getShortName());
       }
       Variable newVar = ncfile.addVariable(oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
-
-      List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
-        ncfile.addVariableAttribute(newVar, att);
-      }
+      newVar.addAll(oldVar.attributes());
     }
   }
 

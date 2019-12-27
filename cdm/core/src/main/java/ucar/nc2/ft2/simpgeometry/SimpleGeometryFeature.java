@@ -48,8 +48,8 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
    * @param user user responsible for feature
    * @param geometryType type of geometry
    */
-  public SimpleGeometryFeature(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units,
-      String description, Object user, GeometryType geometryType) {
+  public SimpleGeometryFeature(String name, DataType dataType, AttributeContainer atts, String coordSysName,
+      String units, String description, Object user, GeometryType geometryType) {
     this.name = name;
     this.dataType = dataType;
     this.atts = new AttributeContainerMutable(name, atts).toImmutable();

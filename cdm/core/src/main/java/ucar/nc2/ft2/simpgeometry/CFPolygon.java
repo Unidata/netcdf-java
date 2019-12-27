@@ -197,10 +197,9 @@ public class CFPolygon implements Polygon {
     CoordinateAxis x = null;
     CoordinateAxis y = null;
 
-    String[] nodeCoords = polyvar.findAttributeIgnoreCase(CF.NODE_COORDINATES).getStringValue().split(" ");
+    String[] nodeCoords = polyvar.attributes().findAttValueIgnoreCase(CF.NODE_COORDINATES, "").split(" ");
 
     // Look for x and y
-
     for (CoordinateAxis ax : axes) {
 
       if (ax.getFullName().equals(nodeCoords[0]))

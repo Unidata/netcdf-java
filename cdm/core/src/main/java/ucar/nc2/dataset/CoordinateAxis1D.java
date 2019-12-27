@@ -874,10 +874,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private boolean makeBoundsFromAux() {
-    Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
-    if ((null == boundsAtt) || !boundsAtt.isString())
+    String boundsVarName = attributes().findAttValueIgnoreCase(CF.BOUNDS, null);
+    if (boundsVarName == null) {
       return false;
-    String boundsVarName = boundsAtt.getStringValue();
+    }
     VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
     if (null == boundsVar)
       return false;

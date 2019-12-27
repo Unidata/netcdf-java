@@ -8,6 +8,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -47,33 +48,23 @@ public class Cosmic1Convention extends CoordSysBuilder {
     return "UCAR/CDAAC".equals(center);
   }
 
-  /**
-   * _more_
-   */
   public Cosmic1Convention() {
     this.conventionName = "Cosmic1";
   }
 
-  /**
-   * _more_
-   *
-   * @param ds _more_
-   * @param cancelTask _more_
-   * @throws IOException _more_
-   */
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    AttributeContainer gatts = ds.getRootGroup().attributes();
 
     Attribute leoAtt = ds.findGlobalAttribute("leoId");
-
     if (leoAtt == null) {
       if (ds.findVariable("time") == null) {
         // create a time variable - assume its linear along the vertical dimension
-        double start = ds.getRootGroup().findAttributeDouble("start_time", Double.NaN);
-        double stop = ds.getRootGroup().findAttributeDouble("stop_time", Double.NaN);
+        double start = gatts.findAttributeDouble("start_time", Double.NaN);
+        double stop = gatts.findAttributeDouble("stop_time", Double.NaN);
 
         if (Double.isNaN(start) && Double.isNaN(stop)) {
-          double top = ds.getRootGroup().findAttributeDouble("toptime", Double.NaN);
-          double bot = ds.getRootGroup().findAttributeDouble("bottime", Double.NaN);
+          double top = gatts.findAttributeDouble("toptime", Double.NaN);
+          double bot = gatts.findAttributeDouble("bottime", Double.NaN);
 
           this.conventionName = "Cosmic2";
           if (top > bot) {
@@ -83,7 +74,6 @@ public class Cosmic1Convention extends CoordSysBuilder {
             stop = bot;
             start = top;
           }
-
         }
 
         Dimension dim = ds.findDimension("MSL_alt");
@@ -155,8 +145,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
       int min = ds.getRootGroup().findAttributeInteger("minute", 0);
       int sec = ds.getRootGroup().findAttributeInteger("second", 0);
 
-      double start = ds.getRootGroup().findAttributeDouble("startTime", Double.NaN);
-      double stop = ds.getRootGroup().findAttributeDouble("stopTime", Double.NaN);
+      double start = gatts.findAttributeDouble("startTime", Double.NaN);
+      double stop = gatts.findAttributeDouble("stopTime", Double.NaN);
       double incr = (stop - start) / n;
       int t = 0;
       // double julian = juday(mon, iday, iyr);
@@ -217,30 +207,6 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
   }
 
-  /*
-   * private DateTime getDateTime(int year, int month, int day, int hour,
-   * int min, int sec) throws Exception {
-   * GregorianCalendar convertCal =
-   * new GregorianCalendar(DateUtil.TIMEZONE_GMT);
-   * convertCal.clear();
-   * convertCal.set(Calendar.YEAR, year);
-   * //The MONTH is 0 based. The incoming month is 1 based
-   * convertCal.set(Calendar.MONTH, month - 1);
-   * convertCal.set(Calendar.DAY_OF_MONTH, day);
-   * convertCal.set(Calendar.HOUR_OF_DAY, hour);
-   * convertCal.set(Calendar.MINUTE, min);
-   * convertCal.set(Calendar.SECOND, sec);
-   * return new DateTime(convertCal.getTime());
-   * }
-   */
-
-  /**
-   * _more_
-   *
-   * @param ncDataset _more_
-   * @param v _more_
-   * @return _more_
-   */
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
     String name = v.getShortName();
     if (name.equals("time")) {
@@ -298,15 +264,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
    * COPYRIGHT : ASTRONOMICAL INSTITUTE
    * 1987 UNIVERSITY OF BERNE
    * SWITZERLAND
-   *
-   * @param a _more_
-   * @param b _more_
-   * @param xstat _more_
-   * @return _more_
    */
-  public double[] xyzell(double a, double b, double[] xstat) {
-
-
+  private double[] xyzell(double a, double b, double[] xstat) {
     double[] xstell = new double[3];
     double e2, s, rlam, zps, h, phi, n, hp, phip;
     int i, niter;
@@ -335,7 +294,6 @@ public class Cosmic1Convention extends CoordSysBuilder {
         h = -999.0;
         break;
       }
-
     }
 
     xstell[0] = phi * 180 / 3.1415926;
@@ -343,9 +301,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
     xstell[2] = h;
 
     return xstell;
-
   }
-
 
   /*
    * gast.f
@@ -359,26 +315,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
    *
    * ! glon -- East longitude in degrees, -180 to 180
    *
-   *
    * call vprod.f spin.f rnorm.f
    * Calculation of the unit vector normal to the occultation plane
    * (clockwise rotated from GPS to LEO)
-   *
-   * @param iyr _more_
-   * 
-   * @param imon _more_
-   * 
-   * @param iday _more_
-   * 
-   * @param ihr _more_
-   * 
-   * @param imin _more_
-   * 
-   * @param sec _more_
-   * 
-   * @param dsec _more_
-   *
-   * @return _more_
    */
   /*
    * double dtheta = gast(iyr,mon,iday,ihr,min,sec,t)
@@ -431,10 +370,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
    * @since May 1995
    *        version $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/gast.f $ $Id: gast.f 10129 2008-07-30 17:10:52Z
    *        dhunt $
-   *        -----------------------------------------------------------------------
    */
 
-  public double gast(int iyr, int imon, int iday, int ihr, int imin, double sec, double dsec) {
+  private double gast(int iyr, int imon, int iday, int ihr, int imin, double sec, double dsec) {
     //
     // implicit double precision (a-h,o-z)
     // character(len=*), parameter :: header = '$URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/gast.f $ $Id: gast.f
@@ -453,18 +391,13 @@ public class Cosmic1Convention extends CoordSysBuilder {
   }
 
   /**
-   * JDAY calculates the Julian Day number (JD) from the Gregorian month
-   * ,day, and year (M,D,Y). (NOT VALID BEFORE 10/15/1582)
-   *
-   * @param M _more_
-   * @param D _more_
-   * @param Y _more_
-   * @return _more_
+   * JDAY calculates the Julian Day number (JD) from the Gregorian month day, and year (M,D,Y). (NOT VALID BEFORE
+   * 10/15/1582)
    */
-  public double juday(int M, int D, int Y) {
+  private double juday(int M, int D, int Y) {
     double JD;
 
-    double IY = Y - (12 - M) / 10;
+    double IY = Y - (12 - M) / 10.0;
     double IM = M + 1 + 12 * ((12 - M) / 10.0);
     double I = IY / 100;
     double J = 2 - I + I / 4 + Math.round(365.25 * IY) + Math.round(30.6001 * IM);
@@ -482,13 +415,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
    * Reference: Astronomical Alamanus, 1993
    * <p/>
    * Modified subroutine from Dasheng's code.
-   *
-   * @param rectt _more_
-   * @param utco _more_
-   * @param gmst _more_
-   * @return _more_
    */
-  public double togreenw(double rectt, double utco, double gmst) {
+  private double togreenw(double rectt, double utco, double gmst) {
 
     double pi = Math.acos(-1.00);
     //
@@ -584,23 +512,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
     return v2;
   }
 
-  /**
-   * _more_
-   */
-  protected static final double RTD = 180. / Math.PI;
+  private static final double RTD = 180. / Math.PI;
+  private static final double DTR = Math.PI / 180.;
 
-  /**
-   * _more_
-   */
-  protected static final double DTR = Math.PI / 180.;
-
-  /**
-   * _more_
-   *
-   * @param eci _more_
-   * @param julian _more_
-   * @return _more_
-   */
   public double[] execute(double[] eci, double julian) {
     double Xi = eci[0];
     double Yi = eci[1];
@@ -675,16 +589,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
     return ecef;
   }
 
-  /**
-   * comparing api to others
-   *
-   * @param x _more_
-   * @param y _more_
-   * @param z _more_
-   * @param a _more_
-   * @param b _more_
-   * @return _more_
-   */
+  /** comparing api to others */
   public static double[] ECFtoLLA(double x, double y, double z, double a, double b) {
 
     double longitude = Math.atan2(y, x);

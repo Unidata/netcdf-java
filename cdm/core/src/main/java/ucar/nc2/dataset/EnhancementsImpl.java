@@ -129,9 +129,7 @@ class EnhancementsImpl implements Enhancements {
   public String getUnitsString() {
     String result = units;
     if ((result == null) && (forVar != null)) {
-      Attribute att = forVar.findAttribute(CDM.UNITS);
-      if (att == null)
-        att = forVar.findAttributeIgnoreCase(CDM.UNITS);
+      Attribute att = forVar.findAttributeIgnoreCase(CDM.UNITS);
       if ((att != null) && att.isString())
         result = att.getStringValue();
     }

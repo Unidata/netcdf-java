@@ -132,7 +132,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     int rnk = var.getRank();
 
     if (rnk == 2) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
       rsvar = makeRadialVariable(nds, v, var);
     }
 
@@ -214,7 +214,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     }
 
     private Dorade2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
+      super(v.getShortName(), v0.attributes());
       sweeps = new ArrayList<>();
       name = v.getShortName();
 

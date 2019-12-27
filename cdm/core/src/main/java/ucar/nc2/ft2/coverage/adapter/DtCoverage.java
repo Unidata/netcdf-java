@@ -233,7 +233,7 @@ public class DtCoverage implements IsMissingEvaluator {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
-    return vs.findAttributeIgnoreCase(name);
+    return vs.attributes().findAttributeIgnoreCase(name);
   }
 
   /**
@@ -268,13 +268,11 @@ public class DtCoverage implements IsMissingEvaluator {
     return shape;
   }
 
-  /**
-   * get the data type
-   */
   public DataType getDataType() {
     return vs.getDataType();
   }
 
+  @Deprecated
   public List<Attribute> getAttributes() {
     return vs.getAttributes();
   }

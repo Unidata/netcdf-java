@@ -150,7 +150,7 @@ public class WRFConvention extends CoordSysBuilder {
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
-      att = v.findAttributeIgnoreCase(CDM.UNITS);
+      att = v.attributes().findAttributeIgnoreCase(CDM.UNITS);
       if (att != null) {
         String units = att.getStringValue();
         if (units != null)

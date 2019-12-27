@@ -162,7 +162,7 @@ public class CFPointObWriter {
     }
 
     public Attribute findAttributeIgnoreCase(String name) {
-      for (Attribute att : getAttributes())
+      for (Attribute att : attributes())
         if (att.getShortName().equalsIgnoreCase(name))
           return att;
       return null;

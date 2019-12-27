@@ -101,11 +101,9 @@ public class AttributeContainerMutable implements AttributeContainer {
 
   @Override
   public Attribute findAttributeIgnoreCase(String name) {
-    for (Attribute a : atts) {
-      if (name.equalsIgnoreCase(a.getShortName()))
-        return a;
-    }
-    return null;
+    Attribute result = findAttribute(name);
+    return (result != null) ? result
+        : atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(name)).findFirst().orElse(null);
   }
 
 
@@ -206,7 +204,9 @@ public class AttributeContainerMutable implements AttributeContainer {
 
     @Override
     public Attribute findAttributeIgnoreCase(String attName) {
-      return atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(attName)).findFirst().orElse(null);
+      Attribute result = findAttribute(attName);
+      return (result != null) ? result
+          : atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(attName)).findFirst().orElse(null);
     }
 
     @Override

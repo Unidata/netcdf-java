@@ -189,8 +189,7 @@ public class FileWriter {
           System.out.println("add var= " + v);
 
         // attributes
-        List<Attribute> attList = oldVar.getAttributes();
-        for (Attribute att : attList) {
+        for (Attribute att : oldVar.attributes()) {
           String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
           if (att.isArray())
             ncfile.addVariableAttribute(varName, useName, att.getValues());
@@ -587,14 +586,13 @@ public class FileWriter {
     } else
       ncfile.addVariable(useName, oldVar.getDataType(), dims);
 
-
     varList.add(oldVar);
     if (debug)
       System.out.println("write var= " + oldVar);
 
-    List<Attribute> attList = oldVar.getAttributes();
-    for (Attribute att : attList)
+    for (Attribute att : oldVar.attributes()) {
       writeAttribute(useName, att);
+    }
   }
 
   /**
