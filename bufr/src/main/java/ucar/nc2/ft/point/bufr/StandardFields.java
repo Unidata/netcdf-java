@@ -215,12 +215,12 @@ public class StandardFields {
       private Field(TypeAndOrder tao, Variable v) {
         this.tao = tao;
         this.memberName = v.getShortName();
-        Attribute att = v.findAttribute("scale_factor");
+        Attribute att = v.attributes().findAttribute("scale_factor");
         if (att != null && !att.isString()) {
           scale = att.getNumericValue().doubleValue();
           hasScale = true;
         }
-        att = v.findAttribute("add_offset");
+        att = v.attributes().findAttribute("add_offset");
         if (att != null && !att.isString()) {
           offset = att.getNumericValue().doubleValue();
           hasScale = true;
@@ -233,7 +233,7 @@ public class StandardFields {
     public StandardFieldsFromStructure(int center, Structure obs) {
       // run through all available fields - LOOK we are not recursing into sub sequences
       for (Variable v : obs.getVariables()) {
-        Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
+        Attribute att = v.attributes().findAttribute(BufrIosp2.fxyAttName);
         if (att == null)
           continue;
         String key = att.getStringValue();

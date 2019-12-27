@@ -181,10 +181,9 @@ public class CFLine implements Line {
     CoordinateAxis x = null;
     CoordinateAxis y = null;
 
-    String[] nodeCoords = var.findAttributeIgnoreCase(CF.NODE_COORDINATES).getStringValue().split(" ");
+    String[] nodeCoords = var.attributes().findAttValueIgnoreCase(CF.NODE_COORDINATES, "").split(" ");
 
     // Look for x and y
-
     for (CoordinateAxis ax : axes) {
 
       if (ax.getFullName().equals(nodeCoords[0]))

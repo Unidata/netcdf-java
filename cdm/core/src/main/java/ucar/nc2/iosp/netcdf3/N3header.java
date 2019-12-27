@@ -947,7 +947,7 @@ public class N3header extends NCheader {
 
       // variable attributes
       long varAttsPos = raf.getFilePointer();
-      writeAtts(var.getAttributes(), fout);
+      writeAtts(var.attributes(), fout);
 
       // data type, variable size, beginning file position
       DataType dtype = var.getDataType();

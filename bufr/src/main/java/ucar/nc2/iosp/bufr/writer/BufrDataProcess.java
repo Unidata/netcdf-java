@@ -177,8 +177,7 @@ public class BufrDataProcess {
   private void processVariable(Variable v, Array mdata, Counter count) {
     String name = v.getShortName();
     String units = v.getUnitsString();
-    Attribute bwAtt = v.findAttribute("BUFR:bitWidth");
-    int bitWidth = bwAtt == null ? 0 : bwAtt.getNumericValue().intValue();
+    int bitWidth = v.attributes().findAttributeInteger("BUFR:bitWidth", 0);
 
     if (showData)
       out.format("%svar='%s' units='%s' : ", indent, name, units);

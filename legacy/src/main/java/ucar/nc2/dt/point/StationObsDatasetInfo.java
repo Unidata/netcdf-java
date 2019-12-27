@@ -289,9 +289,7 @@ public class StationObsDatasetInfo {
       varElem.setAttribute("type", dt.toString());
 
     // attributes
-    Iterator atts = v.getAttributes().iterator();
-    while (atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+    for (ucar.nc2.Attribute att : v.attributes()) {
       varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 

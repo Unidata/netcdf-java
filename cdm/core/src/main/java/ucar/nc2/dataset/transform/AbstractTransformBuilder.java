@@ -108,8 +108,8 @@ public abstract class AbstractTransformBuilder {
    * @param defValue default value if attribute is not found
    * @return attribute value as a double, else NaN if not found
    */
-  protected double readAttributeDouble(AttributeContainer v, String attname, double defValue) {
-    Attribute att = v.findAttributeIgnoreCase(attname);
+  protected double readAttributeDouble(AttributeContainer atts, String attname, double defValue) {
+    Attribute att = atts.findAttributeIgnoreCase(attname);
     if (att == null)
       return defValue;
     if (att.isString())

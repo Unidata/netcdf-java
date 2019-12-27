@@ -314,12 +314,10 @@ public class CoordinateAxis2D extends CoordinateAxis {
   private ArrayDouble.D3 makeBoundsFromAux() {
     if (!computeIsInterval())
       return null;
-
-    Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
-    if (boundsAtt == null)
+    String boundsVarName = attributes().findAttValueIgnoreCase(CF.BOUNDS, null);
+    if (boundsVarName == null) {
       return null;
-
-    String boundsVarName = boundsAtt.getStringValue();
+    }
     VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
 
     Array data;
@@ -345,11 +343,10 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   private boolean computeIsInterval() {
     intervalWasComputed = true;
-
-    Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
-    if ((null == boundsAtt) || !boundsAtt.isString())
+    String boundsVarName = attributes().findAttValueIgnoreCase(CF.BOUNDS, null);
+    if (boundsVarName == null) {
       return false;
-    String boundsVarName = boundsAtt.getStringValue();
+    }
     VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
     if (null == boundsVar)
       return false;

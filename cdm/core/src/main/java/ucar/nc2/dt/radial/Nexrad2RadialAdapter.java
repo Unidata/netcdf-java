@@ -225,11 +225,11 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
 
     if (rnk == 3) {
       if (!isHighResolution(nds)) {
-        VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+        VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
         rsvar = makeRadialVariable(nds, v, var);
       } else {
         if (!vName.endsWith("_HI")) {
-          VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
+          VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
           rsvar = makeRadialVariable(nds, v, var);
         }
       }
@@ -259,7 +259,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
     String name;
 
     private LevelII2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
+      super(v.getShortName(), v0.attributes());
 
       nsweepsHR = 0;
       sweeps = new ArrayList<>();
