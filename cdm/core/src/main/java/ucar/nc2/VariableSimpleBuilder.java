@@ -40,7 +40,7 @@ public class VariableSimpleBuilder {
     this.desc = desc;
     this.units = units;
     this.dt = dt;
-    this.dims = ImmutableList.copyOf(dims);
+    this.dims = (dims == null || dims.size() == 0) ? ImmutableList.of() : ImmutableList.copyOf(dims);
     this.atts = new AttributeContainerMutable(name);
 
     if (units != null) {
