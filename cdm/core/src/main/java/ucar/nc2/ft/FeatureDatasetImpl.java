@@ -75,9 +75,9 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
 
     this.title = netcdfDataset.getTitle();
     if (title == null)
-      title = netcdfDataset.findAttValueIgnoreCase(null, "title", null);
+      title = netcdfDataset.getRootGroup().findAttValueIgnoreCase("title", null);
     if (desc == null)
-      desc = netcdfDataset.findAttValueIgnoreCase(null, "description", null);
+      desc = netcdfDataset.getRootGroup().findAttValueIgnoreCase("description", null);
   }
 
   protected void setTitle(String title) {

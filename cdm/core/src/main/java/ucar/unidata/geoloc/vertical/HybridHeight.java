@@ -66,7 +66,7 @@ public class HybridHeight extends VerticalTransformImpl {
     aVar = ds.findVariable(aName);
     bVar = ds.findVariable(bName);
     orogVar = ds.findVariable(orogName);
-    units = ds.findAttValueIgnoreCase(orogVar, CDM.UNITS, "none");
+    units = orogVar.findAttValueIgnoreCase(CDM.UNITS, "none");
 
   }
 

@@ -184,16 +184,16 @@ public class DtCoverageDataset implements Closeable {
   public String getTitle() {
     String title = ncd.getTitle();
     if (title == null)
-      title = ncd.findAttValueIgnoreCase(null, CDM.TITLE, null);
+      title = ncd.getRootGroup().findAttValueIgnoreCase(CDM.TITLE, null);
     if (title == null)
       title = getName();
     return title;
   }
 
   public String getDescription() {
-    String desc = ncd.findAttValueIgnoreCase(null, "description", null);
+    String desc = ncd.getRootGroup().findAttValueIgnoreCase("description", null);
     if (desc == null)
-      desc = ncd.findAttValueIgnoreCase(null, CDM.HISTORY, null);
+      desc = ncd.getRootGroup().findAttValueIgnoreCase(CDM.HISTORY, null);
     return (desc == null) ? getName() : desc;
   }
 

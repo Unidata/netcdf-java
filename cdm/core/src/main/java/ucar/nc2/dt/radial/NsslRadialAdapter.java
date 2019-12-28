@@ -25,7 +25,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String format = ncd.findAttValueIgnoreCase(null, "format", null);
+    String format = ncd.getRootGroup().findAttValueIgnoreCase("format", null);
     if (format != null) {
       if (format.startsWith("nssl/netcdf"))
         return this;
@@ -149,7 +149,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   public void setIsVolume(NetcdfDataset nds) {
-    String format = nds.findAttValueIgnoreCase(null, "volume", null);
+    String format = nds.getRootGroup().findAttValueIgnoreCase("volume", null);
     if (format == null) {
       isVolume = false;
       return;
@@ -197,7 +197,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String start_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_start", null);
+    String start_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
     if (start_datetime != null)
       startDate = DateUnit.getStandardOrISO(start_datetime);
     else
@@ -205,7 +205,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String end_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_end", null);
+    String end_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
     if (end_datetime != null)
       endDate = DateUnit.getStandardOrISO(end_datetime);
     else

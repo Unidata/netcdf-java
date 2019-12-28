@@ -27,7 +27,7 @@ public class TestReadRecord extends TestCase {
     NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc");
 
     /* Get the value of the global attribute named "title" */
-    String title = nc.findAttValueIgnoreCase(null, "title", "N/A");
+    String title = nc.getRootGroup().findAttValueIgnoreCase("title", "N/A");
 
     /*
      * Read the latitudes into an array of double.
@@ -45,7 +45,7 @@ public class TestReadRecord extends TestCase {
       lats[ilat] = values.getDouble(ima.set0(ilat));
     }
     /* Read units attribute of lat variable */
-    String latUnits = nc.findAttValueIgnoreCase(lat, "units", "N/A");
+    String latUnits = lat.findAttValueIgnoreCase("units", "N/A");
     assert (latUnits.equals("degrees_north"));
 
     /* Read the longitudes. */
@@ -114,7 +114,7 @@ public class TestReadRecord extends TestCase {
     nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     /* Get the value of the global attribute named "title" */
-    String title = nc.findAttValueIgnoreCase(null, "title", "N/A");
+    String title = nc.getRootGroup().findAttValueIgnoreCase("title", "N/A");
 
     /*
      * Read the latitudes into an array of double.
@@ -132,7 +132,7 @@ public class TestReadRecord extends TestCase {
       lats[ilat] = values.getDouble(ima.set0(ilat));
     }
     /* Read units attribute of lat variable */
-    String latUnits = nc.findAttValueIgnoreCase(lat, "units", "N/A");
+    String latUnits = lat.findAttValueIgnoreCase("units", "N/A");
     assert (latUnits.equals("degrees_north"));
 
     /* Read the longitudes. */

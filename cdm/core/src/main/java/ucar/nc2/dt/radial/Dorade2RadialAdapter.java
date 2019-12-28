@@ -32,9 +32,9 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
+    String convention = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
     if (_Coordinate.Convention.equals(convention)) {
-      String format = ncd.findAttValueIgnoreCase(null, "Format", null);
+      String format = ncd.getRootGroup().findAttValueIgnoreCase("Format", null);
       if ("Unidata/netCDF/Dorade".equals(format))
         return this;
     }

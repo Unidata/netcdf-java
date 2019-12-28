@@ -60,7 +60,7 @@ public class OceanSigma extends VerticalTransformImpl {
     sVar = ds.findVariable(sName);
     depthVar = ds.findVariable(depthName);
 
-    units = ds.findAttValueIgnoreCase(depthVar, CDM.UNITS, "none");
+    units = depthVar.findAttValueIgnoreCase(CDM.UNITS, "none");
   }
 
   /**

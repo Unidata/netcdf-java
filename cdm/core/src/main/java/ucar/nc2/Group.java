@@ -236,14 +236,14 @@ public class Group extends CDMNode implements AttributeContainer {
   /**
    * Retrieve a Dimension using its (short) name, in this group only
    *
-   * @param name Dimension name.
+   * @param shortName Dimension name.
    * @return the Dimension, or null if not found
    */
-  public Dimension findDimensionLocal(String name) {
-    if (name == null)
+  public Dimension findDimensionLocal(String shortName) {
+    if (shortName == null)
       return null;
     for (Dimension d : dimensions) {
-      if (name.equals(d.getShortName()))
+      if (shortName.equals(d.getShortName()))
         return d;
     }
 
@@ -263,6 +263,15 @@ public class Group extends CDMNode implements AttributeContainer {
     return attributes.findAttribute(name);
   }
 
+  /**
+   * Find a String-valued Attribute by name (ignore case), return the String value of the Attribute.
+   *
+   * @return the attribute value, or defaultValue if not found
+   */
+  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
   /** @deprecated Use attributes() */
   @Deprecated
   public java.util.List<Attribute> getAttributes() {
@@ -273,12 +282,6 @@ public class Group extends CDMNode implements AttributeContainer {
   @Deprecated
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
   /** @deprecated Use attributes() */

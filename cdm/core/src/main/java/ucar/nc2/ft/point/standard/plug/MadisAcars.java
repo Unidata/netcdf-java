@@ -25,7 +25,7 @@ public class MadisAcars extends Madis {
     if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.TRAJECTORY))
       return false;
 
-    String title = ds.findAttValueIgnoreCase(null, "title", null);
+    String title = ds.getRootGroup().findAttValueIgnoreCase("title", null);
     if (!"MADIS ACARS data".equals(title))
       return false;
 

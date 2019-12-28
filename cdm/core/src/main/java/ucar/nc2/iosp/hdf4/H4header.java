@@ -131,7 +131,7 @@ public class H4header extends NCheader {
       isEos = HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
       if (isEos) {
         adjustDimensions();
-        String history = ncfile.findAttValueIgnoreCase(null, "_History", "");
+        String history = ncfile.getRootGroup().findAttValueIgnoreCase("_History", "");
         ncfile.addAttribute(null, new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
 
       }

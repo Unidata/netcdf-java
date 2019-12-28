@@ -92,9 +92,9 @@ public class AtmosSigma extends VerticalTransformImpl {
       throw new IllegalArgumentException("AtmosSigma failed to read " + sigmaName + " err= " + e.getMessage());
     }
 
-    units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
+    units = psVar.findAttValueIgnoreCase(CDM.UNITS, "none");
 
-    String ptopUnitStr = ds.findAttValueIgnoreCase(ptopVar, CDM.UNITS, "none");
+    String ptopUnitStr = ptopVar.findAttValueIgnoreCase(CDM.UNITS, "none");
     if (!units.equalsIgnoreCase(ptopUnitStr)) {
       // Convert ptopVar to units of psVar
       SimpleUnit psUnit = SimpleUnit.factory(units);

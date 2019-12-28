@@ -260,7 +260,7 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("d");
-      String attValue = ncfile.findAttValueIgnoreCase(v, "c", null);
+      String attValue = v.findAttValueIgnoreCase("c", null);
       String s = Misc.showBytes(attValue.getBytes(StandardCharsets.UTF_8));
       logger.debug(" d:c = ({}) = {}", attValue, s);
       // Array data = v.read();
