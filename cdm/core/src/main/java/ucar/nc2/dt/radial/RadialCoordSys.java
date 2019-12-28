@@ -7,6 +7,7 @@
 
 package ucar.nc2.dt.radial;
 
+import ucar.nc2.Variable;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.dataset.*;
@@ -45,7 +46,7 @@ public class RadialCoordSys {
    * @param v Variable to check.
    * @return the RadialCoordSys made from cs, else null.
    */
-  public static RadialCoordSys makeRadialCoordSys(Formatter parseInfo, CoordinateSystem cs, VariableEnhanced v) {
+  public static RadialCoordSys makeRadialCoordSys(Formatter parseInfo, CoordinateSystem cs, Variable v) {
     if (parseInfo != null) {
       parseInfo.format(" ");
       v.getNameAndDimensions(parseInfo, true, false);

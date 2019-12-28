@@ -9,7 +9,7 @@ import ucar.nc2.ft.FeatureDataset;
 import java.util.List;
 
 /**
- * A lightweight abstractions of a Variable.
+ * A lightweight abstraction of a Variable.
  *
  * @author caron
  * @see FeatureDataset
