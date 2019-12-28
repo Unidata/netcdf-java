@@ -1226,7 +1226,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     Array data = dataReader.readData2(coordIter, yxRange.get(0), yxRange.get(1));
 
-    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);
+    return new GeoReferencedArray(coverage.getShortName(), coverage.getDataType(), data, subsetCoordSys);
   }
 
   // LOOK dependent axis could get added multiple times

@@ -4,8 +4,6 @@
  */
 package ucar.nc2.internal.ncml;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -14,13 +12,10 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Group.Builder;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ReplaceVariableCheck;
-import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
 
 /**
  * Helper methods for constructing NetcdfDatasets.
@@ -111,40 +106,6 @@ class BuilderHelper {
       if (null == target.findAttribute(a.getShortName()))
         target.addAttribute(a);
     }
-  }
-
-  /**
-   * Find the Group in newFile that corresponds (by name) with oldGroup
-   *
-   * @param newFile look in this NetcdfFile
-   * @param oldGroup corresponding (by name) with oldGroup
-   * @return corresponding Group, or null if no match.
-   */
-  static Group findGroup(NetcdfFile newFile, Group oldGroup) {
-    List<Group> chain = new ArrayList<>(5);
-    Group g = oldGroup;
-    while (g.getParentGroup() != null) { // skip the root
-      chain.add(0, g); // put in front
-      g = g.getParentGroup();
-    }
-
-    Group newg = newFile.getRootGroup();
-    for (Group oldg : chain) {
-      newg = newg.findGroup(oldg.getShortName());
-      if (newg == null)
-        return null;
-    }
-    return newg;
-  }
-
-  private static final String boundsDimName = "bounds_dim";
-
-  static Dimension getBoundsDimension(NetcdfFile ncfile) {
-    Group g = ncfile.getRootGroup();
-    Dimension d = g.findDimension(boundsDimName);
-    if (d == null)
-      d = ncfile.addDimension(g, new Dimension(boundsDimName, 2, true));
-    return d;
   }
 
 }

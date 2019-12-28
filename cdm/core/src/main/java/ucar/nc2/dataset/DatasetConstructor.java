@@ -13,7 +13,9 @@ import java.util.ArrayList;
  * 
  * @author caron
  * @since Jul 6, 2007
+ * @deprecated do not use
  */
+@Deprecated
 public class DatasetConstructor {
 
   /**

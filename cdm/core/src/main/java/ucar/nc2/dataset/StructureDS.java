@@ -442,7 +442,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // the wrapper StructureMembers must be converted to correspond to the wrapper Structure
-
   private void convertMemberInfo(StructureMembers wrapperSm) {
     for (StructureMembers.Member m : wrapperSm.getMembers()) {
       Variable v = findVariable(m.getName());
@@ -465,7 +464,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // look for the top variable that has an orgVar with the wanted orgName
-
   private VariableEnhanced findVariableFromOrgName(String orgName) {
     for (Variable vTop : getVariables()) {
       Variable v = vTop;
@@ -480,7 +478,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // verify that the variable has data in the data array
-
   private boolean varHasData(Variable v, StructureMembers sm) {
     if (sm.findMember(v.getShortName()) != null)
       return true;

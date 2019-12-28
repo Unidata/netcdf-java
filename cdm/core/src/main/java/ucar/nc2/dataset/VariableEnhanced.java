@@ -6,24 +6,20 @@ package ucar.nc2.dataset;
 
 import java.util.Set;
 
-/**
- * interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package.
- * 
- * @author john caron
- * @deprecated do not use
- */
-@Deprecated
-public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
+/** Interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package. */
+public interface VariableEnhanced extends Enhancements {
 
-  /** @deprecated do not use */
-  @Deprecated
+  String getFullName();
+
+  String getShortName();
+
   ucar.nc2.Variable getOriginalVariable();
+
+  String getOriginalName();
 
   /** @deprecated do not use */
   @Deprecated
   void setOriginalVariable(ucar.nc2.Variable orgVar);
-
-  String getOriginalName();
 
   /**
    * Set the Unit String for this Variable. Default is to use the CDM.UNITS attribute.
