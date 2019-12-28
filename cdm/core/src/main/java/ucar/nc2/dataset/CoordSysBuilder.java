@@ -52,8 +52,9 @@ import java.util.*;
  * assignCoordinateTransforms(ncDataset);
  * </pre>
  *
- * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 
 /*
  * Implementation notes:
@@ -72,9 +73,7 @@ import java.util.*;
  * 
  * B. You could explicitly add it by overriding assignCoordinateTransforms()
  * 
- * @deprecated do not use
  */
-@Deprecated
 public class CoordSysBuilder implements CoordSysBuilderIF {
   public static final String resourcesDir = "resources/nj22/coords/"; // resource path
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
@@ -865,7 +864,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       List<CoordinateAxis> axisList = new ArrayList<>();
       List<CoordinateAxis> axes = ncDataset.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
-        if (isCoordinateAxisForVariable(axis, ve))
+        if (isCoordinateAxisForVariable(axis, vp.v))
           axisList.add(axis);
       }
 
@@ -881,7 +880,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (requireCompleteCoordSys) {
         if (cs != null) {
           // only build if coordinate system is complete
-          okToBuild = cs.isComplete(ve);
+          okToBuild = cs.isComplete(vp.v);
         }
       } else {
         // coordinate system can be incomplete, so we're ok to build if we find something
@@ -898,7 +897,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         // default enhance mode is yes, they must be complete
         if (requireCompleteCoordSys) {
           // only build if new coordinate system is complete
-          okToBuild = csnew.isComplete(ve);
+          okToBuild = csnew.isComplete(vp.v);
         }
         if (okToBuild) {
           csnew.setImplicit(true);
@@ -919,7 +918,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param v the given variable
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
-  protected boolean isCoordinateAxisForVariable(Variable axis, VariableEnhanced v) {
+  protected boolean isCoordinateAxisForVariable(Variable axis, Variable v) {
     List<Dimension> varDims = v.getDimensionsAll();
     List<Dimension> axisDims = axis.getDimensionsAll();
 

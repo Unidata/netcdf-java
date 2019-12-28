@@ -125,15 +125,15 @@ public class Dimensions {
   }
 
   /** Make a list of private dimensions from an array of lengths */
-  public static List<Dimension> makeDimensionsAnon(int[] shape) {
-    List<Dimension> newDimensions = new ArrayList<>();
+  public static ImmutableList<Dimension> makeDimensionsAnon(int[] shape) {
     if ((shape == null) || (shape.length == 0)) { // scalar
-      return newDimensions;
+      return ImmutableList.of();
     }
+    ImmutableList.Builder<Dimension> newDimensions = ImmutableList.builder();
     for (int len : shape) {
       newDimensions.add(Dimension.builder().setIsVariableLength(len == -1).setLength(len).setIsShared(false).build());
     }
-    return newDimensions;
+    return newDimensions.build();
   }
 
   /**
@@ -141,13 +141,13 @@ public class Dimensions {
    *
    * @return array of Dimension, rank of v plus all parent Structures.
    */
-  public static List<Dimension> makeDimensionsAll(Variable v) {
-    List<Dimension> dimsAll = new ArrayList<>();
+  public static ImmutableList<Dimension> makeDimensionsAll(Variable v) {
+    ImmutableList.Builder<Dimension> dimsAll = ImmutableList.builder();
     addDimensionsAll(dimsAll, v);
-    return dimsAll;
+    return dimsAll.build();
   }
 
-  private static void addDimensionsAll(List<Dimension> result, Variable v) {
+  private static void addDimensionsAll(ImmutableList.Builder<Dimension> result, Variable v) {
     if (v.isMemberOfStructure()) {
       addDimensionsAll(result, v.getParentStructure());
     }

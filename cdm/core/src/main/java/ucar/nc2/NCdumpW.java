@@ -284,17 +284,8 @@ public class NCdumpW {
    * @return String result
    * @throws IOException on write error
    */
-  public static String printVariableData(VariableIF v, ucar.nc2.util.CancelTask ct) throws IOException {
+  public static String printVariableData(Variable v, ucar.nc2.util.CancelTask ct) throws IOException {
     Array data = v.read();
-    /*
-     * try {
-     * data = v.isMemberOfStructure() ? v.readAllStructures(null, true) : v.read();
-     * }
-     * catch (InvalidRangeException ex) {
-     * return ex.getMessage();
-     * }
-     */
-
     StringWriter writer = new StringWriter(10000);
     printArray(data, v.getFullName(), new PrintWriter(writer), new Indent(2), ct);
     return writer.toString();

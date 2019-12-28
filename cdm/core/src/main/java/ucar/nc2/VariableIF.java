@@ -7,7 +7,13 @@ package ucar.nc2;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 
-/** The public interface to a Variable. */
+/**
+ * The public interface to a Variable.
+ * TODO was here because of VariableEnhanced. But not needed, as any VariableEnhanced can be cast to Variable.
+ * 
+ * @deprecated do not use.
+ */
+@Deprecated
 public interface VariableIF extends VariableSimpleIF {
   String getFullName();
 

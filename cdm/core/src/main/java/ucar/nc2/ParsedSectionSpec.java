@@ -13,7 +13,8 @@ import ucar.ma2.Section;
 import java.util.List;
 
 /**
- * Parsed Section Expression, allows nesting for subsetting of Structure member variables.
+ * A String expression for denoting a section of a Variable to be read.
+ * Allows nesting for subsetting of Structure member variables.
  *
  * @author caron
  * @since May 8, 2008
@@ -45,11 +46,9 @@ public class ParsedSectionSpec {
    *
    * @param ncfile look for variable in here
    * @param variableSection the string to parse, eg "record(12).wind(1:20,:,3)"
-   * @return return ParsedSectionSpec, aprsed representation of the variableSection String
+   * @return return ParsedSectionSpec, parsed representation of the variableSection String
    * @throws IllegalArgumentException when token is misformed, or variable name doesnt exist in ncfile
    * @throws ucar.ma2.InvalidRangeException if section does not match variable shape
-   * @see <a href=
-   *      "http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public static ParsedSectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection)
       throws InvalidRangeException {

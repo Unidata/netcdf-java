@@ -473,8 +473,8 @@ public class CoordinateSystem {
    * @param v check for this variable
    * @return true if all dimensions in V (including parents) are in the domain of this coordinate system.
    */
-  public boolean isComplete(VariableIF v) {
-    return isSubset(v.getDimensionsAll(), domain);
+  public boolean isComplete(Variable v) {
+    return isSubset(Dimensions.makeDimensionsAll(v), domain);
   }
 
   /**
@@ -486,8 +486,8 @@ public class CoordinateSystem {
    * @param v check for this variable
    * @return true if all dimensions in the domain of this coordinate system are in V (including parents).
    */
-  public boolean isCoordinateSystemFor(VariableIF v) {
-    return isSubset(domain, v.getDimensionsAll());
+  public boolean isCoordinateSystemFor(Variable v) {
+    return isSubset(domain, Dimensions.makeDimensionsAll(v));
   }
 
   /**

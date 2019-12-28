@@ -132,7 +132,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
         constructCoordinateSystems(ds, (VariableEnhanced) nested, parseInfo);
       }
     } else {
-
       // see if it has a GridCS
       // LOOK: should add geogrid it multiple times if there are multiple geoCS ??
       GridCoordSys gcs = null;

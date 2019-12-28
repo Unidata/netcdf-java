@@ -165,6 +165,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   @Override
   public NetcdfFile getNetcdfFile() {
+    // TODO can group really be null? Variable says no.
     return group == null ? null : group.getNetcdfFile();
   }
 
@@ -273,7 +274,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
    *
    * @return the enhancements applied to this variable.
    */
-  @Nonnull
   public Set<Enhance> getEnhanceMode() {
     if (!(orgVar instanceof VariableDS)) {
       return Collections.unmodifiableSet(enhanceMode);
@@ -316,7 +316,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return false;
     }
   }
-
 
   /**
    * A VariableDS usually wraps another Variable.
@@ -688,7 +687,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return scaleMissingUnsignedProxy.getScaledOffsetType();
   }
 
-  @Nonnull
   @Override
   public DataType getUnsignedConversionType() {
     return scaleMissingUnsignedProxy.getUnsignedConversionType();

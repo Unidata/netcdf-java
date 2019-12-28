@@ -72,7 +72,6 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
     return name;
   }
 
-
   @Override
   public DataType getDataType() {
     return dataType;

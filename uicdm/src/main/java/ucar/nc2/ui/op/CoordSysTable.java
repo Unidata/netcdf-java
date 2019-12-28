@@ -495,7 +495,7 @@ public class CoordSysTable extends JPanel {
     return cdu.makeCalendarDate(value).toString();
   }
 
-  private String getCalendarAttribute(VariableEnhanced vds) {
+  private String getCalendarAttribute(Variable vds) {
     Attribute cal = vds.findAttribute("calendar");
     return (cal == null) ? null : cal.getStringValue();
   }
@@ -577,8 +577,8 @@ public class CoordSysTable extends JPanel {
 
   private void setVariables(List<Variable> varList, List<AxisBean> axisList, List<VariableBean> beanList,
       List<CoordinateSystemBean> csList) {
-    for (Variable aVarList : varList) {
-      VariableEnhanced v = (VariableEnhanced) aVarList;
+    for (Variable aVar : varList) {
+      VariableEnhanced v = (VariableEnhanced) aVar;
       if (v instanceof CoordinateAxis)
         axisList.add(new AxisBean((CoordinateAxis) v));
       else
@@ -666,6 +666,7 @@ public class CoordSysTable extends JPanel {
   public class VariableBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
+    Variable v;
     VariableEnhanced ve;
     CoordinateSystemBean coordSysBean;
     String name, desc, units;
@@ -677,8 +678,9 @@ public class CoordSysTable extends JPanel {
 
     // create from a dataset
 
-    public VariableBean(VariableEnhanced v, List<CoordinateSystemBean> csList) {
-      this.ve = v;
+    public VariableBean(VariableEnhanced ve, List<CoordinateSystemBean> csList) {
+      this.v = (Variable) ve;
+      this.ve = ve;
 
       name = v.getFullName();
       desc = v.getDescription();
@@ -702,8 +704,8 @@ public class CoordSysTable extends JPanel {
       shape = lens.toString();
 
       // sort by largest size first
-      if (!v.getCoordinateSystems().isEmpty()) {
-        List<CoordinateSystem> css = new ArrayList<>(v.getCoordinateSystems());
+      if (!ve.getCoordinateSystems().isEmpty()) {
+        List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
         css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
         CoordinateSystem cs = css.get(0);
         for (CoordinateSystemBean csBean : csList)
@@ -734,7 +736,7 @@ public class CoordSysTable extends JPanel {
 
     @Nullable
     public String getAbbrev() {
-      return ve.attributes().findAttValueIgnoreCase(CDM.ABBREV, null);
+      return v.attributes().findAttValueIgnoreCase(CDM.ABBREV, null);
     }
 
     public String getCoordSys() {
@@ -748,7 +750,7 @@ public class CoordSysTable extends JPanel {
     public String getCoverage() {
       if (coordSysBean == null)
         return "";
-      boolean complete = coordSysBean.coordSys.isComplete(ve);
+      boolean complete = coordSysBean.coordSys.isComplete(v);
       return complete ? coordSysBean.getCoverage() : "Incomplete " + coordSysBean.getCoverage();
     }
 

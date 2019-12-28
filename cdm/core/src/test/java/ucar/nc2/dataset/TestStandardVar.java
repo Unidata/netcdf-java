@@ -160,10 +160,9 @@ public class TestStandardVar {
 
     assert (null != (t1 = dsRead.findVariable("t1")));
     assert t1 instanceof VariableEnhanced;
-    VariableEnhanced dsVar = (VariableEnhanced) t1;
-    assert (dsVar.getDataType() == DataType.DOUBLE);
+    assert (t1.getDataType() == DataType.DOUBLE);
 
-    A = dsVar.read();
+    A = t1.read();
     ima = A.getIndex();
     shape = A.getShape();
 

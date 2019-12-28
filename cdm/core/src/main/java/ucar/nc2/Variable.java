@@ -38,7 +38,7 @@ import java.nio.channels.WritableByteChannel;
  * @see ucar.ma2.Array
  * @see ucar.ma2.DataType
  */
-public class Variable extends CDMNode implements VariableIF, ProxyReader, AttributeContainer {
+public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, AttributeContainer {
   /**
    * Globally permit or prohibit caching. For use during testing and debugging.
    * <p>
@@ -1226,7 +1226,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Attributes
 
-  @Override
   public AttributeContainer attributes() {
     return attributes;
   }

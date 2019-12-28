@@ -198,8 +198,8 @@ public class NetcdfDatasetInfo implements Closeable {
         Element gridElem = new Element("grid");
         rootElem.addContent(gridElem);
 
-        gridElem.setAttribute("name", ve.getFullName());
-        gridElem.setAttribute("decl", getDecl(ve));
+        gridElem.setAttribute("name", var.getFullName());
+        gridElem.setAttribute("decl", getDecl(var));
         if (ve.getUnitsString() != null) {
           gridElem.setAttribute(CDM.UNITS, ve.getUnitsString());
           gridElem.setAttribute("udunits", isUdunits(ve.getUnitsString()));
@@ -218,8 +218,8 @@ public class NetcdfDatasetInfo implements Closeable {
         Element elem = new Element("variable");
         rootElem.addContent(elem);
 
-        elem.setAttribute("name", ve.getFullName());
-        elem.setAttribute("decl", getDecl(ve));
+        elem.setAttribute("name", var.getFullName());
+        elem.setAttribute("decl", getDecl(var));
         if (ve.getUnitsString() != null) {
           elem.setAttribute(CDM.UNITS, ve.getUnitsString());
           elem.setAttribute("udunits", isUdunits(ve.getUnitsString()));
@@ -250,7 +250,7 @@ public class NetcdfDatasetInfo implements Closeable {
     return doc;
   }
 
-  private String getDecl(VariableEnhanced ve) {
+  private String getDecl(Variable ve) {
     Formatter sb = new Formatter();
     sb.format("%s ", ve.getDataType().toString());
     ve.getNameAndDimensions(sb, true, true);

@@ -32,12 +32,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-/**
- * A Tree View of the groups and variables inside a NetcdfFile.
- *
- *
- * @author caron
- */
+/** A Tree View of the groups and variables inside a NetcdfFile. */
 public class DatasetTreeView extends JPanel {
 
   private static final org.slf4j.Logger logger =
@@ -48,10 +43,7 @@ public class DatasetTreeView extends JPanel {
   private DatasetTreeModel model;
   private NetcdfFile currentDataset;
 
-  /**
-   * Constructor.
-   */
-  public DatasetTreeView() {
+  DatasetTreeView() {
     // the catalog tree
     tree = new JTree() {
       public JToolTip createToolTip() {
@@ -67,13 +59,9 @@ public class DatasetTreeView extends JPanel {
         if (selRow != -1) {
           TreeNode node = (TreeNode) tree.getLastSelectedPathComponent();
           if (node instanceof VariableNode) {
-            VariableIF v = ((VariableNode) node).var;
+            Variable v = ((VariableNode) node).var;
             firePropertyChangeEvent(new PropertyChangeEvent(this, "Selection", null, v));
           }
-        }
-
-        if ((selRow != -1) && (e.getClickCount() == 2)) {
-          // acceptSelected();
         }
       }
     });
@@ -88,16 +76,10 @@ public class DatasetTreeView extends JPanel {
     add(new JScrollPane(tree), BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   private void firePropertyChangeEvent(PropertyChangeEvent event) {
     firePropertyChange(event.getPropertyName(), event.getOldValue(), event.getNewValue());
   }
 
-  /**
-   *
-   */
   public void setFile(NetcdfFile ds) {
     if (ds != currentDataset) {
       currentDataset = ds;
@@ -106,9 +88,6 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
-  /**
-   * &
-   */
   public void clear() {
     currentDataset = null;
     model = null;
@@ -120,16 +99,16 @@ public class DatasetTreeView extends JPanel {
    *
    * @param v select this Variable, must be already in the tree.
    */
-  public void setSelected(VariableIF v) {
+  public void setSelected(Variable v) {
     if (v == null) {
       return;
     }
 
     // construct chain of variables
-    List<VariableIF> vchain = new ArrayList<>();
+    List<Variable> vchain = new ArrayList<>();
     vchain.add(v);
 
-    VariableIF vp = v;
+    Variable vp = v;
     while (vp.isMemberOfStructure()) {
       vp = vp.getParentStructure();
       vchain.add(0, vp); // reverse
@@ -191,29 +170,16 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private class GroupNode implements TreeNode {
     private Group group;
     private GroupNode parent;
     private List<Object> children;
 
-    /**
-     *
-     */
     GroupNode(GroupNode parent, Group group) {
       this.parent = parent;
       this.group = group;
-
-      logger.debug("new={}", group.getFullName());
-
-      // firePropertyChangeEvent(new PropertyChangeEvent(this, "TreeNode", null, group));
     }
 
-    /**
-     *
-     */
     public Enumeration children() {
       if (children == null) {
         makeChildren();
@@ -244,21 +210,17 @@ public class DatasetTreeView extends JPanel {
         children.add(new DimensionNode(this, (Dimension) dim));
       }
 
-      List vars = group.getVariables();
-      for (Object var : vars) {
-        children.add(new VariableNode(this, (VariableIF) var));
+      for (Variable var : group.getVariables()) {
+        children.add(new VariableNode(this, var));
       }
 
       List groups = group.getGroups();
       for (Object group1 : groups) {
         children.add(new GroupNode(this, (Group) group1));
       }
-
-      logger.debug("children={}", group.getFullName());
     }
 
     public int getIndex(TreeNode child) {
-      logger.debug("getIndex={} {}", group.getFullName(), child);
       return children.indexOf(child);
     }
 
@@ -280,7 +242,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     @Nullable
-    public GroupNode findNestedGroup(Group g) {
+    GroupNode findNestedGroup(Group g) {
       if (children == null) {
         makeChildren();
       }
@@ -296,7 +258,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     @Nullable
-    public VariableNode findNestedVariable(VariableIF v) {
+    public VariableNode findNestedVariable(Variable v) {
       if (children == null) {
         makeChildren();
       }
@@ -318,29 +280,18 @@ public class DatasetTreeView extends JPanel {
 
   }
 
-  /**
-   *
-   */
   private static class VariableNode implements TreeNode {
-    private VariableIF var;
+    private Variable var;
     private TreeNode parent;
     private List<Object> children;
 
-    /**
-     *
-     */
-    VariableNode(TreeNode parent, VariableIF var) {
+    VariableNode(TreeNode parent, Variable var) {
       this.parent = parent;
       this.var = var;
 
       logger.debug("new var={}", var.getShortName());
-
-      // firePropertyChangeEvent(new PropertyChangeEvent(this, "TreeNode", null, var));
     }
 
-    /**
-     *
-     */
     public Enumeration children() {
       if (children == null) {
         makeChildren();
@@ -368,16 +319,13 @@ public class DatasetTreeView extends JPanel {
 
       if (var instanceof Structure) {
         Structure s = (Structure) var;
-        List vars = s.getVariables();
-        for (Object var1 : vars) {
-          children.add(new VariableNode(this, (VariableIF) var1));
+        for (Variable var1 : s.getVariables()) {
+          children.add(new VariableNode(this, var1));
         }
       }
-      logger.debug("children={}", var.getShortName());
     }
 
     public int getIndex(TreeNode child) {
-      logger.debug("getIndex={} {}", var.getShortName(), child);
       return children.indexOf(child);
     }
 
@@ -394,7 +342,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     @Nullable
-    public VariableNode findNestedVariable(VariableIF v) {
+    public VariableNode findNestedVariable(Variable v) {
       if (children == null) {
         makeChildren();
       }
@@ -412,16 +360,10 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private static class DimensionNode implements TreeNode {
     private Dimension d;
     private TreeNode parent;
 
-    /**
-     *
-     */
     DimensionNode(TreeNode parent, Dimension d) {
       this.parent = parent;
       this.d = d;
@@ -473,17 +415,11 @@ public class DatasetTreeView extends JPanel {
     ImageIcon structIcon, dimIcon;
     String tooltipText;
 
-    /**
-     *
-     */
     public MyTreeCellRenderer() {
       structIcon = BAMutil.getIcon("Structure", true);
       dimIcon = BAMutil.getIcon("nj22/Dimension", true);
     }
 
-    /**
-     *
-     */
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
         boolean leaf, int row, boolean hasFocus) {
 
@@ -515,6 +451,5 @@ public class DatasetTreeView extends JPanel {
     public String getToolTipText() {
       return tooltipText;
     }
-
   }
 }
