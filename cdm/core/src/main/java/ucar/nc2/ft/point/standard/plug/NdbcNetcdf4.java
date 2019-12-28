@@ -26,17 +26,17 @@ public class NdbcNetcdf4 extends TableConfigurerImpl {
     if (ds.getFileTypeId().equals("HDF5"))
       return false;
 
-    String dataProvider = ds.findAttValueIgnoreCase(null, "data_provider", null);
+    String dataProvider = ds.getRootGroup().findAttValueIgnoreCase("data_provider", null);
     if (dataProvider == null)
-      dataProvider = ds.findAttValueIgnoreCase(null, "institution", "");
+      dataProvider = ds.getRootGroup().findAttValueIgnoreCase("institution", "");
     if (!dataProvider.contains("National Data Buoy Center"))
       return false;
 
-    if (null == ds.findAttValueIgnoreCase(null, "station_name", null))
+    if (null == ds.getRootGroup().findAttValueIgnoreCase("station_name", null))
       return false;
-    if (null == ds.findAttValueIgnoreCase(null, "nominal_latitude", null))
+    if (null == ds.getRootGroup().findAttValueIgnoreCase("nominal_latitude", null))
       return false;
-    return null != ds.findAttValueIgnoreCase(null, "nominal_longitude", null);
+    return null != ds.getRootGroup().findAttValueIgnoreCase("nominal_longitude", null);
 
   }
 
@@ -77,12 +77,12 @@ public class NdbcNetcdf4 extends TableConfigurerImpl {
     nt.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
     nt.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);
 
-    nt.stnId = ds.findAttValueIgnoreCase(null, "station_name", null);
-    nt.stnWmoId = ds.findAttValueIgnoreCase(null, "wmo_id", null);
+    nt.stnId = ds.getRootGroup().findAttValueIgnoreCase("station_name", null);
+    nt.stnWmoId = ds.getRootGroup().findAttValueIgnoreCase("wmo_id", null);
 
-    nt.stnDesc = ds.findAttValueIgnoreCase(null, "description", null);
+    nt.stnDesc = ds.getRootGroup().findAttValueIgnoreCase("description", null);
     if (nt.stnDesc == null)
-      nt.stnDesc = ds.findAttValueIgnoreCase(null, "comment", null);
+      nt.stnDesc = ds.getRootGroup().findAttValueIgnoreCase("comment", null);
 
     TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
     obs.structName = "record";

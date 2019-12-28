@@ -1237,6 +1237,15 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return attributes.findAttribute(name);
   }
 
+  /**
+   * Find a String-valued Attribute by name (ignore case), return the String value of the Attribute.
+   *
+   * @return the attribute value, or defaultValue if not found
+   */
+  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
   /** @deprecated Use attributes() */
   @Deprecated
   public java.util.List<Attribute> getAttributes() {
@@ -1247,12 +1256,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   @Deprecated
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
   /** @deprecated Use attributes() */

@@ -41,7 +41,7 @@ public abstract class Evaluator {
   public static Variable findVariableWithAttributeAndDimension(NetcdfDataset ds, String att_name, String att_value,
       Dimension outer, Formatter errlog) {
     for (Variable v : ds.getVariables()) {
-      String attValue = ds.findAttValueIgnoreCase(v, att_name, null);
+      String attValue = v.findAttValueIgnoreCase(att_name, null);
       if ((attValue != null) && attValue.equalsIgnoreCase(att_value)) {
         if (v.getRank() > 0 && v.getDimension(0).equals(outer))
           return v;
@@ -111,7 +111,7 @@ public abstract class Evaluator {
    */
   public static Variable findVariableWithAttributeValue(NetcdfDataset ds, String attName, String attValue) {
     for (Variable v : ds.getVariables()) {
-      String haveValue = ds.findAttValueIgnoreCase(v, attName, null);
+      String haveValue = v.findAttValueIgnoreCase(attName, null);
       if ((haveValue != null) && haveValue.equals(attValue))
         return v;
     }
@@ -218,7 +218,7 @@ public abstract class Evaluator {
    */
   public static String getLiteral(NetcdfDataset ds, String key, Formatter errlog) {
     if (key.startsWith(":")) {
-      String val = ds.findAttValueIgnoreCase(null, key.substring(1), null);
+      String val = ds.getRootGroup().findAttValueIgnoreCase(key.substring(1), null);
       if ((val == null) && (errlog != null))
         errlog.format(" Cant find global attribute %s%n", key);
       return val;

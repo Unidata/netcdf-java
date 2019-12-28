@@ -46,7 +46,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
+    String conv = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
     if (conv == null)
       return false;
 

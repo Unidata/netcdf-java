@@ -84,7 +84,7 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
 
     psVar = ds.findVariable(psName);
     bVar = ds.findVariable(bName);
-    units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
+    units = psVar.findAttValueIgnoreCase(CDM.UNITS, "none");
     if (p0Name != null) {
       p0Var = ds.findVariable(p0Name);
       apUnits = units; // Won't need transformation for AP = A * P0 * 1 (in this case)

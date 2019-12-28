@@ -27,7 +27,7 @@ public class CdmDirect extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     boolean ok = false;
-    String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
+    String conv = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
     if (conv == null)
       return false;
     if (conv.equals(Convention))

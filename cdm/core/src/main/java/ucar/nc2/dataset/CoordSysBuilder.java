@@ -333,10 +333,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   public static CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // look for the Conventions attribute
-    String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
+    String convName = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
     if (convName == null)
-      convName = ds.findAttValueIgnoreCase(null, "Convention", null); // common mistake Convention instead of
-                                                                      // Conventions
+      convName = ds.getRootGroup().findAttValueIgnoreCase("Convention", null); // common mistake Convention instead of
+    // Conventions
     if (convName != null)
       convName = convName.trim();
 

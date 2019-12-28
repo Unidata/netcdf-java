@@ -44,7 +44,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   // TypedDatasetFactoryIF
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convStr = ncd.findAttValueIgnoreCase(null, "Conventions", null);
+    String convStr = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
     if ((null != convStr) && convStr.startsWith("CF/Radial"))
       return this;
     return null;
@@ -279,7 +279,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String datetime = ds.findAttValueIgnoreCase(null, "time_coverage_start", null);
+    String datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
     if (datetime != null) {
       startDate = CalendarDate.parseISOformat(null, datetime).toDate();
     } else {
@@ -288,7 +288,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String datetime = ds.findAttValueIgnoreCase(null, "time_coverage_end", null);
+    String datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
     if (datetime != null) {
       endDate = CalendarDate.parseISOformat(null, datetime).toDate();
     } else {

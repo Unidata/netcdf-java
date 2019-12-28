@@ -752,7 +752,7 @@ public class NetcdfFiles {
    * @param v the cdm node
    * @return full name
    */
-  protected static String makeFullNameSectionSpec(CDMNode v) {
+  static String makeFullNameSectionSpec(CDMNode v) {
     return makeFullName(v, reservedSectionSpec);
   }
 
@@ -764,7 +764,7 @@ public class NetcdfFiles {
    * @param reservedChars the set of characters to escape
    * @return full name
    */
-  protected static String makeFullName(CDMNode node, String reservedChars) {
+  private static String makeFullName(CDMNode node, String reservedChars) {
     Group parent = node.getParentGroup();
     if (((parent == null) || parent.isRoot()) && !node.isMemberOfStructure()) // common case?
       return EscapeStrings.backslashEscape(node.getShortName(), reservedChars);

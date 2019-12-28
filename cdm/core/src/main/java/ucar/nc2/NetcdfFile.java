@@ -927,35 +927,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * Get all of the variables in the file, in all groups.
-   * This is part of "version 3 compatibility" interface.
-   * Alternatively, use groups.
-   *
-   * @return List of type Variable.
-   */
-  public java.util.List<Variable> getVariables() {
-    return variables;
-  }
-
-  /*
-   * Retrieve the Variable with the specified (full) name, which is not a member of a Structure.
-   *
-   * @param name full name, starting from root group.
-   * 
-   * @return the Variable, or null if not found
-   *
-   * public Variable findTopVariable(String name) {
-   * if (name == null) return null;
-   * 
-   * for (Variable v : variables) {
-   * if (name.equals(v.getName()))
-   * return v;
-   * }
-   * return null;
-   * }
-   */
-
-  /**
    * Find a Group, with the specified (full) name.
    * An embedded "/" is interpreted as separating group names.
    *
@@ -970,7 +941,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     Group g = rootGroup;
     StringTokenizer stoke = new StringTokenizer(fullName, "/");
     while (stoke.hasMoreTokens()) {
-      String groupName = NetcdfFile.makeNameUnescaped(stoke.nextToken());
+      String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
       g = g.findGroup(groupName);
       if (g == null)
         return null;
@@ -981,7 +952,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Find a Variable by short name, in the given group.
    * 
-   * @param g A groyp in this file. Null for root group.
+   * @param g A group in this file. Null for root group.
    * @param shortName short name of the Variable.
    * @return Variable if found, else null.
    */
@@ -997,7 +968,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * It may possibly be nested in multiple groups and/or structures.
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/variable.
-   * If the name actually has a ".", you must escape it (call NetcdfFile.escapeName(varname))
+   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
    * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
@@ -1019,7 +990,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       vars = fullNameEscaped.substring(pos + 1);
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
-        String token = NetcdfFile.makeNameUnescaped(stoke.nextToken());
+        String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         g = g.findGroup(token);
         if (g == null)
           return null;
@@ -1031,7 +1002,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (snames.isEmpty())
       return null;
 
-    String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0));
+    String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
     Variable v = g.findVariable(varShortName);
     if (v == null)
       return null;
@@ -1040,7 +1011,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     while (memberCount < snames.size()) {
       if (!(v instanceof Structure))
         return null;
-      String name = NetcdfFile.makeNameUnescaped(snames.get(memberCount++));
+      String name = NetcdfFiles.makeNameUnescaped(snames.get(memberCount++));
       v = ((Structure) v).findVariable(name);
       if (v == null)
         return null;
@@ -1048,6 +1019,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return v;
   }
 
+  /**
+   * Look in the given Group and in its nested Groups for a Variable with a String valued Attribute with the given name
+   * and value.
+   * 
+   * @param g start with this Group, null for the root Group.
+   * @param attName look for an Attribuite with this name.
+   * @param attValue look for an Attribuite with this value.
+   * @return the first Variable that matches, or null if none match.
+   */
   @Nullable
   public Variable findVariableByAttribute(Group g, String attName, String attValue) {
     if (g == null)
@@ -1063,21 +1043,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         return v;
     }
     return null;
-  }
-
-  /**
-   * Get the shared Dimensions used in this file.
-   * This is part of "version 3 compatibility" interface.
-   * <p>
-   * If the dimensions are in a group, the dimension name will have the
-   * group name, in order to disambiguate the dimensions. This means that
-   * a Variable's dimensions will not match Dimensions in this list.
-   * Therefore it is better to get the shared Dimensions directly from the Groups.
-   *
-   * @return List of type Dimension.
-   */
-  public List<Dimension> getDimensions() {
-    return immutable ? dimensions : new ArrayList<>(dimensions);
   }
 
   /**
@@ -1106,7 +1071,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
-        String token = NetcdfFile.makeNameUnescaped(stoke.nextToken());
+        String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         group = group.findGroup(token);
 
         if (group == null) {
@@ -1140,6 +1105,32 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         return d;
     }
     return null;
+  }
+
+  /**
+   * Get the shared Dimensions used in this file.
+   * This is part of "version 3 compatibility" interface.
+   * <p>
+   * If the dimensions are in a group, the dimension name will have the
+   * group name, in order to disambiguate the dimensions. This means that
+   * a Variable's dimensions will not match Dimensions in this list.
+   * Therefore it is better to get the shared Dimensions directly from the Groups.
+   *
+   * @return List of type Dimension.
+   */
+  public List<Dimension> getDimensions() {
+    return immutable ? dimensions : new ArrayList<>(dimensions);
+  }
+
+  /**
+   * Get all of the variables in the file, in all groups.
+   * This is part of "version 3 compatibility" interface.
+   * Alternatively, use groups.
+   *
+   * @return List of type Variable.
+   */
+  public java.util.List<Variable> getVariables() {
+    return variables;
   }
 
   /**
@@ -1189,7 +1180,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/group or group/variable.
    * An embedded "@" is interpreted as variable@attribute
-   * If the name actually has a ".", you must escape it (call NetcdfFile.escapeName(varname))
+   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
    * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
@@ -1219,7 +1210,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       String groups = path.substring(0, pos);
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
-        String token = NetcdfFile.makeNameUnescaped(stoke.nextToken());
+        String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         g = g.findGroup(token);
         if (g == null)
           return null;
@@ -1233,7 +1224,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (snames.isEmpty())
       return null;
 
-    String varShortName = NetcdfFile.makeNameUnescaped(snames.get(0));
+    String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
     Variable v = g.findVariable(varShortName);
     if (v == null)
       return null;
@@ -1242,7 +1233,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     while (memberCount < snames.size()) {
       if (!(v instanceof Structure))
         return null;
-      String name = NetcdfFile.makeNameUnescaped(snames.get(memberCount++));
+      String name = NetcdfFiles.makeNameUnescaped(snames.get(memberCount++));
       v = ((Structure) v).findVariable(name);
       if (v == null)
         return null;
@@ -1256,27 +1247,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Attribute name (ignore case), return the Value of the Attribute.
    * If not found return defaultValue
    *
-   * @param v the variable or null for global attribute
+   * @param v the variable or null to look in the root group.
    * @param attName the (full) name of the attribute, case insensitive
    * @param defaultValue return this if attribute not found
    * @return the attribute value, or defaultValue if not found
+   * @deprecated use getRootGroup() or Variable findAttValueIgnoreCase().
    */
+  @Deprecated
   public String findAttValueIgnoreCase(Variable v, String attName, String defaultValue) {
-    String attValue = null;
-    Attribute att;
-
     if (v == null)
-      att = rootGroup.findAttributeIgnoreCase(attName);
+      return rootGroup.attributes().findAttValueIgnoreCase(attName, defaultValue);
     else
-      att = v.findAttributeIgnoreCase(attName);
-
-    if ((att != null) && att.isString())
-      attValue = att.getStringValue();
-
-    if (null == attValue) // not found, use default
-      attValue = defaultValue;
-
-    return attValue;
+      return v.attributes().findAttValueIgnoreCase(attName, defaultValue);
   }
 
   /** @deprecated use Group.attributes().findAttributeDouble */
@@ -1440,21 +1422,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @return true if file was extended.
    * @throws IOException if error
+   * @deprecated do not use
    */
+  @Deprecated
   public boolean syncExtend() throws IOException {
     // unlocked = false;
     return (iosp != null) && iosp.syncExtend();
   }
 
-  /*
-   * Check if file has changed, and reread metadata if needed.
-   * All previous object references (variables, dimensions, etc) may become invalid - you must re-obtain.
-   * DO NOT USE THIS ROUTINE YET - NOT FULLY TESTED
-   *
-   * @return true if file was changed.
-   * 
-   * @deprecated
-   */
+  /** @deprecated */
   @Deprecated
   @Override
   public long getLastModified() {
@@ -1562,9 +1538,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
 
     if (id == null)
-      setId(findAttValueIgnoreCase(null, "_Id", null));
+      setId(rootGroup.findAttValueIgnoreCase("_Id", null));
     if (title == null)
-      setTitle(findAttValueIgnoreCase(null, "_Title", null));
+      setTitle(rootGroup.findAttValueIgnoreCase("_Title", null));
   }
 
   /**
@@ -1617,9 +1593,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
 
     if (id == null)
-      setId(findAttValueIgnoreCase(null, "_Id", null));
+      setId(rootGroup.findAttValueIgnoreCase("_Id", null));
     if (title == null)
-      setTitle(findAttValueIgnoreCase(null, "_Title", null));
+      setTitle(rootGroup.findAttValueIgnoreCase("_Title", null));
 
     finish();
   }
@@ -2055,7 +2031,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         gattributes.add(oldAtt);
       } else {
         String newName = makeFullNameWithString(g, oldAtt.getShortName()); // LOOK fishy
-        gattributes.add(new Attribute(newName, oldAtt));
+        gattributes.add(oldAtt.toBuilder().setName(newName).build());
       }
     }
 
@@ -2088,7 +2064,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   // this is for reading non-member variables
   // section is null for full read
 
-  /*
+  /**
    * Do not call this directly, use Variable.read() !!
    * Ranges must be filled (no nulls)
    */
@@ -2549,8 +2525,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   private String cacheName;
   protected ucar.nc2.util.cache.FileCacheIF cache;
 
-  // "global view" is derived from the group information.
-  // LOOK: Apparently includes all nested groups. Where is this used?
+  // "global view" over all groups.
   protected List<Variable> variables;
   protected List<Dimension> dimensions;
   protected List<Attribute> gattributes;
