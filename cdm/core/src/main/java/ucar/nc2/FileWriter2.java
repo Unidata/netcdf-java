@@ -117,7 +117,7 @@ public class FileWriter2 {
     varMap.put(oldVar, newVar);
     varList.add(oldVar);
 
-    for (Attribute orgAtt : oldVar.getAttributes())
+    for (Attribute orgAtt : oldVar.attributes())
       writer.addVariableAttribute(newVar, convertAttribute(orgAtt));
 
     return newVar;
@@ -257,7 +257,7 @@ public class FileWriter2 {
       varList.add(oldVar);
 
       // attributes
-      for (Attribute orgAtt : oldVar.getAttributes()) {
+      for (Attribute orgAtt : oldVar.attributes()) {
         writer.addVariableAttribute(v, convertAttribute(orgAtt));
       }
     }
@@ -267,7 +267,7 @@ public class FileWriter2 {
     Group newGroup = writer.addGroup(newParent, oldGroup.getShortName());
 
     // attributes
-    for (Attribute att : oldGroup.getAttributes()) {
+    for (Attribute att : oldGroup.attributes()) {
       writer.addGroupAttribute(newGroup, att); // atts are immutable
       if (debug)
         System.out.println("add gatt= " + att);
@@ -320,7 +320,7 @@ public class FileWriter2 {
         System.out.println("add var= " + v);
 
       // attributes
-      for (Attribute att : oldVar.getAttributes())
+      for (Attribute att : oldVar.attributes())
         writer.addVariableAttribute(v, att); // atts are immutable
     }
 

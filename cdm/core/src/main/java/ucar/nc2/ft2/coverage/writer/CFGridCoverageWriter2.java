@@ -272,7 +272,7 @@ public class CFGridCoverageWriter2 {
       // scalar coordinate transform variable - container for transform info
       Variable ctv = writer.addVariable(null, ct.getName(), DataType.INT, "");
 
-      for (Attribute att : ct.getAttributes())
+      for (Attribute att : ct.attributes())
         ctv.addAttribute(att);
     }
   }

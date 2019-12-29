@@ -124,8 +124,9 @@ public class MemoryCounterAgentTest {
 
     for (Variable v : ncfile.getVariables()) {
       measureSize(v.getFullName(), v, Group.class, false);
-      for (Attribute att : v.getAttributes())
+      for (Attribute att : v.attributes()) {
         measureSize(att.getShortName(), att, null, false);
+      }
     }
 
     for (Attribute att : ncfile.getGlobalAttributes())

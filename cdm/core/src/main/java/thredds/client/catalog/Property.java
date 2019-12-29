@@ -67,7 +67,7 @@ public class Property {
 
   public static List<Property> convertToProperties(AttributeContainer from) {
     List<Property> result = new ArrayList<>();
-    for (Attribute p : from.getAttributes())
+    for (Attribute p : from)
       result.add(new Property(p.getShortName(), p.getStringValue()));
     return result;
   }

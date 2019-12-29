@@ -2455,7 +2455,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     g4.dimHash = new HashMap<>();
 
     // attributes
-    for (Attribute att : g4.g.getAttributes())
+    for (Attribute att : g4.g.attributes())
       writeAttribute(g4.grpid, Nc4prototypes.NC_GLOBAL, att, null);
 
     // dimensions
@@ -2583,7 +2583,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       createCompoundMemberAtts(g4.grpid, varid, (Structure) v);
     }
 
-    for (Attribute att : v.getAttributes())
+    for (Attribute att : v.attributes())
       writeAttribute(g4.grpid, varid, att, v);
 
   }
@@ -2714,7 +2714,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // count size of attribute values
     int sizeAtts = 0;
     for (Variable m : s.getVariables()) {
-      for (Attribute att : m.getAttributes()) {
+      for (Attribute att : m.attributes()) {
         int elemSize;
         if (att.isString()) {
           String val = att.getStringValue();
@@ -2745,7 +2745,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ByteBuffer bb = ByteBuffer.allocate(sizeAtts);
     bb.order(ByteOrder.nativeOrder());
     for (Variable m : s.getVariables()) {
-      for (Attribute att : m.getAttributes()) {
+      for (Attribute att : m.attributes()) {
         // add the fields to the member_atts_t
         String memberName = m.getShortName() + ":" + att.getShortName();
         int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getDataType()); // LOOK override

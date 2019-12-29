@@ -43,8 +43,9 @@ public class Rewrite {
   void createGroup(Group newParent, Group oldGroup) throws IOException, InvalidRangeException {
     Group newGroup = ncOut.addGroup(newParent, oldGroup.getShortName());
 
-    for (Attribute att : oldGroup.getAttributes())
+    for (Attribute att : oldGroup.attributes()) {
       newGroup.addAttribute(att);
+    }
 
     for (Dimension dim : oldGroup.getDimensions()) {
       ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), dim.isUnlimited(), dim.isVariableLength());
@@ -76,13 +77,15 @@ public class Rewrite {
         nv = ncOut.addVariable(null, v.getShortName(), v.getDataType(), v.getDimensionsString());
       }
 
-      for (Attribute att : v.getAttributes())
+      for (Attribute att : v.attributes()) {
         ncOut.addVariableAttribute(nv, att);
+      }
     }
 
     // recurse
-    for (Group g : oldGroup.getGroups())
+    for (Group g : oldGroup.getGroups()) {
       createGroup(newGroup, g);
+    }
   }
 
   void transferData(Group oldGroup) throws IOException, InvalidRangeException {

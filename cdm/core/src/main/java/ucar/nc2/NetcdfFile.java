@@ -1053,7 +1053,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (g == null)
       g = getRootGroup();
     for (Variable v : g.getVariables()) {
-      for (Attribute att : v.getAttributes())
+      for (Attribute att : v.attributes())
         if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return v;
     }
@@ -1279,7 +1279,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return attValue;
   }
 
-  /** @deprecated use Group.findAttributeDouble */
+  /** @deprecated use Group.attributes().findAttributeDouble */
   @Deprecated
   public double readAttributeDouble(Variable v, String attName, double defValue) {
     Attribute att;
@@ -1297,7 +1297,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       return att.getNumericValue().doubleValue();
   }
 
-  /** @deprecated use Group.findAttributeInteger */
+  /** @deprecated use Group.attributes().findAttributeInteger */
   @Deprecated
   public int readAttributeInteger(Variable v, String attName, int defValue) {
     Attribute att;
@@ -2050,7 +2050,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     variables.addAll(g.variables);
 
     // LOOK should group atts be promoted to global atts?
-    for (Attribute oldAtt : g.getAttributes()) {
+    for (Attribute oldAtt : g.attributes()) {
       if (g == rootGroup) {
         gattributes.add(oldAtt);
       } else {
