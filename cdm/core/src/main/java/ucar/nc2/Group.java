@@ -28,7 +28,6 @@ import java.util.Collections;
  * The Groups in a Dataset form a hierarchical tree, like directories on a disk.
  * A Group has a name and optionally a set of Attributes.
  * There is always at least one Group in a dataset, the root Group, whose name is the empty string.
- * <p>
  * Immutable if setImmutable() was called.
  *
  * TODO Group will be immutable in 6.
