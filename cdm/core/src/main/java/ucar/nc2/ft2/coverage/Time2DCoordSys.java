@@ -6,7 +6,7 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -179,7 +179,7 @@ public class Time2DCoordSys {
   private CoverageCoordAxis makeScalarTimeCoord(double val, CoverageCoordAxis1D runAxisSubset) {
     String name = "constantForecastTime";
     String desc = "forecast time";
-    AttributeContainerHelper atts = new AttributeContainerHelper(name);
+    AttributeContainerMutable atts = new AttributeContainerMutable(name);
     atts.addAttribute(new Attribute(CDM.UNITS, runAxisSubset.getUnits()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, desc));
@@ -196,7 +196,7 @@ public class Time2DCoordSys {
   private CoverageCoordAxis makeCFTimeCoord(CoverageCoordAxis1D runAxisSubset, CoverageCoordAxis1D timeAxisSubset) {
     String name = timeAxisSubset.getName() + "Forecast";
     String desc = "forecast time";
-    AttributeContainerHelper atts = new AttributeContainerHelper(name);
+    AttributeContainerMutable atts = new AttributeContainerMutable(name);
     atts.addAttribute(new Attribute(CDM.UNITS, runAxisSubset.getUnits()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, desc));

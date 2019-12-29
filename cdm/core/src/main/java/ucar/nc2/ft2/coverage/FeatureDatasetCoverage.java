@@ -39,7 +39,7 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
 
   public FeatureDatasetCoverage(String location, Closeable closer, CoverageCollection covCollection) {
     this.location = location;
-    this.gatts = new AttributeContainerHelper(location, covCollection.getGlobalAttributes());
+    this.gatts = new AttributeContainerMutable(location, covCollection.getGlobalAttributes()).toImmutable();
     this.closer = closer;
     this.covCollections = Lists.newArrayList(covCollection);
     this.featureType = covCollection.getCoverageType();

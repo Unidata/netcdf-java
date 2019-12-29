@@ -258,7 +258,7 @@ public class NcMLGWriter {
     varElem.setAttribute("type", dt.toString());
 
     // attributes
-    for (Attribute att : var.getAttributes()) {
+    for (Attribute att : var.attributes()) {
       varElem.addContent(makeAttribute(att, "attribute"));
     }
 
@@ -378,7 +378,7 @@ public class NcMLGWriter {
       varElem.setAttribute("type", dt.toString());
 
     // attributes
-    for (Attribute att : var.getAttributes()) {
+    for (Attribute att : var.attributes()) {
       varElem.addContent(makeAttribute(att, "attribute"));
     }
 

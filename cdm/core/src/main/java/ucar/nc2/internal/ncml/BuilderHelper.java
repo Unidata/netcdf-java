@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Group.Builder;
@@ -105,8 +106,8 @@ class BuilderHelper {
     }
   }
 
-  static void transferAttributes(AttributeContainer src, AttributeContainer target) {
-    for (Attribute a : src.getAttributes()) {
+  static void transferAttributes(AttributeContainer src, AttributeContainerMutable target) {
+    for (Attribute a : src) {
       if (null == target.findAttribute(a.getShortName()))
         target.addAttribute(a);
     }

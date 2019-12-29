@@ -706,7 +706,7 @@ public class HdfEos {
 
   private void fixAttributes(Group g) {
     for (Variable v : g.getVariables()) {
-      for (Attribute a : v.getAttributes()) {
+      for (Attribute a : v.attributes()) {
         if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS")) {
           a.setShortName(CDM.UNITS);
         }

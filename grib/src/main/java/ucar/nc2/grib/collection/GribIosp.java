@@ -172,7 +172,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
     }
 
-    for (Attribute att : gribCollection.getGlobalAttributes().getAttributes()) {
+    for (Attribute att : gribCollection.getGlobalAttributes()) {
       rootGroup.addAttribute(att);
     }
   }
@@ -222,7 +222,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
     }
 
-    for (Attribute att : gribCollection.getGlobalAttributes().getAttributes()) {
+    for (Attribute att : gribCollection.getGlobalAttributes()) {
       ncfile.addAttribute(null, att);
     }
   }

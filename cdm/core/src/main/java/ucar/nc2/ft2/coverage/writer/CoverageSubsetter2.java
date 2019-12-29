@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ft2.coverage.writer;
 
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.ft2.coverage.*;
 import java.util.*;
 
@@ -78,7 +78,7 @@ public class CoverageSubsetter2 {
 
     // put it all together
     return ucar.nc2.util.Optional.of(new CoverageCollection(org.getName(), org.getCoverageType(),
-        new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()), null, null, null, coordSys,
+        new AttributeContainerMutable(org.getName(), org.getGlobalAttributes()), null, null, null, coordSys,
         coordTransforms, coordAxes, coverages, org.getReader())); // use org.reader -> subset always in coord space !
   }
 

@@ -6,7 +6,6 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -24,11 +23,11 @@ import java.util.Formatter;
 public class CoverageTransform implements AttributeContainer {
 
   private final String name;
-  private final AttributeContainerHelper attributes;
+  private final AttributeContainer attributes;
   private final boolean isHoriz;
   private ProjectionImpl projection; // lazy instantiation
 
-  public CoverageTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
+  public CoverageTransform(String name, AttributeContainer attributes, boolean isHoriz) {
     this.name = name;
     this.attributes = attributes;
     this.isHoriz = isHoriz;
@@ -61,7 +60,7 @@ public class CoverageTransform implements AttributeContainer {
     f.format(" isHoriz: %s%n", isHoriz());
     if (projection != null)
       f.format(" projection: %s%n", projection);
-    for (Attribute att : attributes.getAttributes())
+    for (Attribute att : attributes)
       f.format("%s     %s%n", indent, att);
     f.format("%n");
 
@@ -69,34 +68,44 @@ public class CoverageTransform implements AttributeContainer {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  // AttributeHelper
+  // Attribute
 
-  @Override
+  public AttributeContainer attributes() {
+    return attributes;
+  }
+
+  /** @deprecated Use attributes() */
+  @Deprecated
   public java.util.List<Attribute> getAttributes() {
     return attributes.getAttributes();
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public double findAttributeDouble(String attName, double defaultValue) {
     return attributes.findAttributeDouble(attName, defaultValue);
   }
 
-  @Override
+  /** @deprecated Use attributes() */
+  @Deprecated
   public int findAttributeInteger(String attName, int defaultValue) {
     return attributes.findAttributeInteger(attName, defaultValue);
   }
