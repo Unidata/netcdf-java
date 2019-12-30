@@ -401,11 +401,6 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     public AttributeContainer attributes() {
       return new AttributeContainerMutable(name, attributes).toImmutable();
     }
-
-    @Override
-    public AttributeContainer attributes() {
-      return new AttributeContainerMutable(name, attributes).toImmutable();
-    }
   }
 
 
