@@ -32,6 +32,7 @@ import ucar.nc2.util.rc.RC;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
+import ucar.unidata.io.s3.S3RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -266,6 +267,27 @@ public class NetcdfFiles {
     return StringUtil2.replace(uriString, '\\', "/");
   }
 
+  static private ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf,
+      String uriString, int buffer_size) throws IOException {
+    int pos = uriString.lastIndexOf('/');
+
+    if (pos < 0)
+      pos = uriString.lastIndexOf(':');
+
+    String tmp = System.getProperty("java.io.tmpdir");
+    String filename = uriString.substring(pos + 1);
+    String sep = File.separator;
+
+    uriString = DiskCache.getFileStandardPolicy(tmp + sep + filename).getPath();
+    copy(raf, new FileOutputStream(uriString), 1 << 20);
+    try {
+      String uncompressedFileName = makeUncompressed(uriString);
+      return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
+    } catch (Exception e) {
+      throw new IOException();
+    }
+  }
+
   private static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
     String uriString = location.trim();
 
@@ -288,7 +310,10 @@ public class NetcdfFiles {
       uriString = "http" + uriString.substring(5);
       byte[] contents = IO.readURLContentsToByteArray(uriString); // read all into memory
       raf = new InMemoryRandomAccessFile(uriString, contents);
-
+    } else if (uriString.startsWith("s3:")) {
+      raf = new S3RandomAccessFile(uriString);
+      if (isCompressed(uriString))
+        raf = downloadAndDecompress(raf, uriString, buffer_size);
     } else {
       // get rid of crappy microsnot \ replace with happy /
       uriString = StringUtil2.replace(uriString, '\\', "/");
@@ -325,26 +350,38 @@ public class NetcdfFiles {
     return raf;
   }
 
-  private static String makeUncompressed(String filename) throws IOException {
-    // see if its a compressed file
+  static private boolean isCompressed(String filename) {
     int pos = filename.lastIndexOf('.');
     if (pos < 0)
-      return null;
+      return false;
 
     String suffix = filename.substring(pos + 1);
-    String uncompressedFilename = filename.substring(0, pos);
 
     if (!suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip")
         && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
+      return false;
+    else
+      return true;
+  }
+
+  static private String makeUncompressed(String filename) throws Exception {
+    // see if its a compressed file
+    if (!isCompressed(filename))
       return null;
+
+    int pos = filename.lastIndexOf('.');
+    String suffix = filename.substring(pos + 1);
+    String uncompressedFilename = filename.substring(0, pos);
 
     // coverity claims resource leak, but attempts to fix break. so beware
     // see if already decompressed, check in cache as needed
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
+      FileInputStream stream = null;
       FileLock lock = null;
-      try (FileInputStream stream = new FileInputStream(uncompressedFile)) {
+      try {
+        stream = new FileInputStream(uncompressedFile);
         // obtain the lock
         while (true) { // loop waiting for the lock
           try {
@@ -352,7 +389,6 @@ public class NetcdfFiles {
             break;
 
           } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
-            log.warn("OverlappingFileLockException", oe);
             try {
               Thread.sleep(100); // msecs
             } catch (InterruptedException e1) {
@@ -366,8 +402,10 @@ public class NetcdfFiles {
         return uncompressedFile.getPath();
 
       } finally {
-        if (lock != null && lock.isValid())
+        if (lock != null)
           lock.release();
+        if (stream != null)
+          stream.close();
       }
     }
 
@@ -388,7 +426,6 @@ public class NetcdfFiles {
           break;
 
         } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
-          log.warn("OverlappingFileLockException2", oe);
           try {
             Thread.sleep(100); // msecs
           } catch (InterruptedException e1) {
@@ -432,7 +469,11 @@ public class NetcdfFiles {
             log.info("ungzipped {} to {}", filename, uncompressedFile);
         }
       } catch (Exception e) {
-        log.warn("Failed to uncompress file {}", filename, e);
+
+        // appears we have to close before we can delete LOOK
+        // fout.close();
+        // fout = null;
+
         // dont leave bad files around
         if (uncompressedFile.exists()) {
           if (!uncompressedFile.delete())
@@ -456,6 +497,23 @@ public class NetcdfFiles {
       int bytesRead = in.read(buffer);
       if (bytesRead == -1)
         break;
+      out.write(buffer, 0, bytesRead);
+    }
+  }
+
+  static private void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {
+    long length = in.length();
+    byte[] buffer = new byte[bufferSize];
+    int bytesRead = 0;
+    while (length > 0) {
+      if (length > bufferSize) {
+        in.readFully(buffer, 0, bufferSize);
+        bytesRead = bufferSize;
+      } else if (length <= bufferSize) {
+        in.readFully(buffer, 0, (int) length);
+        bytesRead = (int) length;
+      }
+      length -= bufferSize;
       out.write(buffer, 0, bytesRead);
     }
   }
