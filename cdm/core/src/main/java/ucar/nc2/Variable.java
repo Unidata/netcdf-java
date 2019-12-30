@@ -1226,11 +1226,13 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Attributes
 
+  @Override
   public AttributeContainer attributes() {
     return attributes;
   }
 
   /** Find the attribute by name, return null if not exist */
+  @Override
   @Nullable
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
@@ -1241,6 +1243,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    *
    * @return the attribute value, or defaultValue if not found
    */
+  @Override
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }

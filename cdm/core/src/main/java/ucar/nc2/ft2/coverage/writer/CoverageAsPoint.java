@@ -106,8 +106,9 @@ public class CoverageAsPoint {
 
       List<VariableSimpleIF> dataVars = new ArrayList<>();
       for (VarData vd : varData) {
-        VariableSimpleIF simple = VariableSimpleBuilder.makeScalar(vd.cov.getName(), vd.cov.getDescription(),
-            vd.cov.getUnitsString(), vd.cov.getDataType()).build();
+        VariableSimpleIF simple = VariableSimpleBuilder
+            .makeScalar(vd.cov.getName(), vd.cov.getDescription(), vd.cov.getUnitsString(), vd.cov.getDataType())
+            .build();
         dataVars.add(simple);
       }
       this.dataVariables = dataVars;
