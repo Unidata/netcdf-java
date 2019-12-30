@@ -145,6 +145,10 @@ libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.11"
 
 libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.9"
 
+// s3 RandomAccessFile
+
+libraries["aws-s3"] = "software.amazon.awssdk:s3:2.10.41"
+
 //// command line parser
 libraries["jcommander"] = "com.beust:jcommander:1.78"
 
@@ -173,8 +177,8 @@ libraries["jj2000"] = "edu.ucar:jj2000:5.4"
 // The easy HTTP client for Groovy (and Java). Used in buildSrc.
 libraries["http-builder-ng-okhttp"] = "io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3"
 
-//////////////////////////////// TDS ///////////////////////////////////////////
-//
+////////////////////////////// legacy gradle module /////////////////////////////////////////
+
 libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s3:1.11.236") {
     // exclude jackson deps so that they can be overridden
     // with 2.7.x deps to address security issue. See
@@ -192,6 +196,8 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
 libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.10.0"
 libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
 libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.10.0"
+
+////////////////////////////// end /////////////////////////////////////////
 
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
