@@ -284,3 +284,9 @@ When reading a remote file over http using byte-range requests, the default buff
 Starting with v5.2.0, users can set the maximum buffer size in bytes using the Java System Property `ucar.unidata.io.http.maxHTTPBufferSize` (default is 10 MB).
 
 ## netCDF-Java API Changes (5.3.x)
+
+### Opening remote files on AWS S3
+
+Files stored as single objects on AWS S3 can not be accessed using NetcdfFile.
+This is done through the use of `S3RandomAccessFile` and byte range-requests, so downloading the entire object may not be needed.
+For more information, see [dataset_urls.html#aws-s3].
