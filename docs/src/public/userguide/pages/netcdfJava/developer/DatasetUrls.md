@@ -30,6 +30,7 @@ When using a file location that has an embedded `:` char, eg `C:/share/data/mode
 
 ### Remote Files
 
+#### HTTP
 `NetcdfFile` can open HTTP remote files, [served over HTTP](read_over_http.html
 ), for example:
 
@@ -41,6 +42,32 @@ Performance will be strongly affected by file format and the data access pattern
 To disambiguate HTTP remote files from OPeNDAP or other URLS, you can use `httpserver:` instead of `http:`, e.g.:
 
 * `httpserver://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc`
+
+#### AWS S3
+`NetcdfFile` can open files stored as a single object on S3 using the AWS RESTful API with byte range-requests, similar to HTTP.
+To disambiguate S3 files from other URLs, you mush use the following URI pattern:
+
+* `s3://bucket/key`
+
+In addition to knowing the bucket and key, you will need to specify the region in which the bucket you are trying to access is located, and potentially credentials.
+However, these are not specified through the S3 URI.
+The netCDF-Java `S3RandomAccessFile` class uses the Amazon S3 SDK library, which provides a few ways to specify both.
+We use the default [Default Region Provider Chain](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-region-selection.html){:target="_blank"} and the [Default Credential Provider Chain](https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html){:target="_blank"}
+As a last resort, we try the AnonymousCredentialsProvider, which requires no configuration on your part.
+
+As an example, if we would like to open a GOES 16 data file from the [NOAA Big Data project's](https://www.noaa.gov/big-data-project){:target="_blank"} [AWS S3 bucket](https://registry.opendata.aws/noaa-goes/) in the US East 1 region (open access), we could do the following:
+
+~~~java
+String region = Region.US_EAST_1.toString();
+String bucket = "noaa-goes16";
+String key = "ABI-L1b-RadC/2019/363/21/OR_ABI-L1b-RadC-M6C16_G16_s20193632101189_e20193632103574_c20193632104070.nc";
+String s3uri = "s3://" + bucket + "/" + key;
+
+System.setProperty("aws.region", region);
+try (NetcdfFile ncfile = NetcdfFiles.open(s3uri)) {
+  ...
+}
+~~~
 
 ### File Types
 
