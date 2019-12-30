@@ -39,7 +39,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     // somewhat duplicated in Nexrad2RadialAdapter - so if changing something here, also
     // look in cdm-core module's Nexrad2RadialAdapter.isNEXRAD2Format
     if (format != null && (format.equals("ARCHIVE2") || format.startsWith("AR2V"))) {
-      if (Integer.parseInt(format.substring(4)) > 8)
+      if (format.startsWith("AR2V") && Integer.parseInt(format.substring(4)) > 8)
         logger.warn("Trying to handle unknown but valid-looking format: " + format);
       return true;
     }
