@@ -20,10 +20,10 @@ public class TestH5iospNewProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "/formats/hdf5/MOP02J-20170807-L2V18.0.3.he5";
-    // showOrg(filename);
+    String filename = TestDir.cdmLocalTestDataDir + "/hdf5/test_atomic_types.nc";
+    showOrg(filename);
     showNew(filename);
-    // assert compareWithBuilder(filename);
+    assert compareWithBuilder(filename);
   }
 
   private boolean compareWithBuilder(String filename) throws IOException {

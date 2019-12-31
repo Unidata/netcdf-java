@@ -398,7 +398,7 @@ public class CoordinateAxis extends VariableDS {
     Attribute cal = attributes.findAttribute(CF.CALENDAR);
     String s = (cal == null) ? null : cal.getStringValue();
     if (s == null) { // default for CF and COARDS
-      Attribute convention = (ncd == null) ? null : ncd.findGlobalAttribute(CDM.CONVENTIONS);
+      Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
       if (convention != null && convention.isString()) {
         String hasName = convention.getStringValue();
         int version = CF1Convention.getVersion(hasName);
