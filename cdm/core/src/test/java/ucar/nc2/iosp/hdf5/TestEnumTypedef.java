@@ -2,7 +2,6 @@
 package ucar.nc2.iosp.hdf5;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.nc2.EnumTypedef;
