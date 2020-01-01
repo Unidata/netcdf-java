@@ -120,7 +120,7 @@ public class H5objects {
         isTypedef = true;
 
       } else if (warnings) { // we dont know what it is
-        log.debug("WARNING Unknown DataObjectFacade = {}", this);
+        log.warn("WARNING Unknown DataObjectFacade = {}", this);
         // return;
       }
 
@@ -1396,7 +1396,7 @@ public class H5objects {
         base.read(objectName);
 
       } else if (warnings) {
-        log.debug(" WARNING not dealing with type= {}", type);
+        log.warn(" WARNING not dealing with type= {}", type);
       }
     }
 
