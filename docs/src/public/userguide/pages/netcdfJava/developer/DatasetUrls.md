@@ -1,6 +1,6 @@
 ---
 title: Dataset URLs
-last_updated: 2018-10-10
+last_updated: 2018-12-31
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: dataset_urls.html
@@ -44,7 +44,10 @@ To disambiguate HTTP remote files from OPeNDAP or other URLS, you can use `https
 * `httpserver://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc`
 
 #### AWS S3
-`NetcdfFile` can open files stored as a single object on S3 using the AWS RESTful API with byte range-requests, similar to HTTP.
+`NetcdfFiles` and `NetcdfDatasets` can open files stored as a single object on S3 using the AWS RESTful API with byte range-requests, similar to HTTP.
+This new functionality is not available in the now deprecated `NetcdfFile` and `NetcdfDataset` open methods.
+You will also need to include the `cdm-s3` artifact in your build.
+This is currently not part of `netcdfAll.jar`.
 To disambiguate S3 files from other URLs, you mush use the following URI pattern:
 
 * `s3://bucket/key`
