@@ -22,6 +22,8 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 /**
  * @author James McClain, based on work by John Caron and Donald Denbof
@@ -49,8 +51,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * The maximum number of connections allowed in the S3 http connection pool. Each built S3 HTTP client has it's own
-   * private
-   * connection pool.
+   * private connection pool.
    */
   private static int maxConnections =
       Integer.parseInt(System.getProperty("ucar.unidata.io.s3.httpMaxConnections", "128"));
@@ -70,7 +71,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     this(url, defaultS3BufferSize, defaultMaxCacheSize);
   }
 
-  public S3RandomAccessFile(String url, int bufferSize, int maxCacheSize) throws IOException {
+  private S3RandomAccessFile(String url, int bufferSize, int maxCacheSize) throws IOException {
     super(bufferSize);
     file = null;
     location = url;
@@ -104,7 +105,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     objectHeadResponse = client.headObject(HeadObjectRequest.builder().bucket(bucket).key(key).build());
   }
 
-  public void close() throws IOException {
+  public void close() {
     // close the client
     if (client != null) {
       client.close();
@@ -122,7 +123,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    */
   private void ensure(Long key) throws IOException {
     if (!cache.containsKey(key)) {
-      long position = key.longValue() * cacheBlockSize;
+      long position = key * cacheBlockSize;
       int toEOF = (int) (length() - position);
       // if size to EOF less than cacheBlockSize, just read to EOF
       int bytes = toEOF < cacheBlockSize ? toEOF : cacheBlockSize;
@@ -136,8 +137,6 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       while (cache.size() > maxCacheBlocks) {
         cache.remove(index.pop());
       }
-
-      return;
     }
   }
 
@@ -173,11 +172,11 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     }
 
     // Service a request that touches only one cache block
-    Long key = new Long(start);
+    Long key = start;
     ensure(key);
 
-    byte[] src = (byte[]) cache.get(key);
-    int srcPos = (int) (pos - (key.longValue() * cacheBlockSize));
+    byte[] src = cache.get(key);
+    int srcPos = (int) (pos - (key * cacheBlockSize));
     int toEOB = src.length - srcPos;
     int length = toEOB < len ? toEOB : len;
     System.arraycopy(src, srcPos, buff, offset, length);
@@ -192,7 +191,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     ResponseBytes<GetObjectResponse> objectPortion = client.getObjectAsBytes(rangeObjectRequest);
 
-    int bytes = 0;
+    int bytes;
     int totalBytes = 0;
     // read response into buff
     try (InputStream objectData = objectPortion.asInputStream()) {
@@ -215,12 +214,32 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   @Override
-  public long length() throws IOException {
+  public long length() {
     return objectHeadResponse.contentLength();
   }
 
   @Override
   public long getLastModified() {
     return objectHeadResponse.lastModified().toEpochMilli();
+  }
+
+  /**
+   * Hook into service provider interface to RandomAccessFileProvider. Register in
+   * META-INF.services.ucar.unidata.io.spi.RandomAccessFileProvider
+   */
+  public static class Provider implements RandomAccessFileProvider {
+
+    @Override
+    public boolean isOwnerOf(String location) {
+      return location.startsWith("s3:");
+    }
+
+    /**
+     * Open a location that this Provider is the owner of.
+     */
+    @Override
+    public RandomAccessFile open(String location) throws IOException {
+      return new S3RandomAccessFile(location);
+    }
   }
 }
