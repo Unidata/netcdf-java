@@ -212,7 +212,6 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
   private class Nids2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     ArrayList<Nids2Sweep> sweeps;
-    String name;
 
     private Nids2Variable(NetcdfDataset nds, Variable v0) {
       super(v0.getShortName(), v0);

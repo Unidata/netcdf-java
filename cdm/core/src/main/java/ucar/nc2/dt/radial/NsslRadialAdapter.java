@@ -248,7 +248,6 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   private class Netcdf2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     ArrayList<Netcdf2Sweep> sweeps;
     int nsweeps;
-    String name;
 
     private Netcdf2Variable(NetcdfDataset nds, Variable v0) {
       super(v0.getShortName(), v0);
