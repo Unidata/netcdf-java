@@ -18,13 +18,16 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 @Category(NeedsExternalResource.class)
 public class TestS3Read {
 
   @Test
-  public void testFullS3Read() throws IOException {
+  public void testFullS3ReadNetcdfFile() throws IOException {
     String region = Region.US_EAST_1.toString();
     String bucket = "noaa-goes16";
     String key =
@@ -56,7 +59,7 @@ public class TestS3Read {
   }
 
   @Test
-  public void testPartialS3Read() throws IOException, InvalidRangeException {
+  public void testPartialS3NetcdfFile() throws IOException, InvalidRangeException {
     String region = Region.US_EAST_1.toString();
     String bucket = "noaa-goes16";
     String key =
@@ -76,6 +79,29 @@ public class TestS3Read {
 
       // check shape of array is the same as the shape of the section
       assertThat(array.getShape()).isEqualTo(section.getShape());
+    } finally {
+      System.clearProperty("aws.region");
+    }
+  }
+
+  @Test
+  public void testFullS3ReadNetcdfDatasets() throws IOException {
+    String region = Region.US_EAST_1.toString();
+    String bucket = "noaa-goes16";
+    String key =
+        "ABI-L1b-RadC/2019/363/21/OR_ABI-L1b-RadC-M6C16_G16_s20193632101189_e20193632103574_c20193632104070.nc";
+    String s3uri = "s3://" + bucket + "/" + key;
+
+    System.setProperty("aws.region", region);
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(s3uri)) {
+      String partialConventionValue = "CF-1.";
+      // read conventions string
+      String conventions = ds.getRootGroup().attributes().findAttValueIgnoreCase(CF.CONVENTIONS, "");
+
+      // check that the file was read the CF convention builder
+      assertThat(conventions).startsWith(partialConventionValue);
+      assertThat(ds.getConventionUsed()).startsWith(partialConventionValue);
+
     } finally {
       System.clearProperty("aws.region");
     }
