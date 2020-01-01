@@ -128,20 +128,18 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   protected void addRadialVariable(NetcdfDataset nds, Variable var) {
     RadialVariable rsvar = null;
-    String vName = var.getShortName();
     int rnk = var.getRank();
 
     if (rnk == 2) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
-      rsvar = makeRadialVariable(nds, v, var);
+      rsvar = makeRadialVariable(nds, var);
     }
 
     if (rsvar != null)
       dataVariables.add(rsvar);
   }
 
-  protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-    return new Dorade2Variable(nds, v, v0);
+  protected RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0) {
+    return new Dorade2Variable(nds, v0);
   }
 
   protected void setStartDate() {
@@ -213,10 +211,9 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
       return (Sweep) sweeps.get(nsw);
     }
 
-    private Dorade2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.attributes());
+    private Dorade2Variable(NetcdfDataset nds, Variable v0) {
+      super(v0.getShortName(), v0);
       sweeps = new ArrayList<>();
-      name = v.getShortName();
 
       int[] shape = v0.getShape();
       int count = v0.getRank() - 1;
@@ -234,7 +231,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
     public float[] readAllData() throws java.io.IOException {
       Array allData;
-      Sweep spn = (Sweep) sweeps.get(0);
+      Sweep spn = sweeps.get(0);
       Variable v = spn.getsweepVar();
 
       try {

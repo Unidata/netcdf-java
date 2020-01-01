@@ -225,12 +225,10 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
 
     if (rnk == 3) {
       if (!isHighResolution(nds)) {
-        VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
-        rsvar = makeRadialVariable(nds, v, var);
+        rsvar = makeRadialVariable(nds, var);
       } else {
         if (!vName.endsWith("_HI")) {
-          VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
-          rsvar = makeRadialVariable(nds, v, var);
+          rsvar = makeRadialVariable(nds, var);
         }
       }
     }
@@ -239,11 +237,9 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
       dataVariables.add(rsvar);
   }
 
-
-
-  protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
+  protected RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0) {
     // this function is null in level 2
-    return new LevelII2Variable(nds, v, v0);
+    return new LevelII2Variable(nds, v0);
   }
 
   public String getInfo() {
@@ -258,12 +254,11 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
     ArrayList<LevelII2Sweep> sweeps;
     String name;
 
-    private LevelII2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.attributes());
+    private LevelII2Variable(NetcdfDataset nds, Variable v0) {
+      super(v0.getShortName(), v0);
 
       nsweepsHR = 0;
       sweeps = new ArrayList<>();
-      name = v.getShortName();
       if (isHighResolution(nds)) {
         String vname = v0.getFullNameEscaped();
         Variable vehr = nds.findVariable(vname + "_HI");
@@ -293,8 +288,6 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
       nsweeps = shape[count];
       for (int i = nsweepsHR; i < (nsweeps + nsweepsHR); i++)
         sweeps.add(new LevelII2Sweep(v0, i, nrays, ngates));
-
-
     }
 
     public String toString() {

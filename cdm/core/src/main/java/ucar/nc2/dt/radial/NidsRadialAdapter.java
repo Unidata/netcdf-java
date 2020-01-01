@@ -10,7 +10,6 @@ import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.ma2.*;
 import java.io.IOException;
@@ -184,12 +183,10 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
   protected void addRadialVariable(NetcdfDataset nds, Variable var) {
     RadialVariable rsvar = null;
-    String vName = var.getShortName();
     int rnk = var.getRank();
 
     if (!var.getShortName().endsWith("RAW") && rnk == 2) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
-      rsvar = new Nids2Variable(nds, v, var);
+      rsvar = new Nids2Variable(nds, var);
     }
 
     if (rsvar != null)
@@ -204,25 +201,22 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
     }
   }
 
-  protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
+  protected RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0) {
     // this function is null in level 2
     return null;
   }
 
   public String getInfo() {
-    String sbuff = "Nids2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
-    return sbuff;
+    return "Nids2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
   }
-
 
   private class Nids2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     ArrayList<Nids2Sweep> sweeps;
     String name;
 
-    private Nids2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.attributes());
+    private Nids2Variable(NetcdfDataset nds, Variable v0) {
+      super(v0.getShortName(), v0);
       sweeps = new ArrayList<>();
-      name = v.getShortName();
 
       int[] shape = v0.getShape();
       int count = v0.getRank() - 1;
@@ -241,7 +235,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
     public float[] readAllData() throws IOException {
       Array allData;
-      Sweep spn = (Sweep) sweeps.get(0);
+      Sweep spn = sweeps.get(0);
       Variable v = spn.getsweepVar();
       try {
         allData = v.read();
