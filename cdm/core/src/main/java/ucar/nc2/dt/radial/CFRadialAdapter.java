@@ -306,14 +306,12 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   protected void addRadialVariable(NetcdfDataset nds, Variable var) {
 
     RadialVariable rsvar = null;
-    String vName = var.getShortName();
     int tIdx = var.findDimensionIndex("time");
     int rIdx = var.findDimensionIndex("range");
     int ptsIdx = var.findDimensionIndex("n_points");
 
     if (((tIdx == 0) && (rIdx == 1)) || (ptsIdx == 0)) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.attributes());
-      rsvar = makeRadialVariable(nds, v, var);
+      rsvar = makeRadialVariable(nds, var);
     }
 
     if (rsvar != null) {
@@ -321,14 +319,13 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
     }
   }
 
-  protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
+  protected RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0) {
     // this function is null in level 2
     return new CFRadial2Variable(nds, v0);
   }
 
   public String getInfo() {
-    String sbuff = "CFRadial2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
-    return sbuff;
+    return "CFRadial2Dataset\n" + super.getDetailInfo() + "\n\n" + parseInfo;
   }
 
   private class CFRadial2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
@@ -338,7 +335,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
     private boolean flattened;
 
     private CFRadial2Variable(NetcdfDataset nds, Variable v0) {
-      super(v0.getShortName(), v0.attributes());
+      super(v0.getShortName(), v0);
 
       sweeps = new ArrayList<>();
       name = v0.getShortName();

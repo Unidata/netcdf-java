@@ -58,7 +58,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
   protected abstract void addRadialVariable(NetcdfDataset ds, Variable var);
 
-  protected abstract RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0);
+  protected abstract RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0);
 
   protected abstract void setTimeUnits() throws Exception; // reminder for subclasses to set this
 
@@ -327,23 +327,23 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     private int[] shape;
     private String name;
     private String desp;
+    private String units;
     private AttributeContainer attributes;
 
-    public MyRadialVariableAdapter(String vName, AttributeContainer atts) {
+    public MyRadialVariableAdapter(String vName, Variable v) {
       rank = 1;
       shape = new int[] {1};
       name = vName;
       desp = "A radial variable holding a list of radial sweeps";
-      attributes = atts;
+      units = v.getUnitsString();
+      attributes = v.attributes();
     }
 
     public String toString() {
       return name;
     }
 
-    /**
-     * Sort by name
-     */
+    /** Sort by name */
     public int compareTo(VariableSimpleIF o) {
       return getFullName().compareTo(o.getFullName());
     }
@@ -373,7 +373,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     }
 
     public String getUnitsString() {
-      return "N/A";
+      return units;
     }
 
     public int getRank() {
