@@ -192,16 +192,9 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     }
   }
 
-  private class Dorade2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {// extends
-                                                                                                              // VariableSimpleAdapter
-                                                                                                              // {
+  private class Dorade2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     ArrayList<Dorade2Sweep> sweeps;
-    String name;
-
     float azi;
-    // float rt;
-    // RadialDatasetSweep.Sweep sweep;
-
 
     public int getNumSweeps() {
       return 1;
@@ -251,7 +244,6 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
       int nrays, ngates;
       double meanElevation = Double.NaN;
       Variable sweepVar;
-      // int[] shape, origi;
 
       Dorade2Sweep(Variable v, int sweepno, int rays, int gates) {
         this.sweepVar = v;

@@ -218,7 +218,6 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     int nsweeps;
 
     ArrayList<UF2Sweep> sweeps;
-    String name;
 
     private UF2Variable(NetcdfDataset nds, Variable v0) {
       super(v0.getShortName(), v0);

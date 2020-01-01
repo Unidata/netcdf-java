@@ -331,14 +331,12 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   private class CFRadial2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     ArrayList<CFRadial2Sweep> sweeps;
 
-    String name;
     private boolean flattened;
 
     private CFRadial2Variable(NetcdfDataset nds, Variable v0) {
       super(v0.getShortName(), v0);
 
       sweeps = new ArrayList<>();
-      name = v0.getShortName();
 
       int[] shape = v0.getShape();
       int ngates = shape[v0.getRank() - 1];
@@ -367,7 +365,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
       return sweeps.get(sweepNo);
     }
 
-    public int getNumRadials() {
+    int getNumRadials() {
       return azimuth.length;
     }
 

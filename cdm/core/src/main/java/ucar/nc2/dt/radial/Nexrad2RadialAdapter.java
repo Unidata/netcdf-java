@@ -252,7 +252,6 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
     int nsweeps;
     int nsweepsHR;
     ArrayList<LevelII2Sweep> sweeps;
-    String name;
 
     private LevelII2Variable(NetcdfDataset nds, Variable v0) {
       super(v0.getShortName(), v0);

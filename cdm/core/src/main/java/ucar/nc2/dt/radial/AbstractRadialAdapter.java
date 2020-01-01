@@ -322,11 +322,10 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
   ///////////////////////////////////////////////////////////////////////
   public static class MyRadialVariableAdapter implements VariableSimpleIF {
-
     private int rank;
     private int[] shape;
-    private String name;
-    private String desp;
+    protected String name;
+    private String desc;
     private String units;
     private AttributeContainer attributes;
 
@@ -334,7 +333,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
       rank = 1;
       shape = new int[] {1};
       name = vName;
-      desp = "A radial variable holding a list of radial sweeps";
+      desc = v.getDescription();
       units = v.getUnitsString();
       attributes = v.attributes();
     }
@@ -343,7 +342,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
       return name;
     }
 
-    /** Sort by name */
+    /** Sort by full name */
     public int compareTo(VariableSimpleIF o) {
       return getFullName().compareTo(o.getFullName());
     }
@@ -365,11 +364,11 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     }
 
     public String getDescription() {
-      return this.desp;
+      return this.desc;
     }
 
     public String getInfo() {
-      return this.desp;
+      return this.desc;
     }
 
     public String getUnitsString() {
