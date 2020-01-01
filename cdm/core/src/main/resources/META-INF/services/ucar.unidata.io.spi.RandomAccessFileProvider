@@ -1,0 +1,2 @@
+ucar.unidata.io.http.HTTPRandomAccessFile$Provider
+ucar.unidata.io.InMemoryRandomAccessFile$Provider

@@ -1,22 +1,26 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.unidata.io.http;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.Urlencoded;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.spi.RandomAccessFileProvider;
+import ucar.unidata.util.Urlencoded;
 
 /**
  * Gives access to files over HTTP, using "Accept-Ranges" HTTP header to do random access.
@@ -239,5 +243,28 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   @Override
   public long getLastModified() {
     return 0;
+  }
+
+  /**
+   * Hook into service provider interface for RandomAccessFileProvider.
+   */
+  public static class Provider implements RandomAccessFileProvider {
+
+    private static final List<String> possibleSchemes = Arrays.asList("http", "https", "nodods", "httpserver");
+
+    @Override
+    public boolean isOwnerOf(String location) {
+      String scheme = location.split(":")[0].toLowerCase();
+      return possibleSchemes.contains(scheme);
+    }
+
+    @Override
+    public RandomAccessFile open(String location) throws IOException {
+      String scheme = location.split(":")[0];
+      if (!scheme.equalsIgnoreCase("https") && !scheme.equalsIgnoreCase("http")) {
+        location = location.replace(scheme, "http");
+      }
+      return new HTTPRandomAccessFile(location);
+    }
   }
 }

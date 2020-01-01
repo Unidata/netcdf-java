@@ -1,4 +1,8 @@
-/* Copyright Unidata */
+/*
+ * Copyright (c) 1998-2019 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2;
 
 import java.io.BufferedInputStream;
@@ -14,6 +18,7 @@ import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.zip.GZIPInputStream;
@@ -29,10 +34,9 @@ import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.rc.RC;
-import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
-import ucar.unidata.io.s3.S3RandomAccessFile;
+import ucar.unidata.io.spi.RandomAccessFileProvider;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -45,20 +49,22 @@ import ucar.unidata.util.StringUtil2;
 public class NetcdfFiles {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();
+  private static final List<RandomAccessFileProvider> registeredRandomAccessFileProviders = new ArrayList<>();
   private static final int default_buffersize = 8092;
   private static final StringLocker stringLocker = new StringLocker();
-
+  private static final List<String> possibleCompressedSuffixes = Arrays.asList("Z", "zip", "gzip", "gz", "bz2");
   private static boolean loadWarnings = false;
   private static boolean userLoads;
 
-  // IOSPs can be loaded by reflection.
-  // Most IOSPs are loaded using the ServiceLoader mechanism. One problem with this is that we no longer
-  // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
-  // making open() slow.
+  // load core service providers
   static {
     // Make sure RC gets loaded
     RC.initialize();
 
+    // IOSPs can be loaded by reflection.
+    // Most IOSPs are loaded using the ServiceLoader mechanism. One problem with this is that we no longer
+    // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
+    // making open() slow.
     // Register iosp's that are part of cdm-core. This ensures that they are tried first.
     try {
       registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospNew");
@@ -79,6 +85,27 @@ public class NetcdfFiles {
         log.info("Cant load class H4iosp", e);
     }
 
+    // register RandomAccessFile providers that are part of cdm-core. This ensures that they are tried first.
+    try {
+      registerRandomAccessFileProvider("ucar.unidata.io.http.HTTPRandomAccessFileProvider");
+    } catch (Throwable e) {
+      if (loadWarnings)
+        log.info("Cant load class HTTPRandomAccessFileProvider", e);
+    }
+
+    try {
+      registerRandomAccessFileProvider("ucar.unidata.io.http.InMemoryRandomAccessFileProvider");
+    } catch (Throwable e) {
+      if (loadWarnings)
+        log.info("Cant load class InMemoryRandomAccessFileProvider", e);
+    }
+
+    // if a user explicitly registers an IOSP or RandomAccessFile implementation via
+    // registerIOProvider or registerRandomAccessFileProvider, this ensures they are tried first,
+    // even before the core implementations.
+    // if false, user registered implementations will be tried after the core implementations.
+    // Implementations loaded by the ServiceLoader mechanism are only tried after core and explicitly
+    // loaded implementations are tried.
     userLoads = true;
   }
 
@@ -127,6 +154,53 @@ public class NetcdfFiles {
       registeredProviders.add(0, spi); // put user stuff first
     else
       registeredProviders.add(spi);
+  }
+
+  /**
+   * Register a RandomAccessFile Provider, using its class string name.
+   *
+   * @param className Class that implements RandomAccessFileProvider.
+   * @throws IllegalAccessException if class is not accessible.
+   * @throws InstantiationException if class doesnt have a no-arg constructor.
+   * @throws ClassNotFoundException if class not found.
+   */
+  public static void registerRandomAccessFileProvider(String className)
+      throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    Class rafClass = NetcdfFile.class.getClassLoader().loadClass(className);
+    registerRandomAccessFileProvider(rafClass);
+  }
+
+  /**
+   * Register a RandomAccessFile Provider. A new instance will be created when one of its files is opened.
+   *
+   * @param rafClass Class that implements RandomAccessFileProvider.
+   * @throws IllegalAccessException if class is not accessible.
+   * @throws InstantiationException if class doesnt have a no-arg constructor.
+   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
+   */
+  public static void registerRandomAccessFileProvider(Class rafClass)
+      throws IllegalAccessException, InstantiationException {
+    registerRandomAccessFileProvider(rafClass, false);
+  }
+
+  /**
+   * Register a RandomAccessFile Provider. A new instance will be created when one of its files is opened.
+   *
+   * @param rafClass Class that implements RandomAccessFileProvider.
+   * @param last true=>insert at the end of the list; otherwise front
+   * @throws IllegalAccessException if class is not accessible.
+   * @throws InstantiationException if class doesnt have a no-arg constructor.
+   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
+   */
+  private static void registerRandomAccessFileProvider(Class rafClass, boolean last)
+      throws IllegalAccessException, InstantiationException {
+    RandomAccessFileProvider rafProvider;
+    rafProvider = (RandomAccessFileProvider) rafClass.newInstance(); // fail fast
+    if (userLoads && !last) {
+      registeredRandomAccessFileProviders.add(0, rafProvider); // put user stuff first
+    } else {
+      registeredRandomAccessFileProviders.add(rafProvider);
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,31 +364,40 @@ public class NetcdfFiles {
 
   private static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
     String uriString = location.trim();
-
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
 
-    ucar.unidata.io.RandomAccessFile raf;
-    if (uriString.startsWith("http:") || uriString.startsWith("https:")) { // open through URL
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+    ucar.unidata.io.RandomAccessFile raf = null;
 
-    } else if (uriString.startsWith("nodods:")) { // deprecated use httpserver
-      uriString = "http" + uriString.substring(6);
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+    for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
+      if (provider.isOwnerOf("location")) {
+        raf = provider.open(location);
+        // might cause issues if the end of a resource location string
+        // cannot be reliably used to determine compression
+        if (looksCompressed(uriString)) {
+          raf = downloadAndDecompress(raf, uriString, buffer_size);
+        }
+        break;
+      }
+    }
 
-    } else if (uriString.startsWith("httpserver:")) { // open through URL
-      uriString = "http" + uriString.substring(10);
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+    if (raf == null) {
+      // look for dynamically loaded RandomAccessFile Providers
+      for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
+        if (provider.isOwnerOf(location)) {
+          raf = provider.open(location);
+          // might cause issues if the end of a resource location string
+          // cannot be used to determine compression
+          if (looksCompressed(uriString)) {
+            raf = downloadAndDecompress(raf, uriString, buffer_size);
+          }
+          break;
+        }
+      }
+    }
 
-    } else if (uriString.startsWith("slurp:")) { // open through URL
-      uriString = "http" + uriString.substring(5);
-      byte[] contents = IO.readURLContentsToByteArray(uriString); // read all into memory
-      raf = new InMemoryRandomAccessFile(uriString, contents);
-    } else if (uriString.startsWith("s3:")) {
-      raf = new S3RandomAccessFile(uriString);
-      if (isCompressed(uriString))
-        raf = downloadAndDecompress(raf, uriString, buffer_size);
-    } else {
+    if (raf == null) {
+      // ok, treat as a local file
       // get rid of crappy microsnot \ replace with happy /
       uriString = StringUtil2.replace(uriString, '\\', "/");
 
@@ -324,50 +407,48 @@ public class NetcdfFiles {
       }
 
       String uncompressedFileName = null;
-      try {
-        stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by one
-        // thread while another is decompressing it
-        uncompressedFileName = makeUncompressed(uriString);
-      } catch (Exception e) {
-        log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
-        // allow to fall through to open the "compressed" file directly - may be a misnamed suffix
-      } finally {
-        stringLocker.release(uriString);
+      if (looksCompressed(uriString)) {
+        try {
+          stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by
+                                           // one
+          // thread while another is decompressing it
+          uncompressedFileName = makeUncompressed(uriString);
+        } catch (Exception e) {
+          log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
+          // allow to fall through to open the "compressed" file directly - may be a misnamed suffix
+        } finally {
+          stringLocker.release(uriString);
+        }
       }
 
       if (uncompressedFileName != null) {
         // open uncompressed file as a RandomAccessFile.
         raf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
-        // raf = new ucar.unidata.io.MMapRandomAccessFile(uncompressedFileName, "r");
-
       } else {
         // normal case - not compressed
         raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, buffer_size);
-        // raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
       }
+    }
+
+    if (raf == null) {
+      throw new IOException("Could not find an appropriate RandomAccessFileProvider to open " + location);
     }
 
     return raf;
   }
 
-  static private boolean isCompressed(String filename) {
+  static private boolean looksCompressed(String filename) {
     int pos = filename.lastIndexOf('.');
-    if (pos < 0)
-      return false;
-
-    String suffix = filename.substring(pos + 1);
-
-    if (!suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip")
-        && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
-      return false;
-    else
-      return true;
+    boolean looksCompressed = false;
+    if (pos > 0) {
+      String suffix = filename.substring(pos + 1).toLowerCase();
+      looksCompressed =
+          possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> suffix.equalsIgnoreCase(compressedSuffix));
+    }
+    return looksCompressed;
   }
 
   static private String makeUncompressed(String filename) throws Exception {
-    // see if its a compressed file
-    if (!isCompressed(filename))
-      return null;
 
     int pos = filename.lastIndexOf('.');
     String suffix = filename.substring(pos + 1);
