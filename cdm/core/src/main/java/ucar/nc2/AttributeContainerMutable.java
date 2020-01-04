@@ -106,7 +106,6 @@ public class AttributeContainerMutable implements AttributeContainer {
         : atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(name)).findFirst().orElse(null);
   }
 
-
   @Override
   public double findAttributeDouble(String attName, double defaultValue) {
     Attribute att = findAttributeIgnoreCase(attName);

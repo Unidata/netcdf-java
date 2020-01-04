@@ -39,13 +39,13 @@ class CSMConvention extends CoardsConventions {
 
   private static final String CONVENTION_NAME = "NCAR-CSM";
 
-  protected CSMConvention(NetcdfDataset.Builder datasetBuilder) {
+  CSMConvention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) {
+  protected void augmentDataset(CancelTask cancelTask) throws IOException {
     for (Variable.Builder vb : rootGroup.vbuilders) {
       VariableDS.Builder vds = (VariableDS.Builder) vb;
       String unit = vds.units;

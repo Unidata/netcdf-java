@@ -1,3 +1,8 @@
+ucar.nc2.internal.dataset.conv.ATDRadarConvention$Factory
+ucar.nc2.internal.dataset.conv.CEDRICRadarConvention$Factory
 ucar.nc2.internal.dataset.conv.CoardsConventions$Factory
 ucar.nc2.internal.dataset.conv.CSMConvention$Factory
+ucar.nc2.internal.dataset.conv.CSMConvention$Factory
+ucar.nc2.internal.dataset.conv.GIEFConvention$Factory
 ucar.nc2.internal.dataset.conv.WRFConvention$Factory
+ucar.nc2.internal.dataset.conv.ZebraConvention$Factory

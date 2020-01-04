@@ -242,7 +242,6 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       return self();
     }
 
-
     public CoordinateTransform build(NetcdfDataset ncd) {
       if (built)
         throw new IllegalStateException("already built");

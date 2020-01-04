@@ -195,7 +195,8 @@ public class CoordSystemFactory {
    * @throws java.io.IOException on io error
    */
   @Nonnull
-  static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder ds, CancelTask cancelTask) throws IOException {
+  public static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder ds, CancelTask cancelTask)
+      throws IOException {
 
     // look for the Conventions attribute
     Group.Builder root = ds.rootGroup;
@@ -280,8 +281,6 @@ public class CoordSystemFactory {
       coordSystemBuilder.addUserAdvice("No CoordSystemBuilder is defined for Conventions= '" + convName + "'\n");
     else {
       coordSystemBuilder.setConventionUsed(coordSysFactory.getConventionName());
-      root.getAttributeContainer()
-          .addAttribute(new Attribute(_Coordinate._CoordSysBuilder, coordSysFactory.getConventionName()));
     }
 
     ds.rootGroup.addAttribute(new Attribute(_Coordinate._CoordSysBuilder, coordSystemBuilder.getClass().getName()));

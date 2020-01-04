@@ -124,14 +124,12 @@ import ucar.unidata.util.StringUtil2;
  * 6: latitude and longitude (including global)
  */
 public class WRFConvention extends CoordSystemBuilder {
-
   private static final String CONVENTION_NAME = "WRF";
 
-  protected WRFConvention(NetcdfDataset.Builder datasetBuilder) {
+  private WRFConvention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
-
 
   private double centerX, centerY;
   private ProjectionCT projCT;

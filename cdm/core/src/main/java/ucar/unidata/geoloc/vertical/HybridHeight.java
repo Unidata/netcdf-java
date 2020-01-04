@@ -123,8 +123,6 @@ public class HybridHeight extends VerticalTransformImpl {
    * @throws ucar.ma2.InvalidRangeException _more_
    */
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
-
-
     Array orogArray = readArray(orogVar, timeIndex);
     if (null == aArray) {
       aArray = aVar.read();
@@ -144,9 +142,7 @@ public class HybridHeight extends VerticalTransformImpl {
 
       double orog = orogArray.getDouble(orogIndex.set(yIndex, xIndex));
       height.set(z, az + bz * orog);
-
     }
-
     return height;
   }
 

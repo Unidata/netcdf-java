@@ -1744,6 +1744,19 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
   protected Variable(Builder<?> builder) {
     super(builder.shortName);
+
+    if (builder.parent == null) {
+      throw new IllegalStateException(String.format("Parent Group must be set for Variable %s", builder.shortName));
+    }
+
+    if (builder.dataType == null) {
+      throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
+    }
+
+    if (builder.shortName == null || builder.shortName.isEmpty()) {
+      throw new IllegalStateException(String.format("Name must be set for Variable"));
+    }
+
     this.group = builder.parent;
     this.ncfile = builder.ncfile;
     this.parentstruct = builder.parentStruct;
@@ -1752,14 +1765,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     this.proxyReader = builder.proxyReader == null ? this : builder.proxyReader;
     this.spiObject = builder.spiObject;
     this.cache = builder.cache;
-
-    if (this.dataType == null) {
-      throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
-    }
-
-    if (this.shortName == null || this.shortName.isEmpty()) {
-      throw new IllegalStateException(String.format("Name must be set for Variable"));
-    }
 
     if (this.dataType.isEnum()) {
       this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
@@ -2098,6 +2103,24 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       addDimensions(orgVar.getDimensions());
       addAttributes(orgVar); // copy
 
+      return self();
+    }
+
+    public T copyFrom(Variable.Builder<?> builder) {
+      addAttributes(builder.attributes); // copy
+      this.autoGen = builder.autoGen;
+      this.cache = builder.cache;
+      setDataType(builder.dataType);
+      addDimensions(builder.dimensions);
+      setDimensionsByName(builder.dimString);
+      this.elementSize = builder.elementSize;
+      setEnumTypeName(builder.getEnumTypeName());
+      setNcfile(builder.ncfile);
+      setGroup(builder.parent);
+      setParentStructure(this.parentStruct);
+      setProxyReader(builder.proxyReader);
+      setName(builder.shortName);
+      setSPobject(builder.spiObject);
       return self();
     }
 
