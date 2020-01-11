@@ -167,8 +167,9 @@ public class CdmrfWriter {
     builder.setName(grid.getName());
     builder.setDataType(NcStream.convertDataType(grid.getDataType()));
 
-    for (Attribute att : grid.getAttributes())
+    for (Attribute att : grid.attributes()) {
       builder.addAtts(NcStream.encodeAtt(att));
+    }
 
     builder.setUnits(grid.getUnitsString());
     builder.setDescription(grid.getDescription());
@@ -211,7 +212,7 @@ public class CdmrfWriter {
     CdmrFeatureProto.CoordTransform.Builder builder = CdmrFeatureProto.CoordTransform.newBuilder();
     builder.setIsHoriz(gct.isHoriz());
     builder.setName(gct.getName());
-    for (Attribute att : gct.getAttributes())
+    for (Attribute att : gct.attributes())
       builder.addParams(NcStream.encodeAtt(att));
     return builder;
   }

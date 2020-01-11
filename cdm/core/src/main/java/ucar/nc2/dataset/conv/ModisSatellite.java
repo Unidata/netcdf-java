@@ -39,12 +39,14 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
-    for (Variable v : ds.getVariables())
+    for (Variable v : ds.getVariables()) {
       checkIfAxis(v);
+    }
 
-    int year = ds.readAttributeInteger(null, "YEAR", -1);
-    int doy = ds.readAttributeInteger(null, "DAY", -1);
-    double time = ds.readAttributeDouble(null, "TIME", Double.NaN);
+    AttributeContainer gatts = ds.getRootGroup().attributes();
+    int year = gatts.findAttributeInteger("YEAR", -1);
+    int doy = gatts.findAttributeInteger("DAY", -1);
+    double time = gatts.findAttributeDouble("TIME", Double.NaN);
 
     if ((year > 0) && (doy > 0) && !Double.isNaN(time)) {
       Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));

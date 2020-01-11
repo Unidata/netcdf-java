@@ -19,6 +19,8 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
@@ -143,6 +145,11 @@ public class CFPointObWriter {
       return (pov.getDataType() == DataType.STRING) ? DataType.CHAR : pov.getDataType();
     }
 
+    @Override
+    public AttributeContainer attributes() {
+      return new AttributeContainerMutable(getName(), atts).toImmutable();
+    }
+
     public List<Attribute> getAttributes() {
       if (atts == null)
         atts = new ArrayList<Attribute>(2);
@@ -155,7 +162,7 @@ public class CFPointObWriter {
     }
 
     public Attribute findAttributeIgnoreCase(String name) {
-      for (Attribute att : getAttributes())
+      for (Attribute att : attributes())
         if (att.getShortName().equalsIgnoreCase(name))
           return att;
       return null;

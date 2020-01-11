@@ -18,13 +18,14 @@ import ucar.ma2.Range;
  */
 public class Dimensions {
 
+  /** A Function that finds a Dimension by name. */
   public interface Find {
     @Nullable
     Dimension findByName(String dimName);
   }
 
   /**
-   * Make a ucar.ma2.Section from an ordered set of Dimension onjects.
+   * Make a ucar.ma2.Section from an ordered set of Dimension objects.
    */
   public static ucar.ma2.Section makeSectionFromDimensions(Iterable<Dimension> dimensions) {
     try {
@@ -45,6 +46,10 @@ public class Dimensions {
     } catch (InvalidRangeException e) {
       throw new IllegalStateException(e.getMessage());
     }
+  }
+
+  public static int[] makeShape(Iterable<Dimension> dimensions) {
+    return makeSectionFromDimensions(dimensions).getShape();
   }
 
   /**
@@ -80,8 +85,8 @@ public class Dimensions {
   /**
    * Make a list of Dimensions from a list of names.
    * 
-   * @param finder interface to find a Dikmension by name.
-   * @param dimString space seperated list of dimension names.
+   * @param finder interface to find a Dimension by name.
+   * @param dimString space separated list of dimension names.
    * @return equivalent list of Dimension objects.
    * @throws IllegalArgumentException if cant find or parse the name.
    */
@@ -120,31 +125,32 @@ public class Dimensions {
   }
 
   /** Make a list of private dimensions from an array of lengths */
-  public static List<Dimension> makeDimensionsAnon(int[] shape) {
-    List<Dimension> newDimensions = new ArrayList<>();
+  public static ImmutableList<Dimension> makeDimensionsAnon(int[] shape) {
     if ((shape == null) || (shape.length == 0)) { // scalar
-      return newDimensions;
+      return ImmutableList.of();
     }
+    ImmutableList.Builder<Dimension> newDimensions = ImmutableList.builder();
     for (int len : shape) {
       newDimensions.add(Dimension.builder().setIsVariableLength(len == -1).setLength(len).setIsShared(false).build());
     }
-    return newDimensions;
+    return newDimensions.build();
   }
 
   /**
-   * Get list of Dimensions, including parents if any.
+   * Get list of Dimensions, including parent Structure(s), if any.
    *
-   * @return array of Dimension, rank of v plus all parents.
+   * @return array of Dimension, rank of v plus all parent Structures.
    */
-  public static List<Dimension> makeDimensionsAll(Variable v) {
-    List<Dimension> dimsAll = new ArrayList<>();
+  public static ImmutableList<Dimension> makeDimensionsAll(Variable v) {
+    ImmutableList.Builder<Dimension> dimsAll = ImmutableList.builder();
     addDimensionsAll(dimsAll, v);
-    return dimsAll;
+    return dimsAll.build();
   }
 
-  private static void addDimensionsAll(List<Dimension> result, Variable v) {
-    if (v.isMemberOfStructure())
+  private static void addDimensionsAll(ImmutableList.Builder<Dimension> result, Variable v) {
+    if (v.isMemberOfStructure()) {
       addDimensionsAll(result, v.getParentStructure());
+    }
 
     for (int i = 0; i < v.getRank(); i++)
       result.add(v.getDimension(i));

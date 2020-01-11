@@ -15,22 +15,19 @@ import java.util.ArrayList;
  * 
  * @author caron
  * @since Feb 23, 2008
- * @deprecated Sequence may not extend Structure or Variable, in 6.
  */
-@Deprecated
 public class Sequence extends Structure {
 
-  /*
+  /**
    * Sequence Constructor
-   *
+   * 
    * @param ncfile the containing NetcdfFile.
-   * 
    * @param group the containing group; if null, use rootGroup
-   * 
    * @param parent parent Structure, may be null
-   * 
    * @param shortName variable shortName, must be unique within the Group
+   * @deprecated use Builder.
    */
+  @Deprecated
   public Sequence(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     super(ncfile, group, parent, shortName);
 
@@ -153,6 +150,7 @@ public class Sequence extends Structure {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
+      this.setDataType(DataType.SEQUENCE);
       return new Sequence(this);
     }
   }

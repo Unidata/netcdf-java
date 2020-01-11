@@ -170,12 +170,12 @@ public class COSMICTrajectoryObsDataset extends TrajectoryObsDatasetImpl impleme
   }
 
   Date getTime(NetcdfDataset ds) {
-    int year = ds.readAttributeInteger(null, "year", 0);
-    int month = ds.readAttributeInteger(null, "month", 0);
-    int dayOfMonth = ds.readAttributeInteger(null, "day", 0);
-    int hourOfDay = ds.readAttributeInteger(null, "hour", 0);
-    int minute = ds.readAttributeInteger(null, "minute", 0);
-    int second = ds.readAttributeInteger(null, "second", 0);
+    int year = ds.getRootGroup().findAttributeInteger("year", 0);
+    int month = ds.getRootGroup().findAttributeInteger("month", 0);
+    int dayOfMonth = ds.getRootGroup().findAttributeInteger("day", 0);
+    int hourOfDay = ds.getRootGroup().findAttributeInteger("hour", 0);
+    int minute = ds.getRootGroup().findAttributeInteger("minute", 0);
+    int second = ds.getRootGroup().findAttributeInteger("second", 0);
 
     Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
     cal.clear();

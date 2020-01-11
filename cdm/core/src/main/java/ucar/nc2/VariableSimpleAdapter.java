@@ -16,7 +16,9 @@ import java.util.stream.Collectors;
  * 
  * @author caron
  * @since Apr 20, 2008
+ * @deprecated use VariableSimpleBuilder
  */
+@Deprecated
 @Immutable
 public class VariableSimpleAdapter implements VariableSimpleIF {
   private final StructureMembers.Member m;
@@ -49,6 +51,11 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
 
   public DataType getDataType() {
     return m.getDataType();
+  }
+
+  @Override
+  public AttributeContainer attributes() {
+    return new AttributeContainerMutable(getShortName(), getAttributes());
   }
 
   public String getDescription() {

@@ -261,11 +261,11 @@ public class CF {
     }
 
     public static FeatureType getFeatureTypeFromGlobalAttribute(NetcdfFile ds) {
-      String ftypeS = ds.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
+      String ftypeS = ds.getRootGroup().findAttValueIgnoreCase(CF.FEATURE_TYPE, null);
       if (ftypeS == null)
-        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
+        ftypeS = ds.getRootGroup().findAttValueIgnoreCase(CF.featureTypeAtt2, null);
       if (ftypeS == null)
-        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
+        ftypeS = ds.getRootGroup().findAttValueIgnoreCase(CF.featureTypeAtt3, null);
 
       if (ftypeS == null)
         return null;

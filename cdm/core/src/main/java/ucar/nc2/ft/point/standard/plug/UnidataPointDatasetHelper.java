@@ -89,12 +89,12 @@ public class UnidataPointDatasetHelper {
       if (v instanceof Structure) {
         List<Variable> vars = ((Structure) v).getVariables();
         for (Variable vs : vars) {
-          String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
+          String axisType = vs.findAttValueIgnoreCase(_Coordinate.AxisType, null);
           if ((axisType != null) && axisType.equals(a.toString()))
             return vs.getShortName();
         }
       } else {
-        String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
+        String axisType = v.findAttValueIgnoreCase(_Coordinate.AxisType, null);
         if ((axisType != null) && axisType.equals(a.toString()))
           return v.getShortName();
       }
@@ -160,12 +160,12 @@ public class UnidataPointDatasetHelper {
       if (v instanceof Structure) {
         List<Variable> vars = ((Structure) v).getVariables();
         for (Variable vs : vars) {
-          String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
+          String axisType = vs.findAttValueIgnoreCase(_Coordinate.AxisType, null);
           if ((axisType != null) && axisType.equals(a.toString()))
             return vs;
         }
       } else {
-        String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
+        String axisType = v.findAttValueIgnoreCase(_Coordinate.AxisType, null);
         if ((axisType != null) && axisType.equals(a.toString()))
           return v;
       }
@@ -199,11 +199,11 @@ public class UnidataPointDatasetHelper {
   public static Variable findVariable(NetcdfFile ds, String name) {
     Variable result = ds.findVariable(name);
     if (result == null) {
-      String aname = ds.findAttValueIgnoreCase(null, name + "_coordinate", null);
+      String aname = ds.getRootGroup().findAttValueIgnoreCase(name + "_coordinate", null);
       if (aname != null)
         result = ds.findVariable(aname);
       else {
-        aname = ds.findAttValueIgnoreCase(null, name + "_variable", null);
+        aname = ds.getRootGroup().findAttValueIgnoreCase(name + "_variable", null);
         if (aname != null)
           result = ds.findVariable(aname);
       }
@@ -215,7 +215,7 @@ public class UnidataPointDatasetHelper {
   public static Dimension findDimension(NetcdfFile ds, String name) {
     Dimension result = ds.findDimension(name); // LOOK use group
     if (result == null) {
-      String aname = ds.findAttValueIgnoreCase(null, name + "Dimension", null);
+      String aname = ds.getRootGroup().findAttValueIgnoreCase(name + "Dimension", null);
       if (aname != null)
         result = ds.findDimension(aname); // LOOK use group
     }
@@ -224,7 +224,7 @@ public class UnidataPointDatasetHelper {
 
   public static Dimension findObsDimension(NetcdfFile ds) {
     Dimension result = null;
-    String aname = ds.findAttValueIgnoreCase(null, "observationDimension", null);
+    String aname = ds.getRootGroup().findAttValueIgnoreCase("observationDimension", null);
     if (aname != null)
       result = ds.findDimension(aname); // LOOK use group
     if (result == null)

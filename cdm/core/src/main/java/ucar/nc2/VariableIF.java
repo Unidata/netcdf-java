@@ -8,11 +8,12 @@ import ucar.ma2.Range;
 import ucar.ma2.Section;
 
 /**
- * The interface to a Variable.
+ * The public interface to a Variable.
+ * TODO was here because of VariableEnhanced. But not needed, as any VariableEnhanced can be cast to Variable.
  * 
- * @author caron
+ * @deprecated do not use.
  */
-
+@Deprecated
 public interface VariableIF extends VariableSimpleIF {
   String getFullName();
 
@@ -44,11 +45,9 @@ public interface VariableIF extends VariableSimpleIF {
 
   int findDimensionIndex(String dimName);
 
-  java.util.List<Attribute> getAttributes();
-
+  /** @deprecated Use attributes() */
+  @Deprecated
   ucar.nc2.Attribute findAttribute(String attName);
-
-  ucar.nc2.Attribute findAttributeIgnoreCase(String attName);
 
   ucar.nc2.Group getParentGroup();
 

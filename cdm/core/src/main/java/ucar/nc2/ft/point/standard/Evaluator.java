@@ -41,7 +41,7 @@ public abstract class Evaluator {
   public static Variable findVariableWithAttributeAndDimension(NetcdfDataset ds, String att_name, String att_value,
       Dimension outer, Formatter errlog) {
     for (Variable v : ds.getVariables()) {
-      String attValue = ds.findAttValueIgnoreCase(v, att_name, null);
+      String attValue = v.findAttValueIgnoreCase(att_name, null);
       if ((attValue != null) && attValue.equalsIgnoreCase(att_value)) {
         if (v.getRank() > 0 && v.getDimension(0).equals(outer))
           return v;
@@ -56,8 +56,8 @@ public abstract class Evaluator {
         Structure s = (Structure) v;
         if (s.getRank() > 0 && s.getDimension(0).equals(outer) || (s.getRank() == 0 && outer == null)) {
           for (Variable vs : s.getVariables()) {
-            Attribute att = vs.findAttributeIgnoreCase(att_name);
-            if ((att != null) && att.isString() && att.getStringValue().equalsIgnoreCase(att_value))
+            String attValue = vs.attributes().findAttValueIgnoreCase(att_name, null);
+            if ((attValue != null) && attValue.equalsIgnoreCase(att_value))
               return vs;
           }
         }
@@ -81,7 +81,7 @@ public abstract class Evaluator {
    */
   public static VarAtt findVariableWithAttribute(NetcdfDataset ds, String attName) {
     for (Variable v : ds.getVariables()) {
-      Attribute att = v.findAttributeIgnoreCase(attName);
+      Attribute att = v.attributes().findAttributeIgnoreCase(attName);
       if (att != null)
         return new VarAtt(v, att);
     }
@@ -91,7 +91,7 @@ public abstract class Evaluator {
       if (v instanceof Structure) {
         Structure s = (Structure) v;
         for (Variable vs : s.getVariables()) {
-          Attribute att = vs.findAttributeIgnoreCase(attName);
+          Attribute att = vs.attributes().findAttributeIgnoreCase(attName);
           if (att != null)
             return new VarAtt(vs, att);
         }
@@ -111,7 +111,7 @@ public abstract class Evaluator {
    */
   public static Variable findVariableWithAttributeValue(NetcdfDataset ds, String attName, String attValue) {
     for (Variable v : ds.getVariables()) {
-      String haveValue = ds.findAttValueIgnoreCase(v, attName, null);
+      String haveValue = v.findAttValueIgnoreCase(attName, null);
       if ((haveValue != null) && haveValue.equals(attValue))
         return v;
     }
@@ -150,8 +150,8 @@ public abstract class Evaluator {
    */
   public static Variable findVariableWithAttributeValue(Structure struct, String attName, String attValue) {
     for (Variable v : struct.getVariables()) {
-      Attribute att = v.findAttributeIgnoreCase(attName);
-      if ((att != null) && att.getStringValue().equals(attValue))
+      String att = v.attributes().findAttValueIgnoreCase(attName, null);
+      if ((att != null) && att.equals(attValue))
         return v;
     }
     return null;
@@ -218,7 +218,7 @@ public abstract class Evaluator {
    */
   public static String getLiteral(NetcdfDataset ds, String key, Formatter errlog) {
     if (key.startsWith(":")) {
-      String val = ds.findAttValueIgnoreCase(null, key.substring(1), null);
+      String val = ds.getRootGroup().findAttValueIgnoreCase(key.substring(1), null);
       if ((val == null) && (errlog != null))
         errlog.format(" Cant find global attribute %s%n", key);
       return val;

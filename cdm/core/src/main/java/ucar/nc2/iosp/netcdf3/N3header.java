@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
+import com.google.common.collect.Iterables;
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -774,7 +775,7 @@ public class N3header extends NCheader {
       size += 4 * var.getDimensions().size(); // dim id
 
       // variable attributes
-      size += sizeAtts(var.getAttributes());
+      size += sizeAtts(var.attributes());
 
       size += 8; // data type, variable size
       size += (largeFile) ? 8 : 4;
@@ -783,9 +784,9 @@ public class N3header extends NCheader {
     return size;
   }
 
-  private void writeAtts(List<Attribute> atts, Formatter fout) throws IOException {
+  private void writeAtts(Iterable<Attribute> atts, Formatter fout) throws IOException {
 
-    int n = atts.size();
+    int n = Iterables.size(atts);
     if (n == 0) {
       raf.writeInt(0);
       raf.writeInt(0);
@@ -794,10 +795,10 @@ public class N3header extends NCheader {
       raf.writeInt(n);
     }
 
-    for (int i = 0; i < n; i++) {
+    int count = 0;
+    for (Attribute att : atts) {
       if (fout != null)
-        fout.format("***att %d pos= %d%n", i, raf.getFilePointer());
-      Attribute att = atts.get(i);
+        fout.format("***att %d pos= %d%n", count, raf.getFilePointer());
 
       writeString(att.getShortName());
       int type = getType(att.getDataType());
@@ -818,9 +819,10 @@ public class N3header extends NCheader {
       if (fout != null)
         fout.format("  %s%n", att);
     }
+    count++;
   }
 
-  private int sizeAtts(List<Attribute> atts) {
+  private int sizeAtts(Iterable<Attribute> atts) {
     int size = 8; // magic, natts
 
     for (Attribute att : atts) {
@@ -945,7 +947,7 @@ public class N3header extends NCheader {
 
       // variable attributes
       long varAttsPos = raf.getFilePointer();
-      writeAtts(var.getAttributes(), fout);
+      writeAtts(var.attributes(), fout);
 
       // data type, variable size, beginning file position
       DataType dtype = var.getDataType();

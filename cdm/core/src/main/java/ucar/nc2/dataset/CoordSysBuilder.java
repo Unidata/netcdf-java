@@ -52,8 +52,9 @@ import java.util.*;
  * assignCoordinateTransforms(ncDataset);
  * </pre>
  *
- * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 
 /*
  * Implementation notes:
@@ -72,9 +73,7 @@ import java.util.*;
  * 
  * B. You could explicitly add it by overriding assignCoordinateTransforms()
  * 
- * @deprecated do not use
  */
-@Deprecated
 public class CoordSysBuilder implements CoordSysBuilderIF {
   public static final String resourcesDir = "resources/nj22/coords/"; // resource path
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
@@ -333,10 +332,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   public static CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // look for the Conventions attribute
-    String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
+    String convName = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
     if (convName == null)
-      convName = ds.findAttValueIgnoreCase(null, "Convention", null); // common mistake Convention instead of
-                                                                      // Conventions
+      convName = ds.getRootGroup().findAttValueIgnoreCase("Convention", null); // common mistake Convention instead of
+    // Conventions
     if (convName != null)
       convName = convName.trim();
 
@@ -865,7 +864,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       List<CoordinateAxis> axisList = new ArrayList<>();
       List<CoordinateAxis> axes = ncDataset.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
-        if (isCoordinateAxisForVariable(axis, ve))
+        if (isCoordinateAxisForVariable(axis, vp.v))
           axisList.add(axis);
       }
 
@@ -881,7 +880,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (requireCompleteCoordSys) {
         if (cs != null) {
           // only build if coordinate system is complete
-          okToBuild = cs.isComplete(ve);
+          okToBuild = cs.isComplete(vp.v);
         }
       } else {
         // coordinate system can be incomplete, so we're ok to build if we find something
@@ -898,7 +897,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         // default enhance mode is yes, they must be complete
         if (requireCompleteCoordSys) {
           // only build if new coordinate system is complete
-          okToBuild = csnew.isComplete(ve);
+          okToBuild = csnew.isComplete(vp.v);
         }
         if (okToBuild) {
           csnew.setImplicit(true);
@@ -919,7 +918,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param v the given variable
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
-  protected boolean isCoordinateAxisForVariable(Variable axis, VariableEnhanced v) {
+  protected boolean isCoordinateAxisForVariable(Variable axis, Variable v) {
     List<Dimension> varDims = v.getDimensionsAll();
     List<Dimension> axisDims = axis.getDimensionsAll();
 
@@ -1132,22 +1131,21 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       this.ds = ds;
       this.v = v;
       VariableEnhanced ve = (VariableEnhanced) v;
-      isCoordinateVariable = v.isCoordinateVariable() || null != v.findAttribute(_Coordinate.AliasForDimension);
+      isCoordinateVariable = v.isCoordinateVariable() || v.attributes().hasAttribute(_Coordinate.AliasForDimension);
       if (isCoordinateVariable) {
         v.isCoordinateVariable(); // DEBUG
         addCoordinateVariable(v.getDimension(0), this);
         parseInfo.format(" Coordinate Variable added = %s for dimension %s%n", v.getFullName(), v.getDimension(0));
       }
 
-      Attribute att = v.findAttributeIgnoreCase(_Coordinate.AxisType);
-      if (att != null) {
-        String axisName = att.getStringValue();
+      String axisName = v.attributes().findAttValueIgnoreCase(_Coordinate.AxisType, null);
+      if (axisName != null) {
         axisType = AxisType.getType(axisName);
         isCoordinateAxis = true;
         parseInfo.format(" Coordinate Axis added = %s type= %s%n", v.getFullName(), axisName);
       }
 
-      coordVarAlias = ds.findAttValueIgnoreCase(v, _Coordinate.AliasForDimension, null);
+      coordVarAlias = v.attributes().findAttValueIgnoreCase(_Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {

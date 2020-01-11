@@ -101,7 +101,7 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(message.getLookup().getCategoryFullName());
       staxWriter.writeEndElement();
 
-      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
+      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecordName);
       StructureDataIterator sdataIter = obs.getStructureIterator(-1);
 
       writeSequence(obs, sdataIter);
@@ -210,11 +210,11 @@ public class Bufr2Xml {
     staxWriter.writeAttribute("name", escaper.escape(name));
 
     String units = v.getUnitsString();
-    if ((units != null) && !units.equals(name) && !units.startsWith("Code"))
+    if ((units != null) && !units.equals(name) && !units.startsWith("Code")) {
       staxWriter.writeAttribute(CDM.UNITS, escaper.escape(v.getUnitsString()));
+    }
 
-    Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
-    String desc = (att == null) ? "N/A" : att.getStringValue();
+    String desc = v.attributes().findAttValueIgnoreCase(BufrIosp2.fxyAttName, "N/A");
     staxWriter.writeAttribute("bufr", escaper.escape(desc));
 
     if (v.getDataType() == DataType.CHAR) {
@@ -255,12 +255,12 @@ public class Bufr2Xml {
   }
 
   private void writeFloat(Variable v, double val) throws XMLStreamException {
-    Attribute bitWidthAtt = v.findAttribute("BUFR:bitWidth");
+    int bitWidth = v.attributes().findAttributeInteger("BUFR:bitWidth", -99);
+
     int sigDigits;
-    if (bitWidthAtt == null)
+    if (bitWidth == -99)
       sigDigits = 7;
     else {
-      int bitWidth = bitWidthAtt.getNumericValue().intValue();
       if (bitWidth < 30) {
         double sigDigitsD = Math.log10(2 << bitWidth);
         sigDigits = (int) (sigDigitsD + 1);

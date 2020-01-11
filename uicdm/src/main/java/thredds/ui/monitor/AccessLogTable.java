@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.ui.monitor;
 
-// import net.sf.ehcache.Cache;
-// import net.sf.ehcache.Element;
+import com.github.lgooddatepicker.components.DateTimePicker;
+import java.time.ZoneId;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import thredds.logs.AccessLogParser;
@@ -57,11 +57,12 @@ public class AccessLogTable extends JPanel {
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
-  private JTextArea startDateField, endDateField;
+  private DateTimePicker dateTimePickerStart, dateTimePickerEnd;
 
-  public AccessLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, DnsLookup dnsLookup) {
-    this.startDateField = startDateField;
-    this.endDateField = endDateField;
+  public AccessLogTable(DateTimePicker dateTimePickerStart, DateTimePicker dateTimePickerEnd, PreferencesExt prefs,
+      DnsLookup dnsLookup) {
+    this.dateTimePickerStart = dateTimePickerStart;
+    this.dateTimePickerEnd = dateTimePickerEnd;
     this.prefs = prefs;
     this.dnsLookup = dnsLookup;
     PopupMenu varPopup;
@@ -257,26 +258,14 @@ public class AccessLogTable extends JPanel {
   public void setLocalManager(LogLocalManager manager) {
     this.manager = manager;
 
-    Date startDate = manager.getStartDate();
-    Date endDate = manager.getEndDate();
-    if (startDate != null)
-      startDateField.setText(df.format(startDate));
-    else
-      startDateField.setText(df.format(new Date()));
-
-    if (endDate != null)
-      endDateField.setText(df.format(endDate));
-    else
-      endDateField.setText(df.format(new Date()));
-
     LogCategorizer.setRoots(manager.getRoots());
   }
 
   void showLogs(LogReader.LogFilter filter) {
     Date start = null, end = null;
     try {
-      start = df.parse(startDateField.getText());
-      end = df.parse(endDateField.getText());
+      start = Date.from(dateTimePickerStart.getDateTimeStrict().atZone(ZoneId.systemDefault()).toInstant());
+      end = Date.from(dateTimePickerEnd.getDateTimeStrict().atZone(ZoneId.systemDefault()).toInstant());
       accessLogFiles = manager.getLocalFiles(start, end);
     } catch (Exception e) {
       e.printStackTrace();
@@ -671,7 +660,7 @@ public class AccessLogTable extends JPanel {
     total_count += count;
     System.out.printf("showTimeSeriesAll: total_count = %d logs = %d%n", total_count, logs.size());
 
-    MultipleAxisChart mc = new MultipleAxisChart("Access Logs", intervalS + " average", "Mbytes Sent", bytesSentData);
+    MultipleAxisChart mc = new MultipleAxisChart("Access Logs", intervalS + " window", "Mbytes Sent", bytesSentData);
     mc.addSeries("Number of Requests", nreqData);
     mc.addSeries("Average Latency (secs)", timeTookData);
     mc.finish(new java.awt.Dimension(1000, 1000));

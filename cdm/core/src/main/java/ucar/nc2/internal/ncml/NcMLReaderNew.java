@@ -5,7 +5,6 @@
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
@@ -27,13 +26,10 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
-import ucar.nc2.Dimensions;
 import ucar.nc2.EnumTypedef;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
@@ -45,11 +41,9 @@ import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableDS.Builder;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.URLnaming;
-import ucar.nc2.write.Nc4Chunking;
 import static ucar.unidata.util.StringUtil2.getTokens;
 
 /**
@@ -61,7 +55,7 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  */
 
 public class NcMLReaderNew {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReaderNew.class);
 
   private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
   private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
@@ -909,7 +903,7 @@ public class NcMLReaderNew {
           .setIsVariableLength(isVariableLength).build());
 
     } else { // existing - modify it
-      Dimension.Builder newDim = new Dimension(dim.toBuilder()).toBuilder(); // copy old one
+      Dimension.Builder newDim = dim.toBuilder();
       newDim.setName(name);
 
       String lengthS = dimElem.getAttributeValue("length");
@@ -1781,38 +1775,43 @@ public class NcMLReaderNew {
    * }
    */
 
-  /**
+  /*
    * Read an NcML and write an equivalent NetcdfFile to a physical file, using Netcdf-3 file format.
    * The NcML may have a referenced dataset in the location URL, in which case the underlying data
    * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
    * then the new file is filled with fill values, like ncgen.
    *
    * @param ncml read NcML from this input stream
+   * 
    * @param fileOutName write to this local file
+   * 
    * @see ucar.nc2.FileWriter2
+   * 
+   * public static void writeNcMLToFile(InputStream ncml, String fileOutName) throws IOException {
+   * writeNcMLToFile(ncml, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
+   * }
    */
-  public static void writeNcMLToFile(InputStream ncml, String fileOutName) throws IOException {
-    writeNcMLToFile(ncml, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
-  }
 
-  /**
+  /*
    * Read an NcML and write an equivilent NetcdfFile to a physical file, using Netcdf-3 file format.
    * The NcML may have a referenced dataset in the location URL, in which case the underlying data
    * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
    * then the new file is filled with fill values, like ncgen.
    *
    * @param ncml read NcML from this input stream
+   * 
    * @param fileOutName write to this local file
+   * 
    * @param version kind of netcdf file
+   * 
    * @param chunker optional chunking (netcdf4 only)
+   * public static void writeNcMLToFile(InputStream ncml, String fileOutName, NetcdfFileWriter.Version version,
+   * Nc4Chunking chunker) throws IOException {
+   * NetcdfDataset ncd = NcMLReaderNew.readNcML(ncml, null);
+   * FileWriter2 writer = new FileWriter2(ncd, fileOutName, version, chunker);
+   * NetcdfFile result = writer.write();
+   * result.close();
+   * ncd.close();
+   * }
    */
-  public static void writeNcMLToFile(InputStream ncml, String fileOutName, NetcdfFileWriter.Version version,
-      Nc4Chunking chunker) throws IOException {
-    NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);
-    FileWriter2 writer = new FileWriter2(ncd, fileOutName, version, chunker);
-    NetcdfFile result = writer.write();
-    result.close();
-    ncd.close();
-  }
-
 }

@@ -32,11 +32,11 @@ import java.util.*;
 public class BufrConfig {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrConfig.class);
 
-  public static BufrConfig scanEntireFile(RandomAccessFile raf) throws IOException {
+  public static BufrConfig scanEntireFile(RandomAccessFile raf) {
     return new BufrConfig(raf);
   }
 
-  public static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
+  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
     BufrConfig config = new BufrConfig(raf, m);
     if (iospParam != null)
       config.merge(iospParam);
@@ -226,7 +226,7 @@ public class BufrConfig {
       Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp2.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 
-      Sequence seq = (Sequence) ncd.findVariable(null, BufrIosp2.obsRecord);
+      Sequence seq = (Sequence) ncd.findVariable(null, BufrIosp2.obsRecordName);
       extract = new StandardFields.StandardFieldsFromStructure(center, seq);
 
       StructureDataIterator iter = seq.getStructureIterator();
@@ -306,11 +306,6 @@ public class BufrConfig {
   private void processStations(FieldConverter parent, StructureData sdata) {
     BufrStation station = new BufrStation();
     station.read(parent, sdata);
-
-    if (station.getName() == null) {
-      log.warn("bad station name: " + station);
-      return;
-    }
 
     BufrStation check = map.get(station.getName());
     if (check == null)
@@ -535,7 +530,7 @@ public class BufrConfig {
       return null;
     }
 
-    public FieldConverter getChild(int i) {
+    FieldConverter getChild(int i) {
       return flds.get(i);
     }
 

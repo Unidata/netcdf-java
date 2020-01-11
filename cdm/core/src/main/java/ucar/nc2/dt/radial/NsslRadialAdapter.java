@@ -25,7 +25,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String format = ncd.findAttValueIgnoreCase(null, "format", null);
+    String format = ncd.getRootGroup().findAttValueIgnoreCase("format", null);
     if (format != null) {
       if (format.startsWith("nssl/netcdf"))
         return this;
@@ -149,7 +149,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   public void setIsVolume(NetcdfDataset nds) {
-    String format = nds.findAttValueIgnoreCase(null, "volume", null);
+    String format = nds.getRootGroup().findAttValueIgnoreCase("volume", null);
     if (format == null) {
       isVolume = false;
       return;
@@ -197,7 +197,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String start_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_start", null);
+    String start_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
     if (start_datetime != null)
       startDate = DateUnit.getStandardOrISO(start_datetime);
     else
@@ -205,7 +205,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String end_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_end", null);
+    String end_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
     if (end_datetime != null)
       endDate = DateUnit.getStandardOrISO(end_datetime);
     else
@@ -214,25 +214,22 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
   protected void addRadialVariable(NetcdfDataset nds, Variable var) {
     RadialVariable rsvar = null;
-    String vName = var.getShortName();
     int rnk = var.getRank();
 
     setIsVolume(nds);
 
     if (isVolume && rnk == 3) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
-      rsvar = makeRadialVariable(nds, v, var);
+      rsvar = makeRadialVariable(nds, var);
     } else if (!isVolume && rnk == 2) {
-      VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
-      rsvar = makeRadialVariable(nds, v, var);
+      rsvar = makeRadialVariable(nds, var);
     }
 
     if (rsvar != null)
       dataVariables.add(rsvar);
   }
 
-  protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-    return new Netcdf2Variable(nds, v, v0);
+  protected RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0) {
+    return new Netcdf2Variable(nds, v0);
   }
 
 
@@ -251,14 +248,12 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
   private class Netcdf2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     ArrayList<Netcdf2Sweep> sweeps;
     int nsweeps;
-    String name;
 
-    private Netcdf2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
+    private Netcdf2Variable(NetcdfDataset nds, Variable v0) {
+      super(v0.getShortName(), v0);
 
       sweeps = new ArrayList<>();
       nsweeps = 0;
-      name = v.getShortName();
       int[] shape = v0.getShape();
       int count = v0.getRank() - 1;
 

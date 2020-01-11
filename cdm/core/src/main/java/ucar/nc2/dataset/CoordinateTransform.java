@@ -6,7 +6,7 @@ package ucar.nc2.dataset;
 
 import java.util.Formatter;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
@@ -164,20 +164,20 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   protected String name, authority;
   protected final TransformType transformType;
   protected List<Parameter> params;
-  private AttributeContainerHelper attributeContainer;
+  private AttributeContainerMutable attributeContainer;
 
   // not needed?
   protected CoordinateTransform(Builder<?> builder, NetcdfDataset ncd) {
     this.name = builder.name;
     this.authority = builder.authority;
     this.transformType = builder.transformType;
-    this.attributeContainer = new AttributeContainerHelper(this.name);
-    this.attributeContainer.addAll(builder.attributeContainer.getAttributes());
+    this.attributeContainer = new AttributeContainerMutable(this.name);
+    this.attributeContainer.addAll(builder.attributeContainer);
 
     CoordinateTransform ct =
         CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter());
-    ct.attributeContainer = new AttributeContainerHelper(this.name);
-    ct.attributeContainer.addAll(builder.attributeContainer.getAttributes());
+    ct.attributeContainer = new AttributeContainerMutable(this.name);
+    ct.attributeContainer.addAll(builder.attributeContainer);
   }
 
   public Builder<?> toBuilder() {
@@ -257,8 +257,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
           CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
       if (ct != null) {
         ct.name = this.name;
-        ct.attributeContainer = new AttributeContainerHelper(this.name);
-        ct.attributeContainer.addAll(attributeContainer.getAttributes());
+        ct.attributeContainer = new AttributeContainerMutable(this.name);
+        ct.attributeContainer.addAll(attributeContainer);
       }
 
       return ct;

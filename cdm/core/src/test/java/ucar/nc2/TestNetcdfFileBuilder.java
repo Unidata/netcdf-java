@@ -45,7 +45,6 @@ public class TestNetcdfFileBuilder {
     assertThat(group.getVariables()).isNotEmpty();
     assertThat(group.getVariables()).hasSize(1);
     Variable v = group.findVariable("varName");
-    assertThat(v).isNotNull();
     assertThat(v.getParentGroup()).isEqualTo(group);
     assertThat(v.getNetcdfFile()).isEqualTo(ncfile);
   }

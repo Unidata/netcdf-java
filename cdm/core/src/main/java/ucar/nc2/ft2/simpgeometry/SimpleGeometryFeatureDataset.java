@@ -67,7 +67,7 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
   public String getTitle() {
     String title = ncd.getTitle();
     if (title == null)
-      title = ncd.findAttValueIgnoreCase(null, CDM.TITLE, null);
+      title = ncd.getRootGroup().findAttValueIgnoreCase(CDM.TITLE, null);
     if (title == null)
       title = getName();
     return title;
@@ -75,9 +75,9 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
 
   @Override
   public String getDescription() {
-    String desc = ncd.findAttValueIgnoreCase(null, CDM.DESCRIPTION, null);
+    String desc = ncd.getRootGroup().findAttValueIgnoreCase(CDM.DESCRIPTION, null);
     if (desc == null)
-      desc = ncd.findAttValueIgnoreCase(null, CDM.HISTORY, null);
+      desc = ncd.getRootGroup().findAttValueIgnoreCase(CDM.HISTORY, null);
     return (desc == null) ? getName() : desc;
   }
 

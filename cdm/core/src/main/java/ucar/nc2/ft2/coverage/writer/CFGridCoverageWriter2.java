@@ -241,7 +241,7 @@ public class CFGridCoverageWriter2 {
       }
 
       Variable v = writer.addVariable(null, axis.getName(), axis.getDataType(), dims);
-      addVariableAttributes(v, axis.getAttributes());
+      addVariableAttributes(v, axis.getAttributeContainer());
       v.addAttribute(new Attribute(CDM.UNITS, axis.getUnits())); // override what was in att list
       if (hasBounds)
         v.addAttribute(new Attribute(CF.BOUNDS, axis.getName() + BOUNDS));
@@ -253,11 +253,11 @@ public class CFGridCoverageWriter2 {
   private void addCoverages(CoverageCollection subsetDataset, NetcdfFileWriter writer) {
     for (Coverage grid : subsetDataset.getCoverages()) {
       Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), grid.getIndependentAxisNamesOrdered());
-      addVariableAttributes(v, grid.getAttributes());
+      addVariableAttributes(v, grid.attributes());
     }
   }
 
-  private void addVariableAttributes(Variable v, List<Attribute> atts) {
+  private void addVariableAttributes(Variable v, AttributeContainer atts) {
     for (Attribute att : atts) {
       if (att.getShortName().startsWith("_Coordinate"))
         continue;
@@ -272,7 +272,7 @@ public class CFGridCoverageWriter2 {
       // scalar coordinate transform variable - container for transform info
       Variable ctv = writer.addVariable(null, ct.getName(), DataType.INT, "");
 
-      for (Attribute att : ct.getAttributes())
+      for (Attribute att : ct.attributes())
         ctv.addAttribute(att);
     }
   }

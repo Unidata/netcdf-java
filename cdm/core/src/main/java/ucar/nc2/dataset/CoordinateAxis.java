@@ -135,7 +135,7 @@ public class CoordinateAxis extends VariableDS {
     axis.isContiguous = this.isContiguous;
     axis.positive = this.positive;
 
-    axis.cache = new Variable.Cache(); // decouple cache
+    axis.cache.reset(); // decouple cache
     return axis;
   }
 
@@ -207,7 +207,7 @@ public class CoordinateAxis extends VariableDS {
   public boolean isIndependentCoordinate() {
     if (isCoordinateVariable())
       return true;
-    return null != findAttribute(_Coordinate.AliasForDimension);
+    return null != attributes.findAttribute(_Coordinate.AliasForDimension);
   }
 
   /*
@@ -395,11 +395,11 @@ public class CoordinateAxis extends VariableDS {
 
   // needed by time coordinates
   public ucar.nc2.time.Calendar getCalendarFromAttribute() {
-    Attribute cal = findAttribute(CF.CALENDAR);
+    Attribute cal = attributes.findAttribute(CF.CALENDAR);
     String s = (cal == null) ? null : cal.getStringValue();
     if (s == null) { // default for CF and COARDS
-      Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
-      if (convention != null) {
+      Attribute convention = (ncd == null) ? null : ncd.findGlobalAttribute(CDM.CONVENTIONS);
+      if (convention != null && convention.isString()) {
         String hasName = convention.getStringValue();
         int version = CF1Convention.getVersion(hasName);
         if (version >= 0) {

@@ -240,9 +240,7 @@ public class WriterCFStationObsDataset {
       Variable newVar = ncfile.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
       recordVars.add(newVar);
 
-      List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts)
-        newVar.addAttribute(att);
+      newVar.addAll(oldVar.attributes());
       newVar.addAttribute(coordAtt);
     }
 

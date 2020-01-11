@@ -75,7 +75,9 @@ task buildJavadocCdm(type: Javadoc) {
     
     title = "NetCDF-Java CDM API v${version}"
     destinationDir = file("$buildDir/javadocCdm/")
-    
+
+    options.showFromPublic()
+
     SourceSet cdmCoreSourceSet = rootProject.project(":cdm:cdm-core").sourceSets.main
     source cdmCoreSourceSet.allJava
 

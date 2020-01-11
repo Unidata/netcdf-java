@@ -27,49 +27,31 @@ import java.util.List;
  */
 public class HybridSigmaPressure extends VerticalTransformImpl {
 
-  /**
-   * P-naught identifier
-   */
+  /** P-naught identifier */
   public static final String P0 = "P0_variableName";
 
-  /**
-   * Surface pressure name identifier
-   */
+  /** Surface pressure name identifier */
   public static final String PS = "SurfacePressure_variableName";
 
-  /**
-   * The "a" variable name identifier
-   */
+  /** The "a" variable name identifier */
   public static final String A = "A_variableName";
 
-  /**
-   * The "a" variable name identifier
-   */
+  /** The "a" variable name identifier */
   public static final String AP = "AP_variableName";
 
-  /**
-   * The "b" variable name identifier
-   */
+  /** The "b" variable name identifier */
   public static final String B = "B_variableName";
 
-  /**
-   * value of p-naught
-   */
+  /** value of p-naught */
   private double p0;
 
-  /**
-   * ps, a, and b variables
-   */
+  /** ps, a, and b variables */
   private Variable psVar, aVar, bVar, p0Var;
 
-  /**
-   * If has AP, this is a pressure value and has to be also in the same units as PS
-   */
+  /** If has AP, this is a pressure value and has to be also in the same units as PS */
   private String apUnits = "";
 
-  /**
-   * a and b Arrays
-   */
+  /** a and b Arrays */
   private Array aArray, bArray;
 
   /**
@@ -80,7 +62,6 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
    * @param params list of transformation Parameters
    */
   public HybridSigmaPressure(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
-
     super(timeDim);
     String psName = getParameterStringValue(params, PS);
     String aName = getParameterStringValue(params, A);
@@ -88,26 +69,26 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     String p0Name = getParameterStringValue(params, P0);
     String apName = getParameterStringValue(params, AP);
 
-
-
     if (apName != null) {
       aVar = ds.findVariable(apName);
-    } else
+    } else {
       aVar = ds.findVariable(aName);
+    }
 
-    if (aVar.findAttributeIgnoreCase(CDM.UNITS) != null) {
-      apUnits = aVar.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
+    if (aVar != null) {
+      String unitValue = aVar.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
+      if (unitValue != null) {
+        apUnits = unitValue;
+      }
     }
 
     psVar = ds.findVariable(psName);
     bVar = ds.findVariable(bName);
-    units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
+    units = psVar.findAttValueIgnoreCase(CDM.UNITS, "none");
     if (p0Name != null) {
       p0Var = ds.findVariable(p0Name);
       apUnits = units; // Won't need transformation for AP = A * P0 * 1 (in this case)
     }
-
-
   }
 
   /**
@@ -218,20 +199,15 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     }
 
     return press;
-
-
   }
 
   private double computeP0() throws IOException {
-
     if (p0Var == null)
       return 1.0; // Has AP variable
-
     double p0 = p0Var.readScalarDouble();
 
-    // Units check:
-    // P0 must have same units as PS
-    String p0UnitStr = p0Var.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
+    // Units check: P0 must have same units as PS
+    String p0UnitStr = p0Var.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
     if (p0UnitStr == null)
       throw new IllegalStateException();
     if (!units.equalsIgnoreCase(p0UnitStr)) {
@@ -246,7 +222,6 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     SimpleUnit ptopUnit = SimpleUnit.factory(unit);
     double factor = ptopUnit.convertTo(1.0, psUnit);
     return val * factor;
-
   }
 
 }

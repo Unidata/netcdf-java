@@ -342,7 +342,7 @@ public class GridDatasetInfo {
       varElem.setAttribute("axisType", axisType.toString());
 
     // attributes
-    for (Attribute att : axis.getAttributes())
+    for (Attribute att : axis.attributes())
       varElem.addContent(ncmlWriter.makeAttributeElement(att));
 
     try {
@@ -461,7 +461,7 @@ public class GridDatasetInfo {
       varElem.setAttribute("axisType", axisType.toString());
 
     // attributes
-    for (Attribute att : axis.getAttributes()) {
+    for (Attribute att : axis.attributes()) {
       varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 

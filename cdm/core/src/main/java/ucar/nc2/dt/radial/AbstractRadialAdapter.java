@@ -45,9 +45,9 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
     this.title = netcdfDataset.getTitle();
     if (title == null)
-      title = netcdfDataset.findAttValueIgnoreCase(null, "title", null);
+      title = netcdfDataset.getRootGroup().findAttValueIgnoreCase("title", null);
     if (desc == null)
-      desc = netcdfDataset.findAttValueIgnoreCase(null, "description", null);
+      desc = netcdfDataset.getRootGroup().findAttValueIgnoreCase("description", null);
 
     // look for radial data variables
     parseInfo.append("RadialDatasetAdapter look for RadialVariables\n");
@@ -58,7 +58,7 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
   protected abstract void addRadialVariable(NetcdfDataset ds, Variable var);
 
-  protected abstract RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0);
+  protected abstract RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0);
 
   protected abstract void setTimeUnits() throws Exception; // reminder for subclasses to set this
 
@@ -322,28 +322,27 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
   ///////////////////////////////////////////////////////////////////////
   public static class MyRadialVariableAdapter implements VariableSimpleIF {
-
     private int rank;
     private int[] shape;
-    private String name;
-    private String desp;
-    private List<Attribute> attributes;
+    protected String name;
+    private String desc;
+    private String units;
+    private AttributeContainer attributes;
 
-    public MyRadialVariableAdapter(String vName, List<Attribute> atts) {
+    public MyRadialVariableAdapter(String vName, Variable v) {
       rank = 1;
       shape = new int[] {1};
       name = vName;
-      desp = "A radial variable holding a list of radial sweeps";
-      attributes = atts;
+      desc = v.getDescription();
+      units = v.getUnitsString();
+      attributes = v.attributes();
     }
 
     public String toString() {
       return name;
     }
 
-    /**
-     * Sort by name
-     */
+    /** Sort by full name */
     public int compareTo(VariableSimpleIF o) {
       return getFullName().compareTo(o.getFullName());
     }
@@ -365,15 +364,15 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     }
 
     public String getDescription() {
-      return this.desp;
+      return this.desc;
     }
 
     public String getInfo() {
-      return this.desp;
+      return this.desc;
     }
 
     public String getUnitsString() {
-      return "N/A";
+      return units;
     }
 
     public int getRank() {
@@ -388,19 +387,18 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
       return null;
     }
 
+    @Deprecated
     public List<Attribute> getAttributes() {
-      return attributes;
+      return attributes.getAttributes();
     }
 
     public ucar.nc2.Attribute findAttributeIgnoreCase(String attName) {
-      Iterator it = attributes.iterator();
-      Attribute at = null;
-      while (it.hasNext()) {
-        at = (Attribute) it.next();
-        if (attName.equalsIgnoreCase(at.getShortName()))
-          break;
-      }
-      return at;
+      return attributes.findAttributeIgnoreCase(attName);
+    }
+
+    @Override
+    public AttributeContainer attributes() {
+      return new AttributeContainerMutable(name, attributes).toImmutable();
     }
   }
 

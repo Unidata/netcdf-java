@@ -19,6 +19,7 @@ import java.util.ServiceLoader;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.annotation.Nullable;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -486,7 +487,10 @@ public class NetcdfFiles {
    */
   public static NetcdfFile openInMemory(URI uri) throws IOException {
     URL url = uri.toURL();
-    byte[] contents = IO.readContentsToByteArray(url.openStream());
+    byte[] contents;
+    try (InputStream in = url.openStream()) {
+      contents = IO.readContentsToByteArray(in);
+    }
     return openInMemory(uri.toString(), contents);
   }
 
@@ -538,54 +542,7 @@ public class NetcdfFiles {
   public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location,
       ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
-    IOServiceProvider spi = null;
-    if (NetcdfFile.debugSPI)
-      log.info("NetcdfFile try to open = {}", location);
-
-    // Registered providers override defaults.
-    for (IOServiceProvider registeredSpi : registeredProviders) {
-      if (NetcdfFile.debugSPI)
-        log.info(" try iosp = {}", registeredSpi.getClass().getName());
-
-      if (registeredSpi.isValidFile(raf)) {
-        // need a new instance for thread safety
-        Class c = registeredSpi.getClass();
-        try {
-          spi = (IOServiceProvider) c.newInstance();
-        } catch (InstantiationException e) {
-          throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt
-          // happen
-        } catch (IllegalAccessException e) {
-          throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt
-          // happen
-        }
-        break;
-      }
-    }
-
-    if (N3headerNew.isValidFile(raf)) {
-      spi = new N3iospNew();
-
-    } else {
-
-      // look for dynamically loaded IOSPs
-      for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
-        if (loadedSpi.isValidFile(raf)) {
-          Class c = loadedSpi.getClass();
-          try {
-            spi = (IOServiceProvider) c.newInstance();
-          } catch (InstantiationException e) {
-            throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt
-            // happen
-          } catch (IllegalAccessException e) {
-            throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt
-            // happen
-          }
-          break;
-        }
-      }
-    }
-
+    IOServiceProvider spi = getIosp(raf);
     if (spi == null) {
       raf.close();
       throw new IOException("Cant read " + location + ": not a valid CDM file.");
@@ -600,12 +557,57 @@ public class NetcdfFiles {
 
     NetcdfFile ncfile =
         spi.isBuilder() ? build(spi, raf, location, cancelTask) : new NetcdfFile(spi, raf, location, cancelTask);
+    spi.buildFinish(ncfile);
 
     // send iospMessage after iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
     return ncfile;
+  }
+
+  @Nullable
+  private static IOServiceProvider getIosp(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    if (NetcdfFile.debugSPI)
+      log.info("NetcdfFile try to open = {}", raf.getLocation());
+
+    // Registered providers override defaults.
+    for (IOServiceProvider registeredSpi : registeredProviders) {
+      if (NetcdfFile.debugSPI)
+        log.info(" try iosp = {}", registeredSpi.getClass().getName());
+
+      if (registeredSpi.isValidFile(raf)) {
+        // need a new instance for thread safety
+        Class c = registeredSpi.getClass();
+        try {
+          return (IOServiceProvider) c.newInstance();
+        } catch (InstantiationException e) {
+          throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor.");
+        } catch (IllegalAccessException e) {
+          throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage());
+        }
+      }
+    }
+
+    if (N3headerNew.isValidFile(raf)) {
+      return new N3iospNew();
+
+    } else {
+      // look for dynamically loaded IOSPs
+      for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
+        if (loadedSpi.isValidFile(raf)) {
+          Class c = loadedSpi.getClass();
+          try {
+            return (IOServiceProvider) c.newInstance();
+          } catch (InstantiationException e) {
+            throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor.");
+          } catch (IllegalAccessException e) {
+            throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage());
+          }
+        }
+      }
+    }
+    return null;
   }
 
   private static NetcdfFile build(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
@@ -748,7 +750,7 @@ public class NetcdfFiles {
    * @param v the cdm node
    * @return full name
    */
-  protected static String makeFullNameSectionSpec(CDMNode v) {
+  static String makeFullNameSectionSpec(CDMNode v) {
     return makeFullName(v, reservedSectionSpec);
   }
 
@@ -760,7 +762,7 @@ public class NetcdfFiles {
    * @param reservedChars the set of characters to escape
    * @return full name
    */
-  protected static String makeFullName(CDMNode node, String reservedChars) {
+  private static String makeFullName(CDMNode node, String reservedChars) {
     Group parent = node.getParentGroup();
     if (((parent == null) || parent.isRoot()) && !node.isMemberOfStructure()) // common case?
       return EscapeStrings.backslashEscape(node.getShortName(), reservedChars);

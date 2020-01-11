@@ -302,9 +302,8 @@ class FmrcDataset {
 
       // some additional global attributes
       Group root = result.getRootGroup();
-      Attribute orgConv = root.findAttributeIgnoreCase(CDM.CONVENTIONS);
-      String convAtt =
-          CoordSysBuilder.buildConventionAttribute("CF-1.4", (orgConv == null ? null : orgConv.getStringValue()));
+      String orgConv = root.attributes().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+      String convAtt = CoordSysBuilder.buildConventionAttribute("CF-1.4", orgConv);
       root.addAttribute(new Attribute(CDM.CONVENTIONS, convAtt));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
       root.addAttribute(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));

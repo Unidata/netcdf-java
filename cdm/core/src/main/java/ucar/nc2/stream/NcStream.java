@@ -31,7 +31,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -69,7 +68,7 @@ public class NcStream {
     for (Dimension dim : g.getDimensions())
       groupBuilder.addDims(NcStream.encodeDim(dim));
 
-    for (Attribute att : g.getAttributes())
+    for (Attribute att : g.attributes())
       groupBuilder.addAtts(NcStream.encodeAtt(att));
 
     for (EnumTypedef enumType : g.getEnumTypedefs())
@@ -152,7 +151,7 @@ public class NcStream {
       builder.addShape(encodeDim(dim));
     }
 
-    for (Attribute att : var.getAttributes()) {
+    for (Attribute att : var.attributes()) {
       builder.addAtts(encodeAtt(att));
     }
 
@@ -176,7 +175,7 @@ public class NcStream {
     for (Dimension dim : s.getDimensions())
       builder.addShape(encodeDim(dim));
 
-    for (Attribute att : s.getAttributes())
+    for (Attribute att : s.attributes())
       builder.addAtts(encodeAtt(att));
 
     for (Variable v : s.getVariables()) {
@@ -422,7 +421,7 @@ public class NcStream {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  static void readGroup(NcStreamProto.Group proto, NetcdfFile ncfile, Group.Builder g) {
+  static void readGroup(NcStreamProto.Group proto, Group.Builder g) {
 
     for (NcStreamProto.Dimension dim : proto.getDimsList())
       g.addDimension(NcStream.decodeDim(dim)); // always added to group? what if private ??
@@ -440,9 +439,9 @@ public class NcStream {
       g.addVariable(NcStream.decodeStructure(s));
 
     for (NcStreamProto.Group gp : proto.getGroupsList()) {
-      Group.Builder ng = Group.builder(g).setName(gp.getName()).setNcfile(ncfile);
+      Group.Builder ng = Group.builder(g).setName(gp.getName());
       g.addGroup(ng);
-      readGroup(gp, ncfile, ng);
+      readGroup(gp, ng);
     }
   }
 

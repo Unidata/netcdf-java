@@ -9,7 +9,7 @@ import ucar.nc2.ft.FeatureDataset;
 import java.util.List;
 
 /**
- * A lightweight abstractions of a Variable.
+ * A lightweight abstraction of a Variable.
  *
  * @author caron
  * @see FeatureDataset
@@ -74,7 +74,7 @@ public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
   /**
    * Dimension List. empty for a scalar variable.
    * 
-   * @return List of ucar.nc2.Dimension
+   * @return List of ucar.nc2.Dimension, ImmutableList in ver6
    */
   List<Dimension> getDimensions();
 
@@ -85,11 +85,16 @@ public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
    */
   DataType getDataType();
 
+  /** Attributes for the variable. */
+  AttributeContainer attributes();
+
   /**
    * Attributes for the variable.
    * 
    * @return List of type ucar.nc2.Attribute
+   * @deprecated Use attributes()
    */
+  @Deprecated
   List<Attribute> getAttributes();
 
   /**
@@ -97,7 +102,9 @@ public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
    * 
    * @param name attribute name
    * @return the attribute for the variable with the given name, or null if not found.
+   * @deprecated Use attributes()
    */
+  @Deprecated
   ucar.nc2.Attribute findAttributeIgnoreCase(String name);
 
 }

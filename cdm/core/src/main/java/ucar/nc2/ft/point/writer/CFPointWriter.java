@@ -517,7 +517,7 @@ public abstract class CFPointWriter implements Closeable {
     for (VariableSimpleIF vs : extra) {
       List<Dimension> dims = makeDimensionList(dimMap, vs.getDimensions());
       Variable mv = writer.addVariable(null, vs.getShortName(), vs.getDataType(), dims);
-      for (Attribute att : vs.getAttributes())
+      for (Attribute att : vs.attributes())
         mv.addAttribute(att);
       extraMap.put(mv.getShortName(), mv);
     }
@@ -562,7 +562,7 @@ public abstract class CFPointWriter implements Closeable {
         continue;
       }
 
-      for (Attribute att : oldVar.getAttributes())
+      for (Attribute att : oldVar.attributes())
         newVar.addAttribute(att);
       varMap.put(newVar.getShortName(), newVar);
     }
@@ -572,7 +572,7 @@ public abstract class CFPointWriter implements Closeable {
   // added as members of the given structure
   protected void addCoordinatesExtended(Structure parent, List<VariableSimpleIF> coords) {
     for (VariableSimpleIF vs : coords) {
-      String dims = Dimension.makeDimensionsString(vs.getDimensions());
+      String dims = Dimensions.makeDimensionsString(vs.getDimensions());
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
 
       if (member == null) {
@@ -580,7 +580,7 @@ public abstract class CFPointWriter implements Closeable {
         continue;
       }
 
-      for (Attribute att : vs.getAttributes())
+      for (Attribute att : vs.attributes())
         member.addAttribute(att);
     }
   }
@@ -620,8 +620,7 @@ public abstract class CFPointWriter implements Closeable {
         }
       }
 
-      List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
+      for (Attribute att : oldVar.attributes()) {
         String attName = att.getShortName();
         if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
           newVar.addAttribute(att);
@@ -661,8 +660,7 @@ public abstract class CFPointWriter implements Closeable {
         continue;
       }
 
-      List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
+      for (Attribute att : oldVar.attributes()) {
         String attName = att.getShortName();
         if (!reservedVariableAtts.contains(attName) && !attName.startsWith("_Coordinate"))
           newVar.addAttribute(att);

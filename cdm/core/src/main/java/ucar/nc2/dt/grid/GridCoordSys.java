@@ -63,11 +63,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    *
    * @param sbuff place information messages here, may be null
    * @param cs the CoordinateSystem to test
-   * @param v can it be used for this variable; v may be null
+   * @param ve can it be used for this variable; v may be null
    * @return true if it can be made into a GridCoordSys.
    * @see CoordinateSystem#isGeoReferencing
    */
-  public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs, VariableEnhanced v) {
+  public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs, VariableEnhanced ve) {
     // must be at least 2 axes
     if (cs.getRankDomain() < 2) {
       if (sbuff != null) {
@@ -197,7 +197,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (ens != null)
       testAxis.add(ens);
 
-    if (v != null) { // test to see that v doesnt have extra dimensions. LOOK RELAX THIS
+    if (ve != null) { // test to see that v doesnt have extra dimensions. LOOK RELAX THIS
       List<Dimension> testDomain = new ArrayList<>();
       for (CoordinateAxis axis : testAxis) {
         for (Dimension dim : axis.getDimensions()) {
@@ -205,7 +205,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
             testDomain.add(dim);
         }
       }
-      if (!CoordinateSystem.isSubset(v.getDimensionsAll(), testDomain)) {
+      Variable v = (Variable) ve;
+      if (!CoordinateSystem.isSubset(Dimensions.makeDimensionsAll(v), testDomain)) {
         if (sbuff != null)
           sbuff.format(" NOT complete%n");
         return false;
@@ -226,7 +227,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   public static GridCoordSys makeGridCoordSys(Formatter sbuff, CoordinateSystem cs, VariableEnhanced v) {
     if (sbuff != null) {
       sbuff.format(" ");
-      v.getNameAndDimensions(sbuff, false, true);
+      ((Variable) v).getNameAndDimensions(sbuff, false, true);
       sbuff.format(" check CS %s: ", cs.getName());
     }
 
@@ -405,7 +406,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     // WRF NMM
-    Attribute att = getXHorizAxis().findAttribute(_Coordinate.Stagger);
+    Attribute att = getXHorizAxis().attributes().findAttribute(_Coordinate.Stagger);
     if (att != null)
       setHorizStaggerType(att.getStringValue());
   }

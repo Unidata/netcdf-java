@@ -32,7 +32,6 @@ public class TestAggNested {
 
     try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), true, null)) {
       Variable time = ncd.findVariable("time");
-      assertThat(time).isNotNull();
       assertThat(time.getSize()).isEqualTo(19723);
       // System.out.printf(" time array = %s%n", NCdumpW.toString(time.read()));
     }
@@ -46,7 +45,6 @@ public class TestAggNested {
       String filename = TestDir.cdmUnitTestDir + "ncml/nestedAgg/test.ncml";
       try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), true, null)) {
         Variable time = ncd.findVariable("time");
-        assertThat(time).isNotNull();
         assertThat(time.getSize()).isEqualTo(19723);
         // System.out.printf(" time array = %s%n", NCdumpW.toString(time.read()));
       }

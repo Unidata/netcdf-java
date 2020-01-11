@@ -49,7 +49,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   public static boolean debugCached = false;
   public static boolean debugOpenTime = false;
 
-  // Define a utility class to decompse names
+  // Define a utility class to decompose names
   private static class NamePieces {
     String prefix = null; // group part of the path
     String var = null; // struct part of the path
@@ -325,7 +325,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       }
       if (cancelTask != null && cancelTask.isCancel())
         return;
-      readArrays(preloadList);
+      preloadData(preloadList);
     }
 
     finish();
@@ -611,7 +611,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   @Deprecated
-  protected void reGroupVariable(Group rootgroup, DODSVariable dodsv) throws opendap.dap.DAP2Exception {
+  protected void reGroupVariable(Group rootgroup, DODSVariable dodsv) {
     String dodsname = dodsv.getDODSName();
     NamePieces pieces = parseName(dodsname);
     if (pieces.prefix != null) {
@@ -631,12 +631,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
   }
 
-  protected void reGroupVariableAttributes(Group rootgroup, Variable v) throws opendap.dap.DAP2Exception {
+  private void reGroupVariableAttributes(Group rootgroup, Variable v) {
     String vname = v.getShortName();
     Group vgroup = v.getParentGroup();
-    Object[] attlist = v.getAttributes().toArray();
-    for (Object att : attlist) {
-      Attribute ncatt = (Attribute) att;
+    for (Attribute ncatt : v.attributes()) {
       String adodsname = ncatt.getDODSName();
       NamePieces pieces = parseName(adodsname);
       Group agroup = null;
@@ -1496,19 +1494,17 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   // called from ucar.nc2.Variable
 
   /**
-   * Make a single call to the DODS Server to read all the named variable's data
+   * Make a single call to the DODS Server to read and cache all the named v\Variable's
    * in one client/server roundtrip.
    *
    * @param preloadVariables list of type Variable
-   * @return list of type Array, contains the data
    * @throws IOException on error
    */
-  @Override
-  public List<Array> readArrays(List<Variable> preloadVariables) throws IOException {
+  private void preloadData(List<Variable> preloadVariables) throws IOException {
     // For performance tests:
     // if (true) return super.readArrays (variables);
     if (preloadVariables.size() == 0)
-      return new ArrayList<Array>();
+      return;
 
     // construct the list of variables, skipping ones with cached data
     List<DodsV> reqDodsVlist = new ArrayList<DodsV>();
@@ -1559,19 +1555,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     // For each variable either extract the data or use cached data.
-    List<Array> result = new ArrayList<Array>();
     for (Variable var : preloadVariables) {
-      if (var.hasCachedData()) {
-        result.add(var.read());
-
-      } else {
-        Array data = null;
+      if (!var.hasCachedData()) {
+        Array data;
         DodsV ddsV = (DodsV) var.getSPobject();
 
         DodsV dataV = map.get(ddsV);
         if (dataV == null) {
           logger.error("DODSNetcdfFile.readArrays cant find " + makeDODSname(ddsV) + " in dataDDS; " + location);
-          // dataDDS.print( System.out);
         } else {
           if (debugConvertData)
             System.out.println("readArray converting " + makeDODSname(ddsV));
@@ -1579,7 +1570,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
           try {
             if (var.isMemberOfStructure()) {
-
               // we want the top structure this variable is contained in.
               while ((dataV.parent != null) && (dataV.parent.bt != null)) {
                 dataV = dataV.parent;
@@ -1600,10 +1590,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
               System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
           }
         }
-        result.add(data);
       }
     }
-    return result;
   }
 
   @Override

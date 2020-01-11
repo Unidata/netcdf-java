@@ -12,7 +12,8 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
@@ -150,12 +151,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     if (ds.getGroupsSize() > 1)
       name += "-" + group.getId();
 
-    AttributeContainerHelper gatts = gribCollection.getGlobalAttributes();
+    AttributeContainer gatts = gribCollection.getGlobalAttributes();
 
     // make horiz transform if needed
     List<CoverageTransform> transforms = new ArrayList<>();
 
-    AttributeContainerHelper projAtts = new AttributeContainerHelper(group.horizCoordSys.getId());
+    AttributeContainerMutable projAtts = new AttributeContainerMutable(group.horizCoordSys.getId());
     for (Parameter p : group.getGdsHorizCoordSys().proj.getProjectionParameters())
       projAtts.addAttribute(new Attribute(p));
     CoverageTransform projTransform = new CoverageTransform(group.horizCoordSys.getId(), projAtts, true);
@@ -259,7 +260,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     List<CoverageCoordAxis> result = new ArrayList<>(2);
     if (isLatLon) {
-      AttributeContainerHelper atts = new AttributeContainerHelper(CF.LATITUDE);
+      AttributeContainerMutable atts = new AttributeContainerMutable(CF.LATITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 
       double[] values = null;
@@ -275,20 +276,20 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
           AxisType.Lat, atts, CoverageCoordAxis.DependenceType.independent, null, spacing, hcs.ny, hcs.getStartY(),
           hcs.getEndY(), hcs.dy, values, this)));
 
-      atts = new AttributeContainerHelper(CF.LONGITUDE);
+      atts = new AttributeContainerMutable(CF.LONGITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       result.add(new CoverageCoordAxis1D(new CoverageCoordAxisBuilder(CF.LONGITUDE, CDM.LON_UNITS, null, DataType.FLOAT,
           AxisType.Lon, atts, CoverageCoordAxis.DependenceType.independent, null,
           CoverageCoordAxis.Spacing.regularPoint, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this)));
 
     } else {
-      AttributeContainerHelper atts = new AttributeContainerHelper("y");
+      AttributeContainerMutable atts = new AttributeContainerMutable("y");
       atts.addAttribute(new Attribute(CDM.UNITS, "km"));
       result.add(new CoverageCoordAxis1D(new CoverageCoordAxisBuilder("y", "km", CF.PROJECTION_Y_COORDINATE,
           DataType.FLOAT, AxisType.GeoY, atts, CoverageCoordAxis.DependenceType.independent, null,
           CoverageCoordAxis.Spacing.regularPoint, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this)));
 
-      atts = new AttributeContainerHelper("x");
+      atts = new AttributeContainerMutable("x");
       atts.addAttribute(new Attribute(CDM.UNITS, "km"));
       result.add(new CoverageCoordAxis1D(new CoverageCoordAxisBuilder("x", "km", CF.PROJECTION_X_COORDINATE,
           DataType.FLOAT, AxisType.GeoX, atts, CoverageCoordAxis.DependenceType.independent, null,
@@ -316,7 +317,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
       AxisType axisType = ll2d.getAxisType();
       String name = ll2d.toString();
-      AttributeContainerHelper atts = new AttributeContainerHelper(name);
+      AttributeContainerMutable atts = new AttributeContainerMutable(name);
       atts.addAttribute(new Attribute(_Coordinate.Stagger, CDM.CurvilinearOrthogonal));
       atts.addAttribute(new Attribute(CDM.StaggerType, ll2d.toString()));
 
@@ -385,7 +386,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
    * values[count++] = offset;
    * }
    * 
-   * AttributeContainerHelper atts = new AttributeContainerHelper(runtime.getName());
+   * AttributeContainerMutable atts = new AttributeContainerMutable(runtime.getName());
    * atts.addAttribute(new Attribute(CDM.UNITS, units));
    * atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
    * atts.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
@@ -429,7 +430,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
    * CoverageCoordAxis1D combined = new CoverageCoordAxis1D(
    * new CoverageCoordAxisBuilder(smoosh.runtime.getName(), smoosh.runtime.getUnits(), Grib.GRIB_RUNTIME,
    * DataType.DOUBLE, AxisType.RunTime,
-   * new AttributeContainerHelper(smoosh.runtime.getName(), smoosh.runtime.getAttributes()),
+   * new AttributeContainerMutable(smoosh.runtime.getName(), smoosh.runtime.getAttributes()),
    * smoosh.runtime.getDependenceType(), null, CoverageCoordAxis.Spacing.regular, n, smoosh.start, smoosh.end,
    * smoosh.resol, null, this, false));
    * 
@@ -587,7 +588,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     }
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(time2D.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(time2D.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit())); // LOOK why not udunit ??
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, CF.TIME));
@@ -642,7 +643,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
    * start = values[0];
    * end = values[n - 1];
    * 
-   * AttributeContainerHelper atts = new AttributeContainerHelper(time2D.getName());
+   * AttributeContainerMutable atts = new AttributeContainerMutable(time2D.getName());
    * atts.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
    * atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
    * atts.addAttribute(new Attribute(CDM.LONG_NAME, CF.TIME));
@@ -689,7 +690,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     }
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(time2D.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(time2D.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
@@ -729,7 +730,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     }
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(time2D.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(time2D.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
@@ -778,7 +779,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     for (Double offset : runtime.getOffsetsInTimeUnits())
       values[count++] = offset;
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(runtime.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(runtime.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, units));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
@@ -810,7 +811,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
         isScalar ? CoverageCoordAxis.DependenceType.scalar : CoverageCoordAxis.DependenceType.dependent;
     String refName = "ref" + time2D.getName();
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(time2D.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(time2D.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, time2D.getTimeUdUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
@@ -842,7 +843,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       data[count++] = masterOffsets.get(masterIdx - 1);
     }
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(time.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(time.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, time.getTimeUdUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
@@ -867,7 +868,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     for (int offset : offsets)
       values[count++] = offset;
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(time.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(time.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, time.getUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
@@ -893,7 +894,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       values[count++] = offset.getBounds2();
     }
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(time.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(time.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, time.getUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
@@ -926,7 +927,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
         values[i] = levels.get(i).getValue1();
     }
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(vertCoord.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(vertCoord.getName());
     String units = vertCoord.getUnit();
     atts.addAttribute(new Attribute(CDM.UNITS, units));
     AxisType axisType = AxisType.GeoZ;
@@ -953,7 +954,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     for (int i = 0; i < n; i++)
       values[i] = ((EnsCoordValue) ensCoord.getValue(i)).getEnsMember();
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(ensCoord.getName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(ensCoord.getName());
     String units = ensCoord.getUnit();
     atts.addAttribute(new Attribute(CDM.UNITS, units));
 
@@ -1041,7 +1042,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private Coverage makeCoverage(GribCollectionImmutable.VariableIndex gribVar,
       Map<Coordinate, List<CoverageCoordAxis>> coord2axisMap) {
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(gribVar.makeVariableName());
+    AttributeContainerMutable atts = new AttributeContainerMutable(gribVar.makeVariableName());
     atts.addAttribute(new Attribute(CDM.LONG_NAME, gribVar.makeVariableDescription()));
     atts.addAttribute(new Attribute(CDM.UNITS, gribVar.makeVariableUnits()));
     gribCollection.addVariableAttributes(atts, gribVar);
@@ -1077,8 +1078,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     String coordSysName = CoverageCoordSys.makeCoordSysName(makeAxisNameList(gribVar, coord2axisMap));
 
-    return new Coverage(gribVar.makeVariableName(), DataType.FLOAT, atts.getAttributes(), coordSysName,
-        gribVar.makeVariableUnits(), gribVar.makeVariableDescription(), this, gribVar);
+    return new Coverage(gribVar.makeVariableName(), DataType.FLOAT, atts, coordSysName, gribVar.makeVariableUnits(),
+        gribVar.makeVariableDescription(), this, gribVar);
   }
 
   //////////////////////////////////////////////////////
@@ -1225,7 +1226,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     Array data = dataReader.readData2(coordIter, yxRange.get(0), yxRange.get(1));
 
-    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);
+    return new GeoReferencedArray(coverage.getShortName(), coverage.getDataType(), data, subsetCoordSys);
   }
 
   // LOOK dependent axis could get added multiple times

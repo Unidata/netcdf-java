@@ -67,7 +67,7 @@ public class TestStructureDSBuilder {
         StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar).build();
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
-    assertThat(var.getOriginalVariable()).isEqualTo(orgVar);
+    assertThat((Object) var.getOriginalVariable()).isEqualTo(orgVar);
   }
 
 }

@@ -214,8 +214,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     else
       cdates = makeTimesFromStrings(org, errMessages);
 
-    List<Attribute> atts = org.getAttributes();
-    for (Attribute att : atts) {
+    for (Attribute att : org.attributes()) {
       addAttribute(att);
     }
   }
@@ -318,8 +317,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         count2++;
       }
 
-      // here we have to decouple from the original variable
-      cache = new Cache();
+      // we have to decouple from the original variable
+      cache.reset();
       setCachedData(shortData, true);
     }
 

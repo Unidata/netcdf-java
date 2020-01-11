@@ -5,6 +5,8 @@
 package ucar.nc2.dt;
 
 import ucar.ma2.DataType;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
@@ -61,20 +63,30 @@ public class VariableSimpleSubclass implements VariableSimpleIF {
     return v.getShape();
   }
 
+  // Will return ImmutableList
   public List<Dimension> getDimensions() {
     return v.getDimensions();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getAttributes() {
     return v.getAttributes();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public ucar.nc2.Attribute findAttributeIgnoreCase(String attName) {
     return v.findAttributeIgnoreCase(attName);
   }
 
   public String toString() {
     return v.toString();
+  }
+
+  @Override
+  public AttributeContainer attributes() {
+    return new AttributeContainerMutable(getName(), v.attributes()).toImmutable();
   }
 
   /**

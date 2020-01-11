@@ -56,15 +56,13 @@ public interface IOServiceProvider {
    * @param ncfile add objects to this empty NetcdfFile
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
-   * @deprecated Use open(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask)
+   * @deprecated Use build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask)
    */
   @Deprecated
   void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;
 
   /**
    * If this iosp implements build().
-   * 
-   * @return
    */
   boolean isBuilder();
 
@@ -78,6 +76,9 @@ public interface IOServiceProvider {
    * @throws IOException if read error
    */
   void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
+
+  /** Sometimes the builder needs access to the finished objects. This is called after ncfile.build() */
+  void buildFinish(NetcdfFile ncfile);
 
   /**
    * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the

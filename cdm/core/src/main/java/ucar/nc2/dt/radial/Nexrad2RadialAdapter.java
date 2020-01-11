@@ -42,9 +42,9 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
+    String convention = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
     if (_Coordinate.Convention.equals(convention)) {
-      String format = ncd.findAttValueIgnoreCase(null, "Format", null);
+      String format = ncd.getRootGroup().findAttValueIgnoreCase("Format", null);
       if (format != null && (isNEXRAD2Format(format) || format.equals("CINRAD-SA"))) {
         return this;
       }
@@ -194,7 +194,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String start_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_start", null);
+    String start_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
     if (start_datetime != null)
       startDate = formatter.getISODate(start_datetime);
     else
@@ -202,7 +202,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String end_datetime = ds.findAttValueIgnoreCase(null, "time_coverage_end", null);
+    String end_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
     if (end_datetime != null)
       endDate = formatter.getISODate(end_datetime);
     else
@@ -225,12 +225,10 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
 
     if (rnk == 3) {
       if (!isHighResolution(nds)) {
-        VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
-        rsvar = makeRadialVariable(nds, v, var);
+        rsvar = makeRadialVariable(nds, var);
       } else {
         if (!vName.endsWith("_HI")) {
-          VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
-          rsvar = makeRadialVariable(nds, v, var);
+          rsvar = makeRadialVariable(nds, var);
         }
       }
     }
@@ -239,11 +237,9 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
       dataVariables.add(rsvar);
   }
 
-
-
-  protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
+  protected RadialVariable makeRadialVariable(NetcdfDataset nds, Variable v0) {
     // this function is null in level 2
-    return new LevelII2Variable(nds, v, v0);
+    return new LevelII2Variable(nds, v0);
   }
 
   public String getInfo() {
@@ -256,14 +252,12 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
     int nsweeps;
     int nsweepsHR;
     ArrayList<LevelII2Sweep> sweeps;
-    String name;
 
-    private LevelII2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getShortName(), v0.getAttributes());
+    private LevelII2Variable(NetcdfDataset nds, Variable v0) {
+      super(v0.getShortName(), v0);
 
       nsweepsHR = 0;
       sweeps = new ArrayList<>();
-      name = v.getShortName();
       if (isHighResolution(nds)) {
         String vname = v0.getFullNameEscaped();
         Variable vehr = nds.findVariable(vname + "_HI");
@@ -293,8 +287,6 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
       nsweeps = shape[count];
       for (int i = nsweepsHR; i < (nsweeps + nsweepsHR); i++)
         sweeps.add(new LevelII2Sweep(v0, i, nrays, ngates));
-
-
     }
 
     public String toString() {

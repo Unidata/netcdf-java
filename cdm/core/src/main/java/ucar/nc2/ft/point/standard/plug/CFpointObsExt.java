@@ -26,7 +26,7 @@ public class CFpointObsExt extends CFpointObs {
 
   @Override
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
+    String conv = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
     return CDM.CF_EXTENDED.equalsIgnoreCase(conv);
   }
 

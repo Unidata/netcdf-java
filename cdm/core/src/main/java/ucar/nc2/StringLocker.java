@@ -8,16 +8,16 @@ import java.util.List;
  * A list of strings that only allows one thread to use any given value at the same time.
  *
  * @author cmrose
+ * @deprecated will move to ucar.nc2.util in ver 6.
  */
-
+@Deprecated
 public class StringLocker {
 
   private List<String> stringList = Collections.synchronizedList(new ArrayList<>());
   private boolean waiting;
 
   public synchronized void control(String item) {
-    // If the string is in use by another thread then wait() for the other thread to notify this thread it is done with
-    // it
+    // If the string is in use by another thread then wait() for the other thread
     waiting = stringList.contains(item);
     while (waiting) {
       try {

@@ -58,7 +58,7 @@ public class Write2ncRect {
     }
 
     // Variables
-    Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecord);
+    Structure recordStruct = (Structure) bufr.findVariable(BufrIosp2.obsRecordName);
     for (Variable oldVar : recordStruct.getVariables()) {
       if (oldVar.getDataType() == DataType.STRUCTURE)
         continue;
@@ -77,8 +77,7 @@ public class Write2ncRect {
         System.out.println("add var= " + newVar);
 
       // attributes
-      List<Attribute> attList = oldVar.getAttributes();
-      for (Attribute att : attList) {
+      for (Attribute att : oldVar.attributes()) {
         String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
         if (att.isArray())
           newVar.addAttribute(new Attribute(useName, att.getValues()));
@@ -117,8 +116,7 @@ public class Write2ncRect {
           System.out.println("add var= " + newVar);
 
         // attributes
-        List<Attribute> attList = seqVar.getAttributes();
-        for (Attribute att : attList) {
+        for (Attribute att : seqVar.attributes()) {
           String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
           if (att.isArray())
             newVar.addAttribute(new Attribute(useName, att.getValues()));

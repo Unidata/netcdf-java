@@ -62,7 +62,7 @@ public class COARDSConvention extends CoordSysBuilder {
     if (unit != null) {
       unit = unit.trim();
       if (SimpleUnit.isDateUnit(unit)) {
-        Attribute calAttr = var.findAttributeIgnoreCase(CF.CALENDAR);
+        Attribute calAttr = var.attributes().findAttributeIgnoreCase(CF.CALENDAR);
         if (calAttr == null) {
           calAttr = new Attribute(CF.CALENDAR, Calendar.gregorian.toString());
           var.addAttribute(calAttr);

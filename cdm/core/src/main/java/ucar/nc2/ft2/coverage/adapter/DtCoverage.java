@@ -233,7 +233,7 @@ public class DtCoverage implements IsMissingEvaluator {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
-    return vs.findAttributeIgnoreCase(name);
+    return vs.attributes().findAttributeIgnoreCase(name);
   }
 
   /**
@@ -244,7 +244,7 @@ public class DtCoverage implements IsMissingEvaluator {
    * @return Attribute string value, or default if not found.
    */
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return dataset.getNetcdfDataset().findAttValueIgnoreCase(vs, attName, defaultValue);
+    return vs.findAttValueIgnoreCase(attName, defaultValue);
   }
 
   // implementation of GeoGrid interface
@@ -268,13 +268,11 @@ public class DtCoverage implements IsMissingEvaluator {
     return shape;
   }
 
-  /**
-   * get the data type
-   */
   public DataType getDataType() {
     return vs.getDataType();
   }
 
+  @Deprecated
   public List<Attribute> getAttributes() {
     return vs.getAttributes();
   }

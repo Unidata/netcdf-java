@@ -110,13 +110,13 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     StructureData obsData = obs.getFeatureData();
 
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
-    // obsCoords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(),
+    // obsCoords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(),
     // DataType.DOUBLE)); // LOOK ??
     Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     // if (useAlt) {
-    obsCoords.add(VariableSimpleImpl.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-        .add(new Attribute(CF.STANDARD_NAME, "altitude"))
-        .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits))));
+    obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+        .addAttribute(CF.STANDARD_NAME, "altitude")
+        .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
     coordNames.format(" %s", altitudeCoordinateName);
     // }
 
@@ -141,29 +141,29 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     Dimension stationDim = writer.addDimension(null, stationDimName, stnList.size());
 
     List<VariableSimpleIF> stnVars = new ArrayList<>();
-    stnVars.add(VariableSimpleImpl.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE));
-    stnVars.add(VariableSimpleImpl.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE));
+    stnVars.add(VariableSimpleBuilder.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
+    stnVars.add(VariableSimpleBuilder.makeScalar(lonName, "station longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
 
     if (useAlt) {
-      stnVars.add(VariableSimpleImpl.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
-          .add(new Attribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE))
-          .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits))));
+      stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
+          .addAttribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE)
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
     }
 
-    stnVars.add(VariableSimpleImpl.makeString(stationIdName, "station identifier", null, id_strlen)
-        .add(new Attribute(CF.CF_ROLE, CF.TIMESERIES_ID))); // station_id:cf_role = "timeseries_id";
+    stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)
+        .addAttribute(CF.CF_ROLE, CF.TIMESERIES_ID).build()); // station_id:cf_role = "timeseries_id";
 
     if (useDesc)
-      stnVars.add(VariableSimpleImpl.makeString(descName, "station description", null, desc_strlen)
-          .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_NAME)));
+      stnVars.add(VariableSimpleBuilder.makeString(descName, "station description", null, desc_strlen)
+          .addAttribute(CF.STANDARD_NAME, CF.PLATFORM_NAME).build());
 
     if (useWmoId)
-      stnVars.add(VariableSimpleImpl.makeString(wmoName, "station WMO id", null, wmo_strlen)
-          .add(new Attribute(CF.STANDARD_NAME, CF.PLATFORM_ID)));
+      stnVars.add(VariableSimpleBuilder.makeString(wmoName, "station WMO id", null, wmo_strlen)
+          .addAttribute(CF.STANDARD_NAME, CF.PLATFORM_ID).build());
 
     for (StructureMembers.Member m : stnData.getMembers()) {
       if (getDataVar(m.getName()) != null)
-        stnVars.add(new VariableSimpleAdapter(m));
+        stnVars.add(VariableSimpleBuilder.fromMember(m).build());
     }
 
     if (isExtended) {
@@ -204,20 +204,21 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
-    profileVars.add(VariableSimpleImpl.makeString(profileIdName, "profile identifier", null, id_strlen)
-        .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID)) // profileId:cf_role = "profile_id";
-        .add(new Attribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue))));
-
-    profileVars.add(VariableSimpleImpl.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
-        .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName))); // rowSize:sample_dimension = "obs"
-
-    profileVars.add(
-        VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
-            .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
+    profileVars.add(VariableSimpleBuilder.makeString(profileIdName, "profile identifier", null, id_strlen)
+        .addAttribute(CF.CF_ROLE, CF.PROFILE_ID) // profileId:cf_role = "profile_id";
+        .addAttribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue)).build());
 
     profileVars
-        .add(VariableSimpleImpl.makeScalar(stationIndexName, "station index for this profile", null, DataType.INT)
-            .add(new Attribute(CF.INSTANCE_DIMENSION, stationDimName)));
+        .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
+            .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build()); // rowSize:sample_dimension = "obs"
+
+    profileVars.add(VariableSimpleBuilder
+        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
+
+    profileVars
+        .add(VariableSimpleBuilder.makeScalar(stationIndexName, "station index for this profile", null, DataType.INT)
+            .addAttribute(CF.INSTANCE_DIMENSION, stationDimName).build());
 
     for (StructureMembers.Member m : profileData.getMembers()) {
       VariableSimpleIF dv = getDataVar(m.getName());

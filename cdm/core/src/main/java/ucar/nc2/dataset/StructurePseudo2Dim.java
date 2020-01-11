@@ -75,7 +75,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
           orgV.getUnitsString(), orgV.getDescription());
       memberV.setDataType(orgV.getDataType());
       memberV.setSPobject(orgV.getSPobject()); // ??
-      memberV.addAll(orgV.getAttributes());
+      memberV.addAll(orgV.attributes());
 
       List<Dimension> dimList = new ArrayList<>(orgV.getDimensions());
       memberV.setDimensions(dimList.subList(2, dimList.size())); // remove first 2 dimensions

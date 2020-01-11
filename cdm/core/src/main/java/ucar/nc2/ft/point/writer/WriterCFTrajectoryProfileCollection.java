@@ -87,9 +87,9 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
     if (useAlt) {
-      obsCoords.add(VariableSimpleImpl.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
-          .add(new Attribute(CF.STANDARD_NAME, "altitude"))
-          .add(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits))));
+      obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
+          .addAttribute(CF.STANDARD_NAME, "altitude")
+          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
       coordNames.format(" %s", altitudeCoordinateName);
     }
 
@@ -103,12 +103,12 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
     List<VariableSimpleIF> trajVars = new ArrayList<>();
 
-    trajVars.add(VariableSimpleImpl.makeString(trajIdName, "trajectory identifier", null, traj_strlen)
-        .add(new Attribute(CF.CF_ROLE, CF.TRAJECTORY_ID)));
+    trajVars.add(VariableSimpleBuilder.makeString(trajIdName, "trajectory identifier", null, traj_strlen)
+        .addAttribute(CF.CF_ROLE, CF.TRAJECTORY_ID).build());
 
     for (StructureMembers.Member m : trajData.getMembers()) {
       if (getDataVar(m.getName()) != null)
-        trajVars.add(new VariableSimpleAdapter(m));
+        trajVars.add(VariableSimpleBuilder.fromMember(m).build());
     }
 
     if (isExtended) {
@@ -142,22 +142,25 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
-    profileVars.add(VariableSimpleImpl.makeString(profileIdName, "profile identifier", null, id_strlen)
-        .add(new Attribute(CF.CF_ROLE, CF.PROFILE_ID)) // profileId:cf_role = "profile_id";
-        .add(new Attribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue))));
-
-    profileVars.add(VariableSimpleImpl.makeScalar(latName, "profile latitude", CDM.LAT_UNITS, DataType.DOUBLE));
-    profileVars.add(VariableSimpleImpl.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE));
-    profileVars.add(
-        VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
-            .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
+    profileVars.add(VariableSimpleBuilder.makeString(profileIdName, "profile identifier", null, id_strlen)
+        .addAttribute(CF.CF_ROLE, CF.PROFILE_ID) // profileId:cf_role = "profile_id";
+        .addAttribute(CDM.MISSING_VALUE, String.valueOf(idMissingValue)).build());
 
     profileVars
-        .add(VariableSimpleImpl.makeScalar(trajectoryIndexName, "trajectory index for this profile", null, DataType.INT)
-            .add(new Attribute(CF.INSTANCE_DIMENSION, trajDimName)));
+        .add(VariableSimpleBuilder.makeScalar(latName, "profile latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
+    profileVars
+        .add(VariableSimpleBuilder.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
+    profileVars.add(VariableSimpleBuilder
+        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
-    profileVars.add(VariableSimpleImpl.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
-        .add(new Attribute(CF.SAMPLE_DIMENSION, recordDimName)));
+    profileVars.add(
+        VariableSimpleBuilder.makeScalar(trajectoryIndexName, "trajectory index for this profile", null, DataType.INT)
+            .addAttribute(CF.INSTANCE_DIMENSION, trajDimName).build());
+
+    profileVars
+        .add(VariableSimpleBuilder.makeScalar(numberOfObsName, "number of obs for this profile", null, DataType.INT)
+            .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build());
 
     for (StructureMembers.Member m : profileData.getMembers()) {
       VariableSimpleIF dv = getDataVar(m.getName());

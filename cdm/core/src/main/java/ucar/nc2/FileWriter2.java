@@ -23,11 +23,7 @@ import java.util.Map;
  * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
  * then the new file is filled with fill values, like ncgen.
  * <p/>
- * <p>
- * Use a NetcdfFileWriter object for a lower level API.
- *
- * @see ucar.nc2.dt.grid.CFGridWriter2
- * @see ucar.nc2.ft.point.writer.CFPointWriter
+ * Use NetcdfFileWriter object for a lower level API.
  *
  * @deprecated use ucar.nc2.writer.FileWriter
  */
@@ -121,7 +117,7 @@ public class FileWriter2 {
     varMap.put(oldVar, newVar);
     varList.add(oldVar);
 
-    for (Attribute orgAtt : oldVar.getAttributes())
+    for (Attribute orgAtt : oldVar.attributes())
       writer.addVariableAttribute(newVar, convertAttribute(orgAtt));
 
     return newVar;
@@ -261,7 +257,7 @@ public class FileWriter2 {
       varList.add(oldVar);
 
       // attributes
-      for (Attribute orgAtt : oldVar.getAttributes()) {
+      for (Attribute orgAtt : oldVar.attributes()) {
         writer.addVariableAttribute(v, convertAttribute(orgAtt));
       }
     }
@@ -271,7 +267,7 @@ public class FileWriter2 {
     Group newGroup = writer.addGroup(newParent, oldGroup.getShortName());
 
     // attributes
-    for (Attribute att : oldGroup.getAttributes()) {
+    for (Attribute att : oldGroup.attributes()) {
       writer.addGroupAttribute(newGroup, att); // atts are immutable
       if (debug)
         System.out.println("add gatt= " + att);
@@ -324,7 +320,7 @@ public class FileWriter2 {
         System.out.println("add var= " + v);
 
       // attributes
-      for (Attribute att : oldVar.getAttributes())
+      for (Attribute att : oldVar.attributes())
         writer.addVariableAttribute(v, att); // atts are immutable
     }
 

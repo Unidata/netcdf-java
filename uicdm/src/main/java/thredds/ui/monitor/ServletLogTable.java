@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package thredds.ui.monitor;
 
+import com.github.lgooddatepicker.components.DateTimePicker;
+import java.time.ZoneId;
 import thredds.logs.LogReader;
 import thredds.logs.ServletLogParser;
 import ucar.ui.widget.BAMutil;
@@ -31,6 +33,7 @@ import java.util.List;
  * @since Mar 26, 2009
  */
 public class ServletLogTable extends JPanel {
+
   private PreferencesExt prefs;
   private DnsLookup dnsLookup;
 
@@ -47,11 +50,13 @@ public class ServletLogTable extends JPanel {
 
   // private JComboBox rootSelector, serviceSelector;
   // private JLabel sizeLable;
-  private JTextArea startDateField, endDateField;
 
-  public ServletLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, DnsLookup dnsLookup) {
-    this.startDateField = startDateField;
-    this.endDateField = endDateField;
+  private DateTimePicker dateTimePickerStart, dateTimePickerEnd;
+
+  public ServletLogTable(DateTimePicker dateTimePickerStart, DateTimePicker dateTimePickerEnd, PreferencesExt prefs,
+      DnsLookup dnsLookup) {
+    this.dateTimePickerStart = dateTimePickerStart;
+    this.dateTimePickerEnd = dateTimePickerEnd;
     this.prefs = prefs;
     this.dnsLookup = dnsLookup;
 
@@ -59,8 +64,9 @@ public class ServletLogTable extends JPanel {
     logTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
-        if (log == null)
+        if (log == null) {
           return;
+        }
         infoTA.setText(log.toString());
         infoWindow.show();
       }
@@ -70,8 +76,9 @@ public class ServletLogTable extends JPanel {
     varPopup.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
-        if (log == null)
+        if (log == null) {
           return;
+        }
         try {
           infoTA.setText(log.getIp() + " = " + dnsLookup.reverseDNS(log.getIp()));
         } catch (Exception ee) {
@@ -85,8 +92,9 @@ public class ServletLogTable extends JPanel {
     uptimeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Uptime uptime = (Uptime) uptimeTable.getSelectedBean();
-        if (uptime == null)
+        if (uptime == null) {
           return;
+        }
         mergeTable.setBeans(filter(uptime.mergeList));
       }
     });
@@ -95,8 +103,9 @@ public class ServletLogTable extends JPanel {
     mergeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Merge m = (Merge) mergeTable.getSelectedBean();
-        if (m == null)
+        if (m == null) {
           return;
+        }
         infoTA.setText(m.toString());
         infoWindow.show();
       }
@@ -106,8 +115,9 @@ public class ServletLogTable extends JPanel {
     varPopupM.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Merge m = (Merge) mergeTable.getSelectedBean();
-        if (m == null)
+        if (m == null) {
           return;
+        }
         try {
           infoTA.setText(m.getIp() + " = " + dnsLookup.reverseDNS(m.getIp()));
         } catch (Exception ee) {
@@ -130,8 +140,9 @@ public class ServletLogTable extends JPanel {
     undoneTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Merge m = (Merge) undoneTable.getSelectedBean();
-        if (m == null)
+        if (m == null) {
           return;
+        }
         infoTA.setText(m.toString());
         infoWindow.show();
       }
@@ -141,8 +152,9 @@ public class ServletLogTable extends JPanel {
     miscTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         LogReader.Log log = (LogReader.Log) miscTable.getSelectedBean();
-        if (log == null)
+        if (log == null) {
           return;
+        }
         infoTA.setText(log.toString());
         infoWindow.show();
       }
@@ -155,7 +167,7 @@ public class ServletLogTable extends JPanel {
 
     /*
      * the selectors
-     * 
+     *
      * rootSelector = new JComboBox(TestFileSystem.getRoots());
      * rootSelector.insertItemAt("", 0);
      * rootSelector.addActionListener(new ActionListener() {
@@ -164,7 +176,7 @@ public class ServletLogTable extends JPanel {
      * tabbedPanel.setSelectedIndex(1);
      * }
      * });
-     * 
+     *
      * serviceSelector = new JComboBox(TestFileSystem.services);
      * serviceSelector.insertItemAt("", 0);
      * serviceSelector.addActionListener(new ActionListener() {
@@ -173,7 +185,7 @@ public class ServletLogTable extends JPanel {
      * tabbedPanel.setSelectedIndex(1);
      * }
      * });
-     * 
+     *
      * JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
      * topPanel.add(new JLabel("Dataroot:"));
      * topPanel.add(rootSelector);
@@ -244,13 +256,6 @@ public class ServletLogTable extends JPanel {
 
   public void setLocalManager(LogLocalManager manager) {
     this.manager = manager;
-
-    Date startDate = manager.getStartDate();
-    Date endDate = manager.getEndDate();
-    if (startDate != null)
-      startDateField.setText(df.format(startDate));
-    if (endDate != null)
-      endDateField.setText(df.format(endDate));
   }
 
   private MergeFilter currFilter;
@@ -258,18 +263,19 @@ public class ServletLogTable extends JPanel {
   public void showLogs(MergeFilter filter) {
     Date start = null, end = null;
     try {
-      start = df.parse(startDateField.getText());
-      end = df.parse(endDateField.getText());
+      start = Date.from(dateTimePickerStart.getDateTimeStrict().atZone(ZoneId.systemDefault()).toInstant());
+      end = Date.from(dateTimePickerEnd.getDateTimeStrict().atZone(ZoneId.systemDefault()).toInstant());
       logFiles = manager.getLocalFiles(start, end);
     } catch (Exception e) {
       e.printStackTrace();
       logFiles = manager.getLocalFiles(null, null);
     }
 
-    if ((start != null) && (end != null))
+    if ((start != null) && (end != null)) {
       currFilter = new DateFilter(start.getTime(), end.getTime(), filter);
-    else
+    } else {
       currFilter = filter;
+    }
 
     LogReader reader = new LogReader(new ServletLogParser());
 
@@ -279,34 +285,40 @@ public class ServletLogTable extends JPanel {
     // sort on name
     logFiles.sort(new Comparator<LogLocalManager.FileDateRange>() {
       public int compare(LogLocalManager.FileDateRange o1, LogLocalManager.FileDateRange o2) {
-        if (o1.f.getName().equals("threddsServlet.log"))
+        if (o1.f.getName().equals("threddsServlet.log")) {
           return 1;
-        if (o2.f.getName().equals("threddsServlet.log"))
+        }
+        if (o2.f.getName().equals("threddsServlet.log")) {
           return -1;
+        }
         return o1.f.getName().compareTo(o2.f.getName());
       }
 
       private int getSeq(File f) {
         String name = f.getName();
         int pos = name.indexOf(".log") + 5;
-        if (name.length() <= pos)
+        if (name.length() <= pos) {
           return 0;
+        }
         return Integer.parseInt(name.substring(pos));
       }
     });
 
     try {
       completeLogs = new ArrayList<>(30000);
-      for (LogLocalManager.FileDateRange fdr : logFiles)
+      for (LogLocalManager.FileDateRange fdr : logFiles) {
         reader.scanLogFile(fdr.f, new MyClosure(completeLogs), new LogReader.FilterNoop(), stats);
+      }
 
       // estimate number of threads used
       int nthreads = 0;
       for (ServletLogParser.ServletLog log : completeLogs) {
-        if (log.isStart())
+        if (log.isStart()) {
           nthreads++;
-        if (log.isDone() && nthreads > 0)
+        }
+        if (log.isDone() && nthreads > 0) {
           nthreads--;
+        }
         log.setNthreads(nthreads);
       }
       logTable.setBeans(completeLogs);
@@ -331,8 +343,9 @@ public class ServletLogTable extends JPanel {
 
     List<Merge> result = new ArrayList<>(allMerge.size());
     for (Merge m : allMerge) {
-      if (currFilter.pass(m))
+      if (currFilter.pass(m)) {
         result.add(m);
+      }
     }
     return result;
   }
@@ -363,10 +376,12 @@ public class ServletLogTable extends JPanel {
   ////////////////////////////////////////////////////////
 
   interface MergeFilter {
+
     boolean pass(Merge log);
   }
 
   private static class DateFilter implements MergeFilter {
+
     long start, end;
     MergeFilter chain;
 
@@ -377,8 +392,9 @@ public class ServletLogTable extends JPanel {
     }
 
     public boolean pass(Merge log) {
-      if (chain != null && !chain.pass(log))
+      if (chain != null && !chain.pass(log)) {
         return false;
+      }
 
       return (log.start.date >= start) && (log.start.date <= end);
 
@@ -386,6 +402,7 @@ public class ServletLogTable extends JPanel {
   }
 
   public static class IpFilter implements MergeFilter {
+
     String[] match;
     MergeFilter chain;
 
@@ -395,18 +412,22 @@ public class ServletLogTable extends JPanel {
     }
 
     public boolean pass(Merge log) {
-      if (chain != null && !chain.pass(log))
+      if (chain != null && !chain.pass(log)) {
         return false;
+      }
 
-      for (String s : match)
-        if (log.getIp().startsWith(s))
+      for (String s : match) {
+        if (log.getIp().startsWith(s)) {
           return false;
+        }
+      }
 
       return true;
     }
   }
 
   public static class ErrorOnlyFilter implements MergeFilter {
+
     MergeFilter chain;
 
     public ErrorOnlyFilter(MergeFilter chain) {
@@ -414,8 +435,9 @@ public class ServletLogTable extends JPanel {
     }
 
     public boolean pass(Merge log) {
-      if (chain != null && !chain.pass(log))
+      if (chain != null && !chain.pass(log)) {
         return false;
+      }
 
       int status = log.getStatus();
       return (status >= 400) && (status < 1000);
@@ -425,6 +447,7 @@ public class ServletLogTable extends JPanel {
 
 
   private static class MyClosure implements LogReader.Closure {
+
     ArrayList<ServletLogParser.ServletLog> logs;
 
     MyClosure(ArrayList<ServletLogParser.ServletLog> logs) {
@@ -432,20 +455,21 @@ public class ServletLogTable extends JPanel {
     }
 
     public void process(LogReader.Log log) {
-      if (log instanceof ServletLogParser.ServletLog)
+      if (log instanceof ServletLogParser.ServletLog) {
         logs.add((ServletLogParser.ServletLog) log);
-      else
+      } else {
         System.out.printf("HEY NULL LOG%n");
+      }
     }
   }
 
   /*
    * public void setLogFiles(List<File> logFiles) {
    * LogReader reader = new LogReader(new ServletLogParser());
-   * 
+   *
    * long startElapsed = System.nanoTime();
    * LogReader.Stats stats = new LogReader.Stats();
-   * 
+   *
    * // sort on name
    * Collections.sort(logFiles, new Comparator<File>() {
    * public int compare(File o1, File o2) {
@@ -453,7 +477,7 @@ public class ServletLogTable extends JPanel {
    * if (o2.getName().equals("threddsServlet.log")) return -1;
    * return o1.getName().compareTo(o2.getName());
    * }
-   * 
+   *
    * private int getSeq(File f) {
    * String name = f.getName();
    * int pos = name.indexOf(".log") + 5;
@@ -461,25 +485,25 @@ public class ServletLogTable extends JPanel {
    * return Integer.parseInt(name.substring(pos));
    * }
    * });
-   * 
+   *
    * try {
    * completeLogs = new ArrayList<ServletLogParser.ServletLog>(30000);
    * for (File f : logFiles)
    * reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
    * logTable.setBeans(completeLogs);
-   * 
+   *
    * } catch (IOException ioe) {
    * ioe.printStackTrace();
    * return;
    * }
-   * 
+   *
    * long elapsedTime = System.nanoTime() - startElapsed;
    * System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
    * System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
-   * 
+   *
    * mergeTable.setBeans(new ArrayList());
    * undoneTable.setBeans(new ArrayList());
-   * 
+   *
    * calcMerge = true;
    * }
    */
@@ -488,6 +512,7 @@ public class ServletLogTable extends JPanel {
 
 
   public static class Merge {
+
     public long getReqTime() {
       return start.getReqTime();
     }
@@ -548,25 +573,30 @@ public class ServletLogTable extends JPanel {
 
     void add(ServletLogParser.ServletLog log) {
       logs.add(log);
-      if (!log.getLevel().equals("INFO"))
+      if (!log.getLevel().equals("INFO")) {
         level = log.getLevel();
-      if (log.extra != null)
+      }
+      if (log.extra != null) {
         extra = log.extra;
+      }
     }
 
     public String toString() {
       Formatter f = new Formatter();
-      for (ServletLogParser.ServletLog log : logs)
+      for (ServletLogParser.ServletLog log : logs) {
         f.format("%s%n", log);
+      }
       return f.toString();
     }
   }
 
   private void calcMergeLogs(ArrayList<ServletLogParser.ServletLog> logs) {
-    if (!calcMerge)
+    if (!calcMerge) {
       return;
-    if (logs == null)
+    }
+    if (logs == null) {
       return;
+    }
 
     logs.sort(new Comparator<ServletLogParser.ServletLog>() {
       public int compare(ServletLogParser.ServletLog o1, ServletLogParser.ServletLog o2) {
@@ -584,8 +614,9 @@ public class ServletLogTable extends JPanel {
     ServletLogParser.ServletLog last = null;
     Uptime current = null;
     for (ServletLogParser.ServletLog log : logs) {
-      if (log.getReqSeq() == 0)
+      if (log.getReqSeq() == 0) {
         continue;
+      }
       if (current == null) {
         current = new Uptime(log);
         uptimeList.add(current);
@@ -613,6 +644,7 @@ public class ServletLogTable extends JPanel {
   }
 
   public class Uptime {
+
     private int n = 10 * 1000;
 
 
@@ -678,10 +710,11 @@ public class ServletLogTable extends JPanel {
 
       } else {
         Merge merge = map.get(log.getReqSeq());
-        if (merge != null)
+        if (merge != null) {
           merge.add(log);
-        else
+        } else {
           miscList.add(log);
+        }
       }
     }
 
@@ -703,7 +736,7 @@ public class ServletLogTable extends JPanel {
    * mergeTable.setBeans(completeMerge);
    * return;
    * }
-   * 
+   *
    * ArrayList<Merge> restrictMerge = new ArrayList<Merge>(1000);
    * for (Merge m : completeMerge) {
    * if (TestFileSystem.getDataroot(m.getPath()).equals(root))
@@ -713,13 +746,13 @@ public class ServletLogTable extends JPanel {
    * sizeLable.setText(Integer.toString(restrictMerge.size()));
    * calcMerge = true;
    * }
-   * 
+   *
    * void selectService(String service) {
    * if (service.length() == 0) {
    * mergeTable.setBeans(completeMerge);
    * return;
    * }
-   * 
+   *
    * ArrayList<Merge> restrictMerge = new ArrayList<Merge>(1000);
    * for (Merge m : completeMerge) {
    * if (TestFileSystem.getService(m.getPath()).equals(service))

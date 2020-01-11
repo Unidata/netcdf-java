@@ -96,7 +96,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   protected final boolean isGrib1;
   protected final org.slf4j.Logger logger;
 
@@ -123,6 +122,63 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected abstract String getVerticalCoordDesc(int vc_code);
 
   protected abstract GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex);
+
+  @Override
+  public boolean isBuilder() {
+    return true;
+  }
+
+  @Override
+  public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+    super.open(raf, rootGroup.getNcfile(), cancelTask);
+
+    if (gHcs != null) { // just use the one group that was set in the constructor
+      this.gribCollection = gHcs.getGribCollection();
+      if (this.gribCollection instanceof PartitionCollectionImmutable) {
+        isPartitioned = true;
+      }
+      gribTable = createCustomizer();
+      GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
+
+      helper.addGroup(rootGroup, gHcs, gtype, false);
+
+    } else if (gribCollection == null) { // may have been set in the constructor
+
+      this.gribCollection =
+          GribCdmIndex.openGribCollectionFromRaf(raf, config, CollectionUpdateType.testIndexOnly, logger);
+      if (gribCollection == null) {
+        throw new IllegalStateException("Not a GRIB data file or index file " + raf.getLocation());
+      }
+
+      isPartitioned = (this.gribCollection instanceof PartitionCollectionImmutable);
+      gribTable = createCustomizer();
+      GribIospBuilder helper = new GribIospBuilder(this, isGrib1, logger, gribCollection, gribTable);
+
+      boolean useDatasetGroup = gribCollection.getDatasets().size() > 1;
+      for (GribCollectionImmutable.Dataset ds : gribCollection.getDatasets()) {
+        Group.Builder topGroup;
+        if (useDatasetGroup) {
+          topGroup = Group.builder(rootGroup);
+          topGroup.setName(ds.getType().toString());
+        } else {
+          topGroup = rootGroup;
+        }
+
+        Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
+        boolean useGroups = ds.getGroupsSize() > 1;
+        for (GribCollectionImmutable.GroupGC g : groups) {
+          helper.addGroup(topGroup, g, ds.getType(), useGroups);
+        }
+      }
+    }
+
+    for (Attribute att : gribCollection.getGlobalAttributes()) {
+      rootGroup.addAttribute(att);
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  // old way (before version 5.3)
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -166,7 +222,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
     }
 
-    for (Attribute att : gribCollection.getGlobalAttributes().getAttributes()) {
+    for (Attribute att : gribCollection.getGlobalAttributes()) {
       ncfile.addAttribute(null, att);
     }
   }
@@ -484,17 +540,16 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.setSPobject(new Time2Dinfo(Time2DinfoType.reftime, null, rtc));
   }
 
-  private enum Time2DinfoType {
+  enum Time2DinfoType {
     off, offU, intv, intvU, bounds, boundsU, is1Dtime, isUniqueRuntime, reftime, timeAuxRef
   }
 
-  private static class Time2Dinfo {
-
+  static class Time2Dinfo {
     final Time2DinfoType which;
     final CoordinateTime2D time2D;
     final Coordinate time1D;
 
-    private Time2Dinfo(Time2DinfoType which, CoordinateTime2D time2D, Coordinate time1D) {
+    Time2Dinfo(Time2DinfoType which, CoordinateTime2D time2D, Coordinate time1D) {
       this.which = which;
       this.time2D = time2D;
       this.time1D = time1D;
@@ -905,7 +960,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   @Nullable
-  private String searchCoord(Grib2Utils.LatLonCoordType type, List<GribCollectionImmutable.VariableIndex> list) {
+  String searchCoord(Grib2Utils.LatLonCoordType type, List<GribCollectionImmutable.VariableIndex> list) {
     if (type == null) {
       return null;
     }

@@ -13,7 +13,9 @@ import java.util.ArrayList;
  * 
  * @author caron
  * @since Jul 6, 2007
+ * @deprecated do not use
  */
+@Deprecated
 public class DatasetConstructor {
 
   /**
@@ -94,8 +96,8 @@ public class DatasetConstructor {
    * @param target copy to here
    */
   public static void transferVariableAttributes(Variable src, Variable target) {
-    for (Attribute a : src.getAttributes()) {
-      if (null == target.findAttribute(a.getShortName()))
+    for (Attribute a : src.attributes()) {
+      if (null == target.attributes().findAttribute(a.getShortName()))
         target.addAttribute(a);
     }
   }
@@ -107,8 +109,8 @@ public class DatasetConstructor {
    * @param target copy to here
    */
   public static void transferGroupAttributes(Group src, Group target) {
-    for (Attribute a : src.getAttributes()) {
-      if (null == target.findAttribute(a.getShortName()))
+    for (Attribute a : src.attributes()) {
+      if (null == target.attributes().findAttribute(a.getShortName()))
         target.addAttribute(a);
     }
   }
