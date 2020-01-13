@@ -68,7 +68,7 @@ public abstract class Grib2Pds {
         return new Grib2Pds61(input);
       default:
         log.warn("Missing template " + template);
-        return null;
+        throw new UnsupportedOperationException ("Product Definition " + template + " not yet implemented.");
     }
   }
 
