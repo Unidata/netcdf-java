@@ -370,7 +370,7 @@ public class NetcdfFiles {
     ucar.unidata.io.RandomAccessFile raf = null;
 
     for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
-      if (provider.isOwnerOf("location")) {
+      if (provider.isOwnerOf(location)) {
         raf = provider.open(location);
         // might cause issues if the end of a resource location string
         // cannot be reliably used to determine compression
