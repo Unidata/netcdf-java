@@ -840,7 +840,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     Dimension d = h5group.dimMap.get(dimName); // first look in current group
     if (d == null) { // create if not found
-      d = Dimension.builder(dimName, length).setIsUnlimited(isUnlimited).build();
+      d = Dimension.builder().setName(dimName).setIsUnlimited(isUnlimited).setLength(length).build();
       h5group.dimMap.put(dimName, d);
       h5group.dimList.add(d);
       parent.addDimension(d);
