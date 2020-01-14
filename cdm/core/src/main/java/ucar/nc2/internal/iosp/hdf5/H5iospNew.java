@@ -7,6 +7,9 @@ package ucar.nc2.internal.iosp.hdf5;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.util.Optional;
+
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -105,6 +108,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   private H5headerNew header;
   private boolean isEos;
   boolean includeOriginalAttributes;
+  private Charset valueCharset;
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
@@ -124,6 +128,32 @@ public class H5iospNew extends AbstractIOServiceProvider {
         }
       });
     }
+  }
+
+  @Override
+  public Object sendIospMessage(Object message) {
+    if (message instanceof Charset) {
+      setValueCharset((Charset) message);
+    }
+    return super.sendIospMessage(message);
+  }
+
+  /**
+   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * occurs by sending a charset as a message using the {@link #sendIospMessage}
+   * method.
+   * @return {@link Charset value charset} if it was defined.
+   */
+  protected Optional<Charset> getValueCharset() {
+    return Optional.ofNullable(valueCharset);
+  }
+
+  /**
+   * Define {@link Charset value charset}.
+   * @param charset may be null.
+   */
+  protected void setValueCharset(Charset charset) {
+    valueCharset = charset;
   }
 
   @Override

@@ -5,6 +5,7 @@
 
 package ucar.unidata.io;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import ucar.nc2.dataset.DatasetUrl;
@@ -1516,9 +1517,21 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public String readString(int nbytes) throws IOException {
+    return readString(nbytes, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Read a String of known length.
+   *
+   * @param nbytes number of bytes to reSad
+   * @param charset the {@link Charset charset} to be used to decode the bytes
+   * @return String wrapping the bytes.
+   * @throws IOException if an I/O error occurs.
+   */
+  public String readString(int nbytes, Charset charset) throws IOException {
     byte[] data = new byte[nbytes];
     readFully(data);
-    return new String(data, StandardCharsets.UTF_8);
+    return new String(data, charset);
   }
 
   /**
@@ -1529,13 +1542,25 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public String readStringMax(int nbytes) throws IOException {
+    return readStringMax(nbytes, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Read a String of max length, zero terminate.
+   *
+   * @param nbytes number of bytes to read
+   * @param charset the {@link Charset charset} to be used to decode the bytes
+   * @return String wrapping the bytes.
+   * @throws IOException if an I/O error occurs.
+   */
+  public String readStringMax(int nbytes, Charset charset) throws IOException {
     byte[] b = new byte[nbytes];
     readFully(b);
     int count;
     for (count = 0; count < nbytes; count++)
       if (b[count] == 0)
         break;
-    return new String(b, 0, count, StandardCharsets.UTF_8);
+    return new String(b, 0, count, charset);
   }
 
   //

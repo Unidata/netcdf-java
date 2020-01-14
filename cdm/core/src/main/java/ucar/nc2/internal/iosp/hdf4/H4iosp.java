@@ -9,7 +9,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Optional;
+
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -41,7 +44,8 @@ public class H4iosp extends AbstractIOServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
   private static boolean showLayoutTypes;
 
-  private H4header header = new H4header();
+  private H4header header;
+  private Charset valueCharset;
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -50,8 +54,9 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   @Override
   public String getFileTypeId() {
-    if (header.isEos())
+    if (header != null && header.isEos()) {
       return "HDF4-EOS";
+    }
     return DataFormatType.HDF4.getDescription();
   }
 
@@ -64,9 +69,21 @@ public class H4iosp extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
     Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
-    header.read(raf, rootGroup, null);
+    getHeader().read(raf, rootGroup, null);
     ncfile.setRootGroup(rootGroup.build(null));
     ncfile.finish();
+  }
+
+  /**
+   * Return header for reading netcdf file.
+   * Create it if it's not already created.
+   * @return header for reading netcdf file.
+   */
+  private H4header getHeader() {
+    if (header == null) {
+      header = new H4header(this);
+    }
+    return header;
   }
 
   @Override
@@ -79,7 +96,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new H4header();
+    header = new H4header(this);
     header.read(raf, rootGroup, null);
   }
 
@@ -475,14 +492,34 @@ public class H4iosp extends AbstractIOServiceProvider {
   @Override
   public void reacquire() throws IOException {
     super.reacquire();
-    header.raf = this.raf;
+    getHeader().raf = this.raf;
   }
 
   public Object sendIospMessage(Object message) {
-    if (message.toString().equals("header"))
-      return header;
+    if (message instanceof Charset) {
+      setValueCharset((Charset) message);
+    }
+    if (message.toString().equals("header")) {
+      return getHeader();
+    }
     return super.sendIospMessage(message);
   }
 
+  /**
+   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * occurs by sending a charset as a message using the {@link #sendIospMessage}
+   * method.
+   * @return {@link Charset value charset} if it was defined.
+   */
+  protected Optional<Charset> getValueCharset() {
+    return Optional.ofNullable(valueCharset);
+  }
 
+  /**
+   * Define {@link Charset value charset}.
+   * @param charset may be null.
+   */
+  protected void setValueCharset(Charset charset) {
+    valueCharset = charset;
+  }
 }
