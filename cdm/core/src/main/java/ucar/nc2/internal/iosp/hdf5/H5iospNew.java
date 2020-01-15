@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.Optional;
-
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -142,6 +141,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
    * Return {@link Charset value charset} if it was defined. Definition of charset
    * occurs by sending a charset as a message using the {@link #sendIospMessage}
    * method.
+   * 
    * @return {@link Charset value charset} if it was defined.
    */
   protected Optional<Charset> getValueCharset() {
@@ -150,6 +150,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
   /**
    * Define {@link Charset value charset}.
+   * 
    * @param charset may be null.
    */
   protected void setValueCharset(Charset charset) {

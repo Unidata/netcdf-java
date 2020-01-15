@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
-
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -77,6 +76,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   /**
    * Return header for reading netcdf file.
    * Create it if it's not already created.
+   * 
    * @return header for reading netcdf file.
    */
   private H4header getHeader() {
@@ -509,6 +509,7 @@ public class H4iosp extends AbstractIOServiceProvider {
    * Return {@link Charset value charset} if it was defined. Definition of charset
    * occurs by sending a charset as a message using the {@link #sendIospMessage}
    * method.
+   * 
    * @return {@link Charset value charset} if it was defined.
    */
   protected Optional<Charset> getValueCharset() {
@@ -517,6 +518,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   /**
    * Define {@link Charset value charset}.
+   * 
    * @param charset may be null.
    */
   protected void setValueCharset(Charset charset) {

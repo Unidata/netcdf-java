@@ -122,6 +122,7 @@ public class H4header implements HdfHeaderIF {
   /**
    * Return defined {@link Charset value charset} that
    * will be used by reading netcdf file.
+   * 
    * @return {@link Charset value charset}
    */
   protected Charset getValueCharset() {

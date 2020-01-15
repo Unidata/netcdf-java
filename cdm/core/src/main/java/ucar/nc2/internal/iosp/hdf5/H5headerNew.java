@@ -190,6 +190,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   /**
    * Return defined {@link Charset value charset} that
    * will be used by reading netcdf file.
+   * 
    * @return {@link Charset value charset}
    */
   protected Charset getValueCharset() {
@@ -1219,7 +1220,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       count++;
     }
     return new String(b, start, count - start, valueCharset); // all strings are considered to be UTF-8
-                                                                        // unicode
+                                                              // unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {

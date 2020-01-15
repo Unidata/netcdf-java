@@ -92,6 +92,7 @@ public class N3headerNew {
   /**
    * Return defined {@link Charset value charset} that
    * will be used by reading netcdf file.
+   * 
    * @return {@link Charset value charset}
    */
   protected Charset getValueCharset() {
@@ -342,8 +343,9 @@ public class N3headerNew {
   /**
    * Return the byte order that will be used by
    * {@link #read(RandomAccessFile, Group.Builder, Formatter) reading file}.
+   * 
    * @return file byte order ({@link RandomAccessFile#BIG_ENDIAN big endian} or
-   * {@link RandomAccessFile#LITTLE_ENDIAN little endian})
+   *         {@link RandomAccessFile#LITTLE_ENDIAN little endian})
    */
   protected int getByteOrder() {
     return RandomAccessFile.BIG_ENDIAN;
@@ -352,9 +354,10 @@ public class N3headerNew {
   /**
    * Check if the given bytes correspond to
    * {@link #MAGIC magic bytes} of the header.
+   * 
    * @param bytes given bytes.
    * @return <code>true</code> if the given bytes correspond to
-   * {@link #MAGIC magic bytes} of the header. Otherwise <code>false</code>.
+   *         {@link #MAGIC magic bytes} of the header. Otherwise <code>false</code>.
    */
   protected boolean isMagicBytes(byte[] bytes) {
     for (int i = 0; i < 3; i++) {

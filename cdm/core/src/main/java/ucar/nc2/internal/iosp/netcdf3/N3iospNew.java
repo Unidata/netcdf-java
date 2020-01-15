@@ -7,7 +7,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.util.Formatter;
 import java.util.Optional;
-
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
@@ -152,6 +151,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   /**
    * Create header for reading netcdf file.
+   * 
    * @return
    */
   protected N3headerNew createHeader() {
@@ -426,6 +426,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
    * Return {@link Charset value charset} if it was defined. Definition of charset
    * occurs by sending a charset as a message using the {@link #sendIospMessage}
    * method.
+   * 
    * @return {@link Charset value charset} if it was defined.
    */
   protected Optional<Charset> getValueCharset() {
@@ -434,6 +435,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   /**
    * Define {@link Charset value charset}.
+   * 
    * @param charset may be null.
    */
   protected void setValueCharset(Charset charset) {
