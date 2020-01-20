@@ -48,7 +48,7 @@ public abstract class HTTPAuthUtil {
     String sss = ss.getScheme();
     String mss = ms.getScheme();
     if (sss != AuthScope.ANY_SCHEME && mss != AuthScope.ANY_SCHEME && sss != mss)
-        return false;
+      return false;
     return true;
   }
 
