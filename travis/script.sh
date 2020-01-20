@@ -11,9 +11,25 @@ then
 elif [[ $TASK == "test-tds" ]]
 then
     echo "Testing the THREDDS Data Server against the netCDF-Java PR"
-    # publish netcdf-java artifacts to local maven repo (~/.m2/repository)
-    echo "build netcdf-java and publish artifacts to local maven repository"
+    # build netCDF-Java
+    echo "Build netCDF-java"
+    $TRAVIS_BUILD_DIR/gradlew assemble
+    # if netCDF-java fails to assemble its artifacts, bail.
+    if [ $? -eq 1 ]
+    then
+      echo "Could not build netcdf-java, exiting." >&2
+      exit 1
+    fi
+
+    # publish netCDF-java artifacts to local maven repo (~/.m2/repository)
+    echo "Publish netCDF-java artifacts to local maven repository"
     $TRAVIS_BUILD_DIR/gradlew publishToMavenLocal
+    # if netCDF-java fails to build or publish its artifacts locally, bail.
+    if [ $? -eq 1 ]
+    then
+      echo "Could not locally publish netcdf-java artifacts, exiting." >&2
+      exit 1
+    fi
 
     # find netcdf-java version as specified in the PR
     NCJ_VERSION=$($TRAVIS_BUILD_DIR/gradlew properties -q | grep "^version:" | awk '{print $2}')
