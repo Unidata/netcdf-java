@@ -352,7 +352,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       // AFAIK, targethost, httpclient, rb, and session
       // contain non-overlapping info => we cannot derive one
       // from any of the others.
-      HttpHost targethost = new HttpHost(this.methodurl.getHost());
+      HttpHost targethost =
+          new HttpHost(this.methodurl.getHost(), this.methodurl.getPort(), this.methodurl.getScheme());
       HttpClientBuilder cb = HttpClients.custom();
       configClient(cb, this.settings);
       session.setAuthenticationAndProxy(cb);
