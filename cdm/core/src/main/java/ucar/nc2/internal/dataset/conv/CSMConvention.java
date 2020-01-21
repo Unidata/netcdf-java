@@ -72,28 +72,27 @@ class CSMConvention extends CoardsConventions {
     super.identifyCoordinateAxes();
   }
 
-  // Apparently never called ??
-  /*
-   * protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-   * CoordinateTransform ct = null;
-   * 
-   * String unit = ctv.getUnitsString();
-   * if (unit != null) {
-   * if (unit.equalsIgnoreCase("hybrid_sigma_pressure")) {
-   * HybridSigmaPressureBuilder b = new HybridSigmaPressureBuilder();
-   * ct = b.makeCoordinateTransform(ds, ctv);
-   * 
-   * } else if (unit.equalsIgnoreCase("sigma_level")) { // LOOK - no test case for CSM Sigma Vertical coord ??
-   * SigmaBuilder b = new SigmaBuilder();
-   * ct = b.makeCoordinateTransform(ds, ctv);
-   * }
-   * }
-   * if (ct != null)
-   * return ct;
-   * 
-   * return super.makeCoordinateTransform(ds, ctv);
-   * }
-   */
+  @Override
+  protected VariableDS.Builder makeCoordinateTransformVariable(CoordinateTransform ctv) {
+    CoordinateTransform ct = null;
+
+    String unit = ctv.
+    if (unit != null) {
+      if (unit.equalsIgnoreCase("hybrid_sigma_pressure")) {
+        HybridSigmaPressureBuilder b = new HybridSigmaPressureBuilder();
+        ct = b.makeCoordinateTransform(ds, ctv);
+
+      } else if (unit.equalsIgnoreCase("sigma_level")) { // LOOK - no test case for CSM Sigma Vertical coord ??
+        SigmaBuilder b = new SigmaBuilder();
+        ct = b.makeCoordinateTransform(ds, ctv);
+      }
+    }
+    if (ct != null) {
+      return ct;
+    }
+
+    return super.makeCoordinateTransform(ctv);
+  }
 
   private class HybridSigmaPressureBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
     public String getTransformName() {
