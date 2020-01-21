@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
+import ucar.nc2.NetcdfFiles;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.StructureTable;
 import org.jdom2.Element;
 import ucar.ma2.Array;
@@ -29,12 +33,12 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
+import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
 import ucar.ui.widget.IndependentWindow;
@@ -46,15 +50,7 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.prefs.Debug;
 
-/**
- * A Swing widget to view the content of a netcdf dataset.
- * It uses a DatasetTree widget and nested BeanTable widget, by
- * wrapping the Variables in a VariableBean.
- * A pop-up menu allows to view a Structure in a StructureTable.
- *
- * @author caron
- */
-
+/** A Swing widget to view the content of a netcdf dataset. */
 public class DatasetViewer extends JPanel {
   private FileManager fileChooser;
 
@@ -78,8 +74,9 @@ public class DatasetViewer extends JPanel {
   private IndependentWindow infoWindow, dataWindow, plotWindow, dumpWindow, attWindow;
 
   private boolean eventsOK = true;
+  private boolean useCoords = false;
 
-  public DatasetViewer(PreferencesExt prefs, FileManager fileChooser) {
+  DatasetViewer(PreferencesExt prefs, FileManager fileChooser) {
     this.prefs = prefs;
     this.fileChooser = fileChooser;
 
@@ -132,10 +129,9 @@ public class DatasetViewer extends JPanel {
     });
   }
 
-  NetcdfOutputChooser outChooser;
+  private NetcdfOutputChooser outChooser;
 
-  public void addActions(JPanel buttPanel) {
-
+  void addActions(JPanel buttPanel) {
     AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (ds == null)
@@ -159,6 +155,12 @@ public class DatasetViewer extends JPanel {
     compareButton.addActionListener(e -> compareDataset());
     buttPanel.add(compareButton);
 
+    AbstractButton builderButton = BAMutil.makeButtcon("Select", "Compare w/wo builder", false);
+    builderButton.addActionListener(e -> {
+      if (useCoords) compareBuilderDS(); else compareBuilder();
+    });
+    buttPanel.add(builderButton);
+
     AbstractAction attAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         showAtts();
@@ -170,7 +172,7 @@ public class DatasetViewer extends JPanel {
 
   ///////////////////////////////////////
 
-  void writeNetcdf(NetcdfOutputChooser.Data data) {
+  private void writeNetcdf(NetcdfOutputChooser.Data data) {
     if (data.version == NetcdfFileWriter.Version.ncstream) {
       writeNcstream(data.outputFilename);
       return;
@@ -218,7 +220,7 @@ public class DatasetViewer extends JPanel {
 
   private CompareDialog dialog;
 
-  public void compareDataset() {
+  private void compareDataset() {
     if (ds == null)
       return;
     if (dialog == null) {
@@ -235,15 +237,65 @@ public class DatasetViewer extends JPanel {
     dialog.setVisible(true);
   }
 
+  private void compareBuilder() {
+    if (ds == null)
+      return;
+    String fileLocation = ds.getLocation();
+    try (NetcdfFile org = NetcdfFile.open(fileLocation)) {
+      try (NetcdfFile withBuilder = NetcdfFiles.open(fileLocation)) {
+        Formatter f = new Formatter();
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(), false, false, true);
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.setTitle("Compare Old (file1) with Builder (file 2)");
+        infoWindow.show();
+      }
+    } catch (Throwable ioe) {
+      StringWriter sw = new StringWriter(10000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      infoTA.setText(sw.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
+    }
+  }
+
+  private void compareBuilderDS() {
+    if (ds == null)
+      return;
+    String fileLocation = ds.getLocation();
+    try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
+      try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
+        Formatter f = new Formatter();
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(), false, false, true);
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.setTitle("Compare Old (file1) with Builder (file 2)");
+        infoWindow.show();
+      }
+    } catch (Throwable ioe) {
+      StringWriter sw = new StringWriter(10000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      infoTA.setText(sw.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
+    }
+  }
+
+  public static class CoordsObjFilter implements ObjFilter {
+    @Override
+    public boolean attCheckOk(Variable v, Attribute att) {
+      return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
+    }
+  }
+
   private void compareDataset(CompareDialog.Data data) {
     if (data.name == null)
       return;
 
-    NetcdfFile compareFile = null;
-    try {
-      compareFile = ToolsUI.getToolsUI().openFile(data.name, false, null);
-      Formatter f = new Formatter();
-
+    try (NetcdfFile compareFile = ToolsUI.getToolsUI().openFile(data.name, false, null);
+         Formatter f = new Formatter()) {
       CompareNetcdf2 cn = new CompareNetcdf2(f, data.showCompare, data.showDetails, data.readData);
       if (data.howMuch == CompareDialog.HowMuch.All)
         cn.compare(ds, compareFile);
@@ -274,14 +326,6 @@ public class DatasetViewer extends JPanel {
       infoTA.setText(sw.toString());
       infoTA.gotoTop();
       infoWindow.show();
-
-    } finally {
-      if (compareFile != null)
-        try {
-          compareFile.close();
-        } catch (Exception eek) {
-          eek.printStackTrace();
-        }
     }
   }
 
@@ -341,8 +385,11 @@ public class DatasetViewer extends JPanel {
     NestedTable nt = nestedTableList.get(0);
     nt.table.setBeans(getVariableBeans(ds));
     hideNestedTable(1);
-
     datasetTree.setFile(ds);
+  }
+
+  void setUseCoords(boolean useCoords) {
+    this.useCoords = useCoords;
   }
 
   private void setSelected(Variable v) {
@@ -816,7 +863,7 @@ public class DatasetViewer extends JPanel {
     prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
 
-  public List<VariableBean> getVariableBeans(NetcdfFile ds) {
+  private List<VariableBean> getVariableBeans(NetcdfFile ds) {
     List<VariableBean> vlist = new ArrayList<>();
     for (Variable v : ds.getVariables()) {
       vlist.add(new VariableBean(v));
@@ -824,7 +871,7 @@ public class DatasetViewer extends JPanel {
     return vlist;
   }
 
-  public List<VariableBean> getStructureVariables(Structure s) {
+  private List<VariableBean> getStructureVariables(Structure s) {
     List<VariableBean> vlist = new ArrayList<>();
     for (Variable v : s.getVariables()) {
       vlist.add(new VariableBean(v));

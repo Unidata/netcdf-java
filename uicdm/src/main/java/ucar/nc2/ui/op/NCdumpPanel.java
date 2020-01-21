@@ -89,7 +89,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
   public void run(Object o) throws IOException {
     try {
       boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
-      if (addCoords) {
+      if (useCoords) {
         ncfile = useBuilders ? NetcdfDatasets.openDataset(filename, true, null)
             : NetcdfDataset.openDataset(filename, true, null);
       } else {

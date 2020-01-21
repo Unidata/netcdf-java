@@ -376,12 +376,15 @@ public class CompareNetcdf2 {
     if (showCompare)
       f.format("compare CoordinateSystem '%s' to '%s' %n", cs1.getName(), cs2.getName());
 
-    List matchAxes = new ArrayList();
-    boolean ok = checkAll(cs1.getName(), cs1.getCoordinateAxes(), cs2.getCoordinateAxes(), matchAxes);
-    for (int i = 0; i < matchAxes.size(); i += 2) {
-      CoordinateAxis orgCs = (CoordinateAxis) matchAxes.get(i);
-      CoordinateAxis copyCs = (CoordinateAxis) matchAxes.get(i + 1);
-      ok &= compareCoordinateAxis(orgCs, copyCs, filter);
+    boolean ok = true;
+    for (CoordinateAxis ct1 : cs1.getCoordinateAxes()) {
+      CoordinateAxis ct2 = cs2.getCoordinateAxes().stream().filter(ct -> ct.getShortName().equals(ct1.getShortName()))
+          .findFirst().orElse(null);
+      if (ct2 == null) {
+        f.format("  ** Cant find coordinateAxis %s in file2 %n", ct1.getShortName());
+      } else {
+        ok &= compareCoordinateAxis(ct1, ct2, filter);
+      }
     }
 
     for (CoordinateTransform ct1 : cs1.getCoordinateTransforms()) {
