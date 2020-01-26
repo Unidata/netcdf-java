@@ -5,6 +5,7 @@
 package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
+import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -94,6 +95,50 @@ class CSMConvention extends CoardsConventions {
    * return super.makeCoordinateTransform(ds, ctv);
    * }
    */
+
+  @Override
+  protected VariableDS.Builder makeCoordinateTransformVariable(CoordinateTransform ct) {
+    VariableDS.Builder v = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
+    List<Parameter> params = ct.getParameters();
+    for (Parameter p : params) {
+      if (p.isString())
+        v.addAttribute(new Attribute(p.getName(), p.getStringValue()));
+      else {
+        double[] data = p.getNumericValues();
+        Array dataA = Array.factory(DataType.DOUBLE, new int[] {data.length}, data);
+        v.addAttribute(new Attribute(p.getName(), dataA));
+      }
+    }
+    v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
+
+    // fake data
+    Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
+    v.setCachedData(data, true);
+
+    parseInfo.format("  made CoordinateTransformVariable: %s%n", ct.getName());
+    return v;
+  }
+
+  protected VariableDS.Builder makeCoordinateTransformVariable2(CoordinateTransform ctv) {
+    CoordinateTransform ct = null;
+
+    String unit = ctv.getUnitsString();
+    if (unit != null) {
+      if (unit.equalsIgnoreCase("hybrid_sigma_pressure")) {
+        HybridSigmaPressureBuilder b = new HybridSigmaPressureBuilder();
+        ct = b.makeCoordinateTransform(ds, ctv);
+
+      } else if (unit.equalsIgnoreCase("sigma_level")) { // LOOK - no test case for CSM Sigma Vertical coord ??
+        SigmaBuilder b = new SigmaBuilder();
+        ct = b.makeCoordinateTransform(ds, ctv);
+      }
+    }
+    if (ct != null) {
+      return ct;
+    }
+
+    return super.makeCoordinateTransform(ctv);
+  }
 
   private class HybridSigmaPressureBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
     public String getTransformName() {
