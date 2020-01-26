@@ -157,7 +157,10 @@ public class DatasetViewer extends JPanel {
 
     AbstractButton builderButton = BAMutil.makeButtcon("Select", "Compare w/wo builder", false);
     builderButton.addActionListener(e -> {
-      if (useCoords) compareBuilderDS(); else compareBuilder();
+      if (useCoords)
+        compareBuilderDS();
+      else
+        compareBuilder();
     });
     buttPanel.add(builderButton);
 
@@ -295,7 +298,7 @@ public class DatasetViewer extends JPanel {
       return;
 
     try (NetcdfFile compareFile = ToolsUI.getToolsUI().openFile(data.name, false, null);
-         Formatter f = new Formatter()) {
+        Formatter f = new Formatter()) {
       CompareNetcdf2 cn = new CompareNetcdf2(f, data.showCompare, data.showDetails, data.readData);
       if (data.howMuch == CompareDialog.HowMuch.All)
         cn.compare(ds, compareFile);
