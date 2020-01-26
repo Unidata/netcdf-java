@@ -842,21 +842,23 @@ public class CoordSystemBuilder {
 
       if (vb instanceof CoordinateAxis.Builder) {
         axis = (CoordinateAxis.Builder) vb;
-      } else {
-        // Create a CoordinateAxis out of this variable.
-        vb = axis = CoordinateAxis.fromVariableDS(vb);
+        return axis;
       }
 
+      // Create a CoordinateAxis out of this variable.
+      CoordinateAxis.Builder builder = CoordinateAxis.fromVariableDS(vb); // experimental
+
       if (axisType != null) {
-        axis.setAxisType(axisType);
-        axis.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
+        builder.setAxisType(axisType);
+        builder.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
 
         if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ))
             && (positive != null)) {
-          axis.setPositive(positive);
-          axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
+          builder.setPositive(positive);
+          builder.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
       }
+      vb = axis = builder;
       coords.addCoordinateAxis(axis);
       rootGroup.replaceVariable(axis);
       return axis;
