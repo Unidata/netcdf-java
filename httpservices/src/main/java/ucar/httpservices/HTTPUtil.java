@@ -5,21 +5,35 @@
 
 package ucar.httpservices;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import org.apache.http.*;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HttpContext;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
 
 public abstract class HTTPUtil {
 
@@ -271,7 +285,7 @@ public abstract class HTTPUtil {
           urib.setScheme(uri.getScheme());
           break;
         case USERINFO:
-          urib.setUserInfo(uri.getUserInfo());
+          urib.setUserInfo(uri.getRawUserInfo());
           break;
         case HOST:
           urib.setHost(uri.getHost());

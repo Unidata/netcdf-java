@@ -8,11 +8,24 @@ package ucar.httpservices;
 import static ucar.httpservices.HTTPSession.Prop;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.apache.http.*;
+import javax.annotation.concurrent.NotThreadSafe;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -23,16 +36,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import javax.annotation.concurrent.NotThreadSafe;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -217,7 +220,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       localsession = true;
     }
     this.session = session;
-    this.userinfo = HTTPUtil.nullify(this.methodurl.getUserInfo());
+    // user info may contain encoded characters (such as a username containing
+    // the @ symbol), and we want to preserve those, so use getRawUserInfo()
+    // here.
+    this.userinfo = HTTPUtil.nullify(this.methodurl.getRawUserInfo());
     if (this.userinfo != null) {
       // convert userinfo to credentials
       this.session.setCredentials(this.methodurl);
