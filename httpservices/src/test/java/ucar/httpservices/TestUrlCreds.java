@@ -1,6 +1,6 @@
 package ucar.httpservices;
 
-import com.google.common.truth.Truth;
+import static com.google.common.truth.Truth.assertThat;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.http.auth.AuthScope;
@@ -33,6 +33,7 @@ public class TestUrlCreds {
 
   @Parameterized.Parameters
   public static Collection primeNumbers() {
+    // {username, password, host}
     return Arrays.asList(new Object[][] {{"user", "someCoolFruitOrSomething", "my.server.edu"},
         {"user%40emailaddress.com", "someCoolerFruitOrSomething", "server.com"},});
   }
@@ -40,7 +41,7 @@ public class TestUrlCreds {
   @Test
   public void testUrlCred() throws HTTPException {
     String url = "https://" + username + ":" + password + "@" + host + "/something/garbage.grb?query";
-    logger.warn("Testing {}", url);
+    logger.info("Testing {}", url);
     try (HTTPMethod method = HTTPFactory.Get(url)) {
       HTTPSession session = method.getSession();
       method.close();
@@ -48,13 +49,31 @@ public class TestUrlCreds {
       try (HTTPMethod method2 = HTTPFactory.Get(session, url)) {
         HTTPSession session2 = method2.getSession();
         CredentialsProvider credentialsProvider = session2.sessionprovider;
-        Truth.assertThat(credentialsProvider).isNotNull();
+        assertThat(credentialsProvider).isNotNull();
         AuthScope expectedAuthScope = new AuthScope(host, 80);
         Credentials credentials = credentialsProvider.getCredentials(expectedAuthScope);
-        Truth.assertThat(credentials).isNotNull();
-        Truth.assertThat(credentials.getUserPrincipal().getName()).isEqualTo(username);
-        Truth.assertThat(credentials.getPassword()).isEqualTo(password);
+        assertThat(credentials).isNotNull();
+        assertThat(credentials.getUserPrincipal().getName()).isEqualTo(username);
+        assertThat(credentials.getPassword()).isEqualTo(password);
       }
+    }
+  }
+
+  @Test
+  public void testUrlCredDefaultProvider() throws HTTPException {
+    String url = "https://" + username + ":" + password + "@" + host + "/something/garbage.grb?query";
+    logger.info("Testing {}", url);
+    try (HTTPMethod method = HTTPFactory.Get(url)) {
+      // we should have a default BasicCredentialProvider available, even though
+      // we didn't call the factory with a specific provider
+      HTTPSession session = method.getSession();
+      CredentialsProvider credentialsProvider = session.sessionprovider;
+      assertThat(credentialsProvider).isNotNull();
+      AuthScope expectedAuthScope = new AuthScope(host, 80);
+      Credentials credentials = credentialsProvider.getCredentials(expectedAuthScope);
+      assertThat(credentials).isNotNull();
+      assertThat(credentials.getUserPrincipal().getName()).isEqualTo(username);
+      assertThat(credentials.getPassword()).isEqualTo(password);
     }
   }
 }
