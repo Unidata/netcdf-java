@@ -72,6 +72,12 @@ farm {
     // :opendap and :httpservices test.
     webapp libraries["dts"], contextPath: '/dts'
     integrationTestTask = 'test'
+
+    // These enable HTTPS authentication, which is needed to access the TDS admin interface.
+    httpsEnabled = true
+    sslKeyStorePath = "$rootDir/gradle/gretty/tomcat/keystore"
+    sslKeyStorePassword = 'secret666'
+    realmConfigFile = "$rootDir/gradle/gretty/tomcat/tomcat-users.xml"
 }
 
 /**
