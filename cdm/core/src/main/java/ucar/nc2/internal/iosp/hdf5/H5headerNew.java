@@ -178,23 +178,23 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   private PrintWriter debugOut;
   private MemTracker memTracker;
 
-  private final Charset valueCharset;
+  private final Charset charset;
 
   H5headerNew(RandomAccessFile myRaf, Group.Builder root, H5iospNew h5iosp) {
     this.raf = myRaf;
     this.root = root;
     this.h5iosp = h5iosp;
-    valueCharset = h5iosp.getValueCharset().orElse(StandardCharsets.UTF_8);
+    charset = h5iosp.getCharset().orElse(StandardCharsets.UTF_8);
   }
 
   /**
-   * Return defined {@link Charset value charset} that
+   * Return defined {@link Charset charset} that
    * will be used by reading HDF5 header.
    * 
-   * @return {@link Charset value charset}
+   * @return {@link Charset charset}
    */
-  protected Charset getValueCharset() {
-    return valueCharset;
+  protected Charset getCharset() {
+    return charset;
   }
 
   public void read(PrintWriter debugPS) throws IOException {
@@ -203,7 +203,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     } else if (debug1 || debugContinueMessage || debugCreationOrder || debugDetail || debugDimensionScales
         || debugGroupBtree || debugHardLink || debugHeap || debugPos || debugReference || debugTracker || debugV
         || debugSoftLink || warnings) {
-      debugOut = new PrintWriter(new OutputStreamWriter(System.out, valueCharset));
+      debugOut = new PrintWriter(new OutputStreamWriter(System.out, charset));
     }
     h5objects = new H5objects(this, debugOut, memTracker);
 
@@ -1208,7 +1208,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         break;
       count++;
     }
-    return new String(b, 0, count, valueCharset); // all strings are considered to be UTF-8 unicode
+    return new String(b, 0, count, charset); // all strings are considered to be UTF-8 unicode
   }
 
   private String convertString(byte[] b, int start, int len) {
@@ -1219,7 +1219,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         break;
       count++;
     }
-    return new String(b, start, count - start, valueCharset); // all strings are considered to be UTF-8
+    return new String(b, start, count - start, charset); // all strings are considered to be UTF-8
                                                               // unicode
   }
 
@@ -2117,7 +2117,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     if (ho.dataSize > 1000 * 1000)
       return String.format("Bad HeapObject.dataSize=%s", ho);
     raf.seek(ho.dataPos);
-    return raf.readString((int) ho.dataSize, valueCharset);
+    return raf.readString((int) ho.dataSize, charset);
   }
 
   /**
@@ -2134,7 +2134,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
     raf.seek(ho.dataPos);
-    return raf.readString((int) ho.dataSize, valueCharset);
+    return raf.readString((int) ho.dataSize, charset);
   }
 
   Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, int endian) throws IOException, InvalidRangeException {

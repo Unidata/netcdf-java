@@ -46,7 +46,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   private static boolean showLayoutTypes;
 
   private H4header header;
-  private Charset valueCharset;
+  private Charset charset;
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -499,7 +499,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
-      setValueCharset((Charset) message);
+      setCharset((Charset) message);
     }
     if (message.toString().equals("header")) {
       return getHeader();
@@ -508,22 +508,22 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   /**
-   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * Return {@link Charset charset} if it was defined. Definition of charset
    * occurs by sending a charset as a message using the {@link #sendIospMessage}
    * method.
    * 
-   * @return {@link Charset value charset} if it was defined.
+   * @return {@link Charset charset} if it was defined.
    */
-  protected Optional<Charset> getValueCharset() {
-    return Optional.ofNullable(valueCharset);
+  protected Optional<Charset> getCharset() {
+    return Optional.ofNullable(charset);
   }
 
   /**
-   * Define {@link Charset value charset}.
+   * Define {@link Charset charset}.
    * 
    * @param charset may be null.
    */
-  protected void setValueCharset(@Nullable Charset charset) {
-    valueCharset = charset;
+  protected void setCharset(@Nullable Charset charset) {
+    this.charset = charset;
   }
 }

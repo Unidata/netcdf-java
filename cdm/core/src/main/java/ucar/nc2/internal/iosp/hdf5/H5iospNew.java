@@ -109,7 +109,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   private H5headerNew header;
   private boolean isEos;
   boolean includeOriginalAttributes;
-  private Charset valueCharset;
+  private Charset charset;
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
@@ -134,29 +134,29 @@ public class H5iospNew extends AbstractIOServiceProvider {
   @Override
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
-      setValueCharset((Charset) message);
+      setCharset((Charset) message);
     }
     return super.sendIospMessage(message);
   }
 
   /**
-   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * Return {@link Charset charset} if it was defined. Definition of charset
    * occurs by sending a charset as a message using the {@link #sendIospMessage}
    * method.
    * 
-   * @return {@link Charset value charset} if it was defined.
+   * @return {@link Charset charset} if it was defined.
    */
-  protected Optional<Charset> getValueCharset() {
-    return Optional.ofNullable(valueCharset);
+  protected Optional<Charset> getCharset() {
+    return Optional.ofNullable(charset);
   }
 
   /**
-   * Define {@link Charset value charset}.
+   * Define {@link Charset charset}.
    * 
    * @param charset may be null.
    */
-  protected void setValueCharset(@Nullable Charset charset) {
-    valueCharset = charset;
+  protected void setCharset(@Nullable Charset charset) {
+    this.charset = charset;
   }
 
   @Override

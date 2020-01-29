@@ -81,7 +81,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   protected long lastModified; // used by sync
   protected boolean debug, debugRecord, debugRead;
 
-  private Charset valueCharset;
+  private Charset charset;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -410,7 +410,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   @Override
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
-      setValueCharset((Charset) message);
+      setCharset((Charset) message);
     }
     if (null == header)
       return null;
@@ -425,23 +425,23 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   }
 
   /**
-   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * Return {@link Charset charset} if it was defined. Definition of charset
    * occurs by sending a charset as a message using the {@link #sendIospMessage}
    * method.
    * 
-   * @return {@link Charset value charset} if it was defined.
+   * @return {@link Charset charset} if it was defined.
    */
-  protected Optional<Charset> getValueCharset() {
-    return Optional.ofNullable(valueCharset);
+  protected Optional<Charset> getCharset() {
+    return Optional.ofNullable(charset);
   }
 
   /**
-   * Define {@link Charset value charset}.
+   * Define {@link Charset charset}.
    * 
    * @param charset may be null.
    */
-  protected void setValueCharset(@Nullable Charset charset) {
-    valueCharset = charset;
+  protected void setCharset(@Nullable Charset charset) {
+    this.charset = charset;
   }
 
   @Override

@@ -107,26 +107,26 @@ public class H4header implements HdfHeaderIF {
   private MemTracker memTracker;
   private PrintWriter debugOut;
 
-  private final Charset valueCharset;
+  private final Charset charset;
 
   public H4header() {
-    valueCharset = StandardCharsets.UTF_8;
+    charset = StandardCharsets.UTF_8;
     debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
   }
 
   H4header(H4iosp h4iosp) {
-    valueCharset = h4iosp.getValueCharset().orElse(StandardCharsets.UTF_8);
-    debugOut = new PrintWriter(new OutputStreamWriter(System.out, valueCharset));
+    charset = h4iosp.getCharset().orElse(StandardCharsets.UTF_8);
+    debugOut = new PrintWriter(new OutputStreamWriter(System.out, charset));
   }
 
   /**
-   * Return defined {@link Charset value charset} that
+   * Return defined {@link Charset charset} that
    * will be used by reading HDF4 header.
    * 
    * @return {@link Charset value charset}
    */
-  protected Charset getValueCharset() {
-    return valueCharset;
+  protected Charset getCharset() {
+    return charset;
   }
 
   public boolean isEos() {
@@ -452,11 +452,11 @@ public class H4header implements HdfHeaderIF {
       case 3:
       case 4:
         if (nelems == 1)
-          att = new Attribute(name, raf.readStringMax(size, valueCharset));
+          att = new Attribute(name, raf.readStringMax(size, charset));
         else {
           String[] vals = new String[nelems];
           for (int i = 0; i < nelems; i++)
-            vals[i] = raf.readStringMax(size, valueCharset);
+            vals[i] = raf.readStringMax(size, charset);
           att = new Attribute(name, Array.factory(DataType.STRING, new int[] {nelems}, vals));
         }
         break;
@@ -1162,7 +1162,7 @@ public class H4header implements HdfHeaderIF {
 
     String read() throws IOException {
       raf.seek(data.offset);
-      return raf.readString(data.length, valueCharset);
+      return raf.readString(data.length, charset);
     }
 
     public String toString() {
@@ -1662,7 +1662,7 @@ public class H4header implements HdfHeaderIF {
       major = raf.readInt();
       minor = raf.readInt();
       release = raf.readInt();
-      name = raf.readStringMax(length - 12, valueCharset);
+      name = raf.readStringMax(length - 12, charset);
     }
 
     public String value() {
@@ -1684,7 +1684,7 @@ public class H4header implements HdfHeaderIF {
 
     protected void read() throws IOException {
       raf.seek(offset);
-      text = raf.readStringMax(length, valueCharset);
+      text = raf.readStringMax(length, charset);
     }
 
     public String detail() {
@@ -1706,7 +1706,7 @@ public class H4header implements HdfHeaderIF {
       raf.seek(offset);
       obj_tagno = raf.readShort();
       obj_refno = raf.readShort();
-      text = raf.readStringMax(length - 4, valueCharset).trim();
+      text = raf.readStringMax(length - 4, charset).trim();
     }
 
     public String detail() {
@@ -1863,7 +1863,7 @@ public class H4header implements HdfHeaderIF {
       int start = 0;
       for (int i = 0; i < length; i++) {
         if (b[i] == 0) {
-          text[count] = new String(b, start, i - start, valueCharset);
+          text[count] = new String(b, start, i - start, charset);
           count++;
           if (count == n)
             break;
@@ -1979,9 +1979,9 @@ public class H4header implements HdfHeaderIF {
         elem_ref[i] = raf.readShort();
 
       short len = raf.readShort();
-      name = raf.readStringMax(len, valueCharset);
+      name = raf.readStringMax(len, charset);
       len = raf.readShort();
-      className = raf.readStringMax(len, valueCharset);
+      className = raf.readStringMax(len, charset);
 
       extag = raf.readShort();
       exref = raf.readShort();
@@ -2055,14 +2055,14 @@ public class H4header implements HdfHeaderIF {
       fld_name = new String[nfields];
       for (int i = 0; i < nfields; i++) {
         short len = raf.readShort();
-        fld_name[i] = raf.readStringMax(len, valueCharset);
+        fld_name[i] = raf.readStringMax(len, charset);
       }
 
       short len = raf.readShort();
-      name = raf.readStringMax(len, valueCharset);
+      name = raf.readStringMax(len, charset);
 
       len = raf.readShort();
-      className = raf.readStringMax(len, valueCharset);
+      className = raf.readStringMax(len, charset);
 
       extag = raf.readShort();
       exref = raf.readShort();

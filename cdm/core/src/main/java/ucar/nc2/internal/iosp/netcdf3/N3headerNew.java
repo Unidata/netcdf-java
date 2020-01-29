@@ -71,7 +71,7 @@ public class N3headerNew {
 
   private long dataStart = Long.MAX_VALUE; // where the data starts
 
-  private final Charset valueCharset;
+  private final Charset charset;
 
   /*
    * Notes:
@@ -82,21 +82,21 @@ public class N3headerNew {
    */
 
   public N3headerNew() {
-    valueCharset = StandardCharsets.UTF_8;
+    charset = StandardCharsets.UTF_8;
   }
 
   protected N3headerNew(N3iospNew n3iospNew) {
-    valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
+    charset = n3iospNew.getCharset().orElse(StandardCharsets.UTF_8);
   }
 
   /**
-   * Return defined {@link Charset value charset} that
+   * Return defined {@link Charset charset} that
    * will be used by reading HDF3 header.
    * 
-   * @return {@link Charset value charset}
+   * @return {@link Charset charset}
    */
-  protected Charset getValueCharset() {
-    return valueCharset;
+  protected Charset getCharset() {
+    return charset;
   }
 
   /**
@@ -568,7 +568,7 @@ public class N3headerNew {
       count++;
     }
 
-    return new String(b, 0, count, valueCharset); // all strings are considered to be UTF-8 unicode.
+    return new String(b, 0, count, charset); // all strings are considered to be UTF-8 unicode.
   }
 
   // skip to a 4 byte boundary in the file
