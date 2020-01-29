@@ -6,9 +6,6 @@ buildscript {
     
     repositories {
         jcenter()
-        maven {
-            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty:gretty-fork'.
-        }
     }
     dependencies {
         classpath libraries["gretty"]  // We want to import GradleUtils and AppStartTask.
@@ -16,14 +13,14 @@ buildscript {
 }
 
 apply from: "$rootDir/gradle/any/properties.gradle"
-apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'org.gretty'
 
 import org.akhikhl.gretty.GradleUtils
 import org.akhikhl.gretty.AppStartTask
 import org.akhikhl.gretty.AppBeforeIntegrationTestTask
 
 gretty {
-    servletContainer = 'tomcat8'  // All webapps run on Tomcat 8.
+    servletContainer = 'tomcat85'  // All webapps run on Tomcat 8.5.x
     
     // Pass filtered system properties to the embedded Tomcat that Gretty will launch.
     systemProperties addFilteredSysProps([:])
@@ -67,17 +64,18 @@ gretty {
 }
 
 farm {
+    jvmArgs = ["-Dlog4j.configurationFile=$rootDir/gradle/gretty/log4j2Config.xml"]
     // used by :dap4 test
     webapp libraries["d4ts"], contextPath: '/d4ts'
     // :opendap and :httpservices test.
     webapp libraries["dts"], contextPath: '/dts'
     integrationTestTask = 'test'
 
-    // These enable HTTPS authentication, which is needed to access the TDS admin interface.
+    // These enable TLS
     httpsEnabled = true
     sslKeyStorePath = "$rootDir/gradle/gretty/tomcat/keystore"
     sslKeyStorePassword = 'secret666'
-    realmConfigFile = "$rootDir/gradle/gretty/tomcat/tomcat-users.xml"
+    logbackConfigFile = "$rootDir/gradle/gretty/logback.xml"
 }
 
 /**

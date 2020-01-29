@@ -22,14 +22,3 @@ Is CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown correct
 Enter key password for <tds>
 	(RETURN if same as keystore password): RETURN
 ~~~
-
-In tomcat-users.xml, we have:
-
-~~~xml
-  <user username="tds"
-        password="secret666"
-        roles="tdsConfig,manager-gui,tdsMonitor"/>
-~~~
-
-We're using the `"tds"` alias and its `"secret666"` password that we setup in the keystore.
-The `"tds"` user has `"tdsConfig"`, `"manager-gui"`, and `"tdsMonitor"` powers.
