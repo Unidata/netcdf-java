@@ -27,7 +27,6 @@ import ucar.nc2.iosp.LayoutRegularSegmented;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.Nullable;
 
 /**

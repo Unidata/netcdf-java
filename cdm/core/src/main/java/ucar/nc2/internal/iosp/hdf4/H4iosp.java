@@ -37,7 +37,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.unidata.io.RandomAccessFile;
-
 import javax.annotation.Nullable;
 
 /** HDF4 iosp */

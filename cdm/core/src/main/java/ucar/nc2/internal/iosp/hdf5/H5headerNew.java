@@ -1220,7 +1220,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       count++;
     }
     return new String(b, start, count - start, charset); // all strings are considered to be UTF-8
-                                                              // unicode
+                                                         // unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {
