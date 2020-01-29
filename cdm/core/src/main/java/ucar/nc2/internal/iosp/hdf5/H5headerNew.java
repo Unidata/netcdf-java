@@ -189,7 +189,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   /**
    * Return defined {@link Charset value charset} that
-   * will be used by reading netcdf file.
+   * will be used by reading HDF5 header.
    * 
    * @return {@link Charset value charset}
    */

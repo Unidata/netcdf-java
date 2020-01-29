@@ -91,7 +91,7 @@ public class N3headerNew {
 
   /**
    * Return defined {@link Charset value charset} that
-   * will be used by reading netcdf file.
+   * will be used by reading HDF3 header.
    * 
    * @return {@link Charset value charset}
    */

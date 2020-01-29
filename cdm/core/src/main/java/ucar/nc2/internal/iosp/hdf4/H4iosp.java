@@ -38,6 +38,8 @@ import ucar.nc2.util.IO;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.Nullable;
+
 /** HDF4 iosp */
 public class H4iosp extends AbstractIOServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
@@ -77,7 +79,7 @@ public class H4iosp extends AbstractIOServiceProvider {
    * Return header for reading netcdf file.
    * Create it if it's not already created.
    * 
-   * @return header for reading netcdf file.
+   * @return header for reading HDF4 file.
    */
   private H4header getHeader() {
     if (header == null) {
@@ -521,7 +523,7 @@ public class H4iosp extends AbstractIOServiceProvider {
    * 
    * @param charset may be null.
    */
-  protected void setValueCharset(Charset charset) {
+  protected void setValueCharset(@Nullable Charset charset) {
     valueCharset = charset;
   }
 }

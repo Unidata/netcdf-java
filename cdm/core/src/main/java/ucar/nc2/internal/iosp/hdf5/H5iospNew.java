@@ -36,6 +36,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.Nullable;
+
 /**
  * HDF5 I/O
  *
@@ -153,7 +155,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
    * 
    * @param charset may be null.
    */
-  protected void setValueCharset(Charset charset) {
+  protected void setValueCharset(@Nullable Charset charset) {
     valueCharset = charset;
   }
 

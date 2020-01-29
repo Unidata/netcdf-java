@@ -28,6 +28,8 @@ import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.Nullable;
+
 /**
  * Read-only using Builders for immutability.
  *
@@ -438,7 +440,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
    * 
    * @param charset may be null.
    */
-  protected void setValueCharset(Charset charset) {
+  protected void setValueCharset(@Nullable Charset charset) {
     valueCharset = charset;
   }
 
