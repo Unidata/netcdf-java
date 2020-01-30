@@ -4,7 +4,8 @@
  */
 package ucar.nc2.units;
 
-import com.google.common.truth.Truth;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class TestDateRange {
     try {
       drStartIsPresent = new DateRange(new DateType("present", null, null), null, new TimeDuration("P7D"), null);
     } catch (ParseException e) {
-      Truth.assertWithMessage("Failed to parse \"present\" and/or \"P7D\": " + e.getMessage()).fail();
+      assertWithMessage("Failed to parse \"present\" and/or \"P7D\": " + e.getMessage()).fail();
       return;
     }
     checkValuesAfterDelay(drStartIsPresent);
@@ -46,7 +47,7 @@ public class TestDateRange {
     try {
       drEndIsPresent = new DateRange(null, new DateType("present", null, null), new TimeDuration("P7D"), null);
     } catch (ParseException e) {
-      Truth.assertWithMessage("Failed to parse \"present\" and/or \"P7D\": " + e.getMessage()).fail();
+      assertWithMessage("Failed to parse \"present\" and/or \"P7D\": " + e.getMessage()).fail();
       return;
     }
     checkValuesAfterDelay(drEndIsPresent);
@@ -69,7 +70,7 @@ public class TestDateRange {
         }
       }
     } catch (InterruptedException e) {
-      Truth.assertWithMessage("Failed to wait: " + e.getMessage()).fail();
+      assertWithMessage("Failed to wait: " + e.getMessage()).fail();
       return;
     }
 
@@ -80,7 +81,7 @@ public class TestDateRange {
     System.out.println("Start   : [" + startDate2.getTime() + "].");
     System.out.println("End     : [" + endDate2.getTime() + "].");
 
-    Truth.assertThat(startDate).isNotEqualTo(startDate2);
-    Truth.assertThat(endDate).isNotEqualTo(endDate2);
+    assertThat(startDate).isNotEqualTo(startDate2);
+    assertThat(endDate).isNotEqualTo(endDate2);
   }
 }

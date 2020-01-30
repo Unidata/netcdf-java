@@ -1,7 +1,7 @@
 
 package ucar.unidata.geoloc;
 
-import com.google.common.truth.Truth;
+import static com.google.common.truth.Truth.assertThat;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -201,7 +201,7 @@ public class TestProjections {
     testProjection(new LambertConformal());
     LambertConformal p = new LambertConformal();
     LambertConformal p2 = (LambertConformal) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -225,7 +225,7 @@ public class TestProjections {
 
     TransverseMercator p = new TransverseMercator();
     TransverseMercator p2 = (TransverseMercator) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -233,7 +233,7 @@ public class TestProjections {
     testProjection(new Stereographic());
     Stereographic p = new Stereographic();
     Stereographic p2 = (Stereographic) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -241,7 +241,7 @@ public class TestProjections {
     testProjection(new LambertAzimuthalEqualArea());
     LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea();
     LambertAzimuthalEqualArea p2 = (LambertAzimuthalEqualArea) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -249,7 +249,7 @@ public class TestProjections {
     testProjectionLonMax(new Orthographic(), 10, 10);
     Orthographic p = new Orthographic();
     Orthographic p2 = (Orthographic) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -257,7 +257,7 @@ public class TestProjections {
     testProjection(new AlbersEqualArea());
     AlbersEqualArea p = new AlbersEqualArea();
     AlbersEqualArea p2 = (AlbersEqualArea) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -265,7 +265,7 @@ public class TestProjections {
     testProjection(new CylindricalEqualAreaProjection());
     CylindricalEqualAreaProjection p = new CylindricalEqualAreaProjection();
     CylindricalEqualAreaProjection p2 = (CylindricalEqualAreaProjection) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -273,21 +273,21 @@ public class TestProjections {
     testProjection(new EquidistantAzimuthalProjection());
     EquidistantAzimuthalProjection p = new EquidistantAzimuthalProjection();
     EquidistantAzimuthalProjection p2 = (EquidistantAzimuthalProjection) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   public void utestAEAE() {
     testProjectionLonMax(new AlbersEqualAreaEllipse(), 180, 80);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
     AlbersEqualAreaEllipse p2 = (AlbersEqualAreaEllipse) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   public void utestLCCE() {
     testProjectionLonMax(new LambertConformalConicEllipse(), 360, 80);
     LambertConformalConicEllipse p = new LambertConformalConicEllipse();
     LambertConformalConicEllipse p2 = (LambertConformalConicEllipse) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -295,7 +295,7 @@ public class TestProjections {
     testProjectionProjMax(new FlatEarth(), 5000, 5000);
     FlatEarth p = new FlatEarth();
     FlatEarth p2 = (FlatEarth) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -303,7 +303,7 @@ public class TestProjections {
     testProjection(new Mercator());
     Mercator p = new Mercator();
     Mercator p2 = (Mercator) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   private void showProjVal(ProjectionImpl proj, double lat, double lon) {
@@ -331,7 +331,7 @@ public class TestProjections {
     testProjectionLonMax(new RotatedPole(37, 177), 360, 88);
     RotatedPole p = new RotatedPole();
     RotatedPole p2 = (RotatedPole) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   /*
@@ -344,7 +344,7 @@ public class TestProjections {
     testProjectionLonMax(new RotatedLatLon(-30, -15, 0), 360, 88);
     RotatedLatLon p = new RotatedLatLon();
     RotatedLatLon p2 = (RotatedLatLon) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -353,7 +353,7 @@ public class TestProjections {
     testProjection(new Sinusoidal(0, 0, 0, 6371.007));
     Sinusoidal p = new Sinusoidal();
     Sinusoidal p2 = (Sinusoidal) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2);
+    assertThat(p).isEqualTo(p2);
   }
 
   @Test
@@ -368,7 +368,7 @@ public class TestProjections {
 
     UtmProjection p = new UtmProjection();
     UtmProjection p2 = (UtmProjection) p.constructCopy();
-    Truth.assertThat(p).isEqualTo(p2); // */
+    assertThat(p).isEqualTo(p2); // */
   }
 
   private void testProjectionUTM(double lat, double lon) {
