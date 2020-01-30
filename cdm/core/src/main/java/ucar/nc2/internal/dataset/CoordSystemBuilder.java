@@ -536,21 +536,17 @@ public class CoordSystemBuilder {
   protected void makeCoordinateTransforms() {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && vp.ct == null) { // TODO dont have ncd
-        vp.ct =
-            CoordinateTransform.builder().setName(vp.vb.shortName).setAttributeContainer(vp.vb.getAttributeContainer());
-        coords.addCoordinateTransform(vp.ct);
-        // vp.ct = CoordTransBuilder.makeCoordinateTransform(null, vp.vb.getAttributeContainer(), parseInfo,
-        // userAdvice);
+        vp.ct = makeCoordinateTransform(vp.vb);
+        if (vp.ct != null) {
+          coords.addCoordinateTransform(vp.ct);
+        }
       }
     }
   }
 
-  /*
-   * Apparently never called ??
-   * protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-   * return CoordTransBuilder.makeCoordinateTransform(ds, ctv, parseInfo, userAdvice);
-   * }
-   */
+  protected CoordinateTransform.Builder makeCoordinateTransform(VariableDS.Builder<?> vb) {
+     return CoordinateTransform.builder().setName(vb.shortName).setAttributeContainer(vb.getAttributeContainer());
+  }
 
   /**
    * Assign CoordinateTransform objects to Variables and Coordinate Systems.

@@ -2048,6 +2048,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     public T setName(String shortName) {
       this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
+      this.attributes.setName(shortName);
       return self();
     }
 

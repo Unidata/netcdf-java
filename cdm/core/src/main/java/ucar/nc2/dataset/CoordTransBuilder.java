@@ -14,6 +14,7 @@ import ucar.nc2.dataset.transform.*;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.nc2.ft2.coverage.CoverageTransform;
+import ucar.nc2.dataset.transform.CsmSigma;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
 import java.util.List;
@@ -70,6 +71,9 @@ public class CoordTransBuilder {
     // -sachin 03/25/09
     registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);
     registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);
+
+    registerTransform("sigma_level", CsmSigma.class);
+    registerTransform("hybrid_sigma_pressure", CsmSigma.HybridSigmaPressureBuilder.class);
 
     // further calls to registerTransform are by the user
     userMode = true;
@@ -168,6 +172,10 @@ public class CoordTransBuilder {
     if (null == transform_name)
       transform_name = ctv.findAttValueIgnoreCase(CF.STANDARD_NAME, null);
 
+    // Finally check the units
+    if (null == transform_name)
+      transform_name = ctv.findAttValueIgnoreCase(CDM.UNITS, null);
+
     if (null == transform_name) {
       parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
       return null;
@@ -222,6 +230,9 @@ public class CoordTransBuilder {
 
     if (ct != null) {
       parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
+          builderObject.getClass().getName());
+    } else {
+      parseInfo.format(" Failed to make Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
           builderObject.getClass().getName());
     }
 
