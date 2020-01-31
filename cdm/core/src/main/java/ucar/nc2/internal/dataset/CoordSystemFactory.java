@@ -240,7 +240,7 @@ public class CoordSystemFactory {
     }
 
     // Look for Convention using isMine()
-    if (coordSysFactory == null) {
+    if (coordSysFactory == null && ds.orgFile != null) {
       for (Convention conv : conventionList) {
         CoordSystemBuilderFactory candidate = conv.factory;
         if (candidate.isMine(ds.orgFile)) {
@@ -251,7 +251,7 @@ public class CoordSystemFactory {
     }
 
     // Use service loader mechanism isMine()
-    if (coordSysFactory == null) {
+    if (coordSysFactory == null && ds.orgFile != null) {
       for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
         if (csb.isMine(ds.orgFile)) {
           coordSysFactory = csb;

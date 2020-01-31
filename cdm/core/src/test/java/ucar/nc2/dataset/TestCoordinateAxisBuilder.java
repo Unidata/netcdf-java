@@ -1,6 +1,8 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
+import static ucar.nc2.TestUtils.makeDummyGroup;
+
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.nc2.constants.AxisType;
@@ -12,7 +14,7 @@ public class TestCoordinateAxisBuilder {
   public void testFromVariableDS() {
     // NetcdfDataset ncd = NetcdfDataset.builder().build();
     VariableDS.Builder vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units")
-        .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+        .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll()).setGroup(makeDummyGroup());
     CoordinateAxis.Builder builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.GeoX);
     CoordinateAxis axis = builder.build();
 

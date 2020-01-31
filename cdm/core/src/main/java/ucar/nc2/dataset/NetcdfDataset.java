@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -1641,7 +1642,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
-    public NetcdfFile orgFile;
+    @Nullable public NetcdfFile orgFile;
     public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
     public String convUsed;
     public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
