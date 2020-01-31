@@ -1900,7 +1900,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     /*
      * TODO Dimensions are tricky during the transition to 6, because they have a pointer to their Group in 5.x,
      * but with Builders, the Group isnt created until build(). The Group is part of equals() and hash().
-     * The second issue is that we may not immediatley know the length, so that may have to be made later.
+     * The second issue is that we may not know their shape, so that may have to be made later.
      * Provisionally, we are going to try this strategy: during build, Dimensions are created without Groups, and
      * hash and equals are modified to allow that. During build, the Dimensions are recreated with the Group, and
      * Variables Dimensions are replaced with shared Dimensions.
@@ -2123,10 +2123,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       setName(builder.shortName);
       setSPobject(builder.spiObject);
       return self();
-    }
-
-    public Section getShapeAsSection() {
-      return Dimensions.makeSectionFromDimensions(this.dimensions);
     }
 
     /** Normally this is called by Group.build() */

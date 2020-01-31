@@ -68,21 +68,17 @@ import java.util.*;
 public class TestDir {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  /**
-   * Property name for the path to the Unidata test data directory, e.g "unidata.testdata.path=/share/testdata".
-   */
+  /** Property name for the path to the Unidata test data directory, e.g "unidata.testdata.path=/share/testdata". */
   private static String testdataDirPropName = "unidata.testdata.path";
 
-  /**
-   * Path to the Unidata test data directory.
-   */
-  public static String testdataDir = null;
+  /** Path to the Unidata test data directory. */
+  public static String testdataDir;
 
   /**
    * New test data directory. do not put temporary files in here. migrate all test data here eventually
    * Unidata "//fileserver/data/testdata2/cdmUnitTest" directory.
    */
-  public static String cdmUnitTestDir = null;
+  public static String cdmUnitTestDir;
 
   /** The cdm-core local test directory, from any cdm submodule. */
   public static String cdmLocalTestDataDir = "../core/src/test/data/";
@@ -93,9 +89,7 @@ public class TestDir {
   /** The cdm-core local test directory, from cdm-test submodule. */
   public static String cdmLocalFromTestDataDir = "../cdm/core/src/test/data/";
 
-  /**
-   * cdm-test data directory (distributed with code but depends on data not in github)
-   */
+  /** cdm-test data directory (distributed with code but depends on data not in github) */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
 
   //////////////////////////////////////////////////////////////////////
@@ -103,24 +97,16 @@ public class TestDir {
   //////////////////////////////////////////////////////////////////////
 
   // Remote Test server(s)
-
   private static String remoteTestServerPropName = "remotetestserver";
-
   public static String remoteTestServer = "localhost:8081";
 
   // DAP 2 Test server (for testing)
-
   public static String dap2TestServerPropName = "dts";
-
   public static String dap2TestServer = "localhost:8080";
 
   // DAP4 Test server (for testing)
-
   public static String dap4TestServerPropName = "d4ts";
-
   public static String dap4TestServer = "localhost:8080";
-
-  //////////////////////////////////////////////////
 
   static {
     testdataDir = System.getProperty(testdataDirPropName); // Check the system property.
@@ -230,15 +216,7 @@ public class TestDir {
     }
   }
 
-  /**
-   * Call act.doAct() of each file in dirName passing
-   * 
-   * @param dirName
-   * @param ff
-   * @param act
-   * @return
-   * @throws IOException
-   */
+  /** Call act.doAct() of each file in dirName passing */
   public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
     return actOnAll(dirName, ff, act, true);
   }
@@ -261,7 +239,7 @@ public class TestDir {
     }
 
     @Override
-    public int doAct(String filename) throws IOException {
+    public int doAct(String filename) {
       filenames.add(new Object[] {filename});
       return 0;
     }
@@ -327,9 +305,9 @@ public class TestDir {
     }
   }
 
-  static int max_size = 1000 * 1000 * 10;
+  private static int max_size = 1000 * 1000 * 10;
 
-  static Section makeSubset(Variable v) throws InvalidRangeException {
+  static Section makeSubset(Variable v) {
     int[] shape = v.getShape();
     shape[0] = 1;
     Section s = new Section(shape);

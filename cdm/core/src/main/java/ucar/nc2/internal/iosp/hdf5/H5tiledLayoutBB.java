@@ -26,8 +26,9 @@ import ucar.unidata.io.RandomAccessFile;
  * Iterator to read/write subsets of an array.
  * This calculates byte offsets for HD5 chunked datasets.
  * Assumes that the data is stored in chunks, indexed by a Btree.
- * for filtered data
- *
+ * Used for filtered data
+ * Had to split from old H5tiledLayoutBB because need to use H5headerNew.Vinfo.
+ * 
  * @author caron
  */
 public class H5tiledLayoutBB implements LayoutBB {

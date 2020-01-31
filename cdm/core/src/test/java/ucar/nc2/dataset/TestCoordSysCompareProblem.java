@@ -9,12 +9,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.CompareNetcdf2.ObjFilter;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
@@ -27,7 +25,8 @@ public class TestCoordSysCompareProblem {
 
   @Test
   public void compareProblemFile() throws IOException {
-    String filename = "file:D:/cdmUnitTest/conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc";
+    String filename = TestDir.cdmUnitTestDir
+        + "conventions/cfradial/cfrad.20140608_220305.809_to_20140608_220710.630_KFTG_v348_Surveillance_SUR.nc";
     showOrg(filename);
     showNew(filename);
     compare(filename);
