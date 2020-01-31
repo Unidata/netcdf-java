@@ -2,7 +2,6 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -41,8 +40,8 @@ public class TestCoordSysCompareProblem {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare
-            .compare(org, withBuilder, new ucar.nc2.dataset.TestCoordSysCompareMore.CoordsObjFilter(), false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new ucar.nc2.dataset.TestCoordSysCompareMore.CoordsObjFilter(),
+            false, false, true);
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
         System.out.printf("new = %s%n",
@@ -56,8 +55,8 @@ public class TestCoordSysCompareProblem {
 
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
       Variable v = org.findVariable("lev");
-      //Array data = v.read();
-      //System.out.printf("data = %s%n", data);
+      // Array data = v.read();
+      // System.out.printf("data = %s%n", data);
     }
   }
 
@@ -65,12 +64,11 @@ public class TestCoordSysCompareProblem {
 
     try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
       Variable v = withBuilder.findVariable("lev");
-     // Array data = v.read();
-      //System.out.printf("data = %s%n", data);
+      // Array data = v.read();
+      // System.out.printf("data = %s%n", data);
     }
   }
 
 }
-
 
 

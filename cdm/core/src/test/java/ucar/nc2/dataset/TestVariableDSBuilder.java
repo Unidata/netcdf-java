@@ -4,7 +4,6 @@ package ucar.nc2.dataset;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 import static ucar.nc2.TestUtils.makeDummyGroup;
-
 import java.io.IOException;
 import java.util.List;
 import org.junit.Test;
@@ -23,8 +22,8 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testVarBuilder() {
-    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-        .setGroup(makeDummyGroup()).build();
+    VariableDS var =
+        VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup()).build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isTrue();
@@ -32,9 +31,8 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testVarDSBuilder() {
-    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-        .setUnits("units").setDesc("desc").setGroup(makeDummyGroup())
-        .setEnhanceMode(NetcdfDataset.getEnhanceAll()).build();
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")
+        .setGroup(makeDummyGroup()).setEnhanceMode(NetcdfDataset.getEnhanceAll()).build();
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
     assertThat(var.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
@@ -44,11 +42,10 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testVarDSBuilderOrgValues() {
-    Variable orgVar = Variable.builder().setName("orgName").setDataType(DataType.INT)
-        .setGroup(makeDummyGroup()).build();
+    Variable orgVar =
+        Variable.builder().setName("orgName").setDataType(DataType.INT).setGroup(makeDummyGroup()).build();
     VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setOriginalName("orgName")
-        .setOriginalDataType(DataType.INT).setOriginalVariable(orgVar)
-        .setGroup(makeDummyGroup()).build();
+        .setOriginalDataType(DataType.INT).setOriginalVariable(orgVar).setGroup(makeDummyGroup()).build();
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.INT);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
     assertThat((Object) var.getOriginalVariable()).isEqualTo(orgVar);
@@ -58,8 +55,8 @@ public class TestVariableDSBuilder {
   public void testWithDims() {
     try {
       // Must set dimension first
-      VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-          .setGroup(makeDummyGroup()).setDimensionsByName("dim1 dim2").build();
+      VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup())
+          .setDimensionsByName("dim1 dim2").build();
       fail();
     } catch (Exception e) {
       // ok
@@ -85,9 +82,8 @@ public class TestVariableDSBuilder {
   public void testWithAnonymousDims() {
     // No parent group needed
     int[] shape = new int[] {3, 6, -1};
-    VariableDS var =
-        VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-            .setGroup(makeDummyGroup()).setDimensionsAnonymous(shape).build();
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup())
+        .setDimensionsAnonymous(shape).build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();

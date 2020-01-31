@@ -3,7 +3,6 @@ package ucar.nc2;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 import static ucar.nc2.TestUtils.makeDummyGroup;
-
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
@@ -12,8 +11,7 @@ public class TestVariableBuilder {
 
   @Test
   public void testBuilder() {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT)
-        .setGroup(makeDummyGroup()).build();
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup()).build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isTrue();
@@ -45,8 +43,8 @@ public class TestVariableBuilder {
   @Test
   public void testWithAnonymousDims() {
     int[] shape = new int[] {3, 6, -1};
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT)
-        .setGroup(makeDummyGroup()).setDimensionsAnonymous(shape).build();
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup())
+        .setDimensionsAnonymous(shape).build();
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();

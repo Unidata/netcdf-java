@@ -545,7 +545,7 @@ public class CoordSystemBuilder {
   }
 
   protected CoordinateTransform.Builder makeCoordinateTransform(VariableDS.Builder<?> vb) {
-     return CoordinateTransform.builder().setName(vb.shortName).setAttributeContainer(vb.getAttributeContainer());
+    return CoordinateTransform.builder().setName(vb.shortName).setAttributeContainer(vb.getAttributeContainer());
   }
 
   /**
