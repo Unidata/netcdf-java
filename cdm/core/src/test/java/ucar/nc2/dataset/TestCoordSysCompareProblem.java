@@ -28,8 +28,7 @@ public class TestCoordSysCompareProblem {
 
   @Test
   public void compareProblemFile() throws IOException {
-    String filename = TestDir.cdmUnitTestDir
-        + "conventions/cfradial/cfrad.20140608_220305.809_to_20140608_220710.630_KFTG_v348_Surveillance_SUR.nc";
+    String filename = "/usr/local/google/home/jlcaron/Downloads/HistDumpTest9.nc";
     showOrg(filename);
     showNew(filename);
     compare(filename);

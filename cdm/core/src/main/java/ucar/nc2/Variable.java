@@ -1883,6 +1883,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     protected abstract T self();
 
+    // add / replace previous
     public T addAttribute(Attribute att) {
       attributes.addAttribute(att);
       return self();
