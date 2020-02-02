@@ -1016,10 +1016,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return addLocalFieldsToBuilder(builder());
   }
 
-  public CoordinateAxis1D(VariableDS.Builder<?> builder) {
-    super(builder);
-  }
-
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);

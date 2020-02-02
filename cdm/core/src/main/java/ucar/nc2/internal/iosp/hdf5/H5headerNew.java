@@ -827,7 +827,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     Dimension d = h5group.dimMap.get(dimName); // first look in current group
     if (d == null) { // create if not found
-      d = Dimension.builder(dimName, length).setIsUnlimited(isUnlimited).build();
+      d = Dimension.builder().setName(name).setIsUnlimited(isUnlimited).setLength(length).build();
       h5group.dimMap.put(dimName, d);
       h5group.dimList.add(d);
       parent.addDimension(d);
@@ -1328,8 +1328,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         vb.addAttribute(new Attribute("_opaqueDesc", desc));
     }
 
-    if (vinfo.isChunked) {// make the data btree, but entries are not read in
-      vinfo.btree = new DataBTree(this, dataAddress, vb.getShapeAsSection().getShape(), vinfo.storageSize, memTracker);
+    int[] shape = makeVariableShape(facade.dobj.mdt, facade.dobj.mds, facade.dimList);
+    if (vinfo.isChunked) { // make the data btree, but entries are not read in
+      vinfo.btree = new DataBTree(this, dataAddress, shape, vinfo.storageSize, memTracker);
 
       if (vinfo.isChunked) { // add an attribute describing the chunk size
         List<Integer> chunksize = new ArrayList<>();
@@ -1363,7 +1364,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
       // fake data for now
       vb.setDataType(DataType.LONG);
-      Array newData = Array.factory(DataType.LONG, vb.getShapeAsSection().getShape());
+      Array newData = Array.factory(DataType.LONG, shape);
       vb.setCachedData(newData, true); // so H5iosp.read() is never called
       vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
     }
@@ -1473,66 +1474,66 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     return hdfDateParser;
   }
 
-  // set the type and shape of the Variable
-  private boolean makeVariableShapeAndType(Group.Builder parent, Variable.Builder v, MessageDatatype mdt,
-      MessageDataspace msd, Vinfo vinfo, String dims) {
-
-    int[] dim = (msd != null) ? msd.dimLength : new int[0];
-    if (dim == null)
-      dim = new int[0]; // scaler
-
-    boolean hasvlen = mdt.isVlen();
+  // get the shape of the Variable
+  private int[] makeVariableShape(MessageDatatype mdt, MessageDataspace msd, String dimNames) {
+    int[] shape = (msd != null) ? msd.dimLength : new int[0];
+    if (shape == null) {
+      shape = new int[0]; // scaler
+    }
 
     // merge the shape for array type (10)
     if (mdt.type == 10) {
-      int len = dim.length + mdt.dim.length;
-      if (hasvlen)
+      int len = shape.length + mdt.dim.length;
+      if (mdt.isVlen()) {
         len++;
+      }
       int[] combinedDim = new int[len];
-      System.arraycopy(dim, 0, combinedDim, 0, dim.length);
-      System.arraycopy(mdt.dim, 0, combinedDim, dim.length, mdt.dim.length); // // type 10 is the inner dimensions
-      if (hasvlen)
+      System.arraycopy(shape, 0, combinedDim, 0, shape.length);
+      System.arraycopy(mdt.dim, 0, combinedDim, shape.length, mdt.dim.length); // // type 10 is the inner dimensions
+      if (mdt.isVlen()) {
         combinedDim[len - 1] = -1;
-      dim = combinedDim;
+      }
+      shape = combinedDim;
     }
 
+    // dimension names were not passed in
+    if (dimNames == null) {
+      if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
+        if (mdt.byteSize != 1) { // scalar string member variable
+          int[] rshape = new int[shape.length + 1];
+          System.arraycopy(shape, 0, rshape, 0, shape.length);
+          rshape[shape.length] = mdt.byteSize;
+          return rshape;
+        }
+      } else if (mdt.isVlen()) { // variable length (not a string)
+        if ((shape.length == 1) && (shape[0] == 1)) { // replace scalar with vlen
+          return new int[] {-1};
+
+        } else if (mdt.type != 10) { // add vlen dimension already done above for array
+          int[] rshape = new int[shape.length + 1];
+          System.arraycopy(shape, 0, rshape, 0, shape.length);
+          rshape[shape.length] = -1;
+          return rshape;
+        }
+      }
+    }
+    return shape;
+  }
+
+  // set the type and shape of the Variable
+  private boolean makeVariableShapeAndType(Group.Builder parent, Variable.Builder v, MessageDatatype mdt,
+      MessageDataspace msd, Vinfo vinfo, String dimNames) {
+
+    int[] shape = makeVariableShape(mdt, msd, dimNames);
+
     // set dimensions on the variable
-    if (dims != null) { // dimensions were passed in
+    if (dimNames != null) { // dimensions were passed in
       if ((mdt.type == 9) && !mdt.isVString)
-        v.setDimensionsByName(dims + " *");
+        v.setDimensionsByName(dimNames + " *");
       else
-        v.setDimensionsByName(dims);
-
-    } else if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
-
-      if (mdt.byteSize == 1) // scalar string member variable
-        v.setDimensionsAnonymous(dim);
-      else {
-        int[] shape = new int[dim.length + 1];
-        System.arraycopy(dim, 0, shape, 0, dim.length);
-        shape[dim.length] = mdt.byteSize;
-        v.setDimensionsAnonymous(shape);
-      }
-
-    } else if (mdt.isVlen()) { // variable length (not a string)
-
-      if ((dim.length == 1) && (dim[0] == 1)) { // replace scalar with vlen
-        int[] shape = {-1};
-        v.setDimensionsAnonymous(shape);
-
-      } else if (mdt.type != 10) { // add vlen dimension already done above for array
-        int[] shape = new int[dim.length + 1];
-        System.arraycopy(dim, 0, shape, 0, dim.length);
-        shape[dim.length] = -1;
-        v.setDimensionsAnonymous(shape);
-
-      } else {
-        v.setDimensionsAnonymous(dim);
-      }
-
-    } else { // all other cases
-
-      v.setDimensionsAnonymous(dim);
+        v.setDimensionsByName(dimNames);
+    } else {
+      v.setDimensionsAnonymous(shape);
     }
 
     // set the type

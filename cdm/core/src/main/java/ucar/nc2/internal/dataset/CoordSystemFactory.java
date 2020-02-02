@@ -195,7 +195,8 @@ public class CoordSystemFactory {
    * @throws java.io.IOException on io error
    */
   @Nonnull
-  static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder ds, CancelTask cancelTask) throws IOException {
+  public static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder ds, CancelTask cancelTask)
+      throws IOException {
 
     // look for the Conventions attribute
     Group.Builder root = ds.rootGroup;
@@ -239,7 +240,7 @@ public class CoordSystemFactory {
     }
 
     // Look for Convention using isMine()
-    if (coordSysFactory == null) {
+    if (coordSysFactory == null && ds.orgFile != null) {
       for (Convention conv : conventionList) {
         CoordSystemBuilderFactory candidate = conv.factory;
         if (candidate.isMine(ds.orgFile)) {
@@ -250,7 +251,7 @@ public class CoordSystemFactory {
     }
 
     // Use service loader mechanism isMine()
-    if (coordSysFactory == null) {
+    if (coordSysFactory == null && ds.orgFile != null) {
       for (CoordSystemBuilderFactory csb : ServiceLoader.load(CoordSystemBuilderFactory.class)) {
         if (csb.isMine(ds.orgFile)) {
           coordSysFactory = csb;
@@ -280,8 +281,6 @@ public class CoordSystemFactory {
       coordSystemBuilder.addUserAdvice("No CoordSystemBuilder is defined for Conventions= '" + convName + "'\n");
     else {
       coordSystemBuilder.setConventionUsed(coordSysFactory.getConventionName());
-      root.getAttributeContainer()
-          .addAttribute(new Attribute(_Coordinate._CoordSysBuilder, coordSysFactory.getConventionName()));
     }
 
     ds.rootGroup.addAttribute(new Attribute(_Coordinate._CoordSysBuilder, coordSystemBuilder.getClass().getName()));

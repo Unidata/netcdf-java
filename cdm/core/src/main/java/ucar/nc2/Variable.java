@@ -1744,6 +1744,19 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
   protected Variable(Builder<?> builder) {
     super(builder.shortName);
+
+    if (builder.parent == null) {
+      throw new IllegalStateException(String.format("Parent Group must be set for Variable %s", builder.shortName));
+    }
+
+    if (builder.dataType == null) {
+      throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
+    }
+
+    if (builder.shortName == null || builder.shortName.isEmpty()) {
+      throw new IllegalStateException(String.format("Name must be set for Variable"));
+    }
+
     this.group = builder.parent;
     this.ncfile = builder.ncfile;
     this.parentstruct = builder.parentStruct;
@@ -1752,14 +1765,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     this.proxyReader = builder.proxyReader == null ? this : builder.proxyReader;
     this.spiObject = builder.spiObject;
     this.cache = builder.cache;
-
-    if (this.dataType == null) {
-      throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
-    }
-
-    if (this.shortName == null || this.shortName.isEmpty()) {
-      throw new IllegalStateException(String.format("Name must be set for Variable"));
-    }
 
     if (this.dataType.isEnum()) {
       this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
@@ -1895,7 +1900,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     /*
      * TODO Dimensions are tricky during the transition to 6, because they have a pointer to their Group in 5.x,
      * but with Builders, the Group isnt created until build(). The Group is part of equals() and hash().
-     * The second issue is that we may not immediatley know the length, so that may have to be made later.
+     * The second issue is that we may not know their shape, so that may have to be made later.
      * Provisionally, we are going to try this strategy: during build, Dimensions are created without Groups, and
      * hash and equals are modified to allow that. During build, the Dimensions are recreated with the Group, and
      * Variables Dimensions are replaced with shared Dimensions.
@@ -2043,6 +2048,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     public T setName(String shortName) {
       this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
+      this.attributes.setName(shortName);
       return self();
     }
 
@@ -2101,8 +2107,22 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
-    public Section getShapeAsSection() {
-      return Dimensions.makeSectionFromDimensions(this.dimensions);
+    public T copyFrom(Variable.Builder<?> builder) {
+      addAttributes(builder.attributes); // copy
+      this.autoGen = builder.autoGen;
+      this.cache = builder.cache;
+      setDataType(builder.dataType);
+      addDimensions(builder.dimensions);
+      setDimensionsByName(builder.dimString);
+      this.elementSize = builder.elementSize;
+      setEnumTypeName(builder.getEnumTypeName());
+      setNcfile(builder.ncfile);
+      setGroup(builder.parent);
+      setParentStructure(this.parentStruct);
+      setProxyReader(builder.proxyReader);
+      setName(builder.shortName);
+      setSPobject(builder.spiObject);
+      return self();
     }
 
     /** Normally this is called by Group.build() */

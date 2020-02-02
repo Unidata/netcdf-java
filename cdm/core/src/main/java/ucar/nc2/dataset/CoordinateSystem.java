@@ -769,9 +769,11 @@ public class CoordinateSystem {
 
       // Find the named coordinate transforms in allTransforms.
       for (String wantTrans : builder.transNames) {
-        CoordinateTransform got = allTransforms.stream().filter(ct -> ct.name.equals(wantTrans)).findFirst()
-            .orElseThrow(() -> new IllegalStateException("Cant find transform " + wantTrans));
-        coordTrans.add(got);
+        CoordinateTransform got = allTransforms.stream()
+            .filter(ct -> ct.getAttributeContainer().getName().equals(wantTrans)).findFirst().orElse(null);
+        if (got != null) {
+          coordTrans.add(got);
+        }
       }
 
     }

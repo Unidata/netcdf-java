@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -48,38 +48,22 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     params.add(param);
   }
 
-  /**
-   * get the name
-   * 
-   * @return the name
-   */
   public String getName() {
     return name;
   }
 
-  /**
-   * get the naming authority
-   * 
-   * @return the naming authority
-   */
+  public AttributeContainer getAttributeContainer() {
+    return attributeContainer;
+  }
+
   public String getAuthority() {
     return authority;
   }
 
-  /**
-   * get the transform type
-   * 
-   * @return the transform type
-   */
   public TransformType getTransformType() {
     return transformType;
   }
 
-  /**
-   * get list of ProjectionParameter objects.
-   * 
-   * @return list of ProjectionParameter objects.
-   */
   public List<Parameter> getParameters() {
     return params;
   }
@@ -242,10 +226,9 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       return self();
     }
 
-
     public CoordinateTransform build(NetcdfDataset ncd) {
       if (built)
-        throw new IllegalStateException("already built");
+        throw new IllegalStateException("already built " + name);
       built = true;
 
       if (this.preBuilt != null) {
@@ -256,7 +239,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       CoordinateTransform ct =
           CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
       if (ct != null) {
-        ct.name = this.name;
+        // ct.name = this.name;
         ct.attributeContainer = new AttributeContainerMutable(this.name);
         ct.attributeContainer.addAll(attributeContainer);
       }
