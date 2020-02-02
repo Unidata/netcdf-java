@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -119,16 +119,6 @@ public class ADASConvention extends CoordSystemBuilder {
     makeCoordAxis("y");
     makeCoordAxis("z");
 
-    /*
-     * perhaps these get added in makeCoordinateAxes
-     * if (ds.findVariable("x_stag") != null)
-     * ds.addCoordinateAxis(makeCoordAxis(ds, "x"));
-     * if (ds.findVariable("y_stag") != null)
-     * ds.addCoordinateAxis(makeCoordAxis(ds, "y"));
-     * if (ds.findVariable("z_stag") != null)
-     * ds.addCoordinateAxis(makeCoordAxis(ds, "z"));
-     */
-
     rootGroup.findVariable("ZPSOIL")
         .ifPresent(vb -> vb.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString())));
   }
@@ -231,8 +221,6 @@ public class ADASConvention extends CoordSystemBuilder {
     return "down"; // eta coords decrease upward
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
-
   private void makeCoordAxis(String axisName) throws IOException {
     String name = axisName + "_stag";
     if (!rootGroup.findVariable(name).isPresent()) {
@@ -257,69 +245,6 @@ public class ADASConvention extends CoordSystemBuilder {
     cb.setCachedData(data, true);
     datasetBuilder.replaceCoordinateAxis(rootGroup, cb);
   }
-
-  /*
-   * private VerticalCT makeWRFEtaVerticalCoordinateTransform(NetcdfDataset ds, CoordinateSystem cs) {
-   * if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) ||
-   * (null == ds.findVariable("P")) || (null == ds.findVariable("PB")))
-   * return null;
-   * 
-   * VerticalCT.Type type = VerticalCT.Type.WRFEta;
-   * VerticalCT ct = new VerticalCT(type.toString(), conventionName, type);
-   * 
-   * ct.addParameter(new Parameter("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
-   * ct.addParameter(new Parameter("perturbation geopotential variable name", "PH"));
-   * ct.addParameter(new Parameter("base state geopotential variable name", "PHB"));
-   * ct.addParameter(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
-   * ct.addParameter(new Parameter("perturbation pressure variable name", "P"));
-   * ct.addParameter(new Parameter("base state pressure variable name", "PB"));
-   * ct.addParameter(new Parameter("staggered x", ""+isStaggered(cs.getXaxis())));
-   * ct.addParameter(new Parameter("staggered y", ""+isStaggered(cs.getYaxis())));
-   * ct.addParameter(new Parameter("staggered z", ""+isStaggered(cs.getZaxis())));
-   * ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getName()));
-   * 
-   * parseInfo.append(" added vertical coordinate transform = "+type+"\n");
-   * return ct;
-   * }
-   * 
-   * private boolean isStaggered(CoordinateAxis axis) {
-   * if (axis == null) return false;
-   * String name = axis.getName();
-   * if (name == null) return false;
-   * if (name.endsWith("stag")) return true;
-   * return false;
-   * }
-   */
-
-  /*
-   * @Override
-   * protected void assignCoordinateTransforms() {
-   * super.assignCoordinateTransforms();
-   * 
-   * // any cs who has a vertical coordinate with no units
-   * for (CoordinateSystem.Builder cs : coords.coordSys) {
-   * if (cs.getZaxis() != null) {
-   * String units = cs.getZaxis().getUnitsString();
-   * if ((units == null) || (units.trim().isEmpty())) {
-   * VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
-   * if (vct != null) {
-   * cs.addCoordinateTransform(vct);
-   * parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s%n", cs.getName());
-   * }
-   * }
-   * }
-   * }
-   * }
-   * 
-   * private VerticalCT makeWRFEtaVerticalCoordinateTransform(CoordinateSystem cs) {
-   * if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
-   * || (null == ds.findVariable("PB")))
-   * return null;
-   * 
-   * WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
-   * return builder.makeCoordinateTransform(ds, null);
-   * }
-   */
 
   public static class Factory implements CoordSystemBuilderFactory {
     @Override
