@@ -391,10 +391,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     super(builder);
   }
 
-  public CoordinateAxis1DTime(VariableDS.Builder<?> builder) {
-    super(builder);
-  }
-
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }

@@ -100,7 +100,6 @@ public class DatasetEnhancer {
    * Possible remove all direct access to Variable.enhance
    */
   public NetcdfDataset enhance() throws IOException {
-
     // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
     CoordSystemBuilder coordSysBuilder = null;
     if (wantEnhance.contains(Enhance.CoordSystems) && !ds.enhanceMode.contains(Enhance.CoordSystems)) {
@@ -203,7 +202,7 @@ public class DatasetEnhancer {
     vb.addEnhanceMode(varEnhance);
   }
 
-  // ODO remove after all conventions are ported.
+  // TODO remove after all conventions are ported.
   private NetcdfDataset useOldBuilder() throws IOException {
     return NetcdfDataset.wrap(ncfile, wantEnhance);
   }

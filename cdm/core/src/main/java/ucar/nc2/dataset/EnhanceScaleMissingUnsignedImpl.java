@@ -167,13 +167,14 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     } else {
       // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
       String fileTypeId = forVar.orgFileTypeId;
-
       boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
           || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
 
-      if (isNetcdfIosp && unsignedConversionType.isNumeric()) {
-        fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
-        hasFillValue = true;
+      if (isNetcdfIosp) {
+        if (unsignedConversionType.isNumeric()) {
+          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+          hasFillValue = true;
+        }
       }
     }
 

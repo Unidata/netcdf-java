@@ -69,6 +69,9 @@ public class TestNcmlReadersCompare {
     @Override
     public boolean accept(File pathname) {
       String name = pathname.getName();
+      // Made to fail, so skip
+      if (name.contains("aggExistingInequivalentCals.xml"))
+        return false;
       // NcMLReader does not change variable to type int, so fails.
       if (name.contains("aggSynthetic.xml"))
         return false;

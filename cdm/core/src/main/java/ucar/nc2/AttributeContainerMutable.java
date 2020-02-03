@@ -9,7 +9,7 @@ import javax.annotation.concurrent.Immutable;
 
 /** A mutable collection of Attributes. */
 public class AttributeContainerMutable implements AttributeContainer {
-  private final String name;
+  private String name;
   private List<Attribute> atts;
 
   public AttributeContainerMutable(String name) {
@@ -20,6 +20,10 @@ public class AttributeContainerMutable implements AttributeContainer {
   public AttributeContainerMutable(String name, Iterable<Attribute> from) {
     this(name);
     addAll(from);
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override
@@ -105,7 +109,6 @@ public class AttributeContainerMutable implements AttributeContainer {
     return (result != null) ? result
         : atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(name)).findFirst().orElse(null);
   }
-
 
   @Override
   public double findAttributeDouble(String attName, double defaultValue) {

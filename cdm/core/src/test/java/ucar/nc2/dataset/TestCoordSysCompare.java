@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -12,16 +16,13 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 
-/**
- * Compare CoordSysBuilder and CoordSystemBuilderImpl
- */
+/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) */
 @RunWith(Parameterized.class)
 public class TestCoordSysCompare {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -47,7 +48,7 @@ public class TestCoordSysCompare {
   @Test
   public void compareCoordSysBuilders() throws IOException {
     System.out.printf("Compare %s%n", fileLocation);
-    logger.info("TestNcmlReaders on {}%n", fileLocation);
+    logger.info("TestCoordSysCompare on {}%n", fileLocation);
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();

@@ -38,36 +38,27 @@ public abstract class OpPanel extends JPanel {
   protected ComboBox cb;
   protected JPanel buttPanel;
   protected JPanel topPanel;
-  protected AbstractButton coordButt;
+  private AbstractButton coordButt;
   protected StopButton stopButton;
 
-  protected boolean addCoords;
-  protected boolean busy;
-  protected long lastEvent = -1;
-  protected boolean eventOK = true;
+  protected boolean useCoords;
+  private boolean busy;
+  private long lastEvent = -1;
+  private boolean eventOK = true;
 
   protected IndependentWindow detailWindow;
   protected TextHistoryPane detailTA;
 
   protected static FileManager fileChooser;
 
-  /**
-   *
-   */
   public OpPanel(PreferencesExt prefs, String command) {
     this(prefs, command, true, true);
   }
 
-  /**
-   *
-   */
   public OpPanel(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
     this(prefs, command, true, addFileButton, addCoordButton);
   }
 
-  /**
-   *
-   */
   public OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton,
       boolean addCoordButton) {
     this.prefs = prefs;
@@ -117,16 +108,16 @@ public abstract class OpPanel extends JPanel {
       AbstractAction coordAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          addCoords = (Boolean) getValue(BAMutil.STATE);
-          String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+          useCoords = (Boolean) getValue(BAMutil.STATE);
+          String tooltip = useCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
           coordButt.setToolTipText(tooltip);
-          // doit( cb.getSelectedItem()); // called from cb action listener
+          setUseCoords(useCoords);
         }
       };
-      addCoords = prefs.getBoolean("coordState", false);
-      String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+      useCoords = prefs.getBoolean("coordState", false);
+      String tooltip2 = useCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
       BAMutil.setActionProperties(coordAction, "nj22/AddCoords", tooltip2, true, 'C', -1);
-      coordAction.putValue(BAMutil.STATE, addCoords);
+      coordAction.putValue(BAMutil.STATE, useCoords);
       coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
     }
 
@@ -154,9 +145,6 @@ public abstract class OpPanel extends JPanel {
     detailWindow.setBounds(bounds);
   }
 
-  /**
-   *
-   */
   public void doit(Object command) {
     if (busy) {
       return;
@@ -176,19 +164,10 @@ public abstract class OpPanel extends JPanel {
     busy = false;
   }
 
-  /**
-   *
-   */
   public abstract boolean process(Object command);
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {}
 
-  /**
-   *
-   */
   public void save() {
     cb.save();
     if (coordButt != null) {
@@ -199,26 +178,22 @@ public abstract class OpPanel extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public void setSelectedItem(Object item) {
     eventOK = false;
     cb.addItem(item);
     eventOK = true;
   }
 
-  /**
-   *
-   */
   public static void setFileChooser(FileManager chooser) {
     fileChooser = chooser;
   }
 
-  /**
-   *
-   */
   public IndependentWindow getDetailWindow() {
     return detailWindow;
   }
+
+  protected void setUseCoords(boolean useCoords) {
+    // NOOP
+  }
+
 }

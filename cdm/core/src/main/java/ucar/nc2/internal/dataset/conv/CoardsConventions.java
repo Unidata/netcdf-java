@@ -1,5 +1,6 @@
 package ucar.nc2.internal.dataset.conv;
 
+import java.io.IOException;
 import javax.annotation.Nullable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
@@ -35,12 +36,12 @@ class CoardsConventions extends CoordSystemBuilder {
    * time in such cases.
    */
 
-  protected CoardsConventions(NetcdfDataset.Builder datasetBuilder) {
+  CoardsConventions(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
 
-  protected boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
+  boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
     boolean hasChanged = false;
     String unit = vb.units;
     if (unit != null) {
@@ -58,7 +59,7 @@ class CoardsConventions extends CoordSystemBuilder {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) {
+  protected void augmentDataset(CancelTask cancelTask) throws IOException {
     for (Variable.Builder vb : rootGroup.vbuilders) {
       if (vb instanceof VariableDS.Builder) {
         checkTimeVarForCalendar((VariableDS.Builder) vb);
@@ -71,8 +72,7 @@ class CoardsConventions extends CoordSystemBuilder {
   // we assume that coordinate axes get identified by being coordinate variables
   @Override
   @Nullable
-  public AxisType getAxisType(VariableDS.Builder vb) {
-
+  protected AxisType getAxisType(VariableDS.Builder vb) {
     String unit = vb.units;
     if (unit == null) {
       return null;

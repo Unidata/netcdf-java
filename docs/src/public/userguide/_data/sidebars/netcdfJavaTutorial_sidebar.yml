@@ -162,6 +162,10 @@ entries:
       url: /file_types.html
       output: web, pdf
 
+    - title: CDM Calendar Date Handling
+      url: /cdm_calendar_date_time_ref.html
+      output: web, pdf
+
     - title: CDM Disk Caching
       url: /disk_caching.html
       output: web, pdf

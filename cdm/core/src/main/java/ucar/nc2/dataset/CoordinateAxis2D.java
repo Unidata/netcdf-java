@@ -445,10 +445,6 @@ public class CoordinateAxis2D extends CoordinateAxis {
     super(builder);
   }
 
-  public CoordinateAxis2D(VariableDS.Builder<?> builder) {
-    super(builder);
-  }
-
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }

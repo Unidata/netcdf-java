@@ -17,6 +17,7 @@ dependencies {
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
     testRuntime libraries["logback-classic"]
+    testCompile libraries["truth"]
 }
 
 test {

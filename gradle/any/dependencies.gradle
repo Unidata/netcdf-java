@@ -28,11 +28,6 @@ repositories {
         // still use. We should really try to eliminate our use of it.
         url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
     }
-    
-    // Third-party repositories.
-    maven {
-        url "https://dl.bintray.com/cwardgar/maven/"  // For "gretty".
-    }
 }
 
 //================================================ Dependencies ================================================//
@@ -46,7 +41,7 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:2.0.1"
+libraries["gretty"] = "org.gretty:gretty:3.0.1"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
@@ -224,11 +219,12 @@ libraries["lgooddatepicker"] = "com.github.lgooddatepicker:LGoodDatePicker:10.3.
 
 /////////////////////////////// Servlets to run tests against ////////////////////////////////
 
+versions["dapwars"] = "5.0.0-SNAPSHOT"
 // used by :dap4 test
-libraries["d4ts"] = "edu.ucar:d4ts:5.0.0-SNAPSHOT"
+libraries["d4ts"] = "edu.ucar:d4ts:${versions["dapwars"]}"
 
 // :opendap and :httpservices test.
-libraries["dts"] = "edu.ucar:dtswar:5.0.0-SNAPSHOT"
+libraries["dts"] = "edu.ucar:dtswar:${versions["dapwars"]}"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
