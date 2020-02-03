@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  */
 package ucar.nc2.internal.ncml;
 
@@ -25,16 +25,17 @@ import ucar.ma2.MAMath;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
-import ucar.nc2.Dimensions;
-import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ProxyReader;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 
@@ -160,15 +161,17 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
   // time units change - must read in time coords and convert, cache the results
   // must be able to be made into a CoordinateAxis1DTime
+  // calendars must be equivalent
   protected void readTimeCoordinates(Variable.Builder timeAxis, CancelTask cancelTask) throws IOException {
     List<CalendarDate> dateList = new ArrayList<>();
     String timeUnits = null;
+    Calendar calendar = null;
+    Calendar calendarToCheck = null;
+    CalendarDateUnit calendarDateUnit;
 
     // make concurrent
     for (AggDataset dataset : getDatasets()) {
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = dataset.acquireFile(cancelTask);
+      try (NetcdfFile ncfile = dataset.acquireFile(cancelTask)) {
         // LOOK was Variable v = ncfile.findVariable(timeAxis.getFullNameEscaped());
         Variable v = ncfile.findVariable(timeAxis.shortName);
         if (v == null) {
@@ -181,20 +184,54 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(null, vds, null);
         dateList.addAll(timeCoordVar.getCalendarDates());
 
-        if (timeUnits == null)
+        // if timeUnits is null, then that is our signal in the code that
+        // we are on the first file of the aggregation
+        if (timeUnits == null) {
           timeUnits = v.getUnitsString();
-
-      } finally {
-        dataset.close(ncfile);
+          // time units might be null. Check before moving on, and, if so, throw runtime error
+          if (timeUnits != null) {
+            calendar = timeCoordVar.getCalendarFromAttribute();
+          } else {
+            String msg = String.format("Time coordinate must have a non-null unit attribute.");
+            logger.error(msg);
+            if (cancelTask != null) {
+              cancelTask.setError(msg);
+            }
+            throw new UnsupportedOperationException(msg);
+          }
+        } else {
+          // Aggregation only makes sense if all files use the same calendar.
+          // This block does take into account the same calendar might have
+          // different names (i.e. "all_leap" and "366_day" are the same calendar)
+          // and we will allow that in the aggregation.
+          // If first file in the aggregation was not defined, it also must be
+          // not defined in the other files.
+          calendarToCheck = timeCoordVar.getCalendarFromAttribute();
+          if (!calendarsEquivalent(calendar, calendarToCheck)) {
+            String msg = String.format(
+                "Inequivalent calendars found across the aggregation: calendar %s is not equivalent to %s.", calendar,
+                calendarToCheck);
+            logger.error(msg);
+            if (cancelTask != null) {
+              cancelTask.setError(msg);
+            }
+            throw new UnsupportedOperationException(msg);
+          }
+        }
       }
-      if (cancelTask != null && cancelTask.isCancel())
-        return;
-    }
-    assert timeUnits != null;
 
-    int[] shape = timeAxis.getShapeAsSection().getShape();
-    int ntimes = shape[0];
-    assert (ntimes == dateList.size());
+      if (cancelTask != null && cancelTask.isCancel()) {
+        return;
+      }
+    }
+
+    // int[] shape = timeAxis.getShapeAsSection().getShape();
+    // int ntimes = shape[0];
+    // assert (ntimes == dateList.size());
+    // LOOK: used to get the shape from the commented code above
+    // Now that using builders, and now that timeAxis isn't built yet, it has no shape.
+    // Might not be right
+    int[] shape = {dateList.size()};
 
     DataType coordType = (timeAxis.dataType == DataType.STRING) ? DataType.STRING : DataType.DOUBLE;
     Array timeCoordVals = Array.factory(coordType, shape);
@@ -202,29 +239,43 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
     // check if its a String or a udunit
     if (timeAxis.dataType == DataType.STRING) {
-
       for (CalendarDate date : dateList) {
         ii.setObjectNext(date.toString());
       }
-
     } else {
       timeAxis.setDataType(DataType.DOUBLE); // otherwise fractional values get lost
-
-      DateUnit du;
-      try {
-        du = new DateUnit(timeUnits);
-      } catch (Exception e) {
-        throw new IOException(e.getMessage());
-      }
-      timeAxis.addAttribute(new Attribute(CDM.UNITS, timeUnits));
-
+      // if calendar is null, maintain the null for the string name, and let
+      // CalendarDateUnit handle it.
+      String calendarName = calendar != null ? calendar.name() : null;
+      calendarDateUnit = CalendarDateUnit.of(calendarName, timeUnits);
+      timeAxis.addAttribute(new Attribute(CDM.UNITS, calendarDateUnit.getUdUnit()));
+      timeAxis.addAttribute(new Attribute(CF.CALENDAR, calendarDateUnit.getCalendar().name()));
       for (CalendarDate date : dateList) {
-        double val = du.makeValue(date.toDate());
+        double val = calendarDateUnit.makeOffsetFromRefDate(date);
         ii.setDoubleNext(val);
       }
     }
 
     timeAxis.setCachedData(timeCoordVals, false);
+  }
+
+  // Check if two calendars are equivalent, while allowing one or both to be null.
+  // in this case, two null calendars are considered equivalent
+  private boolean calendarsEquivalent(Calendar a, Calendar b) {
+    boolean equivalent = false;
+    if (a != null) {
+      // calendar from new file must not be null
+      if (b != null) {
+        // is calendar from new file the same as the first file in the aggregation?
+        equivalent = b.equals(a);
+      }
+    } else {
+      // if calendar attribute is missing from the first file in the aggregation,
+      // it must be missing from the new file in order for the calendars to be
+      // considered "equivalent"
+      equivalent = b != null ? false : true;
+    }
+    return equivalent;
   }
 
   protected int getTotalCoords() {

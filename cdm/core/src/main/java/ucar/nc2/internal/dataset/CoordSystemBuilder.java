@@ -55,6 +55,7 @@ import ucar.unidata.util.Parameter;
  * B. You could explicitly add it by overriding assignCoordinateTransforms()
  */
 public class CoordSystemBuilder {
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSystemBuilder.class);
   private static boolean useMaximalCoordSys = true;
 
   /**
@@ -126,10 +127,10 @@ public class CoordSystemBuilder {
   protected CoordinatesHelper.Builder coords;
 
   protected List<VarProcess> varList = new ArrayList<>();
-  protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create(); // coordinate variables for
-                                                                                             // Dimension (name)
-
-  protected String conventionName = _Coordinate.Convention; // default name of Convention, override in subclass
+  // coordinate variables for Dimension (name)
+  protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
+  // default name of Convention, override in subclass
+  protected String conventionName = _Coordinate.Convention;
   protected Formatter parseInfo = new Formatter();
   protected Formatter userAdvice = new Formatter();
   protected boolean debug;
@@ -141,7 +142,7 @@ public class CoordSystemBuilder {
     this.coords = datasetBuilder.coords;
   }
 
-  public void setConventionUsed(String convName) {
+  protected void setConventionUsed(String convName) {
     this.conventionName = convName;
   }
 
@@ -149,7 +150,7 @@ public class CoordSystemBuilder {
     return conventionName;
   }
 
-  public void addUserAdvice(String advice) {
+  protected void addUserAdvice(String advice) {
     userAdvice.format("%s", advice);
   }
 
@@ -535,27 +536,22 @@ public class CoordSystemBuilder {
   protected void makeCoordinateTransforms() {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && vp.ct == null) { // TODO dont have ncd
-        vp.ct =
-            CoordinateTransform.builder().setName(vp.vb.shortName).setAttributeContainer(vp.vb.getAttributeContainer());
-        coords.addCoordinateTransform(vp.ct);
-        // vp.ct = CoordTransBuilder.makeCoordinateTransform(null, vp.vb.getAttributeContainer(), parseInfo,
-        // userAdvice);
+        vp.ct = makeCoordinateTransform(vp.vb);
+        if (vp.ct != null) {
+          coords.addCoordinateTransform(vp.ct);
+        }
       }
     }
   }
 
-  /*
-   * Apparently never called ??
-   * protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-   * return CoordTransBuilder.makeCoordinateTransform(ds, ctv, parseInfo, userAdvice);
-   * }
-   */
+  protected CoordinateTransform.Builder makeCoordinateTransform(VariableDS.Builder<?> vb) {
+    return CoordinateTransform.builder().setName(vb.shortName).setAttributeContainer(vb.getAttributeContainer());
+  }
 
   /**
    * Assign CoordinateTransform objects to Variables and Coordinate Systems.
    */
   protected void assignCoordinateTransforms() {
-
     // look for explicit transform assignments on the coordinate systems
     for (VarProcess vp : varList) {
       if (vp.isCoordinateSystem && vp.coordinateTransforms != null) {
@@ -842,23 +838,21 @@ public class CoordSystemBuilder {
 
       if (vb instanceof CoordinateAxis.Builder) {
         axis = (CoordinateAxis.Builder) vb;
-        return axis;
+      } else {
+        // Create a CoordinateAxis out of this variable.
+        vb = axis = CoordinateAxis.fromVariableDS(vb);
       }
 
-      // Create a CoordinateAxis out of this variable.
-      CoordinateAxis.Builder builder = CoordinateAxis.fromVariableDS(vb); // experimental
-
       if (axisType != null) {
-        builder.setAxisType(axisType);
-        builder.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
+        axis.setAxisType(axisType);
+        axis.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
 
         if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ))
             && (positive != null)) {
-          builder.setPositive(positive);
-          builder.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
+          axis.setPositive(positive);
+          axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
       }
-      vb = axis = builder;
       coords.addCoordinateAxis(axis);
       rootGroup.replaceVariable(axis);
       return axis;

@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Just open all the files in the formats directory. */
-// @Category(NeedsCdmUnitTest.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestReadFormats {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

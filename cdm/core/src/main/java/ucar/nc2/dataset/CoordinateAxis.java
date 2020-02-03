@@ -67,14 +67,16 @@ public class CoordinateAxis extends VariableDS {
   }
 
   // experimental
-  public static CoordinateAxis.Builder fromVariableDS(VariableDS.Builder vdsBuilder) {
+  // The problem with this is that it converts to CoordinateAxis1D and then to builder
+  public static CoordinateAxis.Builder fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
         || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == DataType.CHAR)) {
-      return new CoordinateAxis1D(vdsBuilder).toBuilder();
-    } else if (vdsBuilder.getRank() == 2)
-      return new CoordinateAxis2D(vdsBuilder).toBuilder();
-    else
-      return new CoordinateAxis(vdsBuilder).toBuilder();
+      return CoordinateAxis1D.builder().copyFrom(vdsBuilder);
+    } else if (vdsBuilder.getRank() == 2) {
+      return CoordinateAxis2D.builder().copyFrom(vdsBuilder);
+    } else {
+      return CoordinateAxis.builder().copyFrom(vdsBuilder);
+    }
   }
 
   /**
@@ -398,7 +400,7 @@ public class CoordinateAxis extends VariableDS {
     Attribute cal = attributes.findAttribute(CF.CALENDAR);
     String s = (cal == null) ? null : cal.getStringValue();
     if (s == null) { // default for CF and COARDS
-      Attribute convention = (ncd == null) ? null : ncd.findGlobalAttribute(CDM.CONVENTIONS);
+      Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
       if (convention != null && convention.isString()) {
         String hasName = convention.getStringValue();
         int version = CF1Convention.getVersion(hasName);
@@ -435,16 +437,11 @@ public class CoordinateAxis extends VariableDS {
     return addLocalFieldsToBuilder(builder());
   }
 
-  public CoordinateAxis(VariableDS.Builder<?> builder) {
-    super(builder);
-  }
-
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     b.setAxisType(this.axisType).setPositive(this.positive).setBoundary(this.boundaryRef)
         .setIsContiguous(this.isContiguous);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
-
   }
 
   /**
@@ -489,6 +486,12 @@ public class CoordinateAxis extends VariableDS {
 
     public T setIsContiguous(boolean isContiguous) {
       this.isContiguous = isContiguous;
+      return self();
+    }
+
+    @Override
+    public T copyFrom(VariableDS.Builder<?> vds) {
+      super.copyFrom(vds);
       return self();
     }
 

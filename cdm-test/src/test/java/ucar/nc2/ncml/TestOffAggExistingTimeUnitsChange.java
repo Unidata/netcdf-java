@@ -5,23 +5,24 @@
 
 package ucar.nc2.ncml;
 
+import static com.google.common.truth.Truth.assertThat;
+import java.io.IOException;
+import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import java.io.IOException;
-import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
 
 /**
  * Test aggregation where timeUnitsChange='true'
@@ -30,6 +31,7 @@ import java.lang.invoke.MethodHandles;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggExistingTimeUnitsChange extends TestCase {
+
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestOffAggExistingTimeUnitsChange(String name) {
@@ -37,19 +39,21 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
   }
   // String location = "file:R:/testdata2/ncml/nc/narr/narr.ncml";
 
-  public void testNamExtract() throws IOException, InvalidRangeException {
+  public void testNamExtract() throws IOException {
     String location = TestDir.cdmUnitTestDir + "ncml/nc/namExtract/test_agg.ncml";
     logger.debug(" TestOffAggExistingTimeUnitsChange.open {}", location);
 
     NetcdfFile ncfile = NetcdfDataset.openFile(location, null);
 
     Variable v = ncfile.findVariable("time");
+
     assert v != null;
-    assert v.getDataType() == DataType.DOUBLE;
+    assertThat(v.getDataType()).isEqualTo(DataType.DOUBLE);
 
     String units = v.getUnitsString();
     assert units != null;
-    assert units.equals("hours since 2006-09-25T06:00:00Z");
+    CalendarDateUnit expectedCalendarDateUnit = CalendarDateUnit.of(null, "hours since 2006-09-25T06:00:00Z");
+    assertThat(units).ignoringCase().isEqualTo(expectedCalendarDateUnit.getUdUnit());
 
     int count = 0;
     Array data = v.read();
@@ -63,7 +67,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     ncfile.close();
   }
 
-  public void testNarrGrib() throws IOException, InvalidRangeException {
+  public void testNarrGrib() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
         + " <aggregation type='joinExisting' dimName='time' timeUnitsChange='true' >\n"

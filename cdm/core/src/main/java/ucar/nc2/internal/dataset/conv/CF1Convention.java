@@ -6,6 +6,7 @@ package ucar.nc2.internal.dataset.conv;
 
 import static ucar.nc2.internal.dataset.CoordSystemFactory.breakupConventionNames;
 import com.google.common.collect.ImmutableList;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import ucar.nc2.Attribute;
@@ -122,7 +123,7 @@ public class CF1Convention extends CSMConvention {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) {
+  protected void augmentDataset(CancelTask cancelTask) throws IOException {
     boolean got_grid_mapping = false;
 
     // look for transforms
@@ -133,8 +134,8 @@ public class CF1Convention extends CSMConvention {
         sname = sname.trim();
 
         /*
-         * if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) { // TODO why isnt this with other
-         * Transforms?
+         * // TODO why isnt this with other Transforms?
+         * if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) {
          * makeAtmLnCoordinate(vds);
          * continue;
          * }

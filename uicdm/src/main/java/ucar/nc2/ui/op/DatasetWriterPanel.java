@@ -53,7 +53,7 @@ public class DatasetWriterPanel extends OpPanel {
     }
 
     try {
-      NetcdfFile ncnew = ToolsUI.getToolsUI().openFile(command, addCoords, null);
+      NetcdfFile ncnew = ToolsUI.getToolsUI().openFile(command, useCoords, null);
       if (ncnew != null) {
         setDataset(ncnew);
       }

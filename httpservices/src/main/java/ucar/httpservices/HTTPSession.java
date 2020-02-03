@@ -5,7 +5,44 @@
 
 package ucar.httpservices;
 
-import org.apache.http.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.print.attribute.UnmodifiableSetException;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -24,27 +61,13 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.*;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import javax.annotation.concurrent.ThreadSafe;
-import javax.print.attribute.UnmodifiableSetException;
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.UnsupportedCharsetException;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 
 /**
  * A session is encapsulated in an instance of the class HTTPSession.
@@ -458,7 +481,10 @@ public class HTTPSession implements Closeable {
     } else if (uri.getScheme().equals("https")) {
       httpsproxy = new HttpHost(uri.getHost(), uri.getPort(), "https");
     }
-    String upw = uri.getUserInfo();
+    // User info may contain encoded characters (such as a username containing
+    // the @ symbol), and we want to preserve those, so use getRawAuthority()
+    // here.
+    String upw = uri.getRawUserInfo();
     if (upw != null) {
       String[] pieces = upw.split("[:]");
       if (pieces.length == 2 && HTTPUtil.nullify(pieces[0]) != null && HTTPUtil.nullify(pieces[1]) != null) {
@@ -984,17 +1010,30 @@ public class HTTPSession implements Closeable {
 
   /**
    * This is used by HTTPMethod to set the in-url name+pwd into
-   * the credentials provider, if defined.
+   * the credentials provider, if defined. If a CredentialsProvider
+   * is not defined for the session, create a new BasicCredentialsProvider
    */
   protected synchronized void setCredentials(URI uri) throws HTTPException {
+    // create a BasicCredentialsProvider if current session
+    // does not have a provider
+    if (sessionprovider == null) {
+      sessionprovider = new BasicCredentialsProvider();
+    }
+
     if (sessionprovider != null) {
-      String userinfo = HTTPUtil.nullify(uri.getUserInfo());
+      // User info may contain encoded characters (such as a username containing
+      // the @ symbol), and we want to preserve those, so use getRawUserInfo()
+      // here.
+      String userinfo = HTTPUtil.nullify(uri.getRawUserInfo());
       if (userinfo != null) {
         // Construct an AuthScope from the uri
         AuthScope scope = HTTPAuthUtil.uriToAuthScope(uri);
         // Save the credentials
         sessionprovider.setCredentials(scope, new UsernamePasswordCredentials(userinfo));
       }
+    } else {
+      log.warn(
+          "Cannot store credentials as no CredientialsProvier can be found for session. Connection will fail if authentication / authorization required");
     }
   }
 

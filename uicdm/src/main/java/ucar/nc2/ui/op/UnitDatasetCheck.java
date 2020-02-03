@@ -5,11 +5,9 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;
@@ -32,7 +30,7 @@ public class UnitDatasetCheck extends OpPanel {
     String command = (String) o;
     boolean err = false;
 
-    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(command, addCoords, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(command, useCoords, null)) {
       ta.setText("Variables for " + command + ":");
       for (Variable vs : ncfile.getVariables()) {
         String units = vs.getUnitsString();

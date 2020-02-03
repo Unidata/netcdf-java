@@ -124,14 +124,12 @@ import ucar.unidata.util.StringUtil2;
  * 6: latitude and longitude (including global)
  */
 public class WRFConvention extends CoordSystemBuilder {
-
   private static final String CONVENTION_NAME = "WRF";
 
-  protected WRFConvention(NetcdfDataset.Builder datasetBuilder) {
+  private WRFConvention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
-
 
   private double centerX, centerY;
   private ProjectionCT projCT;
@@ -777,27 +775,30 @@ public class WRFConvention extends CoordSystemBuilder {
       return CONVENTION_NAME;
     }
 
-    @Override
-    public boolean isMine(NetcdfFile ncfile) {
-      if (null == ncfile.findDimension("south_north"))
-        return false;
-
-      // ARW only
-      Attribute att = ncfile.findGlobalAttribute("DYN_OPT");
-      if (att != null) {
-        if (att.getNumericValue().intValue() != 2)
-          return false;
-      } else {
-        att = ncfile.findGlobalAttribute("GRIDTYPE");
-        if (att != null) {
-          if (!att.getStringValue().equalsIgnoreCase("C") && !att.getStringValue().equalsIgnoreCase("E"))
-            return false;
-        }
-      }
-
-      att = ncfile.findGlobalAttribute("MAP_PROJ");
-      return att != null;
-    }
+    // not ready
+    /*
+     * @Override
+     * public boolean isMine(NetcdfFile ncfile) {
+     * if (null == ncfile.findDimension("south_north"))
+     * return false;
+     * 
+     * // ARW only
+     * Attribute att = ncfile.findGlobalAttribute("DYN_OPT");
+     * if (att != null) {
+     * if (att.getNumericValue().intValue() != 2)
+     * return false;
+     * } else {
+     * att = ncfile.findGlobalAttribute("GRIDTYPE");
+     * if (att != null) {
+     * if (!att.getStringValue().equalsIgnoreCase("C") && !att.getStringValue().equalsIgnoreCase("E"))
+     * return false;
+     * }
+     * }
+     * 
+     * att = ncfile.findGlobalAttribute("MAP_PROJ");
+     * return att != null;
+     * }
+     */
 
     @Override
     public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {

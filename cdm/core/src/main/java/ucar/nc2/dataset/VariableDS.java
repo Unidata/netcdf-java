@@ -509,7 +509,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     Array array = Array.factoryConstant(getDataType(), shape, storage);
-    array.setObject(0, scaleMissingUnsignedProxy.getFillValue());
+    if (scaleMissingUnsignedProxy.hasFillValue()) {
+      array.setObject(0, scaleMissingUnsignedProxy.getFillValue());
+    }
     return array;
   }
 
@@ -893,6 +895,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     /** Copy metadata from orgVar. */
+    @Override
     public T copyFrom(Variable orgVar) {
       super.copyFrom(orgVar);
       setSPobject(null);
@@ -904,6 +907,24 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       // We need units during build.
       this.units = getUnitsString(orgVar);
       this.orgFileTypeId = orgVar.getFileTypeId();
+      return self();
+    }
+
+    public T copyFrom(VariableDS.Builder<?> builder) {
+      super.copyFrom(builder);
+
+      builder.coordSysNames.forEach(name -> this.addCoordinateSystem(name));
+      setDesc(builder.desc);
+      setEnhanceMode(builder.enhanceMode);
+      setFillValueIsMissing(builder.fillValueIsMissing);
+      setInvalidDataIsMissing(builder.invalidDataIsMissing);
+      setMissingDataIsMissing(builder.missingDataIsMissing);
+      this.orgVar = builder.orgVar;
+      this.orgDataType = builder.orgDataType;
+      this.orgFileTypeId = builder.orgFileTypeId;
+      this.orgName = builder.orgName;
+      setUnits(builder.units);
+
       return self();
     }
 

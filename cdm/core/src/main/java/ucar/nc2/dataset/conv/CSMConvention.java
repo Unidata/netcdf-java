@@ -53,7 +53,6 @@ public class CSMConvention extends COARDSConvention {
    * The attribute "coordinates" is an alias for _CoordinateAxes.
    */
   protected void findCoordinateAxes(NetcdfDataset ds) {
-
     // coordinates is an alias for _CoordinateAxes
     for (VarProcess vp : varList) {
       if (vp.coordAxes == null) { // dont override if already set
@@ -67,6 +66,7 @@ public class CSMConvention extends COARDSConvention {
     super.findCoordinateAxes(ds);
   }
 
+  @Override
   protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
     CoordinateTransform ct = null;
 

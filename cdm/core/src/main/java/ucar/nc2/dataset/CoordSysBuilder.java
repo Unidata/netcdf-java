@@ -945,7 +945,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected void makeCoordinateTransforms(NetcdfDataset ncDataset) {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && vp.ct == null) {
-        vp.ct = CoordTransBuilder.makeCoordinateTransform(vp.ds, vp.v, parseInfo, userAdvice);
+        vp.ct = makeCoordinateTransform(vp.ds, vp.v);
       }
     }
   }
