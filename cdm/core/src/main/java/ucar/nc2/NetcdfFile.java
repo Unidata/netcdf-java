@@ -56,7 +56,7 @@ import ucar.unidata.util.StringUtil2;
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
- *   ncfile = NetcdfFile.open(fileName);
+ *   ncfile = NetcdfFile.builder ( ).setLocation (fileName).build ( );
  *   // do stuff
  * } finally {
  *   if (ncfile != null) {
@@ -70,7 +70,7 @@ import ucar.unidata.util.StringUtil2;
  * </p>
  *
  * <pre>
- * try (NetcdfFile ncfile = NetcdfFile.open(fileName)) {
+ * try (NetcdfFile ncfile = NetcdfFile.builder ( ).setLocation (fileName).build ( )) {
  *   // do stuff
  * }
  * </pre>
