@@ -768,9 +768,12 @@ public class CoordinateSystem {
       domain.addAll(dims);
 
       // Find the named coordinate transforms in allTransforms.
-      for (String wantTrans : builder.transNames) {
+      for (String wantTransName : builder.transNames) {
         CoordinateTransform got = allTransforms.stream()
-            .filter(ct -> ct.getAttributeContainer().getName().equals(wantTrans)).findFirst().orElse(null);
+            .filter(ct -> (wantTransName.equals(ct.getName()) ||
+                  ct.getAttributeContainer() != null && wantTransName.equals(ct.getAttributeContainer().getName())))
+            .findFirst()
+            .orElse(null);
         if (got != null) {
           coordTrans.add(got);
         }

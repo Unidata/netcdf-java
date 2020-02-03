@@ -24,7 +24,7 @@ import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) */
+/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) in cdmUnitTestDir*/
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestCoordSysCompareMore {

@@ -5,6 +5,7 @@
 
 package ucar.nc2.internal.dataset.conv;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,6 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -27,6 +27,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
@@ -37,7 +38,6 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.util.StringUtil2;
@@ -68,11 +68,10 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
     @Override
     public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
-      return new ATDRadarConvention(datasetBuilder);
+      return new AWIPSConvention(datasetBuilder);
     }
   }
 
-  // private List<Variable> mungedList = new ArrayList<>();
   private ProjectionCT projCT;
   private double startx, starty;
 
@@ -103,25 +102,25 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (timeCoord != null) {
       datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
       String dimName = timeCoord.getFirstDimensionName();
-      if (!dimName.equals(timeCoord.shortName)) {
+      if (!timeCoord.shortName.equals(dimName)) {
         timeCoord.addAttribute(new Attribute(_Coordinate.AliasForDimension, dimName));
       }
     }
 
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
-    for (Variable.Builder ncvar : rootGroup.vbuilders) {
+    for (Variable.Builder ncvar : ImmutableList.copyOf(rootGroup.vbuilders)) {
       String levelName = ncvar.shortName + "Levels";
       if (rootGroup.findVariable(levelName).isPresent()) {
-        Variable.Builder levelVar = rootGroup.findVariable(levelName).get();
+        VariableDS.Builder levelVar = (VariableDS.Builder) rootGroup.findVariable(levelName).get();
         if (levelVar.getRank() != 2)
           continue;
         if (levelVar.dataType != DataType.CHAR)
           continue;
 
         try {
-          List<Dimension> levels = breakupLevels((VariableDS.Builder) levelVar);
-          // LOOK createNewVariables(ncvar, levels, levelVar.getDimension(0));
-        } catch (IOException ioe) {
+          List<Dimension> levels = breakupLevels(levelVar);
+          createNewVariables((VariableDS.Builder) ncvar, levels, levelVar.orgVar.getDimension(0));
+        } catch (IOException | InvalidRangeException ioe) {
           parseInfo.format("createNewVariables IOException%n");
         }
       }
@@ -140,7 +139,6 @@ public class AWIPSConvention extends CoordSystemBuilder {
         v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
       }
     }
-
   }
 
   // pretty much WRF specific
@@ -163,8 +161,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
   private List<Dimension> breakupLevels(VariableDS.Builder levelVar) throws IOException {
     if (debugBreakup)
       parseInfo.format("breakupLevels = %s%n", levelVar.shortName);
-    List<Dimension> dimList = new ArrayList<>();
 
+    List<Dimension> dimList = new ArrayList<>();
     ArrayChar levelVarData;
     try {
       levelVarData = (ArrayChar) levelVar.orgVar.read();
@@ -220,7 +218,6 @@ public class AWIPSConvention extends CoordSystemBuilder {
   }
 
   // make a new variable out of the list in "values"
-
   private Dimension makeZCoordAxis(List<String> values, String units) throws IOException {
     int len = values.size();
     String name = makeZCoordName(units);
@@ -234,15 +231,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
       Dimension dim = rootGroup.findDimension(name).get();
       if (dim.getLength() == len) {
         if (rootGroup.findVariable(name).isPresent()) {
-          // check against actual values
-          VariableDS.Builder coord = (VariableDS.Builder) rootGroup.findVariable(name).get();
-          Array coordData = coord.orgVar.read();
-          Array newData = Array.makeArray(coord.dataType, values);
-          if (MAMath.nearlyEquals(coordData, newData)) {
-            if (debugBreakup)
-              parseInfo.format("  use existing coord %s%n", dim);
-            return dim;
-          }
+          return dim;
         }
       }
     }
@@ -328,22 +317,23 @@ public class AWIPSConvention extends CoordSystemBuilder {
   private void createNewVariables(VariableDS.Builder ncVar, List<Dimension> newDims, Dimension levelDim)
       throws InvalidRangeException {
 
-    /* LOOK
-    List<Dimension> dims = ncVar.getDimensions();
+    ArrayList<Dimension> dims = new ArrayList<>(ncVar.orgVar.getDimensions());
     int newDimIndex = dims.indexOf(levelDim);
 
     int[] origin = new int[ncVar.getRank()];
-    int[] shape = ncVar.getShape();
+    int[] shape = ncVar.orgVar.getShape();
     int count = 0;
     for (Dimension dim : newDims) {
-      String name = ncVar.shortName + "-" + dim.getShortName();
-
       origin[newDimIndex] = count;
       shape[newDimIndex] = dim.getLength();
+      Variable varSection = ncVar.orgVar.section(new Section(origin, shape));
 
-      Variable.Builder varNew = ncVar.section(new Section(origin, shape));
-      varNew.setName(name);
-      varNew.setDimension(newDimIndex, dim);
+      String name = ncVar.shortName + "-" + dim.getShortName();
+      VariableDS.Builder varNew = VariableDS.builder().setName(name).setOriginalVariable(varSection)
+          .setDataType(ncVar.dataType);
+      dims.set(newDimIndex, dim);
+      varNew.addDimensions(dims);
+      varNew.addAttributes(ncVar.getAttributeContainer());
 
       // synthesize long name
       String long_name = ncVar.getAttributeContainer().findAttValueIgnoreCase(CDM.LONG_NAME, ncVar.shortName);
@@ -351,10 +341,9 @@ public class AWIPSConvention extends CoordSystemBuilder {
       varNew.getAttributeContainer().addAttribute(new Attribute(CDM.LONG_NAME, long_name));
 
       rootGroup.addVariable(varNew);
-
       parseInfo.format("Created New Variable as section = %s%n", name);
       count += dim.getLength();
-    } */
+    }
   }
 
   @Override
@@ -393,7 +382,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
-      // LOOK vp.ct = projCT;
+      vp.ct = CoordinateTransform.builder().setPreBuilt(projCT);
     }
     super.makeCoordinateTransforms();
   }

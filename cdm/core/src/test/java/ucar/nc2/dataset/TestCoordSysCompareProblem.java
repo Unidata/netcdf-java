@@ -18,17 +18,14 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old)
- */
+/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) with problem dataset */
 @Category(NeedsCdmUnitTest.class)
 public class TestCoordSysCompareProblem {
-
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void compareProblemFile() throws IOException {
-    String filename = "/usr/local/google/home/jlcaron/Downloads/HistDumpTest9.nc";
+    String filename = TestDir.cdmUnitTestDir + "conventions/awips/19981109_1200.nc";
     showOrg(filename);
     showNew(filename);
     compare(filename);

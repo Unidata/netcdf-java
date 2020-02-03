@@ -606,6 +606,7 @@ public class CoordSystemBuilder {
         if (!dataAxesList.isEmpty()) {
           for (CoordinateSystem.Builder cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
+              coords.addCoordinateTransform(vp.ct);
               cs.addCoordinateTransformByName(vp.ct.name);
               parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ct, cs);
             }
