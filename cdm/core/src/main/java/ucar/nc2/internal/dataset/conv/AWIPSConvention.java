@@ -81,8 +81,10 @@ public class AWIPSConvention extends CoordSystemBuilder {
       return; // check if its already been done - aggregating enhanced datasets.
     }
 
-    int nx = rootGroup.findDimension("x").map(Dimension::getLength).orElseThrow(() -> new RuntimeException("missing dimension x"));
-    int ny = rootGroup.findDimension("y").map(Dimension::getLength).orElseThrow(() -> new RuntimeException("missing dimension y"));
+    int nx = rootGroup.findDimension("x").map(Dimension::getLength)
+        .orElseThrow(() -> new RuntimeException("missing dimension x"));
+    int ny = rootGroup.findDimension("y").map(Dimension::getLength)
+        .orElseThrow(() -> new RuntimeException("missing dimension y"));
 
     String projName = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projName", "none");
     if (projName.equalsIgnoreCase("LATLON")) {
@@ -251,9 +253,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
       parseInfo.format("  make ZCoordAxis = = %s length = %d%n", name, len);
     }
 
-    CoordinateAxis1D.Builder v =
-        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE). setDimensionsByName(name)
-            .setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
+    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+        .setDimensionsByName(name).setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
     String positive = getZisPositive(v);
     if (null != positive) {
       v.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
@@ -329,8 +330,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
       Variable varSection = ncVar.orgVar.section(new Section(origin, shape));
 
       String name = ncVar.shortName + "-" + dim.getShortName();
-      VariableDS.Builder varNew = VariableDS.builder().setName(name).setOriginalVariable(varSection)
-          .setDataType(ncVar.dataType);
+      VariableDS.Builder varNew =
+          VariableDS.builder().setName(name).setOriginalVariable(varSection).setDataType(ncVar.dataType);
       dims.set(newDimIndex, dim);
       varNew.addDimensions(dims);
       varNew.addAttributes(ncVar.getAttributeContainer());
@@ -455,8 +456,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   private CoordinateAxis.Builder makeXCoordAxis(int nx, String xname) {
     double dx = findAttributeDouble("dxKm");
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE).setDimensionsByName(xname)
-        .setUnits("km").setDesc("x on projection");
+    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+        .setDimensionsByName(xname).setUnits("km").setDesc("x on projection");
     v.setAutoGen(startx, dx);
 
     parseInfo.format("Created X Coordinate Axis = %s%n", xname);
@@ -465,8 +466,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   private CoordinateAxis.Builder makeYCoordAxis(int ny, String yname) {
     double dy = findAttributeDouble("dyKm");
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE).setDimensionsByName(yname)
-        .setUnits("km").setDesc("y on projection");
+    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
+        .setDimensionsByName(yname).setUnits("km").setDesc("y on projection");
     v.setAutoGen(starty, dy);
 
     parseInfo.format("Created Y Coordinate Axis = %s%n", yname);
@@ -481,8 +482,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
       return null;
 
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE).setDimensionsByName(xname)
-        .setUnits(CDM.LON_UNITS).setDesc("longitude");
+    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+        .setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setAutoGen(min, d);
 
@@ -498,8 +499,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
       return null;
 
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setDimensionsByName(name)
-        .setUnits(CDM.LAT_UNITS).setDesc("latitude");
+    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+        .setDimensionsByName(name).setUnits(CDM.LAT_UNITS).setDesc("latitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setAutoGen(min, d);
 
@@ -512,8 +513,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     VariableDS.Builder timeVar = (VariableDS.Builder) rootGroup.findVariable("valtimeMINUSreftime")
         .orElseThrow(() -> new RuntimeException("must have varible 'valtimeMINUSreftime'"));
 
-    Dimension recordDim = rootGroup.findDimension("record")
-        .orElseThrow(() -> new RuntimeException("must have dimension 'record'"));
+    Dimension recordDim =
+        rootGroup.findDimension("record").orElseThrow(() -> new RuntimeException("must have dimension 'record'"));
 
     Array vals;
     try {
@@ -543,9 +544,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     // create the coord axis
     String name = "timeCoord";
     String desc = "synthesized time coordinate from valtimeMINUSreftime and filename YYYYMMDD_HHMM";
-    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name)
-          .setDataType(DataType.INT).setDimensionsByName("record").setUnits(units).setDesc(desc)
-          .setCachedData(vals, true);
+    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name).setDataType(DataType.INT)
+        .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(vals, true);
 
     parseInfo.format("Created Time Coordinate Axis = %s%n", name);
     return timeCoord;
@@ -607,9 +607,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     String units = refVar.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, "seconds since 1970-1-1 00:00:00");
     units = normalize(units);
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
-    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name)
-        .setDataType(DataType.DOUBLE).setDimensionsByName("record").setUnits(units).setDesc(desc)
-        .setCachedData(dvals, true);
+    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+        .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(dvals, true);
 
     parseInfo.format("Created Time Coordinate Axis From reftime Variable%n");
     return timeCoord;

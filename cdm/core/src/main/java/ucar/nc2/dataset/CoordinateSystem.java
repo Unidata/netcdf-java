@@ -770,10 +770,9 @@ public class CoordinateSystem {
       // Find the named coordinate transforms in allTransforms.
       for (String wantTransName : builder.transNames) {
         CoordinateTransform got = allTransforms.stream()
-            .filter(ct -> (wantTransName.equals(ct.getName()) ||
-                  ct.getAttributeContainer() != null && wantTransName.equals(ct.getAttributeContainer().getName())))
-            .findFirst()
-            .orElse(null);
+            .filter(ct -> (wantTransName.equals(ct.getName())
+                || ct.getAttributeContainer() != null && wantTransName.equals(ct.getAttributeContainer().getName())))
+            .findFirst().orElse(null);
         if (got != null) {
           coordTrans.add(got);
         }
