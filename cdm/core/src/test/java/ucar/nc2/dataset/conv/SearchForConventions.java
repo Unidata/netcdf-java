@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -26,7 +27,7 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 @Category(NeedsCdmUnitTest.class)
-// @RunWith(Parameterized.class)
+@RunWith(Parameterized.class)
 public class SearchForConventions {
   private static List<String> testDirs = ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions",
       TestDir.cdmUnitTestDir + "/ft", "E:/data/datasets", "E:/data/work"); // , "F:/bob/data");
@@ -78,7 +79,8 @@ public class SearchForConventions {
     this.filename = filename;
   }
 
-  // @Test
+  @Test
+  @Ignore("Not a test - really a utility program")
   public void findConventions() {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       System.out.printf("%s%n", filename);

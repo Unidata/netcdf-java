@@ -72,8 +72,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
   }
 
-  private ProjectionCT projCT;
-  private double startx, starty;
+  ProjectionCT projCT;
+  double startx, starty, dx, dy;
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
@@ -92,12 +92,12 @@ public class AWIPSConvention extends CoordSystemBuilder {
       datasetBuilder.replaceCoordinateAxis(rootGroup, makeLatCoordAxis(ny, "y"));
     } else if (projName.equalsIgnoreCase("LAMBERT_CONFORMAL")) {
       projCT = makeLCProjection(projName);
-      datasetBuilder.replaceCoordinateAxis(rootGroup, makeXCoordAxis(nx, "x"));
-      datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis(ny, "y"));
+      datasetBuilder.replaceCoordinateAxis(rootGroup, makeXCoordAxis("x"));
+      datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis("y"));
     } else if (projName.equalsIgnoreCase("STEREOGRAPHIC")) {
       projCT = makeStereoProjection(projName);
-      datasetBuilder.replaceCoordinateAxis(rootGroup, makeXCoordAxis(nx, "x"));
-      datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis(ny, "y"));
+      datasetBuilder.replaceCoordinateAxis(rootGroup, makeXCoordAxis("x"));
+      datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis("y"));
     }
 
     CoordinateAxis.Builder timeCoord = makeTimeCoordAxis();
@@ -220,7 +220,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   }
 
   // make a new variable out of the list in "values"
-  private Dimension makeZCoordAxis(List<String> values, String units) throws IOException {
+  private Dimension makeZCoordAxis(List<String> values, String units) {
     int len = values.size();
     String name = makeZCoordName(units);
     if (len > 1)
@@ -418,6 +418,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
       parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.getX();
     starty = start.getY();
+    dx = findAttributeDouble("dxKm");
+    dy = findAttributeDouble("dyKm");
 
     return new ProjectionCT(name, "FGDC", lc);
   }
@@ -441,6 +443,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     ProjectionPoint start = proj.latLonToProj(new LatLonPointImpl(lat0, lon0));
     startx = start.getX();
     starty = start.getY();
+    dx = findAttributeDouble("dxKm");
+    dy = findAttributeDouble("dyKm");
 
     // projection info
     parseInfo.format("---makeStereoProjection start at proj coord %s%n", start);
@@ -454,8 +458,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return new ProjectionCT(name, "FGDC", proj);
   }
 
-  private CoordinateAxis.Builder makeXCoordAxis(int nx, String xname) {
-    double dx = findAttributeDouble("dxKm");
+  CoordinateAxis.Builder makeXCoordAxis(String xname) {
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
         .setDimensionsByName(xname).setUnits("km").setDesc("x on projection");
     v.setAutoGen(startx, dx);
@@ -464,8 +467,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return v;
   }
 
-  private CoordinateAxis.Builder makeYCoordAxis(int ny, String yname) {
-    double dy = findAttributeDouble("dyKm");
+  CoordinateAxis.Builder makeYCoordAxis(String yname) {
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
         .setDimensionsByName(yname).setUnits("km").setDesc("y on projection");
     v.setAutoGen(starty, dy);
@@ -539,7 +541,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     // create the units out of the filename if possible
     String units = makeTimeUnitFromFilename(datasetBuilder.location);
     if (units == null) // ok that didnt work, try something else
-      return makeTimeCoordAxisFromReference(timeVar, vals);
+      return makeTimeCoordAxisFromReference(vals);
 
     // create the coord axis
     String name = "timeCoord";
@@ -581,7 +583,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   // construct time coordinate from reftime variable
   @Nullable
-  private CoordinateAxis.Builder makeTimeCoordAxisFromReference(VariableDS.Builder timeVar, Array vals) {
+  private CoordinateAxis.Builder makeTimeCoordAxisFromReference(Array vals) {
     if (!rootGroup.findVariable("reftime").isPresent())
       return null;
     VariableDS.Builder refVar = (VariableDS.Builder) rootGroup.findVariable("reftime").get();
@@ -614,7 +616,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return timeCoord;
   }
 
-  private double findAttributeDouble(String attname) {
+  double findAttributeDouble(String attname) {
     Attribute att = rootGroup.getAttributeContainer().findAttributeIgnoreCase(attname);
     if (att == null || att.isString()) {
       parseInfo.format("ERROR cant find numeric attribute= %s%n", attname);
