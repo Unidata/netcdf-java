@@ -26,7 +26,7 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 @Category(NeedsCdmUnitTest.class)
-@RunWith(Parameterized.class)
+// @RunWith(Parameterized.class)
 public class SearchForConventions {
   private static List<String> testDirs = ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions",
       TestDir.cdmUnitTestDir + "/ft", "E:/data/datasets", "E:/data/work"); // , "F:/bob/data");
@@ -78,7 +78,7 @@ public class SearchForConventions {
     this.filename = filename;
   }
 
-  @Test
+  // @Test
   public void findConventions() {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       System.out.printf("%s%n", filename);
