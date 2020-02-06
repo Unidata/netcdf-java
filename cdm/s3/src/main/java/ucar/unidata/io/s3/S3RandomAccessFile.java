@@ -1,14 +1,13 @@
 /*
- * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.unidata.io.s3;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
 import java.time.Duration;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
@@ -23,66 +22,48 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.ReadableRemoteFile;
+import ucar.unidata.io.RemoteRandomAccessFile;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 /**
  * @author James McClain, based on work by John Caron and Donald Denbof
  */
 
-public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
+public final class S3RandomAccessFile extends RemoteRandomAccessFile implements ReadableRemoteFile, Closeable {
 
-  // default is 512 Kilobytes
-  static private final int defaultS3BufferSize =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.defaultS3BufferSize", "524288"));
-  // default is 32 Megabytes
-  static private final int defaultMaxCacheSize =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.defaultMaxCacheSize", "33554432"));
-  private int cacheBlockSize;
-  private int maxCacheBlocks;
+  private static final int s3BufferSize = Integer
+      .parseInt(System.getProperty("ucar.unidata.io.s3.bufferSize", String.valueOf(defaultRemoteFileBufferSize)));
 
+  private static final int s3MaxReadCacheSize = Integer
+      .parseInt(System.getProperty("ucar.unidata.io.s3.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
+  /**
+   * The maximum number of connections allowed in the S3 http connection pool. Each built S3 HTTP client has it's own
+   * private connection pool.
+   */
+  private static final int maxConnections =
+      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.httpMaxConnections", "128"));
+  /**
+   * The amount of time to wait (in milliseconds) when initially establishing a connection before giving up and timing
+   * out. A duration of
+   * 0 means infinity, and is not recommended.
+   */
+  private static final int connectionTimeout = Integer
+      .parseInt(System.getProperty("ucar.unidata.io.s3.connectionTimeout", String.valueOf(defaultRemoteFileTimeout)));
+  /**
+   * The amount of time to wait for data to be transferred over an established, open connection before the connection is
+   * timed out. A duration of 0 means infinity, and is not recommended.
+   */
+  private static final int socketTimeout =
+      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.socketTimeout", "100000"));
   private AmazonS3URI uri;
   private S3Client client;
   private String bucket;
   private String key;
   private HeadObjectResponse objectHeadResponse;
 
-  private java.util.Map<Long, byte[]> cache = new java.util.HashMap<>();
-  private java.util.LinkedList<Long> index = new java.util.LinkedList<>();
-
-  /**
-   * The maximum number of connections allowed in the S3 http connection pool. Each built S3 HTTP client has it's own
-   * private connection pool.
-   */
-  private static int maxConnections =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.httpMaxConnections", "128"));
-  /**
-   * The amount of time to wait when initially establishing a connection before giving up and timing out. A duration of
-   * 0 means infinity, and is not recommended.
-   */
-  private static int connectionTimeout =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.connectionTimeout", "100000"));
-  /**
-   * The amount of time to wait for data to be transferred over an established, open connection before the connection is
-   * timed out. A duration of 0 means infinity, and is not recommended.
-   */
-  private static int socketTimeout = Integer.parseInt(System.getProperty("ucar.unidata.io.s3.socketTimeout", "100000"));
-
-  public S3RandomAccessFile(String url) throws IOException {
-    this(url, defaultS3BufferSize, defaultMaxCacheSize);
-  }
-
-  private S3RandomAccessFile(String url, int bufferSize, int maxCacheSize) throws IOException {
-    super(bufferSize);
-    file = null;
-    location = url;
-
-    // Only enable cache if given size is at least twice the buffer size
-    if (maxCacheSize >= 2 * bufferSize) {
-      this.cacheBlockSize = 2 * bufferSize;
-      this.maxCacheBlocks = maxCacheSize / this.cacheBlockSize;
-    } else {
-      this.cacheBlockSize = this.maxCacheBlocks = -1;
-    }
+  private S3RandomAccessFile(String url) {
+    super(url, s3BufferSize, s3MaxReadCacheSize);
 
     uri = new AmazonS3URI(url);
     bucket = uri.getBucket();
@@ -105,7 +86,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     objectHeadResponse = client.headObject(HeadObjectRequest.builder().bucket(bucket).key(key).build());
   }
 
-  public void close() {
+  public void closeRemote() {
     // close the client
     if (client != null) {
       client.close();
@@ -119,29 +100,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   /**
-   * After execution of this function, the given block is guaranteed to be in the cache.
-   */
-  private void ensure(Long key) throws IOException {
-    if (!cache.containsKey(key)) {
-      long position = key * cacheBlockSize;
-      int toEOF = (int) (length() - position);
-      // if size to EOF less than cacheBlockSize, just read to EOF
-      int bytes = toEOF < cacheBlockSize ? toEOF : cacheBlockSize;
-
-      byte[] buffer = new byte[bytes];
-
-      read__(position, buffer, 0, bytes);
-      cache.put(key, buffer);
-      index.add(key);
-      assert (cache.size() == index.size());
-      while (cache.size() > maxCacheBlocks) {
-        cache.remove(index.pop());
-      }
-    }
-  }
-
-  /**
-   * Read directly from S3 [1], without going through the buffer. All reading goes through here or readToByteChannel;
+   * Read directly from the remote service All reading goes through here or readToByteChannel;
    *
    * 1. https://docs.aws.amazon.com/AmazonS3/latest/dev/RetrievingObjectUsingJava.html
    *
@@ -153,38 +112,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    * @throws IOException on io error
    */
   @Override
-  protected int read_(long pos, byte[] buff, int offset, int len) throws IOException {
-    if (!(cacheBlockSize > 0) || !(maxCacheBlocks > 0)) {
-      return read__(pos, buff, offset, len);
-    }
-
-    long start = pos / cacheBlockSize;
-    long end = (pos + len - 1) / cacheBlockSize;
-
-    if (pos >= length()) { // Do not read past end of the file
-      return 0;
-    } else if (end - start > 1) { // If the request touches more than two cache blocks, punt (should never happen)
-      return read__(pos, buff, offset, len);
-    } else if (end - start == 1) { // If the request touches two cache blocks, split it
-      int length1 = (int) ((end * cacheBlockSize) - pos);
-      int length2 = (int) ((pos + len) - (end * cacheBlockSize));
-      return read_(pos, buff, offset, length1) + read_(pos + length1, buff, offset + length1, length2);
-    }
-
-    // Service a request that touches only one cache block
-    Long key = start;
-    ensure(key);
-
-    byte[] src = cache.get(key);
-    int srcPos = (int) (pos - (key * cacheBlockSize));
-    int toEOB = src.length - srcPos;
-    int length = toEOB < len ? toEOB : len;
-    System.arraycopy(src, srcPos, buff, offset, length);
-
-    return len;
-  }
-
-  private int read__(long pos, byte[] buff, int offset, int len) throws IOException {
+  public int readRemote(long pos, byte[] buff, int offset, int len) throws IOException {
 
     String range = String.format("bytes=%d-%d", pos, pos + len);
     GetObjectRequest rangeObjectRequest = GetObjectRequest.builder().bucket(bucket).key(key).range(range).build();
@@ -204,14 +132,6 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return totalBytes;
   }
 
-  @Override
-  public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
-    int n = (int) nbytes;
-    byte[] buff = new byte[n];
-    int done = read_(offset, buff, 0, n);
-    dest.write(ByteBuffer.wrap(buff));
-    return done;
-  }
 
   @Override
   public long length() {
@@ -238,7 +158,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
      * Open a location that this Provider is the owner of.
      */
     @Override
-    public RandomAccessFile open(String location) throws IOException {
+    public RandomAccessFile open(String location) {
       return new S3RandomAccessFile(location);
     }
   }
