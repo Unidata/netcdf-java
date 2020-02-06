@@ -25,7 +25,7 @@ public class TestCoordSysCompareProblem {
 
   @Test
   public void compareProblemFile() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "conventions/awips/20150602_0830_sport_imerg_noHemis_rr.nc";
+    String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/050231700.lsxmod.nc";
     showOrg(filename);
     showNew(filename);
     compare(filename);

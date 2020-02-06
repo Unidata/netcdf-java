@@ -967,8 +967,8 @@ public class Group extends CDMNode implements AttributeContainer {
       return Optional.empty();
     }
 
-    public Iterator<Dimension> getDimensionIterator() {
-      return dimensions.iterator();
+    public Iterable<Dimension> getDimensions() {
+      return dimensions;
     }
 
     /**
