@@ -28,6 +28,7 @@ public class TestS3Read {
 
   @Test
   public void testFullS3ReadNetcdfFile() throws IOException {
+
     String region = Region.US_EAST_1.toString();
     String bucket = "noaa-goes16";
     String key =
