@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2;
@@ -46,17 +46,19 @@ import ucar.unidata.util.StringUtil2;
  * <p>
  * Read-only scientific datasets that are accessible through the netCDF API.
  * Immutable after {@code setImmutable()} is called. Reading data is not
- * thread-safe because of the use of RandomAccessFile.
+ * thread-safe because of the use of {@code RandomAccessFile}.
  * </p>
  *
  * <p>
- * Be sure to close the file when done. Either enclose in a try/finally block:
+ * Using this class's {@code Builder} scheme, opening a {@code NetcdfFile} could, for
+ * example, be accomplished as follows. Be sure to close the file when done. Either
+ * enclose in a try/finally block:
  * </p>
  *
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
- *   ncfile = NetcdfFile.open(fileName);
+ *   ncfile = NetcdfFile.builder().setLocation(fileName).build();
  *   // do stuff
  * } finally {
  *   if (ncfile != null) {
@@ -66,11 +68,26 @@ import ucar.unidata.util.StringUtil2;
  * </pre>
  *
  * <p>
+ * More conveniently, a {@code NetcdfFile} may be opened using one of the static methods
+ * in {@code NetcdfFiles}:
+ * </p>
+ *
+ * <pre>
+ * NetcdfFile ncfile = null;
+ * try {
+ *   ncfile = NetcdfFiles.open(fileName);
+ *   // do stuff
+ * } finally {
+ *   if (ncfile != null) {
+ *     ncfile.close();
+ *   }
+ * }
+ * <p>
  * Or better yet, use try-with-resources:
  * </p>
  *
  * <pre>
- * try (NetcdfFile ncfile = NetcdfFile.open(fileName)) {
+ * try (NetcdfFile ncfile = NetcdfFiles.open(fileName)) {
  *   // do stuff
  * }
  * </pre>
