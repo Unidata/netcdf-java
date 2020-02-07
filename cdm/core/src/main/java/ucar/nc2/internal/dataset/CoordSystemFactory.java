@@ -220,10 +220,10 @@ public class CoordSystemFactory {
 
     // Try to match on convention name as is
     if (convName != null) {
-        coordSysFactory = findRegisteredConventionByName(convName);
-      }
-    if (coordSysFactory == null) {
+      coordSysFactory = findRegisteredConventionByName(convName);
+      if (coordSysFactory == null) {
         coordSysFactory = findLoadedConventionByName(convName);
+      }
     }
 
     // Try to split on ",;/"
