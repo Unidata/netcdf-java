@@ -29,8 +29,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class SearchForConventions {
-  private static final String tempDir =  "/usr/local/google/home/jlcaron/tmp/";
-  private static final List<String> testDirs =
+  private static List<String> testDirs =
       ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions", TestDir.cdmUnitTestDir + "/ft");
   private static Multimap<String, String> convMap = ArrayListMultimap.create();
   private static Multimap<String, String> builderMap = ArrayListMultimap.create();
@@ -51,11 +50,11 @@ public class SearchForConventions {
 
   @AfterClass
   public static void showResults() throws IOException {
-    FileWriter out = new FileWriter(tempDir + "conventions.txt");
+    FileWriter out = new FileWriter("/usr/local/google/home/jlcaron/tmp/conventions.txt");
     showResults(out, convMap);
     out.close();
 
-    out = new FileWriter(tempDir + "builder.txt");
+    out = new FileWriter("/usr/local/google/home/jlcaron/tmp/builder.txt");
     showResults(out, builderMap);
     out.close();
   }
