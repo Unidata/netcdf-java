@@ -25,6 +25,7 @@ public class TestCoordSysCompareProblem {
 
   @Test
   public void compareProblemFile() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "byteArrayRecordVarPaddingTest-bad.nc";
     String filename = TestDir.cdmUnitTestDir + "conventions/m3io/19L.nc";
     showOrg(filename);
     showNew(filename);

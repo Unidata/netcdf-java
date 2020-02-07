@@ -22,6 +22,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
+import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -143,7 +144,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     debugCompress = debugFlag.isSet("NetcdfFile/debugCompress");
     debugStructureIterator = debugFlag.isSet("NetcdfFile/structureIterator");
     N3header.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
+    N3headerNew.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
     N3header.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
+    N3headerNew.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
     showRequest = debugFlag.isSet("NetcdfFile/showRequest");
   }
 

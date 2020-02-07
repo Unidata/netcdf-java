@@ -48,7 +48,8 @@ public class Suomi extends CoordSystemBuilder {
 
       if (null == ncfile.findGlobalAttribute("start_date"))
         return false;
-      return null != ncfile.findGlobalAttribute("start_time");    }
+      return null != ncfile.findGlobalAttribute("start_time");
+    }
 
     @Override
     public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
@@ -72,8 +73,8 @@ public class Suomi extends CoordSystemBuilder {
       throw new RuntimeException("Cant read start_date=" + start_date);
     }
 
-    rootGroup.findVariable("time_offset").ifPresent( v->
-      v.addAttribute(new Attribute(CDM.UNITS, "seconds since " + dfo.toDateTimeString(start))));
+    rootGroup.findVariable("time_offset")
+        .ifPresent(v -> v.addAttribute(new Attribute(CDM.UNITS, "seconds since " + dfo.toDateTimeString(start))));
 
     rootGroup.addAttribute(new Attribute(CDM.CONVENTIONS, "Suomi-Station-CDM"));
   }

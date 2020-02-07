@@ -20,6 +20,7 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * NCAR RAF / NIMBUS
+ * 
  * @see "http://www.eol.ucar.edu/raf/Software/netCDF.html"
  */
 public class Nimbus extends CoardsConventions {
@@ -95,7 +96,8 @@ public class Nimbus extends CoardsConventions {
     if (!rootGroup.findVariable(varName).isPresent()) {
       return false;
     }
-    rootGroup.findVariable(varName).ifPresent(v-> v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString())));
+    rootGroup.findVariable(varName)
+        .ifPresent(v -> v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString())));
     return true;
   }
 }

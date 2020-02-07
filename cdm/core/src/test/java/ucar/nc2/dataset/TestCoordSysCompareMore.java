@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;

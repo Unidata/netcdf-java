@@ -20,6 +20,7 @@ import ucar.nc2.util.CancelTask;
 
 /**
  * Unidata Observation Dataset v1.0
+ * 
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html"
  */
 public class UnidataObsConvention extends CoordSystemBuilder {
@@ -133,8 +134,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
   private boolean addAxisType(String vname, AxisType a) {
     if (vname == null)
       return false;
-    rootGroup.findVariable(vname).ifPresent(v ->
-      v.addAttribute(new Attribute(_Coordinate.AxisType, a.toString())));
+    rootGroup.findVariable(vname).ifPresent(v -> v.addAttribute(new Attribute(_Coordinate.AxisType, a.toString())));
     return rootGroup.findVariable(vname).isPresent();
   }
 

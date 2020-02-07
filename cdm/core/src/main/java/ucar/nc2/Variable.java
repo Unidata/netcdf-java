@@ -1930,6 +1930,19 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
+    public boolean replaceDimension(Dimension dim) {
+      int idx = -1;
+      for (int i = 0; i < dimensions.size(); i++) {
+        if (dimensions.get(i).getShortName().equals(dim.getShortName())) {
+          idx = i;
+        }
+      }
+      if (idx >= 0) {
+        dimensions.set(idx, dim);
+      }
+      return (idx >= 0);
+    }
+
     // Set dimensions by name. If set, supercedes addDimension()
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
