@@ -6,6 +6,9 @@ ucar.nc2.internal.dataset.conv.CoardsConventions$Factory
 ucar.nc2.internal.dataset.conv.CSMConvention$Factory
 ucar.nc2.internal.dataset.conv.GDVConvention$Factory
 ucar.nc2.internal.dataset.conv.GIEFConvention$Factory
+ucar.nc2.internal.dataset.conv.IFPSConvention$Factory
+ucar.nc2.internal.dataset.conv.M3IOConvention$Factory
+ucar.nc2.internal.dataset.conv.MADISStation$Factory
 ucar.nc2.internal.dataset.conv.NUWGConvention$Factory
 ucar.nc2.internal.dataset.conv.WRFConvention$Factory
 ucar.nc2.internal.dataset.conv.ZebraConvention$Factory

@@ -505,6 +505,14 @@ public class CoordinateSystem {
     return true;
   }
 
+  public static boolean isSubset(Set<String> subset, Set<String> set) {
+    for (String d : subset) {
+      if (!(set.contains(d)))
+        return false;
+    }
+    return true;
+  }
+
   public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {

@@ -175,7 +175,7 @@ public class CoordinatesHelper {
     public boolean isComplete(CoordinateSystem.Builder<?> cs, VariableDS.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(vb);
-      // TODO using strings instead of Dimensions, to avaid exposing mutable Dimension objects.
+      // TODO using strings instead of Dimensions, to avoid exposing mutable Dimension objects.
       // TODO Might reconsider in 6.
       Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionNames().iterator());
       HashSet<String> csDomain = new HashSet<>();
