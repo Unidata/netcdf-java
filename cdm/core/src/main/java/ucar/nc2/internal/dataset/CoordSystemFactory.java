@@ -51,7 +51,7 @@ public class CoordSystemFactory {
 
   // These get precedence
   static {
-    registerConvention(_Coordinate.Convention, new DefaultConventions.Factory());
+    registerConvention(_Coordinate.Convention, new CoordSystemBuilder.Factory());
     registerConvention("CF-1.", new CF1Convention.Factory(), String::startsWith);
     registerConvention("CDM-Extended-CF", new CF1Convention.Factory());
   }

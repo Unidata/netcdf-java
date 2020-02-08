@@ -663,7 +663,7 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////
   /**
-   * Instances which have same name are equal.
+   * Instances which have same name, axes and transforms are equal.
    */
   public boolean equals(Object oo) {
     if (this == oo)
@@ -732,7 +732,7 @@ public class CoordinateSystem {
     StringTokenizer stoker = new StringTokenizer(builder.coordAxesNames);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      CoordinateAxis axis = axes.stream().filter(a -> a.getShortName().equals(vname)).findFirst()
+      CoordinateAxis axis = axes.stream().filter(a -> a.getFullName().equals(vname)).findFirst()
           .orElseThrow(() -> new IllegalStateException("Cant find vname " + vname));
       axesList.add(axis);
     }

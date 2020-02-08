@@ -31,8 +31,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @RunWith(Parameterized.class)
 public class TestCoordSysCompareMore {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static List<String> testDirs =
-      ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions", TestDir.cdmUnitTestDir + "/ft");
+  private static List<String> testDirs = ImmutableList.of(TestDir.cdmUnitTestDir);
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
