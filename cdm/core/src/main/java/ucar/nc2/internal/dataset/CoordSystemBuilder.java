@@ -1,6 +1,7 @@
 package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,17 +103,18 @@ public class CoordSystemBuilder {
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
   private static boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VariableDS.Builder<?> vb) {
-    List<Dimension> varDims = vb.getDimensionsAll();
-    List<Dimension> axisDims = axis.getDimensionsAll();
+    ImmutableSet<String> varDims = vb.getDimensionsAll();
+    ImmutableSet<String> axisDims = axis.getDimensionsAll();
 
-    // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
-    int checkDims = axisDims.size();
-    if (axis.dataType == DataType.CHAR) {
-      checkDims--;
-    }
+    /*
+     * LOOK a CHAR variable must really be a STRING, so leave out the last (string length) dimension
+     * int checkDims = axisDims.size();
+     * if (axis.dataType == DataType.CHAR) {
+     * checkDims--;
+     * }
+     */
 
-    for (int i = 0; i < checkDims; i++) {
-      Dimension axisDim = axisDims.get(i);
+    for (String axisDim : axisDims) {
       if (!varDims.contains(axisDim)) {
         return false;
       }
@@ -389,13 +391,13 @@ public class CoordSystemBuilder {
       }
 
       // get list of dimensions from '_CoordinateSystemFor' attribute
-      List<Dimension> dimList = new ArrayList<>(6);
+      Set<String> dimList = new HashSet<>();
       StringTokenizer stoker = new StringTokenizer(csVar.coordinateSystemsFor);
       while (stoker.hasMoreTokens()) {
         String dname = stoker.nextToken();
         Optional<Dimension> dimOpt = rootGroup.findDimension(dname);
         if (dimOpt.isPresent()) {
-          dimList.add(dimOpt.get());
+          dimList.add(dimOpt.get().getShortName());
         } else {
           parseInfo.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar);
           userAdvice.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar);
@@ -854,7 +856,7 @@ public class CoordSystemBuilder {
           axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
       }
-      coords.addCoordinateAxis(axis);
+      coords.replaceCoordinateAxis(axis);
       rootGroup.replaceVariable(axis);
       return axis;
     }

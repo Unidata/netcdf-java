@@ -29,8 +29,8 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class SearchForConventions {
-  private static List<String> testDirs = ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions",
-      TestDir.cdmUnitTestDir + "/ft", "E:/data/datasets", "E:/data/work"); // , "F:/bob/data");
+  private static List<String> testDirs =
+      ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions", TestDir.cdmUnitTestDir + "/ft");
   private static Multimap<String, String> convMap = ArrayListMultimap.create();
   private static Multimap<String, String> builderMap = ArrayListMultimap.create();
 
@@ -50,11 +50,11 @@ public class SearchForConventions {
 
   @AfterClass
   public static void showResults() throws IOException {
-    FileWriter out = new FileWriter("C:/Temp/conventions.txt");
+    FileWriter out = new FileWriter("/usr/local/google/home/jlcaron/tmp/conventions.txt");
     showResults(out, convMap);
     out.close();
 
-    out = new FileWriter("C:/Temp/builder.txt");
+    out = new FileWriter("/usr/local/google/home/jlcaron/tmp/builder.txt");
     showResults(out, builderMap);
     out.close();
   }
@@ -80,7 +80,7 @@ public class SearchForConventions {
   }
 
   @Test
-  @Ignore("Not a test - really a utility program")
+  // @Ignore("Not a test - really a utility program")
   public void findConventions() {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       System.out.printf("%s%n", filename);

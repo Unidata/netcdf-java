@@ -7,6 +7,7 @@ package ucar.nc2;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -1989,18 +1990,18 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return ImmutableList.copyOf(this.dimensions);
     }
 
-    // TODO what about dimString?
-    public List<Dimension> getDimensionsAll() {
-      List<Dimension> dimsAll = new ArrayList<>();
+    // Get all dimension names, including parent structure
+    public ImmutableSet<String> getDimensionsAll() {
+      ImmutableSet.Builder<String> dimsAll = new ImmutableSet.Builder<>();
       addDimensionsAll(dimsAll, this);
-      return dimsAll;
+      return dimsAll.build();
     }
 
-    private void addDimensionsAll(List<Dimension> result, Variable.Builder<?> v) {
-      // if (v.parentStruct != null) TODO
-      // addDimensionsAll(result, v.parentStruct);
-
-      result.addAll(v.dimensions);
+    private void addDimensionsAll(ImmutableSet.Builder<String> result, Variable.Builder<?> v) {
+      if (v.parentStruct != null) {
+        parentStruct.getDimensions().forEach(dim -> result.add(dim.getShortName()));
+      }
+      getDimensionNames().forEach(result::add);
     }
 
     public T setIsScalar() {
