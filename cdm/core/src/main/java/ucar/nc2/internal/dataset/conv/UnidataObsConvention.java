@@ -20,8 +20,9 @@ import ucar.nc2.util.CancelTask;
 
 /**
  * Unidata Observation Dataset v1.0
+ * Obsolete, do not use for new data.
  * 
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html"
+ * @see "https://web.archive.org/web/20130713015813/www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html"
  */
 public class UnidataObsConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "Unidata Observation Dataset v1.0";

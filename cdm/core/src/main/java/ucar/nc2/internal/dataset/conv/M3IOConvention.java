@@ -50,8 +50,7 @@ import ucar.unidata.geoloc.projection.UtmProjection;
  *
  * @author plessel.todd@epa.gov
  * @author caron
- * @see <a href=
- *      "http://www.baronams.com/products/ioapi/index.html">http://www.baronams.com/products/ioapi/index.html</a>
+ * @see "https://www.cmascenter.org/ioapi/"
  */
 public class M3IOConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "M3IO";

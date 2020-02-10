@@ -29,7 +29,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class SearchForConventions {
-  private static final String tempDir = "/usr/local/google/home/jlcaron/tmp/";
+  private static final String tempDir = "~/tmp/";
   private static final List<String> testDirs =
       ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions", TestDir.cdmUnitTestDir + "/ft");
   private static Multimap<String, String> convMap = ArrayListMultimap.create();
@@ -81,7 +81,7 @@ public class SearchForConventions {
   }
 
   @Test
-  // @Ignore("Not a test - really a utility program")
+  @Ignore("Not a test - really a utility program")
   public void findConventions() {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       System.out.printf("%s%n", filename);

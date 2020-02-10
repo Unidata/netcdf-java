@@ -1585,7 +1585,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // LOOK how do we get the variableDS to reference the coordinate system?
     // CoordinatesHelper has to wire the coordinate systems together
     for (Variable v : this.variables) {
-      // LOOK StructureDS ??
+      // TODO anything needed to do for a StructureDS ??
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;
         vds.setCoordinateSystems(coords);

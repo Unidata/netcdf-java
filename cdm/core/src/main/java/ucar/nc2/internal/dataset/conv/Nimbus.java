@@ -21,7 +21,7 @@ import ucar.unidata.util.StringUtil2;
 /**
  * NCAR RAF / NIMBUS
  * 
- * @see "http://www.eol.ucar.edu/raf/Software/netCDF.html"
+ * @see "https://web.archive.org/web/20180621013727/https://www.eol.ucar.edu/raf/Software/netCDF.html"
  */
 public class Nimbus extends CoardsConventions {
   private static final String CONVENTION_NAME = "NCAR-RAF/nimbus";

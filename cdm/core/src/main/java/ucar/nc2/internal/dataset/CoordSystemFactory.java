@@ -138,17 +138,16 @@ public class CoordSystemFactory {
         String name = stoke.nextToken();
         names.add(name.trim());
       }
-      return names;
     } else if ((convAttValue.indexOf('/') > 0)) {
       StringTokenizer stoke = new StringTokenizer(convAttValue, "/");
       while (stoke.hasMoreTokens()) {
         String name = stoke.nextToken();
         names.add(name.trim());
       }
-      return names;
     } else {
       return ImmutableList.of(convAttValue);
     }
+    return names;
   }
 
   /**
