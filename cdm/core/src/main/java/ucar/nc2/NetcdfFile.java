@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2;
@@ -46,17 +46,19 @@ import ucar.unidata.util.StringUtil2;
  * <p>
  * Read-only scientific datasets that are accessible through the netCDF API.
  * Immutable after {@code setImmutable()} is called. Reading data is not
- * thread-safe because of the use of RandomAccessFile.
+ * thread-safe because of the use of {@code RandomAccessFile}.
  * </p>
  *
  * <p>
- * Be sure to close the file when done. Either enclose in a try/finally block:
+ * Using this class's {@code Builder} scheme to create a {@code NetcdfFile} object could, for
+ * example, be accomplished as follows, using a try/finally block to ensure that the
+ * {@code NetcdfFile} is closed when done.
  * </p>
  *
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
- *   ncfile = NetcdfFile.open(fileName);
+ *   ncfile = NetcdfFile.builder().setLocation(fileName).build();
  *   // do stuff
  * } finally {
  *   if (ncfile != null) {
@@ -66,11 +68,26 @@ import ucar.unidata.util.StringUtil2;
  * </pre>
  *
  * <p>
+ * More conveniently, a {@code NetcdfFile} object may be created using one of the static methods
+ * in {@code NetcdfFiles}:
+ * </p>
+ *
+ * <pre>
+ * NetcdfFile ncfile = null;
+ * try {
+ *   ncfile = NetcdfFiles.open(fileName);
+ *   // do stuff
+ * } finally {
+ *   if (ncfile != null) {
+ *     ncfile.close();
+ *   }
+ * }
+ * <p>
  * Or better yet, use try-with-resources:
  * </p>
  *
  * <pre>
- * try (NetcdfFile ncfile = NetcdfFile.open(fileName)) {
+ * try (NetcdfFile ncfile = NetcdfFiles.open(fileName)) {
  *   // do stuff
  * }
  * </pre>
@@ -949,7 +966,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   /**
    * Find a Variable by short name, in the given group.
-   * 
+   *
    * @param g A group in this file. Null for root group.
    * @param shortName short name of the Variable.
    * @return Variable if found, else null.
@@ -1020,7 +1037,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Look in the given Group and in its nested Groups for a Variable with a String valued Attribute with the given name
    * and value.
-   * 
+   *
    * @param g start with this Group, null for the root Group.
    * @param attName look for an Attribuite with this name.
    * @param attValue look for an Attribuite with this value.
@@ -1615,7 +1632,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * For subclass construction.
    * Use NetcdfFileSubclass to access this constructor
-   * 
+   *
    * @deprecated use NetcdfFile.builder()
    */
   @Deprecated
@@ -1697,7 +1714,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   /**
    * Public by accident.
-   * 
+   *
    * @deprecated Use NetcdfFile.builder()
    */
   @Deprecated
@@ -1984,7 +2001,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Completely empty the objects in the netcdf file.
    * Used for rereading the file on a sync().
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -2006,7 +2023,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Finish constructing the object model.
    * This construsts the "global" variables, attributes and dimensions.
    * It also looks for coordinate variables.
-   * 
+   *
    * @deprecated Use NetcdfFile.builder()
    */
   @Deprecated
@@ -2557,7 +2574,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   /**
    * Get Builder for this class.
    * Allows subclassing.
-   * 
+   *
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
