@@ -684,12 +684,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         if (v instanceof Sequence) {
           newVar = SequenceDS.builder().copyFrom((Sequence) v);
         } else if (v instanceof Structure) {
-          newVar = StructureDS.builder().copyFrom((StructureDS) v);
+          newVar = StructureDS.builder().copyFrom((Structure) v);
         } else {
           newVar = VariableDS.builder().copyFrom(v);
         }
         addMemberVariable(newVar);
       }
+      setOriginalVariable(orgVar);
+      setOriginalName(orgVar.getShortName());
       return self();
     }
 

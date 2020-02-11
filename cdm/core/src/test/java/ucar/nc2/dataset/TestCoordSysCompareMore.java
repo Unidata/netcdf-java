@@ -5,11 +5,13 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
+import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -29,13 +31,16 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @RunWith(Parameterized.class)
 public class TestCoordSysCompareMore {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static List<String> testDirs =
+      ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions", TestDir.cdmUnitTestDir + "/ft");
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/conventions",
-          pathname -> pathname.getName().endsWith("nc"), filenames, true);
+      for (String dir : testDirs) {
+        TestDir.actOnAllParameterized(dir, (file) -> file.getPath().endsWith(".nc"), filenames, true);
+      }
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }

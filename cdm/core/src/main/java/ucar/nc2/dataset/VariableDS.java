@@ -10,7 +10,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.util.CancelTask;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -157,6 +156,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     this.enhanceProxy = new EnhancementsImpl(this); // decouple coordinate systems
     this.scaleMissingUnsignedProxy = vds.scaleMissingUnsignedProxy;
+
+    // Add this so that old VariableDS units agrees with new VariableDS units.
+    String units = vds.getUnitsString();
+    if (units != null) {
+      setUnitsString(units.trim());
+    }
 
     if (!isCopy) {
       createNewCache(); // dont share cache unless its a copy
@@ -939,7 +944,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
 
     public String getFullName() {
-      return this.shortName; // TODO
+      String groups = "";
+      if (orgVar != null && !orgVar.getParentGroup().isRoot()) {
+        groups = orgVar.getParentGroup().getFullName() + "/";
+      } else if (parent != null && !parent.isRoot()) {
+        groups = parent.getFullName() + "/";
+      }
+      return groups + this.shortName;
     }
 
     /** Normally this is called by Group.build() */
