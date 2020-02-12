@@ -87,14 +87,14 @@ public class NetcdfFiles {
 
     // register RandomAccessFile providers that are part of cdm-core. This ensures that they are tried first.
     try {
-      registerRandomAccessFileProvider("ucar.unidata.io.http.HTTPRandomAccessFileProvider");
+      registerRandomAccessFileProvider("ucar.unidata.io.http.HTTPRandomAccessFile$Provider");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class HTTPRandomAccessFileProvider", e);
     }
 
     try {
-      registerRandomAccessFileProvider("ucar.unidata.io.http.InMemoryRandomAccessFileProvider");
+      registerRandomAccessFileProvider("ucar.unidata.io.InMemoryRandomAccessFile$Provider");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class InMemoryRandomAccessFileProvider", e);
