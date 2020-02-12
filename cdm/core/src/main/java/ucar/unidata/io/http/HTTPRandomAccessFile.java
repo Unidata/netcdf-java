@@ -28,12 +28,15 @@ import ucar.unidata.util.Urlencoded;
 
 public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
-  private static final int minHttpBufferSize = Integer.parseInt(
-      System.getProperty("ucar.unidata.io.http.minHttpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
-
-  // default to 10 MiB
-  private static final int maxHttpBufferSize =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.http.maxHttpBufferSize", String.valueOf(10485760)));
+  // deprecate ucar.unidata.io.http.maxHttpBufferSize
+  // simplifies determination of buffer size, which might not need to be
+  // so complex now that we have a read cache.
+  // however, if it is set, use it (but change default to defaultRemoteFileBufferSize)
+  private static final int maxHttpBufferSize = Integer.parseInt(
+      System.getProperty("ucar.unidata.io.http.maxHttpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
+  // if ucar.unidata.io.http.httpBufferSize is set, use it over the deprecated ucar.unidata.io.http.maxHttpBufferSize
+  private static final int httpBufferSize =
+      Integer.parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(maxHttpBufferSize)));
 
   private static final int httpMaxCacheSize = Integer
       .parseInt(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
@@ -46,9 +49,10 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
   private long total_length;
 
   public HTTPRandomAccessFile(String url) throws IOException {
-    this(url, minHttpBufferSize, httpMaxCacheSize);
+    this(url, httpBufferSize, httpMaxCacheSize);
   }
 
+  // TODO make private in 6?
   @Urlencoded
   public HTTPRandomAccessFile(String url, int bufferSize, int maxRemoteCacheSize) throws IOException {
     super(url, bufferSize, maxRemoteCacheSize);
@@ -92,33 +96,6 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
     if (needtest && !rangeOk(url))
       throw new IOException("Server does not support byte Ranges");
-
-    if (total_length > 0) {
-      // ok, this logic is interesting. The net effect is that:
-      //
-      // 1. If the remote file size is reported as zero,
-      // read it using a buffer size of minHttpBufferSize
-      // 2. If the remote file is larger than maxHTTPBufferSize,
-      // read it using a buffer size of maxHTTPBufferSize
-      // 3. Otherwise, read the remote file in one request
-      // using a buffer size equal to that of the remote file
-      // size
-      //
-      // Ready? Ok, let's do this...
-      //
-      // If the size of the remote file is less than the maxHTTPBufferSize,
-      // set the buffer size to be the reported file size.
-      // This will set things up such that the remote file will
-      // be read into memory using one call, or it will be zero
-      // because the server isn't reporting the actual remote file
-      // size.
-      int useBuffer = (int) Math.min(total_length, maxHttpBufferSize);
-      // However, if the file size is larger than minHttpBufferSize, use a
-      // buffer the size of the file. If the file size is reported
-      // to be zero, then use minHttpBufferSize
-      useBuffer = Math.max(useBuffer, minHttpBufferSize); // minimum buffer
-      setBufferSize(useBuffer);
-    }
 
     if (debugLeaks)
       openFiles.add(location);
