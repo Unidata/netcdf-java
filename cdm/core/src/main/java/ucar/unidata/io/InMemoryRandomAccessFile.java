@@ -7,7 +7,10 @@ package ucar.unidata.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import ucar.nc2.util.IO;
+import java.util.Optional;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 /**
@@ -78,8 +81,14 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     public RandomAccessFile open(String location) throws IOException {
       String scheme = location.split(":")[0];
       location = location.replace(scheme, "http");
-      byte[] contents = IO.readURLContentsToByteArray(location); // read all into memory
-      return new InMemoryRandomAccessFile(location, contents);
+      Optional<byte[]> contents;
+      try (HTTPMethod method = HTTPFactory.Get(location)) {
+        method.execute();
+        contents = Optional.of(method.getResponseAsBytes());
+      } catch (HTTPException he) {
+        throw new IOException(he);
+      }
+      return new InMemoryRandomAccessFile(location, contents.get());
     }
   }
 
