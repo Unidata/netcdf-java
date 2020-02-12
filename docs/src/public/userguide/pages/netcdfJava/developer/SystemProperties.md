@@ -18,8 +18,8 @@ The netcdf-java library defines several Java System Properties for runtime confi
 | "nj22.cachePolicy" | Create the file in the cache directory | Create the file in the same directory as the original | ucar.nc1.util.DiskCache
 | "nj22.cache" | Set the root directory for the cache | user.home or user.dir + "/.unidata/cache/" | ucar.nc1.util.DiskCache2
 | "nj22.cachePersistRoot" | Set the root directory for the cache | user.home or user.dir + "/" | ucar.nc1.util.DiskCache2 
-| "ucar.unidata.io.http.minHttpBufferSize" | The minimum buffer size when reading over http (because some HTTP servers report a 0 byte Content-Range) | 262144 (256 KiB) | ucar.unidata.io.http.HttpRandomAccessFile
-| "ucar.unidata.io.http.maxHttpBufferSize" | The maximum buffer size used when the remote server reports a non-zero Content-Range | 10485760 (10 MiB) | ucar.unidata.io.http.HttpRandomAccessFile
+| "ucar.unidata.io.http.httpBufferSize" | The buffer size when reading over http | 262144 (256 KiB) | ucar.unidata.io.http.HttpRandomAccessFile
+| "ucar.unidata.io.http.maxHttpBufferSize" | Deprecated. Use "ucar.unidata.io.http.httpBufferSize". | 262144 (256 KiB) | ucar.unidata.io.http.HttpRandomAccessFile
 | "ucar.unidata.io.http.maxReadCacheSize" | The read cache size in bytes | 10485760 (10 MiB)| ucar.unidata.io.http.HttpRandomAccessFile
 | "httpservices.urlencode" | encode the url passed to the HTTPMethod constructor | true | ucar.httpservices.HTTPMethod
 | "store" | key store path | None | ucar.httpservices.HTTPSession
