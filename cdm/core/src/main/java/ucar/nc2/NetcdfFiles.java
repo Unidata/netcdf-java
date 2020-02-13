@@ -341,7 +341,7 @@ public class NetcdfFiles {
     return StringUtil2.replace(uriString, '\\', "/");
   }
 
-  static private ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf,
+  private static ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf,
       String uriString, int buffer_size) throws IOException {
     int pos = uriString.lastIndexOf('/');
 
@@ -437,7 +437,7 @@ public class NetcdfFiles {
     return raf;
   }
 
-  static private boolean looksCompressed(String filename) {
+  private static boolean looksCompressed(String filename) {
     int pos = filename.lastIndexOf('.');
     boolean looksCompressed = false;
     if (pos > 0) {
@@ -448,7 +448,7 @@ public class NetcdfFiles {
     return looksCompressed;
   }
 
-  static private String makeUncompressed(String filename) throws Exception {
+  private static String makeUncompressed(String filename) throws Exception {
 
     int pos = filename.lastIndexOf('.');
     String suffix = filename.substring(pos + 1);
@@ -582,7 +582,7 @@ public class NetcdfFiles {
     }
   }
 
-  static private void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {
+  private static void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {
     long length = in.length();
     byte[] buffer = new byte[bufferSize];
     int bytesRead = 0;
