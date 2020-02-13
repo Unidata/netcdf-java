@@ -71,7 +71,7 @@ public class N3headerNew {
 
   private long dataStart = Long.MAX_VALUE; // where the data starts
 
-  private final Charset charset;
+  private final Charset valueCharset;
 
   /*
    * Notes:
@@ -82,21 +82,21 @@ public class N3headerNew {
    */
 
   public N3headerNew() {
-    charset = StandardCharsets.UTF_8;
+    valueCharset = StandardCharsets.UTF_8;
   }
 
   protected N3headerNew(N3iospNew n3iospNew) {
-    charset = n3iospNew.getCharset().orElse(StandardCharsets.UTF_8);
+    valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
   }
 
   /**
-   * Return defined {@link Charset charset} that
+   * Return defined {@link Charset value charset} that
    * will be used by reading HDF3 header.
    * 
    * @return {@link Charset charset}
    */
-  protected Charset getCharset() {
-    return charset;
+  protected Charset getValueCharset() {
+    return valueCharset;
   }
 
   /**
@@ -470,7 +470,7 @@ public class N3headerNew {
       if (type == 2) {
         if (fout != null)
           fout.format(" begin read String val pos= %d%n", raf.getFilePointer());
-        String val = readString();
+        String val = readString(getValueCharset());
         if (val == null)
           val = "";
         if (fout != null)
@@ -552,6 +552,10 @@ public class N3headerNew {
 
   // read a string = (nelems, byte array), then skip to 4 byte boundary
   private String readString() throws IOException {
+    return readString(StandardCharsets.UTF_8);
+  }
+
+  private String readString(Charset charset) throws IOException {
     int nelems = raf.readInt();
     byte[] b = new byte[nelems];
     raf.readFully(b);
