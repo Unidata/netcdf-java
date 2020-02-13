@@ -12,10 +12,11 @@ apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
     compile project(':cdm:cdm-core')
-    
+
+    compile libraries["aws-s3"]
     compile libraries["jsr305"]
     compile libraries["slf4j-api"]
-    
+
     testCompile project(':cdm:cdm-radial')
     testCompile libraries["truth"]
 }
