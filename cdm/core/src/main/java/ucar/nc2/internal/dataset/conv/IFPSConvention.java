@@ -5,8 +5,10 @@
 
 package ucar.nc2.internal.dataset.conv;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -17,6 +19,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
@@ -113,11 +116,12 @@ public class IFPSConvention extends CoordSystemBuilder {
 
     // figure out the time coordinate for each data variable
     // LOOK : always seperate; could try to discover if they are the same
-    for (Variable.Builder ncvar : rootGroup.vbuilders) {
+    // Make copy because we will add new elements to it.
+    for (Variable.Builder<?> ncvar : ImmutableList.copyOf(rootGroup.vbuilders)) {
       // variables that are used but not displayable or have no data have DIM_0, also don't want history, since those
       // are just how the person edited the grids
-      if ((!ncvar.getFirstDimensionName().equals("DIM_0")) && !ncvar.shortName.endsWith("History")
-          && (ncvar.getRank() > 2) && !ncvar.shortName.startsWith("Tool")) {
+      if ((ncvar.getRank() > 2) && !"DIM_0".equals(ncvar.getFirstDimensionName())
+          && !ncvar.shortName.endsWith("History") && !ncvar.shortName.startsWith("Tool")) {
         createTimeCoordinate((VariableDS.Builder) ncvar);
       } else if (ncvar.shortName.equals("Topo")) {
         // Deal with Topography variable
@@ -127,7 +131,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
   }
 
-  private void createTimeCoordinate(VariableDS.Builder ncVar) {
+  private void createTimeCoordinate(VariableDS.Builder<?> ncVar) {
     // Time coordinate is stored in the attribute validTimes
     // One caveat is that the times have two bounds an upper and a lower
 
@@ -178,9 +182,9 @@ public class IFPSConvention extends CoordSystemBuilder {
     parseInfo.format(" added coordinate variable %s%n", dimName);
 
     // now make the original variable use the new dimension
-    List<Dimension> dimsList = ncVar.getDimensions(rootGroup);
-    dimsList.set(0, newDim);
-    ncVar.setDimensions(dimsList);
+    ArrayList<Dimension> newDims = new ArrayList<>(ncVar.getDimensions(rootGroup));
+    newDims.set(0, newDim);
+    ncVar.setDimensions(newDims);
 
     // better to explicitly set the coordinate system
     ncVar.addAttribute(new Attribute(_Coordinate.Axes, dimName + " yCoord xCoord"));

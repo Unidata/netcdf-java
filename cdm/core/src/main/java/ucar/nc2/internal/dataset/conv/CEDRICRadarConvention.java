@@ -60,7 +60,7 @@ public class CEDRICRadarConvention extends CF1Convention {
 
     @Override
     public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
-      return new ATDRadarConvention(datasetBuilder);
+      return new CEDRICRadarConvention(datasetBuilder);
     }
   }
 }

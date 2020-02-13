@@ -5,6 +5,7 @@
 
 package ucar.nc2.internal.dataset.conv;
 
+import com.google.common.collect.ImmutableList;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import java.io.IOException;
@@ -27,10 +28,13 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.time.CalendarDate;
@@ -125,6 +129,35 @@ import ucar.unidata.util.StringUtil2;
  */
 public class WRFConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "WRF";
+
+  public static class Factory implements CoordSystemBuilderFactory {
+
+    @Override
+    public String getConventionName() {
+      return CONVENTION_NAME;
+    }
+
+    public boolean isMine(NetcdfFile ncfile) {
+      if (null == ncfile.findDimension("south_north"))
+        return false;
+
+      // ARW only
+      int dynOpt = ncfile.getRootGroup().attributes().findAttributeInteger("DYN_OPT", -1);
+      if (dynOpt != -1 && dynOpt != 2) { // if it exists, it must equal 2.
+        return false;
+      } else {
+        String gridType = ncfile.getRootGroup().findAttValueIgnoreCase("GRIDTYPE", "null");
+        if (!gridType.equalsIgnoreCase("C") && !gridType.equalsIgnoreCase("E"))
+          return false;
+      }
+      return ncfile.findGlobalAttribute("MAP_PROJ") != null;
+    }
+
+    @Override
+    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+      return new WRFConvention(datasetBuilder);
+    }
+  }
 
   private WRFConvention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
@@ -237,7 +270,8 @@ public class WRFConvention extends CoordSystemBuilder {
           // http://www.mmm.ucar.edu/wrf/users/workshops/WS2008/presentations/1-2.pdf
           // use 2D XLAT, XLONG
           isLatLon = true;
-          for (Variable.Builder v : rootGroup.vbuilders) {
+          // Make copy because we will add new elements to it.
+          for (Variable.Builder v : ImmutableList.copyOf(rootGroup.vbuilders)) {
             if (v.shortName.startsWith("XLAT")) {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
               removeConstantTimeDim(v);
@@ -731,80 +765,38 @@ public class WRFConvention extends CoordSystemBuilder {
     return att.getNumericValue().doubleValue();
   }
 
-  /**
-   * TODO
-   * Assign CoordinateTransform objects to Coordinate Systems.
-   *
+  /*
+   * not ready yet - need transforms
+   * 
    * @Override
-   *           protected void assignCoordinateTransforms() {
-   *           super.assignCoordinateTransforms();
+   * protected void assignCoordinateTransforms() {
+   * super.assignCoordinateTransforms();
    * 
-   *           // any cs with a vertical coordinate with no units
-   *           for (CoordinateSystem.Builder cs : coords.coordSys) {
-   *           if (cs.getZaxis() != null) {
-   *           String units = cs.getZaxis().getUnitsString();
-   *           if ((units == null) || (units.trim().isEmpty())) {
-   *           CoordinateTransform.Builder vct = makeWRFEtaVerticalCoordinateTransform(cs);
-   *           if (vct != null) {
-   *           cs.addCoordinateTransformByName(vct.name);
-   *           coords.addCoordinateTransform(vct);
-   *           }
-   *           parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s%n", cs.getName());
-   *           }
-   *           }
-   *           }
-   *           }
+   * // any CoordinateSystem with a vertical coordinate with no units
+   * for (CoordinateSystem.Builder cs : coords.coordSys) {
+   * if (cs.getZaxis() != null) {
+   * String units = cs.getZaxis().getUnitsString();
+   * if ((units == null) || (units.trim().isEmpty())) {
+   * VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(cs);
+   * if (vct != null) {
+   * cs.addCoordinateTransform(vct);
+   * }
+   * parseInfo.format("***Added WRFEtaTransformBuilder to CoordinateSystem '%s'%n", cs.coordAxesNames);
+   * }
+   * }
+   * }
+   * }
    * 
-   *           private CoordinateTransform.Builder makeWRFEtaVerticalCoordinateTransform(CoordinateSystem.Builder cs) {
-   *           if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
-   *           || (null == ds.findVariable("PB")))
-   *           return null;
+   * private VerticalCT makeWRFEtaVerticalCoordinateTransform(CoordinateSystem.Builder cs) {
+   * if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
+   * || (null == ds.findVariable("PB")))
+   * return null;
    * 
-   *           CoordinateTransform builder = new WRFEtaTransformBuilder(cs);
-   * 
-   *           return CoordinateTransform.builder().setVerticalTransform("CoordinateTransform");
-   * 
-   *           return builder.makeCoordinateTransform(ds, null);
-   *           }
+   * WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
+   * return builder.makeCoordinateTransform(ds, null);
+   * }
    */
 
-  public static class Factory implements CoordSystemBuilderFactory {
-
-    @Override
-    public String getConventionName() {
-      return CONVENTION_NAME;
-    }
-
-    // not ready
-    /*
-     * @Override
-     * public boolean isMine(NetcdfFile ncfile) {
-     * if (null == ncfile.findDimension("south_north"))
-     * return false;
-     * 
-     * // ARW only
-     * Attribute att = ncfile.findGlobalAttribute("DYN_OPT");
-     * if (att != null) {
-     * if (att.getNumericValue().intValue() != 2)
-     * return false;
-     * } else {
-     * att = ncfile.findGlobalAttribute("GRIDTYPE");
-     * if (att != null) {
-     * if (!att.getStringValue().equalsIgnoreCase("C") && !att.getStringValue().equalsIgnoreCase("E"))
-     * return false;
-     * }
-     * }
-     * 
-     * att = ncfile.findGlobalAttribute("MAP_PROJ");
-     * return att != null;
-     * }
-     */
-
-    @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
-      return new WRFConvention(datasetBuilder);
-    }
-  }
 }
 
 /*

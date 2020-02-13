@@ -19,7 +19,7 @@ public interface HorizTransformBuilderIF {
    *
    * @param ctv the coordinate transform variable.
    * @param geoCoordinateUnits the geo X/Y coordinate units, or null.
-   * @return CoordinateTransform
+   * @return ProjectionCT
    */
   ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits);
 

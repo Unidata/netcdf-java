@@ -1592,6 +1592,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // TODO goes away in version 6
     // LOOK how do we get the variableDS to reference the coordinate system?
     // CoordinatesHelper has to wire the coordinate systems together
+    // Perhaps a VariableDS uses NetcdfDataset or CoordinatesHelper to manage its CoordinateSystems and Transforms ??
+    // So it doesnt need a reference directly to them.
     for (Variable v : this.variables) {
       // TODO anything needed to do for a StructureDS ??
       if (v instanceof VariableDS) {
@@ -1651,7 +1653,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     @Nullable
     public NetcdfFile orgFile;
     public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
-    public String convUsed;
+    private String convUsed;
     public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
     public ucar.nc2.ncml.AggregationIF agg; // If its an aggregation
 

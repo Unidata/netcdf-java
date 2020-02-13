@@ -11,9 +11,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Parameter;
 
-/**
- * @author caron
- */
+/** Create WRF Eta vertical transform. */
 public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
   private CoordinateSystem cs; // can we figure out cs from ds?
 

@@ -17,37 +17,33 @@ import javax.annotation.concurrent.Immutable;
  * Typically it may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -> Height or Pressure.
  * This class just records the transformation parameters. The mathematical transformation itself is
  * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform.
- *
- * @author caron
  */
 @Immutable
 public class VerticalCT extends CoordinateTransform {
 
-  /**
-   * Enumeration of known Vertical transformations.
-   */
+  /** Enumeration of known Vertical transformations. */
   public enum Type {
     // These are from CF-1.0: not all are implemented because we dont have an example to test
-    HybridSigmaPressure(CF.atmosphere_hybrid_sigma_pressure_coordinate), HybridHeight(
-        CF.atmosphere_hybrid_height_coordinate), LnPressure(CF.atmosphere_ln_pressure_coordinate), OceanSigma(
-            CF.ocean_sigma_coordinate), OceanS(
-                CF.ocean_s_coordinate), Sleve(CF.atmosphere_sleve_coordinate), Sigma(CF.atmosphere_sigma_coordinate),
+    HybridSigmaPressure(CF.atmosphere_hybrid_sigma_pressure_coordinate), //
+    HybridHeight(CF.atmosphere_hybrid_height_coordinate), //
+    LnPressure(CF.atmosphere_ln_pressure_coordinate), //
+    OceanSigma(CF.ocean_sigma_coordinate), //
+    OceanS(CF.ocean_s_coordinate), //
+    Sleve(CF.atmosphere_sleve_coordinate), //
+    Sigma(CF.atmosphere_sigma_coordinate), //
 
     // -Sachin 03/25/09
-    OceanSG1("ocean_s_g1"), OceanSG2("ocean_s_g2"),
+    OceanSG1("ocean_s_g1"), //
+    OceanSG2("ocean_s_g2"), //
 
     // others
-    Existing3DField("atmosphere_sigma"), WRFEta("WRFEta");
+    Existing3DField("atmosphere_sigma"), //
+    WRFEta("WRFEta"); //
 
     private final String name;
 
-    /**
-     * Constructor
-     *
-     * @param s name of Type
-     */
-    Type(String s) {
-      this.name = s;
+    Type(String name) {
+      this.name = name;
     }
 
     /**

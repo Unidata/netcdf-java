@@ -34,7 +34,7 @@ import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
 
-/** ADAS netcdf files. */
+/** ADAS netcdf files. Not finished because we dont have any tests files. */
 public class ADASConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "ARPS/ADAS";
 

@@ -7,6 +7,7 @@ package ucar.nc2.internal.dataset.conv;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -23,6 +24,12 @@ public class MADISStation extends CoordSystemBuilder {
     @Override
     public String getConventionName() {
       return CONVENTION_NAME;
+    }
+
+    @Override
+    public boolean isMine(NetcdfFile ncfile) {
+      String s = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("Conventions", "none");
+      return s.startsWith("MADIS");
     }
 
     @Override
