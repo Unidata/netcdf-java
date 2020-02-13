@@ -505,6 +505,14 @@ public class CoordinateSystem {
     return true;
   }
 
+  public static boolean isSubset(Set<String> subset, Set<String> set) {
+    for (String d : subset) {
+      if (!(set.contains(d)))
+        return false;
+    }
+    return true;
+  }
+
   public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {
@@ -655,7 +663,7 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////
   /**
-   * Instances which have same name are equal.
+   * Instances which have same name, axes and transforms are equal.
    */
   public boolean equals(Object oo) {
     if (this == oo)
@@ -724,7 +732,7 @@ public class CoordinateSystem {
     StringTokenizer stoker = new StringTokenizer(builder.coordAxesNames);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      CoordinateAxis axis = axes.stream().filter(a -> a.getShortName().equals(vname)).findFirst()
+      CoordinateAxis axis = axes.stream().filter(a -> a.getFullName().equals(vname)).findFirst()
           .orElseThrow(() -> new IllegalStateException("Cant find vname " + vname));
       axesList.add(axis);
     }
@@ -768,9 +776,11 @@ public class CoordinateSystem {
       domain.addAll(dims);
 
       // Find the named coordinate transforms in allTransforms.
-      for (String wantTrans : builder.transNames) {
+      for (String wantTransName : builder.transNames) {
         CoordinateTransform got = allTransforms.stream()
-            .filter(ct -> ct.getAttributeContainer().getName().equals(wantTrans)).findFirst().orElse(null);
+            .filter(ct -> (wantTransName.equals(ct.getName())
+                || ct.getAttributeContainer() != null && wantTransName.equals(ct.getAttributeContainer().getName())))
+            .findFirst().orElse(null);
         if (got != null) {
           coordTrans.add(got);
         }

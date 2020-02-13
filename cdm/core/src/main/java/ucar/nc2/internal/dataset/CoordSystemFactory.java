@@ -1,5 +1,6 @@
 package ucar.nc2.internal.dataset;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -50,7 +51,7 @@ public class CoordSystemFactory {
 
   // These get precedence
   static {
-    registerConvention(_Coordinate.Convention, new DefaultConventions.Factory());
+    registerConvention(_Coordinate.Convention, new CoordSystemBuilder.Factory());
     registerConvention("CF-1.", new CF1Convention.Factory(), String::startsWith);
     registerConvention("CDM-Extended-CF", new CF1Convention.Factory());
   }
@@ -144,11 +145,7 @@ public class CoordSystemFactory {
         names.add(name.trim());
       }
     } else {
-      StringTokenizer stoke = new StringTokenizer(convAttValue, " ");
-      while (stoke.hasMoreTokens()) {
-        String name = stoke.nextToken();
-        names.add(name.trim());
-      }
+      return ImmutableList.of(convAttValue);
     }
     return names;
   }
@@ -157,7 +154,7 @@ public class CoordSystemFactory {
    * Build a list of Conventions
    *
    * @param mainConv this is the main convention
-   * @param convAtts list of others, onbly use "extra" Conventions
+   * @param convAtts list of others, only use "extra" Conventions
    * @return comma separated list of Conventions
    */
   public static String buildConventionAttribute(String mainConv, String... convAtts) {
@@ -218,9 +215,17 @@ public class CoordSystemFactory {
         return Optional.of(csb);
       }
     }
-
-    // Try to match on convention name
     CoordSystemBuilderFactory coordSysFactory = null;
+
+    // Try to match on convention name as is
+    if (convName != null) {
+      coordSysFactory = findRegisteredConventionByName(convName);
+      if (coordSysFactory == null) {
+        coordSysFactory = findLoadedConventionByName(convName);
+      }
+    }
+
+    // Try to split on ",;/"
     if (convName != null) {
       List<String> names = breakupConventionNames(convName);
       for (String name : names) {

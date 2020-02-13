@@ -76,12 +76,12 @@ public class CoordinatesHelper {
       return this;
     }
 
-    public Optional<CoordinateAxis.Builder> findCoordinateAxis(String axisName) {
-      return coordAxes.stream().filter(axis -> axis.shortName.equals(axisName)).findFirst();
+    public Optional<CoordinateAxis.Builder> findCoordinateAxis(String fullName) {
+      return coordAxes.stream().filter(axis -> axis.getFullName().equals(fullName)).findFirst();
     }
 
     public boolean replaceCoordinateAxis(CoordinateAxis.Builder<?> axis) {
-      Optional<CoordinateAxis.Builder> want = findCoordinateAxis(axis.shortName);
+      Optional<CoordinateAxis.Builder> want = findCoordinateAxis(axis.getFullName());
       want.ifPresent(v -> coordAxes.remove(v));
       addCoordinateAxis(axis);
       return want.isPresent();
@@ -134,6 +134,7 @@ public class CoordinatesHelper {
         if (vbOpt.isPresent()) {
           axes.add(vbOpt.get());
         } else {
+          findCoordinateAxis(vname);
           throw new IllegalArgumentException("Cant find axis " + vname);
         }
       }
@@ -160,7 +161,7 @@ public class CoordinatesHelper {
 
     public String makeCanonicalName(List<CoordinateAxis.Builder> axes) {
       Preconditions.checkNotNull(axes);
-      return axes.stream().sorted(new AxisComparator()).map(a -> a.shortName).collect(Collectors.joining(" "));
+      return axes.stream().sorted(new AxisComparator()).map(a -> a.getFullName()).collect(Collectors.joining(" "));
     }
 
     public CoordinatesHelper build(NetcdfDataset ncd) {
@@ -175,11 +176,11 @@ public class CoordinatesHelper {
     public boolean isComplete(CoordinateSystem.Builder<?> cs, VariableDS.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(vb);
-      // TODO using strings instead of Dimensions, to avaid exposing mutable Dimension objects.
+      // TODO using strings instead of Dimensions, to avoid exposing mutable Dimension objects.
       // TODO Might reconsider in 6.
       Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionNames().iterator());
       HashSet<String> csDomain = new HashSet<>();
-      getAxesForSystem(cs).forEach(axis -> axis.getDimensionNames().forEach(dim -> csDomain.add(dim)));
+      getAxesForSystem(cs).forEach(axis -> axis.getDimensionNames().forEach(csDomain::add));
       return varDomain.equals(csDomain);
     }
 
@@ -212,12 +213,11 @@ public class CoordinatesHelper {
 
   private static class AxisComparator implements java.util.Comparator<CoordinateAxis.Builder> {
     public int compare(CoordinateAxis.Builder c1, CoordinateAxis.Builder c2) {
-
       AxisType t1 = c1.axisType;
       AxisType t2 = c2.axisType;
 
       if ((t1 == null) && (t2 == null))
-        return c1.shortName.compareTo(c2.shortName);
+        return c1.getFullName().compareTo(c2.getFullName());
       if (t1 == null)
         return -1;
       if (t2 == null)

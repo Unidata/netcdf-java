@@ -229,7 +229,7 @@ public class TestGridSubset {
   @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset() throws Exception {
     try (GridDataset dataset =
-        GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc")) {
+        GridDataset.open(TestDir.cdmUnitTestDir + "conventions/problem/SUPER-NATIONAL_latlon_IR_20070222_1600.nc")) {
       GeoGrid grid = dataset.findGridByName("micron11");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();

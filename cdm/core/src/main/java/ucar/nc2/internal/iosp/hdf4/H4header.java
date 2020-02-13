@@ -291,7 +291,7 @@ public class H4header implements HdfHeaderIF {
     Set<Dimension> dimUsed = dimUsedMap.keySet();
 
     // remove unused dimensions from root group
-    Iterator iter = root.getDimensionIterator();
+    Iterator iter = root.getDimensions().iterator();
     while (iter.hasNext()) {
       Dimension dim = (Dimension) iter.next();
       if (!dimUsed.contains(dim)) {

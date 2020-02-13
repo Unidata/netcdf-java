@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -23,23 +23,29 @@ import java.io.PrintWriter;
 import java.util.*;
 
 /**
- * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
+ * <p>
+ * {@code NetcdfDataset} extends the netCDF API, adding standard attribute parsing such as
  * scale and offset, and explicit support for Coordinate Systems.
- * A NetcdfDataset wraps a NetcdfFile, or is defined by an NcML document.
+ * A {@code NetcdfDataset} wraps a {@code NetcdfFile}, or is defined by an NcML document.
+ * </p>
+ *
  * <p>
- * <p>
- * Be sure to close the dataset when done, best practice is to use try-with-resource:
+ * Be sure to close the dataset when done.
+ * Using statics in {@code NetcdfDatets}, best practice is to use try-with-resource:
+ * </p>
  * 
  * <pre>
- * try (NetcdfDataset ncd = NetcdfDataset.openDataset(fileName)) {
+ * try (NetcdfDataset ncd = NetcdfDatasets.openDataset(fileName)) {
  *   ...
  * }
  * </pre>
+ *
  * <p>
- * <p>
- * By default NetcdfDataset is opened with all enhancements turned on. The default "enhance
- * mode" can be set through setDefaultEnhanceMode(). One can also explicitly set the enhancements you want in
- * the dataset factory methods. The enhancements are:
+ * By default @code NetcdfDataset} is opened with all enhancements turned on. The default "enhance
+ * mode" can be set through setDefaultEnhanceMode(). One can also explicitly set the enhancements
+ * you want in the dataset factory methods. The enhancements are:
+ * </p>
+ *
  * <ul>
  * <li>ConvertEnums: convert enum values to their corresponding Strings. If you want to do this manually,
  * you can call Variable.lookupEnumString().</li>
@@ -48,10 +54,12 @@ import java.util.*;
  * <li>ConvertMissing: replace missing data with NaNs, for efficiency.</li>
  * <li>CoordSystems: extract CoordinateSystem using the CoordSysBuilder plug-in mechanism.</li>
  * </ul>
+ *
  * <p>
  * Automatic scale/offset processing has some overhead that you may not want to incur up-front. If so, open the
  * NetcdfDataset without {@code ApplyScaleOffset}. The VariableDS data type is not promoted and the data is not
  * converted on a read, but you can call the convertScaleOffset() routines to do the conversion later.
+ * </p>
  *
  * @author caron
  * @see ucar.nc2.NetcdfFile
@@ -1585,9 +1593,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // LOOK how do we get the variableDS to reference the coordinate system?
     // CoordinatesHelper has to wire the coordinate systems together
     for (Variable v : this.variables) {
-      if (!(v instanceof VariableDS)) {
-        System.out.printf("WTF");
-      }
+      // TODO anything needed to do for a StructureDS ??
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;
         vds.setCoordinateSystems(coords);

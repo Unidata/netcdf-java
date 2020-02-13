@@ -22,7 +22,7 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 
-/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) */
+/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) in cdmLocalTestDataDir */
 @RunWith(Parameterized.class)
 public class TestCoordSysCompare {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

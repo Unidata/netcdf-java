@@ -65,7 +65,7 @@ public class TestCoverageHorizSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc";
+    String filename = TestDir.cdmUnitTestDir + "conventions/problem/SUPER-NATIONAL_latlon_IR_20070222_1600.nc";
     System.out.printf("open %s%n", filename);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {

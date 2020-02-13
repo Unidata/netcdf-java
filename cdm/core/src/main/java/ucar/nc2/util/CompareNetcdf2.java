@@ -168,8 +168,8 @@ public class CompareNetcdf2 {
 
       // coordinate systems
       for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
-        CoordinateSystem cs2 = copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
-            .findFirst().orElse(null);
+        CoordinateSystem cs2 =
+            copyds.getCoordinateSystems().stream().filter(cs -> cs.equals(cs1)).findFirst().orElse(null);
         if (cs2 == null) {
           f.format("  ** Cant find CoordinateSystem=%s in file2 %n", cs1.getName());
         } else {
@@ -358,10 +358,10 @@ public class CompareNetcdf2 {
       VariableEnhanced copye = (VariableEnhanced) copy;
 
       for (CoordinateSystem cs1 : orge.getCoordinateSystems()) {
-        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
-            .findFirst().orElse(null);
+        CoordinateSystem cs2 =
+            copye.getCoordinateSystems().stream().filter(cs -> cs.equals(cs1)).findFirst().orElse(null);
         if (cs2 == null) {
-          f.format("  ** Cant find cs %s in file2 var %s %n", cs1.getName(), org.getShortName());
+          f.format("  ** Cant find CoordinateSystem '%s' in file2 var %s %n", cs1.getName(), org.getShortName());
         } else {
           ok &= compareCoordinateSystem(cs1, cs2, filter);
         }
@@ -378,10 +378,10 @@ public class CompareNetcdf2 {
 
     boolean ok = true;
     for (CoordinateAxis ct1 : cs1.getCoordinateAxes()) {
-      CoordinateAxis ct2 = cs2.getCoordinateAxes().stream().filter(ct -> ct.getShortName().equals(ct1.getShortName()))
+      CoordinateAxis ct2 = cs2.getCoordinateAxes().stream().filter(ct -> ct.getFullName().equals(ct1.getFullName()))
           .findFirst().orElse(null);
       if (ct2 == null) {
-        f.format("  ** Cant find coordinateAxis %s in file2 %n", ct1.getShortName());
+        f.format("  ** Cant find coordinateAxis %s in file2 %n", ct1.getFullName());
       } else {
         ok &= compareCoordinateAxis(ct1, ct2, filter);
       }

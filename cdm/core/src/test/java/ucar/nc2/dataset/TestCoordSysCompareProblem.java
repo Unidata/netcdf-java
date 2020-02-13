@@ -18,18 +18,14 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old)
- */
+/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) with problem dataset */
 @Category(NeedsCdmUnitTest.class)
 public class TestCoordSysCompareProblem {
-
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void compareProblemFile() throws IOException {
-    String filename = TestDir.cdmUnitTestDir
-        + "conventions/cfradial/cfrad.20140608_220305.809_to_20140608_220710.630_KFTG_v348_Surveillance_SUR.nc";
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/UpperDeschutes_t4p10_swemelt.nc";
     showOrg(filename);
     showNew(filename);
     compare(filename);
