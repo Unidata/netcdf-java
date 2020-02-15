@@ -12,6 +12,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
@@ -1574,7 +1575,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private String convUsed;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
   private ucar.nc2.ncml.AggregationIF agg;
-  private CoordinatesHelper coords;
 
   private NetcdfDataset(Builder<?> builder) {
     super(builder);
@@ -1584,7 +1584,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.agg = builder.agg;
 
     // LOOK the need to reference the NetcdfDataset means we cant build the axes or system until now.
-    this.coords = builder.coords.build(this);
+    CoordinatesHelper coords = builder.coords.build(this);
     this.coordAxes = coords.getCoordAxes();
     this.coordSys = coords.getCoordSystems();
     this.coordTransforms = coords.getCoordTransforms();

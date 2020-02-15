@@ -1951,11 +1951,16 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     @Nullable
     public String getFirstDimensionName() {
+      return getDimensionName(0);
+    }
+
+    @Nullable
+    public String getDimensionName(int index) {
       if (dimString != null) {
         Iterable<String> iter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
-        return Iterators.getNext(iter.iterator(), null);
-      } else if (dimensions.size() > 0) {
-        return dimensions.get(0).getShortName();
+        return Iterators.get(iter.iterator(), index, null);
+      } else if (dimensions.size() > index) {
+        return dimensions.get(index).getShortName();
       }
       return null;
     }

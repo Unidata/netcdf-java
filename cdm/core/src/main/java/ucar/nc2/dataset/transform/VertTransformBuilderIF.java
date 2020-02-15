@@ -15,10 +15,7 @@ import ucar.unidata.geoloc.vertical.VerticalTransform;
 /**
  * Implement this interface to add a Coordinate Transform to a NetcdfDataset.
  * Must be able to know how to build one from the info in a Coordinate Transform Variable.
- * 
- * @deprecated use VertTransformBuilderFactory
  */
-@Deprecated
 public interface VertTransformBuilderIF {
 
   /**

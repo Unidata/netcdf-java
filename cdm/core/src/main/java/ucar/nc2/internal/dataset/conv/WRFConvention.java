@@ -33,10 +33,10 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
+import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
+import ucar.nc2.internal.dataset.transform.vertical.WRFEtaTransformBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.SimpleUnit;
@@ -759,43 +759,32 @@ public class WRFConvention extends CoordSystemBuilder {
   }
 
   private double findAttributeDouble(String attname) {
-    Attribute att = rootGroup.getAttributeContainer().findAttributeIgnoreCase(attname);
-    if (att == null)
-      return Double.NaN;
-    return att.getNumericValue().doubleValue();
+    return rootGroup.getAttributeContainer().findAttributeDouble(attname, Double.NaN);
   }
 
-  /*
-   * not ready yet - need transforms
-   * 
-   * @Override
-   * protected void assignCoordinateTransforms() {
-   * super.assignCoordinateTransforms();
-   * 
-   * // any CoordinateSystem with a vertical coordinate with no units
-   * for (CoordinateSystem.Builder cs : coords.coordSys) {
-   * if (cs.getZaxis() != null) {
-   * String units = cs.getZaxis().getUnitsString();
-   * if ((units == null) || (units.trim().isEmpty())) {
-   * VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(cs);
-   * if (vct != null) {
-   * cs.addCoordinateTransform(vct);
-   * }
-   * parseInfo.format("***Added WRFEtaTransformBuilder to CoordinateSystem '%s'%n", cs.coordAxesNames);
-   * }
-   * }
-   * }
-   * }
-   * 
-   * private VerticalCT makeWRFEtaVerticalCoordinateTransform(CoordinateSystem.Builder cs) {
-   * if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
-   * || (null == ds.findVariable("PB")))
-   * return null;
-   * 
-   * WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
-   * return builder.makeCoordinateTransform(ds, null);
-   * }
-   */
+  @Override
+  protected void assignCoordinateTransforms() {
+    super.assignCoordinateTransforms();
+
+    if (rootGroup.findVariable("PH").isPresent() && rootGroup.findVariable("PHB").isPresent()
+        && rootGroup.findVariable("P").isPresent() && rootGroup.findVariable("PB").isPresent()) {
+
+      // public Optional<CoordinateAxis.Builder> findZAxis(CoordinateSystem.Builder csys) {
+      // any cs with a vertical coordinate with no units gets one
+      for (CoordinateSystem.Builder cs : coords.coordSys) {
+        coords.findAxisByType(cs, AxisType.GeoZ).ifPresent(axis -> {
+          String units = axis.getUnits();
+          if ((units == null) || (units.trim().isEmpty())) {
+            // LOOK each cs might have seperate ct; but they might be identical....
+            VerticalCTBuilder vctb = new WRFEtaTransformBuilder(coords, cs);
+            coords.addVerticalCTBuilder(vctb);
+            cs.addCoordinateTransformByName(vctb.getTransformName());
+            parseInfo.format("***Added WRFEtaTransformBuilderto '%s'%n", cs.coordAxesNames);
+          }
+        });
+      }
+    }
+  }
 
 }
 

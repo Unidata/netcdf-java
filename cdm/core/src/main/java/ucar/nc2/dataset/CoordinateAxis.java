@@ -465,7 +465,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
-    protected AxisType axisType;
+    public AxisType axisType;
     protected String positive;
     protected String boundaryRef;
     protected boolean isContiguous = true;

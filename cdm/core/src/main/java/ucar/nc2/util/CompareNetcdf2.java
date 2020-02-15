@@ -358,8 +358,8 @@ public class CompareNetcdf2 {
       VariableEnhanced copye = (VariableEnhanced) copy;
 
       for (CoordinateSystem cs1 : orge.getCoordinateSystems()) {
-        CoordinateSystem cs2 =
-            copye.getCoordinateSystems().stream().filter(cs -> cs.equals(cs1)).findFirst().orElse(null);
+        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
         if (cs2 == null) {
           f.format("  ** Cant find CoordinateSystem '%s' in file2 var %s %n", cs1.getName(), org.getShortName());
         } else {

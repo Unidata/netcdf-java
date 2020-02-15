@@ -9,6 +9,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.util.CancelTask;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -793,6 +794,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
+  // LOOK BAD MUTABLE
   void setCoordinateSystems(CoordinatesHelper coords) {
     for (String name : this.coordSysNames) {
       coords.findCoordSystem(name).ifPresent(cs -> this.enhanceProxy.addCoordinateSystem(cs));

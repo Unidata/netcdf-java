@@ -1,12 +1,10 @@
 package ucar.nc2.internal.dataset;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +21,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.conv.CF1Convention;
 import ucar.nc2.internal.dataset.conv.DefaultConventions;
-import ucar.nc2.internal.dataset.conv.MADISStation;
 import ucar.nc2.internal.ncml.NcMLReaderNew;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
@@ -59,6 +56,8 @@ public class CoordSystemFactory {
     registerConvention(_Coordinate.Convention, new CoordSystemBuilder.Factory());
     registerConvention("CF-1.", new CF1Convention.Factory(), String::startsWith);
     registerConvention("CDM-Extended-CF", new CF1Convention.Factory());
+    // this is to test DefaultConventions, not needed when we remove old convention builders.
+    registerConvention("MARS", new DefaultConventions.Factory());
   }
 
   /**

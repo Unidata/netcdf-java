@@ -208,8 +208,8 @@ public class NUWGConvention extends CoordSystemBuilder {
       } // 2
     } // loop over dims
 
-    if (grib.ct != null) {
-      VariableDS.Builder v = makeCoordinateTransformVariable(grib.ct);
+    if (grib.projectionCT != null) {
+      VariableDS.Builder v = makeCoordinateTransformVariable(grib.projectionCT);
       v.addAttribute(new Attribute(_Coordinate.Axes, xaxisName + " " + yaxisName));
       rootGroup.addVariable(v);
     }
@@ -271,11 +271,11 @@ public class NUWGConvention extends CoordSystemBuilder {
 
   @Override
   protected void makeCoordinateTransforms() {
-    if ((grib != null) && (grib.ct != null)) {
-      VarProcess vp = findVarProcess(grib.ct.getName(), null);
+    if ((grib != null) && (grib.projectionCT != null)) {
+      VarProcess vp = findVarProcess(grib.projectionCT.getName(), null);
       if (vp != null) {
         vp.isCoordinateTransform = true;
-        vp.ct = CoordinateTransform.builder().setPreBuilt(grib.ct);
+        vp.ct = CoordinateTransform.builder().setPreBuilt(grib.projectionCT);
         coords.addCoordinateTransform(vp.ct);
       }
     }
@@ -470,7 +470,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   private class Grib1 {
     private String grid_name;
     private int grid_code;
-    private ProjectionCT ct;
+    private ProjectionCT projectionCT;
 
     private int nx, ny;
     private double startx, starty;
@@ -486,9 +486,9 @@ public class NUWGConvention extends CoordSystemBuilder {
       if (0 == grid_code)
         processLatLonProjection();
       else if (3 == grid_code)
-        ct = makeLCProjection();
+        projectionCT = makeLCProjection();
       else if (5 == grid_code)
-        ct = makePSProjection();
+        projectionCT = makePSProjection();
       else
         throw new IllegalArgumentException("NUWGConvention: unknown grid_code= " + grid_code);
 
