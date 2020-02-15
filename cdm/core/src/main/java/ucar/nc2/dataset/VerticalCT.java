@@ -5,11 +5,13 @@
 
 package ucar.nc2.dataset;
 
+import java.util.List;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.nc2.Dimension;
 import javax.annotation.concurrent.Immutable;
+import ucar.unidata.util.Parameter;
 
 
 /**
@@ -65,6 +67,12 @@ public class VerticalCT extends CoordinateTransform {
     }
   }
 
+  protected VerticalCT(String name, String authority, VerticalCT.Type type, List<Parameter> params) {
+    super(name, authority, TransformType.Vertical, params);
+    this.type = type;
+    this.transformBuilder = null;
+  }
+
   /**
    * Create a Vertical Coordinate Transform.
    *
@@ -102,14 +110,14 @@ public class VerticalCT extends CoordinateTransform {
   }
 
   /**
-   * Use the builder to make the Vertical Transform function
+   * Make the Vertical Transform function
    *
    * @param ds containing dataset
    * @param timeDim time Dimension
    * @return VerticalTransform
-   * @see VertTransformBuilderIF#makeMathTransform
    */
   public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
+    // LOOK This is a VerticalTransform.Builder, not a VerticalCT.builder
     return transformBuilder.makeMathTransform(ds, timeDim, this);
   }
 
@@ -117,7 +125,9 @@ public class VerticalCT extends CoordinateTransform {
    * get the CoordTransBuilderIF
    *
    * @return builder
+   * @deprecated do not use
    */
+  @Deprecated
   public VertTransformBuilderIF getTransformBuilder() {
     return transformBuilder;
   }
@@ -126,11 +136,6 @@ public class VerticalCT extends CoordinateTransform {
   public String toString() {
     return "VerticalCT {" + "type=" + type + ", builder=" + transformBuilder.getTransformName() + '}';
   }
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // inner class VerticalCT.Type
-  // private static final java.util.Map<String,Type> hash = new java.util.HashMap<>(10);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO Make these final and immutable

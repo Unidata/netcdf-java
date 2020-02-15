@@ -15,4 +15,5 @@ ucar.nc2.internal.dataset.conv.Nimbus$Factory
 ucar.nc2.internal.dataset.conv.NUWGConvention$Factory
 ucar.nc2.internal.dataset.conv.Suomi$Factory
 ucar.nc2.internal.dataset.conv.UnidataObsConvention$Factory
+ucar.nc2.internal.dataset.conv.WRFConvention$Factory
 ucar.nc2.internal.dataset.conv.ZebraConvention$Factory

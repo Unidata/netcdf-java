@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Formatter;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -14,13 +15,30 @@ import java.util.List;
 
 /**
  * A CoordinateTransform is an abstraction of a function from a CoordinateSystem to a
- * "reference" CoordinateSystem, such as lat, lon.
+ * "reference" CoordinateSystem.
  *
- * @author caron
+ * CoordinateTransform is the superclass for ProjectionCT and VerticalCT.
+ * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable" which
+ * is just a container for the Transform parameters.
+ * LOOK this should be abstract.
  */
-
 @ThreadSafe
 public class CoordinateTransform implements Comparable<CoordinateTransform> {
+  /**
+   * Create a Coordinate Transform.
+   *
+   * @param name name of transform, must be unique within the Coordinate System.
+   * @param authority naming authority
+   * @param transformType type of transform.
+   * @param params list of Parameters.
+   */
+  public CoordinateTransform(String name, String authority, TransformType transformType, List<Parameter> params) {
+    this.name = name;
+    this.authority = authority;
+    this.transformType = transformType;
+    this.params = ImmutableList.copyOf(params);
+  }
+
   /**
    * Create a Coordinate Transform.
    *
@@ -150,7 +168,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
   protected List<Parameter> params;
   private AttributeContainerMutable attributeContainer;
 
-  // not needed?
+  // LOOK this is wrong, should create a ProjectionCT or a VerticalCT.
   protected CoordinateTransform(Builder<?> builder, NetcdfDataset ncd) {
     this.name = builder.name;
     this.authority = builder.authority;

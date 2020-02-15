@@ -13,6 +13,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -356,6 +357,11 @@ public class DefaultConventions extends CoordSystemBuilder {
     @Nullable
     public String getConventionName() {
       return null;
+    }
+
+    public boolean isMine(NetcdfFile ncfile) {
+      // this is to test DefaultConventions, not needed when we remove old convention builders.
+      return ncfile.getLocation().endsWith("amsr-avhrr-v2.20040729.nc");
     }
 
     @Override
