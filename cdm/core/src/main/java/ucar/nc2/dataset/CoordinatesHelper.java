@@ -15,7 +15,10 @@ import javax.annotation.concurrent.Immutable;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 
-/** A helper class for NetcdfDataset to build and manage coordinates */
+/**
+ * A helper class for NetcdfDataset to build and manage coordinates.
+ * Probably want to move to ucar.nc2.internal.dataset, so its not part of the public API.
+ */
 @Immutable
 public class CoordinatesHelper {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
