@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.iosp.bufr.tables;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
 
 /**
  * Read WMO BUFR XML formats
@@ -54,10 +55,10 @@ public class WmoXmlReader {
         return new String[] {"Exporting_BUFRTableD_E", "ElementName1"};
 
       } else if (this == BUFR_15_1_1) {
-        return new String[] {"Exp_BUFRTableD_E", "ElementName_E"};
+        return new String[] {"Exp_BUFRTableD_E", "ElementName_E", "ExistingElementName_E"};
 
       } else if (this == BUFR_16_0_0) {
-        return new String[] {"Exp_BUFRTableD_E", "ElementName_E"};
+        return new String[] {"Exp_BUFRTableD_E", "ElementName_E", "ExistingElementName_E"};
 
       } else if (this == BUFR_WMO) {
         return new String[] {null, "ElementName_en"};
@@ -184,27 +185,25 @@ public class WmoXmlReader {
 
     Element root = doc.getRootElement();
 
-    String[] elems = null;
-    for (Version v : Version.values()) {
-      elems = v.getElemNamesB();
-      List<Element> featList = root.getChildren(elems[0]);
-      if (featList != null && !featList.isEmpty()) {
-        break;
-      }
-    }
+    // what elements do we need to parse tableB?
+    String[] elems = elementsUsedFromTableB(root);
 
-    // if not found using element name, assume its BUFR_WMO
-    if (elems == null) {
-      elems = Version.BUFR_WMO.getElemNamesB();
-    }
-
+    List<Element> unrecognizedSequenceTermElements = new ArrayList<>();
     List<Element> featList = root.getChildren();
     for (Element elem : featList) {
-      Element ce = elem.getChild(elems[1]);
-      if (ce == null)
+      Element ce = null;
+      for (int nameTest = 1; nameTest < elems.length; nameTest++) {
+        ce = elem.getChild(elems[nameTest]);
+        if (ce != null) {
+          break;
+        }
+      }
+      if (ce == null) {
+        unrecognizedSequenceTermElements.add(elem);
         continue;
+      }
 
-      String name = Util.cleanName(elem.getChildTextNormalize(elems[1]));
+      String name = Util.cleanName(ce.getTextNormalize());
       String units = cleanUnit(elem.getChildTextNormalize("BUFR_Unit"));
       int x = 0, y = 0, scale = 0, reference = 0, width = 0;
 
@@ -243,6 +242,11 @@ public class WmoXmlReader {
 
       b.addDescriptor((short) x, (short) y, scale, reference, width, name, units, null);
     }
+
+    if (log.isDebugEnabled()) {
+      logUnrecognizedElements(unrecognizedSequenceTermElements, "B", b.getLocation());
+    }
+
     ios.close();
   }
 
@@ -253,6 +257,66 @@ public class WmoXmlReader {
   public static String cleanUnit(String unit) {
     String result = StringUtil2.remove(unit, 176);
     return StringUtil2.replace(result, (char) 65533, "2"); // seems to be a superscript 2 in some language
+  }
+
+  static String[] elementsUsedFromTableD(Element root) {
+    return elementsUsedFromTable(root, "D");
+  }
+
+  static String[] elementsUsedFromTableB(Element root) {
+    return elementsUsedFromTable(root, "B");
+  }
+
+  static String[] elementsUsedFromTable(Element root, String tableType) {
+    String[] elems = null;
+    // does the table have its own enum value? If so, use it.
+    for (Version v : Version.values()) {
+      boolean match = root.getAttributes().stream().anyMatch(attr -> attr.getValue().contains(v.toString()));
+      if (match) {
+        elems = tableType.equals("B") ? v.getElemNamesB() : v.getElemNamesD();
+        break;
+      }
+    }
+
+    // exact table match not found. Try seeing if the table uses
+    // the sequence element from a version defined in the Version enum.
+    // Note: will stop on the first version that works, as defined by
+    // the order of the Version enum. might not be correct.
+    if (elems == null) {
+      for (Version v : Version.values()) {
+        elems = tableType.equals("B") ? v.getElemNamesB() : v.getElemNamesD();
+        List<Element> featList = null;
+        if ((elems != null) && (elems.length > 0)) {
+          featList = root.getChildren(elems[0]);
+        }
+        if (featList != null && !featList.isEmpty()) {
+          break;
+        }
+      }
+    }
+
+    return elems;
+  }
+
+  static void logUnrecognizedElements(List<Element> unrecognizedSequenceTermElements, String tableType,
+      String location) {
+    // not every sequence entry in the WMO xml table D files is processed. This has caused trouble before.
+    // this is a pretty specific, low level debug message to hopefully give a clue to us in the future
+    // that if we are having trouble decoding BUFR messages, maybe we're not fully parsing the WMO xml TableD
+    // entries, and so the sequence being used might not be the full sequence necessary to decode.
+    if (log.isDebugEnabled()) {
+      if (unrecognizedSequenceTermElements.size() > 0) {
+        StringBuilder msgBuilder = new StringBuilder();
+        msgBuilder.append(String.format("%d Unprocessed sequences in WMO table %s %s",
+            unrecognizedSequenceTermElements.size(), tableType, location));
+        if (tableType.equals("D")) {
+          String tableDChecker = "bufr/src/test/java/ucar/nc2/iosp/bufr/tables/WmoTableDVariations.java";
+          msgBuilder
+              .append(String.format("This might be ok, but to know for sure, consider running %s", tableDChecker));
+        }
+        log.debug(msgBuilder.toString());
+      }
+    }
   }
 
   /*
@@ -340,24 +404,23 @@ public class WmoXmlReader {
 
     Element root = doc.getRootElement();
 
-    String[] elems = null;
-    for (Version v : Version.values()) {
-      elems = v.getElemNamesD();
-      List<Element> featList = root.getChildren(elems[0]);
-      if (featList != null && !featList.isEmpty()) {
-        break;
-      }
-    }
-
-    if (elems == null) {
-      elems = Version.BUFR_WMO.getElemNamesD();
-    }
-
+    // what elements do we need to parse tableD?
+    String[] elems = elementsUsedFromTableD(root);
+    List<Element> unrecognizedSequenceTermElements = new ArrayList<>();
     List<Element> featList = root.getChildren();
     for (Element elem : featList) {
-      Element ce = elem.getChild(elems[1]);
-      if (ce == null)
+      // see if element in table is recognized
+      Element ce = null;
+      for (int nameTest = 1; nameTest < elems.length; nameTest++) {
+        ce = elem.getChild(elems[nameTest]);
+        if (ce != null) {
+          break;
+        }
+      }
+      if (ce == null) {
+        unrecognizedSequenceTermElements.add(elem);
         continue;
+      }
 
       String seqs = elem.getChildTextNormalize("FXY1");
       int seq = Integer.parseInt(seqs);
@@ -366,7 +429,7 @@ public class WmoXmlReader {
         int y = seq % 1000;
         int w = seq / 1000;
         int x = w % 100;
-        String seqName = Util.cleanName(elem.getChildTextNormalize(elems[1]));
+        String seqName = Util.cleanName(ce.getTextNormalize());
         currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<>());
         currSeqno = seq;
       }
@@ -380,6 +443,11 @@ public class WmoXmlReader {
       int fxy = (f << 14) + (x << 8) + y;
       currDesc.addFeature((short) fxy);
     }
+
+    if (log.isDebugEnabled()) {
+      logUnrecognizedElements(unrecognizedSequenceTermElements, "D", tableD.getLocation());
+    }
+
     ios.close();
   }
 
