@@ -361,7 +361,8 @@ public class DefaultConventions extends CoordSystemBuilder {
 
     public boolean isMine(NetcdfFile ncfile) {
       // this is to test DefaultConventions, not needed when we remove old convention builders.
-      return ncfile.getLocation().endsWith("amsr-avhrr-v2.20040729.nc");
+      // return ncfile.getLocation().endsWith("amsr-avhrr-v2.20040729.nc");
+      return false;
     }
 
     @Override

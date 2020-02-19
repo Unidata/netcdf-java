@@ -791,6 +791,13 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode).setUnits(this.enhanceProxy.units)
         .setDesc(this.enhanceProxy.desc);
+    // wrapping in ncml doesnt enhance
+    if (builder.units == null && this.orgVar != null) {
+      builder.setUnits(this.orgVar.getUnitsString());
+    }
+    if (builder.desc == null && this.orgVar != null) {
+      builder.setDesc(this.orgVar.getDescription());
+    }
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 

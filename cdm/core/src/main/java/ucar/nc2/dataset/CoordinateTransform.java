@@ -32,7 +32,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
    * @param transformType type of transform.
    * @param params list of Parameters.
    */
-  public CoordinateTransform(String name, String authority, TransformType transformType, List<Parameter> params) {
+  protected CoordinateTransform(String name, String authority, TransformType transformType, List<Parameter> params) {
     this.name = name;
     this.authority = authority;
     this.transformType = transformType;

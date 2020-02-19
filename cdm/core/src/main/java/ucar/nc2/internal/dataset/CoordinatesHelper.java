@@ -207,7 +207,7 @@ public class CoordinatesHelper {
       return new CoordinatesHelper(this, ncd);
     }
 
-    // Check if this Coordinate System is complete for v, ie its dimensions match v.
+    // Check if this Coordinate System is complete for v, ie if v dimesnsions are a subset..
     public boolean isComplete(CoordinateSystem.Builder<?> cs, VariableDS.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(vb);
@@ -216,8 +216,8 @@ public class CoordinatesHelper {
       Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionNames().iterator());
       HashSet<String> csDomain = new HashSet<>();
       getAxesForSystem(cs).forEach(axis -> axis.getDimensionNames().forEach(csDomain::add));
-      return varDomain.equals(csDomain);
-    }
+      return CoordinateSystem.isSubset(varDomain, csDomain);
+      }
 
     public boolean containsAxes(CoordinateSystem.Builder cs, List<CoordinateAxis.Builder> dataAxes) {
       Preconditions.checkNotNull(cs);

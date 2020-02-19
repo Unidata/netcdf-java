@@ -5,6 +5,8 @@
 
 package ucar.nc2.ui.op;
 
+import static ucar.nc2.util.CompareNetcdf2.IDENTITY_FILTER;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -315,7 +317,7 @@ public class DatasetViewer extends JPanel {
           return;
         Variable ov = compareFile.findVariable(org.getFullNameEscaped());
         if (ov != null)
-          cn.compareVariable(org, ov);
+          cn.compareVariable(org, ov, IDENTITY_FILTER);
       }
 
       infoTA.setText(f.toString());

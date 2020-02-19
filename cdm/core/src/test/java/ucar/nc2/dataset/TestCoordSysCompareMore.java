@@ -72,11 +72,15 @@ public class TestCoordSysCompareMore {
       }
     }
   }
-
   public static class CoordsObjFilter implements ObjFilter {
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
+    }
+
+    @Override
+    public boolean compareCoordinateTransform(CoordinateTransform ct1, CoordinateTransform ct2) {
+      return ct2.getName().startsWith(ct1.getName());
     }
   }
 

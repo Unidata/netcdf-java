@@ -19,7 +19,26 @@ import ucar.nc2.internal.ncml.NcMLReaderNew;
 import ucar.nc2.util.CancelTask;
 
 public class CEDRICRadarConvention extends CF1Convention {
-  private static final String CONVENTION_NAME = "ATDRadar";
+  private static final String CONVENTION_NAME = "CEDRICRadar";
+
+  public static class Factory implements CoordSystemBuilderFactory {
+    @Override
+    public String getConventionName() {
+      return CONVENTION_NAME;
+    }
+
+    @Override
+    public boolean isMine(NetcdfFile ncfile) {
+      Dimension s = ncfile.findDimension("cedric_general_scaling_factor");
+      Variable v = ncfile.findVariable("cedric_run_date");
+      return v != null && s != null;
+    }
+
+    @Override
+    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+      return new CEDRICRadarConvention(datasetBuilder);
+    }
+  }
 
   CEDRICRadarConvention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
@@ -45,24 +64,6 @@ public class CEDRICRadarConvention extends CF1Convention {
     super.augmentDataset(cancelTask);
   }
 
-  public static class Factory implements CoordSystemBuilderFactory {
-    @Override
-    public String getConventionName() {
-      return CONVENTION_NAME;
-    }
-
-    @Override
-    public boolean isMine(NetcdfFile ncfile) {
-      Dimension s = ncfile.findDimension("cedric_general_scaling_factor");
-      Variable v = ncfile.findVariable("cedric_run_date");
-      return v != null && s != null;
-    }
-
-    @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
-      return new CEDRICRadarConvention(datasetBuilder);
-    }
-  }
 }
 
 

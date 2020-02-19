@@ -5,6 +5,8 @@
 
 package ucar.nc2.ui.op;
 
+import static ucar.nc2.util.CompareNetcdf2.IDENTITY_FILTER;
+
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -372,7 +374,7 @@ public class DatasetWriter extends JPanel {
         }
         Variable ov = compareFile.findVariable(org.getFullNameEscaped());
         if (ov != null) {
-          cn.compareVariable(org, ov);
+          cn.compareVariable(org, ov, IDENTITY_FILTER);
         }
       }
 
