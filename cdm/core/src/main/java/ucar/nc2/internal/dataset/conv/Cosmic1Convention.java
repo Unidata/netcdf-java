@@ -90,10 +90,10 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         double incr = (stop - start) / n;
 
         String timeUnits = "seconds since 1980-01-06 00:00:00";
-        Variable.Builder timeVar = VariableDS.builder().setName("time").setDataType(DataType.DOUBLE)
+        VariableDS.Builder timeVar = VariableDS.builder().setName("time").setDataType(DataType.DOUBLE)
             .setDimensionsByName(dim.getShortName()).setUnits(timeUnits);
         rootGroup.addVariable(timeVar);
-        timeVar.addAttribute(new Attribute(CDM.UNITS, timeUnits));
+        timeVar.setUnits(timeUnits);
         timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         int dir = gatts.findAttributeInteger("irs", 1);
         ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
@@ -159,11 +159,11 @@ public class Cosmic1Convention extends CoordSystemBuilder {
       // cal the dtheta based pm attributes
       double dtheta = gast(iyr, mon, iday, ihr, min, sec, t);
 
-      Variable.Builder tVar = rootGroup.findVariable("time").get();
+      VariableDS.Builder tVar = (VariableDS.Builder) rootGroup.findVariable("time").get();
       String timeUnits = "seconds since 1980-01-06 00:00:00"; // dtime.getUnit().toString();
       tVar.getAttributeContainer().removeAttributeIgnoreCase(CDM.VALID_RANGE);
       tVar.getAttributeContainer().removeAttributeIgnoreCase(CDM.UNITS);
-      tVar.addAttribute(new Attribute(CDM.UNITS, timeUnits));
+      tVar.setUnits(timeUnits);
       tVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
       VariableDS.Builder xLeoVar = (VariableDS.Builder) rootGroup.findVariable("xLeo").get();

@@ -182,8 +182,9 @@ public class WRFConvention extends CoordSystemBuilder {
       att = v.getAttributeContainer().findAttributeIgnoreCase(CDM.UNITS);
       if (att != null) {
         String units = att.getStringValue();
-        if (units != null)
-          v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
+        if (units != null) {
+          ((VariableDS.Builder) v).setUnits(normalize(units));
+        }
       }
     }
 
@@ -207,7 +208,7 @@ public class WRFConvention extends CoordSystemBuilder {
           glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glat.setDimensionsByName("south_north west_east");
         glat.setCachedData(convertToDegrees(glat), false);
-        glat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+        ((VariableDS.Builder)glat).setUnits(CDM.LAT_UNITS);
       }
 
       Optional<Variable.Builder<?>> glonOpt = rootGroup.findVariable("GLON");
@@ -220,7 +221,7 @@ public class WRFConvention extends CoordSystemBuilder {
           glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glon.setDimensionsByName("south_north west_east");
         glon.setCachedData(convertToDegrees(glon), false);
-        glon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+        ((VariableDS.Builder)glon).setUnits(CDM.LON_UNITS);
       }
 
       // Make coordinate system variable
@@ -273,12 +274,12 @@ public class WRFConvention extends CoordSystemBuilder {
           // Make copy because we will add new elements to it.
           for (Variable.Builder v : ImmutableList.copyOf(rootGroup.vbuilders)) {
             if (v.shortName.startsWith("XLAT")) {
+              v = removeConstantTimeDim(v);
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-              removeConstantTimeDim(v);
 
             } else if (v.shortName.startsWith("XLONG")) {
+              v = removeConstantTimeDim(v);
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-              removeConstantTimeDim(v);
 
             } else if (v.shortName.equals("T")) { // ANOTHER MAJOR KLUDGE to pick up 4D fields
               v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z"));
@@ -339,7 +340,7 @@ public class WRFConvention extends CoordSystemBuilder {
     datasetBuilder.replaceCoordinateAxis(rootGroup, makeSoilDepthCoordAxis("ZS"));
   }
 
-  private void removeConstantTimeDim(Variable.Builder<?> vb) {
+  private VariableDS.Builder<?> removeConstantTimeDim(Variable.Builder<?> vb) {
     VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;
     Variable v = vds.orgVar;
     int[] shape = v.getShape();
@@ -349,11 +350,13 @@ public class WRFConvention extends CoordSystemBuilder {
         view = v.slice(0, 0);
       } catch (InvalidRangeException e) {
         parseInfo.format("Cant remove first dimension in variable %s", v);
-        return;
+        return vds;
       }
       VariableDS.Builder<?> vbnew = VariableDS.builder().copyFrom(view);
       rootGroup.replaceVariable(vbnew);
+      return vbnew;
     }
+    return vds;
   }
 
   private Array convertToDegrees(Variable.Builder<?> vb) {
@@ -431,7 +434,7 @@ public class WRFConvention extends CoordSystemBuilder {
     if (vname.equalsIgnoreCase("time") || vname.equalsIgnoreCase("times"))
       return AxisType.Time;
 
-    String unit = v.units;
+    String unit = v.getUnits();
     if (unit != null) {
       if (SimpleUnit.isCompatible("millibar", unit))
         return AxisType.Pressure;
@@ -733,7 +736,7 @@ public class WRFConvention extends CoordSystemBuilder {
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // soil depth gets larger as you go down
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
-    v.addAttribute(new Attribute(CDM.UNITS, CDM.UNITS));
+    v.setUnits(CDM.UNITS);
     if (!v.shortName.equals(soilDim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getShortName()));
 

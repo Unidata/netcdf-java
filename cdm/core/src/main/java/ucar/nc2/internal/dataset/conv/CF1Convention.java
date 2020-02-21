@@ -397,7 +397,6 @@ public class CF1Convention extends CSMConvention {
    */
   @Override
   public AxisType getAxisType(VariableDS.Builder vb) {
-
     // standard names for unitless vertical coords
     String sname = vb.getAttributeContainer().findAttValueIgnoreCase(CF.STANDARD_NAME, null);
     if (sname != null) {
@@ -453,7 +452,7 @@ public class CF1Convention extends CSMConvention {
     String axis = vb.getAttributeContainer().findAttValueIgnoreCase(CF.AXIS, null);
     if (axis != null) {
       axis = axis.trim();
-      String unit = vb.units;
+      String unit = vb.getUnits();
 
       if (axis.equalsIgnoreCase("X")) {
         if (SimpleUnit.isCompatible("m", unit)) {
@@ -486,7 +485,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     try {
-      String units = vb.units;
+      String units = vb.getUnits();
       CalendarDateUnit cd = CalendarDateUnit.of(null, units);
       // parsed successfully, what could go wrong?
       return AxisType.Time;

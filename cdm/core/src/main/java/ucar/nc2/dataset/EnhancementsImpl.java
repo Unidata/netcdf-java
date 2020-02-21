@@ -117,6 +117,9 @@ class EnhancementsImpl implements Enhancements {
    * @param units unit string
    */
   public void setUnitsString(String units) {
+    if (units != null) {
+      units = units.trim();
+    }
     this.units = units;
     forVar.addAttribute(new Attribute(CDM.UNITS, units));
   }

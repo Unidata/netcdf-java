@@ -106,7 +106,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     // look for time axes based on units
     if (map.get(AxisType.Time) == null) {
       for (VarProcess vp : varList) {
-        String unit = vp.vb.units;
+        String unit = vp.vb.getUnits();
         if (unit != null && SimpleUnit.isDateUnit(unit)) {
           vp.isCoordinateAxis = true;
           map.put(AxisType.Time, vp);
@@ -176,11 +176,11 @@ public class DefaultConventions extends CoordSystemBuilder {
     if (vname == null) {
       return null;
     }
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       unit = "";
     }
-    String desc = vb.desc;
+    String desc = vb.getDescription();
     if (desc == null) {
       desc = "";
     }
@@ -257,8 +257,7 @@ public class DefaultConventions extends CoordSystemBuilder {
   // we assume that coordinate axes get identified by being coordinate variables
   @Nullable
   private AxisType getAxisTypeCoards(VariableDS.Builder vb) {
-
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       return null;
     }

@@ -30,7 +30,7 @@ class CSMConvention extends CoardsConventions {
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
     for (Variable.Builder vb : rootGroup.vbuilders) {
       VariableDS.Builder vds = (VariableDS.Builder) vb;
-      String unit = vds.units;
+      String unit = vds.getUnits();
       if (unit != null && (unit.equalsIgnoreCase("hybrid_sigma_pressure") || unit.equalsIgnoreCase("sigma_level"))) {
         // both a coordinate axis and transform
         vds.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));

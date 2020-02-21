@@ -164,7 +164,7 @@ public class NUWGConvention extends CoordSysBuilder {
             if (units != null) {
               units = StringUtil2.remove(units, '(');
               units = StringUtil2.remove(units, ')');
-              ncvar.addAttribute(new Attribute(CDM.UNITS, units));
+              ((VariableDS)ncvar).setUnitsString(units);
             }
           } else {
             parseInfo.format("Couldnt add referential coordAxis = %s%n", ncvar.getFullName());

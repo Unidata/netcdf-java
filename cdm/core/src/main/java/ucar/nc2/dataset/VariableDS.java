@@ -61,7 +61,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + shortName);
 
     if (units != null)
-      addAttribute(new Attribute(CDM.UNITS, units));
+      addAttribute(new Attribute(CDM.UNITS, units.trim()));
     if (desc != null)
       addAttribute(new Attribute(CDM.LONG_NAME, desc));
 
@@ -135,6 +135,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.enhanceProxy = new EnhancementsImpl(this);
     if (enhance) {
       enhance(NetcdfDataset.getDefaultEnhanceMode());
+    }
+
+    // Add this so that old VariableDS units agrees with new VariableDS units.
+    String units = orgVar.getUnitsString();
+    if (units != null) {
+      setUnitsString(units.trim());
     }
   }
 
@@ -756,13 +762,17 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   protected VariableDS(Builder<?> builder) {
     super(builder);
+
     this.enhanceMode = builder.enhanceMode;
     this.orgVar = builder.orgVar;
     this.orgDataType = builder.orgDataType;
     this.orgName = builder.orgName;
 
+    // Make sure that units has been trimmed
+    builder.setUnits(builder.getUnits());
+
     this.orgFileTypeId = builder.orgFileTypeId;
-    this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.desc);
+    this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.getDescription());
     this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this);
     this.scaleMissingUnsignedProxy.setFillValueIsMissing(builder.fillValueIsMissing);
     this.scaleMissingUnsignedProxy.setInvalidDataIsMissing(builder.invalidDataIsMissing);
@@ -791,13 +801,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode).setUnits(this.enhanceProxy.units)
         .setDesc(this.enhanceProxy.desc);
-    // wrapping in ncml doesnt enhance
-    if (builder.units == null && this.orgVar != null) {
-      builder.setUnits(this.orgVar.getUnitsString());
-    }
-    if (builder.desc == null && this.orgVar != null) {
-      builder.setDesc(this.orgVar.getDescription());
-    }
+
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -830,8 +834,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     public DataType orgDataType; // keep separate for the case where there is no orgVar.
     public String orgFileTypeId; // the original fileTypeId.
     String orgName; // in case Variable was renamed, and we need to keep track of the original name
-    public String units;
-    public String desc;
+    private String units;
+    private String desc;
     public List<String> coordSysNames = new ArrayList<>();
 
     private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
@@ -872,14 +876,11 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return self();
     }
 
-    public String getUnits() {
-      return units;
-    }
-
     public T setUnits(String units) {
       this.units = units;
       if (units != null) {
-        addAttribute(new Attribute(CDM.UNITS, units));
+        this.units = units.trim();
+        addAttribute(new Attribute(CDM.UNITS, this.units));
       }
       return self();
     }
@@ -918,8 +919,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       setOriginalDataType(orgVar.getDataType());
       setOriginalName(orgVar.getShortName());
 
-      // We need units during build.
-      this.units = getUnitsString(orgVar);
       this.orgFileTypeId = orgVar.getFileTypeId();
       return self();
     }
@@ -942,12 +941,24 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return self();
     }
 
-    private String getUnitsString(Variable orgVar) {
+    public String getUnits() {
       String result = units;
-      if ((result == null) && (orgVar != null)) {
-        Attribute att = orgVar.attributes().findAttributeIgnoreCase(CDM.UNITS);
-        if ((att != null) && att.isString())
-          result = att.getStringValue();
+      if (result == null) {
+        result = getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, null);
+      }
+      if (result == null && orgVar != null) {
+        result = orgVar.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
+      }
+      return (result == null) ? null : result.trim();
+    }
+
+    public String getDescription() {
+      String result = desc;
+      if (result == null) {
+        result = getAttributeContainer().findAttValueIgnoreCase(CDM.LONG_NAME, null);
+      }
+      if (result == null && orgVar != null) {
+        result = orgVar.attributes().findAttValueIgnoreCase(CDM.LONG_NAME, null);
       }
       return (result == null) ? null : result.trim();
     }
