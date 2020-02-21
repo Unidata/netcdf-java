@@ -217,7 +217,7 @@ public class CoordinatesHelper {
       HashSet<String> csDomain = new HashSet<>();
       getAxesForSystem(cs).forEach(axis -> axis.getDimensionNames().forEach(csDomain::add));
       return CoordinateSystem.isSubset(varDomain, csDomain);
-      }
+    }
 
     public boolean containsAxes(CoordinateSystem.Builder cs, List<CoordinateAxis.Builder> dataAxes) {
       Preconditions.checkNotNull(cs);

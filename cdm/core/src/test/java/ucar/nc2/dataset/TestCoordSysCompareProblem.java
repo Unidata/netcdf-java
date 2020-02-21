@@ -40,9 +40,8 @@ public class TestCoordSysCompareProblem {
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f,  false, false, true);
-        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(),
-            false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(), false, false, true);
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
         System.out.printf("new = %s%n",

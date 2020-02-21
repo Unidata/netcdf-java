@@ -6,7 +6,6 @@
 package ucar.nc2.ui.op;
 
 import static ucar.nc2.util.CompareNetcdf2.IDENTITY_FILTER;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;

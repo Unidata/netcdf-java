@@ -208,7 +208,7 @@ public class WRFConvention extends CoordSystemBuilder {
           glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glat.setDimensionsByName("south_north west_east");
         glat.setCachedData(convertToDegrees(glat), false);
-        ((VariableDS.Builder)glat).setUnits(CDM.LAT_UNITS);
+        ((VariableDS.Builder) glat).setUnits(CDM.LAT_UNITS);
       }
 
       Optional<Variable.Builder<?>> glonOpt = rootGroup.findVariable("GLON");
@@ -221,7 +221,7 @@ public class WRFConvention extends CoordSystemBuilder {
           glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glon.setDimensionsByName("south_north west_east");
         glon.setCachedData(convertToDegrees(glon), false);
-        ((VariableDS.Builder)glon).setUnits(CDM.LON_UNITS);
+        ((VariableDS.Builder) glon).setUnits(CDM.LON_UNITS);
       }
 
       // Make coordinate system variable

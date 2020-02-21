@@ -152,7 +152,8 @@ public class CompareNetcdf2 {
 
   public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter, boolean showCompare, boolean showEach,
       boolean compareData) {
-    if (filter == null) filter = IDENTITY_FILTER;
+    if (filter == null)
+      filter = IDENTITY_FILTER;
     this.compareData = compareData;
     this.showCompare = showCompare;
     this.showEach = showEach;
@@ -175,8 +176,8 @@ public class CompareNetcdf2 {
 
       // coordinate systems
       for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
-        CoordinateSystem cs2 =
-            copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName())).findFirst().orElse(null);
+        CoordinateSystem cs2 = copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
         if (cs2 == null) {
           ok = false;
           f.format("  ** Cant find CoordinateSystem '%s' in file2 %n", cs1.getName());
@@ -288,7 +289,7 @@ public class CompareNetcdf2 {
   }
 
 
-  public boolean compareVariable(Variable org, Variable copy , ObjFilter filter) {
+  public boolean compareVariable(Variable org, Variable copy, ObjFilter filter) {
     return compareVariables(org, copy, filter, compareData, true);
   }
 
@@ -377,7 +378,7 @@ public class CompareNetcdf2 {
       }
     }
 
-    // f.format("  Variable '%s' ok %s %n", org.getName(), ok);
+    // f.format(" Variable '%s' ok %s %n", org.getName(), ok);
     return ok;
   }
 
@@ -398,14 +399,15 @@ public class CompareNetcdf2 {
     }
 
     for (CoordinateTransform ct1 : cs1.getCoordinateTransforms()) {
-      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream().filter(ct -> filter.compareCoordinateTransform(ct1, ct))
-          .findFirst().orElse(null);
+      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream()
+          .filter(ct -> filter.compareCoordinateTransform(ct1, ct)).findFirst().orElse(null);
       if (ct2 == null) {
         ok = false;
         f.format("  ** Cant find transform %s in file2 %n", ct1.getName());
       } else {
         boolean ctOk = filter.compareCoordinateTransform(ct1, ct2);
-        if (!ctOk) f.format("  ** compareCoordinateTransform failed on ct %s for cs %s %n", ct1.getName(), cs1.getName());
+        if (!ctOk)
+          f.format("  ** compareCoordinateTransform failed on ct %s for cs %s %n", ct1.getName(), cs1.getName());
         ok = ok && ctOk;
       }
     }

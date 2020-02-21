@@ -72,6 +72,7 @@ public class TestCoordSysCompareMore {
       }
     }
   }
+
   public static class CoordsObjFilter implements ObjFilter {
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {
