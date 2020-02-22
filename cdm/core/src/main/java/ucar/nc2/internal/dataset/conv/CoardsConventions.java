@@ -55,7 +55,7 @@ class CoardsConventions extends CoordSystemBuilder {
 
   boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
     boolean hasChanged = false;
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit != null) {
       unit = unit.trim();
       if (SimpleUnit.isDateUnit(unit)) {
@@ -85,7 +85,7 @@ class CoardsConventions extends CoordSystemBuilder {
   @Override
   @Nullable
   protected AxisType getAxisType(VariableDS.Builder vb) {
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       return null;
     }

@@ -101,11 +101,11 @@ public class IFPSConvention extends CoordSystemBuilder {
 
     // Figure out projection info. Assume the same for all variables
     VariableDS.Builder lonVar = (VariableDS.Builder) rootGroup.findVariable("longitude").get();
-    lonVar.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+    lonVar.setUnits(CDM.LON_UNITS);
     lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     VariableDS.Builder latVar = (VariableDS.Builder) rootGroup.findVariable("latitude").get();
+    latVar.setUnits(CDM.LAT_UNITS);
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    latVar.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
 
     projVar = latVar;
     String projName = projVar.getAttributeContainer().findAttValueIgnoreCase("projectionType", null);

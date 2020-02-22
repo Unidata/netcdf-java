@@ -11,7 +11,10 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Parameter;
 
-/** Create WRF Eta vertical transform. */
+/**
+ * Create WRF Eta vertical transform.
+ * This is different from other VertTransformBuilderIF because it is specific to a CoordinateSystem.
+ */
 public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
   private CoordinateSystem cs; // can we figure out cs from ds?
 
@@ -38,7 +41,7 @@ public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements 
     if (cs.getYaxis() != null)
       ct.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered(cs.getYaxis())));
     else
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered2(cs.getLonAxis(), 0)));
+      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered2(cs.getLatAxis(), 0)));
 
     ct.addParameter(new Parameter(WRFEta.IsStaggeredZ, "" + isStaggered(cs.getZaxis())));
 

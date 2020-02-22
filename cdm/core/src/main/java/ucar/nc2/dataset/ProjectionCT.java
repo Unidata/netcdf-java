@@ -6,15 +6,9 @@
 package ucar.nc2.dataset;
 
 import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.Immutable;
 
-/**
- * A Projection CoordinateTransform is a function from (GeoX, GeoY) -> (Lat, Lon).
- *
- * @author caron
- */
-
+/** A Projection CoordinateTransform has a Projection bijection (GeoX, GeoY) <-> (Lat, Lon). */
 @Immutable
 public class ProjectionCT extends CoordinateTransform {
 
@@ -26,12 +20,8 @@ public class ProjectionCT extends CoordinateTransform {
    * @param proj projection function.
    */
   public ProjectionCT(String name, String authority, ProjectionImpl proj) {
-    super(name, authority, TransformType.Projection);
+    super(name, authority, TransformType.Projection, proj.getProjectionParameters());
     this.projection = proj;
-
-    for (Parameter p : proj.getProjectionParameters()) {
-      addParameter(p);
-    }
   }
 
   /**
@@ -47,8 +37,6 @@ public class ProjectionCT extends CoordinateTransform {
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final ProjectionImpl projection;
 
-
-  // not needed?
   protected ProjectionCT(Builder<?> builder, NetcdfDataset ncd) {
     super(builder, ncd);
     this.projection = builder.projection;

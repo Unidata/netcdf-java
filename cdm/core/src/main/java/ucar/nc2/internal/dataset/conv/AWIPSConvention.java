@@ -138,7 +138,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     for (Variable.Builder v : rootGroup.vbuilders) {
       String units = v.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, null);
       if (units != null) {
-        v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
+        ((VariableDS.Builder) v).setUnits(normalize(units)); // removes the old
       }
     }
   }

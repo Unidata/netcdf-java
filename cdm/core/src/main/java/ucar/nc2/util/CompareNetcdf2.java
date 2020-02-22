@@ -25,6 +25,7 @@ import java.util.ArrayList;
  * @author john
  */
 public class CompareNetcdf2 {
+  public static final ObjFilter IDENTITY_FILTER = new ObjFilter() {};
 
   public interface ObjFilter {
     // if true, compare attribute, else skip comparision
@@ -40,6 +41,11 @@ public class CompareNetcdf2 {
     // if true, compare dimension, else skip comparision
     default boolean checkDimensionsForFile(String filename) {
       return true;
+    }
+
+    // if true, compare dimension, else skip comparision
+    default boolean compareCoordinateTransform(CoordinateTransform ct1, CoordinateTransform ct2) {
+      return ct1.equals(ct2);
     }
   }
 
@@ -146,6 +152,8 @@ public class CompareNetcdf2 {
 
   public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter, boolean showCompare, boolean showEach,
       boolean compareData) {
+    if (filter == null)
+      filter = IDENTITY_FILTER;
     this.compareData = compareData;
     this.showCompare = showCompare;
     this.showEach = showEach;
@@ -168,10 +176,11 @@ public class CompareNetcdf2 {
 
       // coordinate systems
       for (CoordinateSystem cs1 : orgds.getCoordinateSystems()) {
-        CoordinateSystem cs2 =
-            copyds.getCoordinateSystems().stream().filter(cs -> cs.equals(cs1)).findFirst().orElse(null);
+        CoordinateSystem cs2 = copyds.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
         if (cs2 == null) {
-          f.format("  ** Cant find CoordinateSystem=%s in file2 %n", cs1.getName());
+          ok = false;
+          f.format("  ** Cant find CoordinateSystem '%s' in file2 %n", cs1.getName());
         } else {
           ok &= compareCoordinateSystem(cs1, cs2, filter);
         }
@@ -235,7 +244,7 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    if (filter == null || filter.checkDimensionsForFile(org.getNetcdfFile().getLocation())) {
+    if (filter.checkDimensionsForFile(org.getNetcdfFile().getLocation())) {
       ok &= checkGroupDimensions(org, copy, "copy");
       ok &= checkGroupDimensions(copy, org, "org");
     }
@@ -280,8 +289,8 @@ public class CompareNetcdf2 {
   }
 
 
-  public boolean compareVariable(Variable org, Variable copy) {
-    return compareVariables(org, copy, null, compareData, true);
+  public boolean compareVariable(Variable org, Variable copy, ObjFilter filter) {
+    return compareVariables(org, copy, filter, compareData, true);
   }
 
   private boolean compareVariables(Variable org, Variable copy, ObjFilter filter, boolean compareData,
@@ -294,7 +303,7 @@ public class CompareNetcdf2 {
       f.format(" ** names are different %s != %s %n", org.getFullName(), copy.getFullName());
       ok = false;
     }
-    if (filter != null && filter.varDataTypeCheckOk(org) && (org.getDataType() != copy.getDataType())) {
+    if (filter.varDataTypeCheckOk(org) && (org.getDataType() != copy.getDataType())) {
       f.format(" ** %s dataTypes are different %s != %s %n", org.getFullName(), org.getDataType(), copy.getDataType());
       ok = false;
     }
@@ -358,19 +367,20 @@ public class CompareNetcdf2 {
       VariableEnhanced copye = (VariableEnhanced) copy;
 
       for (CoordinateSystem cs1 : orge.getCoordinateSystems()) {
-        CoordinateSystem cs2 =
-            copye.getCoordinateSystems().stream().filter(cs -> cs.equals(cs1)).findFirst().orElse(null);
+        CoordinateSystem cs2 = copye.getCoordinateSystems().stream().filter(cs -> cs.getName().equals(cs1.getName()))
+            .findFirst().orElse(null);
         if (cs2 == null) {
-          f.format("  ** Cant find CoordinateSystem '%s' in file2 var %s %n", cs1.getName(), org.getShortName());
+          ok = false;
+          f.format("  ** Cant find CoordinateSystem '%s' in file2 for var %s %n", cs1.getName(), org.getShortName());
         } else {
           ok &= compareCoordinateSystem(cs1, cs2, filter);
         }
       }
     }
 
+    // f.format(" Variable '%s' ok %s %n", org.getName(), ok);
     return ok;
   }
-
 
   private boolean compareCoordinateSystem(CoordinateSystem cs1, CoordinateSystem cs2, ObjFilter filter) {
     if (showCompare)
@@ -381,6 +391,7 @@ public class CompareNetcdf2 {
       CoordinateAxis ct2 = cs2.getCoordinateAxes().stream().filter(ct -> ct.getFullName().equals(ct1.getFullName()))
           .findFirst().orElse(null);
       if (ct2 == null) {
+        ok = false;
         f.format("  ** Cant find coordinateAxis %s in file2 %n", ct1.getFullName());
       } else {
         ok &= compareCoordinateAxis(ct1, ct2, filter);
@@ -388,12 +399,16 @@ public class CompareNetcdf2 {
     }
 
     for (CoordinateTransform ct1 : cs1.getCoordinateTransforms()) {
-      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream().filter(ct -> ct.getName().equals(ct1.getName()))
-          .findFirst().orElse(null);
+      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream()
+          .filter(ct -> filter.compareCoordinateTransform(ct1, ct)).findFirst().orElse(null);
       if (ct2 == null) {
+        ok = false;
         f.format("  ** Cant find transform %s in file2 %n", ct1.getName());
       } else {
-        ok &= ct1.equals(ct2);
+        boolean ctOk = filter.compareCoordinateTransform(ct1, ct2);
+        if (!ctOk)
+          f.format("  ** compareCoordinateTransform failed on ct %s for cs %s %n", ct1.getName(), cs1.getName());
+        ok = ok && ctOk;
       }
     }
 
@@ -404,7 +419,7 @@ public class CompareNetcdf2 {
     if (showCompare)
       f.format("  compare CoordinateAxis '%s' to '%s' %n", a1.getShortName(), a2.getShortName());
 
-    compareVariable(a1, a2);
+    compareVariable(a1, a2, filter);
     return true;
   }
 
@@ -419,12 +434,12 @@ public class CompareNetcdf2 {
 
     String name = v == null ? "global" : "variable " + v.getFullName();
     for (Attribute att1 : list1) {
-      if (filter == null || filter.attCheckOk(v, att1))
+      if (filter.attCheckOk(v, att1))
         ok &= checkEach(name, att1, "file1", list1, "file2", list2, null);
     }
 
     for (Attribute att2 : list2) {
-      if (filter == null || filter.attCheckOk(v, att2))
+      if (filter.attCheckOk(v, att2))
         ok &= checkEach(name, att2, "file2", list2, "file1", list1, null);
     }
 

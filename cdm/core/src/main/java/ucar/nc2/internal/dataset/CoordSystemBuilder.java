@@ -1,6 +1,7 @@
 package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.io.IOException;
@@ -24,7 +25,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.CoordinatesHelper;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
@@ -113,22 +113,20 @@ public class CoordSystemBuilder {
    * the variable. If char variable, last dimension is left out.
    *
    * @param axis check if this axis is ok for the given variable
-   * @param vb the given variable
+   * @param vp the given variable
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
-  private static boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VariableDS.Builder<?> vb) {
-    ImmutableSet<String> varDims = vb.getDimensionsAll();
-    ImmutableSet<String> axisDims = axis.getDimensionsAll();
+  protected boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VarProcess vp) {
+    ImmutableList<Dimension> varDims = vp.vb.getDimensions(vp.gb);
+    ImmutableList<Dimension> axisDims = axis.getDimensions(rootGroup);
 
-    /*
-     * LOOK a CHAR variable must really be a STRING, so leave out the last (string length) dimension
-     * int checkDims = axisDims.size();
-     * if (axis.dataType == DataType.CHAR) {
-     * checkDims--;
-     * }
-     */
+    // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
+    int checkDims = axisDims.size();
+    if (axis.dataType == DataType.CHAR)
+      checkDims--;
 
-    for (String axisDim : axisDims) {
+    for (int i = 0; i < checkDims; i++) {
+      Dimension axisDim = axisDims.get(i);
       if (!varDims.contains(axisDim)) {
         return false;
       }
@@ -500,7 +498,7 @@ public class CoordSystemBuilder {
       // look through all axes that fit
       List<CoordinateAxis.Builder> axisList = new ArrayList<>();
       for (CoordinateAxis.Builder axis : coords.coordAxes) {
-        if (isCoordinateAxisForVariable(axis, vp.vb)) {
+        if (isCoordinateAxisForVariable(axis, vp)) {
           axisList.add(axis);
         }
       }

@@ -33,10 +33,10 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
+import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
+import ucar.nc2.internal.dataset.transform.vertical.WRFEtaTransformBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.SimpleUnit;
@@ -182,8 +182,9 @@ public class WRFConvention extends CoordSystemBuilder {
       att = v.getAttributeContainer().findAttributeIgnoreCase(CDM.UNITS);
       if (att != null) {
         String units = att.getStringValue();
-        if (units != null)
-          v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
+        if (units != null) {
+          ((VariableDS.Builder) v).setUnits(normalize(units));
+        }
       }
     }
 
@@ -207,7 +208,7 @@ public class WRFConvention extends CoordSystemBuilder {
           glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glat.setDimensionsByName("south_north west_east");
         glat.setCachedData(convertToDegrees(glat), false);
-        glat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+        ((VariableDS.Builder) glat).setUnits(CDM.LAT_UNITS);
       }
 
       Optional<Variable.Builder<?>> glonOpt = rootGroup.findVariable("GLON");
@@ -220,7 +221,7 @@ public class WRFConvention extends CoordSystemBuilder {
           glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glon.setDimensionsByName("south_north west_east");
         glon.setCachedData(convertToDegrees(glon), false);
-        glon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+        ((VariableDS.Builder) glon).setUnits(CDM.LON_UNITS);
       }
 
       // Make coordinate system variable
@@ -273,12 +274,12 @@ public class WRFConvention extends CoordSystemBuilder {
           // Make copy because we will add new elements to it.
           for (Variable.Builder v : ImmutableList.copyOf(rootGroup.vbuilders)) {
             if (v.shortName.startsWith("XLAT")) {
+              v = removeConstantTimeDim(v);
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-              removeConstantTimeDim(v);
 
             } else if (v.shortName.startsWith("XLONG")) {
+              v = removeConstantTimeDim(v);
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-              removeConstantTimeDim(v);
 
             } else if (v.shortName.equals("T")) { // ANOTHER MAJOR KLUDGE to pick up 4D fields
               v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z"));
@@ -339,7 +340,7 @@ public class WRFConvention extends CoordSystemBuilder {
     datasetBuilder.replaceCoordinateAxis(rootGroup, makeSoilDepthCoordAxis("ZS"));
   }
 
-  private void removeConstantTimeDim(Variable.Builder<?> vb) {
+  private VariableDS.Builder<?> removeConstantTimeDim(Variable.Builder<?> vb) {
     VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;
     Variable v = vds.orgVar;
     int[] shape = v.getShape();
@@ -349,11 +350,13 @@ public class WRFConvention extends CoordSystemBuilder {
         view = v.slice(0, 0);
       } catch (InvalidRangeException e) {
         parseInfo.format("Cant remove first dimension in variable %s", v);
-        return;
+        return vds;
       }
       VariableDS.Builder<?> vbnew = VariableDS.builder().copyFrom(view);
       rootGroup.replaceVariable(vbnew);
+      return vbnew;
     }
+    return vds;
   }
 
   private Array convertToDegrees(Variable.Builder<?> vb) {
@@ -431,7 +434,7 @@ public class WRFConvention extends CoordSystemBuilder {
     if (vname.equalsIgnoreCase("time") || vname.equalsIgnoreCase("times"))
       return AxisType.Time;
 
-    String unit = v.units;
+    String unit = v.getUnits();
     if (unit != null) {
       if (SimpleUnit.isCompatible("millibar", unit))
         return AxisType.Pressure;
@@ -733,7 +736,7 @@ public class WRFConvention extends CoordSystemBuilder {
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // soil depth gets larger as you go down
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
-    v.addAttribute(new Attribute(CDM.UNITS, CDM.UNITS));
+    v.setUnits(CDM.UNITS);
     if (!v.shortName.equals(soilDim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getShortName()));
 
@@ -759,43 +762,32 @@ public class WRFConvention extends CoordSystemBuilder {
   }
 
   private double findAttributeDouble(String attname) {
-    Attribute att = rootGroup.getAttributeContainer().findAttributeIgnoreCase(attname);
-    if (att == null)
-      return Double.NaN;
-    return att.getNumericValue().doubleValue();
+    return rootGroup.getAttributeContainer().findAttributeDouble(attname, Double.NaN);
   }
 
-  /*
-   * not ready yet - need transforms
-   * 
-   * @Override
-   * protected void assignCoordinateTransforms() {
-   * super.assignCoordinateTransforms();
-   * 
-   * // any CoordinateSystem with a vertical coordinate with no units
-   * for (CoordinateSystem.Builder cs : coords.coordSys) {
-   * if (cs.getZaxis() != null) {
-   * String units = cs.getZaxis().getUnitsString();
-   * if ((units == null) || (units.trim().isEmpty())) {
-   * VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(cs);
-   * if (vct != null) {
-   * cs.addCoordinateTransform(vct);
-   * }
-   * parseInfo.format("***Added WRFEtaTransformBuilder to CoordinateSystem '%s'%n", cs.coordAxesNames);
-   * }
-   * }
-   * }
-   * }
-   * 
-   * private VerticalCT makeWRFEtaVerticalCoordinateTransform(CoordinateSystem.Builder cs) {
-   * if ((null == ds.findVariable("PH")) || (null == ds.findVariable("PHB")) || (null == ds.findVariable("P"))
-   * || (null == ds.findVariable("PB")))
-   * return null;
-   * 
-   * WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
-   * return builder.makeCoordinateTransform(ds, null);
-   * }
-   */
+  @Override
+  protected void assignCoordinateTransforms() {
+    super.assignCoordinateTransforms();
+
+    if (rootGroup.findVariable("PH").isPresent() && rootGroup.findVariable("PHB").isPresent()
+        && rootGroup.findVariable("P").isPresent() && rootGroup.findVariable("PB").isPresent()) {
+
+      // public Optional<CoordinateAxis.Builder> findZAxis(CoordinateSystem.Builder csys) {
+      // any cs with a vertical coordinate with no units gets one
+      for (CoordinateSystem.Builder cs : coords.coordSys) {
+        coords.findAxisByType(cs, AxisType.GeoZ).ifPresent(axis -> {
+          String units = axis.getUnits();
+          if ((units == null) || (units.trim().isEmpty())) {
+            // LOOK each cs might have seperate ct; but they might be identical....
+            VerticalCTBuilder vctb = new WRFEtaTransformBuilder(coords, cs);
+            coords.addVerticalCTBuilder(vctb);
+            cs.addCoordinateTransformByName(vctb.getTransformName());
+            parseInfo.format("***Added WRFEtaTransformBuilderto '%s'%n", cs.coordAxesNames);
+          }
+        });
+      }
+    }
+  }
 
 }
 
