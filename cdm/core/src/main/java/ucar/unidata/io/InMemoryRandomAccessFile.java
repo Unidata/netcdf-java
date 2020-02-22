@@ -1,12 +1,17 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.unidata.io;
 
-import java.nio.channels.WritableByteChannel;
-import java.nio.ByteBuffer;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+import java.util.Optional;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 /**
  * A RandomAccessFile stored entirely in memory as a byte array.
@@ -60,6 +65,31 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   @Override
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
     return dest.write(ByteBuffer.wrap(buffer, (int) offset, (int) nbytes));
+  }
+
+  /**
+   * Hook for service provider interface RandomAccessFileProvider
+   */
+  public static class Provider implements RandomAccessFileProvider {
+
+    @Override
+    public boolean isOwnerOf(String location) {
+      return location.startsWith("slurp:");
+    }
+
+    @Override
+    public RandomAccessFile open(String location) throws IOException {
+      String scheme = location.split(":")[0];
+      location = location.replace(scheme, "http");
+      Optional<byte[]> contents;
+      try (HTTPMethod method = HTTPFactory.Get(location)) {
+        method.execute();
+        contents = Optional.of(method.getResponseAsBytes());
+      } catch (HTTPException he) {
+        throw new IOException(he);
+      }
+      return new InMemoryRandomAccessFile(location, contents.get());
+    }
   }
 
 }

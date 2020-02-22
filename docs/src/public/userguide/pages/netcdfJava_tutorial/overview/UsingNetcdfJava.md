@@ -67,6 +67,7 @@ The formats associated with each module are:
 * `bufr`: BUFR
 * `cdm-image`: GINI and FYSAT
 * `cdm-radial`: Radial (eg radar) datasets
+* `cdm-s3`: Enable RandomAccessFile level access to CDM datasets stored on AWS S3
 * `cdm-misc` : Miscellaneous formats (see [here](#cdm-misc-module) for a list)
 * `grib`: GRIB-1 and GRIB-2
 * `netcdf4`: NetCDF-4. Writing requires the NetCDF-4 C library to be installed.
@@ -156,6 +157,7 @@ The `cdm-misc` module contains the following miscellaneous IOSPs:
 
 This is the appropriate option if you’re not using a dependency management tool like Maven or Gradle and you don’t care about jar size or compatibility with other libraries. Simply include netcdfAll-${netcdfJavaVersion}.jar on the classpath when you run your program.
 You’ll also need a logger.
+Currently does not include `cdm-s3` due to the size of the AWS S3 SDK dependency.
 
 ## Logging
 The netCDF-Java library uses the SLF4J logging facade.
