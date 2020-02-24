@@ -22,7 +22,6 @@ import java.util.StringTokenizer;
  * <p/>
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)
- * LOOK XML routines should go away in 5.0
  *
  * @author caron
  * @since Nov 4, 2007
@@ -310,7 +309,7 @@ public class NCdumpW {
     return writer.toString();
   }
 
-
+  /** Print named array to returned String. */
   public static String toString(Array array, String name, CancelTask ct) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
@@ -335,7 +334,6 @@ public class NCdumpW {
     if (array == null) {
       out.println("null array for " + name);
       ilev.decr();
-      // throw new IllegalArgumentException("null array for " + name);
       return;
     }
 
@@ -523,7 +521,6 @@ public class NCdumpW {
       if (ii > 0)
         out.print(",");
       printStringArray(out, slice, indent, ct);
-      // out.print("\n");
     }
     indent.decr();
 
@@ -531,14 +528,13 @@ public class NCdumpW {
   }
 
   private static void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent,
-      ucar.nc2.util.CancelTask ct) { // throws IOException {
+      ucar.nc2.util.CancelTask ct) {
     try (StructureDataIterator sdataIter = array.getStructureDataIterator()) {
       int count = 0;
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
         out.println("\n" + indent + "{");
         printStructureData(out, sdata, indent, ct);
-        // ilev.setIndentLevel(saveIndent);
         out.print(indent + "} " + sdata.getName() + "(" + count + ")");
         if (ct != null && ct.isCancel())
           return;
@@ -549,9 +545,7 @@ public class NCdumpW {
     }
   }
 
-  private static void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) { // throws
-                                                                                                             // IOException
-                                                                                                             // {
+  private static void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) {
     out.print("\n" + indent + "{");
     indent.incr();
     IndexIterator iter = array.getIndexIterator();
@@ -568,8 +562,7 @@ public class NCdumpW {
     out.print("\n" + indent + "}");
   }
 
-  private static void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws
-                                                                                                        // IOException {
+  private static void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) {
     try (StructureDataIterator iter = seq.getStructureDataIterator()) {
       while (iter.hasNext()) {
         StructureData sdata = iter.next();
@@ -595,9 +588,7 @@ public class NCdumpW {
     out.flush();
   }
 
-  private static void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) { // throws
-                                                                                                               // IOException
-                                                                                                               // {
+  private static void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) {
     indent.incr();
     for (StructureMembers.Member m : sdata.getMembers()) {
       Array sdataArray = sdata.getArray(m);
@@ -608,6 +599,7 @@ public class NCdumpW {
     indent.decr();
   }
 
+  /** Print StructureData to returned String. */
   public static String toString(StructureData sdata) {
     CharArrayWriter carray = new CharArrayWriter(1000);
     PrintWriter pw = new PrintWriter(carray);
@@ -636,13 +628,12 @@ public class NCdumpW {
     }
   }
 
-  /**
-   * Print array to PrintWriter
-   */
+  /** Print array to named PrintWriter */
   public static void printArray(Array array, PrintWriter pw) {
     printArray(array, null, null, pw, new Indent(2), null, true);
   }
 
+  /** Print array to returned String. */
   public static String toString(Array ma) {
     return toString(ma, "", null);
   }

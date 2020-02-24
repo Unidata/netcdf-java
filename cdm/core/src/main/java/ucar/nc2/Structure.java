@@ -668,6 +668,7 @@ public class Structure extends Variable {
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
   }
 
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   @Override
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
@@ -695,6 +696,7 @@ public class Structure extends Variable {
     }
   }
 
+  /** A builder of Structures. */
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     public List<Variable.Builder> vbuilders = new ArrayList<>();
     private boolean built;
@@ -709,6 +711,7 @@ public class Structure extends Variable {
       return self();
     }
 
+    /** Remove memeber variable, if present. Return whether it was present */
     public boolean removeMemberVariable(String memberName) {
       Optional<Variable.Builder> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();
       want.ifPresent(v -> vbuilders.remove(v));
@@ -719,7 +722,7 @@ public class Structure extends Variable {
       return vbuilders.stream().filter(d -> d.shortName.equals(name)).findFirst();
     }
 
-    /** Normally this is called by Group.build() */
+    /** Normally this is only called by Group.build() */
     public Structure build() {
       if (built)
         throw new IllegalStateException("already built");

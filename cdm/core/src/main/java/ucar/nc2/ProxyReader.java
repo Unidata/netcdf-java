@@ -12,7 +12,7 @@ import ucar.nc2.util.CancelTask; // ??
 import java.io.IOException;
 
 /**
- * An object that knows how to read the data for a Variable.
+ * Something that knows how to read the data for a Variable.
  *
  * @author caron
  */

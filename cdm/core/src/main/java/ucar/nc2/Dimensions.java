@@ -18,15 +18,15 @@ import ucar.ma2.Range;
  */
 public class Dimensions {
 
+  private Dimensions() {}
+
   /** A Function that finds a Dimension by name. */
   public interface Find {
     @Nullable
     Dimension findByName(String dimName);
   }
 
-  /**
-   * Make a ucar.ma2.Section from an ordered set of Dimension objects.
-   */
+  /** Make a ucar.ma2.Section from an ordered set of Dimension objects. */
   public static ucar.ma2.Section makeSectionFromDimensions(Iterable<Dimension> dimensions) {
     try {
       List<Range> list = new ArrayList<>();
@@ -48,15 +48,12 @@ public class Dimensions {
     }
   }
 
+  /** Make an array of Dimension lengths. */
   public static int[] makeShape(Iterable<Dimension> dimensions) {
     return makeSectionFromDimensions(dimensions).getShape();
   }
 
-  /**
-   * Make a space-delineated String from a list of Dimension names. Inverse of makeDimensionsList().
-   *
-   * @return space-delineated String of Dimension names.
-   */
+  /** Make a space-delineated String from a list of Dimension names, inverse of makeDimensionsList(). */
   public static String makeDimensionsString(List<Dimension> dimensions) {
     if (dimensions == null)
       return "";

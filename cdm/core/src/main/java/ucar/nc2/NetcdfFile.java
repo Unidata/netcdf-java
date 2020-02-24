@@ -94,23 +94,20 @@ import ucar.unidata.util.StringUtil2;
  * </pre>
  *
  * <h3>Naming</h3>
- * <p>
  * Each object has a name (aka "full name") that is unique within the entire netcdf file, and
  * a "short name" that is unique within the parent group.
  * These coincide for objects in the root group, and so are backwards compatible with version
  * 3 files.
- * </p>
- *
  * <ol>
  * <li>Variable: group1/group2/varname
  * <li>Structure member Variable: group1/group2/varname.s1.s2
  * <li>Group Attribute: group1/group2@attName
  * <li>Variable Attribute: group1/group2/varName@attName
  * </ol>
- *
+ * </p>
+ * 
  * @author caron
  */
-
 public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
@@ -1157,7 +1154,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Alternatively, use groups.
    *
    * @return List of type Attribute
+   * @deprecated use getRootGroup().getAttributeContainer()
    */
+  @Deprecated
   public java.util.List<Attribute> getGlobalAttributes() {
     return immutable ? gattributes : new ArrayList<>(gattributes);
   }
@@ -1317,9 +1316,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   //////////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * CDL representation of Netcdf header info, non strict
-   */
+  /** CDL representation of Netcdf header info, non strict */
   public String toString() {
     Formatter f = new Formatter();
     writeCDL(f, new Indent(2), false);
@@ -1328,7 +1325,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   /**
    * CDL representation of Netcdf header info, non strict
+   * 
+   * @deprecated use NcMLWriter
    */
+  @Deprecated
   public String toNcML(String url) {
     NcMLWriter ncmlWriter = new NcMLWriter();
     ncmlWriter.setWriteVariablesPredicate(NcMLWriter.writeNoVariablesPredicate);
@@ -1346,7 +1346,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @param out write to this OutputStream
    * @param strict if true, make it stricly CDL, otherwise, add a little extra info
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public void writeCDL(OutputStream out, boolean strict) {
     PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
     toStringStart(pw, strict);
@@ -1359,7 +1361,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @param pw write to this PrintWriter
    * @param strict if true, make it stricly CDL, otherwise, add a little extra info
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public void writeCDL(PrintWriter pw, boolean strict) {
     toStringStart(pw, strict);
     toStringEnd(pw);
@@ -2241,13 +2245,17 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Access to iosp debugging info.
    *
    * @return debug / underlying implementation details
+   * @deprecated do not use
    */
+  @Deprecated
   public String getDetailInfo() {
     Formatter f = new Formatter();
     getDetailInfo(f);
     return f.toString();
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public void getDetailInfo(Formatter f) {
     f.format("NetcdfFile location= %s%n", getLocation());
     f.format("  title= %s%n", getTitle());
@@ -2267,6 +2275,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     showProxies(f);
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   protected void showCached(Formatter f) {
     int maxNameLen = 8;
     for (Variable v : getVariables()) {
@@ -2564,6 +2574,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     finish(); // LOOK
   }
 
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
@@ -2591,6 +2602,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
   }
 
+  /** A builder of NetcdfFile objects. */
   public static abstract class Builder<T extends Builder<T>> {
     public Group.Builder rootGroup = Group.builder(null).setName("");
     private String id;

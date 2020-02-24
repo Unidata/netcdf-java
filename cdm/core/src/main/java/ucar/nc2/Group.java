@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Collections;
 
 /**
- * A Group is a logical collection of Variables.
+ * A logical collection of Variables, Attributes, and Dimensions.
  * The Groups in a Dataset form a hierarchical tree, like directories on a disk.
  * A Group has a name and optionally a set of Attributes.
  * There is always at least one Group in a dataset, the root Group, whose name is the empty string.
@@ -162,7 +162,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @return List of type Dimension; may be empty, not null.
    *         Will return ImmutableList<> in version 6
    */
-  public java.util.List<Dimension> getDimensions() {
+  public List<Dimension> getDimensions() {
     return dimensions;
   }
 
@@ -184,7 +184,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @return List of type EnumTypedef; may be empty, not null.
    *         Will return ImmutableList<> in version 6
    */
-  public java.util.List<EnumTypedef> getEnumTypedefs() {
+  public List<EnumTypedef> getEnumTypedefs() {
     return enumTypedefs;
   }
 
@@ -820,7 +820,7 @@ public class Group extends CDMNode implements AttributeContainer {
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
   private int hashCode;
 
-  public Group(Builder builder, Group parent) {
+  private Group(Builder builder, Group parent) {
     super(builder.shortName);
     this.group = parent;
     this.ncfile = builder.ncfile;
@@ -852,6 +852,7 @@ public class Group extends CDMNode implements AttributeContainer {
     this.enumTypedefs.forEach(e -> e.setParentGroup(this));
   }
 
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder toBuilder() {
     Builder parentBuilder = (this.getParentGroup() == null) ? null : this.getParentGroup().toBuilder();
     Builder builder = builder(parentBuilder).setName(this.shortName).setNcfile(this.ncfile)
@@ -867,6 +868,7 @@ public class Group extends CDMNode implements AttributeContainer {
     return new Builder().setParentGroup(parent);
   }
 
+  /** A builder of Groups. */
   public static class Builder {
     static private final Logger logger = LoggerFactory.getLogger(Builder.class);
 

@@ -458,6 +458,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return new Variable(this);
   }
 
+  /** Get the NetcdfFile that this variable is contained in. May be null. */
   @Nullable
   public NetcdfFile getNetcdfFile() {
     return ncfile;
@@ -821,6 +822,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return ncfile.readToByteChannel(this, section, wbc);
   }
 
+  /** Read variable data to a stream. Support for NcStreamWriter. */
   public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
       return IospHelper.copyToOutputStream(read(section), out);
@@ -886,7 +888,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     getNameAndDimensions(proxy, useFullName, strict);
     buf.append(proxy);
   }
-
 
   /**
    * Add display name plus the dimensions to the StringBuffer
@@ -1824,6 +1825,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
   }
 
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
@@ -1861,6 +1863,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
   }
 
+  /** A builder for Variables. */
   public static abstract class Builder<T extends Builder<T>> {
     public String shortName;
     public DataType dataType;
