@@ -7,6 +7,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -75,5 +76,10 @@ public class TestUrlCreds {
       assertThat(credentials.getUserPrincipal().getName()).isEqualTo(username);
       assertThat(credentials.getPassword()).isEqualTo(password);
     }
+  }
+
+  @AfterClass
+  public static void checkAllConnectionsClosed() {
+    HTTPSession.validatestate();
   }
 }

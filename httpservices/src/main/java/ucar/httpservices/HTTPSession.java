@@ -1355,8 +1355,8 @@ public class HTTPSession implements Closeable {
   }
 
   // Obsolete
-
-  public static void validatestate() {
+  // make package private as only needed for testing
+  static void validatestate() {
     connmgr.validate();
   }
 }
