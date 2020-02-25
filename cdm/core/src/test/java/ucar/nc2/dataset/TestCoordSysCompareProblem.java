@@ -12,9 +12,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.TestCoordSysCompareMore.CoordsObjFilter;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -25,7 +28,7 @@ public class TestCoordSysCompareProblem {
 
   @Test
   public void compareProblemFile() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/UpperDeschutes_t4p10_swemelt.nc";
+    String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/050231700.lsxmod.nc";
     showOrg(filename);
     showNew(filename);
     compare(filename);
@@ -38,8 +41,7 @@ public class TestCoordSysCompareProblem {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare.compare(org, withBuilder, new ucar.nc2.dataset.TestCoordSysCompareMore.CoordsObjFilter(),
-            false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(), false, false, true);
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
         System.out.printf("new = %s%n",

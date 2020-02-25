@@ -17,14 +17,8 @@ import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Models the vertical coordinate for the Weather Research and Forecast
- * (WRF) model's vertical Eta coordinate
- *
- * @author IDV Development Team
- */
+/** Models the vertical coordinate for the Weather Research and Forecast (WRF) model's vertical Eta coordinate */
 public class WRFEta extends VerticalTransformImpl {
-
   public static final String BasePressureVariable = "base_presure";
   public static final String PerturbationPressureVariable = "perturbation_presure";
   public static final String BaseGeopotentialVariable = "base_geopotential";
@@ -33,19 +27,8 @@ public class WRFEta extends VerticalTransformImpl {
   public static final String IsStaggeredY = "staggered_y";
   public static final String IsStaggeredZ = "staggered_z";
 
-  /**
-   * perturbation variable
-   */
   private Variable pertVar;
-
-  /**
-   * base variable
-   */
   private Variable baseVar;
-
-  /**
-   * some boolean flags
-   */
   private boolean isXStag, isYStag, isZStag;
 
   /**
@@ -57,7 +40,6 @@ public class WRFEta extends VerticalTransformImpl {
    * @param params list of transformation Parameters
    */
   public WRFEta(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
-
     super(timeDim);
 
     isXStag = getParameterBooleanValue(params, IsStaggeredX);
@@ -151,8 +133,6 @@ public class WRFEta extends VerticalTransformImpl {
    * @throws ucar.ma2.InvalidRangeException _more_
    */
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
-
-
     ArrayDouble.D3 data = getCoordinateArray(timeIndex);
 
     int[] origin = new int[3];
@@ -205,7 +185,6 @@ public class WRFEta extends VerticalTransformImpl {
     int[] origin = new int[3];
 
     try {
-
       // loop through the other 2 dimensions and "extrapinterpolate" the other
       for (int i = 0; i < ((dimIndex == 0) ? 1 : ni); i++) {
         for (int j = 0; j < ((dimIndex == 1) ? 1 : nj); j++) {

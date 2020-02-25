@@ -76,7 +76,7 @@ public class M3IOConvention extends CoordSystemBuilder {
   }
 
   /////////////////////////////////////////////////////////////////
-  private CoordinateTransform ct;
+  private ProjectionCT projCT;
 
   private M3IOConvention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
@@ -93,9 +93,9 @@ public class M3IOConvention extends CoordSystemBuilder {
     if (isLatLon) {
       datasetBuilder.replaceCoordinateAxis(rootGroup, makeCoordLLAxis("lon", "COL", "XORIG", "XCELL", "degrees east"));
       datasetBuilder.replaceCoordinateAxis(rootGroup, makeCoordLLAxis("lat", "ROW", "YORIG", "YCELL", "degrees north"));
-      ct = makeLatLongProjection();
+      projCT = makeLatLongProjection();
 
-      VariableDS.Builder v = makeCoordinateTransformVariable(ct);
+      VariableDS.Builder v = makeCoordinateTransformVariable(projCT);
       rootGroup.addVariable(v);
       v.addAttribute(new Attribute(_Coordinate.Axes, "lon lat"));
 
@@ -104,26 +104,26 @@ public class M3IOConvention extends CoordSystemBuilder {
       datasetBuilder.replaceCoordinateAxis(rootGroup, makeCoordAxis("y", "ROW", "YORIG", "YCELL", "km"));
 
       if (projType == 2)
-        ct = makeLCProjection();
+        projCT = makeLCProjection();
       else if (projType == 3)
-        ct = makeTMProjection();
+        projCT = makeTMProjection();
       else if (projType == 4)
-        ct = makeSTProjection();
+        projCT = makeSTProjection();
       else if (projType == 5)
-        ct = makeUTMProjection();
+        projCT = makeUTMProjection();
       else if (projType == 6) // Was 7. See http://www.baronams.com/products/ioapi/GRIDS.html
-        ct = makePolarStereographicProjection();
+        projCT = makePolarStereographicProjection();
       else if (projType == 7)
-        ct = makeEquitorialMercatorProjection();
+        projCT = makeEquitorialMercatorProjection();
       else if (projType == 8)
-        ct = makeTransverseMercatorProjection();
+        projCT = makeTransverseMercatorProjection();
       else if (projType == 9)
-        ct = makeAlbersProjection();
+        projCT = makeAlbersProjection();
       else if (projType == 10)
-        ct = makeLambertAzimuthalProjection();
+        projCT = makeLambertAzimuthalProjection();
 
-      if (ct != null) {
-        VariableDS.Builder v = makeCoordinateTransformVariable(ct);
+      if (projCT != null) {
+        VariableDS.Builder v = makeCoordinateTransformVariable(projCT);
         rootGroup.addVariable(v);
         v.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
       }
@@ -135,10 +135,10 @@ public class M3IOConvention extends CoordSystemBuilder {
 
   @Override
   protected void makeCoordinateTransforms() {
-    if (ct != null) {
-      VarProcess vp = findVarProcess(ct.getName(), null);
+    if (projCT != null) {
+      VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
-      vp.ct = CoordinateTransform.builder().setPreBuilt(ct);
+      vp.ct = CoordinateTransform.builder().setPreBuilt(projCT);
     }
     super.makeCoordinateTransforms();
   }
@@ -250,7 +250,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
   }
 
-  private CoordinateTransform makeLatLongProjection() {
+  private ProjectionCT makeLatLongProjection() {
     // Get lower left and upper right corners of domain in lat/lon
     double x1 = findAttributeDouble("XORIG");
     double y1 = findAttributeDouble("YORIG");
@@ -261,7 +261,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("LatitudeLongitudeProjection", "FGDC", ll);
   }
 
-  private CoordinateTransform makeLCProjection() {
+  private ProjectionCT makeLCProjection() {
     double par1 = findAttributeDouble("P_ALP");
     double par2 = findAttributeDouble("P_BET");
     double lon0 = findAttributeDouble("XCENT");
@@ -271,7 +271,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("LambertConformalProjection", "FGDC", lc);
   }
 
-  private CoordinateTransform makePolarStereographicProjection() {
+  private ProjectionCT makePolarStereographicProjection() {
     double lon0 = findAttributeDouble("XCENT");
     double lat0 = findAttributeDouble("YCENT");
     double latts = findAttributeDouble("P_BET");
@@ -280,7 +280,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("PolarStereographic", "FGDC", sg);
   }
 
-  private CoordinateTransform makeEquitorialMercatorProjection() {
+  private ProjectionCT makeEquitorialMercatorProjection() {
     double lon0 = findAttributeDouble("XCENT");
     double par = findAttributeDouble("P_ALP");
 
@@ -288,7 +288,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("EquitorialMercator", "FGDC", p);
   }
 
-  private CoordinateTransform makeTransverseMercatorProjection() {
+  private ProjectionCT makeTransverseMercatorProjection() {
     double lat0 = findAttributeDouble("P_ALP");
     double tangentLon = findAttributeDouble("P_GAM");
 
@@ -296,7 +296,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("TransverseMercator", "FGDC", p);
   }
 
-  private CoordinateTransform makeAlbersProjection() {
+  private ProjectionCT makeAlbersProjection() {
     double lat0 = findAttributeDouble("YCENT");
     double lon0 = findAttributeDouble("XCENT");
     double par1 = findAttributeDouble("P_ALP");
@@ -306,7 +306,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("Albers", "FGDC", p);
   }
 
-  private CoordinateTransform makeLambertAzimuthalProjection() {
+  private ProjectionCT makeLambertAzimuthalProjection() {
     double lat0 = findAttributeDouble("YCENT");
     double lon0 = findAttributeDouble("XCENT");
 
@@ -314,7 +314,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("LambertAzimuthal", "FGDC", p);
   }
 
-  private CoordinateTransform makeSTProjection() {
+  private ProjectionCT makeSTProjection() {
     double latt = findAttributeDouble("PROJ_ALPHA");
     if (Double.isNaN(latt))
       latt = findAttributeDouble("P_ALP");
@@ -327,7 +327,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("StereographicProjection", "FGDC", st);
   }
 
-  private CoordinateTransform makeTMProjection() {
+  private ProjectionCT makeTMProjection() {
     double lat0 = findAttributeDouble("PROJ_ALPHA");
     if (Double.isNaN(lat0))
       lat0 = findAttributeDouble("P_ALP");
@@ -340,7 +340,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     return new ProjectionCT("MercatorProjection", "FGDC", tm);
   }
 
-  private CoordinateTransform makeUTMProjection() {
+  private ProjectionCT makeUTMProjection() {
     int zone = (int) findAttributeDouble("P_ALP");
     double ycent = findAttributeDouble("YCENT");
     boolean isNorth = true;

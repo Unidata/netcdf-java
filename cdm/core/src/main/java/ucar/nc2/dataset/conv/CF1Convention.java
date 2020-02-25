@@ -383,7 +383,6 @@ public class CF1Convention extends CSMConvention {
    * CF.AXIS attributes
    */
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
-
     // standard names for unitless vertical coords
     String sname = ncDataset.findAttValueIgnoreCase((Variable) v, CF.STANDARD_NAME, null);
     if (sname != null) {

@@ -13,6 +13,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -105,7 +106,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     // look for time axes based on units
     if (map.get(AxisType.Time) == null) {
       for (VarProcess vp : varList) {
-        String unit = vp.vb.units;
+        String unit = vp.vb.getUnits();
         if (unit != null && SimpleUnit.isDateUnit(unit)) {
           vp.isCoordinateAxis = true;
           map.put(AxisType.Time, vp);
@@ -175,11 +176,11 @@ public class DefaultConventions extends CoordSystemBuilder {
     if (vname == null) {
       return null;
     }
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       unit = "";
     }
-    String desc = vb.desc;
+    String desc = vb.getDescription();
     if (desc == null) {
       desc = "";
     }
@@ -256,8 +257,7 @@ public class DefaultConventions extends CoordSystemBuilder {
   // we assume that coordinate axes get identified by being coordinate variables
   @Nullable
   private AxisType getAxisTypeCoards(VariableDS.Builder vb) {
-
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       return null;
     }
@@ -356,6 +356,12 @@ public class DefaultConventions extends CoordSystemBuilder {
     @Nullable
     public String getConventionName() {
       return null;
+    }
+
+    public boolean isMine(NetcdfFile ncfile) {
+      // this is to test DefaultConventions, not needed when we remove old convention builders.
+      // return ncfile.getLocation().endsWith("amsr-avhrr-v2.20040729.nc");
+      return false;
     }
 
     @Override

@@ -20,6 +20,18 @@ import ucar.nc2.util.CancelTask;
 class CoardsConventions extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "COARDS";
 
+  public static class Factory implements CoordSystemBuilderFactory {
+    @Override
+    public String getConventionName() {
+      return CONVENTION_NAME;
+    }
+
+    @Override
+    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+      return new CoardsConventions(datasetBuilder);
+    }
+  }
+
   /*
    * The COARDS standard offers limited support for climatological time. For compatibility with COARDS, time coordinates
    * should also be
@@ -43,7 +55,7 @@ class CoardsConventions extends CoordSystemBuilder {
 
   boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
     boolean hasChanged = false;
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit != null) {
       unit = unit.trim();
       if (SimpleUnit.isDateUnit(unit)) {
@@ -73,7 +85,7 @@ class CoardsConventions extends CoordSystemBuilder {
   @Override
   @Nullable
   protected AxisType getAxisType(VariableDS.Builder vb) {
-    String unit = vb.units;
+    String unit = vb.getUnits();
     if (unit == null) {
       return null;
     }
@@ -119,19 +131,6 @@ class CoardsConventions extends CoordSystemBuilder {
     // return AxisType.Height;
 
     return null;
-  }
-
-  public static class Factory implements CoordSystemBuilderFactory {
-
-    @Override
-    public String getConventionName() {
-      return CONVENTION_NAME;
-    }
-
-    @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
-      return new CoardsConventions(datasetBuilder);
-    }
   }
 
 }

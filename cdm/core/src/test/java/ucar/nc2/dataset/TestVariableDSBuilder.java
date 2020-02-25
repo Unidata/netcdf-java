@@ -104,7 +104,7 @@ public class TestVariableDSBuilder {
     Variable v = vb.build();
 
     VariableDS.Builder builder = VariableDS.builder().copyFrom(v);
-    assertThat(builder.units).isEqualTo("flower");
+    assertThat(builder.getUnits()).isEqualTo("flower");
 
     VariableDS varDS = builder.build();
     assertThat(varDS.getShortName()).isEqualTo("name");

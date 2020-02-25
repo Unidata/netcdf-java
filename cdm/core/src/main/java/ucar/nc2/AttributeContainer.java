@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 /**
  * An immutable Container of Attributes.
- * Use AttributeContainerHelper if you want a mutable container.
+ * Use AttributeContainerMutable if you want a mutable container.
  */
 public interface AttributeContainer extends Iterable<Attribute> {
 

@@ -739,6 +739,7 @@ public class NcMLReaderNew {
       nameInFile = name;
     }
 
+    // LOOK this is wrong, groupBuilder may already have the dimension.
     // see if it already exists
     Dimension dim = (refGroup == null) ? null : refGroup.findDimension(nameInFile);
     if (dim == null) { // nope - create it
@@ -769,7 +770,8 @@ public class NcMLReaderNew {
       if (debugConstruct) {
         System.out.println(" add new dim = " + name);
       }
-      groupBuilder.addDimension(Dimension.builder(name, len).setIsShared(isShared).setIsUnlimited(isUnlimited)
+      // LOOK change to replaceDimension to get fort.54 working.
+      groupBuilder.replaceDimension(Dimension.builder(name, len).setIsShared(isShared).setIsUnlimited(isUnlimited)
           .setIsVariableLength(isVariableLength).build());
 
     } else { // existing - modify it
@@ -872,7 +874,7 @@ public class NcMLReaderNew {
     Optional<Variable.Builder<?>> addedFromAgg = groupBuilder.findVariable(nameInFile);
     if (refv == null && !addedFromAgg.isPresent()) { // new
       if (dtype == null) {
-        errlog.format("NcML Variable dtype is required for new variables (%s)%n", varElem);
+        errlog.format("NcML Variable dtype is required for new variable (%s)%n", name);
         return;
       }
       if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
@@ -1138,7 +1140,7 @@ public class NcMLReaderNew {
     Variable refv = (refStructure == null) ? null : refStructure.findVariable(nameInFile);
     if (refv == null) { // new
       if (dtype == null) {
-        errlog.format("NcML Variable dtype is required for new variables (%s)%n", varElem);
+        errlog.format("NcML Variable dtype is required for new (nested) variable (%s)%n", name);
         return;
       }
       if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {

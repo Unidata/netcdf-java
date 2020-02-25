@@ -31,14 +31,16 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @RunWith(Parameterized.class)
 public class TestCoordSysCompareMore {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static List<String> testDirs =
-      ImmutableList.of(TestDir.cdmUnitTestDir + "/conventions", TestDir.cdmUnitTestDir + "/ft");
+  private static String convDir = TestDir.cdmUnitTestDir + "/conventions";
+  private static List<String> otherDirs =
+      ImmutableList.of(TestDir.cdmUnitTestDir + "/ft", TestDir.cdmUnitTestDir + "/cfPoint");
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      for (String dir : testDirs) {
+      TestDir.actOnAllParameterized(convDir, (file) -> !file.getPath().endsWith(".pdf"), filenames, true);
+      for (String dir : otherDirs) {
         TestDir.actOnAllParameterized(dir, (file) -> file.getPath().endsWith(".nc"), filenames, true);
       }
     } catch (IOException e) {
@@ -75,6 +77,11 @@ public class TestCoordSysCompareMore {
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
+    }
+
+    @Override
+    public boolean compareCoordinateTransform(CoordinateTransform ct1, CoordinateTransform ct2) {
+      return ct2.getName().startsWith(ct1.getName());
     }
   }
 
