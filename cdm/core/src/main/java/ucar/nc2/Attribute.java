@@ -20,10 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
+ * An Attribute is a name and a value, used for associating arbitrary metadata with another object.
  * The value can be a one dimensional array of Strings or numeric values.
  * <p/>
- * Attributes are immutable after setImmutable().
  * TODO Attributes will be immutable in 6.
  * 
  * @author caron
@@ -734,7 +733,7 @@ public class Attribute extends CDMNode {
     return new Builder();
   }
 
-  /** Create an Attribute builder with the given name. */
+  /** Create an Attribute builder with the given Attribute name. */
   public static Builder builder(String name) {
     return new Builder().setName(name);
   }
@@ -860,10 +859,7 @@ public class Attribute extends CDMNode {
     }
 
     /**
-     * Set the values from an Array.
-     * Also sets the DataType from values.getElementType().
-     *
-     * @param arr value of Attribute
+     * Set the values from an Array, and the DataType from values.getElementType().
      */
     public Builder setValues(Array arr) {
       if (arr == null) {

@@ -44,7 +44,7 @@ public interface AttributeContainer extends Iterable<Attribute> {
     return null != findAttribute(attName);
   }
 
-  /** Find an Attribute by name, first doing an exact match, then ignoring case. */
+  /** Find an Attribute by name, first try doing an exact match, then try ignoring case. */
   @Nullable
   Attribute findAttributeIgnoreCase(String attName);
 

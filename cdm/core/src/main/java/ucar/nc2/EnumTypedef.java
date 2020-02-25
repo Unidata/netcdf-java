@@ -14,7 +14,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**
- * Enumeration Typedef is a map from integers to Strings.
+ * A named map from integers to Strings; a user-defined Enum used as a Variable's data type.
  * For ENUM1, ENUM2, ENUM4 enumeration types.
  * Immutable.
  *
@@ -30,10 +30,12 @@ public class EnumTypedef extends CDMNode {
   private final ImmutableList<String> enumStrings;
   private final DataType basetype;
 
+  /** Make an EnumTypedef with base type ENUM4. */
   public EnumTypedef(String name, Map<Integer, String> map) {
     this(name, map, DataType.ENUM4); // default basetype
   }
 
+  /** Make an EnumTypedef setting the base type (must be ENUM1, ENUM2, ENUM4). */
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
     super(name);
     Preconditions.checkArgument(validateMap(map, basetype));

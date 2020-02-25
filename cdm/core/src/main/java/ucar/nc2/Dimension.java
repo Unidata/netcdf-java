@@ -12,12 +12,13 @@ import java.util.StringTokenizer;
 
 /**
  * A Dimension is used to define the array shape of a Variable.
- * It may be shared among Variables, which provides a simple yet powerful way of associating Variables.
+ * A Variable can be thought of as a sampled function with Domain its Dimensions.
+ * A Dimension may be shared among Variables, which provides a simple yet powerful way of associating Variables.
  * When a Dimension is shared, it has a unique name within its Group.
  * It may have a coordinate Variable, which gives each index a coordinate value.
  * A private Dimension cannot have a coordinate Variable, so use shared dimensions with coordinates when possible.
  * The Dimension length must be > 0, except for an unlimited dimension which may have length = 0, and a vlen
- * Dimension which has length = -1.
+ * Dimension which has a length known only when the variable is read.
  * <p/>
  * <p>
  * Immutable if setImmutable() was called, except for an Unlimited Dimension, whose size can change.
@@ -502,6 +503,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return new Builder();
   }
 
+  /** A builder with the Dimension name and length set */
   public static Builder builder(String name, int length) {
     return new Builder().setName(name).setLength(length);
   }

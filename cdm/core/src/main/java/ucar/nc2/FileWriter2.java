@@ -25,8 +25,9 @@ import java.util.Map;
  * <p/>
  * Use NetcdfFileWriter object for a lower level API.
  *
- * @deprecated use ucar.nc2.writer.FileWriter
+ * @deprecated TODO use ucar.nc2.writer.FileWriter
  */
+@Deprecated
 public class FileWriter2 {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
   private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
@@ -68,6 +69,8 @@ public class FileWriter2 {
     this.version = version;
   }
 
+  /** @deprecated TODO use ucar.nc2.writer.FileWriter */
+  @Deprecated
   public enum N3StructureStrategy {
     flatten, exclude
   }
@@ -522,7 +525,10 @@ public class FileWriter2 {
    * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
    * of contiguous writes to a multidimensional array.
    * It writes the first n elements (n < maxChunkElems), then the next, etc.
+   * 
+   * @deprecated TODO use ucar.nc2.writer.FileWriter
    */
+  @Deprecated
   public static class ChunkingIndex extends Index {
     public ChunkingIndex(int[] shape) {
       super(shape);

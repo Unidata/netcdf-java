@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /** A mutable collection of Attributes. */
@@ -12,11 +13,13 @@ public class AttributeContainerMutable implements AttributeContainer {
   private String name;
   private List<Attribute> atts;
 
+  /** Constructor with container name. */
   public AttributeContainerMutable(String name) {
     this.name = name;
     this.atts = new ArrayList<>();
   }
 
+  /** Constructor with container name and list of Attributes to copy in. */
   public AttributeContainerMutable(String name, Iterable<Attribute> from) {
     this(name);
     addAll(from);
@@ -27,6 +30,7 @@ public class AttributeContainerMutable implements AttributeContainer {
   }
 
   @Override
+  @Nullable
   public String getName() {
     return name;
   }
@@ -175,6 +179,7 @@ public class AttributeContainerMutable implements AttributeContainer {
     return att != null && atts.remove(att);
   }
 
+  /** Turn into an immutable AttributeContainer */
   public AttributeContainer toImmutable() {
     return new AttributeContainerImmutable(name, atts);
   }
