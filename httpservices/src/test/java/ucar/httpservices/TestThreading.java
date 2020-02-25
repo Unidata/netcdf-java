@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.net;
+package ucar.httpservices;
 
 import org.junit.Assert;
 import org.junit.Test;
