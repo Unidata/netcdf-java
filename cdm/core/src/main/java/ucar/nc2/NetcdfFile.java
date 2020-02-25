@@ -1346,7 +1346,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @param out write to this OutputStream
    * @param strict if true, make it stricly CDL, otherwise, add a little extra info
-   * @deprecated use CDLWriter
+   * @deprecated use CDLWriter (TODO)
    */
   @Deprecated
   public void writeCDL(OutputStream out, boolean strict) {
@@ -1361,7 +1361,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @param pw write to this PrintWriter
    * @param strict if true, make it stricly CDL, otherwise, add a little extra info
-   * @deprecated use CDLWriter
+   * @deprecated use CDLWriter (TODO)
    */
   @Deprecated
   public void writeCDL(PrintWriter pw, boolean strict) {

@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 
 /**
  * A Dimension is used to define the array shape of a Variable.
- * A Variables can be thought of as a sampled function with Domain its Dimensions.
+ * A Variable can be thought of as a sampled function with Domain its Dimensions.
  * A Dimension may be shared among Variables, which provides a simple yet powerful way of associating Variables.
  * When a Dimension is shared, it has a unique name within its Group.
  * It may have a coordinate Variable, which gives each index a coordinate value.
