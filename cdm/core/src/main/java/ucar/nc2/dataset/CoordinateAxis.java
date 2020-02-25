@@ -54,7 +54,7 @@ public class CoordinateAxis extends VariableDS {
    * @param ncd the containing dataset
    * @param vds an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
-   * @deprecated Use CoordinateAxis.builder()
+   * @deprecated Use CoordinateAxis.fromVariableDS()
    */
   @Deprecated
   public static CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
@@ -66,8 +66,12 @@ public class CoordinateAxis extends VariableDS {
       return new CoordinateAxis(ncd, vds);
   }
 
-  // experimental
-  // The problem with this is that it converts to CoordinateAxis1D and then to builder
+  /**
+   * Create a coordinate axis from an existing Variable.Builder.
+   *
+   * @param vdsBuilder an existing Variable in dataset.
+   * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
+   */
   public static CoordinateAxis.Builder fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
         || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == DataType.CHAR)) {
@@ -461,7 +465,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
-    protected AxisType axisType;
+    public AxisType axisType;
     protected String positive;
     protected String boundaryRef;
     protected boolean isContiguous = true;

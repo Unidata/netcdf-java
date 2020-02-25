@@ -9,6 +9,8 @@ import ucar.nc2.Variable;
 
 /**
  * public by accident
+ * 
+ * @deprecated will move to ucar.nc2.internal.ncml
  */
 public interface ReplaceVariableCheck {
   boolean replace(Variable v);

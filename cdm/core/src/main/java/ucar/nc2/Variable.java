@@ -7,6 +7,7 @@ package ucar.nc2;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -1883,6 +1884,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     protected abstract T self();
 
+    // add / replace previous
     public T addAttribute(Attribute att) {
       attributes.addAttribute(att);
       return self();
@@ -1928,6 +1930,19 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
+    public boolean replaceDimension(Dimension dim) {
+      int idx = -1;
+      for (int i = 0; i < dimensions.size(); i++) {
+        if (dimensions.get(i).getShortName().equals(dim.getShortName())) {
+          idx = i;
+        }
+      }
+      if (idx >= 0) {
+        dimensions.set(idx, dim);
+      }
+      return (idx >= 0);
+    }
+
     // Set dimensions by name. If set, supercedes addDimension()
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
@@ -1936,11 +1951,16 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     @Nullable
     public String getFirstDimensionName() {
+      return getDimensionName(0);
+    }
+
+    @Nullable
+    public String getDimensionName(int index) {
       if (dimString != null) {
         Iterable<String> iter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
-        return Iterators.getNext(iter.iterator(), null);
-      } else if (dimensions.size() > 0) {
-        return dimensions.get(0).getShortName();
+        return Iterators.get(iter.iterator(), index, null);
+      } else if (dimensions.size() > index) {
+        return dimensions.get(index).getShortName();
       }
       return null;
     }
@@ -1988,18 +2008,18 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return ImmutableList.copyOf(this.dimensions);
     }
 
-    // TODO what about dimString?
-    public List<Dimension> getDimensionsAll() {
-      List<Dimension> dimsAll = new ArrayList<>();
+    // Get all dimension names, including parent structure
+    public ImmutableSet<String> getDimensionsAll() {
+      ImmutableSet.Builder<String> dimsAll = new ImmutableSet.Builder<>();
       addDimensionsAll(dimsAll, this);
-      return dimsAll;
+      return dimsAll.build();
     }
 
-    private void addDimensionsAll(List<Dimension> result, Variable.Builder<?> v) {
-      // if (v.parentStruct != null) TODO
-      // addDimensionsAll(result, v.parentStruct);
-
-      result.addAll(v.dimensions);
+    private void addDimensionsAll(ImmutableSet.Builder<String> result, Variable.Builder<?> v) {
+      if (v.parentStruct != null) {
+        parentStruct.getDimensions().forEach(dim -> result.add(dim.getShortName()));
+      }
+      getDimensionNames().forEach(result::add);
     }
 
     public T setIsScalar() {

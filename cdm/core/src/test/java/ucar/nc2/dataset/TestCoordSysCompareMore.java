@@ -5,11 +5,13 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
+import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -24,18 +26,23 @@ import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) */
+/** Compare CoordSysBuilder (new) and CoordSystemBuilderImpl (old) in cdmUnitTestDir */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestCoordSysCompareMore {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static String convDir = TestDir.cdmUnitTestDir + "/conventions";
+  private static List<String> otherDirs =
+      ImmutableList.of(TestDir.cdmUnitTestDir + "/ft", TestDir.cdmUnitTestDir + "/cfPoint");
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/conventions",
-          pathname -> pathname.getName().endsWith("nc"), filenames, true);
+      TestDir.actOnAllParameterized(convDir, (file) -> !file.getPath().endsWith(".pdf"), filenames, true);
+      for (String dir : otherDirs) {
+        TestDir.actOnAllParameterized(dir, (file) -> file.getPath().endsWith(".nc"), filenames, true);
+      }
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }
@@ -70,6 +77,11 @@ public class TestCoordSysCompareMore {
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
+    }
+
+    @Override
+    public boolean compareCoordinateTransform(CoordinateTransform ct1, CoordinateTransform ct2) {
+      return ct2.getName().startsWith(ct1.getName());
     }
   }
 

@@ -86,12 +86,12 @@ public class IFPSConvention extends CoordSysBuilder {
     parseInfo.format("IFPS augmentDataset %n");
 
     // Figure out projection info. Assume the same for all variables
-    Variable lonVar = ds.findVariable("longitude");
-    lonVar.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+    VariableDS lonVar = (VariableDS) ds.findVariable("longitude");
+    lonVar.setUnitsString(CDM.LON_UNITS);
     lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-    Variable latVar = ds.findVariable("latitude");
+    VariableDS latVar = (VariableDS) ds.findVariable("latitude");
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    latVar.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+    latVar.setUnitsString(CDM.LAT_UNITS);
 
     projVar = latVar;
     String projName = ds.findAttValueIgnoreCase(projVar, "projectionType", null);

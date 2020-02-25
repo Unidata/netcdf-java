@@ -67,7 +67,7 @@ public class AggregationNew extends AggregationOuter {
       // if speced externally, this variable will get replaced
       // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType,
       // joinAggCoordVar.units);
-      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.units);
+      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.getUnits());
       joinAggCoordVar.setSPobject(cv);
       cacheList.add(cv);
     } else {

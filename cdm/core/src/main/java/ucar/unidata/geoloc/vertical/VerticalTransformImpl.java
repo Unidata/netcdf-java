@@ -20,11 +20,7 @@ import java.util.List;
  */
 
 public abstract class VerticalTransformImpl implements VerticalTransform {
-
-  /** unit string */
   protected String units;
-
-  /** time dimension */
   private Dimension timeDim;
 
   /**

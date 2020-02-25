@@ -24,7 +24,6 @@ dependencies {
     compile libraries["httpcore"]
     compile libraries["jsr305"]  // Nonnull
     compile libraries["re2j"]
-
     compile libraries["slf4j-api"]
 
     testRuntime libraries["logback-classic"]
@@ -39,3 +38,4 @@ dependencies {
 }
 
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'
+

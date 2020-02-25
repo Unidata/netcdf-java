@@ -22,6 +22,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 
+@Deprecated
 public class VariableEnhancer implements EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

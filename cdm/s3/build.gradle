@@ -1,0 +1,22 @@
+description = "The Common Data Model (CDM) AWS S3 support."
+ext.title = "CDM S3 support library"
+
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
+apply plugin: 'groovy'  // For Spock tests.
+
+dependencies {
+    compile project(':cdm:cdm-core')
+
+    compile libraries["aws-s3"]
+    compile libraries["jsr305"]
+    compile libraries["slf4j-api"]
+
+    testCompile project(':cdm:cdm-radial')
+    testCompile libraries["truth"]
+}

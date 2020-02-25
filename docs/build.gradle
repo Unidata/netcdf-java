@@ -96,18 +96,15 @@ task buildJavadocCdm(type: Javadoc) {
     include 'ucar/ma2/*.java'
     include 'ucar/nc2/*.java'
     include 'ucar/nc2/constants/*.java'
-    include 'ucar/nc2/dataset/**/*.java'
-    include 'ucar/nc2/dt/RadialDatasetSweep.java'
-    include 'ucar/nc2/ft/*.java'
-    include 'ucar/nc2/ft/point/*.java'
-    include 'ucar/nc2/ft/radial/*.java'
-    include 'ucar/nc2/ft2/coverage/*.java'
+    include 'ucar/nc2/dataset/*.java'
+    include 'ucar/nc2/dataset/spi/*.java'
     include 'ucar/nc2/iosp/*.java'
-    include 'ucar/nc2/ncml/*.java'
     include 'ucar/nc2/time/*.java'
     include 'ucar/nc2/units/*.java'
     include 'ucar/nc2/util/*.java'
-    include 'ucar/unidata/**/*.java'
+    include 'ucar/unidata/geoloc/*.java'
+    include 'ucar/unidata/io/*.java'
+    include 'ucar/unidata/util/*.java'
 }
 
 gradle.projectsEvaluated {  // Evaluate all projects first so that SourceSets will have been created for each.

@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -967,8 +966,8 @@ public class Group extends CDMNode implements AttributeContainer {
       return Optional.empty();
     }
 
-    public Iterator<Dimension> getDimensionIterator() {
-      return dimensions.iterator();
+    public Iterable<Dimension> getDimensions() {
+      return dimensions;
     }
 
     /**

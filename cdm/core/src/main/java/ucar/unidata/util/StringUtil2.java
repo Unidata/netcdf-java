@@ -5,6 +5,8 @@
 
 package ucar.unidata.util;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -587,9 +589,15 @@ public class StringUtil2 {
    *
    * @param source split this string
    * @return tokens that were seperated by whitespace
+   * @deprecated use StringUtil2.split()
    */
+  @Deprecated
   public static String[] splitString(String source) {
     return source.trim().split("\\s+"); // Separated by "whitespace"
+  }
+
+  public static Iterable<String> split(String source) {
+    return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(source);
   }
 
   /**

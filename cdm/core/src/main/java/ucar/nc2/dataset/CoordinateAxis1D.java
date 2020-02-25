@@ -5,9 +5,7 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
 import ucar.nc2.Group;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.NamedObject;
@@ -36,7 +34,7 @@ import java.util.List;
  * this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  *
  * @author john caron
- * @see CoordinateAxis#factory
+ * @see CoordinateAxis#fromVariableDS
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {

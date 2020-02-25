@@ -329,7 +329,6 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // create new variables as sections of ncVar
-
   private void createNewVariables(NetcdfDataset ds, Variable ncVar, List<Dimension> newDims, Dimension levelDim)
       throws InvalidRangeException {
 

@@ -83,7 +83,7 @@ class GribIospBuilder {
     boolean isLatLon = isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
 
     if (isRotatedLatLon) {
-      Variable.Builder hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.DOUBLE);
+      Variable.Builder hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
       for (Parameter p : hcs.proj.getProjectionParameters()) {
@@ -141,7 +141,7 @@ class GribIospBuilder {
 
     } else {
       // make horiz coordsys coordinate variable
-      Variable.Builder hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.FLOAT);
+      Variable.Builder hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
       for (Parameter p : hcs.proj.getProjectionParameters()) {
@@ -745,7 +745,7 @@ class GribIospBuilder {
     String ecName = ec.getName().toLowerCase();
     g.addDimension(new Dimension(ecName, n));
 
-    Variable.Builder v = Variable.builder().setName(ecName).setDataType(DataType.FLOAT).setDimensionsByName(ecName);
+    Variable.Builder v = Variable.builder().setName(ecName).setDataType(DataType.INT).setDimensionsByName(ecName);
     g.addVariable(v);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Ensemble.toString()));
 

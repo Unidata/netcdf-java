@@ -10,11 +10,11 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
 import java.util.Formatter;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 /**
  * Implement this interface to add a Coordinate Transform to a NetcdfDataset.
  * Must be able to know how to build one from the info in a Coordinate Transform Variable.
- *
  */
 public interface VertTransformBuilderIF {
 
@@ -37,7 +37,7 @@ public interface VertTransformBuilderIF {
    * @param vCT the vertical coordinate transform
    * @return ucar.unidata.geoloc.vertical.VerticalTransform math transform
    */
-  ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
+  VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
 
   /**
    * Get the Transform name. Typically this is matched on by an attribute in the dataset.

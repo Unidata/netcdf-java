@@ -5,12 +5,7 @@
 
 package ucar.nc2.dataset;
 
-/**
- * Type-safe enumeration of netCDF Dataset TransformType.
- *
- * @author john caron
- */
-
+/** Type-safe enumeration of netCDF Dataset TransformType. */
 public enum TransformType {
   Projection, Vertical
 }
