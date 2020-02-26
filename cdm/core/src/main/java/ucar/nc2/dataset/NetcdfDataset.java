@@ -1067,7 +1067,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param os write to this Output Stream.
    * @param uri use this for the url attribute; if null use getLocation().
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   @Override
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
     NcMLWriter ncmlWriter = new NcMLWriter();

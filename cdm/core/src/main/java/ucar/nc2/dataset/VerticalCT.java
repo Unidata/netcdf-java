@@ -134,7 +134,8 @@ public class VerticalCT extends CoordinateTransform {
 
   @Override
   public String toString() {
-    return "VerticalCT {" + "type=" + type + ", builder=" + transformBuilder.getTransformName() + '}';
+    String builderName = transformBuilder == null ? " none" : transformBuilder.getTransformName();
+    return "VerticalCT {" + "type=" + type + ", builder=" + builderName + '}';
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

@@ -25,8 +25,9 @@ import java.util.StringTokenizer;
  *
  * @author caron
  * @since Nov 4, 2007
+ * @deprecated will move in ver 6
  */
-
+@Deprecated
 public class NCdumpW {
   private static String usage =
       "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
@@ -651,7 +652,9 @@ public class NCdumpW {
    * @param showValues do you want the variable values printed?
    * @param url use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException on write error
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public static void writeNcML(NetcdfFile ncfile, Writer writer, WantValues showValues, String url) throws IOException {
     Preconditions.checkNotNull(ncfile);
     Preconditions.checkNotNull(writer);

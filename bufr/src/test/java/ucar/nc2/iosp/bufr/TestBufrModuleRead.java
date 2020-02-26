@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /** Sanity check on reading bufr messages. */
-public class TestBufrRead {
+public class TestBufrModuleRead {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final boolean show = false;
   private static final String unitDir = "../bufr/src/test/data/";

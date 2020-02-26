@@ -38,7 +38,9 @@ import java.util.TreeMap;
  * @see ucar.nc2.NetcdfFile
  * @see <a href=
  *      "http://www.unidata.ucar.edu/software/netcdf/ncml/">http://www.unidata.ucar.edu/software/netcdf/ncml/</a>
+ * @deprecated will move in ver 6
  */
+@Deprecated
 public class NcMLWriter {
   /**
    * A default namespace constructed from the NcML URI: {@code http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2}.
