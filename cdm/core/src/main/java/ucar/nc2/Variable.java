@@ -859,7 +859,9 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * Get the display name plus the dimensions, eg 'name(dim1, dim2)'
    *
    * @param buf add info to this StringBuilder
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public void getNameAndDimensions(StringBuilder buf) {
     getNameAndDimensions(buf, true, false);
   }
@@ -882,7 +884,9 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @param buf add info to this
    * @param useFullName use full name else short name. strict = true implies short name
    * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public void getNameAndDimensions(StringBuilder buf, boolean useFullName, boolean strict) {
     Formatter proxy = new Formatter();
     getNameAndDimensions(proxy, useFullName, strict);
@@ -890,7 +894,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   }
 
   /**
-   * Add display name plus the dimensions to the StringBuffer
+   * Add display name plus the dimensions to the Formatter
    *
    * @param buf add info to this
    * @param useFullName use full name else short name. strict = true implies short name
@@ -932,9 +936,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
   }
 
-  /**
-   * CDL representation of Variable, not strict.
-   */
   public String toString() {
     return writeCDL(false, false);
   }
@@ -945,13 +946,17 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @param useFullName use full name, else use short name
    * @param strict strictly comply with ncgen syntax
    * @return CDL representation of the Variable.
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public String writeCDL(boolean useFullName, boolean strict) {
     Formatter buf = new Formatter();
     writeCDL(buf, new Indent(2), useFullName, strict);
     return buf.toString();
   }
 
+  /** @deprecated use CDLWriter */
+  @Deprecated
   protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
     buf.format("%s", indent);
     if (dataType == null)

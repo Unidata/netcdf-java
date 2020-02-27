@@ -105,13 +105,17 @@ public class EnumTypedef extends CDMNode {
    *
    * @param strict if true, write in strict adherence to CDL definition.
    * @return CDL representation.
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public String writeCDL(boolean strict) {
     Formatter out = new Formatter();
     writeCDL(out, new Indent(2), strict);
     return out.toString();
   }
 
+  /** @deprecated use CDLWriter */
+  @Deprecated
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
     String basetype = "";

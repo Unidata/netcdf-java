@@ -24,6 +24,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 import java.util.*;
+import ucar.nc2.write.CDLWriter;
 
 /**
  * Wrap CDM source (NetcdfDataset) to be a DSP
@@ -244,7 +245,7 @@ public class CDMDSP extends AbstractDSP {
     try {
       if (DUMPCDL) {
         System.out.println("writecdl:");
-        this.ncdfile.writeCDL(System.out, false);
+        CDLWriter.writeCDL(this.ncdfile, System.out, false);
         System.out.flush();
       }
       // Use the file path to define the dataset name

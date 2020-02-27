@@ -281,7 +281,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return result;
   }
 
-  /** CDL representation, not strict. */
   @Override
   public String toString() {
     return writeCDL(false);
@@ -303,13 +302,17 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    *
    * @param strict if true, write in strict adherence to CDL definition.
    * @return CDL representation.
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public String writeCDL(boolean strict) {
     Formatter f = new Formatter();
     writeCDL(f, new Indent(2), strict);
     return f.toString();
   }
 
+  /** @deprecated use CDLWriter */
+  @Deprecated
   void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName();
     out.format("%s%s", indent, name);

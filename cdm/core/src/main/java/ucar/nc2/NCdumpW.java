@@ -7,6 +7,7 @@ package ucar.nc2;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import java.nio.charset.StandardCharsets;
+import java.util.Formatter;
 import org.jdom2.Element;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -16,6 +17,7 @@ import ucar.nc2.util.Indent;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.StringTokenizer;
+import ucar.nc2.write.CDLWriter;
 
 /**
  * Print contents of an existing netCDF file, using a Writer.
@@ -206,11 +208,11 @@ public class NCdumpW {
     boolean headerOnly = (showValues == WantValues.none) && (varNames == null);
 
     try {
-      if (ncml)
+      if (ncml) {
         writeNcML(nc, out, showValues, null); // output schema in NcML
-      else if (headerOnly)
-        nc.writeCDL(new PrintWriter(out), strict); // output schema in CDL form (like ncdump)
-      else {
+      } else if (headerOnly) {
+        CDLWriter.writeCDL(nc, out, strict);
+      } else {
         PrintWriter ps = new PrintWriter(out);
         nc.toStringStart(ps, strict);
 

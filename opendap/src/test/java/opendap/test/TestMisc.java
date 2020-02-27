@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -111,7 +112,7 @@ public class TestMisc extends UnitTestCommon {
       throw new Exception("Cannot read: " + testcase.url);
     StringWriter ow = new StringWriter();
     PrintWriter pw = new PrintWriter(ow);
-    ncfile.writeCDL(pw, false);
+    CDLWriter.writeCDL(ncfile, pw, false);
     pw.close();
     ow.close();
     String captured = ow.toString();
