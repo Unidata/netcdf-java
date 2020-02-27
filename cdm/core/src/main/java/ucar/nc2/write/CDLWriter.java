@@ -111,7 +111,10 @@ public class CDLWriter {
       out.format("%svariables:%n", indent);
       indent.incr();
       for (Variable v : group.getVariables()) {
-        writeCDL(v, indent, false);
+        if (v instanceof Structure)
+          writeCDL((Structure) v, indent, false);
+        else
+          writeCDL(v, indent, false);
         out.format("%n");
       }
       indent.decr();
