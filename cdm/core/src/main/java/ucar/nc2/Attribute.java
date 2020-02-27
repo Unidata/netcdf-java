@@ -238,11 +238,6 @@ public class Attribute extends CDMNode {
     return null;
   }
 
-  /**
-   * CDL representation, not strict.
-   *
-   * @return CDL representation
-   */
   @Override
   public String toString() {
     return toString(false);
@@ -253,7 +248,9 @@ public class Attribute extends CDMNode {
    * 
    * @param strict if true, create strict CDL, escaping names
    * @return CDL representation
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public String toString(boolean strict) {
     Formatter f = new Formatter();
     writeCDL(f, strict, null);
@@ -265,7 +262,9 @@ public class Attribute extends CDMNode {
    *
    * @param f write into this
    * @param strict if true, create strict CDL, escaping names
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   protected void writeCDL(Formatter f, boolean strict, String parentname) {
     if (strict && (isString() || this.getEnumType() != null))
       // Force type explicitly for string.
@@ -331,12 +330,7 @@ public class Attribute extends CDMNode {
   private static char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
   private static String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
 
-  /**
-   * Replace special characters '\t', '\n', '\f', '\r', for CDL
-   *
-   * @param s string to quote
-   * @return equivilent string replacing special chars
-   */
+  @Deprecated
   private static String encodeString(String s) {
     return StringUtil2.replace(s, org, replace);
   }

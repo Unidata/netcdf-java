@@ -403,13 +403,17 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @param strict if true, write in strict adherence to CDL definition.
    * @return CDL representation.
+   * @deprecated use CDLWriter
    */
+  @Deprecated
   public String writeCDL(boolean strict) {
     Formatter buf = new Formatter();
     writeCDL(buf, new Indent(2), strict);
     return buf.toString();
   }
 
+  /** @deprecated use CDLWriter */
+  @Deprecated
   void writeCDL(Formatter out, Indent indent, boolean strict) {
     boolean hasE = (!enumTypedefs.isEmpty());
     boolean hasD = (!dimensions.isEmpty());
