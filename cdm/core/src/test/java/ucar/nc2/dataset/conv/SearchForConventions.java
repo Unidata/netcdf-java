@@ -84,7 +84,7 @@ public class SearchForConventions {
   }
 
   @Test
-  // @Ignore("Not a test - really a utility program")
+  @Ignore("Not a test - really a utility program")
   public void findConventions() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
       System.out.printf("%s%n", filename);

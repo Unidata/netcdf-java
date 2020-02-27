@@ -48,22 +48,16 @@ public class TestBufrRead {
   @Test
   public void bitCountAllInUnitTestDir() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(unitDir, new MyFileFilter(), new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        return bitCount(filename);
-      }
-    }, true);
+    count += TestDir.actOnAll(unitDir, new MyFileFilter(), filename -> bitCount(filename), true);
     System.out.println("***BitCount " + count + " records");
   }
 
   @Test
   public void openAllInUnitTestDir() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(unitDir, new MyFileFilter(), new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        openNetcdf(filename);
-        return 1;
-      }
+    count += TestDir.actOnAll(unitDir, new MyFileFilter(), filename -> {
+      openNetcdf(filename);
+      return 1;
     }, true);
     System.out.println("***Opened " + count + " files");
   }
