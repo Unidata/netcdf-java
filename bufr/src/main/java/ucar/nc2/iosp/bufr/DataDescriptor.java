@@ -77,6 +77,46 @@ public class DataDescriptor {
     }
   }
 
+  /**
+   * Test if unit string indicates that the data are 7-bit coded characters following
+   * the International Reference Alphabet (formally known as the International Alphabet
+   * No.5 (IA5)) Recommendation/International Standard from the International Telegraph
+   * and Telephone Consultative Committee (CCITT)
+   *
+   * https://www.itu.int/rec/T-REC-T.50/en
+   *
+   * @param unitString unit
+   * @return If true, treat the data as 7-bit coded International Reference Alphabet Characters
+   */
+  public static boolean isInternationalAlphabetUnit(String unitString) {
+    String testUnitString = unitString.toLowerCase();
+    return testUnitString.startsWith("ccitt");
+  }
+
+  /**
+   * Test if the unit string indicates that we are dealing with data associated with a code table
+   *
+   * @param unitString unit
+   * @return If true, the unit indicates we are working with data associated with a code table
+   */
+  public static boolean isCodeTableUnit(String unitString) {
+    String testUnitString = unitString.toLowerCase();
+    return testUnitString.equalsIgnoreCase("Code Table") || testUnitString.equalsIgnoreCase("Code_Table")
+        || testUnitString.startsWith("codetable");
+  }
+
+  /**
+   * Test if the unit string indicates that we are dealing with data associated with a flag table
+   *
+   * @param unitString unit
+   * @return If true, the unit indicates we are working with data associated with a flag table
+   */
+  public static boolean isFlagTableUnit(String unitString) {
+    String testUnitString = unitString.toLowerCase();
+    return testUnitString.equalsIgnoreCase("Flag Table") || testUnitString.equalsIgnoreCase("Flag_Table")
+        || testUnitString.startsWith("flagtable");
+  }
+
   private void setDescriptor(TableB.Descriptor d) {
     this.name = d.getName().trim();
     this.units = d.getUnits().trim();
@@ -87,13 +127,12 @@ public class DataDescriptor {
     this.localOverride = d.getLocalOverride();
     this.source = d.getSource();
 
-    if (units.equalsIgnoreCase("CCITT IA5") || units.equalsIgnoreCase("CCITT_IA5")) {
+    if (isInternationalAlphabetUnit(units)) {
       this.type = 1; // String
-      // this.bitWidth *= 8;
     }
 
     // LOOK what about flag table ??
-    if (units.equalsIgnoreCase("Code Table") || units.equalsIgnoreCase("Code_Table")) {
+    if (isCodeTableUnit(units)) {
       this.type = 2; // enum
     }
   }
