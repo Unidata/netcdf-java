@@ -4,7 +4,9 @@ package ucar.nc2.internal.iosp.netcdf3;
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.util.Formatter;
+import java.util.Optional;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
@@ -25,6 +27,7 @@ import ucar.nc2.iosp.LayoutRegularSegmented;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
+import javax.annotation.Nullable;
 
 /**
  * Read-only using Builders for immutability.
@@ -77,6 +80,8 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   protected long lastModified; // used by sync
   protected boolean debug, debugRecord, debugRead;
 
+  private Charset valueCharset;
+
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return N3headerNew.isValidFile(raf);
@@ -116,7 +121,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     }
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new N3headerNew();
+    header = createHeader();
 
     Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
     header.read(raf, rootGroup, null);
@@ -141,8 +146,17 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     }
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new N3headerNew();
+    header = createHeader();
     header.read(raf, rootGroup, null);
+  }
+
+  /**
+   * Create header for reading netcdf file.
+   * 
+   * @return
+   */
+  protected N3headerNew createHeader() {
+    return new N3headerNew(this);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -394,6 +408,9 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   @Override
   public Object sendIospMessage(Object message) {
+    if (message instanceof Charset) {
+      setValueCharset((Charset) message);
+    }
     if (null == header)
       return null;
     /*
@@ -404,6 +421,26 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
      */
 
     return super.sendIospMessage(message);
+  }
+
+  /**
+   * Return {@link Charset value charset} if it was defined. Definition of charset
+   * occurs by sending a charset as a message using the {@link #sendIospMessage}
+   * method.
+   * 
+   * @return {@link Charset value charset} if it was defined.
+   */
+  protected Optional<Charset> getValueCharset() {
+    return Optional.ofNullable(valueCharset);
+  }
+
+  /**
+   * Define {@link Charset value charset}.
+   * 
+   * @param charset may be null.
+   */
+  protected void setValueCharset(@Nullable Charset charset) {
+    this.valueCharset = charset;
   }
 
   @Override

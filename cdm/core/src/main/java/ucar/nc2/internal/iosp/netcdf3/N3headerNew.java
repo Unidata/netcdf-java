@@ -4,6 +4,7 @@
  */
 package ucar.nc2.internal.iosp.netcdf3;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -70,6 +71,8 @@ public class N3headerNew {
 
   private long dataStart = Long.MAX_VALUE; // where the data starts
 
+  private final Charset valueCharset;
+
   /*
    * Notes:
    * In netcdf-3 are dimensions signed or unsigned?
@@ -77,6 +80,24 @@ public class N3headerNew {
    * "Each fixed-size variable and the data for one record's worth of a single record variable are limited in size to a
    * little less than 4 GiB, which is twice the size limit in versions earlier than netCDF 3.6."
    */
+
+  public N3headerNew() {
+    valueCharset = StandardCharsets.UTF_8;
+  }
+
+  protected N3headerNew(N3iospNew n3iospNew) {
+    valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Return defined {@link Charset value charset} that
+   * will be used by reading HDF3 header.
+   * 
+   * @return {@link Charset charset}
+   */
+  protected Charset getValueCharset() {
+    return valueCharset;
+  }
 
   /**
    * Read the header and populate the ncfile
@@ -96,14 +117,14 @@ public class N3headerNew {
 
     // netcdf magic number
     long pos = 0;
-    raf.order(RandomAccessFile.BIG_ENDIAN);
+    raf.order(getByteOrder());
     raf.seek(pos);
 
     byte[] b = new byte[4];
     raf.readFully(b);
-    for (int i = 0; i < 3; i++)
-      if (b[i] != MAGIC[i])
-        throw new IOException("Not a netCDF file " + raf.getLocation());
+    if (!isMagicBytes(b)) {
+      throw new IOException("Not a netCDF file " + raf.getLocation());
+    }
     if ((b[3] != 1) && (b[3] != 2))
       throw new IOException("Not a netCDF file " + raf.getLocation());
     useLongOffset = (b[3] == 2);
@@ -311,6 +332,34 @@ public class N3headerNew {
     }
   }
 
+  /**
+   * Return the byte order that will be used by
+   * {@link #read(RandomAccessFile, Group.Builder, Formatter) reading file}.
+   * 
+   * @return file byte order ({@link RandomAccessFile#BIG_ENDIAN big endian} or
+   *         {@link RandomAccessFile#LITTLE_ENDIAN little endian})
+   */
+  protected int getByteOrder() {
+    return RandomAccessFile.BIG_ENDIAN;
+  }
+
+  /**
+   * Check if the given bytes correspond to
+   * {@link #MAGIC magic bytes} of the header.
+   * 
+   * @param bytes given bytes.
+   * @return <code>true</code> if the given bytes correspond to
+   *         {@link #MAGIC magic bytes} of the header. Otherwise <code>false</code>.
+   */
+  protected boolean isMagicBytes(byte[] bytes) {
+    for (int i = 0; i < 3; i++) {
+      if (bytes[i] != MAGIC[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   long calcFileSize() {
     if (udim != null)
       return recStart + recsize * numrecs;
@@ -369,7 +418,7 @@ public class N3headerNew {
       if (type == 2) {
         if (fout != null)
           fout.format(" begin read String val pos= %d%n", raf.getFilePointer());
-        String val = readString();
+        String val = readString(getValueCharset());
         if (val == null)
           val = "";
         if (fout != null)
@@ -451,6 +500,10 @@ public class N3headerNew {
 
   // read a string = (nelems, byte array), then skip to 4 byte boundary
   private String readString() throws IOException {
+    return readString(StandardCharsets.UTF_8);
+  }
+
+  private String readString(Charset charset) throws IOException {
     int nelems = raf.readInt();
     byte[] b = new byte[nelems];
     raf.readFully(b);
@@ -467,7 +520,7 @@ public class N3headerNew {
       count++;
     }
 
-    return new String(b, 0, count, StandardCharsets.UTF_8); // all strings are considered to be UTF-8 unicode.
+    return new String(b, 0, count, charset); // all strings are considered to be UTF-8 unicode.
   }
 
   // skip to a 4 byte boundary in the file
