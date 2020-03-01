@@ -316,7 +316,12 @@ public class CDLWriter {
 
     indent.incr();
     for (Variable v : s.getVariables()) {
-      writeCDL(v, indent, useFullName);
+      // nested structures
+      if (v instanceof Structure) {
+        writeCDL((Structure) v, indent, useFullName);
+      } else {
+        writeCDL(v, indent, useFullName);
+      }
     }
     indent.decr();
 
