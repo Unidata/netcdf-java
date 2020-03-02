@@ -1957,7 +1957,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private Array decodeVlen(DataType dt, int pos, ByteBuffer bbuff) throws IOException {
     Array array;
     int n = (int) bbuff.getLong(pos); // Note that this does not increment the buffer position
-    long addr = getNativeAddr(pos + NativeLong.SIZE, bbuff); // LOOK: this assumes 64 bit pointers
+    long addr = getNativeAddr(pos + com.sun.jna.Native.POINTER_SIZE, bbuff);
     Pointer p = new Pointer(addr);
     Object data;
     switch (dt) {
