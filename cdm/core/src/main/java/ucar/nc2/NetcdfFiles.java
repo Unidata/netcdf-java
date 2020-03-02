@@ -323,6 +323,34 @@ public class NetcdfFiles {
   }
 
   /**
+   * Find out if the location can be opened, but dont actually open it.
+   *
+   * In order for a location to be openable by netCDF-java, we must have 1) a proper
+   * {@link ucar.unidata.io.RandomAccessFile} implementation, and 2) a proper {@link IOServiceProvider}
+   * implementation.
+   *
+   * @param location location of file
+   * @return true if can be opened
+   * @throws IOException on read error
+   */
+  public static boolean canOpen(String location) throws IOException {
+    boolean canOpen = false;
+    // do we have a RandomAccessFile class that will work?
+    try (ucar.unidata.io.RandomAccessFile raf = getRaf(location, -1)) {
+      if (raf != null) {
+        log.info(String.format("{} can be accessed with {}", raf.getLocation(), raf.getClass()));
+        // do we have an appropriate IOSP?
+        IOServiceProvider iosp = getIosp(raf);
+        if (iosp != null) {
+          canOpen = true;
+          log.info(String.format("{} can be opened by {}", raf.getLocation(), iosp.getClass()));
+        }
+      }
+    }
+    return canOpen;
+  }
+
+  /**
    * Removes the {@code "file:"} or {@code "file://"} prefix from the location, if necessary. Also replaces
    * back slashes with forward slashes.
    *
