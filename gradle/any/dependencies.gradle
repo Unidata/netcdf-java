@@ -146,8 +146,15 @@ libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.11"
 libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.9"
 
 // s3 RandomAccessFile
-
-libraries["aws-s3"] = "software.amazon.awssdk:s3:2.10.41"
+libraries["aws-s3"] = dependencies.create("software.amazon.awssdk:s3:2.10.76") {
+    // exclude netty nio client due to open CVEs. See
+    // https://github.com/aws/aws-sdk-java-v2/issues/1632
+    // we don't use the nio http client in our S3 related code,
+    // so we should be ok here (others may need to add it specifically to
+    // their code if they are using our S3 stuff, but then it's their
+    // explicit decision to run it).
+    exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+}
 
 //// command line parser
 libraries["jcommander"] = "com.beust:jcommander:1.78"
