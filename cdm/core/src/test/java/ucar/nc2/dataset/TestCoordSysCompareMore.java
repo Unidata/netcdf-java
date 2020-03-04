@@ -58,9 +58,6 @@ public class TestCoordSysCompareMore {
   @Test
   public void compareCoordSysBuilders() throws IOException {
     System.out.printf("Compare %s%n", fileLocation);
-    org.junit.Assume.assumeFalse(fileLocation.endsWith("conventions/wrf/wrfout_01_000000_0003.ncml"));
-    org.junit.Assume.assumeFalse(fileLocation.endsWith("conventions/wrf/wrf_masscore.ncml"));
-    org.junit.Assume.assumeFalse(fileLocation.endsWith("conventions/cedric/test.ncml"));
     logger.info("TestCoordSysCompare on {}%n", fileLocation);
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {

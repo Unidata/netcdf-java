@@ -6,8 +6,6 @@ package ucar.nc2.dataset;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -43,10 +41,8 @@ public class TestOpenWithEnhanceP {
     this.filename = filename;
   }
 
-
   @Test
   public void openWithEnhance() throws Exception {
-    org.junit.Assume.assumeFalse(filename.endsWith("HistDumpTest9.nc"));
     try (NetcdfDataset ncDataset = NetcdfDatasets.openDataset(filename, true, null)) {
       Assert.assertEquals(NetcdfDataset.getDefaultEnhanceMode(), ncDataset.getEnhanceMode());
       Assert.assertTrue("size=" + ncDataset.getCoordinateSystems().size(), ncDataset.getCoordinateSystems().size() > 0);
