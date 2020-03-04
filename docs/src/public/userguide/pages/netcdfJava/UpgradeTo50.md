@@ -293,3 +293,5 @@ You will also need to include the `cdm-s3` artifact in your build.
 This is currently not part of `netcdfAll.jar`..
 This is done through the use of `S3RandomAccessFile` and byte range-requests, so downloading the entire object may not be needed.
 For more information, see [dataset_urls.html#aws-s3].
+
+## netCDF-Java API Changes (5.4.x)

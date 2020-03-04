@@ -6,6 +6,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,13 +57,18 @@ public class SearchForConventions {
 
   @AfterClass
   public static void showResults() throws IOException {
-    FileWriter out = new FileWriter(tempDir + "conventions.txt");
-    showResults(out, convMap);
-    out.close();
+    Path tempPath = Paths.get(tempDir);
+    if (!Files.exists(tempPath)) {
+      System.out.printf("%s does not exist. Cannot save results.%n", tempDir);
+    } else {
+      FileWriter out = new FileWriter(tempDir + "conventions.txt");
+      showResults(out, convMap);
+      out.close();
 
-    out = new FileWriter(tempDir + "builder.txt");
-    showResults(out, builderMap);
-    out.close();
+      out = new FileWriter(tempDir + "builder.txt");
+      showResults(out, builderMap);
+      out.close();
+    }
   }
 
   private static void showResults(FileWriter out, Multimap<String, String> mmap) throws IOException {
