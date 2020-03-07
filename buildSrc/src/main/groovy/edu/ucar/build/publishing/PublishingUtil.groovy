@@ -99,9 +99,12 @@ abstract class PublishingUtil {
      * generated, instead of 'runtime'. This addresses a known bug in the maven-publish plugin:
      * https://discuss.gradle.org/t/maven-publish-plugin-generated-pom-making-dependency-scope-runtime/
      *
+     * Also ensures that javax.servlet does not get added as a runtime dependency for projects that use gretty
+     * to spin up a local server for testing...no idea why that happens.
+     *
      * @param project  the project to adjust POM scopes for.
      */
-    static void adjustMavenPublicationPomScopes(Project project) {
+    static void adjustMavenPublication(Project project) {
         project.with {
             Configuration projCompileConfig = configurations.findByName('compile')
             if (!projCompileConfig) {
@@ -142,6 +145,14 @@ abstract class PublishingUtil {
 
                         depNodesToFix.each { Node depNode ->
                             depNode.scope*.value = 'compile'
+                        }
+
+                        if (project.name in ["httpservices", "opendap"]) {
+                            pomProjectNode.dependencies.dependency.each { dep ->
+                                if (dep.artifactId.text() == "javax.servlet-api") {
+                                    assert dep.parent().remove(dep)
+                                }
+                            }
                         }
                     }
                 }
