@@ -398,7 +398,7 @@ public class H4header implements HdfHeaderIF {
     }
 
     boolean isUnlimited = (length == 0);
-    Dimension dim = Dimension.builder(group.name, length).setIsUnlimited(isUnlimited).build();
+    Dimension dim = Dimension.builder().setName(group.name).setIsUnlimited(isUnlimited).setLength(length).build();
     root.addDimension(dim);
   }
 

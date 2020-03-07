@@ -51,8 +51,9 @@ class BuilderHelper {
     // dimensions
     for (Dimension d : src.getDimensions()) {
       if (!targetGroup.findDimensionLocal(d.getShortName()).isPresent()) {
-        Dimension newd = Dimension.builder(d.getShortName(), d.getLength()).setIsShared(d.isShared())
-            .setIsUnlimited(unlimitedOK && d.isUnlimited()).setIsVariableLength(d.isVariableLength()).build();
+        Dimension newd = Dimension.builder().setName(d.getShortName()).setIsShared(d.isShared())
+            .setIsUnlimited(unlimitedOK && d.isUnlimited()).setIsVariableLength(d.isVariableLength())
+            .setLength(d.getLength()).build();
         targetGroup.addDimension(newd);
       }
     }
