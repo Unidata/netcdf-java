@@ -8,6 +8,9 @@ package ucar.unidata.util.test;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -395,8 +398,8 @@ public abstract class UnitTestCommon {
 
   public static String readfile(String filename) throws IOException {
     StringBuilder buf = new StringBuilder();
-    try (FileReader file = new FileReader(filename)) {
-      BufferedReader rdr = new BufferedReader(file);
+    Path file = Paths.get(filename);
+    try (BufferedReader rdr = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
       String line;
       while ((line = rdr.readLine()) != null) {
         if (line.startsWith("#"))
