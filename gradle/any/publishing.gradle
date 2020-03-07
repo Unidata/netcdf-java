@@ -4,7 +4,7 @@ apply plugin: 'maven-publish'
 
 // These are safe to apply to the root project. They'll basically have no effect.
 PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
-PublishingUtil.adjustMavenPublicationPomScopes(project)
+PublishingUtil.adjustMavenPublication(project)
 
 publishing {
     repositories {

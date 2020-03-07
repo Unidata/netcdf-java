@@ -209,7 +209,7 @@ class PublishingUtilTest extends Specification {
         buildSrcClasspathAsCsvString == "C:/Users/cwardgar/Desktop,D:/git/gh958"
     }
     
-    def "adjustMavenPublicationPomScopes() on Java pub with various deps"() {
+    def "adjustMavenPublication() on Java pub with various deps"() {
         setup: "settings file"
         File settingsFile = testProjectDir.newFile('settings.gradle')
         settingsFile << "rootProject.name = 'test'"
@@ -232,7 +232,7 @@ class PublishingUtilTest extends Specification {
             
             import edu.ucar.build.publishing.PublishingUtil
             PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
-            PublishingUtil.adjustMavenPublicationPomScopes(project)   // Testing this.
+            PublishingUtil.adjustMavenPublication(project)   // Testing this.
             
             dependencies {
                 compile "org.slf4j:slf4j-api:1.7.7"
@@ -265,17 +265,17 @@ class PublishingUtilTest extends Specification {
         Node hamcrestDepNode = depNodes.find { it.artifactId.text() == 'hamcrest-core' }
         hamcrestDepNode?.scope.text() == 'runtime'
 
-        and: "One is slf4j-api, with compile scope. Corrected by adjustMavenPublicationPomScopes()."
+        and: "One is slf4j-api, with compile scope. Corrected by adjustMavenPublication()."
         Node slf4jDepNode = depNodes.find { it.artifactId.text() == 'slf4j-api' }
         slf4jDepNode?.scope.text() == 'compile'
 
-        and: "One is objenesis, with compile scope. Corrected by adjustMavenPublicationPomScopes()."
+        and: "One is objenesis, with compile scope. Corrected by adjustMavenPublication()."
         Node objenesisDepNode = depNodes.find { it.artifactId.text() == 'objenesis' }
         objenesisDepNode?.scope.text() == 'compile'
     }
     
     @Issue("gh-596")
-    def "adjustMavenPublicationPomScopes() on Web pub"() {
+    def "adjustMavenPublication() on Web pub"() {
         setup: "settings file"
         File settingsFile = testProjectDir.newFile('settings.gradle')
         settingsFile << "rootProject.name = 'test'"
@@ -298,7 +298,7 @@ class PublishingUtilTest extends Specification {
             
             import edu.ucar.build.publishing.PublishingUtil
             PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
-            PublishingUtil.adjustMavenPublicationPomScopes(project)   // Testing this.
+            PublishingUtil.adjustMavenPublication(project)   // Testing this.
         """
         
         and: "Setup GradleRunner and execute it to get build result."
@@ -320,7 +320,7 @@ class PublishingUtilTest extends Specification {
     }
     
     @Issue("gh-596")
-    def "adjustMavenPublicationPomScopes() on artifact pub"() {  // Specifically our fat jars.
+    def "adjustMavenPublication() on artifact pub"() {  // Specifically our fat jars.
         setup: "settings file"
         File settingsFile = testProjectDir.newFile('settings.gradle')
         settingsFile << "rootProject.name = 'test'"
@@ -355,7 +355,7 @@ class PublishingUtilTest extends Specification {
             }
             
             import edu.ucar.build.publishing.PublishingUtil
-            PublishingUtil.adjustMavenPublicationPomScopes(project)   // Testing this.
+            PublishingUtil.adjustMavenPublication(project)   // Testing this.
         """
         
         and: "Setup GradleRunner and execute it to get build result."
