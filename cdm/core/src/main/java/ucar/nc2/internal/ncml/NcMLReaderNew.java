@@ -771,8 +771,8 @@ public class NcMLReaderNew {
         System.out.println(" add new dim = " + name);
       }
       // LOOK change to replaceDimension to get fort.54 working.
-      groupBuilder.replaceDimension(Dimension.builder(name, len).setIsShared(isShared).setIsUnlimited(isUnlimited)
-          .setIsVariableLength(isVariableLength).build());
+      groupBuilder.replaceDimension(Dimension.builder().setName(name).setIsShared(isShared).setIsUnlimited(isUnlimited)
+          .setIsVariableLength(isVariableLength).setLength(len).build());
 
     } else { // existing - modify it
       Dimension.Builder newDim = dim.toBuilder();
