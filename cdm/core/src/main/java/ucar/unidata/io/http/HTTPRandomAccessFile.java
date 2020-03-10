@@ -38,8 +38,8 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
   private static final int httpBufferSize =
       Integer.parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(maxHttpBufferSize)));
 
-  private static final int httpMaxCacheSize = Integer
-      .parseInt(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
+  private static final long httpMaxCacheSize = Long
+      .parseLong(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
 
   private static final boolean debug = false, debugDetails = false;
 
@@ -54,7 +54,7 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
   // TODO make private in 6?
   @Urlencoded
-  public HTTPRandomAccessFile(String url, int bufferSize, int maxRemoteCacheSize) throws IOException {
+  public HTTPRandomAccessFile(String url, int bufferSize, long maxRemoteCacheSize) throws IOException {
     super(url, bufferSize, maxRemoteCacheSize);
 
     if (debugLeaks)

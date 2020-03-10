@@ -35,8 +35,8 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
   private static final int s3BufferSize = Integer
       .parseInt(System.getProperty("ucar.unidata.io.s3.bufferSize", String.valueOf(defaultRemoteFileBufferSize)));
 
-  private static final int s3MaxReadCacheSize = Integer
-      .parseInt(System.getProperty("ucar.unidata.io.s3.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
+  private static final long s3MaxReadCacheSize = Long
+      .parseLong(System.getProperty("ucar.unidata.io.s3.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
   /**
    * The maximum number of connections allowed in the S3 http connection pool. Each built S3 HTTP client has it's own
    * private connection pool.
