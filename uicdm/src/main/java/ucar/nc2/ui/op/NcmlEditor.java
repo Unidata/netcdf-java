@@ -12,8 +12,10 @@ import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
 import org.jdom2.Element;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
@@ -282,7 +284,9 @@ public class NcmlEditor extends JPanel {
 
   private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
     try {
-      return NetcdfDataset.openDataset(location, addCoords, task);
+      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
+      return useBuilders ? NetcdfDatasets.openDataset(location, addCoords, task)
+          : NetcdfDataset.openDataset(location, addCoords, task);
 
       // if (setUseRecordStructure)
       // ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -336,8 +340,9 @@ public class NcmlEditor extends JPanel {
     if (ncmlLocation == null) {
       return;
     }
-
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(ncmlLocation)) {
+    boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
+    try (NetcdfDataset ncd =
+        useBuilders ? NetcdfDatasets.openDataset(ncmlLocation) : NetcdfDataset.openDataset(ncmlLocation)) {
       ncd.check(f);
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
