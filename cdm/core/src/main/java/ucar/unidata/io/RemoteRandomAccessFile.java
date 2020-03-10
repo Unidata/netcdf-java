@@ -21,7 +21,7 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
 
   protected final String url;
   // 10 MiB default maximum loading cache size
-  protected static final int defaultMaxReadCacheSize = 10485760;
+  protected static final long defaultMaxReadCacheSize = 10485760;
   // 256 KiB default remote file buffer size
   protected static final int defaultRemoteFileBufferSize = 262144;
   // default connection timeout in milliseconds (10 seconds)
@@ -37,7 +37,7 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteRandomAccessFile.class);
 
-  protected RemoteRandomAccessFile(String url, int bufferSize, int maxRemoteCacheSize) {
+  protected RemoteRandomAccessFile(String url, int bufferSize, long maxRemoteCacheSize) {
     super(bufferSize);
 
     this.url = url;
@@ -55,9 +55,9 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     }
   }
 
-  private void initCache(int cacheBlockSizeInBytes, java.time.Duration timeToLive) {
+  private void initCache(long cacheSizeInBytes, java.time.Duration timeToLive) {
     CacheBuilder<Object, Object> cb =
-        CacheBuilder.newBuilder().maximumSize(cacheBlockSizeInBytes).expireAfterWrite(timeToLive);
+        CacheBuilder.newBuilder().maximumSize(cacheSizeInBytes).expireAfterWrite(timeToLive);
     if (debugAccess) {
       cb.recordStats();
     }
@@ -133,10 +133,10 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
 
   private byte[] readRemoteCacheSizedChunk(Long cacheBlockNumber) throws IOException {
     long position = cacheBlockNumber * readCacheBlockSize;
-    int toEOF = (int) (length() - position);
+    long toEOF = length() - position;
     // if size to EOF less than readCacheBlockSize, just read to EOF
-    int bytes = toEOF < readCacheBlockSize ? toEOF : readCacheBlockSize;
-
+    long bytesToRead = toEOF < readCacheBlockSize ? toEOF : readCacheBlockSize;
+    int bytes = Math.toIntExact(bytesToRead);
     byte[] buffer = new byte[bytes];
 
     readRemote(position, buffer, 0, bytes);
