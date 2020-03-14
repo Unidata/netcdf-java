@@ -26,7 +26,11 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
-/** CDL writer */
+/**
+ * Common Data Language (CDL) writer.
+ * 
+ * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#cdl_guide"
+ */
 public class CDLWriter {
 
   public static void writeCDL(NetcdfFile ncfile, PrintStream out, boolean strict) {

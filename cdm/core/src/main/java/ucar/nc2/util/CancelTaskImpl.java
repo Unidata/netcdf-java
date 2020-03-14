@@ -10,7 +10,9 @@ package ucar.nc2.util;
  *
  * @author caron
  * @since 4/10/13
+ * @deprecated will move in ver6
  */
+@Deprecated
 public class CancelTaskImpl implements CancelTask {
   protected boolean done;
   protected boolean success;

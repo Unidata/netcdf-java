@@ -10,9 +10,10 @@ import java.net.URI;
 
 /**
  * Networking utilities.
- *
- * @author caron
+ * 
+ * @deprecated move to util.net
  */
+@Deprecated
 public class URLnaming {
 
   /// try to figure out if we need to add file: to the location when writing

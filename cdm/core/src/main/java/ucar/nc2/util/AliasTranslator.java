@@ -7,10 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle textual substitution for dataroots.
- *
- * @author caron
- * @since 4/16/2015
+ * 
+ * @deprecated will move in ver 6
  */
+@Deprecated
 public class AliasTranslator {
 
   private static Map<String, String> alias = new ConcurrentHashMap<>();

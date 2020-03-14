@@ -812,7 +812,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
-  // LOOK BAD MUTABLE
+  /** @deprecated do not use */
+  @Deprecated
   void setCoordinateSystems(CoordinatesHelper coords) {
     for (String name : this.coordSysNames) {
       coords.findCoordSystem(name).ifPresent(cs -> this.enhanceProxy.addCoordinateSystem(cs));

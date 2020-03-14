@@ -8,9 +8,10 @@ package ucar.nc2.util;
 /**
  * Interface for global debug flags.
  * Allows decoupling of packages.
- *
- * @author John Caron
+ * 
+ * @deprecated will move in ver 6
  */
+@Deprecated
 public interface DebugFlags {
 
   /**

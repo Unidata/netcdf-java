@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Input/Output utilities.
+ * Input/Output static utilities.
  *
  * @author John Caron
  * @see "http://stackoverflow.com/questions/12552863/correct-idiom-for-managing-multiple-chained-resources-in-try-with-resources-bloc"

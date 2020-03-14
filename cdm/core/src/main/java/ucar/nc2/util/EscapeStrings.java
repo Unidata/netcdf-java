@@ -40,8 +40,10 @@ import java.util.List;
  * 3) PercentEscaper
  * PercentEscaper(String safeChars, boolean plusForSpace)
  * Constructs a percent escaper with the specified safe characters and optional handling of the space character.
+ * 
+ * @deprecated
  */
-
+@Deprecated
 public class EscapeStrings {
 
   protected static final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

@@ -21,9 +21,10 @@ import java.util.ArrayList;
 /**
  * Compare two NetcdfFile.
  * Dont use assert, place results in Formatter.
- *
- * @author john
+ * 
+ * @deprecated will move in ver6
  */
+@Deprecated
 public class CompareNetcdf2 {
   public static final ObjFilter IDENTITY_FILTER = new ObjFilter() {};
 

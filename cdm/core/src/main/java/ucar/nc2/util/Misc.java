@@ -15,7 +15,9 @@ import ucar.ma2.DataType;
  * Miscellaneous static routines.
  *
  * @author caron
+ * @deprecated
  */
+@Deprecated
 public class Misc {
   public static final int referenceSize = 4; // estimates pointer size, in principle JVM dependent
   public static final int objectSize = 16; // estimates pointer size, in principle JVM dependent

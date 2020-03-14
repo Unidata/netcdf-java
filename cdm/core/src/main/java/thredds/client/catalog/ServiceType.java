@@ -83,7 +83,7 @@ public enum ServiceType {
   public enum AccessType {
     Catalog("Catalog"), Metadata("Metadata"), DataAccess("Data Access"), Unknown("Unknown");
 
-    protected String name;
+    protected final String name;
 
     AccessType(String name) {
       this.name = name;

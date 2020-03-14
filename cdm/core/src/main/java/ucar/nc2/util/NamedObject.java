@@ -7,9 +7,9 @@ package ucar.nc2.util;
 /**
  * An object that has a name and a description.
  * 
- * @author caron
+ * @deprecated will move in ver 6
  */
-
+@Deprecated
 public interface NamedObject {
 
   /**

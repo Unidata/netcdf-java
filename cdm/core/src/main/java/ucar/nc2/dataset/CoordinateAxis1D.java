@@ -198,7 +198,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * The ith one refers to the ith coordinate.
    *
    * @return List of ucar.nc2.util.NamedObject, or empty list.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getNames() {
     int n = getDimension(0).getLength();
     List<NamedObject> names = new ArrayList<>(n);

@@ -317,14 +317,18 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   /**
    * @return ArrayList of thredds.util.NamedObject, from the GridCoordSys.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getLevels() {
     return gcs.getLevels();
   }
 
   /**
    * @return ArrayList of thredds.util.NamedObject, from the GridCoordSys.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getTimes() {
     return gcs.getTimes();
   }

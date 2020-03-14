@@ -1449,7 +1449,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * The ith one refers to the ith level coordinate.
    *
    * @return List of ucar.nc2.util.NamedObject, or empty list.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getLevels() {
     if (vertZaxis == null)
       return new ArrayList<>(0);
@@ -1496,7 +1498,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * The ith one refers to the ith time coordinate.
    *
    * @return List of ucar.nc2.util.NamedObject, or empty list.
+   * @deprecated will move in ver 6
    */
+  @Deprecated
   public List<NamedObject> getTimes() {
     List<CalendarDate> cdates = getCalendarDates();
     List<NamedObject> times = new ArrayList<>(cdates.size());
