@@ -21,6 +21,7 @@ import java.util.StringTokenizer;
  * @author Russ Rew
  * @author John Caron
  */
+// TODO make Immutable in ver6
 public class LatLonRect {
 
   public static LatLonRect INVALID = new LatLonRect(LatLonPointImmutable.INVALID, LatLonPointImmutable.INVALID);

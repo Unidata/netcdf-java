@@ -75,7 +75,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     if (origin == null)
       return;
 
-    double dLat = Math.toDegrees(getMaximumRadialDist() / Earth.getRadius());
+    double dLat = Math.toDegrees(getMaximumRadialDist() / Earth.WGS84_EARTH_RADIUS_METERS);
     double latRadians = Math.toRadians(origin.getLatitude());
     double dLon = dLat * Math.cos(latRadians);
 

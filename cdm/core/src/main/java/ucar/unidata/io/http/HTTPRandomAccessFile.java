@@ -25,7 +25,6 @@ import ucar.unidata.util.Urlencoded;
  *
  * @author John Caron, based on work by Donald Denbo
  */
-
 public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
   // deprecate ucar.unidata.io.http.maxHttpBufferSize

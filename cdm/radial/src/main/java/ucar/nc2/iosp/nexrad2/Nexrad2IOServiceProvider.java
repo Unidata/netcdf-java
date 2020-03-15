@@ -130,11 +130,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       ncfile.addAttribute(null, new Attribute("StationLongitude", volScan.getStationLongitude()));
       ncfile.addAttribute(null, new Attribute("StationElevationInMeters", volScan.getStationElevation()));
 
-      double latRadiusDegrees = Math.toDegrees(radarRadius / ucar.unidata.geoloc.Earth.getRadius());
+      double latRadiusDegrees = Math.toDegrees(radarRadius / ucar.unidata.geoloc.Earth.WGS84_EARTH_RADIUS_METERS);
       ncfile.addAttribute(null, new Attribute("geospatial_lat_min", volScan.getStationLatitude() - latRadiusDegrees));
       ncfile.addAttribute(null, new Attribute("geospatial_lat_max", volScan.getStationLatitude() + latRadiusDegrees));
       double cosLat = Math.cos(Math.toRadians(volScan.getStationLatitude()));
-      double lonRadiusDegrees = Math.toDegrees(radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
+      double lonRadiusDegrees =
+          Math.toDegrees(radarRadius / cosLat / ucar.unidata.geoloc.Earth.WGS84_EARTH_RADIUS_METERS);
       ncfile.addAttribute(null, new Attribute("geospatial_lon_min", volScan.getStationLongitude() - lonRadiusDegrees));
       ncfile.addAttribute(null, new Attribute("geospatial_lon_max", volScan.getStationLongitude() + lonRadiusDegrees));
 

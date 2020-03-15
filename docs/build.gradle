@@ -104,6 +104,7 @@ task buildJavadocCdm(type: Javadoc) {
     include 'ucar/nc2/util/*.java'
     include 'ucar/unidata/geoloc/*.java'
     include 'ucar/unidata/io/*.java'
+    include 'ucar/unidata/io/spi/*.java'
     include 'ucar/unidata/util/*.java'
 }
 

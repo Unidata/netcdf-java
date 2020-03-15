@@ -8,11 +8,11 @@ package ucar.nc2.wmo;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * Uitlities common to WMO table parsing
+ * Uitlities common to WMO table parsing.
  *
- * @author caron
- * @since 3/1/13
+ * @deprecated will be moved in ver6
  */
+@Deprecated
 public class Util {
 
   /**
