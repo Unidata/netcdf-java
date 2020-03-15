@@ -847,7 +847,7 @@ public class GridHorizCoordSys {
     startx = -gridLengthX * xp; // km
     starty = -gridLengthY * yp;
 
-    double radius = Earth.getRadius() / 1000.0; // km
+    double radius = Earth.WGS84_EARTH_RADIUS_KM;
 
     if (nr == 1111111111.0) { // LOOK: not sure how all ones will appear as a double, need example
       proj = new Orthographic(Lat0, Lon0, radius);

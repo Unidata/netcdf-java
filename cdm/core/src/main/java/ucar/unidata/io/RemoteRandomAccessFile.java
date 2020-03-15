@@ -14,12 +14,14 @@ import java.nio.channels.WritableByteChannel;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// not immutable because RandomAccessFile is not immutable.
 public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAccessFile implements ReadableRemoteFile {
+  private static final Logger logger = LoggerFactory.getLogger(RemoteRandomAccessFile.class);
 
-  protected final String url;
   // 10 MiB default maximum loading cache size
   protected static final long defaultMaxReadCacheSize = 10485760;
   // 256 KiB default remote file buffer size
@@ -29,13 +31,10 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
   // default cache time to live in milliseconds
   private static final long defaultReadCacheTimeToLive = 30 * 1000;
 
+  protected final String url;
   private final boolean readCacheEnabled;
-
-
   private final int readCacheBlockSize;
-  private LoadingCache<Long, byte[]> readCache;
-
-  private static final Logger logger = LoggerFactory.getLogger(RemoteRandomAccessFile.class);
+  private final LoadingCache<Long, byte[]> readCache;
 
   protected RemoteRandomAccessFile(String url, int bufferSize, long maxRemoteCacheSize) {
     super(bufferSize);
@@ -47,21 +46,22 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     // Only enable cache if given size is at least twice the buffer size
     if (maxRemoteCacheSize >= 2 * bufferSize) {
       this.readCacheBlockSize = 2 * bufferSize;
-      initCache(maxRemoteCacheSize, Duration.ofMillis(defaultReadCacheTimeToLive));
+      this.readCache = initCache(maxRemoteCacheSize, Duration.ofMillis(defaultReadCacheTimeToLive));
       readCacheEnabled = true;
     } else {
       this.readCacheBlockSize = -1;
       readCacheEnabled = false;
+      readCache = null;
     }
   }
 
-  private void initCache(long cacheSizeInBytes, java.time.Duration timeToLive) {
+  private LoadingCache<Long, byte[]> initCache(int cacheBlockSizeInBytes, java.time.Duration timeToLive) {
     CacheBuilder<Object, Object> cb =
         CacheBuilder.newBuilder().maximumSize(cacheSizeInBytes).expireAfterWrite(timeToLive);
     if (debugAccess) {
       cb.recordStats();
     }
-    this.readCache = cb.build(new CacheLoader<Long, byte[]>() {
+    return cb.build(new CacheLoader<Long, byte[]>() {
       public byte[] load(@Nonnull Long key) throws IOException {
         return readRemoteCacheSizedChunk(key);
       }

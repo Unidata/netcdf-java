@@ -62,7 +62,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
   public AlbersEqualArea(double lat0, double lon0, double par1, double par2) {
-    this(lat0, lon0, par1, par2, 0, 0, Earth.getRadius() * .001);
+    this(lat0, lon0, par1, par2, 0, 0, Earth.WGS84_EARTH_RADIUS_KM);
   }
 
   /**
@@ -79,7 +79,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    */
   public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting,
       double falseNorthing) {
-    this(lat0, lon0, par1, par2, falseEasting, falseNorthing, Earth.getRadius() * .001);
+    this(lat0, lon0, par1, par2, falseEasting, falseNorthing, Earth.WGS84_EARTH_RADIUS_KM);
   }
 
   /**
