@@ -188,7 +188,7 @@ public class RadialCoordSys {
     if (origin == null)
       return null;
 
-    double dLat = Math.toDegrees(getMaximumRadial() / Earth.getRadius());
+    double dLat = Math.toDegrees(getMaximumRadial() / Earth.WGS84_EARTH_RADIUS_METERS);
     double latRadians = Math.toRadians(origin.getLatitude());
     double dLon = dLat * Math.cos(latRadians);
 

@@ -13,7 +13,7 @@ import java.util.Formatter;
  *
  * @author John Caron
  * @see ProjectionPoint
- * @deprecated only use ProjectionPoint in 6.
+ * @deprecated only use ProjectionPoint interface in 6; will not implement Serializable in ver6
  */
 public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializable {
   private double x, y;

@@ -209,7 +209,7 @@ public abstract class AbstractTransformBuilder {
    * @return earth radius in km
    */
   double getEarthRadiusInKm(AttributeContainer ctv) {
-    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius());
+    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.WGS84_EARTH_RADIUS_METERS);
     if (earth_radius > 10000.0)
       earth_radius *= .001;
     return earth_radius;

@@ -10,9 +10,9 @@ import javax.annotation.concurrent.Immutable;
 /**
  * An immutable {@link LatLonPoint}.
  *
- * @author caron
- * @since 7/29/2014
+ * @deprecated move to implementatipon classes
  */
+@Deprecated
 @Immutable
 public class LatLonPointImmutable extends LatLonPointImpl {
   public static final LatLonPointImmutable INVALID =

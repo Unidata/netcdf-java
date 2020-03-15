@@ -10,7 +10,9 @@ import java.util.Objects;
  *
  * @author cwardgar
  * @since 2018-03-08
+ * @deprecated will move in ver6
  */
+@Deprecated
 @Immutable
 public class LatLonPointNoNormalize {
   /** East latitude in degrees, not necessarily in [-90, 90]. */

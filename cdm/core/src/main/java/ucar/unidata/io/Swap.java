@@ -12,8 +12,9 @@ package ucar.unidata.io;
  *
  * @author Kirk Waters
  * @author Russ Rew, 1998, added documentation
+ * @depreated do not use
  */
-
+@Deprecated
 public class Swap {
 
   /**

@@ -35,13 +35,13 @@ import java.util.*;
  *
  * @author John Caron
  * @see Projection
- * @deprecated only use Projection interface in 6.
+ * @deprecated only use Projection interface in 6; will not implement Serializable in ver6
  */
 public abstract class ProjectionImpl implements Projection, java.io.Serializable {
   /**
    * Earth radius in kilometers
    */
-  public static final double EARTH_RADIUS = Earth.getRadius() * 0.001; // km
+  public static final double EARTH_RADIUS = Earth.WGS84_EARTH_RADIUS_METERS * 0.001; // km
 
   /**
    * Latitude index
