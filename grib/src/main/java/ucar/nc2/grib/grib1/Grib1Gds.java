@@ -572,7 +572,7 @@ public abstract class Grib1Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
@@ -890,7 +890,7 @@ public abstract class Grib1Gds {
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
@@ -1072,7 +1072,7 @@ public abstract class Grib1Gds {
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
@@ -1222,7 +1222,7 @@ public abstract class Grib1Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
@@ -1305,7 +1305,7 @@ public abstract class Grib1Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 

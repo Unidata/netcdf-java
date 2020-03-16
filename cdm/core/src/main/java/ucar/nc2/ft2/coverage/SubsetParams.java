@@ -9,6 +9,7 @@ import com.google.common.net.UrlEscapers;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -225,8 +226,8 @@ public class SubsetParams {
     return this;
   }
 
-  public LatLonPointImpl getLatLonPoint() {
-    return (LatLonPointImpl) get(latlonPoint);
+  public LatLonPoint getLatLonPoint() {
+    return (LatLonPoint) get(latlonPoint);
   }
 
   public SubsetParams setLatLonPoint(LatLonPointImpl pt) {

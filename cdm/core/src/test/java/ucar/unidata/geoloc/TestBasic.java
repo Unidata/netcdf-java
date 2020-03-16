@@ -153,14 +153,14 @@ public class TestBasic extends TestCase {
 
   void showLatLonNormal(double lon, double center) {
     System.out.println(
-        Format.formatDouble(lon, 8, 5) + " => " + Format.formatDouble(LatLonPointImpl.lonNormal(lon, center), 8, 5));
+        Format.formatDouble(lon, 8, 5) + " => " + Format.formatDouble(LatLonPoints.lonNormal(lon, center), 8, 5));
   }
 
   void runCenter(double center) {
     for (double lon = 0.0; lon < 380.0; lon += 22.5) {
       if (debug1)
         showLatLonNormal(lon, center);
-      double result = LatLonPointImpl.lonNormal(lon, center);
+      double result = LatLonPoints.lonNormal(lon, center);
       assert (result >= center - 180.);
       assert (result <= center + 180.);
       assert ((result == lon) || (Math.abs(result - lon) == 360) || (Math.abs(result - lon) == 720));

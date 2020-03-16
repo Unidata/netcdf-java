@@ -13,7 +13,8 @@ import java.io.*;
  * Note that getX() getY() really means getMinX(), getMinY(), rather than
  * "upper left point" of the rectangle.
  *
- * @deprecated will not implement Serializable in ver6
+ * LOOK will not implement Serializable in ver6
+ * LOOK may be immutable AutoValue in ver6
  */
 public class ProjectionRect implements java.io.Serializable {
   // TODO make final in ver6

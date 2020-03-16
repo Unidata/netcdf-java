@@ -20,6 +20,7 @@ import java.util.StringTokenizer;
  *
  * @author Russ Rew
  * @author John Caron
+ *         LOOK may be immutable AutoValue in ver6
  */
 // TODO make Immutable in ver6
 public class LatLonRect {
@@ -84,7 +85,7 @@ public class LatLonRect {
 
     // these are an alternative way to view the longitude range
     this.width = Math.abs(deltaLon);
-    this.lon0 = LatLonPointImpl.lonNormal(p1.getLongitude() + deltaLon / 2);
+    this.lon0 = LatLonPoints.lonNormal(p1.getLongitude() + deltaLon / 2);
     this.allLongitude = (this.width >= 360.0);
   }
 
@@ -101,7 +102,7 @@ public class LatLonRect {
    */
   public LatLonRect(LatLonPoint left, LatLonPoint right) {
     this(left, right.getLatitude() - left.getLatitude(),
-        LatLonPointImpl.lonNormal360(right.getLongitude() - left.getLongitude()));
+        LatLonPoints.lonNormal360(right.getLongitude() - left.getLongitude()));
   }
 
   /**
@@ -145,6 +146,7 @@ public class LatLonRect {
    * Get the upper right corner of the bounding box.
    *
    * @return upper right corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getUpperRightPoint() {
     return upperRight;
@@ -154,6 +156,7 @@ public class LatLonRect {
    * Get the lower left corner of the bounding box.
    *
    * @return lower left corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getLowerLeftPoint() {
     return lowerLeft;
@@ -163,6 +166,7 @@ public class LatLonRect {
    * Get the upper left corner of the bounding box.
    *
    * @return upper left corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getUpperLeftPoint() {
     return new LatLonPointImpl(upperRight.getLatitude(), lowerLeft.getLongitude());
@@ -172,6 +176,7 @@ public class LatLonRect {
    * Get the lower left corner of the bounding box.
    *
    * @return lower left corner of the bounding box
+   *         LOOK will return LatLonPoint in ver6
    */
   public LatLonPointImpl getLowerRightPoint() {
     return new LatLonPointImpl(lowerLeft.getLatitude(), upperRight.getLongitude());
@@ -464,7 +469,7 @@ public class LatLonRect {
     double lonMin = getLonMin();
     double lonMax = getLonMax();
 
-    double nlonMin = LatLonPointImpl.lonNormal(r.getLonMin(), lonMin);
+    double nlonMin = LatLonPoints.lonNormal(r.getLonMin(), lonMin);
     double nlonMax = nlonMin + r.getWidth();
     lonMin = Math.min(lonMin, nlonMin);
     lonMax = Math.max(lonMax, nlonMax);
@@ -475,7 +480,7 @@ public class LatLonRect {
       width = 360.0;
       lonMin = -180.0;
     } else {
-      lonMin = LatLonPointImpl.lonNormal(lonMin);
+      lonMin = LatLonPoints.lonNormal(lonMin);
     }
 
     lowerLeft.setLongitude(lonMin);

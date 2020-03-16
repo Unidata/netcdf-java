@@ -11,6 +11,7 @@ import ucar.nc2.ft.PointFeature;
  *
  * @author caron
  * @since Feb 18, 2008
+ *        LOOK may be immutable AutoValue in ver6
  */
 public interface EarthLocation {
   /**

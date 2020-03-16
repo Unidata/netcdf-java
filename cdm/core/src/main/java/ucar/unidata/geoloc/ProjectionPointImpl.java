@@ -15,6 +15,7 @@ import java.util.Formatter;
  * @see ProjectionPoint
  * @deprecated only use ProjectionPoint interface in 6; will not implement Serializable in ver6
  */
+@Deprecated
 public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializable {
   private double x, y;
 
@@ -134,13 +135,8 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
         || (y == java.lang.Double.POSITIVE_INFINITY) || (y == java.lang.Double.NEGATIVE_INFINITY);
   }
 
-  /**
-   * See if either coordinate in <code>pt</code> is +/- infinite.
-   * This happens sometimes in projective geometry.
-   *
-   * @param pt point to check
-   * @return true if either coordinate is +/- infinite.
-   */
+  /** @deprecated use LatLonPoints.isInfinite */
+  @Deprecated
   public static boolean isInfinite(ProjectionPoint pt) {
     return (pt.getX() == java.lang.Double.POSITIVE_INFINITY) || (pt.getX() == java.lang.Double.NEGATIVE_INFINITY)
         || (pt.getY() == java.lang.Double.POSITIVE_INFINITY) || (pt.getY() == java.lang.Double.NEGATIVE_INFINITY);

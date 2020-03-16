@@ -276,7 +276,7 @@ public class NavigatedPanel extends JPanel {
       LatLonProjection llproj = (LatLonProjection) project;
       ProjectionRect box = getMapArea();
       double center = llproj.getCenterLon();
-      double lonBeg = LatLonPointImpl.lonNormal(box.getMinX(), center);
+      double lonBeg = LatLonPoints.lonNormal(box.getMinX(), center);
       double lonEnd = lonBeg + box.getMaxX() - box.getMinX();
       boolean showShift = Debug.isSet("projection/LatLonShift") || debugNewProjection;
       if (showShift)

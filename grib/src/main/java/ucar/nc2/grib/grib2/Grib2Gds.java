@@ -511,7 +511,7 @@ public abstract class Grib2Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
@@ -552,14 +552,14 @@ public abstract class Grib2Gds {
       if (angleRotation != 0) {
         throw new RuntimeException("Unsupported nonzero GRIB2 GDS template 1 angle of rotation: " + angleRotation);
       }
-      latNorthPole = -LatLonPointImpl.latNormal(latSouthPole);
-      lonNorthPole = LatLonPointImpl.lonNormal(lonSouthPole + 180);
+      latNorthPole = -LatLonPoints.latNormal(latSouthPole);
+      lonNorthPole = LatLonPoints.lonNormal(lonSouthPole + 180);
       // la1/lo1/la2/lo2 are the grid corners in rotated coordinates,
       // as in COSMO test data; normalise to improve interoperability
-      la1 = (float) LatLonPointImpl.latNormal(la1);
-      lo1 = (float) LatLonPointImpl.lonNormal(lo1);
-      la2 = (float) LatLonPointImpl.latNormal(la2);
-      lo2 = (float) LatLonPointImpl.lonNormal(lo2);
+      la1 = (float) LatLonPoints.latNormal(la1);
+      lo1 = (float) LatLonPoints.lonNormal(lo1);
+      la2 = (float) LatLonPoints.latNormal(la2);
+      lo2 = (float) LatLonPoints.lonNormal(lo2);
       // if the corners wrap the rotated antimeridian or the domain does not
       // contain the origin, then something is very wrong: the reason rotated
       // latitude/longitude is used is to place the region of interest near
@@ -630,7 +630,7 @@ public abstract class Grib2Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
@@ -672,17 +672,16 @@ public abstract class Grib2Gds {
       float lonCentre = lo2;
       // position of north pole of rotated grid
       if (latCentre > 0) {
-        latNorthPole = 90 - LatLonPointImpl.latNormal(latCentre);
-        lonNorthPole = LatLonPointImpl.lonNormal(lonCentre + 180);
+        latNorthPole = 90 - LatLonPoints.latNormal(latCentre);
+        lonNorthPole = LatLonPoints.lonNormal(lonCentre + 180);
       } else {
-        latNorthPole = 90 + LatLonPointImpl.latNormal(latCentre);
-        lonNorthPole = LatLonPointImpl.lonNormal(lonCentre);
+        latNorthPole = 90 + LatLonPoints.latNormal(latCentre);
+        lonNorthPole = LatLonPoints.lonNormal(lonCentre);
       }
       RotatedPole proj = new RotatedPole(latNorthPole, lonNorthPole);
       // recalculate la1/lo1/la2/lo2 in rotated coordinates
       LatLonPointImpl unrotated = new LatLonPointImpl(la1, lo1);
-      ProjectionPointImpl rotated = new ProjectionPointImpl();
-      proj.latLonToProj(unrotated, rotated);
+      ProjectionPoint rotated = proj.latLonToProj(unrotated);
       // expect grid centred on origin in rotated coordinates
       if (rotated.getX() >= 0) {
         throw new RuntimeException("Unexpected nonnegative lower left rotated longitude: " + rotated.getX());
@@ -848,7 +847,7 @@ public abstract class Grib2Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
@@ -1018,7 +1017,7 @@ public abstract class Grib2Gds {
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
@@ -1193,7 +1192,7 @@ public abstract class Grib2Gds {
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
@@ -1280,7 +1279,7 @@ public abstract class Grib2Gds {
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
@@ -1688,7 +1687,7 @@ public abstract class Grib2Gds {
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPointImpl startLL = new LatLonPointImpl(LaP, LoP);
-      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);

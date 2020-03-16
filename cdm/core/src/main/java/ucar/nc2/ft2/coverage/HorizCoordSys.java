@@ -179,7 +179,7 @@ public class HorizCoordSys {
           CoordAxisHelper xhelper = new CoordAxisHelper(lonAxis);
           CoordAxisHelper yhelper = new CoordAxisHelper(latAxis);
 
-          double lonNormal = LatLonPointImpl.lonNormalFrom(latlon.getLongitude(), lonAxis.getStartValue());
+          double lonNormal = LatLonPoints.lonNormalFrom(latlon.getLongitude(), lonAxis.getStartValue());
           optb = xhelper.subsetContaining(lonNormal);
           if (optb.isPresent())
             lonaxisSubset = new CoverageCoordAxis1D(optb.get());
@@ -322,8 +322,8 @@ public class HorizCoordSys {
 
   // here's where to deal with crossing seam
   private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) {
-    double wantMin = LatLonPointImpl.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
-    double wantMax = LatLonPointImpl.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
+    double wantMin = LatLonPoints.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
+    double wantMax = LatLonPoints.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
     double start = lonAxis.getStartValue();
     double end = lonAxis.getEndValue();
 
@@ -441,7 +441,7 @@ public class HorizCoordSys {
     } else { // 1D lat lon case
       CoordAxisHelper xhelper = new CoordAxisHelper(lonAxis);
       CoordAxisHelper yhelper = new CoordAxisHelper(latAxis);
-      double lon = LatLonPointImpl.lonNormalFrom(x, lonAxis.getStartValue());
+      double lon = LatLonPoints.lonNormalFrom(x, lonAxis.getStartValue());
       result.x = xhelper.findCoordElement(lon, false);
       result.y = yhelper.findCoordElement(y, false);
 
@@ -747,7 +747,7 @@ public class HorizCoordSys {
    * Returns a list of points that is equivalent to the input list, but with longitude values adjusted to ensure that
    * adjacent elements are "connected".
    * <p>
-   * Two points are "connected" if the absolute difference of their {@link LatLonPointImpl#lonNormal normalized
+   * Two points are "connected" if the absolute difference of their {@link LatLonPoints#lonNormal normalized
    * longitudes} is {@code ≤180}. For example, the longitudes {@code 112} and {@code 124} are connected. So are
    * {@code 15} and {@code -27}.
    * <p>
@@ -777,7 +777,7 @@ public class HorizCoordSys {
 
       if (!connectedPoints.isEmpty()) {
         double prevLon = connectedPoints.getLast().getLongitude();
-        curLon = LatLonPointImpl.lonNormal(curLon, prevLon);
+        curLon = LatLonPoints.lonNormal(curLon, prevLon);
       }
       connectedPoints.add(new LatLonPointNoNormalize(curLat, curLon));
     }

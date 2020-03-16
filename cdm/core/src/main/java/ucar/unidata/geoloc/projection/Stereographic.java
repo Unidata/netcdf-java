@@ -314,7 +314,7 @@ public class Stereographic extends ProjectionImpl {
    * @return false if there is no seam
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return false; // ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2);
+    return false; // LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2);
   }
 
   @Override

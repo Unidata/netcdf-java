@@ -8,6 +8,7 @@ import ucar.ma2.*;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -145,7 +146,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       int nlons = (int) lonEdge.getSize();
       for (int i = 0; i < nlons; i++) {
         double nonVal = lonEdge.getDouble(i);
-        lonEdge.setDouble(i, LatLonPointImpl.lonNormalFrom(nonVal, lonMinMax.min));
+        lonEdge.setDouble(i, LatLonPoints.lonNormalFrom(nonVal, lonMinMax.min));
       }
 
       if (debug)
@@ -162,7 +163,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
      * @return false if not in the grid.
      */
     public boolean findCoordElement(double wantLat, double wantLon, int[] rectIndex) {
-      double wantLonNormal = LatLonPointImpl.lonNormalFrom(wantLon, lonMinMax.min);
+      double wantLonNormal = LatLonPoints.lonNormalFrom(wantLon, lonMinMax.min);
       return findCoordElementNoForce(wantLat, wantLonNormal, rectIndex);
     }
 
@@ -459,8 +460,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
       double maxy = urpt.getLatitude();
 
       // normalize to [minLon,minLon+360], edge already normalized to this
-      double minx = LatLonPointImpl.lonNormalFrom(llpt.getLongitude(), lonMinMax.min);
-      double maxx = LatLonPointImpl.lonNormalFrom(urpt.getLongitude(), lonMinMax.min);
+      double minx = LatLonPoints.lonNormalFrom(llpt.getLongitude(), lonMinMax.min);
+      double maxx = LatLonPoints.lonNormalFrom(urpt.getLongitude(), lonMinMax.min);
 
       int[] shape = lonAxis2D.getShape();
       int ny = shape[0];
@@ -528,8 +529,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
     private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
       double midpoint = (lon1 + lon2) / 2;
-      lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
-      lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
+      lon1 = LatLonPoints.lonNormal(lon1, midpoint);
+      lon2 = LatLonPoints.lonNormal(lon2, midpoint);
 
       return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
     }
