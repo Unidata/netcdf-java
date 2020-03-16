@@ -427,7 +427,7 @@ public class LambertConformal extends ProjectionImpl {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
     // opposite signed X values, larger then 20,000 km
@@ -438,7 +438,7 @@ public class LambertConformal extends ProjectionImpl {
    * MACROBODY
    * latLonToProj {} {
    * fromLat = Math.toRadians(fromLat);
-   * double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+   * double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
    * double theta = n * Math.toRadians(dlon);
    * double tn = Math.pow( Math.tan(PI_OVER_4 + fromLat/2), n);
    * double r = earthRadiusTimesF / tn;
@@ -497,7 +497,7 @@ public class LambertConformal extends ProjectionImpl {
 
 
     fromLat = Math.toRadians(fromLat);
-    double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+    double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
     double theta = n * Math.toRadians(dlon);
     double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
     double r = earthRadiusTimesF / tn;
@@ -575,7 +575,7 @@ public class LambertConformal extends ProjectionImpl {
       double fromLon = fromLonA[i];
 
       fromLat = Math.toRadians(fromLat);
-      double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+      double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
       double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;
@@ -665,7 +665,7 @@ public class LambertConformal extends ProjectionImpl {
       double fromLon = fromLonA[i];
 
       fromLat = Math.toRadians(fromLat);
-      double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
+      double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
       double theta = n * Math.toRadians(dlon);
       double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
       double r = earthRadiusTimesF / tn;

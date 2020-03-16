@@ -252,7 +252,7 @@ public class DtCoverageCS {
 
   public LatLonPoint getLatLon(double xcoord, double ycoord) {
     Projection dataProjection = getProjection();
-    return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
+    return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord));
   }
 
   private LatLonRect llbb;

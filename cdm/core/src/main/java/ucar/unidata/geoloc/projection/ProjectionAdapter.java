@@ -11,11 +11,9 @@ import ucar.unidata.geoloc.*;
  * ProjectionImpl, so we can assume a Projection is a ProjectionImpl
  * without loss of generality.
  *
- * @author John Caron
- * @see Projection
- * @see ProjectionImpl
+ * @deprecated do not use
  */
-
+@Deprecated
 public class ProjectionAdapter extends ProjectionImpl {
 
   /**

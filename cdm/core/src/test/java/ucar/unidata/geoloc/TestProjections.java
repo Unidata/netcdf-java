@@ -138,8 +138,6 @@ public class TestProjections {
 
     startL.setLatitude(latMax / 2);
     startL.setLongitude(lonMax / 2);
-    ProjectionPointImpl base = new ProjectionPointImpl();
-    proj.latLonToProj(startL, base);
     ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
       double x = minx + rangex * r.nextDouble();
@@ -149,7 +147,6 @@ public class TestProjections {
       try {
         LatLonPoint ll = proj.projToLatLon(startP);
         ProjectionPoint endP = proj.latLonToProj(ll);
-
 
         if (show) {
           System.out.println("start  = " + startP);
@@ -208,10 +205,8 @@ public class TestProjections {
   public void testLCseam() {
     // test seam crossing
     LambertConformal lc = new LambertConformal(40.0, 180.0, 20.0, 60.0);
-    ProjectionPointImpl p1 =
-        (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(0.0, -1.0), new ProjectionPointImpl());
-    ProjectionPointImpl p2 =
-        (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(0.0, 1.0), new ProjectionPointImpl());
+    ProjectionPoint p1 = lc.latLonToProj(new LatLonPointImpl(0.0, -1.0));
+    ProjectionPoint p2 = lc.latLonToProj(new LatLonPointImpl(0.0, 1.0));
     if (show) {
       System.out.printf(" p1= x=%f y=%f%n", p1.getX(), p1.getY());
       System.out.printf(" p2= x=%f y=%f%n", p2.getX(), p2.getY());

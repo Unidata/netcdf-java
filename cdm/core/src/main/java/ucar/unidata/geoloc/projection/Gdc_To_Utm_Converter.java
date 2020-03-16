@@ -35,6 +35,7 @@ package ucar.unidata.geoloc.projection;
 
 import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import java.lang.*;
@@ -161,7 +162,7 @@ class Gdc_To_Utm_Converter {
   public ProjectionPoint latLonToProj(double latitude, double longitude, ProjectionPointImpl result) {
     double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
 
-    longitude = LatLonPointImpl.lonNormal(longitude, axlon0_deg); // normalize to the central meridian
+    longitude = LatLonPoints.lonNormal(longitude, axlon0_deg); // normalize to the central meridian
 
     source_lat = latitude * RADIANS_PER_DEGREE;
     source_lon = longitude * RADIANS_PER_DEGREE;
@@ -205,7 +206,7 @@ class Gdc_To_Utm_Converter {
     double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
 
     for (int i = 0; i < from[0].length; i++) {
-      double longitude = LatLonPointImpl.lonNormal(from[lonIndex][i], axlon0_deg); // normalize to the central meridian
+      double longitude = LatLonPoints.lonNormal(from[lonIndex][i], axlon0_deg); // normalize to the central meridian
       source_lat = from[latIndex][i] * RADIANS_PER_DEGREE;
       source_lon = longitude * RADIANS_PER_DEGREE;
 
@@ -250,7 +251,7 @@ class Gdc_To_Utm_Converter {
     double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
 
     for (int i = 0; i < from[0].length; i++) {
-      double longitude = LatLonPointImpl.lonNormal(from[lonIndex][i], axlon0_deg); // normalize to the central meridian
+      double longitude = LatLonPoints.lonNormal(from[lonIndex][i], axlon0_deg); // normalize to the central meridian
       source_lat = from[latIndex][i] * RADIANS_PER_DEGREE;
       source_lon = longitude * RADIANS_PER_DEGREE;
 

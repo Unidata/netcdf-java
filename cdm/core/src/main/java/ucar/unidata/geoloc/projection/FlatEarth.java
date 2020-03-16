@@ -254,7 +254,7 @@ public class FlatEarth extends ProjectionImpl {
       toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
     }
 
-    toLon = LatLonPointImpl.lonNormal(toLon);
+    toLon = LatLonPoints.lonNormal(toLon);
 
     result.setLatitude(toLat);
     result.setLongitude(toLon);
@@ -352,7 +352,7 @@ public class FlatEarth extends ProjectionImpl {
         toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
       }
 
-      toLon = LatLonPointImpl.lonNormal(toLon);
+      toLon = LatLonPoints.lonNormal(toLon);
 
       toLatA[i] = (float) toLat;
       toLonA[i] = (float) toLon;
@@ -437,7 +437,7 @@ public class FlatEarth extends ProjectionImpl {
         toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
       }
 
-      toLon = LatLonPointImpl.lonNormal(toLon);
+      toLon = LatLonPoints.lonNormal(toLon);
 
       toLatA[i] = toLat;
       toLonA[i] = toLon;

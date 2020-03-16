@@ -15,6 +15,7 @@ import ucar.ui.widget.PopupManager;
 import ucar.nc2.ui.widget.RangeDateSelector;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.Station;
@@ -144,9 +145,9 @@ public class StationRegionDateChooser extends NPController {
             sbuff.append("\n");
             if (null != s.getDescription())
               sbuff.append(s.getDescription()).append("\n");
-            sbuff.append(LatLonPointImpl.latToString(s.getLatitude(), 4));
+            sbuff.append(LatLonPoints.latToString(s.getLatitude(), 4));
             sbuff.append(" ");
-            sbuff.append(LatLonPointImpl.lonToString(s.getLongitude(), 4));
+            sbuff.append(LatLonPoints.lonToString(s.getLongitude(), 4));
             sbuff.append(" ");
             double alt = s.getAltitude();
             if (!Double.isNaN(alt)) {

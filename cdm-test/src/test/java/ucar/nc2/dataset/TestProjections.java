@@ -186,7 +186,7 @@ public class TestProjections {
       }
 
       if (testPt != null) {
-        ProjectionPoint pt = proj.latLonToProj(testPt, new ProjectionPointImpl());
+        ProjectionPoint pt = proj.latLonToProj(testPt);
         assert pt != null;
         assert !Double.isNaN(pt.getX());
         assert !Double.isNaN(pt.getY());

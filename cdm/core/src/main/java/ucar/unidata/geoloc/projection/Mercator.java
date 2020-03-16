@@ -227,7 +227,7 @@ public class Mercator extends ProjectionImpl {
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
 
@@ -296,7 +296,7 @@ public class Mercator extends ProjectionImpl {
       toX = Double.POSITIVE_INFINITY;
       toY = Double.POSITIVE_INFINITY;
     } else {
-      toX = A * Math.toRadians(LatLonPointImpl.range180(fromLon - this.lon0));
+      toX = A * Math.toRadians(LatLonPoints.range180(fromLon - this.lon0));
       toY = A * SpecialMathFunction.atanh(Math.sin(fromLat_r)); // p 41 Snyder
     }
 

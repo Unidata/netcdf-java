@@ -359,7 +359,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
    * @return true when the line between pt1 and pt2 crosses the seam.
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2);
+    return LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2);
 
     /*
      * opposite signed X values, larger then 5000 km LOOK ????
@@ -407,7 +407,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
    */
 
   private double computeTheta(double lon) {
-    double dlon = LatLonPointImpl.lonNormal(lon - lon0deg);
+    double dlon = LatLonPoints.lonNormal(lon - lon0deg);
     return n * Math.toRadians(dlon);
   }
 

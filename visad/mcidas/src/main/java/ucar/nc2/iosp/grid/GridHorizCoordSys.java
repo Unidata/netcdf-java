@@ -464,13 +464,12 @@ public class GridHorizCoordSys {
 
     // create the data
     ProjectionPointImpl projPoint = new ProjectionPointImpl();
-    LatLonPointImpl latlonPoint = new LatLonPointImpl();
     double[] latData = new double[nx * ny];
     double[] lonData = new double[nx * ny];
     for (int i = 0; i < ny; i++) {
       for (int j = 0; j < nx; j++) {
         projPoint.setLocation(xData[j], yData[i]);
-        proj.projToLatLon(projPoint, latlonPoint);
+        LatLonPoint latlonPoint = proj.projToLatLon(projPoint);
         latData[i * nx + j] = latlonPoint.getLatitude();
         lonData[i * nx + j] = latlonPoint.getLongitude();
       }

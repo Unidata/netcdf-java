@@ -436,14 +436,14 @@ public class GridRenderer {
       }
     } else if (wantx >= 0) {
       if (dataProjection.isLatLon())
-        sbuff.append(LatLonPointImpl.latToString(xaxis.getCoordValue(wantx), 3));
+        sbuff.append(LatLonPoints.latToString(xaxis.getCoordValue(wantx), 3));
       else {
         sbuff.append(" ").append(Format.d(xaxis.getCoordValue(wantx), 3));
         sbuff.append(" ").append(xaxis.getUnitsString());
       }
     } else if (wanty >= 0) {
       if (dataProjection.isLatLon())
-        sbuff.append(LatLonPointImpl.latToString(yaxis.getCoordValue(wanty), 3));
+        sbuff.append(LatLonPoints.latToString(yaxis.getCoordValue(wanty), 3));
       else {
         sbuff.append(" ").append(Format.d(yaxis.getCoordValue(wanty), 3));
         sbuff.append(" ").append(yaxis.getUnitsString());

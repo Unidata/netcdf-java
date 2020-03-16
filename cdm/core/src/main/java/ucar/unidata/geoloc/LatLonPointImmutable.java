@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 /**
  * An immutable {@link LatLonPoint}.
  *
- * @deprecated move to implementatipon classes
+ * @deprecated move to implementation classes
  */
 @Deprecated
 @Immutable
@@ -19,8 +19,8 @@ public class LatLonPointImmutable extends LatLonPointImpl {
       new LatLonPointImmutable(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
   public LatLonPointImmutable(double lat, double lon) {
-    this.lat = latNormal(lat);
-    this.lon = lonNormal(lon);
+    this.lat = LatLonPoints.latNormal(lat);
+    this.lon = LatLonPoints.lonNormal(lon);
   }
 
   public LatLonPointImmutable(LatLonPoint pt) {

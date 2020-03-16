@@ -704,12 +704,12 @@ public class GeoTiffWriter2 extends GeotiffWriter {
         }
 
         float dd = lon.getFloat(lonIndex.set(jj));
-        slon.setFloat(slonIndex.set(j), (float) LatLonPointImpl.lonNormal(dd));
+        slon.setFloat(slonIndex.set(j), (float) LatLonPoints.lonNormal(dd));
       }
 
       if (p0.getLongitude() == pN.getLongitude()) {
         float dd = slon.getFloat(slonIndex.set(lonShape[0] - 1));
-        slon.setFloat(slonIndex.set(0), -(float) LatLonPointImpl.lonNormal(dd));
+        slon.setFloat(slonIndex.set(0), -(float) LatLonPoints.lonNormal(dd));
       }
       return slon;
 

@@ -201,7 +201,7 @@ public class Orthographic extends ProjectionImpl {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2))
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2))
       return true;
 
     // opposite signed X values, larger then 5000 km
@@ -252,7 +252,7 @@ public class Orthographic extends ProjectionImpl {
    * toLat= Math.toDegrees(toLat);
    * toLon= Math.toDegrees(toLon);
    * if (temp < 0) toLon += 180;
-   * toLon= LatLonPointImpl.lonNormal(toLon);
+   * toLon= LatLonPoints.lonNormal(toLon);
    * }
    * 
    * 
@@ -336,7 +336,7 @@ public class Orthographic extends ProjectionImpl {
     if (temp < 0) {
       toLon += 180;
     }
-    toLon = LatLonPointImpl.lonNormal(toLon);
+    toLon = LatLonPoints.lonNormal(toLon);
 
     result.setLatitude(toLat);
     result.setLongitude(toLon);
@@ -433,7 +433,7 @@ public class Orthographic extends ProjectionImpl {
       if (temp < 0) {
         toLon += 180;
       }
-      toLon = LatLonPointImpl.lonNormal(toLon);
+      toLon = LatLonPoints.lonNormal(toLon);
 
       toLatA[i] = (float) toLat;
       toLonA[i] = (float) toLon;
@@ -531,7 +531,7 @@ public class Orthographic extends ProjectionImpl {
       if (temp < 0) {
         toLon += 180;
       }
-      toLon = LatLonPointImpl.lonNormal(toLon);
+      toLon = LatLonPoints.lonNormal(toLon);
 
       toLatA[i] = toLat;
       toLonA[i] = toLon;

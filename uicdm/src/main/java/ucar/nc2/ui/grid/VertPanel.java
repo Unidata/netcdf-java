@@ -11,6 +11,7 @@ import ucar.ui.event.ActionSourceListener;
 import ucar.nc2.ui.widget.ScaledPanel;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
 import javax.swing.*;
@@ -137,9 +138,9 @@ public class VertPanel extends JPanel {
   public void setSlice(int slice) {
 
     if (isLatLon) {
-      leftScale.setText(LatLonPointImpl.latToString(yleft, 3));
-      midScale.setText(LatLonPointImpl.latToString(ymid, 3));
-      rightScale.setText(LatLonPointImpl.latToString(yright, 3));
+      leftScale.setText(LatLonPoints.latToString(yleft, 3));
+      midScale.setText(LatLonPoints.latToString(ymid, 3));
+      rightScale.setText(LatLonPoints.latToString(yright, 3));
       return;
     }
     double xval;
@@ -158,7 +159,7 @@ public class VertPanel extends JPanel {
 
   private String getYstr(double xvalue, double yvalue) {
     LatLonPoint lpt = ((ProjectionImpl) proj).projToLatLon(xvalue, yvalue);
-    return LatLonPointImpl.latToString(lpt.getLatitude(), 3);
+    return LatLonPoints.latToString(lpt.getLatitude(), 3);
   }
 
 }

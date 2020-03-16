@@ -203,7 +203,7 @@ public class Sinusoidal extends ProjectionImpl {
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
 
@@ -222,7 +222,7 @@ public class Sinusoidal extends ProjectionImpl {
    */
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
-    double deltaLon_d = LatLonPointImpl.range180(latLon.getLongitude() - centMeridian);
+    double deltaLon_d = LatLonPoints.range180(latLon.getLongitude() - centMeridian);
     double fromLat_r = Math.toRadians(latLon.getLatitude());
 
     double toX = earthRadius * Math.toRadians(deltaLon_d) * Math.cos(fromLat_r);

@@ -5,6 +5,7 @@ import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 
 public class TestStereographicAzimuthalProjection {
@@ -15,7 +16,7 @@ public class TestStereographicAzimuthalProjection {
     double[] y = new double[lat.length];
     for (int i = 0; i < lat.length; ++i) {
       LatLonPoint lp = new LatLonPointImpl(lat[i], lon[i]);
-      ProjectionPointImpl p = (ProjectionPointImpl) proj.latLonToProj(lp, new ProjectionPointImpl());
+      ProjectionPoint p = proj.latLonToProj(lp);
       x[i] = p.getX();
       y[i] = p.getY();
     }

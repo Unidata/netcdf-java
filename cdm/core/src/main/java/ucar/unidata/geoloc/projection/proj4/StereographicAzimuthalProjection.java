@@ -412,7 +412,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   }
 
   private double computeTheta(double lon) {
-    double dlon = LatLonPointImpl.lonNormal(lon - Math.toDegrees(projectionLongitude));
+    double dlon = LatLonPoints.lonNormal(lon - Math.toDegrees(projectionLongitude));
     return n * Math.toRadians(dlon);
   }
 

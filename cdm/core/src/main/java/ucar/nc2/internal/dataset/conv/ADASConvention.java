@@ -31,7 +31,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
 
 /** ADAS netcdf files. Not finished because we dont have any tests files. */
@@ -129,7 +128,7 @@ public class ADASConvention extends CoordSystemBuilder {
     double lon_check = rootGroup.getAttributeContainer().findAttributeDouble("CTRLON", Double.NaN);
 
     LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
-    ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
+    ProjectionPoint ppt0 = proj.latLonToProj(lpt0);
 
     VariableDS.Builder xstag = (VariableDS.Builder) rootGroup.findVariable("x_stag")
         .orElseThrow(() -> new IllegalStateException("Must have x_stag Variable"));

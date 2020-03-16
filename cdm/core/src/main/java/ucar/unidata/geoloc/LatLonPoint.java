@@ -13,6 +13,7 @@ import ucar.nc2.util.Misc;
  * Latitude is always between -90 and +90 deg.
  *
  * @author John Caron
+ *         LOOK will be immutable AutoValue in ver6
  */
 public interface LatLonPoint {
 

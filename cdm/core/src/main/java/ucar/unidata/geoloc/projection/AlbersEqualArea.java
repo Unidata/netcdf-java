@@ -171,7 +171,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    * @return theta
    */
   private double computeTheta(double lon) {
-    double dlon = LatLonPointImpl.lonNormal(Math.toDegrees(lon) - lon0Degrees);
+    double dlon = LatLonPoints.lonNormal(Math.toDegrees(lon) - lon0Degrees);
     return n * Math.toRadians(dlon);
   }
 
@@ -407,7 +407,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
     // opposite signed X values, larger then 5000 km

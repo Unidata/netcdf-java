@@ -12,6 +12,7 @@ import ucar.unidata.util.Parameter;
  * a projective cartesian surface.
  * 
  * @author John Caron
+ *         LOOK will be immutable AutoValue in ver6
  */
 
 public interface Projection {
@@ -37,26 +38,29 @@ public interface Projection {
    */
   String paramsToString();
 
-  /**
-   * Convert a LatLonPoint to projection coordinates. Note: do not assume
-   * a new object is created on each call for the return value.
-   *
-   * @param latlon convert from these lat, lon coordinates
-   * @param result point to put result in
-   * @return ProjectionPoint convert to these projection coordinates
-   */
+  /** @deprecated use latLonToProj(LatLonPoint latlon) */
+  @Deprecated
   ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result);
 
   /**
+   * Convert a LatLonPoint to projection coordinates.
+   *
+   * @param latlon convert from these lat, lon coordinates
+   * @return ProjectionPoint convert to these projection coordinates
+   */
+  ProjectionPoint latLonToProj(LatLonPoint latlon);
+
+  /** @deprecated use latLonToProj(LatLonPoint latlon) */
+  @Deprecated
+  LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
+
+  /**
    * Convert projection coordinates to a LatLonPoint.
-   * Note: do not assume a new object is created on each call for the
-   * return value.
    *
    * @param ppt convert from these projection coordinates
-   * @param result return result here, or null
    * @return lat/lon coordinates
    */
-  LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
+  LatLonPoint projToLatLon(ProjectionPoint ppt);
 
   /**
    * Does the line between these two points cross the projection "seam", which
@@ -89,7 +93,9 @@ public interface Projection {
    * Get parameters as list of ucar.unidata.util.Parameter
    *
    * @return List of parameters
+   * @deprecated will return Iterable in ver6
    */
+  @Deprecated
   java.util.List<Parameter> getProjectionParameters();
 
   /**

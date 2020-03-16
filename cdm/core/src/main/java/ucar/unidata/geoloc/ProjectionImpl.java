@@ -37,11 +37,12 @@ import java.util.*;
  * @see Projection
  * @deprecated only use Projection interface in 6; will not implement Serializable in ver6
  */
+@Deprecated
 public abstract class ProjectionImpl implements Projection, java.io.Serializable {
   /**
    * Earth radius in kilometers
    */
-  public static final double EARTH_RADIUS = Earth.WGS84_EARTH_RADIUS_METERS * 0.001; // km
+  public static final double EARTH_RADIUS = Earth.WGS84_EARTH_RADIUS_KM;
 
   /**
    * Latitude index
@@ -177,7 +178,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @return ProjectionPoint convert to these projection coordinates
    */
   public ProjectionPoint latLonToProj(LatLonPoint latLon) {
-    return latLonToProj(latLon, new ProjectionPointImpl());
+    return latLonToProj(latLon);
   }
 
   /**
@@ -530,13 +531,11 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       throw new IllegalArgumentException("ProjectionImpl.latLonToProj:" + "from array not same length as to array");
     }
 
-    ProjectionPointImpl ppi = new ProjectionPointImpl();
     LatLonPointImpl llpi = new LatLonPointImpl();
-
     for (int i = 0; i < from[0].length; i++) {
       llpi.setLatitude(from[latIndex][i]);
       llpi.setLongitude(from[lonIndex][i]);
-      latLonToProj(llpi, ppi);
+      ProjectionPoint ppi = latLonToProj(llpi);
       to[0][i] = ppi.getX();
       to[1][i] = ppi.getY();
     }
@@ -616,13 +615,11 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       throw new IllegalArgumentException("ProjectionImpl.latLonToProj:" + "from array not same length as to array");
     }
 
-    ProjectionPointImpl ppi = new ProjectionPointImpl();
     LatLonPointImpl llpi = new LatLonPointImpl();
-
     for (int i = 0; i < from[0].length; i++) {
       llpi.setLatitude(from[latIndex][i]);
       llpi.setLongitude(from[lonIndex][i]);
-      latLonToProj(llpi, ppi);
+      ProjectionPoint ppi = latLonToProj(llpi);
       to[0][i] = (float) ppi.getX();
       to[1][i] = (float) ppi.getY();
     }
@@ -654,10 +651,10 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
 
     } else {
-      ProjectionPoint ll = latLonToProj(llpt, new ProjectionPointImpl());
-      ProjectionPoint ur = latLonToProj(urpt, new ProjectionPointImpl());
-      ProjectionPoint lr = latLonToProj(lrpt, new ProjectionPointImpl());
-      ProjectionPoint ul = latLonToProj(ulpt, new ProjectionPointImpl());
+      ProjectionPoint ll = latLonToProj(llpt);
+      ProjectionPoint ur = latLonToProj(urpt);
+      ProjectionPoint lr = latLonToProj(lrpt);
+      ProjectionPoint ul = latLonToProj(ulpt);
 
       minx = Math.min(ll.getX(), ul.getX());
       miny = Math.min(ll.getY(), lr.getY());
@@ -670,8 +667,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
 
   private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
     double midpoint = (lon1 + lon2) / 2;
-    lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
-    lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
+    lon1 = LatLonPoints.lonNormal(lon1, midpoint);
+    lon2 = LatLonPoints.lonNormal(lon2, midpoint);
 
     return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
   }
@@ -692,17 +689,10 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       llp.setCenterLon(latlonRect.getCenterLon()); // LOOK side effect BAD !!
     }
 
-    ProjectionPointImpl w1 = new ProjectionPointImpl();
-    ProjectionPointImpl w2 = new ProjectionPointImpl();
-
     LatLonPoint ll = latlonRect.getLowerLeftPoint();
     LatLonPoint ur = latlonRect.getUpperRightPoint();
-    latLonToProj(ll, w1);
-    latLonToProj(ur, w2);
-
-    // if (!isLatLon && crossSeam(w1, w2)) {
-    // log.warn("CROSS SEAM failure=" + w1 + " " + w2+" for "+this, new Throwable());
-    // }
+    ProjectionPoint w1 = latLonToProj(ll);
+    ProjectionPoint w2 = latLonToProj(ur);
 
     // make bounding box out of those two corners
     ProjectionRect world = new ProjectionRect(w1.getX(), w1.getY(), w2.getX(), w2.getY());
@@ -713,13 +703,11 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     // now extend if needed to the other two corners
     la.setLatitude(ur.getLatitude());
     la.setLongitude(ll.getLongitude());
-    latLonToProj(la, w1);
-    world.add(w1);
+    world.add(latLonToProj(la));
 
     lb.setLatitude(ll.getLatitude());
     lb.setLongitude(ur.getLongitude());
-    latLonToProj(lb, w2);
-    world.add(w2);
+    world.add(latLonToProj(lb));
 
     return world;
   }

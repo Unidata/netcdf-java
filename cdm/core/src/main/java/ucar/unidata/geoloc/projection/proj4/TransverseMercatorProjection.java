@@ -25,6 +25,7 @@ import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
@@ -286,7 +287,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // TODO: check, taken from ucar.unidata.geoloc.projection.TransverseMercator
     // either point is infinite
-    if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2)) {
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }
 
