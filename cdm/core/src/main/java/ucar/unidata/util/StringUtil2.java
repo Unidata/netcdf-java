@@ -511,7 +511,9 @@ public class StringUtil2 {
    * @param match string to match
    * @param subst string to substitute
    * @return a new string with substitutions
+   * @deprecated use original.replace(match, subst)
    */
+  @Deprecated
   public static String substitute(String original, String match, String subst) {
     String s = original;
     int pos;

@@ -5,27 +5,26 @@
 
 package ucar.nc2.ui.widget;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedMap;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Optional;
-import org.apache.http.entity.StringEntity;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.util.IO;
-import ucar.ui.widget.TextHistoryPane;
-import ucar.unidata.util.Urlencoded;
-import ucar.util.prefs.PreferencesExt;
-import ucar.ui.prefs.ComboBox;
-import java.awt.*;
-import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -33,10 +32,20 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.apache.http.entity.StringEntity;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
+import ucar.httpservices.HttpNameValue;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.util.IO;
+import ucar.ui.widget.TextHistoryPane;
+import ucar.unidata.util.Urlencoded;
+import ucar.util.prefs.PreferencesExt;
+import ucar.ui.prefs.ComboBox;
 
 /**
  * A text widget to dump a web URL.
- * Uses java.net.HttpURLConnection or org.apache.http.
  *
  * @author John Caron
  * @see UrlAuthenticatorDialog
@@ -44,7 +53,7 @@ import javax.swing.JPanel;
 
 public class URLDumpPane extends TextHistoryPane {
   private enum Library {
-    HTTPFactory, java
+    UcarHttpservices, java
   }
 
   private enum Command {
@@ -123,12 +132,8 @@ public class URLDumpPane extends TextHistoryPane {
     clear();
 
     Library impl = (Library) implCB.getSelectedItem();
-    // if (impl == Library.HttpClient) {
-    // openClient(urlString, cmd);
-    // } else
-    if (impl == Library.HTTPFactory) {
-      openURL2(urlString, cmd);
-
+    if (impl == Library.UcarHttpservices) {
+      openWithUcarHttpservices(urlString, cmd);
     } else if (impl == Library.java) {
       if (cmd == Command.GET)
         readURL(urlString);
@@ -139,120 +144,13 @@ public class URLDumpPane extends TextHistoryPane {
     }
   }
 
-  /*
-   * ///////////////////////////////////////////////////////
-   * // Uses apache HttpComponents
-   * 
-   * private void openClient(String urlString, Command cmd) {
-   * HttpEntity entity = null;
-   * try {
-   * org.apache.http.client.HttpClient httpclient = new DefaultHttpClient();
-   * 
-   * // request
-   * HttpGet httpget = new HttpGet(urlString);
-   * appendLine("Request: " + httpget.getRequestLine());
-   * 
-   * HttpParams params = httpget.getParams();
-   * appendLine("Params: ");
-   * showParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, params);
-   * showParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, params);
-   * showParameter(CoreProtocolPNames.ORIGIN_SERVER, params);
-   * showParameter(CoreProtocolPNames.PROTOCOL_VERSION, params);
-   * showParameter(CoreProtocolPNames.STRICT_TRANSFER_ENCODING, params);
-   * showParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, params);
-   * showParameter(CoreProtocolPNames.USER_AGENT, params);
-   * showParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE, params);
-   * 
-   * //response
-   * BasicHttpContext localContext = new BasicHttpContext();
-   * HttpResponse response = httpclient.execute(httpget, localContext);
-   * 
-   * appendLine("\nHttpContext: " + localContext);
-   * showAtribute(ExecutionContext.HTTP_CONNECTION, localContext);
-   * showAtribute(ExecutionContext.HTTP_PROXY_HOST, localContext);
-   * showAtribute(ExecutionContext.HTTP_REQ_SENT, localContext);
-   * showAtribute(ExecutionContext.HTTP_REQUEST, localContext);
-   * showAtribute(ExecutionContext.HTTP_RESPONSE, localContext);
-   * showAtribute(ExecutionContext.HTTP_TARGET_HOST, localContext);
-   * 
-   * HttpRequest req = (HttpRequest) localContext.getAttribute(ExecutionContext.HTTP_REQUEST);
-   * appendLine("\nRequest Headers:");
-   * HeaderIterator it = req.headerIterator();
-   * while (it.hasNext()) {
-   * appendLine(" " + it.next().toString());
-   * }
-   * 
-   * appendLine("\nResponse Headers:");
-   * it = response.headerIterator();
-   * while (it.hasNext()) {
-   * appendLine(" " + it.next().toString());
-   * }
-   * 
-   * // content
-   * entity = response.getEntity();
-   * if (entity != null) {
-   * String contents = EntityUtils.toString(entity);
-   * if (contents.length() > 50 * 1000)
-   * contents = contents.substring(0, 50 * 1000);
-   * appendLine("\nContent:");
-   * appendLine(contents);
-   * }
-   * 
-   * } catch (Exception e) {
-   * ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-   * e.printStackTrace(new PrintStream(bos));
-   * appendLine(bos.toString());
-   * 
-   * } finally {
-   * if (entity != null) try {
-   * entity.consumeContent();
-   * 
-   * } catch (IOException e) {
-   * ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-   * e.printStackTrace(new PrintStream(bos));
-   * appendLine(bos.toString());
-   * }
-   * }
-   * }
-   * 
-   * private void showAtribute(String key, HttpContext localContext) {
-   * Object value = localContext.getAttribute(key);
-   * if (null != value)
-   * appendLine(" " + key + ": " + value);
-   * }
-   * 
-   * private void showParameter(String key, HttpParams params) {
-   * Object value = params.getParameter(key);
-   * if (null != value)
-   * appendLine(" " + key + ": " + value);
-   * }
-   */
-
-  private HTTPMethod processMethod(HTTPSession httpclient, String url, Command cmd)
-      throws HTTPException, UnsupportedEncodingException {
-    HTTPMethod m = null;
-    if (cmd == Command.GET)
-      m = HTTPFactory.Get(httpclient, url);
-    else if (cmd == Command.HEAD)
-      m = HTTPFactory.Head(httpclient, url);
-    else if (cmd == Command.OPTIONS)
-      m = HTTPFactory.Options(httpclient, url);
-    else if (cmd == Command.PUT) {
-      m = HTTPFactory.Put(httpclient, url);
-      m.setRequestContent(new StringEntity(ta.getText())); // was setRequestContentAsString(ta.getText());
-    }
-
-    return m;
-  }
-
   ///////////////////////////////////////////////////////
-  // Uses apache commons HttpClient
+  // Uses ucar.httpservices
   @Urlencoded
-  private void openURL2(String urlString, Command cmd) {
-
+  private void openWithUcarHttpservices(String urlString, Command cmd) {
     HTTPMethod m;
 
-    try (HTTPSession httpclient = HTTPFactory.newSession(urlString)) {
+    try (HTTPSession httpSession = HTTPFactory.newSession(urlString)) {
       /*
        * you might think this works, but it doesnt:
        * URI raw = new URI(urlString.trim());
@@ -272,55 +170,43 @@ public class URLDumpPane extends TextHistoryPane {
 
       // urlString = URLnaming.escapeQuery(urlString);
       if (cmd == Command.GET)
-        m = HTTPFactory.Get(httpclient, urlString);
+        m = HTTPFactory.Get(httpSession, urlString);
       else if (cmd == Command.HEAD)
-        m = HTTPFactory.Head(httpclient, urlString);
+        m = HTTPFactory.Head(httpSession, urlString);
       else if (cmd == Command.OPTIONS)
-        m = HTTPFactory.Options(httpclient, urlString);
+        m = HTTPFactory.Options(httpSession, urlString);
       else if (cmd == Command.PUT) {
-        m = HTTPFactory.Put(httpclient, urlString);
-        m.setRequestContent(new StringEntity(ta.getText())); // was setRequestContentAsString(ta.getText());
+        m = HTTPFactory.Put(httpSession, urlString);
+        m.setRequestContent(new StringEntity(ta.getText()));
       } else {
-        throw new IOException("Unsupported command: " + cmd);
+        throw new RuntimeException("Unsupported command: " + cmd);
       }
 
       m.setCompression("gzip,deflate");
 
-      /*
-       * FIX
-       * appendLine("HttpClient " + m.getName() + " " + urlString);
-       * 
-       * appendLine("   do Authentication= " + m.getDoAuthentication());
-       * appendLine("   follow Redirects= " + m.getFollowRedirects());
-       * 
-       * 
-       * appendLine("   cookie policy= " + p.getCookiePolicy());
-       * appendLine("   http version= " + p.getVersion().toString());
-       * appendLine("   timeout (msecs)= " + p.getSoTimeout());
-       * appendLine("   virtual host= " + p.getVirtualHost());
-       */
-      printHeaders("Request Headers = ", m.getRequestHeaders().entries());
+      appendLine("HTTPMethod " + m.getMethodKind() + " " + urlString);
+      httpSession.getMergedSettings().forEach((k, v) -> appendLine(String.format("    %s = %s", k, v)));
       appendLine(" ");
 
+      // TODO not handling chunked content, only gets first chunk.
       m.execute();
 
-      printHeaders("Request Headers2 = ", m.getRequestHeaders().entries());
+      printHeaders("Request Headers = ", m.getRequestHeaderValues());
       appendLine(" ");
 
-      appendLine("Status = " + m.getStatusCode() + " " + m.getStatusText());
       appendLine("Status Line = " + m.getStatusLine());
-      printHeaders("Response Headers = ", m.getResponseHeaders().entries());
+      printHeaders("Response Headers = ", m.getResponseHeaderValues());
       if (cmd == Command.GET) {
         appendLine("\nResponseBody---------------");
 
         String charset = m.getResponseCharSet();
         if (charset == null)
           charset = CDM.UTF8;
-        String contents = null;
 
         // check for deflate and gzip compression
         Optional<String> encodingOpt = m.getResponseHeaderValue("content-encoding");
         if (encodingOpt.isPresent()) {
+          String contents = null;
           String encoding = encodingOpt.get();
 
           if ("deflate".equals(encoding)) {
@@ -345,16 +231,19 @@ public class URLDumpPane extends TextHistoryPane {
             byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
             contents = (body == null) ? "" : new String(body, charset);
           }
+          if (contents != null) {
+            if (contents.length() > 50 * 1000) // limit contents
+              contents = contents.substring(0, 50 * 1000);
+            appendLine(contents);
+          }
+        } else {
+          byte[] body = m.getResponseAsBytes();
+          appendLine("  contents length =" + body.length);
         }
 
-        if (contents != null) {
-          if (contents.length() > 50 * 1000) // limit contents
-            contents = contents.substring(0, 50 * 1000);
-          appendLine(contents);
-        }
-
-      } else if (cmd == Command.OPTIONS)
+      } else if (cmd == Command.OPTIONS) {
         printSet("AllowedMethods = ", HTTPFactory.getAllowedMethods());
+      }
 
     } catch (IOException e) {
       StringWriter sw = new StringWriter(5000);
@@ -363,12 +252,27 @@ public class URLDumpPane extends TextHistoryPane {
     }
   }
 
+  private void printHeaders(String title, ImmutableSortedMap<String, ImmutableList<HttpNameValue>> headers) {
+    appendLine(title);
+    headers.forEach((key, value) -> {
+      Formatter f = new Formatter();
+      value.forEach(nv -> {
+        if (nv.getValue() == null) {
+          f.format("%s ", nv.getName());
+        } else {
+          f.format("%s=%s ", nv.getName(), nv.getValue());
+        }
+      });
+      appendLine(String.format("  %s: %s", key, f.toString()));
+    });
+  }
+
   private void printHeaders(String title, Collection<Map.Entry<String, String>> headers) {
     if (headers.isEmpty())
       return;
     appendLine(title);
     for (Map.Entry<String, String> entry : headers) {
-      appendLine(String.format("  %s = %s" + entry.getKey(), entry.getValue()));
+      appendLine(String.format("  %s = %s", entry.getKey(), entry.getValue()));
     }
   }
 
@@ -380,7 +284,6 @@ public class URLDumpPane extends TextHistoryPane {
     appendLine("");
   }
 
-  ///////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////
   // Uses java.net
 
@@ -497,26 +400,6 @@ public class URLDumpPane extends TextHistoryPane {
     }
   }
 
-  /*
-   * public void setURL(String urlString) {
-   * if (urlString == null) return;
-   * 
-   * task = new GetContentsTask(urlString);
-   * thredds.ui.ProgressMonitor pm = new thredds.ui.ProgressMonitor(task);
-   * pm.addActionListener(new ActionListener() {
-   * public void actionPerformed(ActionEvent e) {
-   * // System.out.println(" setURL event"+e.getActionCommand());
-   * if (e.getActionCommand().equals("success")) {
-   * ta.setText(task.contents);
-   * }
-   * 
-   * }
-   * });
-   * pm.start(this, "Open URL " + urlString, 10);
-   * return;
-   * }
-   */
-
   public void setURL(String urlString) {
     if (urlString == null)
       return;
@@ -539,61 +422,4 @@ public class URLDumpPane extends TextHistoryPane {
   public void append(String text) {
     ta.append(text);
   }
-
-  /*
-   * public class ConsoleAuthPrompter implements CredentialsProvider {
-   * 
-   * private BufferedReader in = null;
-   * 
-   * public ConsoleAuthPrompter() {
-   * super();
-   * this.in = new BufferedReader(new InputStreamReader(System.in));
-   * }
-   * 
-   * private String readConsole() throws IOException {
-   * return this.in.readLine();
-   * }
-   * 
-   * public Credentials getCredentials(final AuthScheme authscheme, final String host, int port, boolean proxy)
-   * throws CredentialsNotAvailableException {
-   * 
-   * if (authscheme == null) {
-   * return null;
-   * }
-   * 
-   * System.out.println("getCredentials AuthScheme="+authscheme.getClass().getName());
-   * System.out.println("  authscheme="+authscheme.getSchemeName()+" realm="+authscheme.getRealm()+" connect="
-   * +authscheme.isConnectionBased());
-   * System.out.println("  host="+host+" port= "+port +"proxy="+proxy);
-   * 
-   * try {
-   * if (authscheme instanceof NTLMScheme) {
-   * System.out.println(host + ":" + port + " requires Windows authentication");
-   * System.out.print("Enter domain: ");
-   * String domain = readConsole();
-   * System.out.print("Enter username: ");
-   * String user = readConsole();
-   * System.out.print("Enter password: ");
-   * String password = readConsole();
-   * return new NTCredentials(user, password, host, domain);
-   * } else if (authscheme instanceof RFC2617Scheme) {
-   * System.out.println(host + ":" + port + " requires authentication with the realm '"
-   * + authscheme.getRealm() + "'");
-   * System.out.print("Enter username: ");
-   * String user = readConsole();
-   * System.out.print("Enter password: ");
-   * String password = readConsole();
-   * return new UsernamePasswordCredentials(user, password);
-   * } else {
-   * throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
-   * authscheme.getSchemeName());
-   * }
-   * } catch (IOException e) {
-   * throw new CredentialsNotAvailableException(e.getMessage(), e);
-   * }
-   * }
-   * }
-   */
-
-
 }

@@ -8,7 +8,10 @@ package ucar.httpservices;
 import static ucar.httpservices.HTTPSession.Prop;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multimap;
 import java.io.Closeable;
 import java.io.IOException;
@@ -618,6 +621,50 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       }
     }
     return multimap;
+  }
+
+  public ImmutableSortedMap<String, ImmutableList<HttpNameValue>> getRequestHeaderValues() {
+    if (this.lastrequest == null)
+      return ImmutableSortedMap.of();
+
+    ArrayListMultimap<String, ImmutableList<HttpNameValue>> multimap = ArrayListMultimap.create();
+    for (Header header : this.lastrequest.getAllHeaders()) {
+      ImmutableList.Builder<HttpNameValue> list = ImmutableList.builder();
+      for (HeaderElement element : header.getElements()) {
+        list.add(HttpNameValue.create(element.getName(), element.getValue()));
+      }
+      multimap.put(header.getName(), list.build());
+    }
+
+    ImmutableSortedMap.Builder<String, ImmutableList<HttpNameValue>> builder = ImmutableSortedMap.naturalOrder();
+    multimap.asMap().forEach((name, value) -> {
+      ImmutableList.Builder<HttpNameValue> listBuilder = ImmutableList.builder();
+      value.forEach(listBuilder::addAll);
+      builder.put(name, listBuilder.build());
+    });
+    return builder.build();
+  }
+
+  public ImmutableSortedMap<String, ImmutableList<HttpNameValue>> getResponseHeaderValues() {
+    if (this.lastresponse == null)
+      return ImmutableSortedMap.of();
+
+    ArrayListMultimap<String, ImmutableList<HttpNameValue>> multimap = ArrayListMultimap.create();
+    for (Header header : this.lastresponse.getAllHeaders()) {
+      ImmutableList.Builder<HttpNameValue> list = ImmutableList.builder();
+      for (HeaderElement element : header.getElements()) {
+        list.add(HttpNameValue.create(element.getName(), element.getValue()));
+      }
+      multimap.put(header.getName(), list.build());
+    }
+
+    ImmutableSortedMap.Builder<String, ImmutableList<HttpNameValue>> builder = ImmutableSortedMap.naturalOrder();
+    multimap.asMap().forEach((name, value) -> {
+      ImmutableList.Builder<HttpNameValue> listBuilder = ImmutableList.builder();
+      value.forEach(listBuilder::addAll);
+      builder.put(name, listBuilder.build());
+    });
+    return builder.build();
   }
 
   @VisibleForTesting
