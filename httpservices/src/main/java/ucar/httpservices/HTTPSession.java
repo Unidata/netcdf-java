@@ -5,6 +5,7 @@
 
 package ucar.httpservices;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1118,6 +1119,12 @@ public class HTTPSession implements Closeable {
       merged = HTTPUtil.merge(globalsettings, localsettings);
     }
     return Collections.unmodifiableMap(merged);
+  }
+
+  public ImmutableMap<String, String> getMergedSettings() {
+    ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+    mergedSettings().forEach((key, value) -> builder.put(key.name(), value.toString()));
+    return builder.build();
   }
 
   //////////////////////////////////////////////////
