@@ -14,7 +14,6 @@ import java.nio.channels.WritableByteChannel;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +54,7 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     }
   }
 
-  private LoadingCache<Long, byte[]> initCache(int cacheBlockSizeInBytes, java.time.Duration timeToLive) {
+  private LoadingCache<Long, byte[]> initCache(long cacheSizeInBytes, java.time.Duration timeToLive) {
     CacheBuilder<Object, Object> cb =
         CacheBuilder.newBuilder().maximumSize(cacheSizeInBytes).expireAfterWrite(timeToLive);
     if (debugAccess) {
@@ -119,7 +118,7 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
 
     int srcPos = (int) (pos - (key * readCacheBlockSize));
     int toEOB = src.length - srcPos;
-    int length = toEOB < len ? toEOB : len;
+    int length = Math.min(toEOB, len);
     // copy byte array fulfilling the request as obtained from the cache or a fresh read
     // of the remote data into the destination buffer
     System.arraycopy(src, srcPos, buff, offset, length);
@@ -130,7 +129,6 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
   /**
    * read a readCacheBlockSize chunk of the remote file
    */
-
   private byte[] readRemoteCacheSizedChunk(Long cacheBlockNumber) throws IOException {
     long position = cacheBlockNumber * readCacheBlockSize;
     long toEOF = length() - position;
