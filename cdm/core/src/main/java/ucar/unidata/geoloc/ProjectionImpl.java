@@ -159,6 +159,16 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    */
   public abstract ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint);
 
+  /**
+   * Convert a LatLonPoint to projection coordinates
+   * Note: a new object is now created on each call for the return value, as of 4.0.46
+   *
+   * @param latLon convert from these lat, lon coordinates
+   * @return ProjectionPoint convert to these projection coordinates
+   */
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
+    return latLonToProj(latLon, new ProjectionPointImpl());
+  }
 
   /**
    * Convert projection coordinates to a LatLonPoint
@@ -169,17 +179,6 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @return LatLonPoint convert to these lat/lon coordinates
    */
   public abstract LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint);
-
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   * Note: a new object is now created on each call for the return value, as of 4.0.46
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @return ProjectionPoint convert to these projection coordinates
-   */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
-    return latLonToProj(latLon);
-  }
 
   /**
    * Convert projection coordinates to a LatLonPoint
