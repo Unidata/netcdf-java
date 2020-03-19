@@ -50,9 +50,10 @@ import java.net.URL;
  * field[i] goes from [endPos[i-1] to endPos[i])
  * <p/>
  * </pre>
- *
- * @author caron
+ * 
+ * @deprecated move in ver6
  */
+@Deprecated
 /*
  * ClassLoader cl = Level2VolumeScan.class.getClassLoader();
  * InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");

@@ -25,7 +25,7 @@ import java.util.Map;
  * <p/>
  * Use NetcdfFileWriter object for a lower level API.
  *
- * @deprecated TODO use ucar.nc2.writer.FileWriter
+ * @deprecated TODO use ucar.nc2.write.FileWriter
  */
 @Deprecated
 public class FileWriter2 {
@@ -69,7 +69,7 @@ public class FileWriter2 {
     this.version = version;
   }
 
-  /** @deprecated TODO use ucar.nc2.writer.FileWriter */
+  /** @deprecated TODO use ucar.nc2.write.FileWriter */
   @Deprecated
   public enum N3StructureStrategy {
     flatten, exclude

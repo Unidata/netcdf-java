@@ -243,6 +243,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     return getCoordMidpoint(index);
   }
 
+  /** @deprecated will be moved in ver6 */
+  @Deprecated
   public List<NamedObject> getCoordValueNames() {
     loadValuesIfNeeded();
     if (timeHelper != null)

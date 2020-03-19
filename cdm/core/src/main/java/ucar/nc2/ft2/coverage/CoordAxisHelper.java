@@ -282,8 +282,8 @@ class CoordAxisHelper {
     return subsetValues(min, max, stride);
   }
 
-  // look could specialize when only one point
-  // look must handle discon interval different
+  // LOOK could specialize when only one point
+  // TODO must handle discontinuous interval different
   private Optional<CoverageCoordAxisBuilder> subsetValues(double minValue, double maxValue, int stride) {
     if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
       return subsetValuesDiscontinuous(minValue, maxValue, stride);

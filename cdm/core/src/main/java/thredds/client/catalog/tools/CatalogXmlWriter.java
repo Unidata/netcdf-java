@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
+import ucar.unidata.util.Format;
 
 /**
  * Write client side catalogs out as XML.
@@ -432,7 +433,7 @@ public class CatalogXmlWriter {
     }
 
     sizeElem.setAttribute("units", unit);
-    sizeElem.setText(ucar.unidata.util.Format.d(size, 4));
+    sizeElem.setText(Format.d(size, 4));
 
     return sizeElem;
   }

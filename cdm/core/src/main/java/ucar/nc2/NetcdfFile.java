@@ -148,11 +148,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     userLoads = true;
   }
 
-  /**
-   * debugging
-   *
-   * @param debugFlag debug flags
-   */
+  /** @deprecated do not use */
+  @Deprecated
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugSPI = debugFlag.isSet("NetcdfFile/debugSPI");
     debugCompress = debugFlag.isSet("NetcdfFile/debugCompress");
@@ -1317,6 +1314,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   //////////////////////////////////////////////////////////////////////////////////////
 
   /** CDL representation of Netcdf header info, non strict */
+  @Override
   public String toString() {
     Formatter f = new Formatter();
     writeCDL(f, new Indent(2), false);
@@ -1410,7 +1408,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param uri use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException if error
    * @see NcMLWriter#writeToStream
-   * @deprecated will move in ver 6
+   * @deprecated use NcMLWriter
    */
   @Deprecated
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
@@ -1427,7 +1425,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param uri use this for the url attribute; if null use getLocation().
    * @throws IOException if error
    * @see NcMLWriter#writeToWriter
-   * @deprecated will move in ver 6
+   * @deprecated use NcMLWriter
    */
   @Deprecated
   public void writeNcML(java.io.Writer writer, String uri) throws IOException {

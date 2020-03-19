@@ -12,6 +12,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.ForbiddenConversionException;
 import ucar.ma2.Index;
 import ucar.nc2.constants.CDM;
+import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
@@ -456,7 +457,7 @@ public class Attribute extends CDMNode {
    *
    * @param param copy info from here.
    */
-  public Attribute(ucar.unidata.util.Parameter param) {
+  public Attribute(Parameter param) {
     this(param.getName());
 
     if (param.isString()) {

@@ -8,6 +8,7 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_NOT_ACCEPTABLE;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import com.google.common.annotations.VisibleForTesting;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
@@ -27,11 +28,11 @@ import java.util.*;
  * @since 10/20/2015.
  */
 public class DatasetUrl {
-  protected static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  protected static final String slashalpha = "\\/" + alpha;
+  private static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  private static final String slashalpha = "\\/" + alpha;
 
-  static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
-  static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
+  private static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
+  private static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
       ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
 
   /**
@@ -45,6 +46,7 @@ public class DatasetUrl {
    * @param url the url whose protocols to return
    * @return list of leading protocols without the trailing :
    */
+  @VisibleForTesting
   public static List<String> getProtocols(String url) {
     List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
@@ -532,9 +534,18 @@ public class DatasetUrl {
   }
 
   /////////////////////////////////////////////////////////////////////
+  // TODO this could be an @AutoValue
+  @Deprecated
   public final ServiceType serviceType;
+  @Deprecated
   public final String trueurl;
 
+  public static DatasetUrl create(ServiceType serviceType, String trueurl) {
+    return new DatasetUrl(serviceType, trueurl);
+  }
+
+  /** @deprecated use create() */
+  @Deprecated
   public DatasetUrl(ServiceType serviceType, String trueurl) {
     this.serviceType = serviceType;
     this.trueurl = trueurl;
@@ -555,5 +566,13 @@ public class DatasetUrl {
   @Override
   public int hashCode() {
     return Objects.hash(serviceType, trueurl);
+  }
+
+  public ServiceType getServiceType() {
+    return serviceType;
+  }
+
+  public String getTrueurl() {
+    return trueurl;
   }
 }

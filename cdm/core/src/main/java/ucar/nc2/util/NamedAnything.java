@@ -10,8 +10,9 @@ package ucar.nc2.util;
  *
  * @author caron
  * @since Apr 1, 2010
+ * @deprecated will move in ver 6
  */
-
+@Deprecated
 public class NamedAnything implements NamedObject {
   private Object value;
   private String desc;

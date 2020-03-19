@@ -70,6 +70,8 @@ public class TimeHelper {
     return dateUnit.makeOffsetFromRefDate(date);
   }
 
+  /** @deprecated will be moved in ver6 */
+  @Deprecated
   public List<NamedObject> getCoordValueNames(CoverageCoordAxis1D axis) {
     axis.loadValuesIfNeeded();
     List<NamedObject> result = new ArrayList<>();

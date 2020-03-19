@@ -15,8 +15,8 @@ import java.util.Iterator;
  * // do stuff
  * }
  *
- * @author caron
- * @since 11/20/13
+ * @deprecated will move in ver6
  */
+@Deprecated
 public interface CloseableIterator<T> extends Iterator<T>, Closeable {
 }

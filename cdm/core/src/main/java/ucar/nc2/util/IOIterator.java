@@ -11,9 +11,9 @@ import java.util.NoSuchElementException;
 /**
  * A Closeable Iterator that can throw an IOException
  *
- * @author caron
- * @since 9/23/2015.
+ * @deprecated will move in ver6
  */
+@Deprecated
 public interface IOIterator<T> extends Closeable {
 
   /**
