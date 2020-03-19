@@ -45,7 +45,7 @@ public class DatasetUrl {
    * @param url the url whose protocols to return
    * @return list of leading protocols without the trailing :
    */
-  private static List<String> getProtocols(String url) {
+  static List<String> getProtocols(String url) {
     List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
     // Note, we cannot use split because of the context sensitivity
