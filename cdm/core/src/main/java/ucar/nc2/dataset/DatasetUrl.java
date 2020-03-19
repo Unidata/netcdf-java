@@ -8,7 +8,6 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_NOT_ACCEPTABLE;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-
 import com.google.common.annotations.VisibleForTesting;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
