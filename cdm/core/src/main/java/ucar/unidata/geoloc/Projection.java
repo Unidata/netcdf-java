@@ -50,7 +50,7 @@ public interface Projection {
    */
   ProjectionPoint latLonToProj(LatLonPoint latlon);
 
-  /** @deprecated use latLonToProj(LatLonPoint latlon) */
+  /** @deprecated use projToLatLon(ProjectionPoint ppt) */
   @Deprecated
   LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
 
