@@ -13,13 +13,13 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
+import ucar.nc2.write.NcmlWriter;
 
 /**
  * Forecast Model Run Collection, manages dynamic collections of GridDatasets.
@@ -39,7 +39,6 @@ import java.util.*;
 public class Fmrc implements Closeable {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Fmrc.class);
   private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
-  private static NcMLWriter ncmlWriter = new NcMLWriter();
 
   /**
    * Factory method
@@ -277,6 +276,7 @@ public class Fmrc implements Closeable {
           // 177 with comment // Look: not really right )
           runDate = CalendarDate.parseISOformat(null, filesRunDateMap.get(f.getPath()));
           Element element = new Element("netcdf", ncNSHttps);
+          NcmlWriter ncmlWriter = new NcmlWriter();
           Element runDateAttr =
               ncmlWriter.makeAttributeElement(new Attribute(_Coordinate.ModelRunDate, runDate.toString()));
           config.innerNcml = element.addContent(runDateAttr);

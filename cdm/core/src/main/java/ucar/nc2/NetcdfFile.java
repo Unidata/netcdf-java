@@ -4,19 +4,37 @@
  */
 package ucar.nc2;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -27,20 +45,25 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.rc.RC;
+import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -108,8 +131,8 @@ import ucar.unidata.util.StringUtil2;
  * 
  * @author caron
  */
-public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
+public class NetcdfFile implements FileCacheable, Closeable {
+  private static final Logger log = LoggerFactory.getLogger(NetcdfFile.class);
 
   public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   public static final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
@@ -150,7 +173,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   /** @deprecated do not use */
   @Deprecated
-  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  public static void setDebugFlags(DebugFlags debugFlag) {
     debugSPI = debugFlag.isSet("NetcdfFile/debugSPI");
     debugCompress = debugFlag.isSet("NetcdfFile/debugCompress");
     debugStructureIterator = debugFlag.isSet("NetcdfFile/structureIterator");
@@ -301,7 +324,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @param location location of file.
    * @return the NetcdfFile.
-   * @throws java.io.IOException if error
+   * @throws IOException if error
    * @deprecated use NetcdfFiles.open
    */
   @Deprecated
@@ -319,7 +342,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated use NetcdfFiles.open
    */
   @Deprecated
-  public static NetcdfFile open(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public static NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
     return open(location, -1, cancelTask);
   }
 
@@ -335,8 +358,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated use NetcdfFiles.open
    */
   @Deprecated
-  public static NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
-      throws IOException {
+  public static NetcdfFile open(String location, int buffer_size, CancelTask cancelTask) throws IOException {
     return open(location, buffer_size, cancelTask, null);
   }
 
@@ -369,10 +391,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated use NetcdfFiles.open
    */
   @Deprecated
-  public static NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
-      Object iospMessage) throws IOException {
+  public static NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage)
+      throws IOException {
 
-    ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
+    RandomAccessFile raf = getRaf(location, buffer_size);
 
     try {
       return open(raf, location, cancelTask, iospMessage);
@@ -393,12 +415,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    */
   @Deprecated
   public static boolean canOpen(String location) throws IOException {
-    try (ucar.unidata.io.RandomAccessFile raf = getRaf(location, -1)) {
+    try (RandomAccessFile raf = getRaf(location, -1)) {
       return (raf != null) && canOpen(raf);
     }
   }
 
-  private static boolean canOpen(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  private static boolean canOpen(RandomAccessFile raf) throws IOException {
     if (N3header.isValidFile(raf)) {
       return true;
     } else {
@@ -446,8 +468,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (bufferSize <= 0)
       bufferSize = default_buffersize;
 
-    ucar.unidata.io.RandomAccessFile raf =
-        ucar.unidata.io.RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
+    RandomAccessFile raf = RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
 
     NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
 
@@ -479,24 +500,24 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return StringUtil2.replace(uriString, '\\', "/");
   }
 
-  private static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
+  private static RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
 
     String uriString = location.trim();
 
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
 
-    ucar.unidata.io.RandomAccessFile raf;
+    RandomAccessFile raf;
     if (uriString.startsWith("http:") || uriString.startsWith("https:")) { // open through URL
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+      raf = new HTTPRandomAccessFile(uriString);
 
     } else if (uriString.startsWith("nodods:")) { // deprecated use httpserver
       uriString = "http" + uriString.substring(6);
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+      raf = new HTTPRandomAccessFile(uriString);
 
     } else if (uriString.startsWith("httpserver:")) { // open through URL
       uriString = "http" + uriString.substring(10);
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+      raf = new HTTPRandomAccessFile(uriString);
 
     } else if (uriString.startsWith("slurp:")) { // open through URL
       uriString = "http" + uriString.substring(5);
@@ -526,12 +547,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
       if (uncompressedFileName != null) {
         // open uncompressed file as a RandomAccessFile.
-        raf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
+        raf = RandomAccessFile.acquire(uncompressedFileName, buffer_size);
         // raf = new ucar.unidata.io.MMapRandomAccessFile(uncompressedFileName, "r");
 
       } else {
         // normal case - not compressed
-        raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, buffer_size);
+        raf = RandomAccessFile.acquire(uriString, buffer_size);
         // raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
       }
     }
@@ -690,7 +711,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   public static NetcdfFile openInMemory(String name, byte[] data, String iospClassName)
       throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
-    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
+    InMemoryRandomAccessFile raf = new InMemoryRandomAccessFile(name, data);
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
 
@@ -703,12 +724,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @param name name of the dataset. Typically use the filename or URI.
    * @param data in-memory netcdf file
    * @return memory-resident NetcdfFile
-   * @throws java.io.IOException if error
+   * @throws IOException if error
    * @deprecated use NetcdfFiles.openInMemory
    */
   @Deprecated
   public static NetcdfFile openInMemory(String name, byte[] data) throws IOException {
-    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
+    InMemoryRandomAccessFile raf = new InMemoryRandomAccessFile(name, data);
     return open(raf, name, null, null);
   }
 
@@ -760,8 +781,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated use NetcdfFiles.open
    */
   @Deprecated
-  public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location,
-      ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
+  public static NetcdfFile open(RandomAccessFile raf, String location, CancelTask cancelTask, Object iospMessage)
+      throws IOException {
 
     IOServiceProvider spi = getIosp(raf);
     if (spi == null) {
@@ -811,7 +832,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       return SPFactory.getServiceProvider();
 
     } else if (H5header.isValidFile(raf)) {
-      return new ucar.nc2.iosp.hdf5.H5iosp();
+      return new H5iosp();
 
     } else {
 
@@ -839,9 +860,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * If the underlying file was acquired, it will be released, otherwise closed.
    * if isClosed() already, nothing will happen
    *
-   * @throws java.io.IOException if error when closing
+   * @throws IOException if error when closing
    */
-  public synchronized void close() throws java.io.IOException {
+  public synchronized void close() throws IOException {
     if (cache != null) {
       if (cache.release(this))
         return;
@@ -874,7 +895,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Optional file caching.
    */
   @Deprecated
-  public synchronized void setFileCache(ucar.nc2.util.cache.FileCacheIF cache) {
+  public synchronized void setFileCache(FileCacheIF cache) {
     this.cache = cache;
   }
 
@@ -1141,7 +1162,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *
    * @return List of type Variable.
    */
-  public java.util.List<Variable> getVariables() {
+  public List<Variable> getVariables() {
     return variables;
   }
 
@@ -1154,7 +1175,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated use getRootGroup().getAttributeContainer()
    */
   @Deprecated
-  public java.util.List<Attribute> getGlobalAttributes() {
+  public List<Attribute> getGlobalAttributes() {
     return immutable ? gattributes : new ArrayList<>(gattributes);
   }
 
@@ -1321,18 +1342,38 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return f.toString();
   }
 
-  /**
-   * CDL representation of Netcdf header info, non strict
-   * 
-   * @deprecated use NcMLWriter
-   */
-  @Deprecated
+  /** NcML representation of Netcdf header info, non strict */
   public String toNcML(String url) {
-    NcMLWriter ncmlWriter = new NcMLWriter();
-    ncmlWriter.setWriteVariablesPredicate(NcMLWriter.writeNoVariablesPredicate);
-
+    NcmlWriter ncmlWriter = new NcmlWriter(null, null, NcmlWriter.writeNoVariablesPredicate);
     Element netcdfElement = ncmlWriter.makeNetcdfElement(this, url);
     return ncmlWriter.writeToString(netcdfElement);
+  }
+
+  /**
+   * Write the NcML representation: dont show coordinate values
+   *
+   * @param os : write to this OutputStream. Will be closed at end of the method.
+   * @param uri use this for the url attribute; if null use getLocation(). // ??
+   * @throws IOException if error
+   */
+  public void writeNcML(OutputStream os, String uri) throws IOException {
+    NcmlWriter ncmlWriter = new NcmlWriter();
+    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
+    ncmlWriter.writeToStream(netcdfElem, os);
+  }
+
+  /**
+   * Write the NcML representation: dont show coordinate values
+   *
+   * @param writer : write to this Writer, should have encoding of UTF-8. Will be closed at end of the
+   *        method.
+   * @param uri use this for the url attribute; if null use getLocation().
+   * @throws IOException if error
+   */
+  public void writeNcML(Writer writer, String uri) throws IOException {
+    NcmlWriter ncmlWriter = new NcmlWriter();
+    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
+    ncmlWriter.writeToWriter(netcdfElem, writer);
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -1402,39 +1443,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   }
 
   /**
-   * Write the NcML representation: dont show coordinate values
-   *
-   * @param os : write to this OutputStream. Will be closed at end of the method.
-   * @param uri use this for the url attribute; if null use getLocation(). // ??
-   * @throws IOException if error
-   * @see NcMLWriter#writeToStream
-   * @deprecated use NcMLWriter
-   */
-  @Deprecated
-  public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
-    NcMLWriter ncmlWriter = new NcMLWriter();
-    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
-    ncmlWriter.writeToStream(netcdfElem, os);
-  }
-
-  /**
-   * Write the NcML representation: dont show coordinate values
-   *
-   * @param writer : write to this Writer, should have encoding of UTF-8 if applicable. Will be closed at end of the
-   *        method.
-   * @param uri use this for the url attribute; if null use getLocation().
-   * @throws IOException if error
-   * @see NcMLWriter#writeToWriter
-   * @deprecated use NcMLWriter
-   */
-  @Deprecated
-  public void writeNcML(java.io.Writer writer, String uri) throws IOException {
-    NcMLWriter ncmlWriter = new NcMLWriter();
-    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
-    ncmlWriter.writeToWriter(netcdfElem, writer);
-  }
-
-  /**
    * Extend the file if needed, in a way that is compatible with the current metadata, that is,
    * does not invalidate structural metadata held by the application.
    * For example, ok if dimension lengths, data has changed.
@@ -1468,13 +1476,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * This is can only be used for local netcdf-3 files.
    *
    * @param filename location
-   * @throws java.io.IOException if error
+   * @throws IOException if error
    * @deprecated use NetcdfFile.open( location) or NetcdfDataset.openFile( location)
    */
   @Deprecated
   public NetcdfFile(String filename) throws IOException {
     this.location = filename;
-    ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(filename);
+    RandomAccessFile raf = RandomAccessFile.acquire(filename);
     // ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.MMapRandomAccessFile(filename, "r");
     this.iosp = SPFactory.getServiceProvider();
     iosp.open(raf, this, null);
@@ -1485,13 +1493,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * This can only be used for netcdf-3 files served over HTTP
    *
    * @param url HTTP URL location
-   * @throws java.io.IOException if error
+   * @throws IOException if error
    * @deprecated use NetcdfFile.open( http:location) or NetcdfDataset.openFile( http:location)
    */
   @Deprecated
   public NetcdfFile(URL url) throws IOException {
     this.location = url.toString();
-    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.http.HTTPRandomAccessFile(location);
+    RandomAccessFile raf = new HTTPRandomAccessFile(location);
     this.iosp = SPFactory.getServiceProvider();
     iosp.open(raf, this, null);
     finish();
@@ -1514,8 +1522,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated use NetcdfFile.builder()
    */
   @Deprecated
-  protected NetcdfFile(String iospClassName, Object iospParam, String location, int buffer_size,
-      ucar.nc2.util.CancelTask cancelTask)
+  protected NetcdfFile(String iospClassName, Object iospParam, String location, int buffer_size, CancelTask cancelTask)
       throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
     Class iospClass = getClass().getClassLoader().loadClass(iospClassName);
@@ -1526,7 +1533,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       iosp.sendIospMessage(iospParam);
 
     this.location = location;
-    ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
+    RandomAccessFile raf = getRaf(location, buffer_size);
 
     try {
       this.iosp.open(raf, this, cancelTask);
@@ -1575,8 +1582,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated use NetcdfFile.builder()
    */
   @Deprecated
-  protected NetcdfFile(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  protected NetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask)
+      throws IOException {
 
     this.iosp = spi;
     this.location = location;
@@ -2088,7 +2095,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Do not call this directly, use Variable.read() !!
    * Ranges must be filled (no nulls)
    */
-  protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
+  protected Array readData(Variable v, Section ranges) throws IOException, InvalidRangeException {
     long start = 0;
     if (showRequest) {
       log.info("Data request for variable: {} section {}...", v.getFullName(), ranges);
@@ -2154,13 +2161,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    *        Note: no nulls allowed. IOSP may not modify.
    * @param wbc write data to this WritableByteChannel
    * @return the number of bytes written to the channel
-   * @throws java.io.IOException if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
+   * @throws IOException if read error
+   * @throws InvalidRangeException if invalid section
    * @deprecated do not use
    */
   @Deprecated
-  protected long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  protected long readToByteChannel(Variable v, Section section, WritableByteChannel wbc)
+      throws IOException, InvalidRangeException {
 
     // if (unlocked)
     // throw new IllegalStateException("File is unlocked - cannot use");
@@ -2171,8 +2178,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return iosp.readToByteChannel(v, section, wbc);
   }
 
-  protected long readToOutputStream(ucar.nc2.Variable v, Section section, OutputStream out)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  protected long readToOutputStream(Variable v, Section section, OutputStream out)
+      throws IOException, InvalidRangeException {
 
     // if (unlocked)
     // throw new IllegalStateException("File is unlocked - cannot use");
@@ -2183,7 +2190,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return iosp.readToOutputStream(v, section, out);
   }
 
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
     return iosp.getStructureIterator(s, bufferSize);
   }
 
@@ -2203,8 +2210,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @deprecated will be moved to DODSNetcdfFile in version 6.
    */
   @Deprecated
-  public java.util.List<Array> readArrays(java.util.List<Variable> variables) throws IOException {
-    java.util.List<Array> result = new java.util.ArrayList<>();
+  public List<Array> readArrays(List<Variable> variables) throws IOException {
+    List<Array> result = new ArrayList<>();
     for (Variable variable : variables)
       result.add(variable.read());
     return result;
@@ -2549,7 +2556,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   // LOOK can we get rid of internal caching
   private String cacheName;
-  protected ucar.nc2.util.cache.FileCacheIF cache;
+  protected FileCacheIF cache;
 
   // "global view" over all groups.
   protected List<Variable> variables;

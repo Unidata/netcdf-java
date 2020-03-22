@@ -23,9 +23,9 @@ import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageTransform;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Misc;
+import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -36,10 +36,9 @@ import ucar.unidata.geoloc.ProjectionRect;
  * @since 5/7/2015
  */
 public class CoverageDatasetCapabilities {
-  private CoverageCollection gcd;
-  private String path;
-
-  private final NcMLWriter ncmlWriter = new NcMLWriter();
+  private final CoverageCollection gcd;
+  private final String path;
+  private final NcmlWriter ncmlWriter = new NcmlWriter();
 
   public CoverageDatasetCapabilities(CoverageCollection gds, String path) {
     this.gcd = gds;
