@@ -10,10 +10,8 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.google.common.annotations.VisibleForTesting;
 import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
@@ -22,7 +20,7 @@ import java.util.*;
 
 /**
  * Detection of the protocol from a location string.
- * TODO: Break this up so that each protocol is responsible for itself. We still need to disambiguate http:
+ * TODO: Review and refactor as needed. Perhaps BiMap\<ServiceType, String>?
  *
  * @author caron
  * @since 10/20/2015.
@@ -320,9 +318,9 @@ public class DatasetUrl {
       case "httpserver":
       case "nodods":
         return ServiceType.HTTPServer;
-      case CdmRemote.PROTOCOL:
+      case "cdmremote":
         return ServiceType.CdmRemote;
-      case DataFactory.PROTOCOL: // thredds
+      case "thredds":
         return ServiceType.THREDDS;
     }
 

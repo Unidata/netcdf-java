@@ -10,8 +10,10 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
 import java.util.*;
+import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.Stereographic;
+import ucar.unidata.geoloc.projection.TransverseMercator;
 
 /**
  * GDV Conventions.

@@ -19,10 +19,10 @@ import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.RotatedLatLon;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
-import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 /**
  * A georeferencing "gridded" CoordinateSystem. This describes a "grid" of coordinates, which

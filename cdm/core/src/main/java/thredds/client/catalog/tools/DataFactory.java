@@ -31,8 +31,9 @@ import javax.annotation.Nonnull;
  * DataFactory for THREDDS client catalogs
  *
  * @author caron
- * @since 1/8/2015
+ * @deprecated will change in ver2
  */
+@Deprecated
 public class DataFactory {
   public static final String PROTOCOL = "thredds";
   public static final String SCHEME = PROTOCOL + ":";

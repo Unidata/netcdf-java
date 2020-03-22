@@ -18,7 +18,9 @@ import java.text.ParseException;
  *
  * @author Barrodale Computing Services, Ltd. (Eric Davies)
  * @author Unidata Java Development Team
+ * @deprecated will move in ver6
  */
+@Deprecated
 public class WKTParser {
   private static Logger logger = LoggerFactory.getLogger(WKTParser.class);
 

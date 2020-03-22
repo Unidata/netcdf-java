@@ -29,6 +29,7 @@ public class Service { // (7)
   private final List<Service> nestedServices;
   private final List<Property> properties;
 
+  /** @deprecated use builder */
   public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices,
       List<Property> properties, String accessType) {
     this.name = name;

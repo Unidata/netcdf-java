@@ -16,7 +16,9 @@ import java.io.IOException;
  *
  * @author edavis
  * @since 4.0
+ * @deprecated will move in ver6
  */
+@Deprecated
 public class CoordRefSysToGML {
   private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordRefSysToGML.class);
 

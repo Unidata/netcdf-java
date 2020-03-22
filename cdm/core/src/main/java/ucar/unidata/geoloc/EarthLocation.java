@@ -4,8 +4,6 @@
  */
 package ucar.unidata.geoloc;
 
-import ucar.nc2.ft.PointFeature;
-
 /**
  * A location on the earth, specified by lat, lon and optionally altitude.
  *
@@ -35,9 +33,7 @@ public interface EarthLocation {
   double getLongitude();
 
   /**
-   * Returns the altitude in some unit. If this {@code EarthLocation} was retrieved from a {@link PointFeature}
-   * (via {@link PointFeature#getLocation()}), then the unit can be obtained by calling
-   * {@code pointFeature.getFeatureCollection().getAltUnits()}.
+   * Returns the altitude in some unit.
    *
    * @return the altitude in some unit. A value of {@link Double#NaN} indicates "no altitude".
    */

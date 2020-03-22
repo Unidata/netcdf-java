@@ -9,12 +9,14 @@ import java.net.*;
 import java.util.Map;
 
 /**
- * how do we know if URLStreamHandlerFactory has already been set?
+ * how do we know if URLStreamHandlerFactory has already been se
+ * 
+ * @deprecated do not use
  */
-
+@Deprecated
 public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory {
 
-  public static org.slf4j.Logger log = ucar.httpservices.HTTPSession.log;
+  public static org.slf4j.Logger log = ucar.httpservices.HTTPSession.log; // WTF?
 
   //////////////////////////////////////////////////////////////////////////
   private static Map<String, URLStreamHandler> map = new java.util.HashMap<>();

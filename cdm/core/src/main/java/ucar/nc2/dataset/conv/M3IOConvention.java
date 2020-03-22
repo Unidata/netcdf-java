@@ -11,9 +11,16 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.ProjectionRect;
 import java.util.*;
+import ucar.unidata.geoloc.projection.AlbersEqualArea;
+import ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea;
+import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.geoloc.projection.Mercator;
+import ucar.unidata.geoloc.projection.Stereographic;
+import ucar.unidata.geoloc.projection.TransverseMercator;
+import ucar.unidata.geoloc.projection.UtmProjection;
 
 /**
  * Models-3/EDSS Input/Output netcf format.

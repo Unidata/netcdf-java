@@ -73,7 +73,7 @@ evaluationDependsOn(":uicdm")  // Evaluate ":uicdm" first so that all :cdm Sourc
 task buildJavadocCdm(type: Javadoc) {
     description = "Generate Javadoc for the CDM subproject."
     
-    title = "NetCDF-Java CDM API v${version}"
+    title = "NetCDF-Java CDM Public API v${version}"
     destinationDir = file("$buildDir/javadocCdm/")
 
     options.showFromPublic()

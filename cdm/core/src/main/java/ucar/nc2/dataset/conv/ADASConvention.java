@@ -16,10 +16,9 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-// import ucar.units.ConversionException;
 import java.io.IOException;
 import java.util.*;
+import ucar.unidata.geoloc.projection.LambertConformal;
 
 /**
  * ADAS netcdf files.

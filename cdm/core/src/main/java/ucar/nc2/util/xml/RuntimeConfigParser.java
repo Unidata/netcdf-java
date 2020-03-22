@@ -35,7 +35,9 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  * </pre>
  *
  * @author caron
+ * @deprecated will move in ver6
  */
+@Deprecated
 public class RuntimeConfigParser {
 
   public static void read(InputStream is, StringBuilder errlog) throws IOException {

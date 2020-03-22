@@ -63,8 +63,8 @@ public class CoordinatesHelper {
     coordTransforms =
         builder.coordTransforms.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull).collect(Collectors.toList());
 
-    coordTransforms.addAll(builder.verticalCTBuilder.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
-        .collect(Collectors.toList()));
+    coordTransforms.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd))
+        .filter(Objects::nonNull).collect(Collectors.toList()));
 
     this.coordSystems = builder.coordSys.stream().map(s -> s.build(ncd, this.coordAxes, this.coordTransforms))
         .collect(Collectors.toList());
@@ -80,7 +80,7 @@ public class CoordinatesHelper {
     public List<CoordinateAxis.Builder> coordAxes = new ArrayList<>();
     public List<CoordinateSystem.Builder> coordSys = new ArrayList<>();
     public List<CoordinateTransform.Builder> coordTransforms = new ArrayList<>();
-    public List<VerticalCTBuilder> verticalCTBuilder = new ArrayList<>();
+    public List<VerticalCTBuilder> verticalCTBuilders = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder axis) {
@@ -125,7 +125,7 @@ public class CoordinatesHelper {
     }
 
     public Builder addVerticalCTBuilder(VerticalCTBuilder vctb) {
-      verticalCTBuilder.add(vctb);
+      verticalCTBuilders.add(vctb);
       return this;
     }
 

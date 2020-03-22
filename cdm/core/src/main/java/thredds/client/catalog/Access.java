@@ -5,10 +5,7 @@
 package thredds.client.catalog;
 
 import java.util.Objects;
-import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.ft.remote.CdmrFeatureDataset;
-import ucar.nc2.stream.CdmRemote;
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 
@@ -17,6 +14,7 @@ import java.net.URI;
  *
  * @author caron
  * @since 1/7/2015
+ *        LOOK could be @Autovalue
  */
 @Immutable
 public class Access { // (5)
@@ -26,6 +24,7 @@ public class Access { // (5)
   private final String dataFormatS;
   private final long dataSize;
 
+  /** @deprecated use builder */
   public Access(Dataset dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
     this.dataset = dataset;
     this.urlPath = urlPath; // urlPath.startsWith("/") ? urlPath.substring(1) : urlPath;
@@ -111,11 +110,11 @@ public class Access { // (5)
       return null;
 
     if (service.getType() == ServiceType.THREDDS)
-      return DataFactory.SCHEME + uri;
+      return ServiceType.THREDDS.getProtocol() + ":" + uri;
     if (service.getType() == ServiceType.CdmRemote)
-      return CdmRemote.SCHEME + uri;
+      return ServiceType.CdmRemote.getProtocol() + ":" + uri;
     if (service.getType() == ServiceType.CdmrFeature)
-      return CdmrFeatureDataset.SCHEME + uri;
+      return ServiceType.CdmrFeature.getProtocol() + ":" + uri;
     return uri.toString();
   }
 

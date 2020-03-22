@@ -48,6 +48,8 @@ public class Catalog extends DatasetNode {
   //////////////////////////////////////////////////////////////////////////////////////////
   private final URI baseURI; // LOOK its possible we never want to use this. perhaps "location" instead ??
 
+  /** @deprecated use builder */
+  @Deprecated
   public Catalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
     super(null, name, flds, datasets);
     this.baseURI = baseURI;
