@@ -17,11 +17,11 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.NcmlWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
 import ucar.ui.widget.IndependentWindow;
@@ -490,8 +490,8 @@ public class DatasetWriter extends JPanel {
     infoTA.clear();
 
     if (isNcml) {
-      NcMLWriter ncmlWriter = new NcMLWriter();
-      ncmlWriter.setNamespace(null);
+      NcmlWriter ncmlWriter = new NcmlWriter();
+      // LOOK ncmlWriter.setNamespace(null);
       ncmlWriter.getXmlFormat().setOmitDeclaration(true);
 
       Element varElement = ncmlWriter.makeVariableElement(v, false);

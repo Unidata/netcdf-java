@@ -27,7 +27,6 @@ import ucar.nc2.util.DiskCache;
  * @since 3/9/2015
  */
 public class Nccopy {
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static class CommandLine {
     @Parameter(names = {"-i", "--input"}, description = "Input dataset.", required = true)
@@ -135,7 +134,7 @@ public class Nccopy {
         DiskCache.setCachePolicy(true);
       }
 
-      try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel)) {
+      try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
 
         FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, cmdLine.format, cmdLine.getNc4Chunking());
         writer.getNetcdfFileWriter().setLargeFile(cmdLine.isLargeFile);

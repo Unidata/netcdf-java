@@ -13,6 +13,7 @@ import ucar.ma2.Array
 import ucar.ma2.DataType
 import ucar.nc2.*
 import ucar.nc2.dataset.NetcdfDataset
+import ucar.nc2.write.NcmlWriter
 
 /**
  * @author cwardgar
@@ -156,9 +157,9 @@ recordsGroup/recordsStruct = UNREADABLE
 </netcdf>
 '''
 
-    NcMLWriter ncmlWriter
+    NcmlWriter ncmlWriter
     def setup() {
-        ncmlWriter = new NcMLWriter();
+        ncmlWriter = new NcmlWriter();
     }
 
     def "set NetcdfFile properties and exercise namespace and xmlFormat getters/setters"() {
@@ -166,10 +167,10 @@ recordsGroup/recordsStruct = UNREADABLE
         NetcdfFile emptyNcFile = new NetcdfFileSubclass()
         emptyNcFile.setLocation("file:SOME_FILE");
         emptyNcFile.setId("SOME_ID")
-        emptyNcFile.setTitle("NcMLWriter Test")
+        emptyNcFile.setTitle("NcmlWriter Test")
         emptyNcFile.finish()
 
-        when: "set NcMLWriter namespace"
+        when: "set NcmlWriter namespace"
         // Causes:
         //     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" />
         // to become:
@@ -179,7 +180,7 @@ recordsGroup/recordsStruct = UNREADABLE
         then: "getter returns instance just set"
         ncmlWriter.namespace == Namespace.NO_NAMESPACE  // Exercise getter.
 
-        when: "set NcMLWriter XMLFormat"
+        when: "set NcmlWriter XMLFormat"
         // Omits the '<?xml version="1.0" encoding="UTF-8"?>' declaration.
         Format xmlFormat = Format.rawFormat.setOmitDeclaration(true)
         ncmlWriter.xmlFormat = xmlFormat   // Exercise setter.
@@ -190,7 +191,7 @@ recordsGroup/recordsStruct = UNREADABLE
         expect:
         Element netcdfElem = ncmlWriter.makeNetcdfElement(emptyNcFile, null)
         ncmlWriter.writeToString(netcdfElem) ==
-                '<netcdf location="file:SOME_FILE" id="SOME_ID" title="NcMLWriter Test" />\r\n'
+                '<netcdf location="file:SOME_FILE" id="SOME_ID" title="NcmlWriter Test" />\r\n'
     }
 
     def "makeDimensionElement() throws exception for private Dimension"() {
@@ -204,40 +205,40 @@ recordsGroup/recordsStruct = UNREADABLE
 
     def "'time' is a coordinate variable"() {
         expect:
-        NcMLWriter.writeCoordinateVariablesPredicate.apply(ncFile.findVariable("time"))
+        NcmlWriter.writeCoordinateVariablesPredicate.apply(ncFile.findVariable("time"))
     }
 
     def "'charVar', 'stringVar', and 'dessert' are metadata variables"() {
         expect:
         ['charVar', 'stringVar', 'dessert'].every {
-            NcMLWriter.writeMetadataVariablesPredicate.apply(ncFile.findVariable(it))
+            NcmlWriter.writeMetadataVariablesPredicate.apply(ncFile.findVariable(it))
         }
     }
 
     def "'recordsGroup/recordsStruct' can be selected with WriteVariablesWithNamesPredicate"() {
         setup:
         Predicate<Variable> writeVarsPred =
-                new NcMLWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct'])
+                new NcmlWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct'])
 
         expect:
         writeVarsPred.apply(ncFile.findVariable('recordsGroup/recordsStruct'))
     }
 
     def "write to String using compound writeVariablesPredicate"() {
-        setup: "configure NcMLWriter"
+        setup: "configure NcmlWriter"
         Predicate<Variable> compoundPred = Predicates.or(
-                NcMLWriter.writeCoordinateVariablesPredicate,   // "time"
-                NcMLWriter.writeMetadataVariablesPredicate,     // "charVar", "stringVar", "dessert"
-                new NcMLWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct']));
+                NcmlWriter.writeCoordinateVariablesPredicate,   // "time"
+                NcmlWriter.writeMetadataVariablesPredicate,     // "charVar", "stringVar", "dessert"
+                new NcmlWriter.WriteVariablesWithNamesPredicate(['recordsGroup/recordsStruct']));
 
-        when: "set NcMLWriter writeVariablesPredicate"
-        ncmlWriter.writeVariablesPredicate = compoundPred   // Exercise setter.
+        when: "set NcmlWriter writeVariablesPredicate"
+        ncmlWriter.writeValuesPredicate = compoundPred   // Exercise setter.
 
         then: "getter returns instance just set"
-        ncmlWriter.writeVariablesPredicate == compoundPred  // Exercise getter.
+        ncmlWriter.writeValuesPredicate == compoundPred  // Exercise getter.
 
         expect: "compoundPred applies to every Variable in ncFile"
-        ncFile.variables.every { ncmlWriter.writeVariablesPredicate.apply(it) }
+        ncFile.variables.every { ncmlWriter.writeValuesPredicate.apply(it) }
 
         and: "generated NcML string will match expectedNcmlResult"
         Element netcdfElem = ncmlWriter.makeExplicitNetcdfElement(ncFile, null)
@@ -252,12 +253,12 @@ recordsGroup/recordsStruct = UNREADABLE
         setup: "create temporary file to write NcML to"
         File outFile = File.createTempFile("NcMLWriterSpec", ".ncml")
 
-        and: "configure NcMLWriter"
+        and: "configure NcmlWriter"
         // Don't try to write values 'recordsGroup/recordsStruct' this time; that already failed in previous method.
         // Also, the NetcdfDataset that NcMLReader returns will try to generate missing values, which we don't want.
-        ncmlWriter.writeVariablesPredicate = Predicates.or(
-                NcMLWriter.writeCoordinateVariablesPredicate,   // "time"
-                NcMLWriter.writeMetadataVariablesPredicate)     // "charVar", "stringVar", "dessert"
+        ncmlWriter.writeValuesPredicate = Predicates.or(
+                NcmlWriter.writeCoordinateVariablesPredicate,   // "time"
+                NcmlWriter.writeMetadataVariablesPredicate)     // "charVar", "stringVar", "dessert"
 
         when: "write NcML to file"
         Element netcdfElem = ncmlWriter.makeExplicitNetcdfElement(ncFile, null)

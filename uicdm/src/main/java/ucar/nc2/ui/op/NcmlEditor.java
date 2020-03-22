@@ -14,9 +14,9 @@ import org.jdom2.Element;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
+import ucar.nc2.write.NcmlWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
 import ucar.ui.widget.IndependentWindow;
@@ -264,7 +264,7 @@ public class NcmlEditor extends JPanel {
       if (ds == null) {
         editor.setText("Failed to open <" + location + ">");
       } else {
-        NcMLWriter ncmlWriter = new NcMLWriter();
+        NcmlWriter ncmlWriter = new NcmlWriter();
         Element netcdfElem = ncmlWriter.makeNetcdfElement(ds, null);
         result = ncmlWriter.writeToString(netcdfElem);
 

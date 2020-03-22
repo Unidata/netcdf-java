@@ -30,8 +30,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
@@ -328,7 +328,7 @@ public class GridDatasetInfo {
     if (axis == null)
       return null;
 
-    NcMLWriter ncmlWriter = new NcMLWriter();
+    NcmlWriter ncmlWriter = new NcmlWriter();
 
     Element varElem = new Element(name);
     varElem.setAttribute("name", axis.getFullName());
@@ -447,7 +447,7 @@ public class GridDatasetInfo {
    */
 
   private Element writeAxis(CoordinateAxis axis) {
-    NcMLWriter ncmlWriter = new NcMLWriter();
+    NcmlWriter ncmlWriter = new NcmlWriter();
 
     Element varElem = new Element("axis");
     varElem.setAttribute("name", axis.getFullName());
@@ -588,7 +588,7 @@ public class GridDatasetInfo {
   }
 
   private Element writeGrid(GridDatatype grid) {
-    NcMLWriter ncmlWriter = new NcMLWriter();
+    NcmlWriter ncmlWriter = new NcmlWriter();
 
     Element varElem = new Element("grid");
     varElem.setAttribute("name", grid.getFullName());

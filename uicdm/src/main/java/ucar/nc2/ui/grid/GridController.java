@@ -28,7 +28,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDatasetInfo;
-import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.write.NcmlWriter;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
@@ -518,7 +518,7 @@ public class GridController {
     if (gridDataset == null)
       return "Null gridset";
 
-    NcMLWriter ncmlWriter = new NcMLWriter();
+    NcmlWriter ncmlWriter = new NcmlWriter();
     Element netcdfElement = ncmlWriter.makeNetcdfElement(gridDataset.getNetcdfFile(), null);
     return ncmlWriter.writeToString(netcdfElement);
   }

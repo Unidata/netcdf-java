@@ -1,13 +1,25 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.ncml;
+package ucar.nc2.write;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -21,40 +33,41 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.util.Misc;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.xml.Parse;
-import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Helper class to write NcML.
  *
  * @author caron
  * @author cwardgar
- * @see ucar.nc2.NetcdfFile
+ * @see NetcdfFile
  * @see <a href=
  *      "http://www.unidata.ucar.edu/software/netcdf/ncml/">http://www.unidata.ucar.edu/software/netcdf/ncml/</a>
- * @deprecated use ucar.nc2.write.NcmlWriter
  */
-@Deprecated
-public class NcMLWriter {
+public class NcmlWriter {
+  private static final Logger log = LoggerFactory.getLogger(NcmlWriter.class);
+
   /**
    * A default namespace constructed from the NcML URI: {@code http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2}.
    */
   // A default namespace means that we can use it without having to prepend the "ncml:" prefix to every element name.
   // thredds.client.catalog.Catalog.ncmlNS is *not* default and therefore *does* require the prefix.
-  public static final Namespace ncmlDefaultNamespace = Namespace.getNamespace(Catalog.NJ22_NAMESPACE);
+  private static final Namespace ncmlDefaultNamespace = Namespace.getNamespace(Catalog.NJ22_NAMESPACE);
 
-  private static final Logger log = LoggerFactory.getLogger(NcMLWriter.class);
 
   //////////////////////////////////////// Variable-writing predicates ////////////////////////////////////////
 
   /** Predicate that always returns {@code false}. */
-  public static final Predicate<Variable> writeNoVariablesPredicate = Predicates.alwaysFalse();
+  public static final Predicate<Variable> writeNoVariablesPredicate = attributes -> false;
 
   /**
    * Predicate that returns {@code true} for variables that are {@link Variable#isMetadata() metadata variables}.
@@ -70,7 +83,7 @@ public class NcMLWriter {
   public static final Predicate<Variable> writeCoordinateVariablesPredicate = Variable::isCoordinateVariable;
 
   /** Predicate that always returns {@code true}. */
-  public static final Predicate<Variable> writeAllVariablesPredicate = Predicates.alwaysTrue();
+  public static final Predicate<Variable> writeAllVariablesPredicate = (v) -> true;
 
   /** Predicate that returns {@code true} for variables whose names are specified to the constructor. */
   public static class WriteVariablesWithNamesPredicate implements Predicate<Variable> {
@@ -81,28 +94,52 @@ public class NcMLWriter {
     }
 
     @Override
-    public boolean apply(Variable var) {
+    public boolean test(Variable var) {
       return variableNames.contains(var.getFullName());
     }
   }
 
-  //////////////////////////////////////// Instance variables ////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
 
-  private Namespace namespace;
-  private Format xmlFormat;
-  private Predicate<Variable> writeVariablesPredicate;
-
+  private final Namespace namespace;
+  private final Format xmlFormat;
+  private final Predicate<Variable> writeValuesPredicate;
   private final XMLOutputter xmlOutputter = new XMLOutputter();
 
-  //////////////////////////////////////// Constructors ////////////////////////////////////////
-
-  public NcMLWriter() {
-    this.namespace = ncmlDefaultNamespace;
-    this.xmlFormat = Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX);
-    this.writeVariablesPredicate = writeMetadataVariablesPredicate;
+  /**
+   * Constructor allows you to set parameters. Any parameters may be null for default.
+   *
+   * @param namespace, if null use ncmlDefaultNamespace.
+   * @param xmlFormat, if null, use Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX).
+   * @param writeValuesPredicate if null, write a Variable's values if Variable.isMetadata(). This determines whether
+   *        values should be written or not. The values will be contained within a {@code <values>} element.
+   *        By default, the predicate will be {@link #writeMetadataVariablesPredicate}. There could be data loss if the
+   *        values
+   *        of metadata variables aren't included in the NcML, so we recommend that you always use it, possibly as part
+   *        of a
+   *        compound predicate. For example, suppose you wanted to print the values of metadata <b>and</b> coordinate
+   *        variables:
+   * 
+   *        <pre>
+   *        Predicate<Variable> compoundPred =
+   *        Predicates.or(writeMetadataVariablesPredicate, writeCoordinateVariablesPredicate);
+   *        ncmlWriter.setWriteVariablesPredicate(compoundPred);
+   *        </pre>
+   */
+  public NcmlWriter(@Nullable Namespace namespace, @Nullable Format xmlFormat,
+      @Nullable Predicate<Variable> writeValuesPredicate) {
+    this.namespace = namespace == null ? ncmlDefaultNamespace : namespace;
+    this.xmlFormat = xmlFormat == null ? Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX) : xmlFormat;
+    this.writeValuesPredicate =
+        writeValuesPredicate == null ? writeMetadataVariablesPredicate::test : writeValuesPredicate;
   }
 
-  //////////////////////////////////////// Getters and setters ////////////////////////////////////////
+  /** Constructor with default values */
+  public NcmlWriter() {
+    this.namespace = ncmlDefaultNamespace;
+    this.xmlFormat = Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX);
+    this.writeValuesPredicate = writeMetadataVariablesPredicate::test;
+  }
 
   /**
    * Gets the XML namespace for the elements in the NcML. By default, it is {@link #ncmlDefaultNamespace}.
@@ -111,15 +148,6 @@ public class NcMLWriter {
    */
   public Namespace getNamespace() {
     return namespace;
-  }
-
-  /**
-   * Sets the XML namespace.
-   *
-   * @param namespace the new namespace. {@code null} implies {@link Namespace#NO_NAMESPACE}.
-   */
-  public void setNamespace(Namespace namespace) {
-    this.namespace = namespace == null ? Namespace.NO_NAMESPACE : namespace;
   }
 
   /**
@@ -132,42 +160,15 @@ public class NcMLWriter {
     return xmlFormat;
   }
 
-  public void setXmlFormat(Format xmlFormat) {
-    this.xmlFormat = Preconditions.checkNotNull(xmlFormat);
-  }
-
   /**
    * Gets the predicate that will be applied to variables to determine wither their values should be written in
    * addition to their metadata. The values will be contained within a {@code <values>} element.
    *
    * @return the predicate.
    */
-  public Predicate<Variable> getWriteVariablesPredicate() {
-    return writeVariablesPredicate;
+  public Predicate<Variable> getWriteValuesPredicate() {
+    return writeValuesPredicate;
   }
-
-  /**
-   * Sets the predicate that will be applied to variables to determine whether their values should be written in
-   * addition to their metadata. The values will be contained within a {@code <values>} element.
-   * <p/>
-   * By default, the predicate will be {@link #writeMetadataVariablesPredicate}. Their could be data loss if the values
-   * of metadata variables aren't included in the NcML, so we recommend that you always use it, possibly as part of a
-   * compound predicate. For example, suppose you wanted to print the values of metadata <b>and</b> coordinate
-   * variables. Just do:
-   * 
-   * <pre>
-   * Predicate<Variable> compoundPred =
-   *     Predicates.or(writeMetadataVariablesPredicate, writeCoordinateVariablesPredicate);
-   * ncmlWriter.setWriteVariablesPredicate(compoundPred);
-   * </pre>
-   *
-   * @param predicate the predicate to apply.
-   */
-  public void setWriteVariablesPredicate(Predicate<Variable> predicate) {
-    this.writeVariablesPredicate = Preconditions.checkNotNull(predicate);
-  }
-
-  //////////////////////////////////////// Writing ////////////////////////////////////////
 
   /**
    * Writes an NcML element to a string.
@@ -273,7 +274,7 @@ public class NcMLWriter {
 
     // regular variables
     for (Variable var : group.getVariables()) {
-      boolean showValues = writeVariablesPredicate.apply(var);
+      boolean showValues = writeValuesPredicate.test(var);
       elem.addContent(makeVariableElement(var, showValues));
     }
 
@@ -301,7 +302,7 @@ public class NcMLWriter {
     // Use a TreeMap so that the key-value pairs are emitted in a consistent order.
     TreeMap<Integer, String> map = new TreeMap<>(etd.getMap());
 
-    for (Map.Entry<Integer, String> entry : map.entrySet()) {
+    for (Entry<Integer, String> entry : map.entrySet()) {
       typeElem.addContent(new Element("enum", namespace).setAttribute("key", Integer.toString(entry.getKey()))
           .addContent(entry.getValue()));
     }
@@ -463,7 +464,7 @@ public class NcMLWriter {
         for (int i = 2; i < a.getSize(); i++) {
           double v1 = a.getDouble(ima.set(i));
           double v0 = a.getDouble(ima.set(i - 1));
-          if (!ucar.nc2.util.Misc.nearlyEquals(v1 - v0, incr))
+          if (!Misc.nearlyEquals(v1 - v0, incr))
             isRegular = false;
         }
 

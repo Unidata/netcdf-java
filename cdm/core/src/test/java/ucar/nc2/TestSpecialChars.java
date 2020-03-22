@@ -14,9 +14,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ncml.NcMLWriter;
-import ucar.unidata.util.test.TestDir;
-import java.io.File;
+import ucar.nc2.write.NcmlWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -69,7 +67,7 @@ public class TestSpecialChars {
       assert val.equals(trouble);
 
       try (OutputStream out = new FileOutputStream(ncmlFilePath)) {
-        NcMLWriter ncmlWriter = new NcMLWriter();
+        NcmlWriter ncmlWriter = new NcmlWriter();
         Element netcdfElem = ncmlWriter.makeNetcdfElement(ncfile, null);
         ncmlWriter.writeToStream(netcdfElem, out);
       }

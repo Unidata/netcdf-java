@@ -22,11 +22,11 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -214,7 +214,7 @@ public class FeatureDatasetCapabilitiesWriter {
   }
 
   private Element writeVariable(VariableSimpleIF v) {
-    NcMLWriter ncMLWriter = new NcMLWriter();
+    NcmlWriter ncMLWriter = new NcmlWriter();
     Element varElem = new Element("variable");
     varElem.setAttribute("name", v.getShortName());
 

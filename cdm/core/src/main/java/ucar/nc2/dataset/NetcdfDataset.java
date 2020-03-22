@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import javax.annotation.Nullable;
-import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -14,7 +13,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.cache.FileCache;
@@ -1060,21 +1058,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     return false;
-  }
-
-  /**
-   * Write the NcML representation.
-   *
-   * @param os write to this Output Stream.
-   * @param uri use this for the url attribute; if null use getLocation().
-   * @deprecated will move in ver 6
-   */
-  @Deprecated
-  @Override
-  public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
-    NcMLWriter ncmlWriter = new NcMLWriter();
-    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
-    ncmlWriter.writeToStream(netcdfElem, os);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
