@@ -14,7 +14,8 @@ import ucar.nc2.dataset.transform.HorizTransformBuilderIF;
 
 /**
  * Projection based on Mcidas Area files.
- *
+ * TODO not used or not registered?
+ * 
  * @author caron
  */
 public class McIDASAreaTransformBuilder extends AbstractTransformBuilder implements HorizTransformBuilderIF {

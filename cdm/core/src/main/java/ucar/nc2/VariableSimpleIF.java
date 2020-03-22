@@ -5,14 +5,10 @@
 package ucar.nc2;
 
 import ucar.ma2.DataType;
-import ucar.nc2.ft.FeatureDataset;
 import java.util.List;
 
 /**
  * A lightweight abstraction of a Variable.
- *
- * @author caron
- * @see FeatureDataset
  */
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
 

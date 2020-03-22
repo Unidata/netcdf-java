@@ -23,6 +23,7 @@ public class DatasetNode {
   protected final String name;
   protected final Map<String, Object> flds; // keep memory small. dont store reference objects for nulls
 
+  /** @deprecated use builder */
   protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds,
       List<DatasetBuilder> datasetBuilders) {
     this.parent = parent;
@@ -119,4 +120,5 @@ public class DatasetNode {
     }
     return new ArrayList(0);
   }
+
 }

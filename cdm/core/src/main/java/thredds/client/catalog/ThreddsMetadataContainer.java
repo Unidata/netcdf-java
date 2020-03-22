@@ -13,9 +13,6 @@ import java.util.List;
  * @since 1/11/2015
  */
 public interface ThreddsMetadataContainer {
-
   Object getLocalField(String fldName);
-
   List getLocalFieldAsList(String fldName);
-
 }

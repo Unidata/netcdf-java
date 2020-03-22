@@ -17,7 +17,9 @@ import ucar.unidata.util.Parameter;
  *
  * @author edavis
  * @since 4.0
+ * @deprecated will move in ver6
  */
+@Deprecated
 public class EPSG_OGC_CF_Helper {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EPSG_OGC_CF_Helper.class);
 

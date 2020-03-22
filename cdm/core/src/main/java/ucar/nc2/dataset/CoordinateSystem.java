@@ -7,8 +7,8 @@ package ucar.nc2.dataset;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
 import java.util.*;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 
 /**
  * A CoordinateSystem specifies the coordinates of a Variable's values.

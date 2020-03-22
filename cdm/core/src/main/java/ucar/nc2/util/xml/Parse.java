@@ -14,7 +14,9 @@ import java.io.IOException;
  * created Jul 3, 2007
  *
  * @author caron
+ * @deprecated will move in ver6
  */
+@Deprecated
 public class Parse {
 
   /**

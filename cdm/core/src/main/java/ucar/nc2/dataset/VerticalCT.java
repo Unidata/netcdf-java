@@ -6,11 +6,11 @@
 package ucar.nc2.dataset;
 
 import java.util.List;
+import javax.annotation.concurrent.Immutable;
+import ucar.nc2.Dimension;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.transform.VertTransformBuilderIF;
-import ucar.unidata.geoloc.vertical.*;
-import ucar.nc2.Dimension;
-import javax.annotation.concurrent.Immutable;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.Parameter;
 
 

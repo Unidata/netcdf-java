@@ -4,22 +4,21 @@
  */
 package ucar.nc2.dataset;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Formatter;
 import javax.annotation.Nullable;
+import ucar.ma2.DataType;
+import ucar.ma2.Array;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
 import ucar.nc2.ft2.coverage.CoverageTransform;
-import ucar.nc2.dataset.transform.CsmSigma;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Formatter;
 
 /**
  * Manager for Coordinate Transforms.
@@ -239,7 +238,6 @@ public class CoordTransBuilder {
     return ct;
   }
 
-
   /**
    * Create a "dummy" Coordinate Transform Variable based on the given CoordinateTransform.
    * This creates a scalar Variable with dummy data, and adds the Parameters of the CoordinateTransform
@@ -271,12 +269,14 @@ public class CoordTransBuilder {
   }
 
   /**
-   * Make a CoordinateTransform object from the parameters in a GridCoordTransform, using an intrinsic or
+   * Make a CoordinateTransform object from the parameters in a CoordTransform, using an intrinsic or
    * registered CoordTransBuilder.
    * 
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
+   * @deprecated wwill move in ver6
    */
+  @Deprecated
   public static ProjectionImpl makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
     String transform_name = gct.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);

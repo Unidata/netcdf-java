@@ -21,6 +21,7 @@ public class CatalogRef extends Dataset {
   private final String xlink;
   private boolean isRead;
 
+  /** @deprecated use builder */
   public CatalogRef(DatasetNode parent, String name, String xlink, Map<String, Object> flds,
       List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, accessBuilders, datasetBuilders);

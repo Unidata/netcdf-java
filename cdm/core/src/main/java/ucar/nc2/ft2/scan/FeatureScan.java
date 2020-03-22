@@ -25,8 +25,9 @@ import java.util.List;
  *
  * @author caron
  * @since Aug 15, 2009
+ * @deprecated do not use.
  */
-
+@Deprecated
 public class FeatureScan {
   private String top;
   private boolean subdirs;

@@ -22,6 +22,7 @@ public class Property {
   private final String name;
   private final String value;
 
+  /** @deprecated use builder */
   public Property(String name, String value) {
     this.name = name;
     this.value = value;
