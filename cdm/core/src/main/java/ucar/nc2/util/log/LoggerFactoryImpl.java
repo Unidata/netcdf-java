@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 
 /**
  * Default LoggerFactory uses org.slf4j.LoggerFactory
- *
- * @author caron
- * @since 3/27/13
+ * 
+ * @deprecated do not use
  */
+@Deprecated
 public class LoggerFactoryImpl implements LoggerFactory {
 
   @Override

@@ -8,9 +8,10 @@ package ucar.nc2.util.log;
 /**
  * Interface for generating org.slf4j.Logger objects.
  * Allows us to keep log4j dependencies out of the cdm
- *
- * TODO used by TDS?
+ * 
+ * @deprecated do not use
  */
+@Deprecated
 public interface LoggerFactory {
 
   org.slf4j.Logger getLogger(String name);
