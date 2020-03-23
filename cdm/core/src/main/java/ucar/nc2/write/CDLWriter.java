@@ -32,7 +32,7 @@ import ucar.unidata.util.StringUtil2;
  * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#cdl_guide"
  */
 public class CDLWriter {
-
+  /** Write CDL to a PrintStream */
   public static void writeCDL(NetcdfFile ncfile, PrintStream out, boolean strict) {
     Formatter f = new Formatter();
     CDLWriter.writeCDL(ncfile, f, strict);
@@ -40,6 +40,7 @@ public class CDLWriter {
     pw.write(f.toString());
   }
 
+  /** Write CDL to a Writer */
   public static void writeCDL(NetcdfFile ncfile, Writer out, boolean strict) {
     Formatter f = new Formatter();
     CDLWriter.writeCDL(ncfile, f, strict);
@@ -47,23 +48,24 @@ public class CDLWriter {
     pw.write(f.toString());
   }
 
+  /** Write CDL to a Formatter */
   public static void writeCDL(NetcdfFile ncfile, Formatter out, boolean strict) {
     CDLWriter writer = new CDLWriter(ncfile, out, strict);
-    writer.toStringStart(out, new Indent(2), strict);
-    writer.toStringEnd(out);
+    writer.toStringStart(new Indent(2), strict);
+    writer.toStringEnd();
   }
 
   private final NetcdfFile ncfile;
   private final Formatter out;
   private final boolean strict;
 
-  private CDLWriter(NetcdfFile ncfile, Formatter out, boolean strict) {
+  CDLWriter(NetcdfFile ncfile, Formatter out, boolean strict) {
     this.ncfile = ncfile;
     this.out = out;
     this.strict = strict;
   }
 
-  private void toStringStart(Formatter f, Indent indent, boolean strict) {
+  void toStringStart(Indent indent, boolean strict) {
     String name = ncfile.getLocation();
     if (strict) {
       if (name.endsWith(".nc"))
@@ -72,13 +74,13 @@ public class CDLWriter {
         name = name.substring(0, name.length() - 4);
       name = NetcdfFile.makeValidCDLName(name);
     }
-    f.format("%snetcdf %s {%n", indent, name);
+    out.format("%snetcdf %s {%n", indent, name);
     indent.incr();
     writeCDL(ncfile.getRootGroup(), indent);
     indent.decr();
   }
 
-  private void toStringEnd(Formatter out) {
+  void toStringEnd() {
     out.format("}%n");
   }
 

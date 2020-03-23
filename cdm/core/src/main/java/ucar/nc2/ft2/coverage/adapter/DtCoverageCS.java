@@ -5,11 +5,11 @@
 package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import java.io.IOException;
 import java.util.*;
@@ -396,7 +396,7 @@ public class DtCoverageCS {
           }
         }
       } else {
-        f.format("%s", NCdumpW.printVariableData(axis, null));
+        f.format("%s", Ncdump.printVariableData(axis, null));
       }
     } catch (IOException ioe) {
       f.format(ioe.getMessage());

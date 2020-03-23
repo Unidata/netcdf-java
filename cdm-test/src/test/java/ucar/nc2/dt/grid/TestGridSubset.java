@@ -14,7 +14,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.Range;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -22,6 +21,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
@@ -193,7 +193,7 @@ public class TestGridSubset {
       assert data.getShape()[2] == 32 : data.getShape()[2];
       assert data.getShape()[3] == 64 : data.getShape()[3];
 
-      logger.debug(NCdumpW.toString(data, "grid_section", null));
+      logger.debug(Ncdump.printArray(data, "grid_section", null));
 
       LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
       LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
@@ -667,8 +667,8 @@ public class TestGridSubset {
       Array data = grid.readDataSlice(1, 0, 10, 20);
       Array data2 = grid2.readDataSlice(0, 0, 10, 20);
 
-      logger.debug(NCdumpW.toString(data, "org", null));
-      logger.debug(NCdumpW.toString(data2, "subset", null));
+      logger.debug(Ncdump.printArray(data, "org", null));
+      logger.debug(Ncdump.printArray(data2, "subset", null));
 
       ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
     }

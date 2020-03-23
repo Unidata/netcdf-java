@@ -11,12 +11,12 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.NCheader;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -59,7 +59,7 @@ public class TestCDF5Reading extends UnitTestCommon {
       jni.setLocation(location + " (jni)");
       Array data = read(jni, "f4", "0:2");
       if (prop_visual) {
-        String dump = NCdumpW.toString(data);
+        String dump = Ncdump.printArray(data);
         logger.debug(dump);
         String testresult = dump.replace('r', ' ').replace('\n', ' ').trim();
         visual("CDF Read", testresult);

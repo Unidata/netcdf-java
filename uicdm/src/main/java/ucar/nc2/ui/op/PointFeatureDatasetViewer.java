@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
@@ -21,6 +20,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.point.StationRegionDateChooser;
+import ucar.nc2.write.Ncdump;
 import ucar.ui.util.Resource;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentDialog;
@@ -90,9 +90,6 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private int maxCount = Integer.MAX_VALUE;
 
-  /**
-   *
-   */
   public PointFeatureDatasetViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
@@ -272,16 +269,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     add(splitObs, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   private class BeanContextMenu extends PopupMenu {
-
     final BeanTable beanTable2;
 
-    /**
-     *
-     */
     BeanContextMenu(BeanTable beanTable) {
       super(beanTable.getJTable(), "Options");
       this.beanTable2 = beanTable;
@@ -303,24 +293,14 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   // I'd like to offload this class into its own file, but it needs to read the pfDataset field, whose value may change
   // during execution. I could still do it if I added the necessary event listener machinery, but meh.
-
-  /**
-   *
-   */
   private class WaterMLConverterAction extends AbstractAction {
 
-    /**
-     *
-     */
     private WaterMLConverterAction() {
       putValue(NAME, "WaterML 2.0 Writer");
       putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "nj22/drop_24.png", true));
       putValue(SHORT_DESCRIPTION, "Write timeseries as an OGC WaterML v2.0 document.");
     }
 
-    /**
-     *
-     */
     @Override
     public void actionPerformed(ActionEvent e) {
       if (pfDataset == null) {
@@ -355,9 +335,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public void clear() {
     fcTable.clearBeans();
     stnTable.clearBeans();
@@ -370,9 +347,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     selectedCollection = null;
   }
 
-  /**
-   *
-   */
   public void save() {
     fcTable.saveState(false);
     stnTable.saveState(false);
@@ -387,9 +361,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.saveState();
   }
 
-  /**
-   *
-   */
   private void writeNetcdf(NetcdfOutputChooser.Data data) {
     if (data.version == NetcdfFileWriter.Version.ncstream) {
       return;
@@ -404,9 +375,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public void setDataset(FeatureDatasetPoint dataset) {
     this.pfDataset = dataset;
 
@@ -437,9 +405,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void setFeatureCollection(FeatureCollectionBean fcb) throws IOException {
     // reconfigure the UI depending on the type
     changingPane.removeAll();
@@ -500,9 +465,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     repaint();
   }
 
-  /**
-   *
-   */
   private void setStations(List<StationFeature> stations) {
     List<StationBean> stationBeans = new ArrayList<>();
     try {
@@ -519,9 +481,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.clear();
   }
 
-  /**
-   *
-   */
   private void setPointCollection(PointFeatureCollection pointCollection) throws IOException {
     List<PointObsBean> pointBeans = new ArrayList<>();
     int count = 0;
@@ -538,9 +497,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.clearSelectedCells();
   }
 
-  /**
-   *
-   */
   private void setProfileCollection(ProfileFeatureCollection profileCollection) throws IOException {
     List<ProfileFeatureBean> beans = new ArrayList<>();
     for (ProfileFeature profile : profileCollection) {
@@ -556,9 +512,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.clearSelectedCells();
   }
 
-  /**
-   *
-   */
   private void setTrajectoryCollection(TrajectoryFeatureCollection trajCollection) throws IOException {
     List<TrajectoryFeatureBean> beans = new ArrayList<>();
     for (TrajectoryFeature traj : trajCollection) {
@@ -574,9 +527,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.clearSelectedCells();
   }
 
-  /**
-   *
-   */
   private void setSectionCollection(TrajectoryProfileFeatureCollection sectionCollection) throws IOException {
     List<SectionFeatureBean> beans = new ArrayList<>();
 
@@ -593,9 +543,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.clearSelectedCells();
   }
 
-  /**
-   *
-   */
   private void subset(LatLonRect geoRegion, DateRange dateRange) throws IOException {
     PointFeatureCollection pc = null;
     CalendarDateRange cdr = CalendarDateRange.of(dateRange);
@@ -628,9 +575,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void setStation(StationBean sb, DateRange dr) throws IOException {
     if (selectedType == FeatureType.POINT) {
       PointObsBean pobsBean = (PointObsBean) sb;
@@ -693,9 +637,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void setStnProfile(StnProfileFeatureBean sb) throws IOException {
     ProfileFeature feature = sb.pfc;
     setObservations(feature);
@@ -707,9 +648,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void setProfile(ProfileFeatureBean sb) throws IOException {
     ProfileFeature feature = sb.pfc;
     setObservations(feature);
@@ -722,9 +660,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void setTrajectory(TrajectoryFeatureBean sb) throws IOException {
     TrajectoryFeature feature = sb.pfc;
     setObservations(feature);
@@ -737,9 +672,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void setSection(SectionFeatureBean sb) throws IOException {
     TrajectoryProfileFeature feature = sb.pfc;
     setSectionObservations(feature);
@@ -752,9 +684,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private void setStnProfiles(List<PointFeatureCollection> pfcList) throws IOException {
     List<StnProfileFeatureBean> beans = new ArrayList<>();
 
@@ -766,9 +695,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.clear();
   }
 
-  /**
-   *
-   */
   private void setSectionProfiles(List<PointFeatureCollection> pfcList) throws IOException {
     List<ProfileFeatureBean> beans = new ArrayList<>();
 
@@ -780,9 +706,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.clear();
   }
 
-  /**
-   *
-   */
   private void setObservationsAll() throws IOException {
     if (selectedType == FeatureType.POINT) {
       PointFeatureCollection pointCollection = (PointFeatureCollection) selectedCollection;
@@ -817,9 +740,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   private int setObservations(PointFeatureCollection pointCollection) throws IOException {
     int count = 0;
     List<PointFeature> obsList = new ArrayList<>();
@@ -834,9 +754,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     return obsList.size();
   }
 
-  /**
-   *
-   */
   private void setStnProfileObservations(StationProfileFeature stationProfileFeature) throws IOException {
     List<PointFeatureCollection> pfcList = new ArrayList<>();
     for (PointFeatureCollection pfc : stationProfileFeature) {
@@ -845,9 +762,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     setStnProfiles(pfcList);
   }
 
-  /**
-   *
-   */
   private void setSectionObservations(TrajectoryProfileFeature sectionFeature) throws IOException {
     List<PointFeatureCollection> pfcList = new ArrayList<>();
     for (PointFeatureCollection pfc : sectionFeature) {
@@ -856,9 +770,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     setSectionProfiles(pfcList);
   }
 
-  /**
-   *
-   */
   private void setObservations(List<PointFeature> obsList) throws IOException {
     if (obsList.isEmpty()) {
       obsTable.clear();
@@ -871,23 +782,13 @@ public class PointFeatureDatasetViewer extends JPanel {
     // pointDisplayWindow.setVisible(true);
   }
 
-  /**
-   *
-   */
   public PreferencesExt getPrefs() {
     return prefs;
   }
 
-  /**
-   *
-   */
   public static class FeatureCollectionBean {
-
     DsgFeatureCollection fc;
 
-    /**
-     *
-     */
     public FeatureCollectionBean(DsgFeatureCollection fc) {
       this.fc = fc;
     }
@@ -901,25 +802,16 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public static class FeatureBean {
 
     StructureData sdata;
     String fields;
 
-    /**
-     *
-     */
     public FeatureBean() {}
 
-    /**
-     *
-     */
     FeatureBean(StructureData sdata) throws IOException {
       this.sdata = sdata;
-      fields = NCdumpW.toString(sdata);
+      fields = Ncdump.printStructureData(sdata);
     }
 
     public String getFields() {
@@ -928,34 +820,21 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public String showFields() {
       StringWriter sw = new StringWriter(10000);
-      NCdumpW.printStructureData(new PrintWriter(sw), sdata);
+      Ncdump.printStructureData(new PrintWriter(sw), sdata);
       return sw.toString();
     }
   }
 
-  /**
-   *
-   */
   public static class StationBean extends FeatureBean implements Station {
-
     private StationFeature stnFeat;
     private int npts = -1;
 
-    /**
-     *
-     */
     public StationBean() {}
 
-    /**
-     *
-     */
     public StationBean(StructureData sdata) throws IOException {
       super(sdata);
     }
 
-    /**
-     *
-     */
     public StationBean(Station s) throws IOException {
       super(((StationFeature) s).getFeatureData());
       this.stnFeat = (StationFeature) s;
@@ -1022,9 +901,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     private String timeObs;
     private int id;
 
-    /**
-     *
-     */
     public PointObsBean(int id, PointFeature obs) {
       this.id = id;
       this.pobs = obs;
@@ -1079,18 +955,12 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public static class TrajectoryFeatureBean extends StationBean {
 
     int npts;
     TrajectoryFeature pfc;
     PointFeature pf;
 
-    /**
-     *
-     */
     public TrajectoryFeatureBean(TrajectoryFeature pfc) throws IOException {
       super(pfc.getFeatureData());
       this.pfc = pfc;
@@ -1157,18 +1027,12 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public static class ProfileFeatureBean extends StationBean {
 
     int npts;
     ProfileFeature pfc;
     PointFeature pf;
 
-    /**
-     *
-     */
     public ProfileFeatureBean(ProfileFeature pfc) throws IOException {
       super(pfc.getFeatureData());
       this.pfc = pfc;
@@ -1233,17 +1097,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public static class StnProfileFeatureBean extends FeatureBean {
-
     ProfileFeature pfc;
     int npts;
 
-    /**
-     *
-     */
     public StnProfileFeatureBean(ProfileFeature pfc) throws IOException {
       super(pfc.getFeatureData());
       this.pfc = pfc;
@@ -1275,18 +1132,12 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public static class SectionFeatureBean extends StationBean {
 
     int npts;
     TrajectoryProfileFeature pfc;
     ProfileFeature pf;
 
-    /**
-     *
-     */
     public SectionFeatureBean(TrajectoryProfileFeature pfc) throws IOException {
       super(pfc.getFeatureData());
       this.pfc = pfc;

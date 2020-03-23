@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.lang.invoke.MethodHandles;
 
@@ -70,7 +71,7 @@ public class TestH5ReadStructure2 {
 
         for (StructureMembers.Member m : sd.getMembers()) {
           Array data = sd.getArray(m);
-          logger.debug(NCdumpW.toString(data, m.getName(), null));
+          logger.debug(Ncdump.printArray(data, m.getName(), null));
         }
       }
 
@@ -115,7 +116,7 @@ public class TestH5ReadStructure2 {
 
         for (StructureMembers.Member m : sd.getMembers()) {
           Array data = sd.getArray(m);
-          logger.debug(NCdumpW.toString(data, m.getName(), null));
+          logger.debug(Ncdump.printArray(data, m.getName(), null));
         }
       }
 
@@ -163,7 +164,7 @@ public class TestH5ReadStructure2 {
 
         for (StructureMembers.Member m : sd.getMembers()) {
           Array data = sd.getArray(m);
-          logger.debug(NCdumpW.toString(data, m.getName(), null));
+          logger.debug(Ncdump.printArray(data, m.getName(), null));
         }
       }
 

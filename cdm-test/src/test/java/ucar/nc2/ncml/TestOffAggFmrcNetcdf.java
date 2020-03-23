@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -105,7 +105,6 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     assert time.getShape()[0] == nagg;
     assert time.getDataType() == DataType.DOUBLE;
 
-    DateFormatter formatter = new DateFormatter();
     try {
       Array data = time.read();
       assert data.getRank() == 1;
@@ -113,7 +112,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
       assert data.getShape()[0] == nagg;
       assert data.getElementType() == double.class;
 
-      logger.debug(NCdumpW.toString(data));
+      logger.debug(Ncdump.printArray(data));
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();

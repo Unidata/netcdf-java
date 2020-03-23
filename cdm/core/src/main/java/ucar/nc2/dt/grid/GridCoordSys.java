@@ -12,6 +12,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.units.*;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
@@ -1381,7 +1382,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
           }
         }
       } else {
-        f.format("%s", NCdumpW.printVariableData(axis, null));
+        f.format("%s", Ncdump.printVariableData(axis, null));
       }
     } catch (IOException ioe) {
       f.format(ioe.getMessage());

@@ -11,9 +11,9 @@ import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.Range;
 import ucar.nc2.Dimension;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -44,7 +44,7 @@ public class TestGeoGrid extends TestCase {
     assert gcs_section.getTimeAxis().equals(gcs.getTimeAxis());
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    logger.debug(NCdumpW.toString(data, "grid_section", null));
+    logger.debug(Ncdump.printArray(data, "grid_section", null));
 
     dataset.close();
   }

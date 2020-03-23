@@ -10,9 +10,9 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.*;
-import ucar.nc2.NCdumpW.WantValues;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -215,12 +215,12 @@ public class TestNc4IospWriting {
         ncFileOut.setLocation("writeEnumType");
 
         Writer sw = new StringWriter();
-        NCdumpW.print(ncFile, sw, WantValues.all, false, false, null, null);
+        Ncdump.print(ncFile, sw, Ncdump.WantValues.all, false, false, null, null);
         sw.close();
         mem = sw.toString();
 
         sw = new StringWriter();
-        NCdumpW.print(ncFileOut, sw, WantValues.all, false, false, null, null);
+        Ncdump.print(ncFileOut, sw, Ncdump.WantValues.all, false, false, null, null);
         sw.close();
         disk = sw.toString();
       }

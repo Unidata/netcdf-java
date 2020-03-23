@@ -14,6 +14,7 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
@@ -114,7 +115,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
       assert data.getShape()[0] == nagg;
       assert data.getElementType() == double.class;
 
-      logger.debug(NCdumpW.toString(data));
+      logger.debug(Ncdump.printArray(data));
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();

@@ -7,6 +7,7 @@ package ucar.nc2;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,7 +44,7 @@ public class TestLongOffset extends TestCase {
       ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
       StringWriter sw = new StringWriter();
-      NCdumpW.print(ncfile, "-vall", sw, null);
+      Ncdump.print(ncfile, "-vall", sw, null);
       logger.debug(sw.toString());
     }
   }
@@ -51,7 +52,7 @@ public class TestLongOffset extends TestCase {
   public void testReadLongOffsetV3mode() throws IOException {
     try (NetcdfFile ncfile = TestDir.openFileLocal("longOffset.nc")) {
       StringWriter sw = new StringWriter();
-      NCdumpW.print(ncfile, "-vall", sw, null);
+      Ncdump.print(ncfile, "-vall", sw, null);
       logger.debug(sw.toString());
     }
   }

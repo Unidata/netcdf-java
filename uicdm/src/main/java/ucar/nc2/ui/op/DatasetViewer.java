@@ -28,7 +28,6 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.FileWriter2;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ParsedSectionSpec;
@@ -39,6 +38,7 @@ import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
+import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
@@ -629,7 +629,7 @@ public class DatasetViewer extends JPanel {
 
     try {
       Array data = v.read();
-      infoTA.setText(NCdumpW.toString(data, v.getFullName(), null));
+      infoTA.setText(Ncdump.printArray(data, v.getFullName(), null));
 
     } catch (Exception ex) {
       StringWriter s = new StringWriter();
@@ -1010,7 +1010,7 @@ public class DatasetViewer extends JPanel {
 
     public String getValue() {
       Array value = att.getValues();
-      return NCdumpW.toString(value, null, null);
+      return Ncdump.printArray(value, null, null);
     }
 
   }

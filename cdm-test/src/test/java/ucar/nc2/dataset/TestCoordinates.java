@@ -17,13 +17,13 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
@@ -33,7 +33,6 @@ import java.lang.invoke.MethodHandles;
 /**
  * Test _Coordinates dataset in the JUnit framework.
  */
-
 public class TestCoordinates extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -67,7 +66,7 @@ public class TestCoordinates extends TestCase {
 
     // if offset is applied twice, the result is not in +-180 range
     Array data = v.read();
-    logger.debug(NCdumpW.toString(data));
+    logger.debug(Ncdump.printArray(data));
     IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext()) {
       assert Math.abs(ii.getDoubleNext()) < 180 : ii.getDoubleCurrent();

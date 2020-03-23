@@ -11,6 +11,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -363,8 +364,8 @@ public class TestStandardVar {
         Array enhancedData = enhancedVar.read();
         Array deferredData = deferVar.read();
 
-        logger.debug("Enhanced = {}", NCdumpW.toString(enhancedData));
-        logger.debug("Deferred = {}", NCdumpW.toString(deferredData));
+        logger.debug("Enhanced = {}", Ncdump.printArray(enhancedData));
+        logger.debug("Deferred = {}", Ncdump.printArray(deferredData));
 
         Formatter compareOutputFormatter = new Formatter();
         CompareNetcdf2 nc = new CompareNetcdf2(compareOutputFormatter, false, false, true);
@@ -374,7 +375,7 @@ public class TestStandardVar {
 
         Array processedData = enhancedVar.applyScaleOffset(deferredData);
 
-        logger.debug("Processed = {}", NCdumpW.toString(deferredData));
+        logger.debug("Processed = {}", Ncdump.printArray(deferredData));
         assert nc.compareData(enhancedVar.getShortName(), enhancedData, processedData, false);
       }
     }

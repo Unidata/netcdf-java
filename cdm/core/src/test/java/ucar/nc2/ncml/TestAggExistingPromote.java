@@ -12,12 +12,12 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Test promoting an attribute to a variable.
@@ -57,7 +57,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getShape()[0] == 3;
     assert datap.getElementType() == String.class;
 
-    logger.debug(NCdumpW.toString(datap, "time_coverage_end", null));
+    logger.debug(Ncdump.printArray(datap, "time_coverage_end", null));
 
     String[] resultp = new String[] {"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     int count = 0;
@@ -92,7 +92,7 @@ public class TestAggExistingPromote extends TestCase {
       assert data.getShape()[0] == 3;
       assert data.getElementType() == String.class;
 
-      logger.debug(NCdumpW.toString(data, "time coord", null));
+      logger.debug(Ncdump.printArray(data, "time coord", null));
 
       count = 0;
       dataI = data.getIndexIterator();
@@ -177,7 +177,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
 
-    logger.debug(NCdumpW.toString(datap, "title", null));
+    logger.debug(Ncdump.printArray(datap, "title", null));
 
     while (datap.hasNext())
       assert datap.next().equals("Example Data");
@@ -198,7 +198,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
 
-    logger.debug(NCdumpW.toString(datap, "title", null));
+    logger.debug(Ncdump.printArray(datap, "title", null));
 
     int count = 0;
     while (datap.hasNext()) {

@@ -7,7 +7,6 @@ package ucar.nc2.ft2.coverage;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.AttributeContainerHelper;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
@@ -15,6 +14,7 @@ import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import javax.annotation.Nonnull;
 import java.util.Formatter;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Fmrc TimeAxis: time(runtime, time)
@@ -66,7 +66,7 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
     super.toString(f, indent);
     f.format("%s  %s%n", indent, Misc.showInts(shape));
     Array data = getCoordsAsArray();
-    f.format("%s%n", NCdumpW.toString(data, getName() + " values", null));
+    f.format("%s%n", Ncdump.printArray(data, getName() + " values", null));
   }
 
   @Override
