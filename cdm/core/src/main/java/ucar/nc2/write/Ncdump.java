@@ -224,7 +224,7 @@ public class Ncdump {
       } else if (headerOnly) {
         CDLWriter.writeCDL(nc, out, strict);
       } else {
-        //PrintWriter ps = new PrintWriter(out);
+        PrintWriter ps = new PrintWriter(out);
         Formatter f = new Formatter();
         Indent indent = new Indent(2);
         CDLWriter cdlWriter = new CDLWriter(nc, f, strict);
