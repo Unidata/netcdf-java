@@ -39,15 +39,12 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 
 /**
- * Print contents of an existing netCDF file, using a Writer.
- * <p/>
+ * Utility to implement ncdump.
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
- * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)
+ * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h).
  * Moved from ucar.nc2.NCdumpW
  */
 public class Ncdump {
-  private static String usage =
-      "usage: Ncdump <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
   /** Tell Ncdump if you want values printed. */
   public enum WantValues {
@@ -702,6 +699,9 @@ public class Ncdump {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO use jcommander?
+  private static String usage =
+      "usage: Ncdump <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
   /**
    * Main program.
