@@ -5,7 +5,6 @@
 package ucar.nc2.write;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.FileNotFoundException;
@@ -18,6 +17,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
 import java.util.StringTokenizer;
+import java.util.function.Predicate;
+import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
@@ -34,7 +35,6 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 
@@ -44,6 +44,7 @@ import ucar.nc2.util.Indent;
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h).
  * Moved from ucar.nc2.NCdumpW
  */
+@Immutable
 public class Ncdump {
 
   /** Tell Ncdump if you want values printed. */
@@ -75,7 +76,7 @@ public class Ncdump {
       // the rest of the command
       int pos = command.indexOf(filename);
       command = command.substring(pos + filename.length());
-      return print(nc, command, out, ct);
+      return ncdump(nc, command, out, ct);
 
     } catch (FileNotFoundException e) {
       out.write("file not found= ");
@@ -84,32 +85,6 @@ public class Ncdump {
 
     } finally {
       out.close();
-    }
-  }
-
-  /**
-   * ncdump-like print of netcdf file.
-   *
-   * @param filename NetcdfFile to open
-   * @param out print to this stream
-   * @param showAll dump all variable data
-   * @param showCoords only print header and coordinate variables
-   * @param ncml print NcML representation (other arguments are ignored)
-   * @param strict print strict CDL representation
-   * @param varNames semicolon delimited list of variables whose data should be printed
-   * @param ct allow task to be cancelled; may be null.
-   * @return true if successful
-   * @throws IOException on write error
-   */
-  public static boolean ncdump(String filename, Writer out, boolean showAll, boolean showCoords, boolean ncml,
-      boolean strict, String varNames, CancelTask ct) throws IOException {
-    try (NetcdfFile nc = NetcdfDatasets.openFile(filename, ct)) {
-      return print(nc, out, showAll, showCoords, ncml, strict, varNames, ct);
-    } catch (FileNotFoundException e) {
-      out.write("file not found= ");
-      out.write(filename);
-      out.flush();
-      return false;
     }
   }
 
@@ -123,14 +98,11 @@ public class Ncdump {
    * @return true if successful
    * @throws IOException on write error
    */
-  public static boolean print(NetcdfFile nc, String command, Writer out, CancelTask ct)
+  public static boolean ncdump(NetcdfFile nc, String command, Writer out, CancelTask ct)
       throws IOException {
     WantValues showValues = WantValues.none;
-    boolean ncml = false;
-    boolean strict = false;
-    String varNames = null;
-    String trueDataset = null;
-    String fakeDataset = null;
+
+    Builder builder = builder(nc, out).setCancelTask(ct);
 
     if (command != null) {
       StringTokenizer stoke = new StringTokenizer(command);
@@ -142,133 +114,180 @@ public class Ncdump {
           out.write('\n');
           return true;
         }
-        if (toke.equalsIgnoreCase("-vall"))
+        if (toke.equalsIgnoreCase("-vall")) {
           showValues = WantValues.all;
-        if (toke.equalsIgnoreCase("-c") && (showValues == WantValues.none))
+        }
+        if (toke.equalsIgnoreCase("-c") && (showValues == WantValues.none)) {
           showValues = WantValues.coordsOnly;
-        if (toke.equalsIgnoreCase("-ncml"))
-          ncml = true;
-        if (toke.equalsIgnoreCase("-cdl") || toke.equalsIgnoreCase("-strict"))
-          strict = true;
-        if (toke.equalsIgnoreCase("-v") && stoke.hasMoreTokens())
-          varNames = stoke.nextToken();
+        }
+        if (toke.equalsIgnoreCase("-ncml")) {
+          builder.setNcml(true);
+        }
+        if (toke.equalsIgnoreCase("-cdl") || toke.equalsIgnoreCase("-strict")) {
+          builder.setStrict(true);
+        }
+        if (toke.equalsIgnoreCase("-v") && stoke.hasMoreTokens()) {
+          builder.setVarNames(stoke.nextToken());
+        }
         if (toke.equalsIgnoreCase("-datasetname") && stoke.hasMoreTokens()) {
-          fakeDataset = stoke.nextToken();
-          if (fakeDataset.isEmpty())
-            fakeDataset = null;
-          if (fakeDataset != null) {
-            trueDataset = nc.getLocation();
-            nc.setLocation(fakeDataset); // LOOK WTF?
-          }
+          builder.setLocationName(stoke.nextToken());
         }
       }
     }
+    builder.setWantValues(showValues);
 
-    boolean ok = print(nc, out, showValues, ncml, strict, varNames, ct);
-    if (trueDataset != null && fakeDataset != null)
-      nc.setLocation(trueDataset);
-    return ok;
-  }
-
-  /**
-   * ncdump-like print of netcdf file.
-   *
-   * @param nc already opened NetcdfFile
-   * @param out print to this stream
-   * @param showAll dump all variable data
-   * @param showCoords only print header and coordinate variables
-   * @param ncml print NcML representation (other arguments are ignored)
-   * @param strict print strict CDL representation
-   * @param varNames semicolon delimited list of variables whose data should be printed. May have
-   *        Fortran90 like selector: eg varName(1:2,*,2)
-   * @param ct allow task to be cancelled; may be null.
-   * @return true if successful
-   * @throws IOException on write error
-   */
-  public static boolean print(NetcdfFile nc, Writer out, boolean showAll, boolean showCoords, boolean ncml,
-      boolean strict, String varNames, CancelTask ct) throws IOException {
-
-    WantValues showValues = WantValues.none;
-    if (showAll)
-      showValues = WantValues.all;
-    else if (showCoords)
-      showValues = WantValues.coordsOnly;
-
-    return print(nc, out, showValues, ncml, strict, varNames, ct);
+    return builder.build().print();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  // heres where the work is done
 
-  /**
-   * ncdump-like print of netcdf file.
-   *
-   * @param nc already opened NetcdfFile
-   * @param out print to this stream
-   * @param showValues do you want the variable values printed?
-   * @param ncml print NcML representation (other arguments are ignored)
-   * @param strict print strict CDL representation
-   * @param varNames semicolon delimited list of variables whose data should be printed. May have
-   *        Fortran90 like selector: eg varName(1:2,*,2)
-   * @param ct allow task to be cancelled; may be null.
-   * @return true if successful
-   * @throws IOException on write error
-   */
-  public static boolean print(NetcdfFile nc, Writer out, WantValues showValues, boolean ncml, boolean strict,
-      String varNames, CancelTask ct) throws IOException {
-    boolean headerOnly = (showValues == WantValues.none) && (varNames == null);
+  public static Builder builder(NetcdfFile ncfile, Writer writer) {
+    return new Builder(ncfile, writer);
+  }
+
+  public static class Builder {
+    private NetcdfFile ncfile;
+    private Writer writer;
+    private WantValues wantValues = WantValues.none;
+    private boolean ncml;
+    private boolean strict;
+    private String varNames;
+    private String locationName;
+    private CancelTask cancelTask;
+
+    private Builder(NetcdfFile ncfile, Writer writer) {
+      this.ncfile = ncfile;
+      this.writer = writer;
+    }
+
+    /** show all Variable's values */
+    public Builder setShowAllValues() {
+      this.wantValues = WantValues.all;
+      return this;
+    }
+
+    /** show Coordinate Variable's values only */
+    public Builder setShowCoordValues() {
+      this.wantValues = WantValues.coordsOnly;
+      return this;
+    }
+
+    public Builder setLocationName(String locationName) {
+      if (locationName != null && !locationName.isEmpty()) {
+        this.locationName = locationName;
+      }
+      return this;
+    }
+
+    /** set what Variables' values you want output. */
+    public Builder setWantValues(WantValues wantValues) {
+      this.wantValues = wantValues;
+      return this;
+    }
+
+    /** set true if outout should be ncml, otherwise CDL. */
+    public Builder setNcml(boolean ncml) {
+      this.ncml = ncml;
+      return this;
+    }
+
+    /** strict CDL representation, default false */
+     public Builder setStrict(boolean strict) {
+      this.strict = strict;
+       return this;
+    }
+
+    /**
+     * @param varNames semicolon delimited list of variables whose data should be printed. May have
+     *        Fortran90 like selector: eg varName(1:2,*,2)
+     */
+    public Builder setVarNames(String varNames) {
+      this.varNames = varNames;
+      return this;
+    }
+
+    /** allow task to be cancelled */
+    public Builder setCancelTask(CancelTask cancelTask) {
+      this.cancelTask = cancelTask;
+      return this;
+    }
+
+    public Ncdump build() {
+      return new Ncdump(this);
+    }
+  }
+
+  private final NetcdfFile ncfile;
+  private final WantValues wantValues;
+  private final boolean ncml;
+  private final boolean strict;
+  private final String varNames;
+  private final String locationName;
+  private final CancelTask cancelTask;
+
+  private Ncdump(Builder builder) {
+    this.ncfile = builder.ncfile;
+    this.wantValues = builder.wantValues;
+    this.ncml = builder.ncml;
+    this.strict = builder.strict;
+    this.varNames = builder.varNames;
+    this.locationName = builder.locationName;
+    this.cancelTask = builder.cancelTask;
+  }
+
+  public boolean print() throws IOException {
+    boolean headerOnly = (wantValues == WantValues.none) && (varNames == null);
 
     try {
       if (ncml) {
-        writeNcML(nc, out, showValues, null); // output schema in NcML
+        writeNcML(ncfile, writer, wantValues, null); // output schema in NcML
       } else if (headerOnly) {
-        CDLWriter.writeCDL(nc, out, strict);
+        CDLWriter.writeCDL(ncfile, writer, strict);
       } else {
-        PrintWriter ps = new PrintWriter(out);
-        Formatter f = new Formatter();
+        Formatter out = new Formatter();
         Indent indent = new Indent(2);
-        CDLWriter cdlWriter = new CDLWriter(nc, f, strict);
+        CDLWriter cdlWriter = new CDLWriter(ncfile, out, strict);
         cdlWriter.toStringStart(indent, strict);
 
         indent.incr();
-        ps.printf("%n%sdata:%n", indent);
+        out.format("%n%sdata:%n", indent);
         indent.incr();
 
-        if (showValues == WantValues.all) { // dump all data
-          for (Variable v : nc.getVariables()) {
-            printArray(v.read(), v.getFullName(), ps, indent, ct);
-            if (ct != null && ct.isCancel())
+        if (wantValues == WantValues.all) { // dump all data
+          for (Variable v : ncfile.getVariables()) {
+            printArray(v.read(), v.getFullName(), out, indent, cancelTask);
+            if (cancelTask != null && cancelTask.isCancel())
               return false;
           }
-        } else if (showValues == WantValues.coordsOnly) { // dump coordVars
-          for (Variable v : nc.getVariables()) {
+        } else if (wantValues == WantValues.coordsOnly) { // dump coordVars
+          for (Variable v : ncfile.getVariables()) {
             if (v.isCoordinateVariable())
-              printArray(v.read(), v.getFullName(), ps, indent, ct);
-            if (ct != null && ct.isCancel())
+              printArray(v.read(), v.getFullName(), out, indent, cancelTask);
+            if (cancelTask != null && cancelTask.isCancel())
               return false;
           }
         }
 
-        if ((showValues != WantValues.all) && (varNames != null)) { // dump the list of variables
+        if ((wantValues != WantValues.all) && (varNames != null)) { // dump the list of variables
           StringTokenizer stoke = new StringTokenizer(varNames, ";");
           while (stoke.hasMoreTokens()) {
             String varSubset = stoke.nextToken(); // variable name and optionally a subset
 
             if (varSubset.indexOf('(') >= 0) { // has a selector
-              Array data = nc.readSection(varSubset);
-              printArray(data, varSubset, ps, indent, ct);
+              Array data = ncfile.readSection(varSubset);
+              printArray(data, varSubset, out, indent, cancelTask);
 
             } else { // do entire variable
-              Variable v = nc.findVariable(varSubset);
+              Variable v = ncfile.findVariable(varSubset);
               if (v == null) {
-                ps.print(" cant find variable: " + varSubset + "\n   " + usage);
+                out.format(" cant find variable: %s%n   %s", varSubset, usage);
                 continue;
               }
               // dont print coord vars if they are already printed
-              if ((showValues != WantValues.coordsOnly) || v.isCoordinateVariable())
-                printArray(v.read(), v.getFullName(), ps, indent, ct);
+              if ((wantValues != WantValues.coordsOnly) || v.isCoordinateVariable())
+                printArray(v.read(), v.getFullName(), out, indent, cancelTask);
             }
-            if (ct != null && ct.isCancel())
+            if (cancelTask != null && cancelTask.isCancel())
               return false;
           }
         }
@@ -276,18 +295,16 @@ public class Ncdump {
         indent.decr();
         indent.decr();
         cdlWriter.toStringEnd();
-        PrintWriter pw = new PrintWriter(out);
-        pw.write(f.toString());
       }
 
     } catch (Exception e) {
       e.printStackTrace();
-      out.write(e.getMessage());
-      out.flush();
+      writer.write(e.getMessage());
+      writer.flush();
       return false;
     }
 
-    out.flush();
+    writer.flush();
     return true;
   }
 
@@ -324,6 +341,27 @@ public class Ncdump {
     StringWriter writer = new StringWriter(20000);
     printArray(data, v.getFullName(), new PrintWriter(writer), new Indent(2), ct);
     return writer.toString();
+  }
+
+  /**
+   * Print array as undifferentiated sequence of values.
+   *
+   * @param ma any Array except ArrayStructure
+   */
+  public static String printArrayPlain(Array ma) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    ma.resetLocalIterator();
+    while (ma.hasNext()) {
+      pw.print(ma.next());
+      pw.print(' ');
+    }
+    return sw.toString();
+  }
+
+  /** Print array to returned String. */
+  public static String printArray(Array ma) {
+    return printArray(ma, "", null);
   }
 
   /** Print named array to returned String. */
@@ -594,15 +632,20 @@ public class Ncdump {
     }
   }
 
-  /**
-   * Print contents of a StructureData.
-   *
-   * @param out send output here.
-   * @param sdata StructureData to print.
-   */
-  public static void printStructureData(PrintWriter out, StructureData sdata) {
-    printStructureData(out, sdata, new Indent(2), null);
-    out.flush();
+  /** Print StructureData to returned String. */
+  public static String printStructureData(StructureData sdata) {
+    CharArrayWriter carray = new CharArrayWriter(1000);
+    PrintWriter pw = new PrintWriter(carray);
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      Array memData = sdata.getArray(m);
+      if (memData instanceof ArrayChar) {
+        pw.print(((ArrayChar) memData).getString());
+      } else {
+        printArray(memData, null, null, pw, new Indent(2), null, true);
+      }
+      pw.print(',');
+    }
+    return carray.toString();
   }
 
   private static void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) {
@@ -614,45 +657,6 @@ public class Ncdump {
         return;
     }
     indent.decr();
-  }
-
-  /** Print StructureData to returned String. */
-  public static String printStructureData(StructureData sdata) {
-    CharArrayWriter carray = new CharArrayWriter(1000);
-    PrintWriter pw = new PrintWriter(carray);
-    for (StructureMembers.Member m : sdata.getMembers()) {
-      Array memData = sdata.getArray(m);
-      if (memData instanceof ArrayChar)
-        pw.print(((ArrayChar) memData).getString());
-      else
-        printArray(memData, pw);
-      pw.print(',');
-    }
-    return carray.toString();
-  }
-
-  /**
-   * Print array as undifferentiated sequence of values.
-   *
-   * @param ma any Array except ArrayStructure
-   * @param out print to here
-   */
-  public static void printArrayPlain(Array ma, PrintWriter out) {
-    ma.resetLocalIterator();
-    while (ma.hasNext()) {
-      out.print(ma.next());
-      out.print(' ');
-    }
-  }
-
-  /** Print array to named PrintWriter */
-  public static void printArray(Array array, PrintWriter pw) {
-    printArray(array, null, null, pw, new Indent(2), null, true);
-  }
-
-  /** Print array to returned String. */
-  public static String printArray(Array ma) {
-    return printArray(ma, "", null);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -674,16 +678,16 @@ public class Ncdump {
     Preconditions.checkNotNull(writer);
     Preconditions.checkNotNull(showValues);
 
-    Predicate<Variable> writeVarsPred;
+    Predicate<? super Variable> writeVarsPred;
     switch (showValues) {
       case none:
-        writeVarsPred = NcMLWriter.writeNoVariablesPredicate;
+        writeVarsPred = NcmlWriter.writeNoVariablesPredicate;
         break;
       case coordsOnly:
-        writeVarsPred = NcMLWriter.writeCoordinateVariablesPredicate;
+        writeVarsPred = NcmlWriter.writeCoordinateVariablesPredicate;
         break;
       case all:
-        writeVarsPred = NcMLWriter.writeAllVariablesPredicate;
+        writeVarsPred = NcmlWriter.writeAllVariablesPredicate;
         break;
       default:
         String message =
@@ -691,9 +695,7 @@ public class Ncdump {
         throw new AssertionError(message);
     }
 
-    NcMLWriter ncmlWriter = new NcMLWriter();
-    ncmlWriter.setWriteVariablesPredicate(writeVarsPred);
-
+    NcmlWriter ncmlWriter = new NcmlWriter(null, null, writeVarsPred);
     Element netcdfElement = ncmlWriter.makeNetcdfElement(ncfile, url);
     ncmlWriter.writeToWriter(netcdfElement, writer);
   }
@@ -738,7 +740,7 @@ public class Ncdump {
         command.append(args[i]);
         command.append(" ");
       }
-      print(nc, command.toString(), writer, null);
+      ncdump(nc, command.toString(), writer, null);
     } catch (IOException ioe) {
       ioe.printStackTrace();
     }

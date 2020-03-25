@@ -215,12 +215,12 @@ public class TestNc4IospWriting {
         ncFileOut.setLocation("writeEnumType");
 
         Writer sw = new StringWriter();
-        Ncdump.print(ncFile, sw, Ncdump.WantValues.all, false, false, null, null);
+        Ncdump.builder(ncFile, sw).setShowAllValues().build().print();
         sw.close();
         mem = sw.toString();
 
         sw = new StringWriter();
-        Ncdump.print(ncFileOut, sw, Ncdump.WantValues.all, false, false, null, null);
+        Ncdump.builder(ncFile, sw).setShowAllValues().build().print();
         sw.close();
         disk = sw.toString();
       }

@@ -98,7 +98,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
       }
 
       StringWriter sw = new StringWriter(50000);
-      Ncdump.print(ncfile, command, sw, task);
+      Ncdump.ncdump(ncfile, command, sw, task);
       result = sw.toString();
     } finally {
       try {
@@ -122,7 +122,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
     GetDataRunnable runner = new GetDataRunnable() {
       public void run(Object o) throws IOException {
         StringWriter sw = new StringWriter(50000);
-        Ncdump.print(ncfile, command, sw, task);
+        Ncdump.ncdump(ncfile, command, sw, task);
         result = sw.toString();
       }
     };
