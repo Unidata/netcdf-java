@@ -7,6 +7,7 @@ package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import java.nio.charset.Charset;
@@ -3582,7 +3583,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public static long getNativeAddr(int pos, ByteBuffer buf) {
-    return (NativeLong.SIZE == (Integer.SIZE / 8) ? buf.getInt(pos) : buf.getLong(pos));
+    return Platform.is64Bit() ? buf.getLong(pos) : buf.getInt(pos);
   }
 
   @Override
