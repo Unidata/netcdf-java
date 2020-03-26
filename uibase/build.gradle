@@ -29,3 +29,9 @@ dependencies {
     testCompile libraries["mockito"]
     testCompile libraries["truth"]
 }
+
+test {
+    // Tell java to use ucar.util.prefs.PreferencesExtFactory to generate preference objects
+    // Important for ucar.util.prefs.TestJavaUtilPreferences
+    systemProperty "java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory"
+}
