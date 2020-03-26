@@ -17,6 +17,8 @@ dependencies {
     compile libraries["jsr305"]
     compile libraries["slf4j-api"]
 
+    testRuntime libraries["logback-classic"]
+
     testCompile project(':cdm:cdm-radial')
     testCompile libraries["truth"]
 }
