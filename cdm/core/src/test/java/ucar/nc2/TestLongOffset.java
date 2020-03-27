@@ -25,8 +25,8 @@ public class TestLongOffset extends TestCase {
     super(name);
   }
 
-  File tempFile;
-  FileOutputStream out;
+  private File tempFile;
+  private FileOutputStream out;
 
   protected void setUp() throws Exception {
     tempFile = File.createTempFile("TestLongOffset", "out");

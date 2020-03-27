@@ -39,18 +39,13 @@ public class ArraySequence extends ArrayStructure {
     this.nelems = nelems;
   }
 
-  /**
-   * n
-   *
-   * @return StructureDataIterator.class
-   */
   @Override
   public Class getElementType() {
     return StructureDataIterator.class;
   }
 
   @Override
-  public StructureDataIterator getStructureDataIterator() { // throws java.io.IOException {
+  public StructureDataIterator getStructureDataIterator() {
     iter = iter.reset();
     return iter;
   }

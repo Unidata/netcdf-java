@@ -226,13 +226,13 @@ public class NcmlWriter {
 
   //////////////////////////////////////// Element creation ////////////////////////////////////////
 
-  public Element makeExplicitNetcdfElement(NetcdfFile ncFile, String location) {
+  public Element makeExplicitNetcdfElement(NetcdfFile ncFile, @Nullable String location) {
     Element netcdfElem = makeNetcdfElement(ncFile, location);
     netcdfElem.addContent(0, new Element("explicit", namespace));
     return netcdfElem;
   }
 
-  public Element makeNetcdfElement(NetcdfFile ncFile, String location) {
+  public Element makeNetcdfElement(NetcdfFile ncFile, @Nullable String location) {
     Element rootElem = makeGroupElement(ncFile.getRootGroup());
 
     // rootElem isn't just like any other group element; we must undo some of the changes made to it in writeGroup().

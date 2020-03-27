@@ -32,10 +32,12 @@ import ucar.unidata.util.StringUtil2;
  * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#cdl_guide"
  */
 public class CDLWriter {
-  /** Write CDL to a PrintStream.
+  /**
+   * Write CDL to a PrintStream.
+   * 
    * @deprecated do not use
-    */
-   @Deprecated
+   */
+  @Deprecated
   public static void writeCDL(NetcdfFile ncfile, PrintStream out, boolean strict) {
     Formatter f = new Formatter();
     CDLWriter.writeCDL(ncfile, f, strict);
@@ -43,10 +45,12 @@ public class CDLWriter {
     pw.write(f.toString());
   }
 
-  /** Write CDL to a Writer (legacy)
+  /**
+   * Write CDL to a Writer (legacy)
+   * 
    * @deprecated do not use
-    */
-   @Deprecated
+   */
+  @Deprecated
   public static void writeCDL(NetcdfFile ncfile, Writer out, boolean strict) {
     Formatter f = new Formatter();
     CDLWriter.writeCDL(ncfile, f, strict);
