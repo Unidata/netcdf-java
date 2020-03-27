@@ -10,9 +10,9 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.*;
-import ucar.nc2.NCdumpW.WantValues;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -202,30 +202,18 @@ public class TestNc4IospWriting {
     // Add the variable to the root group and finish ncFile
     ncFile.addVariable(null, dessert);
     ncFile.finish();
-    ncFile.setLocation("writeEnumType");
-
-
     File outFile = File.createTempFile("writeEnumType", ".nc");
     try {
       FileWriter2 writer = new FileWriter2(ncFile, outFile.getAbsolutePath(), NetcdfFileWriter.Version.netcdf4,
           new Nc4ChunkingStrategyNone());
-      String mem;
-      String disk;
       try (NetcdfFile ncFileOut = writer.write()) {
-        ncFileOut.setLocation("writeEnumType");
-
-        Writer sw = new StringWriter();
-        NCdumpW.print(ncFile, sw, WantValues.all, false, false, null, null);
-        sw.close();
-        mem = sw.toString();
-
-        sw = new StringWriter();
-        NCdumpW.print(ncFileOut, sw, WantValues.all, false, false, null, null);
-        sw.close();
-        disk = sw.toString();
+        // override name so that CDL will compare equal
+        String org = Ncdump.builder(ncFile).setShowAllValues().setLocationName("writeEnumType").build().print();
+        String copy = Ncdump.builder(ncFileOut).setShowAllValues().setLocationName("writeEnumType").build().print();
+        String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", org, copy);
+        Assert.assertTrue(diffs, diffs == null);
       }
-      String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", mem, disk);
-      Assert.assertTrue("Differences", diffs == null);
+
     } finally {
       ncFile.close();
       outFile.delete();

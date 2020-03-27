@@ -7,7 +7,6 @@ package ucar.nc2;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
 import org.jdom2.Element;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -27,7 +26,7 @@ import ucar.nc2.write.CDLWriter;
  *
  * @author caron
  * @since Nov 4, 2007
- * @deprecated will move in ver 6
+ * @deprecated use ucar.nc2.write.Ncdump
  */
 @Deprecated
 public class NCdumpW {

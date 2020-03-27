@@ -32,7 +32,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Group.Builder;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
@@ -41,6 +40,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.iosp.netcdf3.NetcdfFileFormat;
 import ucar.nc2.iosp.hdf4.H4type;
 import ucar.nc2.iosp.hdf4.TagEnum;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 
@@ -1439,7 +1439,7 @@ public class H4header implements HdfHeaderIF {
           throw new IllegalStateException("cant parse " + chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
         if (debugChunkDetail)
-          System.out.println(NCdumpW.toString(sdata, "getChunkedTable", null));
+          System.out.println(Ncdump.printArray(sdata, "getChunkedTable", null));
 
         // construct the chunks
         StructureMembers members = sdata.getStructureMembers();

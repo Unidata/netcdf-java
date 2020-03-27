@@ -6,12 +6,12 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import javax.annotation.Nonnull;
 import java.util.Formatter;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Swath TimeAxis: time(scan, xscan)
@@ -63,7 +63,7 @@ public class TimeAxis2DSwath extends CoverageCoordAxis {
     super.toString(f, indent);
     f.format("%s  %s%n", indent, Misc.showInts(shape));
     Array data = getCoordsAsArray();
-    f.format("%s%n", NCdumpW.toString(data, getName() + " values", null));
+    f.format("%s%n", Ncdump.printArray(data, getName() + " values", null));
   }
 
   @Override

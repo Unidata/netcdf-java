@@ -12,6 +12,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -191,7 +192,7 @@ public class TestOffAggFmrcGrib {
       assert data.getShape()[0] == nagg;
       assert data.getElementType() == double.class;
 
-      logger.debug(NCdumpW.toString(data));
+      logger.debug(Ncdump.printArray(data));
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
@@ -226,7 +227,7 @@ public class TestOffAggFmrcGrib {
     DateUnit du = new DateUnit(units);
 
     Array data = time.read();
-    logger.debug(NCdumpW.toString(data, "timeCoords", null));
+    logger.debug(Ncdump.printArray(data, "timeCoords", null));
 
     assert data.getSize() == nagg * ntimes;
     assert data.getShape()[0] == nagg;

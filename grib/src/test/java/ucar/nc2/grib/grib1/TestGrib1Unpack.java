@@ -9,12 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.GribData;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.write.Ncdump;
 
 /**
  * Test misc GRIB1 unpacking
@@ -123,7 +123,7 @@ public class TestGrib1Unpack {
       int[] shape = new int[] {gds.getNy(), gds.getNx()};
       Array dataA = Array.factory(DataType.FLOAT, shape, data);
       Array lineA = dataA.slice(0, lineno);
-      logger.debug("{}", NCdumpW.toString(lineA));
+      logger.debug("{}", Ncdump.printArray(lineA));
     }
     System.out.printf("%s%n", method);
 

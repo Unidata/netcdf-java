@@ -11,24 +11,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
-/**
- * Describe
- *
- * @author caron
- * @since 3/17/2015
- */
 @Category(NeedsCdmUnitTest.class)
 public class TestFmrcOffsetsGreaterEqual {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -98,9 +92,9 @@ public class TestFmrcOffsetsGreaterEqual {
       GridDatatype grid = gridDs.findGridByShortName("salt");
       GridCoordSystem gcs = grid.getCoordinateSystem();
       CoordinateAxis1D timeAxis = gcs.getTimeAxis1D();
-      logger.debug("timeAxis = {} {}", NCdumpW.toString(timeAxis.read()), timeAxis.getUnitsString());
+      logger.debug("timeAxis = {} {}", Ncdump.printArray(timeAxis.read()), timeAxis.getUnitsString());
       CoordinateAxis1D runAxis = gcs.getRunTimeAxis();
-      logger.debug("runAxis = {} {}", NCdumpW.toString(runAxis.read()), runAxis.getUnitsString());
+      logger.debug("runAxis = {} {}", Ncdump.printArray(runAxis.read()), runAxis.getUnitsString());
 
       CalendarDate expected = CalendarDate.parseISOformat(null, "2013-05-05T00:00:00");
       CalendarDateUnit cdu = CalendarDateUnit.of(null, timeAxis.getUnitsString());

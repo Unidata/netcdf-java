@@ -7,7 +7,6 @@ package ucar.nc2.ui;
 
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.PointFeature;
@@ -15,6 +14,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.time.CalendarTimeZone;
+import ucar.nc2.write.Ncdump;
 import ucar.ui.table.*;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
@@ -327,9 +327,7 @@ public class StructureTable extends JPanel {
     if (sd == null)
       return;
 
-    StringWriter sw = new StringWriter(10000);
-    NCdumpW.printStructureData(new PrintWriter(sw), sd);
-    dumpTA.setText(sw.toString());
+    dumpTA.setText(Ncdump.printStructureData(sd));
     dumpWindow.setVisible(true);
   }
 

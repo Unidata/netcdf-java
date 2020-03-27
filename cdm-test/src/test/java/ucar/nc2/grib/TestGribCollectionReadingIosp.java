@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -89,7 +89,7 @@ public class TestGribCollectionReadingIosp {
       assert data.getRank() == 4;
       assert data.getDataType() == DataType.FLOAT;
       assert data.getSize() == 2;
-      logger.debug("{}", NCdumpW.toString(data));
+      logger.debug("{}", Ncdump.printArray(data));
       while (data.hasNext()) {
         float val = data.nextFloat();
         assert !Float.isNaN(val);
@@ -111,7 +111,7 @@ public class TestGribCollectionReadingIosp {
       assert data.getRank() == 4;
       assert data.getDataType() == DataType.FLOAT;
       assert data.getSize() == 12;
-      logger.debug("{}", NCdumpW.toString(data));
+      logger.debug("{}", Ncdump.printArray(data));
       while (data.hasNext()) {
         float val = data.nextFloat();
         assert !Float.isNaN(val);

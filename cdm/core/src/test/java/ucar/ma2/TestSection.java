@@ -7,9 +7,9 @@ package ucar.ma2;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NCdumpW;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.write.Ncdump;
 
 /** Test ma2 section methods in the JUnit framework. */
 
@@ -429,14 +429,14 @@ public class TestSection extends TestCase {
     Array a = Array.makeArray(DataType.DOUBLE, 1000, 0.0, 1.0);
     Array a3 = a.reshape(new int[] {10, 10, 10});
 
-    logger.debug("{}", NCdumpW.toString(a3, "test a3", null));
+    logger.debug("{}", Ncdump.printArray(a3, "test a3", null));
     Array a2 = a3.slice(0, 1);
 
-    logger.debug("{}", NCdumpW.toString(a2, "a3.slice(0,1)", null));
+    logger.debug("{}", Ncdump.printArray(a2, "a3.slice(0,1)", null));
 
     Array a1 = a2.slice(0, 1);
 
-    logger.debug("{}", NCdumpW.toString(a1, "a2.slice(0,1)", null));
+    logger.debug("{}", Ncdump.printArray(a1, "a2.slice(0,1)", null));
 
     ArrayDouble.D2 twoD = (ArrayDouble.D2) a2;
     System.out.printf("wrong= %f%n", a2.getDouble(0));

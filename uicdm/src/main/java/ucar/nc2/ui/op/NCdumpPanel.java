@@ -5,7 +5,6 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -14,6 +13,7 @@ import ucar.nc2.ui.GetDataRunnable;
 import ucar.nc2.ui.GetDataTask;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
+import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
@@ -98,7 +98,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
       }
 
       StringWriter sw = new StringWriter(50000);
-      NCdumpW.print(ncfile, command, sw, task);
+      Ncdump.ncdump(ncfile, command, sw, task);
       result = sw.toString();
     } finally {
       try {
@@ -122,7 +122,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
     GetDataRunnable runner = new GetDataRunnable() {
       public void run(Object o) throws IOException {
         StringWriter sw = new StringWriter(50000);
-        NCdumpW.print(ncfile, command, sw, task);
+        Ncdump.ncdump(ncfile, command, sw, task);
         result = sw.toString();
       }
     };

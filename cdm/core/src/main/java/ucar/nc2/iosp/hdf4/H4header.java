@@ -7,6 +7,7 @@ package ucar.nc2.iosp.hdf4;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.ma2.*;
@@ -1355,7 +1356,7 @@ public class H4header extends NCheader {
           throw new IllegalStateException("cant parse " + chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
         if (debugChunkDetail)
-          System.out.println(NCdumpW.toString(sdata, "getChunkedTable", null));
+          System.out.println(Ncdump.printArray(sdata, "getChunkedTable", null));
 
         // construct the chunks
         StructureMembers members = sdata.getStructureMembers();

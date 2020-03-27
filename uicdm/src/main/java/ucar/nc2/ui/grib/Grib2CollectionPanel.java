@@ -41,7 +41,6 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
@@ -49,6 +48,7 @@ import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -954,7 +954,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     int[] shape = {gds.getNy(), gds.getNx()};
     Array arr = Array.factory(DataType.FLOAT, shape, data);
-    f.format("%s", NCdumpW.toString(arr));
+    f.format("%s", Ncdump.printArray(arr));
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////

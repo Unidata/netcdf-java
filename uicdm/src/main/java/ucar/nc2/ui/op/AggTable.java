@@ -7,11 +7,11 @@ package ucar.nc2.ui.op;
 
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
@@ -158,7 +158,7 @@ public class AggTable extends JPanel {
       Array data = aggCoord.read();
 
       f.format("   Aggregated coordinate variable %s%n", aggCoord);
-      f.format(NCdumpW.toString(data, aggDimName, null));
+      f.format(Ncdump.printArray(data, aggDimName, null));
 
       for (Object bean : datasetTable.getBeans()) {
         DatasetBean dbean = (DatasetBean) bean;
@@ -171,7 +171,7 @@ public class AggTable extends JPanel {
             f.format("   doesnt have coordinate variable%n");
           } else {
             data = aggCoordp.read();
-            f.format(NCdumpW.toString(data, aggCoordp.getNameAndDimensions() + " (" + aggCoordp.getUnitsString() + ")",
+            f.format(Ncdump.printArray(data, aggCoordp.getNameAndDimensions() + " (" + aggCoordp.getUnitsString() + ")",
                 null));
           }
         }

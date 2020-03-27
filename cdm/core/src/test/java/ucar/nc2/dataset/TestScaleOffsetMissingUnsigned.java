@@ -14,6 +14,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import java.io.File;
@@ -123,11 +124,11 @@ public class TestScaleOffsetMissingUnsigned {
 
       Section s = new Section().appendRange(1, 1).appendRange(1, 1);
       Array readEnhanced = vs.read(s);
-      logger.debug(NCdumpW.toString(readEnhanced));
+      logger.debug(Ncdump.printArray(readEnhanced));
 
       Variable sec = vs.section(s);
       Array readSection = sec.read();
-      logger.debug(NCdumpW.toString(readSection));
+      logger.debug(Ncdump.printArray(readSection));
 
       ucar.unidata.util.test.CompareNetcdf.compareData(readEnhanced, readSection);
     }

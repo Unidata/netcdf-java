@@ -12,13 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -73,7 +73,7 @@ public class TestN4problems {
     Variable v = ncfile.findVariable("primary_cloud");
     Array data = v.read();
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    logger.debug(NCdumpW.toString(data, "primary_cloud", null));
+    logger.debug(Ncdump.printArray(data, "primary_cloud", null));
     ncfile.close();
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
   }

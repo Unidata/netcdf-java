@@ -1409,12 +1409,16 @@ public class NetcdfFile implements FileCacheable, Closeable {
     pw.flush();
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   void toStringStart(PrintWriter pw, boolean strict) {
     Formatter f = new Formatter();
     toStringStart(f, new Indent(2), strict);
     pw.write(f.toString());
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   void toStringEnd(PrintWriter pw) {
     pw.print("}\n");
   }

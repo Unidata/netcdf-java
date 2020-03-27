@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import java.io.IOException;
 import java.io.StringReader;
@@ -207,7 +207,7 @@ public class TestAggExistingCoordVars extends TestCase {
     assert data.getShape()[0] == 3;
     assert data.getElementType() == String.class;
 
-    logger.debug(NCdumpW.toString(data, "time coord", null));
+    logger.debug(Ncdump.printArray(data, "time coord", null));
 
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();
@@ -248,7 +248,7 @@ public class TestAggExistingCoordVars extends TestCase {
     assert data.getShape()[0] == 3;
     assert data.getElementType() == double.class;
 
-    logger.debug(NCdumpW.toString(data, "time coord", null));
+    logger.debug(Ncdump.printArray(data, "time coord", null));
 
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();

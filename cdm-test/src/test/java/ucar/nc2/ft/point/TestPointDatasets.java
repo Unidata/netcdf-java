@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.DsgFeatureCollection;
@@ -51,13 +50,13 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
-import ucar.unidata.util.test.category.NotTravis;
 
 /**
  * Test PointFeatureTypes.
@@ -671,7 +670,7 @@ public class TestPointDatasets {
         for (ucar.nc2.ft.PointFeature pointFeature : pfc) {
           System.out.printf("   3.hashcode=%d %n", pointFeature.hashCode());
           StructureData sdata = pointFeature.getDataAll();
-          logger.debug(NCdumpW.toString(sdata));
+          logger.debug(Ncdump.printStructureData(sdata));
         }
       }
     }
