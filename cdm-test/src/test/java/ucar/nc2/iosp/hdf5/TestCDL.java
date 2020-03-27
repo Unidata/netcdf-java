@@ -5,7 +5,6 @@
 
 package ucar.nc2.iosp.hdf5;
 
-import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
@@ -46,10 +45,7 @@ public class TestCDL {
     NetcdfFile ncfile = NetcdfFiles.open(filename, null);
     System.out.println("File " + filename);
 
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(30 * 1000);
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(bout, StandardCharsets.UTF_8));
-    Ncdump.builder(ncfile, pw).setStrict(true).build().print();
-    String njCDL = bout.toString();
+    String njCDL = Ncdump.builder(ncfile).setStrict(true).build().print();
     if (show)
       System.out.println("============================================");
     if (show)

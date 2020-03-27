@@ -238,11 +238,11 @@ public class Ncdump {
       if (ncml) {
         return writeNcML(ncfile, wantValues, locationName); // output schema in NcML
       } else if (headerOnly) {
-        CDLWriter.writeCDL(ncfile, out, strict);
+        CDLWriter.writeCDL(ncfile, out, strict, locationName);
       } else {
         Indent indent = new Indent(2);
         CDLWriter cdlWriter = new CDLWriter(ncfile, out, strict);
-        cdlWriter.toStringStart(indent, strict);
+        cdlWriter.toStringStart(indent, strict, locationName);
 
         indent.incr();
         out.format("%n%sdata:%n", indent);

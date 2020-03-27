@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import ucar.ma2.DataType;
 import ucar.ma2.ForbiddenConversionException;
 import ucar.nc2.Attribute;
@@ -40,7 +41,7 @@ public class CDLWriter {
   @Deprecated
   public static void writeCDL(NetcdfFile ncfile, PrintStream out, boolean strict) {
     Formatter f = new Formatter();
-    CDLWriter.writeCDL(ncfile, f, strict);
+    CDLWriter.writeCDL(ncfile, f, strict, null);
     PrintWriter pw = new PrintWriter(out);
     pw.write(f.toString());
   }
@@ -53,15 +54,15 @@ public class CDLWriter {
   @Deprecated
   public static void writeCDL(NetcdfFile ncfile, Writer out, boolean strict) {
     Formatter f = new Formatter();
-    CDLWriter.writeCDL(ncfile, f, strict);
+    CDLWriter.writeCDL(ncfile, f, strict, null);
     PrintWriter pw = new PrintWriter(out);
     pw.write(f.toString());
   }
 
   /** Write CDL to a Formatter */
-  public static void writeCDL(NetcdfFile ncfile, Formatter out, boolean strict) {
+  public static void writeCDL(NetcdfFile ncfile, Formatter out, boolean strict, @Nullable String nameOverride) {
     CDLWriter writer = new CDLWriter(ncfile, out, strict);
-    writer.toStringStart(new Indent(2), strict);
+    writer.toStringStart(new Indent(2), strict, nameOverride);
     writer.toStringEnd();
   }
 
@@ -75,14 +76,14 @@ public class CDLWriter {
     this.strict = strict;
   }
 
-  void toStringStart(Indent indent, boolean strict) {
-    String name = ncfile.getLocation();
+  void toStringStart(Indent indent, boolean strict, @Nullable String nameOverride) {
+    String name = (nameOverride != null) ? nameOverride : ncfile.getLocation();
     if (strict) {
       if (name.endsWith(".nc"))
         name = name.substring(0, name.length() - 3);
       if (name.endsWith(".cdl"))
         name = name.substring(0, name.length() - 4);
-      name = NetcdfFile.makeValidCDLName(name);
+      name = NetcdfFiles.makeValidCDLName(name);
     }
     out.format("%snetcdf %s {%n", indent, name);
     indent.incr();

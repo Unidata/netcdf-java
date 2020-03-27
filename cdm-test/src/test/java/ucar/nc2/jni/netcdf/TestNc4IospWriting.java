@@ -202,30 +202,18 @@ public class TestNc4IospWriting {
     // Add the variable to the root group and finish ncFile
     ncFile.addVariable(null, dessert);
     ncFile.finish();
-    ncFile.setLocation("writeEnumType");
-
-
     File outFile = File.createTempFile("writeEnumType", ".nc");
     try {
       FileWriter2 writer = new FileWriter2(ncFile, outFile.getAbsolutePath(), NetcdfFileWriter.Version.netcdf4,
           new Nc4ChunkingStrategyNone());
-      String mem;
-      String disk;
       try (NetcdfFile ncFileOut = writer.write()) {
-        ncFileOut.setLocation("writeEnumType");
-
-        Writer sw = new StringWriter();
-        Ncdump.builder(ncFile, sw).setShowAllValues().build().print();
-        sw.close();
-        mem = sw.toString();
-
-        sw = new StringWriter();
-        Ncdump.builder(ncFile, sw).setShowAllValues().build().print();
-        sw.close();
-        disk = sw.toString();
+        // override name so that CDL will compare equal
+        String org = Ncdump.builder(ncFile).setShowAllValues().setLocationName("writeEnumType").build().print();
+        String copy = Ncdump.builder(ncFileOut).setShowAllValues().setLocationName("writeEnumType").build().print();
+        String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", org, copy);
+        Assert.assertTrue(diffs, diffs == null);
       }
-      String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", mem, disk);
-      Assert.assertTrue("Differences", diffs == null);
+
     } finally {
       ncFile.close();
       outFile.delete();
