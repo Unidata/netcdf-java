@@ -33,7 +33,7 @@ public class N3headerNew {
   public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     switch (NetcdfFileFormat.findNetcdfFormatType(raf)) {
       case NETCDF3:
-      case NETCDF3_64BIT_DATA:
+      case NETCDF3_64BIT_OFFSET:
         return true;
       default:
         return false;

@@ -1747,8 +1747,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param arg -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]
    * @throws IOException on read or write error
+   * @deprecated use ucar.nc2.writer.Nccopy
    */
-  // LOOK: Can we use CFPointWriter.CommandLine for CLI parsing instead? Would that break existing scripts?
+  @Deprecated
   public static void main(String[] arg) throws IOException {
     String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]";
     if (arg.length < 4) {

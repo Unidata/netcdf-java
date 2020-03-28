@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.io.RandomAccessFile;
@@ -148,7 +149,7 @@ public class TestDir {
 
   public static NetcdfFile open(String filename) throws IOException {
     logger.debug("**** Open {}", filename);
-    NetcdfFile ncfile = NetcdfFile.open(filename, null);
+    NetcdfFile ncfile = NetcdfFiles.open(filename, null);
     logger.debug("open {}", ncfile);
 
     return ncfile;
@@ -299,7 +300,7 @@ public class TestDir {
   private static class ReadAllVariables implements Act {
     @Override
     public int doAct(String filename) throws IOException {
-      try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
         return readAllData(ncfile);
       }
     }
