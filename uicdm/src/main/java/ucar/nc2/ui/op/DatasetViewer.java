@@ -27,9 +27,7 @@ import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -38,8 +36,11 @@ import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
+import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
 import ucar.ui.widget.IndependentWindow;
@@ -177,17 +178,19 @@ public class DatasetViewer extends JPanel {
   ///////////////////////////////////////
 
   private void writeNetcdf(NetcdfOutputChooser.Data data) {
-    if (data.version == NetcdfFileWriter.Version.ncstream) {
+    if (data.format == NetcdfFileFormat.NCSTREAM) {
       writeNcstream(data.outputFilename);
       return;
     }
 
     try {
-      FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version,
-          Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
+      NetcdfFormatWriter.Builder builder =
+          NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format).setLocation(data.outputFilename)
+              .setChunker(Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
+      NetcdfCopier copier = NetcdfCopier.create(ds, builder.build());
+
       // write() return the open file that was just written, so we just need to close it.
-      try (NetcdfFile result = writer.write()) {
-        result.close();
+      try (NetcdfFile result = copier.write(null)) {
       }
       JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (Exception ioe) {

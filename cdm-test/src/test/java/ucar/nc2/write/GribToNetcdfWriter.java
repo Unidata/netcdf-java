@@ -3,15 +3,13 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.writer;
+package ucar.nc2.write;
 
 import java.io.Closeable;
 import java.io.IOException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
-import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.io.RandomAccessFile;
 
 /**

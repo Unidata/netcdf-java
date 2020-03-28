@@ -3,14 +3,13 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.writer;
+package ucar.nc2.write;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
-import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;

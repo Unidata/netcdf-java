@@ -31,6 +31,7 @@ import ucar.nc2.ui.op.*;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.URLDumpPane;
 import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
+import ucar.nc2.write.NetcdfCopier;
 import ucar.ui.widget.*;
 import ucar.ui.widget.ProgressMonitor;
 import ucar.nc2.util.CancelTask;
@@ -676,7 +677,7 @@ public class ToolsUI extends JPanel {
     Nc4Iosp.setDebugFlags(debugFlags);
     DataFactory.setDebugFlags(debugFlags);
 
-    ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
+    NetcdfCopier.setDebugFlags(debugFlags);
     ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
     ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
   }

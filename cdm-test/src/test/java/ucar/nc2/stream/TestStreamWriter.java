@@ -13,11 +13,12 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
+import ucar.nc2.write.NetcdfCopier;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -99,11 +100,11 @@ public class TestStreamWriter {
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
-    // public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker)
-    // throws IOException {
-    FileWriter2 writer = new FileWriter2(fileIn, fileOut, NetcdfFileWriter.Version.netcdf3, null);
-    NetcdfFile ncout2 = writer.write();
-    ncout2.close();
+    NetcdfFormatWriter.Builder builder =
+        NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(fileOut);
+    NetcdfCopier copier = NetcdfCopier.create(fileIn, builder.build());
+    try (NetcdfFile ncout2 = copier.write(null)) {
+    }
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 

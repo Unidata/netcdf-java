@@ -82,6 +82,11 @@ public class CancelTaskImpl implements CancelTask {
     return cancel;
   }
 
+  public void setSuccess() {
+    this.success = true;
+    this.done = true;
+  }
+
   @Override
   public void setError(String error) {
     this.error = error;

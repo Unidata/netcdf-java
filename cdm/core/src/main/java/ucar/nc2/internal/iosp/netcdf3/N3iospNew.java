@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
  * @since 9/29/2019.
  */
 public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
 
   /*
    * CLASSIC

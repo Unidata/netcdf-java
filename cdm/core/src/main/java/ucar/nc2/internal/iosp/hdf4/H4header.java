@@ -37,7 +37,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.internal.iosp.netcdf3.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.nc2.iosp.hdf4.H4type;
 import ucar.nc2.iosp.hdf4.TagEnum;
 import ucar.nc2.write.Ncdump;
@@ -54,12 +54,24 @@ import ucar.unidata.util.Format;
 public class H4header implements HdfHeaderIF {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
-  private static final byte[] head = {0x0e, 0x03, 0x13, 0x01};
-  private static final String shead = new String(head, StandardCharsets.UTF_8);
+  private static final byte[] H4HEAD = {(byte) 0x0e, (byte) 0x03, (byte) 0x13, (byte) 0x01};
+  private static final String H4HEAD_STRING = new String(H4HEAD, StandardCharsets.UTF_8);
   private static final long maxHeaderPos = 500000; // header's gotta be within this
 
-  public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    return NetcdfFileFormat.findNetcdfFormatType(raf) == NetcdfFileFormat.HDF4;
+  static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    long pos = 0;
+    long size = raf.length();
+
+    // search forward for the header
+    while ((pos < (size - H4HEAD.length)) && (pos < maxHeaderPos)) {
+      raf.seek(pos);
+      String magic = raf.readString(H4HEAD.length);
+      if (magic.equals(H4HEAD_STRING))
+        return true;
+      pos = (pos == 0) ? 512 : 2 * pos;
+    }
+
+    return false;
   }
 
   private static boolean debugDD; // DDH/DD

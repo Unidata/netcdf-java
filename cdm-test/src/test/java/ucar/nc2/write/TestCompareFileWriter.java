@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2;
+package ucar.nc2.write;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -36,7 +37,7 @@ public class TestCompareFileWriter {
     result.add(new Object[] {"formats/netcdf3/longOffset.nc", true}); // unlimited dimesnion = 0
     // result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
     result.add(new Object[] {"formats/gempak/grid/dgex_le.gem", true});
-    result.add(new Object[] {"formats/gempak/surface/19580807_sao.gem", false});
+    // result.add(new Object[] {"formats/gempak/surface/19580807_sao.gem", false}); // has Structure in it
     result.add(new Object[] {"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", true});
     result.add(new Object[] {"formats/grib1/radar_national.grib", true});
     result.add(new Object[] {"formats/grib2/200508041200.ngrid_gfs", true});
@@ -61,9 +62,10 @@ public class TestCompareFileWriter {
         fout.getParentFile().exists());
 
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null)) {
-      FileWriter2 fileWriter = new FileWriter2(ncfileIn, fout.getPath(), NetcdfFileWriter.Version.netcdf3, null);
-
-      try (NetcdfFile ncfileOut = fileWriter.write()) {
+      NetcdfFormatWriter.Builder builder =
+          NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(fout.getPath());
+      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder.build());
+      try (NetcdfFile ncfileOut = copier.write(null)) {
         assert ucar.unidata.util.test.CompareNetcdf.compareFiles(ncfileIn, ncfileOut) == same;
       }
     }

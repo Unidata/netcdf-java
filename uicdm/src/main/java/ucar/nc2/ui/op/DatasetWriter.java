@@ -9,9 +9,7 @@ import static ucar.nc2.util.CompareNetcdf2.IDENTITY_FILTER;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -20,8 +18,11 @@ import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
 import ucar.ui.widget.IndependentWindow;
@@ -216,12 +217,12 @@ public class DatasetWriter extends JPanel {
       return;
     }
 
-    if (data.version == NetcdfFileWriter.Version.ncstream) {
+    if (data.format == NetcdfFileFormat.NCSTREAM) {
       writeNcstream(data.outputFilename);
       return;
     }
 
-    if (data.version.isNetdf4format()) {
+    if (data.format.isNetdf4format()) {
       if (!Nc4Iosp.isClibraryPresent()) {
         JOptionPane.showMessageDialog(this, "NetCDF-4 C library is not loaded");
         return;
@@ -247,12 +248,13 @@ public class DatasetWriter extends JPanel {
       try {
         List beans = nestedTableList.get(0).table.getBeans();
         BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
-        FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version, bc);
+        NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format)
+            .setLocation(data.outputFilename).setChunker(bc);
+        NetcdfCopier copier = NetcdfCopier.create(ds, builder.build());
 
         double start = System.nanoTime();
         // write() return the open file that was just written, so we just need to close it.
-        try (NetcdfFile result = writer.write(this)) {
-          result.close();
+        try (NetcdfFile result = copier.write(this)) {
         }
 
         double took = (System.nanoTime() - start) / 1000 / 1000 / 1000;
@@ -262,8 +264,8 @@ public class DatasetWriter extends JPanel {
 
         double r = (double) newFile.length() / oldFile.length();
 
-        logger.debug("Rewrite from {} {} to {} {} version = {} ratio = {} took= {} secs", ds.getLocation(),
-            oldFile.length(), data.outputFilename, newFile.length(), data.version, r, took);
+        logger.debug("Rewrite from {} {} to {} {} format = {} ratio = {} took= {} secs", ds.getLocation(),
+            oldFile.length(), data.outputFilename, newFile.length(), data.format, r, took);
 
         JOptionPane.showMessageDialog(DatasetWriter.this,
             "File successfully written took=" + took + " secs ratio=" + r);

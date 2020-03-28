@@ -9,6 +9,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import java.io.*;
 import java.nio.ByteOrder;
+import ucar.nc2.write.ChunkingIndex;
 
 /**
  * Write a NetcdfFile to an OutputStream using ncstream protocol
@@ -195,7 +196,7 @@ public class NcStreamWriter {
   private long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, NcStreamCompression compress)
       throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
-    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(oldVar.getShape());
+    ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
     long size = 0;
     while (index.currentElement() < index.getSize()) {
       try {
