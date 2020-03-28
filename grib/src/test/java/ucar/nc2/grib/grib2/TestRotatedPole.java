@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import java.lang.invoke.MethodHandles;
@@ -37,7 +38,7 @@ public class TestRotatedPole {
    */
   @Test
   public void testRapNative() throws Exception {
-    try (NetcdfFile nc = NetcdfFile.open("../grib/src/test/data/rap-native.grib2")) {
+    try (NetcdfFile nc = NetcdfFiles.open("../grib/src/test/data/rap-native.grib2")) {
       Assert.assertNotNull(nc);
       // check dimensions
       Dimension rlonDim = nc.findDimension("rlon");
@@ -103,7 +104,7 @@ public class TestRotatedPole {
    */
   @Test
   public void testCosmoEu() throws Exception {
-    try (NetcdfFile nc = NetcdfFile.open("../grib/src/test/data/cosmo-eu.grib2")) {
+    try (NetcdfFile nc = NetcdfFiles.open("../grib/src/test/data/cosmo-eu.grib2")) {
       Assert.assertNotNull(nc);
       // check dimensions
       Dimension rlonDim = nc.findDimension("rlon");

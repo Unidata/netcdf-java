@@ -408,7 +408,7 @@ public class TestDmspIosp extends TestCase {
 
     // Open test DMSP file as NetCDF file.
     try {
-      meNcf = NetcdfFile.open(testFilePath + "/" + testDataFileName);
+      meNcf = NetcdfFiles.open(testFilePath + "/" + testDataFileName);
     } catch (IOException e) {
       assertTrue("Unexpected IOException opening DMSP file <" + testFile.getAbsolutePath() + ">: " + e.getMessage(),
           false);

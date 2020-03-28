@@ -69,7 +69,7 @@ public class TestCharFillValue extends UnitTestCommon {
       ncfw.create();
     }
 
-    try (NetcdfFile ncf = NetcdfFile.open(fileName)) {
+    try (NetcdfFile ncf = NetcdfFiles.open(fileName)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
       H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());
@@ -101,7 +101,7 @@ public class TestCharFillValue extends UnitTestCommon {
       ncfw.create();
     }
 
-    try (NetcdfFile ncf = NetcdfFile.open(fileName)) {
+    try (NetcdfFile ncf = NetcdfFiles.open(fileName)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
       H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());

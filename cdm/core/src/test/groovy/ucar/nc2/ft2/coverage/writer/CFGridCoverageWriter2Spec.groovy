@@ -86,7 +86,7 @@ class CFGridCoverageWriter2Spec extends Specification {
         CFGridCoverageWriter2.write(covColl, null, null, true, writer)
 
         and: "open output file"
-        NetcdfFile ncFile = NetcdfFile.open(outputFile.absolutePath)
+        NetcdfFile ncFile = NetcdfFiles.open(outputFile.absolutePath)
         
         and: "declare expected lats"
         def expectedShape = [4, 4] as int[]

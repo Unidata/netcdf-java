@@ -77,7 +77,7 @@ public class TestScaleOffsetMissingUnsigned {
     Array readPacked;
 
     // read the packed form, compare to original
-    try (NetcdfFile ncfileRead = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfileRead = NetcdfFiles.open(filename)) {
       Variable v = ncfileRead.findVariable("packed");
       assert v != null;
       readPacked = v.read();

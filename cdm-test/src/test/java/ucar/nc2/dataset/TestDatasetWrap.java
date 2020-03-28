@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -53,7 +54,7 @@ public class TestDatasetWrap {
     NetcdfDataset ds = null;
 
     try {
-      ncfile = NetcdfFile.open(filename);
+      ncfile = NetcdfFiles.open(filename);
       ds = NetcdfDataset.openDataset(filename);
 
       String varName = "Lon";
@@ -83,7 +84,7 @@ public class TestDatasetWrap {
     NetcdfDataset ds = null;
 
     try {
-      ncfile = NetcdfFile.open(filename);
+      ncfile = NetcdfFiles.open(filename);
       ds = NetcdfDataset.openDataset(filename);
 
       String varName = "lon";

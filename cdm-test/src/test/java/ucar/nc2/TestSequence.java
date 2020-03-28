@@ -60,7 +60,7 @@ public class TestSequence {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testRead() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest")) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest")) {
       Sequence record = (Sequence) ncfile.findVariable("record");
 
       List<String> expectedMemberNames = Arrays.asList("tsec", "nsec", "lat", "lon", "sgnl", "mult", "fill",
@@ -87,7 +87,7 @@ public class TestSequence {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testReadNestedSequence() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass")) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass")) {
       Sequence obs = (Sequence) ncfile.findVariable("obs");
 
       List<String> expectedMemberNames = Arrays.asList("WMO_block_number", "WMO_station_number", "Type_of_station",

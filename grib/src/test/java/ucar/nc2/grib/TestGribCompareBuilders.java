@@ -44,7 +44,7 @@ public class TestGribCompareBuilders {
   @Test
   public void compareWithBuilder() throws IOException {
     System.out.printf("TestBuilders on %s%n", filename);
-    try (NetcdfFile org = NetcdfFile.open(filename)) {
+    try (NetcdfFile org = NetcdfFiles.open(filename)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);

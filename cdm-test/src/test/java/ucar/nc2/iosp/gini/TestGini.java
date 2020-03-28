@@ -15,6 +15,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -70,7 +71,7 @@ public class TestGini {
 
   @Test
   public void testGiniRead() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/gini/" + fname)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/gini/" + fname)) {
       Variable v = ncfile.findVariable(varName);
 
       // Make sure we can get the expected variable and that it is at-least 2D

@@ -23,7 +23,7 @@ public class TestMRMS {
 
   @Test
   public void checkVariable() throws IOException {
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
       Assert.assertNotNull(var);
 

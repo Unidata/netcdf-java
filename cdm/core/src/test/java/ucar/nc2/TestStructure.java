@@ -200,12 +200,12 @@ public class TestStructure extends TestCase {
    */
 
   public void readBothWays(String filename) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     // System.out.println(ncfile);
     ncfile.close();
 
-    ncfile = NetcdfFile.open(filename);
+    ncfile = NetcdfFiles.open(filename);
     // System.out.println(ncfile);
     ncfile.close();
   }

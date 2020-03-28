@@ -54,7 +54,7 @@ public class TestRedefine3 {
     ncFile.flush();
     ncFile.close();
 
-    NetcdfFile nc = NetcdfFile.open(filename, null);
+    NetcdfFile nc = NetcdfFiles.open(filename, null);
     Variable v = nc.findVariable("jill");
     Array jillRead = v.read();
     ucar.unidata.util.test.CompareNetcdf.compareData(jillArray, jillRead);

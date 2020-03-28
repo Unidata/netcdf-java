@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -41,7 +42,7 @@ public class TestGribMiscCoordinates {
 
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/HIRLAMhybrid.grib";
     System.out.println("\n\nReading File " + filename);
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     Group best = ncfile.findGroup("Best");
 
     Variable hybrid = ncfile.findVariable(best, "hybrid");
@@ -62,7 +63,7 @@ public class TestGribMiscCoordinates {
   public void testHybridCoordinates() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500";
     System.out.println("\n\nReading File " + filename);
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     Group best = ncfile.findGroup("Best");
     Variable hybrid = ncfile.findVariable(best, "hybrid1");
     assert hybrid != null;
@@ -79,7 +80,7 @@ public class TestGribMiscCoordinates {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/CCCma_SRES_A2_HGT500_1-10.grb";
     System.out.println("\n\nReading File " + filename);
 
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     Group best = ncfile.findGroup("Best");
 
     Variable lat = ncfile.findVariable(best, "lat");

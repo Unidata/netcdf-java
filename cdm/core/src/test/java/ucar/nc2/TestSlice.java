@@ -70,7 +70,7 @@ public class TestSlice {
 
   @Test
   public void testSlice1() throws IOException, InvalidRangeException {
-    try (NetcdfFile file = NetcdfFile.open(filePath)) {
+    try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
       Variable sliced = var.slice(0, 3);
       sliced.read();
@@ -87,7 +87,7 @@ public class TestSlice {
 
   @Test
   public void testSlice2() throws IOException, InvalidRangeException {
-    try (NetcdfFile file = NetcdfFile.open(filePath)) {
+    try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
       Variable sliced = var.slice(1, 3);
       sliced.read();
@@ -104,7 +104,7 @@ public class TestSlice {
 
   @Test
   public void testSlice3() throws IOException, InvalidRangeException {
-    try (NetcdfFile file = NetcdfFile.open(filePath)) {
+    try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
       Variable sliced1 = var.slice(0, 3);
       Variable sliced2 = sliced1.slice(0, 3);

@@ -88,7 +88,7 @@ public class TestWriteMiscProblems {
       ncfile.write("Times", data);
     }
 
-    try (NetcdfFile nc = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile nc = NetcdfFiles.open(filename, null)) {
       Variable v = nc.findVariable("Times");
       Array dataRead = v.read();
       assert dataRead instanceof ArrayChar;

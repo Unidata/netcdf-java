@@ -92,7 +92,7 @@ public class TestWriteMisc {
       }
     }
 
-    try (NetcdfFile ncFile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncFile = NetcdfFiles.open(filename)) {
       Array result2 = ncFile.readSection("time");
       System.out.println(result2);
       // ucar.unidata.util.test.CompareNetcdf.compareData(result1, result2);
@@ -207,7 +207,7 @@ public class TestWriteMisc {
       writer.create();
     }
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Attribute att3 = ncfile.findGlobalAttribute("nameLongerThanYou");
       assert att3 != null;
     }
@@ -263,7 +263,7 @@ public class TestWriteMisc {
       writer.write(time, origin, data);
     }
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Attribute att3 = ncfile.findGlobalAttribute("name2");
       assert att3 != null;
 

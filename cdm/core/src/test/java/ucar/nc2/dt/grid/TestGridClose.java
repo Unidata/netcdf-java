@@ -41,6 +41,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.TestDir;
@@ -106,7 +107,7 @@ public class TestGridClose {
   }
 
   public void checkFile(String url) throws IOException {
-    try (NetcdfFile file = NetcdfFile.open(url, null)) {
+    try (NetcdfFile file = NetcdfFiles.open(url, null)) {
       assert file.findVariable(newVarName) != null : "cant find " + newVarName;
     }
   }

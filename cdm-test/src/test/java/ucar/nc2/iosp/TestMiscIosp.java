@@ -14,6 +14,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.cache.FileCache;
@@ -54,7 +55,7 @@ public class TestMiscIosp {
   @Test
   public void testFyiosp() throws IOException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/fysat/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
       logger.debug("open {}", ncf.getLocation());
 
       String val = ncf.getRootGroup().findAttValueIgnoreCase("version", null);
@@ -73,7 +74,7 @@ public class TestMiscIosp {
 
   @Test
   public void testUamiv() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/uamiv/uamiv.grid", null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/uamiv/uamiv.grid", null)) {
       logger.debug("open {}", ncfile.getLocation());
       ucar.nc2.Variable v = ncfile.findVariable("UP");
       assert v != null;
@@ -87,7 +88,7 @@ public class TestMiscIosp {
   @Test
   public void testGini() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-compress";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
       logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("Reflectivity");
@@ -103,7 +104,7 @@ public class TestMiscIosp {
   @Test
   public void testGrads() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
       logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("mask");
@@ -122,7 +123,7 @@ public class TestMiscIosp {
   @Test
   public void testGradsWithRAFCache() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
       logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("mask");
@@ -142,7 +143,7 @@ public class TestMiscIosp {
   // dunno what kind of grads file this is.
   public void testGrads2() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/pdef.ctl";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
       logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("pdef");

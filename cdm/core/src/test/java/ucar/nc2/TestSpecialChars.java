@@ -54,7 +54,7 @@ public class TestSpecialChars {
     }
 
     String ncmlFilePath = tempFolder.newFile().getAbsolutePath();
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       String val = ncfile.getRootGroup().findAttValueIgnoreCase("omy", null);
       assert val != null;
       assert val.equals(trouble);
