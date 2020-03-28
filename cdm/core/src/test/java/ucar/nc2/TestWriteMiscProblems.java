@@ -15,6 +15,8 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
 import ucar.nc2.write.NetcdfCopier;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
@@ -106,9 +108,10 @@ public class TestWriteMiscProblems {
     try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null)) {
       assert ncd.removeVariable(null, "temperature");
       ncd.finish();
-
-      NetcdfCopier writer = new NetcdfCopier(ncd, outName, NetcdfFileWriter.Version.netcdf3, null);
-      try (NetcdfFile ncdnew = writer.write()) {
+      NetcdfFormatWriter.Builder builder =
+          NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(outName);
+      NetcdfCopier copier = NetcdfCopier.create(ncd, builder.build());
+      try (NetcdfFile ncdnew = copier.write(null)) {
         // ok empty
       }
     }
