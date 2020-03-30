@@ -25,7 +25,7 @@ import java.util.Map;
  * <p/>
  * Use NetcdfFileWriter object for a lower level API.
  *
- * @deprecated TODO use ucar.nc2.write.FileWriter
+ * @deprecated use ucar.nc2.write.NetcdfCopier (library) or ucar.nc2.write.Nccopy (command line)
  */
 @Deprecated
 public class FileWriter2 {
@@ -563,8 +563,6 @@ public class FileWriter2 {
   }
 
   /**
-   * Better to use ucar.nc.dataset.NetcdfDataset main program instead.
-   * <p>
    * <strong>ucar.nc2.FileWriter -in fileIn -out fileOut</strong>.
    * <p>
    * where:
@@ -575,7 +573,9 @@ public class FileWriter2 {
    *
    * @param arg -in fileIn -out fileOut [-netcdf4]
    * @throws IOException on read or write error
+   * @deprecated use ucar.nc2.write.Nccopy
    */
+  @Deprecated
   public static void main(String[] arg) throws IOException {
     if (arg.length < 4) {
       usage();

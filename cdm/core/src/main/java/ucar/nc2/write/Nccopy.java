@@ -23,15 +23,14 @@ import ucar.nc2.util.DiskCache;
 public class Nccopy {
 
   private static class CommandLine {
-
     @Parameter(names = {"-i", "--input"}, description = "Input dataset.", required = true)
     String inputFile;
 
     @Parameter(names = {"-o", "--output"}, description = "Output file.", required = true)
     File outputFile;
 
-    @Parameter(names = {"-f", "--format"}, description = "Output file format (DEPRECATED). Allowed values = "
-        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
+    @Parameter(names = {"-f", "--format"}, description = "Output file format (DEPRECATED use --outformat). "
+        + "Allowed values = [netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
     String formatLegacy = null;
 
     @Parameter(names = {"-outf", "--outformat"}, description = "Output file format. Allowed values = "
@@ -39,7 +38,7 @@ public class Nccopy {
     NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
 
     @Parameter(names = {"-st", "--strategy"},
-        description = "Chunking strategy. Only used in NetCDF 4. " + "Allowed values = [standard, grib, none]")
+        description = "Chunking strategy. Only used in NetCDF 4. Allowed values = [standard, grib, none]")
     Nc4Chunking.Strategy strategy = Nc4Chunking.Strategy.standard;
 
     @Parameter(names = {"-isLargeFile", "--isLargeFile"},
@@ -126,6 +125,7 @@ public class Nccopy {
           break;
         case "netcdf3c64":
           result = NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
+          cmdLine.useJna = true;
           break;
         case "ncstream":
           result = NetcdfFileFormat.NCSTREAM;
