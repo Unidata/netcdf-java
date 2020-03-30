@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.writer;
+package ucar.nc2.write;
 
 import SevenZip.LzmaAlone;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;

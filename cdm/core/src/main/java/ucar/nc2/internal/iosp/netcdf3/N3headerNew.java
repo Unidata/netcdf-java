@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import java.util.*;
 import java.io.IOException;
@@ -19,18 +20,20 @@ import java.io.IOException;
 public class N3headerNew {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
 
-  private static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
-  private static final int MAGIC_DIM = 10;
-  private static final int MAGIC_VAR = 11;
-  private static final int MAGIC_ATT = 12;
+  static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
+  // 64-bit offset format : only affects the variable offset value
+  static final byte[] MAGIC_LONG = {0x43, 0x44, 0x46, 0x02};
+  static final int MAGIC_DIM = 10;
+  static final int MAGIC_VAR = 11;
+  static final int MAGIC_ATT = 12;
 
   public static boolean disallowFileTruncation; // see NetcdfFile.setDebugFlags
   public static boolean debugHeaderSize; // see NetcdfFile.setDebugFlags
 
   public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     switch (NetcdfFileFormat.findNetcdfFormatType(raf)) {
-      case CLASSIC:
-      case OFFSET_64BIT:
+      case NETCDF3:
+      case NETCDF3_64BIT_OFFSET:
         return true;
       default:
         return false;
@@ -56,7 +59,7 @@ public class N3headerNew {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  ucar.unidata.io.RandomAccessFile raf;
+  protected ucar.unidata.io.RandomAccessFile raf;
 
   // N3iosp needs access to these
   private boolean isStreaming; // is streaming (numrecs = -1)
@@ -64,12 +67,11 @@ public class N3headerNew {
   long recsize; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
-  private boolean useLongOffset;
-  private long nonRecordDataSize; // size of non-record variables
-  private Dimension udim; // the unlimited dimension
-  private List<Vinfo> vars = new ArrayList<>();
-
-  private long dataStart = Long.MAX_VALUE; // where the data starts
+  protected boolean useLongOffset;
+  protected long nonRecordDataSize; // size of non-record variables
+  protected Dimension udim; // the unlimited dimension
+  protected List<Vinfo> vars = new ArrayList<>();
+  protected long dataStart = Long.MAX_VALUE; // where the data starts
 
   private final Charset valueCharset;
 
@@ -458,7 +460,7 @@ public class N3headerNew {
     return natts;
   }
 
-  private int readAttributeValue(DataType type, IndexIterator ii) throws IOException {
+  int readAttributeValue(DataType type, IndexIterator ii) throws IOException {
     if (type == DataType.BYTE) {
       byte b = (byte) raf.read();
       // if (debug) out.println(" byte val = "+b);
@@ -499,7 +501,7 @@ public class N3headerNew {
   }
 
   // read a string = (nelems, byte array), then skip to 4 byte boundary
-  private String readString() throws IOException {
+  String readString() throws IOException {
     return readString(StandardCharsets.UTF_8);
   }
 
@@ -524,7 +526,7 @@ public class N3headerNew {
   }
 
   // skip to a 4 byte boundary in the file
-  private void skip(int nbytes) throws IOException {
+  void skip(int nbytes) throws IOException {
     int pad = padding(nbytes);
     if (pad > 0)
       raf.seek(raf.getFilePointer() + pad);

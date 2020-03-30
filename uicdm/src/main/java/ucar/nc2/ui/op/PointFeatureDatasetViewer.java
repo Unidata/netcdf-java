@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
@@ -21,6 +22,8 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.util.Resource;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentDialog;
@@ -362,12 +365,13 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void writeNetcdf(NetcdfOutputChooser.Data data) {
-    if (data.version == NetcdfFileWriter.Version.ncstream) {
+    if (data.format == NetcdfFileFormat.NCSTREAM) {
       return;
     }
 
     try {
-      int count = CFPointWriter.writeFeatureCollection(pfDataset, data.outputFilename, data.version);
+      Version version = NetcdfFormatWriter.convertToNetcdfFileWriterVersion(data.format);
+      int count = CFPointWriter.writeFeatureCollection(pfDataset, data.outputFilename, version);
       JOptionPane.showMessageDialog(this, count + " records written");
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

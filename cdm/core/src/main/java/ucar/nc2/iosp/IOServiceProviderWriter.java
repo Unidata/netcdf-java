@@ -14,12 +14,10 @@ import java.io.IOException;
 /**
  * This is really just an interface to Netcdf-3 and Netcdf-4 file writing.
  * 
- * @deprecated Do not use.
- *
- * @author caron
+ * @deprecated This will be internal in ver6.
  */
+@Deprecated
 public interface IOServiceProviderWriter extends IOServiceProvider {
-
   /**
    * Create new file, populate it from the objects in ncfile.
    *

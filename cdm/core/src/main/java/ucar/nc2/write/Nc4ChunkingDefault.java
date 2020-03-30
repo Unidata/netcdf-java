@@ -7,7 +7,6 @@ package ucar.nc2.write;
 
 import ucar.ma2.Section;
 import ucar.nc2.Dimension;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.Variable;
 import java.util.List;
 
@@ -95,7 +94,7 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
   private int[] fillRightmost(int[] shape, int maxElements) {
     // fill up rightmost dimensions first, until maxElements is reached
-    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(shape);
+    ChunkingIndex index = new ChunkingIndex(shape);
     return index.computeChunkShape(maxElements);
   }
 

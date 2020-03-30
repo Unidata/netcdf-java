@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2;
+package ucar.nc2.write;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Section;
-import ucar.nc2.write.Nc4ChunkingDefault;
-import ucar.nc2.write.Nc4ChunkingStrategy;
+import ucar.nc2.Dimension;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +36,7 @@ public class TestChunkingIndex {
   private void testOne(int[] shape, long maxChunkElems) {
     show("shape", shape);
     System.out.printf(" max = %d%n", maxChunkElems);
-    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(shape);
+    ChunkingIndex index = new ChunkingIndex(shape);
     int[] result = index.computeChunkShape(maxChunkElems);
     show("chunk", result);
     long shapeSize = new Section(result).computeSize();

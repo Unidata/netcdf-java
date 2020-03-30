@@ -3,14 +3,12 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.writer;
+package ucar.nc2.write;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.grid.CFGridWriter2;
-import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
 import java.lang.invoke.MethodHandles;

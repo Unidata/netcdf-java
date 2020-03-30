@@ -62,7 +62,7 @@ import ucar.nc2.internal.iosp.hdf5.H5objects.MessageFillValueOld;
 import ucar.nc2.internal.iosp.hdf5.H5objects.MessageFilter;
 import ucar.nc2.internal.iosp.hdf5.H5objects.MessageType;
 import ucar.nc2.internal.iosp.hdf5.H5objects.StructureMember;
-import ucar.nc2.internal.iosp.netcdf3.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;

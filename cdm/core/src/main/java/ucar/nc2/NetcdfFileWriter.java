@@ -45,8 +45,9 @@ import java.util.*;
  * <li>ucar.nc2.ft2.coverage.grid.CFGridCoverageWriter</li>
  * </ul>
  *
- * @deprecated TODO use ucar.nc2.write.NetcdfFileWriter
+ * @deprecated use ucar.nc2.write.NetcdfFormatWriter or ucar.nc2.write.NetcdfCopier
  */
+@Deprecated
 public class NetcdfFileWriter implements Closeable {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
   private static Set<DataType> validN3types =
