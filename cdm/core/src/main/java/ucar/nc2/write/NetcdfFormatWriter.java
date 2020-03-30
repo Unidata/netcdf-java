@@ -87,7 +87,7 @@ public class NetcdfFormatWriter implements Closeable {
     private int extraHeaderBytes;
     private long preallocateSize;
     private Nc4Chunking chunker;
-    private boolean useJni;
+    private boolean useJna;
 
     /** The file locatipn */
     public Builder setLocation(String location) {
@@ -142,9 +142,9 @@ public class NetcdfFormatWriter implements Closeable {
       return this;
     }
 
-    /** Set if you want to use JNI / netcdf c library to do the writing. Default is false. */
-    public Builder setUseJni(boolean useJni) {
-      this.useJni = useJni;
+    /** Set if you want to use JNA / netcdf c library to do the writing. Default is false. */
+    public Builder setUseJna(boolean useJna) {
+      this.useJna = useJna;
       return this;
     }
 
@@ -161,13 +161,11 @@ public class NetcdfFormatWriter implements Closeable {
   private final int extraHeaderBytes;
   private final long preallocateSize;
   private final Nc4Chunking chunker;
-  private final boolean useJni;
+  private final boolean useJna;
 
   private ucar.unidata.io.RandomAccessFile outputRaf;
   private IOServiceProviderWriter spiw;
   private NetcdfFile ncout;
-
-  private Map<String, String> varRenameMap = new HashMap<>();
 
   private NetcdfFormatWriter(Builder builder) throws IOException {
     this.location = builder.location;
@@ -177,7 +175,7 @@ public class NetcdfFormatWriter implements Closeable {
     this.extraHeaderBytes = builder.extraHeaderBytes;
     this.preallocateSize = builder.preallocateSize;
     this.chunker = builder.chunker;
-    this.useJni = builder.useJni;
+    this.useJna = builder.useJna;
 
     if (!isNewFile) {
       outputRaf = new ucar.unidata.io.RandomAccessFile(location, "rw");
@@ -189,7 +187,7 @@ public class NetcdfFormatWriter implements Closeable {
       }
     }
 
-    if (useJni) {
+    if (useJna) {
       String className = "ucar.nc2.jni.netcdf.Nc4Iosp";
       IOServiceProviderWriter spi;
       try {

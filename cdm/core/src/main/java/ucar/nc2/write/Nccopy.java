@@ -35,7 +35,7 @@ public class Nccopy {
     String formatLegacy = null;
 
     @Parameter(names = {"-outf", "--outformat"}, description = "Output file format. Allowed values = "
-        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3_64bit_offset,  ncstream]")
+        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3_64bit_offset,  ncstream] (See NetcdfFileFormat enum values)")
     NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
 
     @Parameter(names = {"-st", "--strategy"},
@@ -46,8 +46,8 @@ public class Nccopy {
         description = "Write to large file offset format. Only used in NetCDF 3.")
     boolean isLargeFile;
 
-    @Parameter(names = {"-useJni", "--useJni"}, description = "Use JNI/netCDF C library for writing.")
-    boolean useJni;
+    @Parameter(names = {"-useJna", "--useJna"}, description = "Use JNA/netCDF C library for writing.")
+    boolean useJna;
 
     @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. "
         + "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
@@ -74,7 +74,7 @@ public class Nccopy {
 
       // Display parameters in this order in the usage information.
       private final List<String> orderedParamNames = Arrays.asList("--input", "--output", "--ncformat", "--isLargeFile",
-          "--strategy", "--deflateLevel", "--shuffle", "--diskCacheRoot", "--useJni", "--help");
+          "--strategy", "--deflateLevel", "--shuffle", "--diskCacheRoot", "--useJna", "--help");
 
       @Override
       public int compare(ParameterDescription p0, ParameterDescription p1) {
@@ -122,7 +122,7 @@ public class Nccopy {
           break;
         case "netcdf3c":
           result = NetcdfFileFormat.NETCDF3;
-          cmdLine.useJni = true;
+          cmdLine.useJna = true;
           break;
         case "netcdf3c64":
           result = NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
@@ -173,7 +173,7 @@ public class Nccopy {
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
 
       NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setNewFile(true).setFormat(getFormat(cmdLine))
-          .setLocation(datasetOut).setChunker(cmdLine.getNc4Chunking()).setUseJni(cmdLine.useJni);
+          .setLocation(datasetOut).setChunker(cmdLine.getNc4Chunking()).setUseJna(cmdLine.useJna);
       NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder.build());
 
       try (NetcdfFile ncfileOut = copier.write(cancel)) {

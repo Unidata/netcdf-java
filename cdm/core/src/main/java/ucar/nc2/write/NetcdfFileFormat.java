@@ -36,8 +36,7 @@ import java.io.IOException;
  * #define NC_FORMATX_UNDEFINED (0)
  * 
  * To avoid breaking compatibility (such as in the python library), we need to retain the NC_FORMAT_xxx format as well.
- * This may come
- * out eventually, as the NC_FORMATX is more clear that it's an extended format specifier.
+ * This may come out eventually, as the NC_FORMATX is more clear that it's an extended format specifier.
  * 
  * #define NC_FORMAT_NC3 NC_FORMATX_NC3
  * #define NC_FORMAT_NC_HDF5 NC_FORMATX_NC_HDF5
@@ -107,8 +106,7 @@ import java.io.IOException;
  * is likely.
  * 
  * A more extensive description of the netCDF formats and a formal specification of the classic and 64-bit formats is
- * available as a
- * NASA ESDS community standard
+ * available as a NASA ESDS community standard
  * (https://earthdata.nasa.gov/sites/default/files/esdswg/spg/rfc/esds-rfc-011/ESDS-RFC-011v2.00.pdf)
  * 
  * The 64-bit data CDF-5 format specification is available in
@@ -122,9 +120,9 @@ public enum NetcdfFileFormat {
   NETCDF3_64BIT_OFFSET(2, "netcdf-3 64bit-offset"), //
   NETCDF4(3, "netcdf-4"), // This is really just HDF-5, dont know yet if its written by netcdf4.
   NETCDF4_CLASSIC(4, "netcdf-4 classic"), // psuedo format I think
-  NETCDF3_64BIT_DATA(5, "netcdf-5"), // what is this ?
+  NETCDF3_64BIT_DATA(5, "netcdf-5"), // from PnetCDF project
 
-  NCSTREAM(42, "ncstream"); // No assigned version, not part of C library. Does this belong here?
+  NCSTREAM(42, "ncstream"); // No assigned version, not part of C library.
 
   private static final int MAGIC_NUMBER_LEN = 8;
   private static final long MAXHEADERPOS = 50000; // header's gotta be within this range
@@ -172,9 +170,8 @@ public enum NetcdfFileFormat {
   public static NetcdfFileFormat findNetcdfFormatType(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     byte[] magic = new byte[MAGIC_NUMBER_LEN];
 
-    // If this is not an HDF5 file, then the magic number is at
-    // position 0; If it is an HDF5 file, then we need to search
-    // forward for it.
+    // If this is not an HDF5 file, then the magic number is at position 0;
+    // If it is an HDF5 file, then we need to search forward for it.
 
     // Look for the relevant leading tag
     raf.seek(0);
