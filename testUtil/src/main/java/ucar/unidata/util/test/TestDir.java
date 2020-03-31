@@ -149,7 +149,7 @@ public class TestDir {
 
   public static NetcdfFile open(String filename) throws IOException {
     logger.debug("**** Open {}", filename);
-    NetcdfFile ncfile = NetcdfFile.open(filename, null);
+    NetcdfFile ncfile = NetcdfFiles.open(filename, null);
     logger.debug("open {}", ncfile);
 
     return ncfile;
