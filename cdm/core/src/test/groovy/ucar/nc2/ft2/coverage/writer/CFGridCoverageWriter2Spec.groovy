@@ -8,6 +8,7 @@ import ucar.ma2.Array
 import ucar.ma2.DataType
 import ucar.ma2.MAMath
 import ucar.nc2.NetcdfFile
+import ucar.nc2.NetcdfFiles
 import ucar.nc2.NetcdfFileWriter
 import ucar.nc2.ft2.coverage.CoverageCollection
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory

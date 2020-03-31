@@ -87,7 +87,8 @@ public class TestSequence {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testReadNestedSequence() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass")) {
+    try (
+        NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass")) {
       Sequence obs = (Sequence) ncfile.findVariable("obs");
 
       List<String> expectedMemberNames = Arrays.asList("WMO_block_number", "WMO_station_number", "Type_of_station",

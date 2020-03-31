@@ -226,7 +226,7 @@ public class NetcdfCopier {
 
     if (newType == DataType.STRUCTURE) {
       Structure oldStruct = (Structure) oldVar;
-      Structure.Builder sb = Structure.builder().setName(oldVar.getShortName()).setDataType(newType);
+      Structure.Builder sb = Structure.builder().setName(oldVar.getShortName());
       for (Variable nested : oldStruct.getVariables()) {
         sb.addMemberVariable(copyVariable(nested));
       }

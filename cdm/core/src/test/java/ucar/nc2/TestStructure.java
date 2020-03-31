@@ -4,8 +4,10 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -17,25 +19,23 @@ import java.util.*;
 /**
  * Test reading record data
  */
-
-public class TestStructure extends TestCase {
+public class TestStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  public TestStructure(String name) {
-    super(name);
-  }
 
   NetcdfFile ncfile;
 
-  protected void setUp() throws Exception {
-    ncfile = TestDir.openFileLocal("testWriteRecord.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+  @Before
+  public void setUp() throws Exception {
+    ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
+        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     ncfile.close();
   }
 
+  @Test
   public void testNames() {
     List<Variable> vars = ncfile.getVariables();
     String[] trueNames = {"rh", "T", "lat", "lon", "time", "recordvarTest", "record"};
@@ -61,6 +61,7 @@ public class TestStructure extends TestCase {
     Assert.assertEquals(time, time2);
   }
 
+  @Test
   public void testReadStructureCountBytesRead() throws IOException, InvalidRangeException {
 
     Structure record = (Structure) ncfile.findVariable("record");
@@ -111,6 +112,7 @@ public class TestStructure extends TestCase {
     Assert.assertEquals("Bytes through iteration", totalIter, totalOne);
   }
 
+  @Test
   public void testN3ReadStructureCheckValues() throws IOException, InvalidRangeException {
 
     Structure record = (Structure) ncfile.findVariable("record");
@@ -199,7 +201,16 @@ public class TestStructure extends TestCase {
    * }
    */
 
-  public void readBothWays(String filename) throws IOException {
+  @Test
+  public void testReadBothWaysV3mode() throws IOException {
+    // readBothWays(TestAll.testdataDir+"grid/netcdf/mm5/n040.nc");
+    readBothWays(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
+    // readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
+
+    // System.out.println("*** testReadBothWaysV3mode ok");
+  }
+
+  private void readBothWays(String filename) throws IOException {
     NetcdfFile ncfile = NetcdfFiles.open(filename);
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     // System.out.println(ncfile);
@@ -208,14 +219,6 @@ public class TestStructure extends TestCase {
     ncfile = NetcdfFiles.open(filename);
     // System.out.println(ncfile);
     ncfile.close();
-  }
-
-  public void testReadBothWaysV3mode() throws IOException {
-    // readBothWays(TestAll.testdataDir+"grid/netcdf/mm5/n040.nc");
-    readBothWays(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
-    // readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
-
-    // System.out.println("*** testReadBothWaysV3mode ok");
   }
 
   private void checkValues(Array rh, int recnum) {

@@ -5,6 +5,9 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -15,26 +18,24 @@ import java.util.*;
 
 /** Test reading record data */
 
-public class TestStructureArray extends TestCase {
+public class TestStructureArray {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestStructureArray(String name) {
-    super(name);
+  private NetcdfFile ncfile;
+
+  @Before
+  public void setUp() throws Exception {
+    ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testStructures.nc", -1, null,
+        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 
-  NetcdfFile ncfile;
-
-  protected void setUp() throws Exception {
-    ncfile = TestDir.openFileLocal("testStructures.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-  }
-
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     ncfile.close();
   }
 
+  @Test
   public void testNames() {
-
     List vars = ncfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
@@ -51,6 +52,7 @@ public class TestStructureArray extends TestCase {
     }
   }
 
+  @Test
   public void testReadTop() throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable("record");
     assert v != null;

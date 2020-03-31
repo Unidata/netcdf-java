@@ -4,7 +4,9 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -16,13 +18,22 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-public class TestReadRecord extends TestCase {
+public class TestReadRecord {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private NetcdfFile ncfile;
 
-  public TestReadRecord(String name) {
-    super(name);
+  @Before
+  public void setUp() throws Exception {
+    ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
+        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 
+  @After
+  public void tearDown() throws Exception {
+    ncfile.close();
+  }
+
+  @Test
   public void testNC3ReadRecordV3mode() throws IOException, InvalidRangeException {
     NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc");
 
@@ -109,19 +120,18 @@ public class TestReadRecord extends TestCase {
     nc.close();
   }
 
+  @Test
   public void testNC3ReadRecordN4mode() throws IOException {
-    NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc");
-    nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     /* Get the value of the global attribute named "title" */
-    String title = nc.getRootGroup().findAttValueIgnoreCase("title", "N/A");
+    String title = ncfile.getRootGroup().findAttValueIgnoreCase("title", "N/A");
 
     /*
      * Read the latitudes into an array of double.
      * This works regardless of the external
      * type of the "lat" variable.
      */
-    Variable lat = nc.findVariable("lat");
+    Variable lat = ncfile.findVariable("lat");
     assert (lat.getRank() == 1); // make sure it's 1-dimensional
     int nlats = lat.getShape()[0]; // number of latitudes
     double[] lats = new double[nlats]; // where to put them
@@ -136,7 +146,7 @@ public class TestReadRecord extends TestCase {
     assert (latUnits.equals("degrees_north"));
 
     /* Read the longitudes. */
-    Variable lon = nc.findVariable("lon");
+    Variable lon = ncfile.findVariable("lon");
     values = lon.read();
     assert (values instanceof ArrayFloat.D1);
     ArrayFloat.D1 fa = (ArrayFloat.D1) values;
@@ -154,7 +164,7 @@ public class TestReadRecord extends TestCase {
      */
 
     // record variable
-    Variable record = nc.findVariable("record");
+    Variable record = ncfile.findVariable("record");
     assert record instanceof Structure;
     Structure rs = (Structure) record;
     assert rs.getRank() == 1;
@@ -191,7 +201,7 @@ public class TestReadRecord extends TestCase {
 
     /*
      * Read the temperature data
-     * Variable t = nc.findVariable("T");
+     * Variable t =ncfile.findVariable("T");
      * Array tValues = t.read();
      * assert( tValues instanceof ArrayDouble.D3);
      * ArrayDouble.D3 Ta = (ArrayDouble.D3) tValues;
@@ -205,19 +215,17 @@ public class TestReadRecord extends TestCase {
      * assert TestH5.close( Ta.get(0,0,0), 1.0f) : Ta.get(0, 0, 0);
      * assert TestH5.close( Ta.get(1,1,1), 10.0f) : Ta.get(1, 1, 1);
      */
-
-    nc.close();
   }
 
-
+  @Test
   public void testDatasetAddRecord() throws InvalidRangeException, IOException {
     String location = TestDir.cdmLocalTestDataDir + "testWriteRecord.nc";
     DatasetUrl durl = new DatasetUrl(null, location);
-    NetcdfDataset nc = NetcdfDataset.openDataset(durl, NetcdfDataset.getDefaultEnhanceMode(), -1, null,
+    NetcdfDataset ncd = NetcdfDataset.openDataset(durl, NetcdfDataset.getDefaultEnhanceMode(), -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // record variable
-    Variable record = nc.findVariable("record");
+    Variable record = ncd.findVariable("record");
     assert record instanceof StructureDS;
     StructureDS rs = (StructureDS) record;
     assert rs.getRank() == 1;
@@ -247,15 +255,16 @@ public class TestReadRecord extends TestCase {
     ArrayInt.D0 ta = (ArrayInt.D0) timeValues;
     assert (ta.get() == 6) : ta.get();
 
-    nc.close();
+    ncd.close();
   }
 
+  @Test
   public void testDatasetAddRecordAfter() throws InvalidRangeException, IOException {
-    NetcdfDataset nc = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
-    assert (Boolean) nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    NetcdfDataset ncd = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
+    assert (Boolean) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // record variable
-    Variable record = nc.findVariable("record");
+    Variable record = ncd.findVariable("record");
     assert record instanceof StructureDS;
     StructureDS rs = (StructureDS) record;
     assert rs.getRank() == 1;
@@ -284,15 +293,13 @@ public class TestReadRecord extends TestCase {
     ArrayInt.D0 ta = (ArrayInt.D0) timeValues;
     assert (ta.get() == 6) : ta.get();
 
-    nc.close();
+    ncd.close();
   }
 
+  @Test
   public void testNC3ReadRecordStrided() throws InvalidRangeException, IOException {
-    NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc");
-    nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
     // record variable
-    Variable record = nc.findVariable("record");
+    Variable record = ncfile.findVariable("record");
     assert record instanceof Structure;
     Structure rs = (Structure) record;
     assert rs.getRank() == 1;
@@ -313,8 +320,5 @@ public class TestReadRecord extends TestCase {
 
     int t2 = sdata.getScalarInt("time");
     assert t2 == 18;
-
-    nc.close();
-
   }
 }

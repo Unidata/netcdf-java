@@ -213,7 +213,7 @@ public class NetcdfFiles {
    * @throws java.io.IOException if error
    */
   public static NetcdfFile open(String location) throws IOException {
-    return open(location, null);
+    return open(location, -1, null);
   }
 
   /**

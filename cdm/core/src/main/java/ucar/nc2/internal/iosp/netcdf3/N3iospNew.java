@@ -15,6 +15,7 @@ import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
@@ -103,7 +104,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   }
 
   // properties
-  protected boolean useRecordStructure;
+  boolean useRecordStructure;
 
   //////////////////////////////////////////////////////////////////////////////////////
   // read existing file
@@ -413,12 +414,11 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     }
     if (null == header)
       return null;
-    /*
-     * if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
-     * return header.makeRecordStructure();
-     * else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
-     * return header.removeRecordStructure();
-     */
+
+    if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
+      this.useRecordStructure = true;
+      return null;
+    }
 
     return super.sendIospMessage(message);
   }

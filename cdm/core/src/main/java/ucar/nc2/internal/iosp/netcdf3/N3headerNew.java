@@ -67,28 +67,18 @@ public class N3headerNew {
   long recsize; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
-  protected boolean useLongOffset;
-  protected long nonRecordDataSize; // size of non-record variables
-  protected Dimension udim; // the unlimited dimension
-  protected List<Vinfo> vars = new ArrayList<>();
-  protected long dataStart = Long.MAX_VALUE; // where the data starts
+  boolean useLongOffset;
+  private N3iospNew n3iospNew;
+  long nonRecordDataSize; // size of non-record variables
+  Dimension udim; // the unlimited dimension
+  List<Vinfo> vars = new ArrayList<>();
+  long dataStart = Long.MAX_VALUE; // where the data starts
 
   private final Charset valueCharset;
 
-  /*
-   * Notes:
-   * In netcdf-3 are dimensions signed or unsigned?
-   * In java, integers are signed, so are limited to 2^31, not 2^32
-   * "Each fixed-size variable and the data for one record's worth of a single record variable are limited in size to a
-   * little less than 4 GiB, which is twice the size limit in versions earlier than netCDF 3.6."
-   */
-
-  public N3headerNew() {
-    valueCharset = StandardCharsets.UTF_8;
-  }
-
-  protected N3headerNew(N3iospNew n3iospNew) {
-    valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
+  N3headerNew(N3iospNew n3iospNew) {
+    this.n3iospNew = n3iospNew;
+    this.valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
   }
 
   /**
@@ -326,11 +316,16 @@ public class N3headerNew {
     long calcSize = dataStart + nonRecordDataSize + recsize * numrecs;
     if (calcSize > actualSize + 3) {
       if (disallowFileTruncation)
-        throw new IOException("File is truncated calculated size= " + calcSize + " actual = " + actualSize);
+        throw new IOException("File is truncated, calculated size= " + calcSize + " actual = " + actualSize);
       else {
         // log.info("File is truncated calculated size= "+calcSize+" actual = "+actualSize);
         raf.setExtendMode();
       }
+    }
+
+    // add a record structure if asked to do so
+    if (n3iospNew.useRecordStructure && uvars.size() > 0) {
+      // makeRecordStructure(root, uvars);
     }
   }
 
@@ -583,4 +578,26 @@ public class N3headerNew {
 
     throw new IllegalArgumentException("unknown DataType == " + dt);
   }
+
+  /*
+   * Dont implement this yet - see if its needed.
+   * private boolean makeRecordStructure(Group.Builder root, List<Variable.Builder> uvars) {
+   * Structure.Builder recordStructure = Structure.builder().setName("record");
+   * recordStructure.setDimensionsByName(udim.getShortName());
+   * for (Variable.Builder v : uvars) {
+   * Variable.Builder memberV;
+   * try {
+   * memberV = v.slice(0, 0); // set unlimited dimension to 0
+   * } catch (InvalidRangeException e) {
+   * log.warn("N3header.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
+   * return false;
+   * }
+   * recordStructure.addMemberVariable(memberV);
+   * }
+   * 
+   * root.addVariable(recordStructure);
+   * uvars.add(recordStructure);
+   * return true;
+   * }
+   */
 }
