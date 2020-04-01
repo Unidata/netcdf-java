@@ -121,12 +121,12 @@ public class GeoGridPanel extends OpPanel {
       newds = useBuilders ? NetcdfDatasets.openDataset(command, true, null)
           : NetcdfDataset.openDataset(command, true, null);
       if (newds == null) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command);
+        JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + command);
         return false;
       }
       setDataset(newds);
     } catch (FileNotFoundException ioe) {
-      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command + "\n" + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + command + "\n" + ioe.getMessage());
       // ioe.printStackTrace();
       err = true;
     } catch (Throwable ioe) {

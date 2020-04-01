@@ -1209,7 +1209,7 @@ public class ToolsUI extends JPanel {
       }
 
       if (ncfile == null) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location);
+        JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + location);
       } else if (useRecordStructure) {
         ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       }
@@ -1218,14 +1218,14 @@ public class ToolsUI extends JPanel {
       if ((null == message) && (ioe instanceof EOFException)) {
         message = "Premature End of File";
       }
-      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "%n" + message);
+      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + location + "%n" + message);
       if (!(ioe instanceof FileNotFoundException)) {
         ioe.printStackTrace();
       }
       ncfile = null;
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "%n" + e.getMessage());
-      log.error("NetcdfDataset.open cannot open " + location, e);
+      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + location + "%n" + e.getMessage());
+      log.error("NetcdfDatasets.open cannot open " + location, e);
       e.printStackTrace();
 
       try {

@@ -1481,7 +1481,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    *
    * @param filename location
    * @throws IOException if error
-   * @deprecated use NetcdfFile.open( location) or NetcdfDataset.openFile( location)
+   * @deprecated use NetcdfFiles.open( location) or NetcdfDatasets.openFile( location)
    */
   @Deprecated
   public NetcdfFile(String filename) throws IOException {
@@ -1498,7 +1498,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    *
    * @param url HTTP URL location
    * @throws IOException if error
-   * @deprecated use NetcdfFile.open( http:location) or NetcdfDataset.openFile( http:location)
+   * @deprecated use NetcdfFiles.open( http:location) or NetcdfDatasets.openFile( http:location)
    */
   @Deprecated
   public NetcdfFile(URL url) throws IOException {

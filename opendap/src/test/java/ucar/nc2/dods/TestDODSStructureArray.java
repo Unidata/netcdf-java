@@ -13,6 +13,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -168,7 +169,7 @@ public class TestDODSStructureArray {
   }
 
   public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfDataset.openFile(url, null);
+    NetcdfFile ncfile = NetcdfDatasets.openFile(url, null);
     Structure v = (Structure) ncfile.findVariable(sname);
     assert v != null;
 

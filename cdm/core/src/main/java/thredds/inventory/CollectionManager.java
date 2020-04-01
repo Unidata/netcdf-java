@@ -16,7 +16,7 @@ import java.io.IOException;
  * An MFile must have the property that
  * 
  * <pre>
- *   NetcdfDataset.open(MFile.getPath, ...);
+ *   NetcdfDatasets.open(MFile.getPath, ...);
  * </pre>
  * 
  * should work.

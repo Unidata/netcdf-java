@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -329,7 +330,7 @@ public class GribRewritePanel extends JPanel {
 
       if (debug)
         System.out.printf(" fileScan=%s%n", getPath());
-      try (NetcdfDataset ncd = NetcdfDataset.openDataset(getPath())) {
+      try (NetcdfDataset ncd = NetcdfDatasets.openDataset(getPath())) {
         fileType = ncd.getFileTypeId();
         cdmData2D = countCdmData2D(ncd);
         countGribData2D(f);
@@ -436,7 +437,7 @@ public class GribRewritePanel extends JPanel {
         return;
       nc4Size = nc4.length();
 
-      try (NetcdfDataset ncd = NetcdfDataset.openDataset(nc4Filename)) {
+      try (NetcdfDataset ncd = NetcdfDatasets.openDataset(nc4Filename)) {
         nc4Data2D = countCdmData2D(ncd);
       } catch (IOException e) {
         System.out.printf("Error opening %s%n", nc4Filename);

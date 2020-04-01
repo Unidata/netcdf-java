@@ -7,6 +7,7 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ui.OpPanel;
@@ -68,9 +69,9 @@ public class RadialPanel extends OpPanel {
 
     NetcdfDataset newds;
     try {
-      newds = NetcdfDataset.openDataset(command, true, null);
+      newds = NetcdfDatasets.openDataset(command, true, null);
       if (newds == null) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command);
+        JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + command);
         return false;
       }
 
@@ -85,7 +86,7 @@ public class RadialPanel extends OpPanel {
         setDataset(rds);
       }
     } catch (FileNotFoundException ioe) {
-      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command + "\n" + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + command + "\n" + ioe.getMessage());
       ioe.printStackTrace();
       err = true;
     } catch (IOException ioe) {
