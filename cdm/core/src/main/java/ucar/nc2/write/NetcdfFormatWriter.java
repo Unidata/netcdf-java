@@ -307,7 +307,7 @@ public class NetcdfFormatWriter implements Closeable {
    * throw new RuntimeException("Cant rename " + prevFile.getAbsolutePath() + " to " + tmpFile.getAbsolutePath());
    * }
    * 
-   * NetcdfFile oldFile = NetcdfFile.open(tmpFile.getPath());
+   * NetcdfFile oldFile = NetcdfFiles.open(tmpFile.getPath());
    * 
    * // create new file with current set of objects
    * spiw.create(location, ncfile, extraHeaderBytes, preallocateSize, isLargeFile);

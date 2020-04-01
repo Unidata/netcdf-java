@@ -5,13 +5,12 @@
 package ucar.nc2.iosp.bufr;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -115,7 +114,7 @@ public class TestBufrModuleRead {
   // just open and see if it barfs
   private void openNetcdf(String filename) throws IOException {
     System.out.printf("%n***openNetcdf bufr %s%n", filename);
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       if (show)
         System.out.printf("%s%n", ncfile);
     }

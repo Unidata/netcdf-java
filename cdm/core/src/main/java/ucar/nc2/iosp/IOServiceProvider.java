@@ -26,7 +26,7 @@ import ucar.unidata.io.RandomAccessFile;
  * An implementation must have a no-argument constructor.
  *
  * The NetcdfFile class manages all registered IOServiceProvider classes.
- * When NetcdfFile.open() is called:
+ * When NetcdfFiles.open() is called:
  * <ol>
  * <li>the file is opened as a ucar.unidata.io.RandomAccessFile;</li>
  * <li>the file is handed to the isValidFile() method of each registered
