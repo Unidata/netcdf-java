@@ -14,6 +14,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.NcmlWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class TestSpecialChars {
         ncmlWriter.writeToStream(netcdfElem, out);
       }
 
-      try (NetcdfFile ncfile2 = NetcdfDataset.openFile(ncmlFilePath, null)) {
+      try (NetcdfFile ncfile2 = NetcdfDatasets.openFile(ncmlFilePath, null)) {
         String val2 = ncfile2.getRootGroup().findAttValueIgnoreCase("omy", null);
         assert val2 != null;
         assert val2.equals(trouble);
@@ -86,7 +87,7 @@ public class TestSpecialChars {
       }
     }
 
-    try (NetcdfFile ncfile = NetcdfDataset.openFile(ncmlFilePath, null)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(ncmlFilePath, null)) {
       System.out.println("ncml= " + ncfile.getLocation());
 
       String val = ncfile.getRootGroup().findAttValueIgnoreCase("omy", null);

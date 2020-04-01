@@ -355,8 +355,8 @@ public class TestStandardVar {
     DatasetUrl durl = new DatasetUrl(null, filename);
 
     try (NetcdfDataset ncd =
-        NetcdfDataset.openDataset(durl, EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset), -1, null, null)) {
-      try (NetcdfDataset ncdefer = NetcdfDataset.openDataset(durl, null, -1, null, null)) {
+        NetcdfDatasets.openDataset(durl, EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset), -1, null, null)) {
+      try (NetcdfDataset ncdefer = NetcdfDatasets.openDataset(durl, null, -1, null, null)) {
 
         VariableDS enhancedVar = (VariableDS) ncd.findVariable("t1");
         VariableDS deferVar = (VariableDS) ncdefer.findVariable("t1");
