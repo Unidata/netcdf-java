@@ -20,6 +20,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
@@ -468,8 +469,8 @@ public class DataFactory {
 
     // ready to open it through netcdf API
     DatasetUrl durl = new DatasetUrl(serviceType, datasetLocation);
-    NetcdfDataset ncd = acquire ? NetcdfDataset.acquireDataset(durl, true, task)
-        : NetcdfDataset.openDataset(durl, null, -1, task, null);
+    NetcdfDataset ncd = acquire ? NetcdfDatasets.acquireDataset(durl, true, task)
+        : NetcdfDatasets.openDataset(durl, null, -1, task, null);
 
     /*
      * String prefix = null;

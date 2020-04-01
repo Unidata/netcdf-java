@@ -6,6 +6,7 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ui.OpPanel;
@@ -129,7 +130,7 @@ public class SimpleGeomPanel extends OpPanel {
 
     NetcdfDataset newds;
     try {
-      newds = NetcdfDataset.openDataset(command, true, null);
+      newds = NetcdfDatasets.openDataset(command, true, null);
       if (newds == null) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command);
         return false;

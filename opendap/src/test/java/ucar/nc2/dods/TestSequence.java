@@ -8,6 +8,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.dataset.NetcdfDatasets;
 
 public class TestSequence extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -27,7 +28,7 @@ public class TestSequence extends TestCase {
   public void testSequence() {
     String url = "http://tsds.net/tsds/test/Scalar";
     try {
-      NetcdfDataset ds = NetcdfDataset.openDataset(url);
+      NetcdfDataset ds = NetcdfDatasets.openDataset(url);
       System.out.println(ds);
       Structure struct = (Structure) ds.findVariable("TimeSeries");
       Variable var = struct.findVariable("time");
