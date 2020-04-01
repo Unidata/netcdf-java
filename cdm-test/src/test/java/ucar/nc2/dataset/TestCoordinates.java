@@ -43,7 +43,7 @@ public class TestCoordinates extends TestCase {
   @Category(NeedsCdmUnitTest.class)
   public void testAlias() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename);
     Variable v = ncd.findCoordinateAxis("number");
     assert v != null;
     // assert v.isCoordinateVariable();
@@ -59,7 +59,7 @@ public class TestCoordinates extends TestCase {
   public void testWrapOnce() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ncml/coords/testCoordScaling.ncml";
     System.out.printf("%s%n", filename);
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename);
     Variable v = ncd.findCoordinateAxis("Longitude");
     assert v != null;
     assert v instanceof CoordinateAxis1D;

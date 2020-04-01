@@ -61,7 +61,7 @@ public class TestCompareFileWriter {
     System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(),
         fout.getParentFile().exists());
 
-    try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null)) {
+    try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(fin.getPath(), null)) {
       NetcdfFormatWriter.Builder builder =
           NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(fout.getPath());
       NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder.build());

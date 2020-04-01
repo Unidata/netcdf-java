@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -52,7 +53,7 @@ public class TestJustReadGrib {
   public void testProblem() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/testproj2.grb";
     System.out.println("read file= " + filename);
-    NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
+    NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
     ncfile.close();
   }
 
@@ -81,7 +82,7 @@ public class TestJustReadGrib {
     @Override
     public int doAct(String filename) throws IOException {
       System.out.println("read file= " + filename);
-      try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+      try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
         return 1;
       }
     }

@@ -58,7 +58,7 @@ public class TestProjectionCoordinates {
   private void testCoordinates(String filename, double startLat, double startLon, double endLat, double endLon)
       throws IOException, InvalidRangeException {
     System.out.printf("%n***Open %s%n", filename);
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(filename);
     GridDataset gds = new GridDataset(ncd);
     GridCoordSystem gsys = null;
     ProjectionImpl p = null;

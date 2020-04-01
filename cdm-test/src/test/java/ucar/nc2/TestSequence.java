@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -148,7 +149,7 @@ public class TestSequence {
     // Read the enhanced values of "obs.struct1.u-component". Of course, we could do this much more concisely with
     // "ncFile.findVariable("obs.struct1.u-component").read()", but we're trying to demonstrate a bug in
     // ArrayStructureMA.factoryMA() that only occurs when we iterate over a Sequence with unknown length ("obs").
-    try (NetcdfFile ncFile = NetcdfDataset.openDataset(dataset.getAbsolutePath())) {
+    try (NetcdfFile ncFile = NetcdfDatasets.openDataset(dataset.getAbsolutePath())) {
       /*
        * The structure of the file (with irrelevant bits removed) is:
        * netcdf {
