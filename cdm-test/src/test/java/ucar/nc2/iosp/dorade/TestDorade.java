@@ -33,7 +33,7 @@ public class TestDorade {
   public void testDoradeGround() throws IOException {
 
     System.out.println("**** Open " + groundDoradeFile);
-    try (NetcdfFile ncfile = NetcdfFile.open(groundDoradeFile)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(groundDoradeFile)) {
 
       for (Variable v : ncfile.getVariables()) {
         System.out.println(v.getFullName());
@@ -169,7 +169,7 @@ public class TestDorade {
   @Test
   public void testDoradeAir() throws IOException {
     System.out.println("**** Open " + airDoradeFile);
-    try (NetcdfFile ncfile = NetcdfFile.open(airDoradeFile)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(airDoradeFile)) {
 
       for (Variable v : ncfile.getVariables()) {
         System.out.println(v.getFullName());

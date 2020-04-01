@@ -7,6 +7,7 @@ package ucar.nc2.iosp;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
+import javax.annotation.Nullable;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureDataIterator;
@@ -25,7 +26,7 @@ import ucar.unidata.io.RandomAccessFile;
  * An implementation must have a no-argument constructor.
  *
  * The NetcdfFile class manages all registered IOServiceProvider classes.
- * When NetcdfFile.open() is called:
+ * When NetcdfFiles.open() is called:
  * <ol>
  * <li>the file is opened as a ucar.unidata.io.RandomAccessFile;</li>
  * <li>the file is handed to the isValidFile() method of each registered
@@ -195,12 +196,13 @@ public interface IOServiceProvider {
   // public long getLastModified(); LOOK: dont add this for backwards compatibility. Probably add back in in version 5
 
   /**
-   * A way to communicate arbitrary information to an iosp.
+   * A way to communicate arbitrary information to and from an iosp.
    * 
    * @param message opaque message sent to the IOSP object when its opened (not when isValidFile() is called)
    * @return opaque return, may be null.
    */
-  Object sendIospMessage(Object message);
+  @Nullable
+  Object sendIospMessage(@Nullable Object message);
 
   /**
    * Debug info for this object.

@@ -383,7 +383,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return sectionV;
   }
 
-
   /**
    * Create a new Variable that is a logical slice of this Variable, by
    * fixing the specified dimension at the specified index value. This reduces rank by 1.

@@ -120,8 +120,8 @@ public class TestStandardVar {
 
   @Test
   public void testReadStandardVar() throws Exception {
-    ncfileRead = NetcdfFile.open(filename);
-    dsRead = NetcdfDataset.openDataset(filename);
+    ncfileRead = NetcdfFiles.open(filename);
+    dsRead = NetcdfDatasets.openDataset(filename);
 
     readDouble();
     readByte2Short();

@@ -18,6 +18,7 @@ import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -139,7 +140,7 @@ public class TestGribCdmIndexUpdating {
       System.out.printf("changed = %s%n", changed);
 
       // open the resulting index
-      try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
+      try (NetcdfFile ncfile = NetcdfFiles.open(dataDir + indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
         Variable v = ncfile.findVariable(g, varName);
@@ -158,7 +159,7 @@ public class TestGribCdmIndexUpdating {
       System.out.printf("changed2 = %s%n", changed2);
 
       // open the resulting index
-      try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
+      try (NetcdfFile ncfile = NetcdfFiles.open(dataDir + indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
         Variable v = ncfile.findVariable(g, varName);

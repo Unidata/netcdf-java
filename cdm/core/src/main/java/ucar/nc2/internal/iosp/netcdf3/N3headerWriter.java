@@ -31,6 +31,10 @@ class N3headerWriter extends N3headerNew {
   private ImmutableList<Variable> uvars; // vars that have the unlimited dimension
   private long globalAttsPos; // global attributes start here - used for update
 
+  N3headerWriter(N3iospNew n3iospNew) {
+    super(n3iospNew);
+  }
+
   /**
    * Write the header out, based on ncfile structures.
    *

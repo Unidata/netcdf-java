@@ -57,7 +57,7 @@ public class TestRadarUF {
   @Test
   public void checkMetadata() throws IOException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/uf/" + fname;
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
       Attribute att = ncf.findGlobalAttribute("StationLongitude");
       Assert.assertEquals(lon, att.getNumericValue().doubleValue(), 0.001);
 

@@ -70,7 +70,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       myRaf.setLength(preallocateSize);
     }
 
-    N3headerWriter headerw = new N3headerWriter();
+    N3headerWriter headerw = new N3headerWriter(this);
     headerw.create(raf, ncfile, extra, largeFile, null);
     this.header = headerw;
 

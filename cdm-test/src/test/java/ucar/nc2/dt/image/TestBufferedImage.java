@@ -8,6 +8,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -28,7 +29,7 @@ public class TestBufferedImage {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public byte[] convert(String srcPath, double a, double b) throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(srcPath)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(srcPath)) {
       Variable v = ncfile.findVariable("image1/image_data");
       Array array = v.read();
 

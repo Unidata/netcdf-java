@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
@@ -28,7 +29,7 @@ public class TestBufr2Xml {
         if (message == null || !message.isTablesComplete() || !message.isBitCountOk())
           continue;
         byte[] mbytes = scan.getMessageBytesFromLast(message);
-        NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
+        NetcdfFile ncfile = NetcdfFiles.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
         new Bufr2Xml(message, ncd, out, true);
         out.close();

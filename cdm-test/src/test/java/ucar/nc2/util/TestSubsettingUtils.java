@@ -7,6 +7,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -26,7 +27,7 @@ public class TestSubsettingUtils {
     // varName = NetcdfFile.makeValidCdmObjectName(varName);
     System.out.println("testVariableSubset=" + filename + "," + varName);
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
 
       Variable v = ncfile.findVariable(varName);
       if (v == null) {
@@ -68,7 +69,7 @@ public class TestSubsettingUtils {
       throws InvalidRangeException, IOException {
     System.out.println("testVariableSubset=" + filename + "," + varName);
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable(varName);
       assert (null != v);
       subsetVariable(v, s, v.read());

@@ -31,7 +31,7 @@ public class TestOpenInMemory extends TestCase {
     System.out.println("**** OpenInMemory " + pathname);
 
     byte[] ba = IO.readFileToByteArray(pathname);
-    NetcdfFile ncfile = NetcdfFile.openInMemory("OpenInMemory", ba);
+    NetcdfFile ncfile = NetcdfFiles.openInMemory("OpenInMemory", ba);
     System.out.println(ncfile);
     return ncfile;
   }

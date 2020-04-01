@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp;
 
+import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -141,7 +142,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
-  public Object sendIospMessage(Object message) {
+  @Nullable
+  public Object sendIospMessage(@Nullable Object message) {
     if (message == NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE) {
       return raf;
     }

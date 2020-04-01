@@ -8,13 +8,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 @RunWith(JUnit4.class)
 public class TestMRMS {
@@ -23,7 +21,7 @@ public class TestMRMS {
 
   @Test
   public void checkVariable() throws IOException {
-    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
       Assert.assertNotNull(var);
 

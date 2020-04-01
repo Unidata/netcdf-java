@@ -119,7 +119,7 @@ public class TestUnicode {
     ncfile.write(helloGreek, data);
     ncfile.close();
 
-    NetcdfFile nc = NetcdfFile.open(filename);
+    NetcdfFile nc = NetcdfFiles.open(filename);
     Variable v = ncfile.findVariable(helloGreek);
     assert v != null;
     assert v.getShortName().equals(helloGreek);

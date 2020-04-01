@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
-import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.File;
@@ -69,9 +69,9 @@ public class TestCharFillValue extends UnitTestCommon {
       ncfw.create();
     }
 
-    try (NetcdfFile ncf = NetcdfFile.open(fileName)) {
+    try (NetcdfFile ncf = NetcdfFiles.open(fileName)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
-      H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
+      H5headerNew.Vinfo h5 = (H5headerNew.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());
       // should be 3 charFillVal characters
       Array arr = charVarFromFile.read();
@@ -101,9 +101,9 @@ public class TestCharFillValue extends UnitTestCommon {
       ncfw.create();
     }
 
-    try (NetcdfFile ncf = NetcdfFile.open(fileName)) {
+    try (NetcdfFile ncf = NetcdfFiles.open(fileName)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
-      H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
+      H5headerNew.Vinfo h5 = (H5headerNew.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());
       // should be 3 charFillVal characters
       Array arr = charVarFromFile.read();

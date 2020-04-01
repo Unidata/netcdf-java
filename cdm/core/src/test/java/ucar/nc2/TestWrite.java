@@ -492,7 +492,7 @@ public class TestWrite {
   // test reading after closing the file
   @Test
   public void testNC3ReadExisting() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(writerLocation);
+    NetcdfFile ncfile = NetcdfFiles.open(writerLocation);
 
     // read entire array
     Variable temp = ncfile.findVariable("temperature");
@@ -1042,7 +1042,7 @@ public class TestWrite {
       }
     }
 
-    try (NetcdfFile ncFile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncFile = NetcdfFiles.open(filename)) {
       Array result = ncFile.readSection("time");
       Assert.assertEquals("0 12 24 36 48 60 72 84 96 108", result.toString().trim());
     }

@@ -351,6 +351,7 @@ public class WRFConvention extends CoordSystemBuilder {
         parseInfo.format("Cant remove first dimension in variable %s", v);
         return vds;
       }
+      // TODO test that this works
       VariableDS.Builder<?> vbnew = VariableDS.builder().copyFrom(view);
       rootGroup.replaceVariable(vbnew);
       return vbnew;

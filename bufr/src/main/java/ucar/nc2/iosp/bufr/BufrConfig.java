@@ -10,6 +10,7 @@ import thredds.client.catalog.Catalog;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Sequence;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
@@ -222,7 +223,7 @@ public class BufrConfig {
 
       // ncd = NetcdfDataset.openDataset(raf.getLocation(), BufrIosp2.enhance, -1, null, null); // LOOK opening another
       // raf
-      ncd = NetcdfFile.open(raf.getLocation()); // LOOK opening another raf
+      ncd = NetcdfFiles.open(raf.getLocation()); // LOOK opening another raf
       Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp2.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 

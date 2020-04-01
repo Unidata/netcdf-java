@@ -114,7 +114,7 @@ public class Bufr2Xml {
 
         byte[] mbytes = scan.getMessageBytesFromLast(m);
 
-        NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
+        NetcdfFile ncfile = NetcdfFiles.openInMemory("test", mbytes);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
 
         writeMessage(m, ncd);

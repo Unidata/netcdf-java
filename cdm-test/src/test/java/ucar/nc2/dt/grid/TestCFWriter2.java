@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
@@ -236,7 +237,7 @@ public class TestCFWriter2 {
         return;
     }
 
-    try (NetcdfFile ncfile = NetcdfFile.open(fileOut)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(fileOut)) {
 
       long total = 0;
       for (String grid : grids) {

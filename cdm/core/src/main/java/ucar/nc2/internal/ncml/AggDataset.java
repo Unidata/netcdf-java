@@ -42,7 +42,7 @@ class AggDataset implements Comparable<AggDataset> {
   @Nullable
   protected final ucar.nc2.util.cache.FileFactory reader;
   @Nullable
-  protected final Object spiObject; // pass to NetcdfFile.open()
+  protected final Object spiObject; // pass to NetcdfFiles.open()
 
   // deferred opening LOOK
   protected DatasetUrl durl;

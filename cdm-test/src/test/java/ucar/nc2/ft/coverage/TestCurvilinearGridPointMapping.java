@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
@@ -45,7 +46,7 @@ public class TestCurvilinearGridPointMapping {
     int[] origin = new int[] {j, i};
     int[] shape = new int[] {1, 1};
 
-    NetcdfFile ncf = NetcdfFile.open(datasetLocation);
+    NetcdfFile ncf = NetcdfFiles.open(datasetLocation);
     Variable latVar = ncf.findVariable("lat");
     Array latArray = latVar.read(origin, shape);
     Variable lonVar = ncf.findVariable("lon");

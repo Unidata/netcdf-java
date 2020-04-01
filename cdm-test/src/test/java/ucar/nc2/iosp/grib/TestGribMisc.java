@@ -64,7 +64,7 @@ public class TestGribMisc {
   public void pdsScaleOverflow() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/pdsScale.grib2";
     logger.debug("{}", filename);
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("isobaric");
       float val = v.readScalarFloat();
       Assert2.assertNearlyEquals(val, 92500.0);
@@ -76,7 +76,7 @@ public class TestGribMisc {
     // this one has a analysis and forecast in same variable
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
     logger.debug("{}", filename);
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();
     }
@@ -84,7 +84,7 @@ public class TestGribMisc {
     // this one has a forecast and error = must be seperate variables
     filename = TestDir.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
     logger.debug("{}", filename);
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       assert ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // Pressure_Surface
       assert ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_error_L103") != null; // Temperature_error_height_above_ground
     }
@@ -95,7 +95,7 @@ public class TestGribMisc {
     // this one has a analysis and forecast in same variable
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/thinGrid.grib2";
     logger.debug("{}", filename);
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
       assert v != null : ncfile.getLocation();
 
@@ -115,7 +115,7 @@ public class TestGribMisc {
     // original jj2000 code
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
     logger.debug("testJPEG2K: {}", filename);
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1"); // Land_cover_0__sea_1__land_surface
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
@@ -131,7 +131,7 @@ public class TestGribMisc {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/SingleRecordNbits0.grib2";
     logger.debug("testNBits0: {}", filename);
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-1-194_L1");
       assert v != null : ncfile.getLocation();
       Array vals = v.read();
@@ -181,7 +181,7 @@ public class TestGribMisc {
      */
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/grid174_scanmode_64_example.grb2";
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();
       ArrayFloat vals = (ArrayFloat) (v.read("0,:,0").reduce()); // read first column - its flipped
@@ -199,7 +199,7 @@ public class TestGribMisc {
     Grib1RecordScanner.setAllowBadIsLength(true);
 
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/badEcmwf.grib1";
-    try (NetcdfFile nc = NetcdfFile.open(filename)) {
+    try (NetcdfFile nc = NetcdfFiles.open(filename)) {
 
       Variable var = nc.findVariable("2_metre_temperature_surface");
       Array data = var.read();
@@ -224,7 +224,7 @@ public class TestGribMisc {
    * //Grib1RecordScanner.setAllowBadIsLength(true);
    * 
    * String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/badEcmwf.grib1";
-   * try (NetcdfFile nc = NetcdfFile.open(filename)) {
+   * try (NetcdfFile nc = NetcdfFiles.open(filename)) {
    * 
    * Variable var = nc.findVariable("2_metre_temperature_surface");
    * Array data = var.read();
