@@ -17,7 +17,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testNetcdfFile() throws IOException, InvalidRangeException {
-    try (NetcdfFile ncfile = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", null)) {
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", null)) {
       Variable v = ncfile.findVariable("testScale");
       assert null != v;
       assert v.getDataType() == DataType.SHORT;
@@ -65,7 +65,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
   }
 
   public void testNetcdfDataset() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
     System.out.printf("Open %s%n", ncfile.getLocation());
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
@@ -118,7 +118,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
   }
 
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
-    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc")) {
+    try (NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc")) {
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");
       assert null != v;
       assert v.getDataType() == DataType.FLOAT;
