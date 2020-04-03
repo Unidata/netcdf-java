@@ -685,7 +685,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Factory method for opening a NetcdfFile through the netCDF API. May be any kind of file that
    * can be read through the netCDF API, including OpenDAP and NcML.
    * <p>
-   * This does not necessarily return a NetcdfDataset, or enhance the dataset; use NetcdfDataset.openDataset() method
+   * This does not necessarily return a NetcdfDataset, or enhance the dataset; use NetcdfDatasets.openDataset() method
    * for that.
    *
    * @param location location of dataset. This may be a

@@ -85,7 +85,7 @@ public class TestConventionFeatureTypes {
     }
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
       logger.debug("Open CoverageDataset {}", f.getPath());
-      try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
+      try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
         DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, new Formatter());
         Assert.assertNotNull(builder);
       }

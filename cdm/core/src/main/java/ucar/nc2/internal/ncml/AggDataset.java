@@ -67,7 +67,7 @@ class AggDataset implements Comparable<AggDataset> {
    * @param location attribute "location" on the netcdf element
    * @param id attribute "id" on the netcdf element
    * @param wantEnhance open dataset in enhance mode, may be null
-   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
+   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDatasets.open( location)
    */
   protected AggDataset(String cacheLocation, String location, @Nullable String id,
       @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.util.cache.FileFactory reader,

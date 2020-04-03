@@ -221,8 +221,6 @@ public class BufrConfig {
       featureType = guessFeatureType(standardFields);
       hasDate = standardFields.hasTime();
 
-      // ncd = NetcdfDataset.openDataset(raf.getLocation(), BufrIosp2.enhance, -1, null, null); // LOOK opening another
-      // raf
       ncd = NetcdfFiles.open(raf.getLocation()); // LOOK opening another raf
       Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp2.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();

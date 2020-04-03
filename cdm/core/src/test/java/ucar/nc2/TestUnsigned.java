@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class TestUnsigned {
 
   @Test
   public void testSigned() throws IOException {
-    try (NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc")) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc")) {
       Variable v = ncfile.findVariable("bvar");
       Assert.assertNotNull(v);
       Assert.assertTrue(!v.getDataType().isUnsigned());
@@ -48,7 +49,7 @@ public class TestUnsigned {
 
   @Test
   public void testUnsigned() throws IOException {
-    try (NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml")) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml")) {
       Variable v = ncfile.findVariable("bvar");
       Assert.assertNotNull(v);
       Assert.assertEquals(DataType.FLOAT, v.getDataType()); // has float scale_factor

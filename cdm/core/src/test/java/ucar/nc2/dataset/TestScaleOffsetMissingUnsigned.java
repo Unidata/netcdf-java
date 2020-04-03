@@ -87,7 +87,7 @@ public class TestScaleOffsetMissingUnsigned {
     Array readEnhanced;
 
     // read the packed form, enhance using scale/offset, compare to original
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       VariableDS vs = (VariableDS) ncd.findVariable("packed");
       vs.removeEnhancement(Enhance.ConvertMissing);
       readEnhanced = vs.read();
@@ -118,7 +118,7 @@ public class TestScaleOffsetMissingUnsigned {
   // check section of scale/offset only applies it once
   private void doSubset(String filename) throws IOException, InvalidRangeException {
     // read the packed form, enhance using scale/offset, compare to original
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       Variable vs = ncd.findVariable("packed");
       assert vs != null;
 
@@ -141,7 +141,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaledFillValue() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
 
       double expectedFillValue = .99999;
@@ -178,7 +178,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaleMissingFloatingPointComparisons() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
       fooVar.removeEnhancement(Enhance.ConvertMissing);
 
@@ -224,7 +224,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testMissingUnsigned() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("missingUnsigned");
 
       // Packed valid_min == -106. Interpreting bit pattern as unsigned, we get 150.
@@ -251,7 +251,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaleOffsetMissingUnsigned() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetMissingUnsigned");
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of 100 and offset of 1 applied.
@@ -289,7 +289,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaleValidRange() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleValidRange");
       var.addEnhancement(Enhance.ConvertMissing);
 
@@ -310,7 +310,7 @@ public class TestScaleOffsetMissingUnsigned {
     DatasetUrl location = DatasetUrl.findDatasetUrl(testResource.getAbsolutePath());
     Set<Enhance> enhanceMode = EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset); // No ConvertMissing!
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(location, enhanceMode, -1, null, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(location, enhanceMode, -1, null, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("unpackedValidRange");
 
       // valid_range will be interpreted as unpacked because of:
@@ -335,7 +335,7 @@ public class TestScaleOffsetMissingUnsigned {
   public void testUnsignedOffsetAttribute() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("unsignedOffsetAttribute");
 
       Assert.assertEquals(156, var.getOffset(), 0);

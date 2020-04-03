@@ -57,7 +57,7 @@ public class TestTransforms {
   @Test
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
     String filename = testDir + "climo.cam2.h0.0000-09.nc";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename);
     VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
         SimpleUnit.pressureUnit, true);
 
@@ -76,7 +76,7 @@ public class TestTransforms {
   @Test
   public void testHybridSigmaPressure3() throws IOException, InvalidRangeException {
     String filename = testDir + "HIRLAMhybrid.ncml";
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename);
     VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity_hybrid", "time", VerticalCT.Type.HybridSigmaPressure,
         HybridSigmaPressure.class, SimpleUnit.pressureUnit, true);
 
@@ -222,7 +222,7 @@ public class TestTransforms {
       VerticalCT.Type vtype, Class vclass, SimpleUnit unit, boolean varsMatch)
       throws IOException, InvalidRangeException {
 
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename);
     test(ncd, levName, varName, timeName, vtype, vclass, unit, varsMatch);
     ncd.close();
 

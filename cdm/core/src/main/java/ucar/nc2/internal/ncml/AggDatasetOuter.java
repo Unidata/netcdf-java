@@ -51,7 +51,7 @@ class AggDatasetOuter extends AggDataset {
    * @param ncoordS attribute "ncoords" on the netcdf element
    * @param coordValueS attribute "coordValue" on the netcdf element
    * @param enhance open dataset in enhance mode NOT USED
-   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
+   * @param reader factory for reading this netcdf dataset; if null, use NetcdfDatasets.open( location)
    */
   AggDatasetOuter(AggregationOuter aggregationOuter, String cacheName, String location, String id, String ncoordS,
       String coordValueS, EnumSet<Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {

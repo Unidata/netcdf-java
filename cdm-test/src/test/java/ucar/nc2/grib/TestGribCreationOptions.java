@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -50,7 +51,7 @@ public class TestGribCreationOptions {
      */
 
     String dataset = TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2";
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(dataset)) {
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(dataset)) {
       Variable v = ds.findVariable("Dewpoint_temperature_height_above_ground");
       Assert.assertNotNull("Dewpoint_temperature_height_above_ground", v);
       Dimension d = v.getDimension(0);

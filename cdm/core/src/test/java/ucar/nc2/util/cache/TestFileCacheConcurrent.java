@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
@@ -100,7 +101,7 @@ public class TestFileCacheConcurrent {
   class MyFileFactory implements FileFactory {
     public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
-      return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
+      return NetcdfDatasets.openFile(location, buffer_size, cancelTask, iospMessage);
     }
   }
 

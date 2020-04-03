@@ -95,7 +95,7 @@ public class TestGribCollectionCoordinates {
     boolean ok = true;
 
     try (NetcdfDataset ds =
-        NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/namAlaska22.ncx4")) {
+        NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/namAlaska22.ncx4")) {
       for (Variable vds : ds.getVariables()) {
         String stdname = vds.findAttValueIgnoreCase("standard_name", "no");
         if (!stdname.equalsIgnoreCase("time"))
@@ -151,7 +151,7 @@ public class TestGribCollectionCoordinates {
     boolean ok = true;
 
     try (NetcdfDataset ds =
-        NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4")) {
+        NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4")) {
       for (Variable vds : ds.getVariables()) {
         String stdname = vds.findAttValueIgnoreCase("standard_name", "no");
         if (!stdname.equalsIgnoreCase("forecast_reference_time"))

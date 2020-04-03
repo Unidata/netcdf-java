@@ -55,7 +55,7 @@ public class TestDatasetWrap {
 
     try {
       ncfile = NetcdfFiles.open(filename);
-      ds = NetcdfDataset.openDataset(filename);
+      ds = NetcdfDatasets.openDataset(filename);
 
       String varName = "Lon";
       Variable wrap = ds.findVariable(varName);
@@ -85,7 +85,7 @@ public class TestDatasetWrap {
 
     try {
       ncfile = NetcdfFiles.open(filename);
-      ds = NetcdfDataset.openDataset(filename);
+      ds = NetcdfDatasets.openDataset(filename);
 
       String varName = "lon";
       Variable org = ncfile.findVariable(varName);

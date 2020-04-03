@@ -308,7 +308,7 @@ public class NetcdfDatasets {
    * <li>thredds dataset (thredds: prefix), see DataFactory.openDataset(String location, ...));
    * </ol>
    * <p>
-   * This does not necessarily return a NetcdfDataset, or enhance the dataset; use NetcdfDataset.openDataset() method
+   * This does not necessarily return a NetcdfDataset, or enhance the dataset; use NetcdfDatasets.openDataset() method
    * for that.
    *
    * @param location location of dataset.

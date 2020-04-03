@@ -122,7 +122,7 @@ public class TestProjections {
   @Test
   public void testOneProjection() throws IOException {
     logger.debug("Open= {}", filename);
-    try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
 
       Variable ctv = null;
       if (ctvName != null) {

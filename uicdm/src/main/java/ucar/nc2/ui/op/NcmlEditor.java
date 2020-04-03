@@ -293,7 +293,7 @@ public class NcmlEditor extends JPanel {
       // if (setUseRecordStructure)
       // ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     } catch (IOException ioe) {
-      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + ioe.getMessage());
       if (!(ioe instanceof FileNotFoundException)) {
         ioe.printStackTrace();
       }
