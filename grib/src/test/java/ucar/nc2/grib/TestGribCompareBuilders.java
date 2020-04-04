@@ -1,7 +1,6 @@
 package ucar.nc2.grib;
 
 import static org.junit.Assert.fail;
-
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -27,8 +26,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 public class TestGribCompareBuilders {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static List<String> testDirs =
-      ImmutableList.of("../grib/src/test/data/");
+  private static List<String> testDirs = ImmutableList.of("../grib/src/test/data/");
   // TODO refactor this framework: need a way to pass in compareData, these files are too big.
   // , TestDir.cdmUnitTestDir + "/formats/grib1", TestDir.cdmUnitTestDir + "/formats/grib2");
 
@@ -38,10 +36,9 @@ public class TestGribCompareBuilders {
     try {
       for (String dir : testDirs) {
         TestDir.actOnAllParameterized(dir,
-            (file) -> file.getPath().endsWith(".grb") || file.getPath().endsWith(".grib1") ||
-                file.getPath().endsWith(".grib2") || file.getPath().endsWith(".grb2"),
-            filenames,
-            true);
+            (file) -> file.getPath().endsWith(".grb") || file.getPath().endsWith(".grib1")
+                || file.getPath().endsWith(".grib2") || file.getPath().endsWith(".grb2"),
+            filenames, true);
       }
     } catch (IOException e) {
       logger.warn("Failed to add directory", e);
