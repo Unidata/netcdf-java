@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * See LICENSE for license information.
  */
 package ucar.nc2.grib;
 
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.Formatter;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -17,7 +17,7 @@ import ucar.unidata.util.test.TestDir;
 /** Compare problem grib file builder */
 public class TestGribCompareProblem {
 
-  @Test
+  @Ignore
   public void compareProblemFile() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/gfs_4_20130830_1800_144.grb2";
     compare(filename);

@@ -85,11 +85,7 @@ public class Grib2SectionDataRepresentation {
 
   @Override
   public String toString() {
-    return "Grib2SectionDataRepresentation{" +
-        "startingPosition=" + startingPosition +
-        ", dataPoints=" + dataPoints +
-        ", dataTemplate=" + dataTemplate +
-        ", length=" + length +
-        '}';
+    return "Grib2SectionDataRepresentation{" + "startingPosition=" + startingPosition + ", dataPoints=" + dataPoints
+        + ", dataTemplate=" + dataTemplate + ", length=" + length + '}';
   }
 }

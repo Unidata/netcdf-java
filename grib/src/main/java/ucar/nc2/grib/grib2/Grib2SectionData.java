@@ -63,9 +63,6 @@ public class Grib2SectionData {
 
   @Override
   public String toString() {
-    return "Grib2SectionData{" +
-        "startingPosition=" + startingPosition +
-        ", msgLength=" + msgLength +
-        '}';
+    return "Grib2SectionData{" + "startingPosition=" + startingPosition + ", msgLength=" + msgLength + '}';
   }
 }
