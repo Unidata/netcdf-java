@@ -65,6 +65,7 @@ class GribIospBuilder {
       g = Group.builder(parent);
       g.setName(group.getId());
       g.addAttribute(new Attribute(CDM.LONG_NAME, group.getDescription()));
+      parent.addGroup(g);
     } else {
       g = parent;
     }

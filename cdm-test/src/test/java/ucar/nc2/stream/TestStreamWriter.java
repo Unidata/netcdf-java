@@ -59,7 +59,7 @@ public class TestStreamWriter {
   @Test
   public void testN3outputStreamWriter() throws IOException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
-    NetcdfFile fileIn = NetcdfFiles.open(endpoint);
+    NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
@@ -67,7 +67,7 @@ public class TestStreamWriter {
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFiles.open(fileOut);
+    NetcdfFile file2 = NetcdfFile.open(fileOut);
     assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
@@ -78,7 +78,7 @@ public class TestStreamWriter {
   @Test
   public void testN3channelWriter() throws IOException, InvalidRangeException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
-    NetcdfFile fileIn = NetcdfFiles.open(endpoint);
+    NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
@@ -86,7 +86,7 @@ public class TestStreamWriter {
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFiles.open(fileOut);
+    NetcdfFile file2 = NetcdfFile.open(fileOut);
     assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
@@ -97,7 +97,7 @@ public class TestStreamWriter {
   @Test
   public void testFileWriter() throws IOException, InvalidRangeException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
-    NetcdfFile fileIn = NetcdfFiles.open(endpoint);
+    NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
@@ -109,7 +109,7 @@ public class TestStreamWriter {
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFiles.open(fileOut);
+    NetcdfFile file2 = NetcdfFile.open(fileOut);
     assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();

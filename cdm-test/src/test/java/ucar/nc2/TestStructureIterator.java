@@ -30,7 +30,7 @@ public class TestStructureIterator extends TestCase {
   }
 
   public void testStructureIterator() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
+    NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     Structure v = (Structure) ncfile.findVariable("record");
