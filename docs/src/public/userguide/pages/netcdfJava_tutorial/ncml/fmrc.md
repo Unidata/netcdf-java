@@ -1,6 +1,6 @@
 ---
 title: Forecast Model Run Collection Aggregation
-last_updated: 2019-11-05
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: fmrc_ref.html
@@ -72,7 +72,7 @@ Possibly more interesting is to make it into a <b>_ucar.nc2.dt.fmrc.ForecastMode
 A common case is that the model output is spread out in multiple files. A special kind of NcML aggregation can be used to create an FMRC dataset.
 
 ### Case 1: All data for each forecast model run is in a single file
-This case is similar to a [JoinNew](/ncml_aggregation.html#exercise-3-aggregation-on-a-new-dimension){:target="_blank"} aggregation, in that a new, outer dimension is created, and each file becomes one slice of the new dataset.
+This case is similar to a [JoinNew](ncml_aggregation.html#exercise-3-aggregation-on-a-new-dimension){:target="_blank"} aggregation, in that a new, outer dimension is created, and each file becomes one slice of the new dataset.
 
 ~~~
    <?xml version="1.0" encoding="UTF-8"?>
