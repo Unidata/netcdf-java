@@ -1,6 +1,6 @@
 ---
 title: Grid Datasets
-last_updated: 2019-07-22
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: grid_datasets.html
@@ -21,7 +21,7 @@ A GridDatatype (aka GeoGrid or just Grid) has a Grid Coordinate System, whose di
 
 A Grid Dataset has Grids that are grouped into Gridsets based on common Grid Coordinate Systems. Here is the UML for the Grid interface classes, found in the ucar.nc2.dt package:
 
-{% include image.html file="netcdf-java/tutorial/feature_types/Grid.png" alt="Grid" caption="Grid Interface" %}
+{% include image.html file="netcdf-java/tutorial/feature_types/feature_types/Grid.png" alt="Grid" caption="Grid Interface" %}
 
 ### Opening a GridDataset
 
@@ -136,9 +136,9 @@ Once you have a GridDataset, you can write it as a Netcdf-3 file using the <a hr
 
 You can use ToolsUI <b>_FeatureTypes/Grids_</b> Tab to view Grid Datasets. This consists of 3 tables that show the Grid DataTypes, the Grid Coordinate systems, and the Coordinate Axes, eg:
 
-{% include image.html file="netcdf-java/tutorial/toolsui/GridUI.png" alt="Grid UI" caption="ToolsUI Interface" %}
+{% include image.html file="netcdf-java/tutorial/toolsui/gridUI.png" alt="Grid UI" caption="ToolsUI Interface" %}
 
 Use the {% include inline_image.html file="netcdf-java/tutorial/toolsui/redrawButton.jpg" alt="Redraw button" %}  button to display the grids in the grid viewer:
 
-{% include image.html file="netcdf-java/tutorial/toolsui/GridView.png" alt="Grid View" caption="ToolsUI View" %}
+{% include image.html file="netcdf-java/tutorial/toolsui/gridView.png" alt="Grid View" caption="ToolsUI View" %}
 

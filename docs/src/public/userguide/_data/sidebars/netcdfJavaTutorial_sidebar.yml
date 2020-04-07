@@ -178,7 +178,7 @@ entries:
       url: /feature_datasets.html
       output: web, pdf
 
-    - title: CDMRemote Feature Datasets
+    - title: CDM Remote Feature Datasets
       url: /cdmremote_feature_datasets.html
       output: web, pdf
 
@@ -192,10 +192,6 @@ entries:
 
     - title: NetCDF4 Compound Attributes
       url: /cdm_netcdf_mapping.html
-      output: web, pdf
-
-    - title: CDM Utility Programs
-      url: /cdm_utility_programs.html
       output: web, pdf
 
     - title: CF DSG Encoding Table

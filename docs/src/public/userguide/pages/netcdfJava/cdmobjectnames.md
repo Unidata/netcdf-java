@@ -48,7 +48,7 @@ Also See:
 
 ## CDL
 
-A [CDL](https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#cdl_syntax){:target="_blank"} (netCDF Definition Language) document is encoded in UTF-8.
+A [CDL](https://www.unidata.ucar.edu/software/netcdf/documentation/NUG/netcdf_utilities_guide.html#cdl_guide){:target="_blank"} (netCDF Definition Language) document is encoded in UTF-8.
 Certain characters must be escaped. The escape mechanism is to prepend a backslash "\" before the character.
 
 Which characters in an identifier must be escaped in CDL?
