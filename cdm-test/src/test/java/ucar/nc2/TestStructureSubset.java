@@ -27,7 +27,7 @@ public class TestStructureSubset extends TestCase {
   NetcdfFile ncfile;
 
   protected void setUp() throws Exception {
-    ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
+    ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 

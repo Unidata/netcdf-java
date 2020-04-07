@@ -60,4 +60,9 @@ public class Grib2SectionData {
     raf.readFully(data);
     return data;
   }
+
+  @Override
+  public String toString() {
+    return "Grib2SectionData{" + "startingPosition=" + startingPosition + ", msgLength=" + msgLength + '}';
+  }
 }

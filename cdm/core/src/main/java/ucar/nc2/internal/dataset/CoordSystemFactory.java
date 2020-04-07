@@ -221,14 +221,14 @@ public class CoordSystemFactory {
     }
     CoordSystemBuilderFactory coordSysFactory = null;
 
-    // Try to match on isMine()
-    if (ds.orgFile != null) {
-      coordSysFactory = findConventionByIsMine(ds.orgFile);
+    // Try to match on convention name. Must be first in case NcML has set Convention name.
+    if (convName != null) {
+      coordSysFactory = findConventionByName(convName);
     }
 
-    // Try to match on convention name
-    if (coordSysFactory == null && convName != null) {
-      coordSysFactory = findConventionByName(convName);
+    // Try to match on isMine() TODO: why use orgFile instead of ds?
+    if (coordSysFactory == null && ds.orgFile != null) {
+      coordSysFactory = findConventionByIsMine(ds.orgFile);
     }
 
     // TODO, if convention not explicitly found, bail out to use the old one.
