@@ -12,37 +12,42 @@ ext {
     // Is there a better way to detect Jenkins?
     jenkinsEnvVar = 'JENKINS_URL'
     isJenkins = System.env[jenkinsEnvVar] as boolean  // We only care if prop is defined, not its actual value.
-    
     if (isJenkins) {
         logger.warn "Skipping all NotJenkins tests: detected that we're running in the Jenkins environment."
     }
-    
-    
+
     travisEnvVar = 'TRAVIS'
-    isTravis = System.env[travisEnvVar] as boolean        // We only care if prop is defined, not its actual value.
-    
+    isTravis = System.env[travisEnvVar] as boolean  // We only care if prop is defined, not its actual value.
     if (isTravis) {
         logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
     }
-    
-    
+
     contentRootKey = 'tds.content.root.path'
     isContentRootAvailable = isSystemPropertyAValidDirectory contentRootKey
-    
-    if (!isContentRootAvailable && !isJenkins) {        // Don't skip tests on Jenkins, except NotJenkins ones.
+    if (!isContentRootAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
         logger.warn "Skipping all NeedsContentRoot tests."
     }
-    
-    
+
     testdataDirKey = 'unidata.testdata.path'
     isCdmUnitTestDirAvailable = isSystemPropertyAValidDirectory testdataDirKey
-    
     if (!isCdmUnitTestDirAvailable && !isJenkins) {     // Don't skip tests on Jenkins, except NotJenkins ones.
         logger.warn "Skipping all NeedsCdmUnitTest tests."
     }
-    
-    isRdaDataAvailable = false  // figure out how to set later
-    runSlowTests = false  // figure out how to set later
+
+    runSlowTests = System.properties["runSlowTests"] as boolean // We only care if prop is defined, not its actual value.
+    if (!runSlowTests) {
+        logger.warn "Skipping all Slow tests."
+    }
+
+    isRdaDataAvailable = System.properties["rdaDataAvailable"] as boolean // We only care if prop is defined, not its actual value.
+    if (!isRdaDataAvailable) {
+        logger.warn "Skipping all tests that require access to RDA data."
+    }
+
+    isUcarNetworkAvailable = System.properties["ucarNetworkAvailable"] as boolean // We only care if prop is defined, not its actual value.
+    if (!isUcarNetworkAvailable) {
+        logger.warn "Skipping all tests that require access to the UCAR Network."
+    }
 }
 
 import java.nio.file.*

@@ -26,7 +26,7 @@ tasks.withType(Test).all {
             excludeCategories 'ucar.unidata.util.test.category.NeedsExternalResource'
         }
         
-        if (!isContentRootAvailable && !isJenkins) {     // Don't skip tests on Jenkins, except NotJenkins ones.
+        if (!isContentRootAvailable && !isJenkins) { // Don't skip tests on Jenkins, except NotJenkins ones.
             excludeCategories 'ucar.unidata.util.test.category.NeedsContentRoot'
         }
         
@@ -40,6 +40,10 @@ tasks.withType(Test).all {
 
         if (!runSlowTests) {
             excludeCategories 'ucar.unidata.util.test.category.Slow'
+        }
+
+        if (!isUcarNetworkAvailable) {
+            excludeCategories 'ucar.unidata.util.test.category.NeedsUcarNetwork'
         }
     }
 }
