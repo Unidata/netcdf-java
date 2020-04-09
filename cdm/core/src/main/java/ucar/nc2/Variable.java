@@ -1976,7 +1976,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       if (dimString != null) {
         return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
       } else if (dimensions.size() > 0) {
-        return dimensions.stream().map(d -> d.getShortName()).collect(Collectors.toList());
+        // TODO test if tis always works
+        return dimensions.stream().map(d -> d.getShortName()).filter(Objects::nonNull).collect(Collectors.toList());
       }
       return ImmutableList.of();
     }

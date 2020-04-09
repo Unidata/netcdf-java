@@ -207,7 +207,7 @@ public class CoordinatesHelper {
       return new CoordinatesHelper(this, ncd);
     }
 
-    // Check if this Coordinate System is complete for v, ie if v dimesnsions are a subset..
+    // Check if this Coordinate System is complete for v, ie if v dimensions are a subset..
     public boolean isComplete(CoordinateSystem.Builder<?> cs, VariableDS.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(vb);
