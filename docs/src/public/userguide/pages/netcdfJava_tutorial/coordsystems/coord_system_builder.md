@@ -1,6 +1,6 @@
 ---
 title: Coordinate System Builder
-last_updated: 2019-07-22
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 permalink: coord_system_builder.html
 toc: false
@@ -14,7 +14,7 @@ In order to use a dataset at the scientific datatype layer, the dataset's coordi
 
 For more details, see the <a href="common_data_model_overview.html">CDM Object Model</a>.
 
-A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define and document a new Convention in collaboration with others with similar needs. If you do so, read <a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html" target="_blank">Writing NetCDF Files: Best Practices</a>, look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">NetCDF Conventions page</a>.
+A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="https://www.unidata.ucar.edu/software/netcdf/conventions.html" target="_blank">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define and document a new Convention in collaboration with others with similar needs. If you do so, read <a href="https://www.unidata.ucar.edu/software/netcdf/documentation/NUG/_best_practices.html" target="_blank">Writing NetCDF Files: Best Practices</a>, look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">NetCDF Conventions page</a>.
 
 The steps to using your CoordSysBuilderIF class in the Netcdf-Java library:
 
