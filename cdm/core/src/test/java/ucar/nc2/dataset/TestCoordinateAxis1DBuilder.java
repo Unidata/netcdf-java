@@ -16,8 +16,8 @@ public class TestCoordinateAxis1DBuilder {
 
   @Test
   public void testFromVariableDS() throws IOException {
-    Group parent = Group.builder(null).addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build(null);
+    Group parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+        .addDimension(new Dimension("dim2", 27)).build();
 
     VariableDS.Builder vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units")
         .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())

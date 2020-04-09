@@ -158,8 +158,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       for (GribCollectionImmutable.Dataset ds : gribCollection.getDatasets()) {
         Group.Builder topGroup;
         if (useDatasetGroup) {
-          topGroup = Group.builder(rootGroup);
-          topGroup.setName(ds.getType().toString());
+          topGroup = Group.builder().setName(ds.getType().toString());
+          rootGroup.addGroup(topGroup);
         } else {
           topGroup = rootGroup;
         }

@@ -530,7 +530,7 @@ public class NcMLReaderNew {
         refGroup = refParent.findGroup(nameInFile);
       }
       if (refGroup == null) { // new
-        groupBuilder = Group.builder(parent).setName(name);
+        groupBuilder = Group.builder().setName(name);
         parent.addGroup(groupBuilder);
         if (debugConstruct) {
           System.out.println(" add new group = " + name);

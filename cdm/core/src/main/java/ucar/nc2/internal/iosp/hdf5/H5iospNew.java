@@ -161,10 +161,10 @@ public class H5iospNew extends AbstractIOServiceProvider {
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
+    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
     header = new H5headerNew(raf, rootGroup, this);
     header.read(null);
-    ncfile.setRootGroup(rootGroup.build(null));
+    ncfile.setRootGroup(rootGroup.build());
 
     // check if its an HDF5-EOS file
     if (useHdfEos) {

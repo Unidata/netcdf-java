@@ -62,7 +62,7 @@ class GribIospBuilder {
         logger.warn("Duplicate Group - skipping");
         return;
       }
-      g = Group.builder(parent);
+      g = Group.builder();
       g.setName(group.getId());
       g.addAttribute(new Attribute(CDM.LONG_NAME, group.getDescription()));
       parent.addGroup(g);

@@ -246,9 +246,9 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     version = proto.getVersion();
 
     NcStreamProto.Group root = proto.getRoot();
-    Group.Builder rootBuilder = Group.builder(null).setNcfile(ncfile).setName("");
+    Group.Builder rootBuilder = Group.builder().setNcfile(ncfile).setName("");
     NcStream.readGroup(root, rootBuilder);
-    ncfile.setRootGroup(rootBuilder.build(null));
+    ncfile.setRootGroup(rootBuilder.build());
     ncfile.finish();
 
     // then we have a stream of data messages with a final END or ERR

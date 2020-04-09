@@ -547,7 +547,7 @@ public class H4header implements HdfHeaderIF {
     if (tagGroup.nelems < 1)
       return Optional.empty();
 
-    Group.Builder group = Group.builder(parent).setName(tagGroup.name);
+    Group.Builder group = Group.builder().setName(tagGroup.name);
     parent.addGroup(group);
     tagGroup.used = true;
     tagGroup.group = group;
@@ -599,7 +599,7 @@ public class H4header implements HdfHeaderIF {
 
       if (tag.code == 1965) { // VGroup - prob a Group
         TagVGroup vg = (TagVGroup) tag;
-        if ((vg.group != null) && (vg.group.parentGroup == root)) {
+        if ((vg.group != null) && (vg.group.getParentGroup() == root)) {
           addGroupToGroup(group, vg.group, vg);
         } else {
           // makeGroup adds the nested group.
