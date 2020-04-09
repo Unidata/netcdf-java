@@ -124,7 +124,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = createHeader();
 
-    Group.Builder rootGroup = Group.builder(null).setName("").setNcfile(ncfile);
+    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
     header.read(raf, rootGroup, null);
     ncfile.setRootGroup(rootGroup.build(null));
     ncfile.finish();

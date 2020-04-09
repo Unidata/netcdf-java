@@ -170,7 +170,7 @@ public class NetcdfCopier {
   }
 
   private Group.Builder copyGroup(Group oldGroup, Group.Builder parent) throws IOException {
-    Group.Builder newGroup = Group.builder(parent).setName(oldGroup.getShortName());
+    Group.Builder newGroup = Group.builder().setParentGroup(parent).setName(oldGroup.getShortName());
     if (debug) {
       System.out.println("add group= " + oldGroup.getShortName());
     }

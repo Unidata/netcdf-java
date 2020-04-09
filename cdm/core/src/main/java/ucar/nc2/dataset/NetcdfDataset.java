@@ -1683,7 +1683,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       setId(orgFile.getId());
       setTitle(orgFile.getTitle());
 
-      Group.Builder root = Group.builder(null).setName("");
+      Group.Builder root = Group.builder().setName("");
       convertGroup(root, orgFile.getRootGroup());
       setRootGroup(root);
 
@@ -1706,7 +1706,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       }
 
       for (Group nested : from.getGroups()) {
-        Group.Builder nnested = Group.builder(g);
+        Group.Builder nnested = Group.builder();
         g.addGroup(nnested);
         convertGroup(nnested, nested); // convert
       }

@@ -858,9 +858,8 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder toBuilder() {
-    Builder parentBuilder = (this.getParentGroup() == null) ? null : this.getParentGroup().toBuilder();
-    Builder builder = builder(parentBuilder).setName(this.shortName).setNcfile(this.ncfile)
-        .addAttributes(this.attributes).addDimensions(this.dimensions).addEnumTypedefs(this.enumTypedefs);
+    Builder builder = builder().setName(this.shortName).setNcfile(this.ncfile).addAttributes(this.attributes)
+        .addDimensions(this.dimensions).addEnumTypedefs(this.enumTypedefs);
 
     this.groups.forEach(g -> builder.addGroup(g.toBuilder()));
     this.variables.forEach(v -> builder.addVariable(v.toBuilder()));
@@ -868,15 +867,15 @@ public class Group extends CDMNode implements AttributeContainer {
     return builder;
   }
 
-  public static Builder builder(@Nullable Group.Builder parent) {
-    return new Builder().setParentGroup(parent);
+  public static Builder builder() {
+    return new Builder();
   }
 
   /** A builder of Groups. */
   public static class Builder {
     static private final Logger logger = LoggerFactory.getLogger(Builder.class);
 
-    public @Nullable Group.Builder parentGroup; // ignored during build()
+    private @Nullable Group.Builder parentGroup; // ignored during build()
     public List<Group.Builder> gbuilders = new ArrayList<>();
     public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     public String shortName;
@@ -889,6 +888,10 @@ public class Group extends CDMNode implements AttributeContainer {
     public Builder setParentGroup(@Nullable Group.Builder parentGroup) {
       this.parentGroup = parentGroup;
       return this;
+    }
+
+    public @Nullable Group.Builder getParentGroup() {
+      return this.parentGroup;
     }
 
     public Builder addAttribute(Attribute att) {

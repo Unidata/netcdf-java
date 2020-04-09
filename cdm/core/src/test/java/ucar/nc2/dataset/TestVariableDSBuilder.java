@@ -63,7 +63,7 @@ public class TestVariableDSBuilder {
     }
 
     Group group =
-        Group.builder(null).addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
             .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
     List<Dimension> varDims = group.makeDimensionsList("dim1 dim2");
 
@@ -96,7 +96,7 @@ public class TestVariableDSBuilder {
   @Test
   public void testCopyFrom() {
     Group group =
-        Group.builder(null).addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
+        Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
             .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build(null);
     Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
         .setDimensionsByName("dim1 dim2").addAttribute(new Attribute("units", "flower"));
@@ -115,7 +115,7 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testMissingData() throws IOException {
-    Group parent = Group.builder(null).addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+    Group parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27)).build(null);
 
     VariableDS vds = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")

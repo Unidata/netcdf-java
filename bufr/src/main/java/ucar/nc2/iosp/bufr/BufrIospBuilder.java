@@ -186,7 +186,6 @@ class BufrIospBuilder {
     v.setDataType(DataType.FLOAT); // scalar
     struct.addMemberVariable(v);
 
-    parent.addMemberVariable(struct);
     struct.setSPobject(dpiField); // ??
   }
 

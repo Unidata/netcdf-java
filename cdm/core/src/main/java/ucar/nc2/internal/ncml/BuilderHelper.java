@@ -93,7 +93,7 @@ class BuilderHelper {
     for (Group srcNested : src.getGroups()) {
       Optional<Builder> existing = targetGroup.findGroup(srcNested.getShortName());
       if (!existing.isPresent()) {
-        Group.Builder nested = Group.builder(targetGroup).setName(srcNested.getShortName());
+        Group.Builder nested = Group.builder().setName(srcNested.getShortName());
         targetGroup.addGroup(nested);
         transferGroup(ds, targetDs, srcNested, nested, replaceCheck);
       } else {

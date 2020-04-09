@@ -783,7 +783,7 @@ public class NetcdfFiles {
     NetcdfFile.Builder builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);
 
     try {
-      Group.Builder root = Group.builder(null).setName("");
+      Group.Builder root = Group.builder().setName("");
       spi.build(raf, root, cancelTask);
       builder.setRootGroup(root);
 

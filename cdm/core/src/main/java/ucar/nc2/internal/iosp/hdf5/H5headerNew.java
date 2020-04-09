@@ -494,7 +494,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         H5Group h5groupNested = h5objects.readH5Group(facadeNested);
         if (facadeNested.group == null) // hard link with cycle
           continue; // just skip it
-        Group.Builder nestedGroup = Group.builder(parentGroup).setName(facadeNested.name);
+        Group.Builder nestedGroup = Group.builder().setName(facadeNested.name);
         parentGroup.addGroup(nestedGroup);
         allHaveSharedDimensions &= makeNetcdfGroup(nestedGroup, h5groupNested);
         if (debug1) {

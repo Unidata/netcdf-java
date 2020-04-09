@@ -2032,7 +2032,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   private Group makeRootGroup() {
-    return Group.builder(null).setNcfile(this).setName("").build(null);
+    return Group.builder().setNcfile(this).setName("").build(null);
   }
 
   /**
@@ -2613,7 +2613,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   /** A builder of NetcdfFile objects. */
   public static abstract class Builder<T extends Builder<T>> {
-    public Group.Builder rootGroup = Group.builder(null).setName("");
+    public Group.Builder rootGroup = Group.builder().setName("");
     private String id;
     private String title;
     public String location;

@@ -92,6 +92,12 @@ public class TestReadFormats {
     doOne(TestDir.cdmUnitTestDir + "formats/cinrad/CHGZ_2006071512.0300");
   }
 
+  @Test
+  public void readBufr() {
+    doOne(TestDir.cdmUnitTestDir
+        + "formats/bufr/eumetsat.exclude/METEOSAT7-MVIRI-MTPCSKR-NA-1-20080405120514.000000000Z-909326.bfr");
+  }
+
   private void doOne(String name) {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(name, null)) {
       if (verbose)
