@@ -95,7 +95,7 @@ public class TestStreamWriter {
   }
 
   @Test
-  public void testFileWriter() throws IOException, InvalidRangeException {
+  public void testFileWriter() throws IOException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
     NetcdfFile fileIn = NetcdfFile.open(endpoint);
 

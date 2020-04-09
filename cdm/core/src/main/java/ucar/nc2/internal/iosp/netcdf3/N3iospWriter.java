@@ -294,6 +294,15 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     // header.updateAttribute(v2, att);
   }
 
+  @Override
+  public void flush() throws java.io.IOException {
+    if (raf != null) {
+      raf.flush();
+      ((N3headerWriter) header).writeNumrecs();
+      raf.flush();
+    }
+  }
+
   /////////////////////////////////////////////////////////////
 
   // fill buffer with fill value

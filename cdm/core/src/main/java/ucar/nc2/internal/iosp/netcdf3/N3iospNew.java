@@ -379,7 +379,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   public void flush() throws java.io.IOException {
     if (raf != null) {
       raf.flush();
-      // raf.flush();
     }
   }
 
