@@ -28,7 +28,7 @@ public class TestVariableBuilder {
     }
 
     Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build(null);
+        .addDimension(new Dimension("dim2", 27)).build();
 
     Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
         .setDimensionsByName("dim1 dim2").build();
@@ -56,7 +56,7 @@ public class TestVariableBuilder {
   @Test
   public void testCopy() {
     Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build(null);
+        .addDimension(new Dimension("dim2", 27)).build();
 
     Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
         .setDimensionsByName("dim1 dim2").build();

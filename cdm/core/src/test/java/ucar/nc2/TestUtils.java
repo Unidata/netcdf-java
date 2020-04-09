@@ -45,6 +45,6 @@ public class TestUtils {
   }
 
   public static Group makeDummyGroup() {
-    return Group.builder().setName("").build(null);
+    return Group.builder().setName("").build();
   }
 }

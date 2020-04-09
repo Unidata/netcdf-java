@@ -70,7 +70,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     super.open(raf, ncfile, cancelTask);
     Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
     getHeader().read(raf, rootGroup, null);
-    ncfile.setRootGroup(rootGroup.build(null));
+    ncfile.setRootGroup(rootGroup.build());
     ncfile.finish();
   }
 

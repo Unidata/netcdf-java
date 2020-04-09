@@ -1125,15 +1125,19 @@ public class Group extends CDMNode implements AttributeContainer {
       return Dimensions.makeDimensionsList(dimName -> this.findDimension(dimName).orElse(null), dimString);
     }
 
-    /**
-     * Normally this is called by NetcdfFile.build()
-     */
-    public Group build(Group parent) {
+    /** Build the root group, with parent = null. */
+    public Group build() {
+      return build(null);
+    }
+
+    /** Normally this is called by NetcdfFile.build() */
+    Group build(Group parent) {
       if (built)
         throw new IllegalStateException("Group was already built " + this.shortName);
       built = true;
       return new Group(this, parent);
     }
+
 
     // utility methods
     public void removeFromAny(Group.Builder group, Dimension want) {
