@@ -44,7 +44,8 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
  * ucar.nc2.ft2.coverage.grid.GridCoordSys.
  *
  * @author caron
- * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System Object
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System
+ *      Object
  *      Model</a>
  */
 public class CoordinateSystem {
