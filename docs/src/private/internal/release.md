@@ -53,8 +53,8 @@ If so, you can skip to step 4.
     - As long as we don't make it to the artifact publishing step, we can always fix any issues by squashing new commits and pushing to the branch on Unidata/netcdf-java
 
 1. Update Unidata download page
-    - check https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
-      * Edit (on machine www) `/content/downloads/netcdf-java/toc.xml` as needed
+    - check https://www.unidata.ucar.edu/downloads/netcdf-java/
+      * Edit (on machine www) `/content/downloads/netcdf-java/index.html` as needed
 
 1. Update netcdf-java landing page (if major or minor version change)
     - Edit (on machine www) /web/content/software/netcdf-java/index.html, update major.minor version string as needed.
