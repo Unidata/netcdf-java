@@ -10,9 +10,9 @@ permalink: cdm_netcdf_mapping.html
 
 last modified: June 2019
 
-The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html"> NetCDF-4 data model</a>. When reading netCDF-4 files, one is interested in the mapping from netCDF-4 to CDM. This mapping is relatively stable. As of version 4.3, the CDM can write to netCDF-4 files, and one is interested in the mapping from CDM to netCDF-4. This mapping is still being developed, eg to give users some control where needed.
+The CDM data model is close to, but not identical to the <a href="https://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html"> NetCDF-4 data model</a>. When reading netCDF-4 files, one is interested in the mapping from netCDF-4 to CDM. This mapping is relatively stable. As of version 4.3, the CDM can write to netCDF-4 files, and one is interested in the mapping from CDM to netCDF-4. This mapping is still being developed, eg to give users some control where needed.
 
-NetCDF-4 intentionally supports a simpler data model than HDF5, which means there are HDF5 files that cannot be converted to netCDF-4. See: <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15"> NetCDF</a>
+NetCDF-4 intentionally supports a simpler data model than HDF5, which means there are HDF5 files that cannot be converted to netCDF-4. See: <a href="https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15"> NetCDF</a>
 
 ### Data Model Differences
 

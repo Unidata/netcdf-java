@@ -422,7 +422,7 @@ objects are.
 
 Since there is no CoordinateSystem object directly stored in a netCDF
 file, CoordinateSystem information is encoded using a
-_http://www.unidata.ucar.edu/software/netcdf/conventions.html[Convention]_
+_https://www.unidata.ucar.edu/software/netcdf/conventions.html[Convention]_
 for adding Attributes, naming Variables and Dimensions, etc. in a
 standard way. The simplest and most direct way to add Coordinate Systems
 is to use the CDM <<CoordinateAttributes#,_Coordinate Attribute
@@ -444,7 +444,7 @@ that the IOSP writer follow an existing Convention and ensure that the
 Coordinate System information is correctly interpreted, particularly if
 you want to take advantage of the capabilities of the CDM Scientific
 Datatype Layer, such as serving the data through
-http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WCS.html[WCS]
+https://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WCS.html[WCS]
 or the
-http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService.html[Netcdf
+https://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService.html[Netcdf
 Subset Service].

@@ -136,7 +136,7 @@ public enum Calendar {
 
 /*
  * 
- * http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Time
+ * https://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Time
  * 
  * You should use a true calendar package rather than the UDUNITS-2 package to handle time. Having said that, many
  * people use

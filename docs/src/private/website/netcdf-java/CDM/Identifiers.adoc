@@ -55,11 +55,11 @@ high order bit set. So the excluded byte values are 0-31, 47, and 127.
 
 See:
 
-* http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf.html#File-Format[http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Classic-Format-Spec.html]
+* https://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf.html#File-Format[https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Classic-Format-Spec.html]
 
 == CDL
 
-A http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html[CDL]
+A https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html[CDL]
 (netCDF Definition Language) document is encoded in UTF-8. Certain
 characters must be escaped. The escape mechanism is to prepend a
 backslash *"\"* before the character.
@@ -79,7 +79,7 @@ idescaped =[ !"#$%&'()*,:;<=>?\[\\\]^`{|}~]
 
 == NcML
 
-A http://www.unidata.ucar.edu/software/netcdf/ncml/[NcML] (netCDF Markup
+A https://www.unidata.ucar.edu/software/netcdf/ncml/[NcML] (netCDF Markup
 Language) document uses http://www.w3.org/TR/xml/#charsets[standard XML
 encoding] and escaping.
 

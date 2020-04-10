@@ -80,7 +80,7 @@ these are not machine readable formats.
 4.  A parameter name is encouraged, and is added to the variable as an
 attribute with name "Grib_Parameter_Name".
 5.  Unidata encourages the use of
-http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html#Database[udunit
+https://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html#Database[udunit
 formatting] for expressing units.
 6.  We need to be able to find your tables. Add enough metadata so that
 a google search on "<your center name> GRIB tables" finds you within

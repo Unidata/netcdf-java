@@ -49,16 +49,16 @@ following example:
 -------------------------------------------------------------------------------------------------------------------
 <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="test/testData.nc" dataType="Grid">
 
-  <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/>
-  <property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/>
+  <property name="viewer" value="https://www.unidata.ucar.edu/staff/caron/,MyViewer"/>
+  <property name="viewer2" value="https://www.unidata.ucar.edu/,MyOtherViewer"/>
 </dataset>
 -------------------------------------------------------------------------------------------------------------------
 
 results in the following HTML fragment:
 
 ---------------------------------------------------------------
-<a href='http://www.unidata.ucar.edu/staff/caron/'>MyViewer</a>
-<a href='http://www.unidata.ucar.edu/'>MyOtherViewer</a>
+<a href='https://www.unidata.ucar.edu/staff/caron/'>MyViewer</a>
+<a href='https://www.unidata.ucar.edu/'>MyOtherViewer</a>
 ---------------------------------------------------------------
 
 Which looks like this on the TDS page:
@@ -76,7 +76,7 @@ children datasets:
 <dataset name="Test inherited viewer" ID="tiv">
   <metadata inherited="true">
     <serviceName>all</serviceName>
-    <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer" />
+    <property name="viewer" value="https://www.unidata.ucar.edu/staff/caron/,MyViewer" />
   </metadata>
   <dataset name="test inherited viewer ds 1" ID="tiv/ds1" urlPath="tiv/ds1.nc">
   <dataset name="test inherited viewer ds 2" ID="tiv/ds2" urlPath="tiv/ds2.nc">
@@ -92,7 +92,7 @@ generated dataset:
   <metadata
   inherited="true">
     <serviceName>all</serviceName>
-    <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer" />
+    <property name="viewer" value="https://www.unidata.ucar.edu/staff/caron/,MyViewer" />
   </metadata>
 </datasetScan>
 -----------------------------------------------------------------------------------------------------------
@@ -226,11 +226,11 @@ So, looking at an approximation of the IDV JNLP file:
 ----------------------------------------------------------------------------------
 <?xml version="1.0" encoding="utf-8"?>
 <!-- JNLP File for Integrated Data Viewer -->
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/idv/webstart/">
+<jnlp spec="1.0+" codebase="https://www.unidata.ucar.edu/software/idv/webstart/">
   <information>
     <title>Integrated Data Viewer</title>
     <vendor>Unidata</vendor>
-    <homepage href="http://www.unidata.ucar.edu/software/idv/index.html"/>
+    <homepage href="https://www.unidata.ucar.edu/software/idv/index.html"/>
     <description>Integrated Data Viewer(IDV)</description>
     <description kind="short">A tool for geoscientific analysis and visualization.
     </description>
@@ -381,12 +381,12 @@ return this JNLP file:
 
 -----------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/current/webstart">
+<jnlp spec="1.0+" codebase="https://www.unidata.ucar.edu/software/netcdf-java/current/webstart">
 
    <information>
      <title>NetCDF Tools UI</title>
      <vendor>Unidata</vendor>
-     <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
+     <homepage href="https://www.unidata.ucar.edu/software/netcdf-java/"/>
      <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
      <icon href="nc.gif"/>
      <offline-allowed/>
@@ -439,7 +439,7 @@ browser has Java webstart installed as a helper application (which
 happens when you install Java on your computer), the jnlp file is
 handled by the ``Java plugin'' on your browser, which downloads ToolsUI
 from wherever the jnlp file specifies, currently
-*http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart* +
+*https://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart* +
  +
  The jnlp file has been customized to include the command line argument
 of the form ``\{catalog}#\{dataset}'', and the ToolsUI application looks

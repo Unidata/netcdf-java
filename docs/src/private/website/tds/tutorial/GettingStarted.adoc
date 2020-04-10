@@ -30,7 +30,7 @@ No prior knowledge of Tomcat, Java, or the TDS needed.
 
 ==== JDK installation help
 
-Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the http://www.unidata.ucar.edu/mailing_lists/archives/thredds/[THREDDS mailing list] for installation help.
+Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the https://www.unidata.ucar.edu/mailing_lists/archives/thredds/[THREDDS mailing list] for installation help.
 
 * Oracle Java 8 (latest version)
 * Apache Tomcat 8.x
@@ -222,7 +222,7 @@ code from assuming a graphics console exists. Without this, WMS code
 will crash the server in some circumstances.
 * `-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs`
 allows the
-http://www.unidata.ucar.edu/software/thredds/current/tds/faq.html#javaUtilPrefs[java.util.prefs]
+https://www.unidata.ucar.edu/software/thredds/current/tds/faq.html#javaUtilPrefs[java.util.prefs]
 of the TDS WMS to write system preferences to a location that is
 writable by the Tomcat user.
 
@@ -353,9 +353,9 @@ is deployed.
 
 A <<Checklist#,maintenance checklist>> and contains helpful
 information about upgrading the TDS.
-http://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html[New
+https://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html[New
 features] and
-http://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html[configuration
+https://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html[configuration
 changes] made between TDS versions are listed for each release.
 
 ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war[Download]

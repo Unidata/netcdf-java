@@ -342,7 +342,7 @@ on your machine.
 
 The main use of netCDF-4 is to get the performance benefits from
 compression, and possibly from chunking
-(http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters[why
+(https://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters[why
 it matters]). **By default, the Java library will write chunked and
 compressed netcdf-4 files**, using the default chunking algorithm. To
 have your own control of chunking and compression, you must create a

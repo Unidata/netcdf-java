@@ -392,7 +392,7 @@ class N3headerWriter extends N3headerNew {
         raf.writeInt(0); // come back to this later
 
       // From nc3 file format specification
-      // (http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF-Classic-Format):
+      // (https://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF-Classic-Format):
       // Note on padding: In the special case of only a single record variable of character,
       // byte, or short type, no padding is used between data values.
       // 2/15/2011: we will continue to write the (incorrect) padded vsize into the header, but we will use the unpadded

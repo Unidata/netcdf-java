@@ -117,7 +117,7 @@ be set to one of: _All_, _None_, _ConvertEnums_, _ConvertUnsigned_, _ApplyScaleO
 _CoordSystems_ (case insensitive). For backwards compatibility, we also support _true_ (alias for _All_),
 _ScaleMissingDefer_ (alias for _None_), _AllDefer_ (combination of _ConvertEnums_ and _CoordSystems_), and
 _ScaleMissing_ (combination of _ConvertUnsigned_, _ApplyScaleOffset_, and _ConvertMissing_). The default is _None_. See
-http://www.unidata.ucar.edu/software/netcdf-java/tutorial/NetcdfDataset.html#enhance[NetcdfDataset.EnhanceMode].
+https://www.unidata.ucar.edu/software/netcdf-java/tutorial/NetcdfDataset.html#enhance[NetcdfDataset.EnhanceMode].
 9.  The optional _*addRecords*_ attribute is used only when the
 referenced datasets is a netCDF-3 file. If true (default false) then a
 Structure named _*record*_ is added, containing the record (unlimited)
@@ -126,7 +126,7 @@ dimension.
 10. These 3 parameters control how the referenced dataset is opened by
 the IOServiceProvider. If *iosp* is specified, its value must be a fully
 qualified class name of an
-*http://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html[IOServiceProvider]*
+*https://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html[IOServiceProvider]*
 class that knows how to open the file specified by **location**. The
 optional *iospParam* is passed to the IOSP through the
 **IOServiceProvider**.setSpecial() method. The optional *bufferSize*
@@ -647,7 +647,7 @@ both.
 11. If *olderThan* attribute is present, only files whose last modified
 date are older than this amount of time will be included. This is a way
 to exclude files that are still being written. This must be a
-http://www.unidata.ucar.edu/software/udunits/[udunit] time such as "5
+https://www.unidata.ucar.edu/software/udunits/[udunit] time such as "5
 min" or "1 hour".
 12. A *dateFormatMark* is used on *_joinNew_* types to create date
 coordinate values out of the filename. It consists of a section of text,
@@ -704,7 +704,7 @@ name to join.
 18. _**The recheckEvery attribute only applies when using a scan
 element**._ When you are using scan elements on a set of files that may
 change, and you are using caching, set *recheckEvery* to a valid
-http://www.unidata.ucar.edu/software/udunits/[udunit] time value, like
+https://www.unidata.ucar.edu/software/udunits/[udunit] time value, like
 "10 min", "1 hour", "30 days", etc. Whenever the dataset is
 reacquired from the cache, the directories will be rescanned if
 *recheckEvery* amount of time has elapsed since the last time it was

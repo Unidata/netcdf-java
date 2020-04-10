@@ -39,7 +39,7 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * NUWG Convention (ad hoc).
- * see http://www.unidata.ucar.edu/software/netcdf/NUWG/
+ * see https://www.unidata.ucar.edu/software/netcdf/NUWG/
  */
 public class NUWGConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "NUWG";

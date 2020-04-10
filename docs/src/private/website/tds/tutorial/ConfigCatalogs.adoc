@@ -168,7 +168,7 @@ files.
 
 You can check that a data file is recognized as ``gridded'' with
 netCDF-Java ToolsUI (available for download from the
-http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java home page]
+https://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java home page]
 or you can use
 https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[webstart]).
 

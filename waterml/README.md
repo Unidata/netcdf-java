@@ -1,6 +1,6 @@
 # waterml
 
-Converts [CDM DSGs](http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/PointFeatures.html)
+Converts [CDM DSGs](https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/PointFeatures.html)
 (currently just Station time series features) to [WaterML 2.0 timeseries](http://www.opengeospatial.org/standards/waterml).
 
 ## Inclusion of third-party software

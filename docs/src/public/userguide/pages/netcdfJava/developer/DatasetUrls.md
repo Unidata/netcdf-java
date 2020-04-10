@@ -34,7 +34,7 @@ When using a file location that has an embedded `:` char, eg `C:/share/data/mode
 `NetcdfFile` can open HTTP remote files, [served over HTTP](read_over_http.html
 ), for example:
 
-* http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
+* https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
 
 The HTTP server must implement the getRange header and functionality.
 Performance will be strongly affected by file format and the data access pattern.

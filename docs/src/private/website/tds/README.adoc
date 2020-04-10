@@ -66,13 +66,13 @@ Configuration is made as simple and as automatic as possible, and we
 have made the server as secure as possible. The library is freely
 available and the source code is released under the (MIT-style) netCDF
 library
-http://www.unidata.ucar.edu/software/netcdf/copyright.html[license].
+https://www.unidata.ucar.edu/software/netcdf/copyright.html[license].
 
 *Writing to netCDF-4 files is supported through the netCDF C library
 only.
 
 Much of the realtime data available over the Unidata
-http://www.unidata.ucar.edu/software/idd/index.html[Internet Data
+https://www.unidata.ucar.edu/software/idd/index.html[Internet Data
 Distribution] (IDD) is available through a THREDDS Data Server hosted at
 Unidata on http://thredds.ucar.edu/thredds/[thredds.ucar.edu]. You are
 welcome to browse and access these meteorological datasets. If you need
@@ -137,6 +137,6 @@ Ferret-THREDDS Data Server (F-TDS)]
 
 * <<catalog/index#,THREDDS Catalogs>>
 * Fact Sheet
-[http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc[Word
+[https://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc[Word
 Doc]]
-[http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf[PDF]]
+[https://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf[PDF]]

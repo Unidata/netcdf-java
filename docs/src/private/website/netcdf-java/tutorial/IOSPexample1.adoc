@@ -276,7 +276,7 @@ so, you need to understand the Conventions used by these layers. In this
 case, we have Point data, so we are going to use Unidata’s
 <<../reference/CoordinateAttributes#,_Coordinate Conventions>> and
 Unidata’s
-http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html[Point
+https://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html[Point
 Observation Conventions] which requires us to add certain attributes.
 The payoff is that we can then look at our data through the Point tab of
 the ToolsUI.

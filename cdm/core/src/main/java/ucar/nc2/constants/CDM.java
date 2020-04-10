@@ -21,7 +21,7 @@ public class CDM {
   public static final String FIELD_ATTS = "_field_atts"; // netcdf4 compound atts
 
   // from the Netcdf Users Guide
-  // http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions
+  // https://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions
   public static final String ABBREV = "abbreviation";
   public static final String ADD_OFFSET = "add_offset";
   public static final String CONVENTIONS = "Conventions";
