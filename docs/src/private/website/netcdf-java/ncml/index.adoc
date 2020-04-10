@@ -8,7 +8,7 @@
 NcML is an XML representation of netCDF metadata, (approximately) the
 header information one gets from a netCDF file with the "ncdump -h" command. 
 NcML is similar to the netCDF
-http://www.unidata.ucar.edu/packages/netcdf/guidec/guidec-15.html#HEADING15-0[CDL]
+http://www.unidata.ucar.edu/software/netcdf/guidec/guidec-15.html#HEADING15-0[CDL]
 (network Common data form Description Language), except, of course, it
 uses XML syntax.
 

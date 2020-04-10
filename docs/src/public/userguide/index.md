@@ -20,7 +20,7 @@ The [THREDDS Data Server (TDS)](https://www.unidata.ucar.edu/software/thredds/cu
 
 NetCDF-Java is Free and Open Source Software, and is hosted on [GitHub](https://github.com/unidata/netcdf-java){:target="_blank"}.
 To build the latest stable version from source or contribute code to the netCDF-Java project, [see here](building_from_source.html).
-Most projects use netcdfAll.jar or toolsUI.jar (download [here](https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp){:target="_blank"}), or include the desired artifacts in their maven or gradle builds.
+Most projects use netcdfAll.jar or toolsUI.jar (download [here](https://www.unidata.ucar.edu/downloads/netcdf-java/){:target="_blank"}), or include the desired artifacts in their maven or gradle builds.
 See [Using netCDF-Java Maven Artifacts](using_netcdf_java_artifacts.html) for details.
 
 As of version 5.0, netCDF-Java is released under the BSD-3 licence, which can be found can be found [here](https://github.com/Unidata/netcdf-java/blob/master/LICENSE){:target="_blank"}.
