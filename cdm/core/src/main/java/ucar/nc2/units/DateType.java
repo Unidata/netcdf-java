@@ -28,7 +28,7 @@ import ucar.nc2.time.CalendarPeriod;
  * </ol>
  *
  * @author john caron
- * @see <a href=""http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateType"">THREDDS
+ * @see <a href=""https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateType"">THREDDS
  *      dateType</a>
  */
 

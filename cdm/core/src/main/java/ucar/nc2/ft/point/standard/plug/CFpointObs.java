@@ -31,7 +31,7 @@ import ucar.nc2.ft.point.standard.TableConfigurerImpl;
  *
  * @author caron
  * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries"
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/CFencodingTable.html"
+ * @see "https://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/CFencodingTable.html"
  * @since Nov 3, 2008
  */
 public class CFpointObs extends TableConfigurerImpl {

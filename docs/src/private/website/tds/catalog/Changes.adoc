@@ -31,7 +31,7 @@ attributes. +
 
 * The version attribute is ``1.0.1'' .
 * The schema can be found
-http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[here].
+https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[here].
 However, you should tell your parser to resolve to a local copy of it,
 both for performance and to decouple with Unidata’s web server.
 

@@ -31,7 +31,7 @@ XML Spy, or an IDE like IntelliJ, Eclipse, or NetBeans that have
 context-sensitive XML editing.
 
 For these exercises, you should
-http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[run
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[run
 ToolsUI from webstart] or
 ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/toolsUI-4.5.jar[download
 the ToolsUI application] and run it locally from the jar.

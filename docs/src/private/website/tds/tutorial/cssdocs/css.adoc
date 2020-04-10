@@ -132,8 +132,8 @@ How many to a parent: 1..1
         <head>
          <title>TDS Tutorial: PAGE TITLE</title>
          <link rel="stylesheet" href="tutorial.css" type="text/css" /> 
-         <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
-         <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon" />
+         <script language="JavaScript1.2" src="https://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
+         <link rel="SHORTCUT ICON" href="https://www.unidata.ucar.edu/favicon.ico" type="image/x-icon" />
         </head>
         <body>
      

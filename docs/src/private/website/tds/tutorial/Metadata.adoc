@@ -90,7 +90,7 @@ The example enhanced catalog lives at
       </creator>
       <publisher>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
       </publisher>
       <timeCoverage>
         <end>present</end>
@@ -203,9 +203,9 @@ datasets in a collection differ only in their time coverage.
 
 == Resources
 
-* http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html[THREDDS
+* https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html[THREDDS
 Catalog 1.0 Specification]
-* http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html[NetCDF
+* https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html[NetCDF
 Attribute Convention for Dataset Discovery]
 * <<../catalog/InvCatalogSpec#,THREDDS Catalog specification>> -
 <<../catalog/InvCatalogSpec#threddsMetadataGroup<<Metadata

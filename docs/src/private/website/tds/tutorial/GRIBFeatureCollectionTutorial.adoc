@@ -17,9 +17,9 @@ Reference>>
 
 The featureCollection element is a way to tell the TDS to serve
 collections of
-http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html[CDM
+https://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html[CDM
 Feature Datasets]. Currently this is used mostly for
-http://www.unidata.ucar.edu/software/netcdf-java/tutorial/GridDatatype.html[gridded
+https://www.unidata.ucar.edu/software/netcdf-java/tutorial/GridDatatype.html[gridded
 data] whose time and spatial coordinates are recognized by the CDM
 software stack. In this tutorial, we will work with featureCollection
 for collections of GRIB files.

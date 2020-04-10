@@ -112,6 +112,6 @@ _Comments to mailto:thredds@unidata.ucar.edu[THREDDS mailgroup] or
 mailto:support-thredds@unidata.ucar.edu[THREDDS support]  _
 
 _Go to:
-http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html[THREDDS
-Tech Page]_ or _http://www.unidata.ucar.edu/projects/THREDDS/[THREDDS
+https://www.unidata.ucar.edu/projects/THREDDS/tech/index.html[THREDDS
+Tech Page]_ or _https://www.unidata.ucar.edu/projects/THREDDS/[THREDDS
 Home Page]_ image:../../thredds.jpg[image] +

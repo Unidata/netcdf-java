@@ -8,16 +8,16 @@
 
 === For more information
 
-* http://www.unidata.ucar.edu/software/netcdf/ncml/[NetCDF Markup
+* https://www.unidata.ucar.edu/software/netcdf/ncml/[NetCDF Markup
 Language]
-* http://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html[NcML
+* https://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html[NcML
 Aggregation]
 * <<../reference/DatasetScan#,DatasetScan>>
-* http://www.unidata.ucar.edu/software/netcdf/ncml/FmrcAggregation.html[FMRC
+* https://www.unidata.ucar.edu/software/netcdf/ncml/FmrcAggregation.html[FMRC
 Aggregation]
 
 An *NcML document* is an XML document that uses the
-http://www.unidata.ucar.edu/software/netcdf/ncml/[NetCDF Markup
+https://www.unidata.ucar.edu/software/netcdf/ncml/[NetCDF Markup
 Language] to define a **CDM dataset**. NcML can be embedded directly
 into the TDS catalogs to achieve a number of powerful features, shown
 below. This embedded NcML is only useful in the TDS server catalogs, it
@@ -66,7 +66,7 @@ You can use use NcML to modify an existing CDM dataset:
 
 ==== For more information
 
-See http://www.unidata.ucar.edu/software/netcdf/ncml/Tutorial.html[NcML
+See https://www.unidata.ucar.edu/software/netcdf/ncml/Tutorial.html[NcML
 Tutorial] for more details.
 
 ==== Notes:
@@ -154,7 +154,7 @@ Here is an example that defines a dataset using NcML aggregation.
 ==== For more information
 
 See
-http://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html[NcML
+https://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html[NcML
 Aggregation] for more details.
 
 ==== Notes:
@@ -346,7 +346,7 @@ Now start up
 https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[ToolsUI],
 and in the viewer tab, navigate to `test.ncml` and try to open it.
 2.  If the dataset is
-http://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html#dynamic[dynamic]
+https://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html#dynamic[dynamic]
 (files can be added or deleted), add the `recheckEvery` attribute on the
 `scan` element and open the dataset, then reopen after a new file has
 arrived (and `recheckEvery` time has passed). Generally you make

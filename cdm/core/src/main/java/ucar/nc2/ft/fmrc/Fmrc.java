@@ -55,7 +55,7 @@ public class Fmrc implements Closeable {
    * @param errlog place error messages here
    * @return Fmrc or null on error
    * @throws IOException on read error
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
    */
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
     if (collection.startsWith(MFileCollectionManager.CATALOG)) {

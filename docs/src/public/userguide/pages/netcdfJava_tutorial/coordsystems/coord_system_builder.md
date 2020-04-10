@@ -14,7 +14,7 @@ In order to use a dataset at the scientific datatype layer, the dataset's coordi
 
 For more details, see the <a href="common_data_model_overview.html">CDM Object Model</a>.
 
-A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="https://www.unidata.ucar.edu/software/netcdf/conventions.html" target="_blank">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define and document a new Convention in collaboration with others with similar needs. If you do so, read <a href="https://www.unidata.ucar.edu/software/netcdf/documentation/NUG/_best_practices.html" target="_blank">Writing NetCDF Files: Best Practices</a>, look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">NetCDF Conventions page</a>.
+A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="https://www.unidata.ucar.edu/software/netcdf/conventions.html" target="_blank">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define and document a new Convention in collaboration with others with similar needs. If you do so, read <a href="https://www.unidata.ucar.edu/software/netcdf/documentation/NUG/_best_practices.html" target="_blank">Writing NetCDF Files: Best Practices</a>, look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="https://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">NetCDF Conventions page</a>.
 
 The steps to using your CoordSysBuilderIF class in the Netcdf-Java library:
 
@@ -142,7 +142,7 @@ The <b>_NcMLReader.wrapNcMLresource()_</b> looks for the NcML document by callin
 </netcdf>
 ~~~
 
-The NcML adds the appropriate <b>__CoordinateAxisType_</b> attribute to existing Coordinate Axes. Because the data variables all use coordinate variables, implicit Coordinate System objects are created and assigned. There is no need for Coordinate Transforms because all the coordinates are reference coordinates (lat, lon, height). <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/" target="_blank">Here</a> is complete info on NcML.
+The NcML adds the appropriate <b>__CoordinateAxisType_</b> attribute to existing Coordinate Axes. Because the data variables all use coordinate variables, implicit Coordinate System objects are created and assigned. There is no need for Coordinate Transforms because all the coordinates are reference coordinates (lat, lon, height). <a href="https://www.unidata.ucar.edu/software/netcdf/ncml/" target="_blank">Here</a> is complete info on NcML.
 
 If all you need to do is wrap the dataset in NcML, and the dataset already has a Convention attribute in it (before it is wrapped), then you can simply register the NcML directly, without having to write any code. For this, you use:
 

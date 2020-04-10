@@ -33,10 +33,10 @@ A _*Structure*_ is a NetCDF Variable that contains other Variables, like
 a *struct* in C. All of the data in a Structure are stored together on
 disk, so it is efficient to read all the data in a Structure in a single
 read. Structures are a new part of NetCDF, introduced in the
-http://www.unidata.ucar.edu/software/netcdf-java/index.html[NetCDF-Java]
+https://www.unidata.ucar.edu/software/netcdf-java/index.html[NetCDF-Java]
 library, version 2.2 as part of the Common Data Model (CDM), and also
 implemented in the
-http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4]
+https://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4]
 library.
 
 Since data for Record variables is stored together on disk, this
@@ -509,5 +509,5 @@ examples here where different data types might use identical data
 structures. We recommend explicitly describing the file’s data type,
 especially its connectivity and its coordinate system(s), in the file
 metadata and in a human-readable
-http://www.unidata.ucar.edu/software/netcdf/conventions.html[Conventions]
+https://www.unidata.ucar.edu/software/netcdf/conventions.html[Conventions]
 document.

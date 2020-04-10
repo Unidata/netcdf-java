@@ -19,10 +19,10 @@ A _*Structure*_ is a NetCDF Variable that contains other Variables, like
 a *struct* in C. All of the data in a Structure are stored together on
 disk, so that it should be efficient to read all the data in a Structure
 in a single read. Structures are a new part of NetCDF, introduced in the
-http://www.unidata.ucar.edu/software/netcdf-java/index.html[NetCDF-Java]
+https://www.unidata.ucar.edu/software/netcdf-java/index.html[NetCDF-Java]
 library, version 2.2 as part of the Common Data Model, and will also be
 implemented in
-http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4].
+https://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4].
 
 In the NetCDF version 3 data model, _*Record variables*_ are ones that
 use the *unlimited dimension* (also known as the **record dimension**),

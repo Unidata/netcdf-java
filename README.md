@@ -12,7 +12,7 @@ It also implements Unidata's Common Data Model (CDM) to provide data geolocation
 
 For more information about netCDF-Java/CDM, see the netCDF-Java web page at
 
-* http://www.unidata.ucar.edu/software/netcdf-java/
+* https://www.unidata.ucar.edu/software/netcdf-java/
 
 and the CDM web page at
 
@@ -20,7 +20,7 @@ https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/common_data_model_overvi
 
 You can obtain a copy of the latest released version of netCDF-Java software from
 
-* http://www.unidata.ucar.edu/downloads/netcdf-java/
+* https://www.unidata.ucar.edu/downloads/netcdf-java/
 
 More documentation can be found at
 
@@ -29,7 +29,7 @@ More documentation can be found at
 A mailing list, netcdf-java@unidata.ucar.edu, exists for discussion of all things netCDF-Java/CDM including announcements about netCDF-Java/CDM bugs, fixes, enhancements, and releases.
 For information about how to subscribe, see the "Subscribe" link on this page
 
-* http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/
+* https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/
 
 For more general netCDF discussion, see the netcdfgroup@unidata.ucar.edu email list.
 
