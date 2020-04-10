@@ -1449,7 +1449,7 @@ Aggregation Server configuration. A _File_ dataset is not readable by
 remote clients. *HTTPServer* should be used when your file is being
 served by an HTTP (Web) Server. This is used for bulk transfer just like
 FTP, and also can be used by the
-http://www.unidata.ucar.edu/packages/netcdf-java/[Java-NetCDF library]
+http://www.unidata.ucar.edu/software/netcdf-java/[Java-NetCDF library]
 to access NetCDF files remotely (in that case just make sure that the
 dataset has dataFormatType NetCDF or NcML).
 

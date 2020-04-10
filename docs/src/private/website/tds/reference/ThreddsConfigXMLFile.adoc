@@ -433,7 +433,7 @@ detail on the <<ncISO#,ncISO page>>.
 -----------------------------------------
 
 In order to write netCDF-4 files, you must have the
-http://www.unidata.ucar.edu/downloads/netcdf/index.jsp[netCDF-4 C library]—version 4.3.1 or above—compiled and
+http://www.unidata.ucar.edu/downloads/netcdf/[netCDF-4 C library]—version 4.3.1 or above—compiled and
 available on your system, along with all supporting libraries (HDF5, zlib, and curl). The
 <<../../netcdf-java/reference/netcdf4Clibrary.html#,details>> of this differ for each operating system. The elements
 above allow you to configure how the library is discovered and used.
