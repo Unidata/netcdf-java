@@ -284,7 +284,7 @@ modification with each line including a timestamp, user name, 
 modification name, and modification arguments. Its use is recommended
 and its value will be used by THREDDS as a history-type documentation.
 The "history" attribute is recommended by the
-link:/packages/netcdf/docs/netcdf/[NetCDF Users Guide] and the
+link:/software/netcdf/docs/netcdf/[NetCDF Users Guide] and the
 http://www.cgd.ucar.edu/cms/eaton/cf-metadata/[CF convention].
 
 === id and naming_authority Attributes
@@ -447,7 +447,7 @@ The "title" attribute gives a brief description of the dataset. Its
 use is highly recommended and its value will be used by THREDDS as the
 name of the dataset. It therefore should be human readable and
 reasonable to display in a list of such names. The "title" attribute
-is recommended by the "link:/packages/netcdf/docs/netcdf/[NetCDF Users
+is recommended by the "link:/software/netcdf/docs/netcdf/[NetCDF Users
 Guide]" and the http://www.cgd.ucar.edu/cms/eaton/cf-metadata/[CF
 convention].
 
