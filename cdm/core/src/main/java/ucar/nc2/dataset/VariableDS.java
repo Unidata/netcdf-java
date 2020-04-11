@@ -222,7 +222,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     // Initialize EnhanceScaleMissingUnsignedImpl. We can't do this in the constructors because this object may not
     // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is
     // constructed first, and then Attributes are added to it later.
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this);
+    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
 
     if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
       setDataType(DataType.STRING); // LOOK promote data type to STRING ????
@@ -260,8 +260,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       if (this.isVariableLength) {
         return data;
       }
-      return scaleMissingUnsignedProxy.convert(data, enhancements.contains(Enhance.ConvertUnsigned),
-          enhancements.contains(Enhance.ApplyScaleOffset), enhancements.contains(Enhance.ConvertMissing));
+      return scaleMissingUnsignedProxy.convert(data,
+          enhancements.contains(Enhance.ConvertUnsigned),
+          enhancements.contains(Enhance.ApplyScaleOffset),
+          enhancements.contains(Enhance.ConvertMissing));
     }
   }
 
@@ -428,15 +430,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return convert(result);
   }
 
-  // do not call directly
-  @Override
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    if (orgVar == null)
-      return getMissingDataArray(shape);
-
-    return orgVar.read();
-  }
-
   // section of regular Variable
   @Override
   protected Array _read(Section section) throws IOException, InvalidRangeException {
@@ -451,6 +444,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       result = proxyReader.reallyRead(this, section, null);
 
     return convert(result);
+  }
+
+  // do not call directly
+  @Override
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    if (orgVar == null)
+      return getMissingDataArray(shape);
+
+    return orgVar.read();
   }
 
   // do not call directly
@@ -753,7 +755,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   // TODO make these final and immutable in 6.
   private EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl();
-  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
+  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // The set of enhancements that were made.
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O
   protected DataType orgDataType; // keep separate for the case where there is no orgVar.
@@ -780,12 +782,16 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     this.orgFileTypeId = builder.orgFileTypeId;
     this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.getDescription());
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this);
+    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
     this.scaleMissingUnsignedProxy.setFillValueIsMissing(builder.fillValueIsMissing);
     this.scaleMissingUnsignedProxy.setInvalidDataIsMissing(builder.invalidDataIsMissing);
     this.scaleMissingUnsignedProxy.setMissingDataIsMissing(builder.missingDataIsMissing);
 
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
+    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
+      this.dataType = DataType.STRING; // LOOK promote enum data type to STRING ????
+    }
+
+    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isEnum()) {
       // We may need a larger data type to hold the results of the unsigned conversion.
       this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType();
     }

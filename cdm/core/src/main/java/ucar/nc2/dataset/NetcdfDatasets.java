@@ -160,13 +160,12 @@ public class NetcdfDatasets {
    * @throws IOException on io error
    */
   public static NetcdfDataset enhance(NetcdfFile ncfile, Set<Enhance> mode, CancelTask cancelTask) throws IOException {
-
     if (ncfile instanceof NetcdfDataset) {
       NetcdfDataset ncd = (NetcdfDataset) ncfile;
       NetcdfDataset.Builder builder = ncd.toBuilder();
       if (DatasetEnhancer.enhanceNeeded(mode, ncd.getEnhanceMode())) {
-        DatasetEnhancer enhancer = new DatasetEnhancer(ncfile, builder, mode, cancelTask);
-        return enhancer.enhance();
+        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
+        return enhancer.enhance(ncfile);
       } else {
         return ncd;
       }
@@ -175,8 +174,8 @@ public class NetcdfDatasets {
     // original file not a NetcdfDataset
     NetcdfDataset.Builder builder = NetcdfDataset.builder(ncfile);
     if (DatasetEnhancer.enhanceNeeded(mode, null)) {
-      DatasetEnhancer enhancer = new DatasetEnhancer(ncfile, builder, mode, cancelTask);
-      return enhancer.enhance();
+      DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
+      return enhancer.enhance(ncfile);
     }
     return builder.build();
   }
@@ -404,30 +403,30 @@ public class NetcdfDatasets {
     // look for dynamically loaded NetcdfFileProvider
     for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
       if (provider.isOwnerOf(durl)) {
-        return provider.open(durl.trueurl, cancelTask);
+        return provider.open(durl.getTrueurl(), cancelTask);
       }
     }
 
     // look for providers who do not have an associated ServiceType.
     for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
-      if (provider.isOwnerOf(durl.trueurl)) {
-        return provider.open(durl.trueurl, cancelTask);
+      if (provider.isOwnerOf(durl.getTrueurl())) {
+        return provider.open(durl.getTrueurl(), cancelTask);
       }
     }
 
     // Otherwise we are dealing with a file or a remote http file.
-    if (durl.serviceType != null) {
-      switch (durl.serviceType) {
+    if (durl.getServiceType() != null) {
+      switch (durl.getServiceType()) {
         case File:
         case HTTPServer:
           break; // fall through
 
         default:
-          throw new IOException("Unknown service type: " + durl.serviceType);
+          throw new IOException("Unknown service type: " + durl.getServiceType());
       }
     }
 
     // Open as a file or remote file
-    return NetcdfFiles.open(durl.trueurl, buffer_size, cancelTask, spiObject);
+    return NetcdfFiles.open(durl.getTrueurl(), buffer_size, cancelTask, spiObject);
   }
 }

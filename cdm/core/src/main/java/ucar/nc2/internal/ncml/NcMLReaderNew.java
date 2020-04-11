@@ -43,6 +43,7 @@ import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableDS.Builder;
+import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
@@ -260,7 +261,7 @@ public class NcMLReaderNew {
       Element netcdfElem = doc.getRootElement();
 
       NcMLReaderNew reader = new NcMLReaderNew();
-      reader.readNetcdf(ncmlResourceLocation, ncDataset, netcdfElem, cancelTask);
+      reader.readNetcdf(ncDataset.location, ncDataset, netcdfElem, cancelTask);
       if (debugOpen) {
         System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
       }
@@ -269,8 +270,7 @@ public class NcMLReaderNew {
 
   /**
    * Use NCML to modify the referenced dataset, create a new dataset with the merged info Used to wrap each dataset of
-   * an aggregation before
-   * its aggregated
+   * an aggregation before its aggregated.
    *
    * @param ref referenced dataset
    * @param ncmlElem parent element - usually the aggregation element of the ncml
@@ -403,7 +403,7 @@ public class NcMLReaderNew {
     }
 
     // Doesnt have to have a referenced dataset, Ncml can be self-contained.
-    // If exists, open the referenced dataset - do NOT use acquire, and dont enhance
+    // If it exists, open the referenced dataset - do NOT use acquire, and dont enhance.
     if (referencedDatasetUri != null) {
       if (iospS != null) {
         try {
@@ -488,7 +488,12 @@ public class NcMLReaderNew {
     // enhance means do scale/offset and/or add CoordSystems
     Set<NetcdfDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
+      // cant just set enhance mode
       builder.setEnhanceMode(mode);
+      if (DatasetEnhancer.enhanceNeeded(mode, null)) {
+        DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
+        enhancer.enhance();
+      }
     }
 
     /*
@@ -932,7 +937,7 @@ public class NcMLReaderNew {
     String dimNames = varElem.getAttributeValue("shape"); // list of dimension names
     if (dimNames != null) {
       List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
-      v.addDimensions(varDims); // TODO check conformable
+      v.setDimensions(varDims); // TODO check conformable
     }
 
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);

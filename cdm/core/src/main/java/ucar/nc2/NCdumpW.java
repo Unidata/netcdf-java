@@ -9,7 +9,7 @@ import com.google.common.base.Predicate;
 import java.nio.charset.StandardCharsets;
 import org.jdom2.Element;
 import ucar.ma2.*;
-import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
@@ -60,7 +60,7 @@ public class NCdumpW {
       return false;
     }
 
-    try (NetcdfFile nc = NetcdfDatasets.openFile(filename, ct)) {
+    try (NetcdfFile nc = NetcdfDataset.openFile(filename, ct)) {
       // the rest of the command
       int pos = command.indexOf(filename);
       command = command.substring(pos + filename.length());
@@ -149,7 +149,7 @@ public class NCdumpW {
    */
   public static boolean print(String filename, Writer out, boolean showAll, boolean showCoords, boolean ncml,
       boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws IOException {
-    try (NetcdfFile nc = NetcdfDatasets.openFile(filename, ct)) {
+    try (NetcdfFile nc = NetcdfDataset.openFile(filename, ct)) {
       return print(nc, out, showAll, showCoords, ncml, strict, varNames, ct);
     } catch (java.io.FileNotFoundException e) {
       out.write("file not found= ");
@@ -715,7 +715,7 @@ public class NCdumpW {
     // pull out the filename from the command
     String filename = args[0];
     try (Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
-        NetcdfFile nc = NetcdfDatasets.openFile(filename, null)) {
+        NetcdfFile nc = NetcdfDataset.openFile(filename, null)) {
       // the rest of the command
       StringBuilder command = new StringBuilder();
       for (int i = 1; i < args.length; i++) {

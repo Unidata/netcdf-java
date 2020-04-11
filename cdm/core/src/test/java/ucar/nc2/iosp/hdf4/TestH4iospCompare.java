@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -27,9 +29,7 @@ import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Compare objects in original N3iosp vs N3iospNew using builders.
- */
+/** Compare objects in original H4iosp vs H4iospNew using builders. */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestH4iospCompare {
@@ -59,7 +59,7 @@ public class TestH4iospCompare {
     try (NetcdfFile org = NetcdfFile.open(filename)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f);
         if (!compare.compare(org, withBuilder, new DimensionsFilter())) {
           System.out.printf("Compare %s%n%s%n", filename, f);
           fail();

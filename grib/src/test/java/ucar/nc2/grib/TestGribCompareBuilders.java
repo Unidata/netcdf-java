@@ -47,7 +47,6 @@ public class TestGribCompareBuilders {
   }
 
   private final String filename;
-  private final boolean compareData = true;
 
   public TestGribCompareBuilders(String filename) {
     this.filename = filename;
@@ -59,7 +58,7 @@ public class TestGribCompareBuilders {
     try (NetcdfFile org = NetcdfFile.open(filename)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, compareData);
+        CompareNetcdf2 compare = new CompareNetcdf2(f);
         if (!compare.compare(org, withBuilder, null)) {
           System.out.printf("Compare %s%n%s%n", filename, f);
           fail();

@@ -29,14 +29,12 @@ public class DatasetEnhancer {
     return false;
   }
 
-  private final NetcdfFile ncfile;
-  private final NetcdfDataset.Builder ds;
+  private final NetcdfDataset.Builder dsBuilder;
   private final Set<Enhance> wantEnhance;
   private final CancelTask cancelTask;
 
-  public DatasetEnhancer(NetcdfFile ncfile, NetcdfDataset.Builder ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
-    this.ncfile = ncfile;
-    this.ds = ds;
+  public DatasetEnhancer(NetcdfDataset.Builder ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
+    this.dsBuilder = ds;
     this.wantEnhance = wantEnhance == null ? EnumSet.noneOf(Enhance.class) : wantEnhance;
     this.cancelTask = cancelTask;
   }
@@ -98,36 +96,69 @@ public class DatasetEnhancer {
    * 2) enhance(EnumSet<Enhance> mode) is called.
    *
    * Possible remove all direct access to Variable.enhance
+   * 
+   * @deprecated use enhance() which does not default to old CoordSysBuilder
    */
-  public NetcdfDataset enhance() throws IOException {
+  @Deprecated
+  public NetcdfDataset enhance(NetcdfFile ncfile) throws IOException {
     // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
     CoordSystemBuilder coordSysBuilder = null;
-    if (wantEnhance.contains(Enhance.CoordSystems) && !ds.enhanceMode.contains(Enhance.CoordSystems)) {
-      Optional<CoordSystemBuilder> hasNewBuilder = CoordSystemFactory.factory(ds, cancelTask);
+    if (wantEnhance.contains(Enhance.CoordSystems) && !dsBuilder.getEnhanceMode().contains(Enhance.CoordSystems)) {
+      Optional<CoordSystemBuilder> hasNewBuilder = CoordSystemFactory.factory(dsBuilder, cancelTask);
       if (!hasNewBuilder.isPresent()) {
-        return useOldBuilder();
+        return useOldBuilder(ncfile);
       }
       coordSysBuilder = hasNewBuilder.get();
       coordSysBuilder.augmentDataset(cancelTask);
-      ds.setConventionUsed(coordSysBuilder.getConventionUsed());
+      dsBuilder.setConventionUsed(coordSysBuilder.getConventionUsed());
     }
 
-    enhanceGroup(ds.rootGroup);
+    enhanceGroup(dsBuilder.rootGroup);
 
     // now find coord systems which may change some Variables to axes, etc
     if (coordSysBuilder != null) {
       // temporarily set enhanceMode if incomplete coordinate systems are allowed
       if (wantEnhance.contains(Enhance.IncompleteCoordSystems)) {
-        ds.enhanceMode.add(Enhance.IncompleteCoordSystems);
+        dsBuilder.addEnhanceMode(Enhance.IncompleteCoordSystems);
         coordSysBuilder.buildCoordinateSystems();
-        ds.enhanceMode.remove(Enhance.IncompleteCoordSystems);
+        dsBuilder.removeEnhanceMode(Enhance.IncompleteCoordSystems);
       } else {
         coordSysBuilder.buildCoordinateSystems();
       }
     }
 
-    ds.enhanceMode.addAll(wantEnhance);
-    return ds.build();
+    dsBuilder.addEnhanceModes(wantEnhance);
+    return dsBuilder.build();
+  }
+
+  public NetcdfDataset.Builder enhance() throws IOException {
+    // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
+    CoordSystemBuilder coordSysBuilder = null;
+    if (wantEnhance.contains(Enhance.CoordSystems) && !dsBuilder.getEnhanceMode().contains(Enhance.CoordSystems)) {
+      Optional<CoordSystemBuilder> hasNewBuilder = CoordSystemFactory.factory(dsBuilder, cancelTask);
+      if (hasNewBuilder.isPresent()) {
+        coordSysBuilder = hasNewBuilder.get();
+        coordSysBuilder.augmentDataset(cancelTask);
+        dsBuilder.setConventionUsed(coordSysBuilder.getConventionUsed());
+      }
+    }
+
+    enhanceGroup(dsBuilder.rootGroup);
+
+    // now find coord systems which may change some Variables to axes, etc
+    if (coordSysBuilder != null) {
+      // temporarily set enhanceMode if incomplete coordinate systems are allowed
+      if (wantEnhance.contains(Enhance.IncompleteCoordSystems)) {
+        dsBuilder.addEnhanceMode(Enhance.IncompleteCoordSystems);
+        coordSysBuilder.buildCoordinateSystems();
+        dsBuilder.removeEnhanceMode(Enhance.IncompleteCoordSystems);
+      } else {
+        coordSysBuilder.buildCoordinateSystems();
+      }
+    }
+
+    dsBuilder.addEnhanceModes(wantEnhance);
+    return dsBuilder;
   }
 
   private void enhanceGroup(Group.Builder group) {
@@ -190,9 +221,9 @@ public class DatasetEnhancer {
 
     // enhance() may have been called previously, with a different enhancement set.
     // So, we need to reset to default before we process this new set.
-    // if (vb.orgDataType != null) {
-    // vb.setDataType(vb.orgDataType); // LOOK needed ?
-    // }
+    if (vb.orgDataType != null) {
+      vb.setDataType(vb.orgDataType);
+    }
 
     if (varEnhance.contains(Enhance.ConvertEnums) && vb.dataType.isEnum()) {
       vb.setDataType(DataType.STRING);
@@ -203,9 +234,7 @@ public class DatasetEnhancer {
   }
 
   // TODO remove after all conventions are ported.
-  private NetcdfDataset useOldBuilder() throws IOException {
+  private NetcdfDataset useOldBuilder(NetcdfFile ncfile) throws IOException {
     return NetcdfDataset.wrap(ncfile, wantEnhance);
   }
-
-
 }
