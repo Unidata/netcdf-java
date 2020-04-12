@@ -775,7 +775,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     Attribute units = builder.getAttributeContainer().findAttributeIgnoreCase(CDM.UNITS);
     if (units != null && units.isString()) {
       builder.getAttributeContainer()
-          .addAttribute(units.toBuilder().setStringValue(units.getStringValue().trim()).build());
+          .addAttribute(Attribute.builder(CDM.UNITS).setStringValue(units.getStringValue().trim()).build());
     }
 
     this.orgFileTypeId = builder.orgFileTypeId;

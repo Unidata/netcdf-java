@@ -573,7 +573,6 @@ public class CompareNetcdf2 {
   }
 
   // check that want is in both list1 and list2, using object.equals()
-
   private boolean checkEach(String what, Object want1, String name1, List list1, String name2, List list2,
       List result) {
     boolean ok = true;
@@ -651,12 +650,12 @@ public class CompareNetcdf2 {
   private boolean compareData(String name, Array data1, Array data2, boolean justOne, boolean testTypes) {
     boolean ok = true;
     if (data1.getSize() != data2.getSize()) {
-      f.format(" DIFF %s: size %d !== %d%n", name, data1.getSize(), data2.getSize());
+      f.format(" DIFF %s: data size %d !== %d%n", name, data1.getSize(), data2.getSize());
       ok = false;
     }
 
     if (testTypes && data1.getElementType() != data2.getElementType()) {
-      f.format(" DIFF %s: element type %s !== %s%n", name, data1.getElementType(), data2.getElementType());
+      f.format(" DIFF %s: data element type %s !== %s%n", name, data1.getElementType(), data2.getElementType());
       ok = false;
     }
 
