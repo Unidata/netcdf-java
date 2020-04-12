@@ -17,9 +17,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.Attribute;
+import ucar.nc2.Variable;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.ncml.NcMLReaderNew;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 
 /**
@@ -33,7 +37,7 @@ public class TestNcmlReadersCompare {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(TestNcMLRead.topDir, new MyFileFilter(), filenames, true);
+      TestDir.actOnAllParameterized(TestNcMLRead.topDir, new NcmlFilter(), filenames, true);
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }
@@ -54,7 +58,7 @@ public class TestNcmlReadersCompare {
       try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        if (!compare.compare(org, withBuilder)) {
+        if (!compare.compare(org, withBuilder, new CoordsObjFilter())) {
           System.out.printf("Compare %s%n%s%n", ncmlLocation, f);
           fail();
         }
@@ -64,7 +68,7 @@ public class TestNcmlReadersCompare {
     }
   }
 
-  private static class MyFileFilter implements FileFilter {
+  private static class NcmlFilter implements FileFilter {
 
     @Override
     public boolean accept(File pathname) {
@@ -75,11 +79,21 @@ public class TestNcmlReadersCompare {
       // NcMLReader does not change variable to type int, so fails.
       if (name.contains("aggSynthetic.xml"))
         return false;
+      // Bug in old reader
+      if (name.contains("testStandaloneNoEnhance.ncml"))
+        return false;
       if (name.contains("AggFmrc"))
         return false; // not implemented
       if (name.endsWith("ml"))
         return true; // .xml or .ncml
       return false;
+    }
+  }
+
+  public static class CoordsObjFilter implements ObjFilter {
+    @Override
+    public boolean attCheckOk(Variable v, Attribute att) {
+      return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
     }
   }
 

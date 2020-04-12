@@ -1,4 +1,9 @@
-package ucar.nc2.ncml;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
 import thredds.client.catalog.ServiceType;
@@ -16,7 +21,7 @@ public class NcmlNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-    return NcMLReader.readNcML(location, cancelTask);
+    return NcMLReaderNew.readNcML(location, (String) null, cancelTask).build();
   }
 
   @Override
@@ -26,7 +31,7 @@ public class NcmlNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public boolean isOwnerOf(DatasetUrl url) {
-    return url.serviceType == ServiceType.NCML;
+    return url.getServiceType() == ServiceType.NCML;
   }
 
 }

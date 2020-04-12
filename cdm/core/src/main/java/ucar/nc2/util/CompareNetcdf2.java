@@ -129,7 +129,7 @@ public class CompareNetcdf2 {
   }
 
   public CompareNetcdf2(Formatter f) {
-    this(f, false, false, false);
+    this(f, false, false, System.getProperty("allTests") != null);
   }
 
   public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData) {
@@ -147,10 +147,12 @@ public class CompareNetcdf2 {
     return compare(org, copy, filter, showCompare, showEach, compareData);
   }
 
+  @Deprecated
   public boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
     return compare(org, copy, null, showCompare, showEach, compareData);
   }
 
+  @Deprecated
   public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter, boolean showCompare, boolean showEach,
       boolean compareData) {
     if (filter == null)

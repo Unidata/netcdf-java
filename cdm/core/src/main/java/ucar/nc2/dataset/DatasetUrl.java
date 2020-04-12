@@ -533,9 +533,9 @@ public class DatasetUrl {
 
   /////////////////////////////////////////////////////////////////////
   // TODO this could be an @AutoValue
-  @Deprecated
+  @Deprecated // use getServiceType()()
   public final ServiceType serviceType;
-  @Deprecated
+  @Deprecated // use getTrueurl()
   public final String trueurl;
 
   public static DatasetUrl create(ServiceType serviceType, String trueurl) {

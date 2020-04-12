@@ -2,7 +2,6 @@ package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -488,7 +487,7 @@ public class CoordSystemBuilder {
   private void makeCoordinateSystemsMaximal() {
 
     boolean requireCompleteCoordSys =
-        !datasetBuilder.enhanceMode.contains(NetcdfDataset.Enhance.IncompleteCoordSystems);
+        !datasetBuilder.getEnhanceMode().contains(NetcdfDataset.Enhance.IncompleteCoordSystems);
 
     for (VarProcess vp : varList) {
       if (vp.hasCoordinateSystem() || !vp.isData()) {

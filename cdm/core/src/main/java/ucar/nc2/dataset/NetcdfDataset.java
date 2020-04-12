@@ -4,7 +4,9 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nullable;
+import thredds.client.catalog.ServiceType;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -13,6 +15,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.cache.FileCache;
@@ -792,23 +795,29 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private static NetcdfFile openProtocolOrFile(DatasetUrl durl, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
       Object spiObject) throws IOException {
 
+    // this is a kludge - we want NetcdfDataset to keep using the old NcmlReader, and NetcdfDatasets use the
+    // NcmlReaderNew. So we bypass the NetcdfFileProvider here.
+    if (durl.getServiceType() == ServiceType.NCML) {
+      return NcMLReader.readNcML(durl.getTrueurl(), cancelTask);
+    }
+
     // look for dynamically loaded NetcdfFileProvider
     for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
       if (provider.isOwnerOf(durl)) {
-        return provider.open(durl.trueurl, cancelTask);
+        return provider.open(durl.getTrueurl(), cancelTask);
       }
     }
 
     // look for providers who do not have an associated ServiceType.
     for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
-      if (provider.isOwnerOf(durl.trueurl)) {
-        return provider.open(durl.trueurl, cancelTask);
+      if (provider.isOwnerOf(durl.getTrueurl())) {
+        return provider.open(durl.getTrueurl(), cancelTask);
       }
     }
 
     // Otherwise we are dealing with a file or a remote http file.
-    if (durl.serviceType != null) {
-      switch (durl.serviceType) {
+    if (durl.getServiceType() != null) {
+      switch (durl.getServiceType()) {
         case File:
         case HTTPServer:
           break; // fall through
@@ -819,7 +828,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     // Open as a file or remote file
-    return NetcdfFile.open(durl.trueurl, buffer_size, cancelTask, spiObject);
+    return NetcdfFile.open(durl.getTrueurl(), buffer_size, cancelTask, spiObject);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -1565,7 +1574,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     super(builder);
     this.orgFile = builder.orgFile;
     this.convUsed = builder.convUsed;
-    this.enhanceMode = builder.enhanceMode;
+    this.enhanceMode = builder.getEnhanceMode();
     this.agg = builder.agg;
 
     // LOOK the need to reference the NetcdfDataset means we cant build the axes or system until now.
@@ -1639,7 +1648,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     public NetcdfFile orgFile;
     public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
     private String convUsed;
-    public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
+    private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
     public ucar.nc2.ncml.AggregationIF agg; // If its an aggregation
 
     private boolean built;
@@ -1670,6 +1679,30 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     public T setEnhanceMode(Set<Enhance> enhanceMode) {
       this.enhanceMode = enhanceMode;
       return self();
+    }
+
+    public Set<Enhance> getEnhanceMode() {
+      return this.enhanceMode;
+    }
+
+    public void addEnhanceMode(Enhance addEnhanceMode) {
+      ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
+      result.addAll(this.enhanceMode);
+      result.add(addEnhanceMode);
+      this.enhanceMode = result.build();
+    }
+
+    public void removeEnhanceMode(Enhance removeEnhanceMode) {
+      ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
+      this.enhanceMode.stream().filter(e -> !e.equals(removeEnhanceMode)).forEach(result::add);
+      this.enhanceMode = result.build();
+    }
+
+    public void addEnhanceModes(Set<Enhance> addEnhanceModes) {
+      ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
+      result.addAll(this.enhanceMode);
+      result.addAll(addEnhanceModes);
+      this.enhanceMode = result.build();
     }
 
     public T setAggregation(ucar.nc2.ncml.AggregationIF agg) {

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -62,8 +63,8 @@ public class TestCoordSysCompareMore {
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(), false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f);
+        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
         System.out.printf("new = %s%n",

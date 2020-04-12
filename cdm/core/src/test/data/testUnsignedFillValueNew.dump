@@ -1,0 +1,11 @@
+netcdf file:../core/src/test/data/testUnsignedFillValue.ncml {
+  variables:
+    uint my_var;
+      :long_name = "my_var_name";
+      :_FillValue = 55555US; // ushort
+      :_Unsigned = "true";
+
+
+  data:
+    my_var = 55555
+}

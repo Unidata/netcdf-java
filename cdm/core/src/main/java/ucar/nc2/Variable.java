@@ -620,7 +620,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @throws ForbiddenConversionException if data type not convertible to byte
    */
   public byte readScalarByte() throws IOException {
-    Array data = getScalarData();
+    Array data = _readScalarData();
     return data.getByte(Index.scalarIndexImmutable);
   }
 
@@ -632,7 +632,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @throws ForbiddenConversionException if data type not convertible to short
    */
   public short readScalarShort() throws IOException {
-    Array data = getScalarData();
+    Array data = _readScalarData();
     return data.getShort(Index.scalarIndexImmutable);
   }
 
@@ -644,7 +644,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @throws ForbiddenConversionException if data type not convertible to int
    */
   public int readScalarInt() throws IOException {
-    Array data = getScalarData();
+    Array data = _readScalarData();
     return data.getInt(Index.scalarIndexImmutable);
   }
 
@@ -656,7 +656,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @throws ForbiddenConversionException if data type not convertible to long
    */
   public long readScalarLong() throws IOException {
-    Array data = getScalarData();
+    Array data = _readScalarData();
     return data.getLong(Index.scalarIndexImmutable);
   }
 
@@ -668,7 +668,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @throws ForbiddenConversionException if data type not convertible to float
    */
   public float readScalarFloat() throws IOException {
-    Array data = getScalarData();
+    Array data = _readScalarData();
     return data.getFloat(Index.scalarIndexImmutable);
   }
 
@@ -680,7 +680,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @throws ForbiddenConversionException if data type not convertible to double
    */
   public double readScalarDouble() throws IOException {
-    Array data = getScalarData();
+    Array data = _readScalarData();
     return data.getDouble(Index.scalarIndexImmutable);
   }
 
@@ -693,7 +693,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @throws ClassCastException if data type not DataType.STRING or DataType.CHAR.
    */
   public String readScalarString() throws IOException {
-    Array data = getScalarData();
+    Array data = _readScalarData();
     if (dataType == DataType.STRING)
       return (String) data.getObject(Index.scalarIndexImmutable);
     else if (dataType == DataType.CHAR) {
@@ -703,6 +703,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       throw new IllegalArgumentException("readScalarString not STRING or CHAR " + getFullName());
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   protected Array getScalarData() throws IOException {
     Array scalarData = (cache.data != null) ? cache.data : read();
     scalarData = scalarData.reduce();
@@ -740,6 +742,37 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
   }
 
+  // section of non-structure-member Variable
+  // assume filled, validated Section
+  protected Array _read(Section section) throws IOException, InvalidRangeException {
+    // check if its really a full read
+    if ((null == section) || section.computeSize() == getSize())
+      return _read();
+
+    // full read was cached
+    if (isCaching()) {
+      if (cache.data == null) {
+        setCachedData(_read()); // read and cache entire array
+        if (debugCaching)
+          System.out.println("cache " + getFullName());
+      }
+      if (debugCaching)
+        System.out.println("got data from cache " + getFullName());
+      return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
+    }
+
+    return proxyReader.reallyRead(this, section, null);
+  }
+
+  protected Array _readScalarData() throws IOException {
+    Array scalarData = read();
+    scalarData = scalarData.reduce();
+
+    if ((scalarData.getRank() == 0) || ((scalarData.getRank() == 1) && dataType == DataType.CHAR))
+      return scalarData;
+    throw new java.lang.UnsupportedOperationException("not a scalar variable =" + this);
+  }
+
   /**
    * public by accident, do not call directly.
    *
@@ -762,28 +795,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       e.printStackTrace();
       throw new IOException(e.getMessage()); // cant happen haha
     }
-  }
-
-  // section of non-structure-member Variable
-  // assume filled, validated Section
-  protected Array _read(Section section) throws IOException, InvalidRangeException {
-    // check if its really a full read
-    if ((null == section) || section.computeSize() == getSize())
-      return _read();
-
-    // full read was cached
-    if (isCaching()) {
-      if (cache.data == null) {
-        setCachedData(_read()); // read and cache entire array
-        if (debugCaching)
-          System.out.println("cache " + getFullName());
-      }
-      if (debugCaching)
-        System.out.println("got data from cache " + getFullName());
-      return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
-    }
-
-    return proxyReader.reallyRead(this, section, null);
   }
 
   /**
@@ -1555,7 +1566,12 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return cache.isCaching;
   }
 
-  /** @deprecated Use Variable.builder() */
+  /**
+   * Note that standalone Ncml caches data values set in the Ncml.
+   * So one cannont invalidate those caches.
+   * 
+   * @deprecated Use Variable.builder()
+   */
   @Deprecated
   public void invalidateCache() {
     cache.data = null;

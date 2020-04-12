@@ -245,8 +245,7 @@ public class NetcdfFiles {
 
   /**
    * Open an existing file (read only), with option of cancelling, setting the RandomAccessFile buffer size for
-   * efficiency,
-   * with an optional special object for the iosp.
+   * efficiency, with an optional special object for the iosp.
    *
    * @param location location of file. This may be a
    *        <ol>
@@ -256,14 +255,13 @@ public class NetcdfFiles {
    *        <li>local hdf-5 filename (with a file: prefix or no prefix)
    *        <li>local iosp filename (with a file: prefix or no prefix)
    *        </ol>
-   *        http://thredds.ucar.edu/thredds/fileServer/grib/NCEP/GFS/Alaska_191km/files/GFS_Alaska_191km_20130416_0600.grib1
    *        If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file
    *        without the suffix,
    *        then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally
    *        it prefers to
    *        place the uncompressed file in the same directory as the original file. If it does not have write permission
-   *        on that directory,
-   *        it will use the directory defined by ucar.nc2.util.DiskCache class.
+   *        on that directory, it will use the directory defined by ucar.nc2.util.DiskCache class.
+   *
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
@@ -274,7 +272,6 @@ public class NetcdfFiles {
       Object iospMessage) throws IOException {
 
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
-
     try {
       return open(raf, location, cancelTask, iospMessage);
     } catch (Throwable t) {

@@ -56,7 +56,6 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  */
 
 public class NcMLReader {
-
   private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
   private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
@@ -76,8 +75,6 @@ public class NcMLReader {
     debugConstruct = debugFlag.isSet("NcML/debugConstruct");
     debugAggDetail = debugFlag.isSet("NcML/debugAggDetail");
   }
-
-  // private static boolean validate = false;
 
   /**
    * Use NCML to modify a dataset, getting the NcML document as a resource stream.
@@ -454,11 +451,6 @@ public class NcMLReader {
         }
         refds = new NetcdfDataset(ncfile, false);
       } else {
-        // String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-        // throws IOException {
-        // (String location, EnumSet<Enhance> enhanceMode, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object
-        // spiObject) throws IOException {
-
         refds = NetcdfDataset.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
         // refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been
         // applied
@@ -563,7 +555,6 @@ public class NcMLReader {
     String addRecords = netcdfElem.getAttributeValue("addRecords");
     if ("true".equalsIgnoreCase(addRecords))
       targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1258,8 +1249,10 @@ public class NcMLReader {
 
     /*
      * now that we have attributes finalized, redo the enhance
-     * if (enhance && (v instanceof VariableDS))
+     * LOOK enhance not set
+     * if (enhance && (v instanceof VariableDS)) {
      * ((VariableDS) v).enhance();
+     * }
      */
 
     return v;
