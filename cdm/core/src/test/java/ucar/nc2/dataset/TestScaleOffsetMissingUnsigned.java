@@ -141,7 +141,8 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaledFillValue() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
+    // LOOK removeEnhancement does not work in new
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
 
       double expectedFillValue = .99999;
@@ -178,7 +179,8 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaleMissingFloatingPointComparisons() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
 
-    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
+    // LOOK removeEnhancement does not work in new
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
       fooVar.removeEnhancement(Enhance.ConvertMissing);
 
