@@ -769,9 +769,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.orgName = builder.orgName;
 
     // Make sure that units has been trimmed.
-    // Tricky to preserve case.
+    // Replace with correct case
     // TODO Can simplify when doesnt have to agree with old VariableDS
-    // Possibly we should just replace with correct case
     Attribute units = builder.getAttributeContainer().findAttributeIgnoreCase(CDM.UNITS);
     if (units != null && units.isString()) {
       builder.getAttributeContainer()
