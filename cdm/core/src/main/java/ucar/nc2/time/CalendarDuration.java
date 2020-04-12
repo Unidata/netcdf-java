@@ -41,7 +41,7 @@ import javax.annotation.concurrent.Immutable;
  * relation to javax.xml.datatype ?
  *
  * @author john caron
- * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
+ * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
  */
 
 @Immutable

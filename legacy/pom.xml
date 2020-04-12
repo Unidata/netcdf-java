@@ -15,7 +15,7 @@
     <artifactId>legacy</artifactId>
     <name>legacyJar Module</name>
     <description>Package that generates a jar file of legacy classes for backwards compatibility</description>
-    <url>http://www.unidata.ucar.edu/software/tds/</url>
+    <url>https://www.unidata.ucar.edu/software/tds/</url>
 
     <dependencies>
         <dependency>

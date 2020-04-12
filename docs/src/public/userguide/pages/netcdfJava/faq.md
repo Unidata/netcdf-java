@@ -245,7 +245,7 @@ Netcdf-Java library supports writing netCDF-3 file format using the [classic dat
 
 #### Q: What is the relationship of NetCDF with HDF5?
 
-The netCDF-4 file format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. NetCDF adds shared dimensions, so it is unfortunately not a strict subset of HDF5. Gory details are here:  <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">Part 1</a>, <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part 2</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.
+The netCDF-4 file format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. NetCDF adds shared dimensions, so it is unfortunately not a strict subset of HDF5. Gory details are here:  <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">Part 1</a>, <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part 2</a>, <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.
 
 HDF5 is a very complicated format, and we do not plan to write a pure Java version for writing netCDF4 files (we do have a pure Java version for reading both HDF5 and netCDF-4). You must use the JNI interface to the [netCDF C library](netcdf4_c_library.html).
 

@@ -23,7 +23,7 @@ import java.util.*;
 
 /**
  * NUWG Convention (ad hoc).
- * see http://www.unidata.ucar.edu/software/netcdf/NUWG/
+ * see https://www.unidata.ucar.edu/software/netcdf/NUWG/
  *
  * @author caron
  */

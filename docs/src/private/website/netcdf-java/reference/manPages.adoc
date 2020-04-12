@@ -25,7 +25,7 @@ library. The easiest way to use these is to grab the latest
 
 Prints the textual representation of a dataset to standard output.
 Similar functionality to the
-_http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/ncdump.html[ncdump]_
+_https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/ncdump.html[ncdump]_
 utility program. By default, just the header (ncdump -h) is output. This
 application works on any CDM file, not just netCDF files.
 

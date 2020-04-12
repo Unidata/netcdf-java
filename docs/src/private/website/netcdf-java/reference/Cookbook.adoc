@@ -17,7 +17,7 @@ java -Xmx512m -classpath netdfAll-<version>.jar ucar.nc2.dataset.NetcdfDataset -
 *Use NcML to modify the original dataset:*
 
 You can wrap the original dataset in
-http://www.unidata.ucar.edu/software/netcdf/ncml/[NcML]. The NcML file
+https://www.unidata.ucar.edu/software/netcdf/ncml/[NcML]. The NcML file
 must have the suffix ".ncml", and it becomes the "in" file:
 
 -----------------------------------------------------------------------------------------------------------
@@ -55,9 +55,9 @@ For example, use the <remove> element to remove variables that you don’t want 
 Notes:
 
 * *datasetIn* can be any dataset the CDM can read, e.g. an OPeNDAP dataset, a GRIB file, etc.
-However, the dataset must only use the http://www.unidata.ucar.edu/software/netcdf/#fv18[classic model].
+However, the dataset must only use the https://www.unidata.ucar.edu/software/netcdf/#fv18[classic model].
 * *datasetOut* will be overwritten
-* *isLargeFile="true"* will write a http://www.unidata.ucar.edu/software/netcdf/#fv1[64-bit offset netCDF-3 file].
+* *isLargeFile="true"* will write a https://www.unidata.ucar.edu/software/netcdf/#fv1[64-bit offset netCDF-3 file].
 
 == Reading from Sequences
 

@@ -67,7 +67,7 @@ public class TestDate {
    * </p>
    * <p/>
    * <p>
-   * http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2008-May/000631.html
+   * https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2008-May/000631.html
    * <p/>
    * <p>
    * [snip]

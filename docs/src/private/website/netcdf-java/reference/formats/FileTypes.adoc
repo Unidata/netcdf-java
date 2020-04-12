@@ -49,10 +49,10 @@ http://www.eol.ucar.edu/instrumentation/airborne-instruments/eldora/[]
 |http://satellite.cma.gov.cn/
 
 |GempakGrid |GEMPAK Gridded Data
-|http://www.unidata.ucar.edu/software/gempak/
+|https://www.unidata.ucar.edu/software/gempak/
 
 |GempakSurface |GEMPAK Surface Obs Data
-|http://www.unidata.ucar.edu/software/gempak/
+|https://www.unidata.ucar.edu/software/gempak/
 
 |GINI |GOES Ingest and NOAAPORT Interface
 |http://weather.unisys.com/wxp/Appendices/Formats/GINI.html
@@ -81,10 +81,10 @@ http://www.ssec.wisc.edu/mcidas/doc/prog_man/2006
 http://www.ssec.wisc.edu/mcidas/doc/prog_man/2006/formats-20.html#22077
 
 |netCDF |NetCDF classic format
-|http://www.unidata.ucar.edu/software/netcdf/index.html
+|https://www.unidata.ucar.edu/software/netcdf/index.html
 
 |netCDF-4 |NetCDF-4 format on HDF-5
-|http://www.unidata.ucar.edu/software/netcdf/index.html
+|https://www.unidata.ucar.edu/software/netcdf/index.html
 
 |NEXRAD-2 |NEXRAD Level-II Base Data a|
 http://www.ncdc.noaa.gov/oa/radar/radarresources.html

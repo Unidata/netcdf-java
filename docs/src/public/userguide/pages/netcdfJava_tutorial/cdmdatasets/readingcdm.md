@@ -347,7 +347,7 @@ public void run() {
 Files can be made accessible over the network by simply placing them on an HTTP (web) server, like Apache.
 The server must be configured to set the "Content-Length" and "Accept-Ranges: bytes" headers.
 The client that wants to read these files just uses the usual NetcdfFile.open(String location, …) method to open a file.
-The location contains the URL of the file, for example: <b>_http://www.unidata.ucar.edu/staff/caron/test/mydata.nc_</b>.
+The location contains the URL of the file, for example: <b>_https://www.unidata.ucar.edu/staff/caron/test/mydata.nc_</b>.
 In order to use this option you need to have <b>_HttpClient.jar_</b> in your classpath.
 The <b>_ucar.nc2_</b> library uses the HTTP 1.1 protocol's "Range" command to get ranges of bytes from the remote file.
 The efficiency of the remote access depends on how the data is accessed.

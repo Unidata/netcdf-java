@@ -11,7 +11,7 @@ package ucar.nc2.constants;
  * @author john caron
  * @author wchen@usgs.gov
  * @see <a href=
- *      "http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM
+ *      "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM
  *      Feature Types</a>
  */
 /*

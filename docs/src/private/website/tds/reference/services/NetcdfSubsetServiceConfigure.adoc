@@ -64,7 +64,7 @@ Types>>: GRID, POINT, STATION.
 === Verifying that a dataset is gridded
 
 Open your file in the
-http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[NetCDF
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[NetCDF
 ToolsUI program], using the _*FeatureTypes->Grids*_ tab. Any fields
 identified as grids will show up in the top table. To be sure, go into
 the viewer (click image:images/redraw.gif[Redraw] to bring up the

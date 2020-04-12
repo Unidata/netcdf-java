@@ -40,8 +40,8 @@ import ucar.unidata.io.RandomAccessFile;
 /**
  * Defines the ncstream format, along with ncStream.proto.
  *
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
+ * @see "https://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
+ * @see "https://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
  */
 public class NcStream {
   // must start with this "CDFS"

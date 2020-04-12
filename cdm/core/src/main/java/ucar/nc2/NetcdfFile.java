@@ -2135,7 +2135,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
    * @see <a href=
-   *      "http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     /*
@@ -2230,7 +2230,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
    * @see <a href=
-   *      "http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    * @deprecated use readSection(), flatten=false no longer supported
    */
   @Deprecated
@@ -2349,7 +2349,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Get the file type id for the underlying data source.
    *
    * @return registered id of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeId() {
     if (iosp != null)
@@ -2361,7 +2361,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Get a human-readable description for this file type.
    *
    * @return description of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeDescription() {
     if (iosp != null)
@@ -2374,7 +2374,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Get the version of this file type.
    *
    * @return version of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeVersion() {
     if (iosp != null)

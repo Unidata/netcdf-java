@@ -14,7 +14,7 @@
 * Why use TDS? (link:TDSOverview.pptx[PPT])(link:TDSOverview.pdf[PDF])
 * TDS Resources: <<../TDS#,Web page>>,
 <<../reference/index#,Reference>>, <<../faq#,FAQ>>
-* http://www.unidata.ucar.edu/community/surveys/2014training/survey.html[Feedback/Evaluation
+* https://www.unidata.ucar.edu/community/surveys/2014training/survey.html[Feedback/Evaluation
 Form] (Repeated submissions encouraged)
 
 === 9:00 Participant Introductions (John)
@@ -87,16 +87,16 @@ Collections>>
 === 4:15 Software Engineering and Contributing (Ryan)
 
 * Source on https://github.com/Unidata/thredds[GitHub]
-* Issue Tracking with http://www.unidata.ucar.edu/jira/[JIRA]
+* Issue Tracking with https://www.unidata.ucar.edu/jira/[JIRA]
 * Maven artifacts on https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[Nexus]
 * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
 * Continuous Integration on
 https://travis-ci.org/Unidata/thredds[Travis]
 * Static code analysis on
 https://scan.coverity.com/projects/388?tab=overview[Coverity]
-* http://www.unidata.ucar.edu/support/#mailinglists[Email Lists]:
+* https://www.unidata.ucar.edu/support/#mailinglists[Email Lists]:
 thredds@unidata.ucar.edu; netcdf-java@unidata.ucar.edu
-* http://www.unidata.ucar.edu/support/index.html#archives[Support]:
+* https://www.unidata.ucar.edu/support/index.html#archives[Support]:
 support-thredds@unidata.ucar.edu; support-netcdf-java@unidata.ucar.edu
 
 === 4:30 Discussion and Questions
@@ -177,7 +177,7 @@ Collections]
 (link:../reference/files/NCSS_4_3.pdf[pdf])
 * URL Builder
 
-=== 1:45 (Sean) http://www.unidata.ucar.edu/software/rosetta/[Rosetta]
+=== 1:45 (Sean) https://www.unidata.ucar.edu/software/rosetta/[Rosetta]
 (http://rosetta.unidata.ucar.edu[live site])
 
 === 2:00 WMS Demos
@@ -201,19 +201,19 @@ Index redirection]
 Participant feedback (Sean)
 
 * Source on https://github.com/Unidata/thredds[GitHub]
-* Issue Tracking with http://www.unidata.ucar.edu/jira/[JIRA]
+* Issue Tracking with https://www.unidata.ucar.edu/jira/[JIRA]
 * Maven artifacts on https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[Nexus]
 * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
 * Continuous Integration on
 https://travis-ci.org/Unidata/thredds[Travis]
 * Static code analysis on
 https://scan.coverity.com/projects/388?tab=overview[Coverity]
-* http://www.unidata.ucar.edu/support/#mailinglists[Email Lists]:
+* https://www.unidata.ucar.edu/support/#mailinglists[Email Lists]:
 thredds@unidata.ucar.edu; netcdf-java@unidata.ucar.edu
-* http://www.unidata.ucar.edu/support/index.html#archives[Support]:
+* https://www.unidata.ucar.edu/support/index.html#archives[Support]:
 support-thredds@unidata.ucar.edu; support-netcdf-java@unidata.ucar.edu
 
-* http://www.unidata.ucar.edu/community/surveys/2014training/survey.html[Feedback/Evaluation
+* https://www.unidata.ucar.edu/community/surveys/2014training/survey.html[Feedback/Evaluation
 Form] (Repeated submissions encouraged)
 
 === 4:00 Day Two Finish

@@ -25,7 +25,7 @@ to prevent the "C:" from being misinterpreted as a URL schema.
 
 *NetcdfFile* can open *HTTP remote files*, <<HTTPservice#,served over HTTP>>, for example:
 
-* _\http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc_
+* _\https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc_
 
 The HTTP server must implement the *getRange* header and functionality. Performance will
 be strongly affected by file format and the data access pattern.
@@ -78,7 +78,7 @@ NetcdfDataset can open *_NcML_* datasets, which may be local or remote, and must
 
 * _/usr/share/data/model.ncml_
 * _file:/usr/share/data/model.ncml_
-* _\http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.xml_
+* _\https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.xml_
 
 Because xml is so widely used, we recommend using the _.ncml_ suffix when possible.
 
