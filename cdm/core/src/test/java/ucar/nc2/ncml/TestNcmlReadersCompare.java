@@ -79,8 +79,8 @@ public class TestNcmlReadersCompare {
       // NcMLReader does not change variable to type int, so fails.
       if (name.contains("aggSynthetic.xml"))
         return false;
-      // Bug in old reader, read
-      if (name.contains("testStandaloneNoEnhance.xml"))
+      // Bug in old reader
+      if (name.contains("testStandaloneNoEnhance.ncml"))
         return false;
       if (name.contains("AggFmrc"))
         return false; // not implemented
