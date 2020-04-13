@@ -50,7 +50,7 @@ list of `roles`:
 Download the `ToolsUI` jar file and start the `TdsMonitor` tool.
 
 Download the
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/toolsUI-4.5.jar[ToolsUI.jar]
+https://www.unidata.ucar.edu/downloads/netcdf-java/[ToolsUI.jar]
 file to some convenient place on your local drive.
 
 --------------------------------------------------------------

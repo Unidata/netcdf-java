@@ -142,7 +142,7 @@ large collections.
 * Improved HDF-EOS processing.
 * CF 1.6 DSG: bug in handling station profiles, multidimensional
 representation
-[ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war[TDS-513]]
+[https://www.unidata.ucar.edu/downloads/tds/[TDS-513 thredds.war]]
 * MSGnavigation scan mode bug
 * IOSP for SIGMET radar files (beta)
 

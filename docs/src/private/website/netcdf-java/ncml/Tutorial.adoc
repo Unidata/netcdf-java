@@ -33,7 +33,7 @@ context-sensitive XML editing.
 For these exercises, you should
 https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[run
 ToolsUI from webstart] or
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/toolsUI-4.5.jar[download
+https://www.unidata.ucar.edu/downloads/netcdf-java/[download
 the ToolsUI application] and run it locally from the jar.
 
 Use the ToolsUI *NcML Tab* to generate NcML from the CDM file by

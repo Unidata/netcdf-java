@@ -95,13 +95,11 @@ security fixes. This is required for publically accessible servers!*
 *TDS 5.0 is the development release. It requires Tomcat 8 and Java 8.*
 
 * Download the latest development release:
-** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war[thredds.war]
-** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.md5[MD5]
-** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.sha1[SHA1]
+** link:https://www.unidata.ucar.edu/downloads/tds/[thredds.war]
 ** link:https://github.com/Unidata/thredds[source on GitHub]
 ** link:https://artifacts.unidata.ucar.edu/#browse/search=repository_name%3Dunidata-releases%20AND%20name.raw%3Dtds[artifacts in Unitdata’s maven repository]
 The THREDDS Data Manager (TDM)
-** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/tdm-5.0.jar[tdm.jar]
+** link:https://www.unidata.ucar.edu/downloads/tds/[tdm.jar]
 
 == TDS Services
 
