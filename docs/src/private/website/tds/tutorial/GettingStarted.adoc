@@ -358,7 +358,7 @@ features] and
 https://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html[configuration
 changes] made between TDS versions are listed for each release.
 
-ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war[Download]
+https://www.unidata.ucar.edu/downloads/tds/[Download thredds.war]
 the TDS WAR file from Unidata’s web site.
 
 We will be using the current _TDS 4.6.2 version_ for this workshop:
