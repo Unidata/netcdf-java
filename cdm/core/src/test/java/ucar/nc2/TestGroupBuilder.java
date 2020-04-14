@@ -30,7 +30,7 @@ public class TestGroupBuilder {
 
     assertThat(group.getGroups()).isNotEmpty();
     assertThat(group.getGroups()).hasSize(1);
-    Group child = group.findGroup("child");
+    Group child = group.findGroupLocal("child");
     assertThat(child.getParentGroup()).isEqualTo(group);
 
     assertThat(group.getVariables()).isNotEmpty();
@@ -74,8 +74,8 @@ public class TestGroupBuilder {
     assertThat(builder.gbuilders).hasSize(2);
     assertThat(builder.removeGroup("child")).isTrue();
     assertThat(builder.gbuilders).hasSize(1);
-    assertThat(builder.findGroup("child").isPresent()).isFalse();
-    assertThat(builder.findGroup("child2").isPresent()).isTrue();
+    assertThat(builder.findGroupLocal("child").isPresent()).isFalse();
+    assertThat(builder.findGroupLocal("child2").isPresent()).isTrue();
   }
 
   @Test

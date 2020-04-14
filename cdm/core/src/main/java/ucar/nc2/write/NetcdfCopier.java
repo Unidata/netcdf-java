@@ -311,7 +311,7 @@ public class NetcdfCopier {
       if (cancel.isCancel()) {
         break;
       }
-      Group nestedOut = groupOut.findGroup(nestedIn.getShortName());
+      Group nestedOut = groupOut.findGroupLocal(nestedIn.getShortName());
       copyVariableData(nestedIn, nestedOut, counter, cancel);
     }
   }

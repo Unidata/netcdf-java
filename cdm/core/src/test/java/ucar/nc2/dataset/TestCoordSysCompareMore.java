@@ -6,6 +6,7 @@ package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
 import com.google.common.collect.ImmutableList;
+import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class TestCoordSysCompareMore {
   private static String convDir = TestDir.cdmUnitTestDir + "/conventions";
   private static List<String> otherDirs =
       ImmutableList.of(TestDir.cdmUnitTestDir + "/ft", TestDir.cdmUnitTestDir + "/cfPoint");
+  private static List<String> hdfDirs =
+      ImmutableList.of(TestDir.cdmUnitTestDir + "/formats/hdf4/", TestDir.cdmUnitTestDir + "/formats/hdf5/");
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
@@ -43,12 +46,40 @@ public class TestCoordSysCompareMore {
       TestDir.actOnAllParameterized(convDir,
           (file) -> !file.getPath().endsWith(".pdf") && !file.getName().startsWith("cfrad."), filenames, true);
       for (String dir : otherDirs) {
-        TestDir.actOnAllParameterized(dir, (file) -> file.getPath().endsWith(".nc"), filenames, true);
+        TestDir.actOnAllParameterized(dir, (file) -> file.getName().endsWith(".nc"), filenames, true);
+      }
+      for (String dir : hdfDirs) {
+        TestDir.actOnAllParameterized(dir, TestCoordSysCompareMore::skipHdf, filenames, true);
       }
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }
     return filenames;
+  }
+
+  private static List<String> skippers = ImmutableList.of(
+      // Skip these because old code doesnt push Dims up properly.
+      "PR1B0000-2000101203_010_001.hdf", "misr", "MISR_AM1_AGP_P040_F01_24.subset.eos",
+      "AMSR_E_L3_DailyLand_B04_20080101.hdf",
+      // transforms
+      "MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MOD10A1.A2008001.h23v15.005.2008003161138.hdf",
+      // dont have group names right
+      "OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "AMSR_E_L2_Land_T06_200801012345_A.hdf",
+      "AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf",
+      // anon dimensions
+      "MOD02OBC.A2007001.0005.005.2007307210540.hdf",
+      // attributes changed, see DimensionsFilter in H4 and 5 iosp compare
+      "2006166131201_00702_CS_2B-GEOPROF_GRANULE_P_R03_E00.hdf",
+      // problem with filename
+      "Europe_MSG1_8bit_HRV_OF_21-NOV-2003_06%3A00%3A04.171.H5");
+
+  private static boolean skipHdf(File file) {
+    for (String skip : skippers) {
+      if (file.getPath().contains(skip)) {
+        return false;
+      }
+    }
+    return !file.getName().endsWith(".xml");
   }
 
   private String fileLocation;

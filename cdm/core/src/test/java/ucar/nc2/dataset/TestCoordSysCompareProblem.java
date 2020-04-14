@@ -5,6 +5,7 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -26,7 +27,8 @@ public class TestCoordSysCompareProblem {
 
   @Test
   public void compareProblemFile() throws IOException {
-    String filename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
+    String filename =
+        TestDir.cdmUnitTestDir + "formats/hdf5/aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5";
     showOrg(filename);
     showNew(filename);
     compare(filename);
@@ -38,7 +40,7 @@ public class TestCoordSysCompareProblem {
     try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, false);
         boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));

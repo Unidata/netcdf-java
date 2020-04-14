@@ -307,9 +307,9 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
+    Group geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS);
     if (geoFieldsG == null) {
-      geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+      geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS2);
     }
     if (geoFieldsG != null) {
       Variable latAxis = null, lonAxis = null, timeAxis = null;
@@ -368,9 +368,9 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group dataG = parent.findGroup(DATA_FIELDS);
+    Group dataG = parent.findGroupLocal(DATA_FIELDS);
     if (dataG == null) {
-      dataG = parent.findGroup(DATA_FIELDS2);
+      dataG = parent.findGroupLocal(DATA_FIELDS2);
     }
     if (dataG != null) {
       Element f = swathElem.getChild("DataField");
@@ -521,9 +521,9 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
+    Group geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS);
     if (geoFieldsG == null) {
-      geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+      geoFieldsG = parent.findGroupLocal(GEOLOC_FIELDS2);
     }
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
@@ -542,9 +542,9 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group dataG = parent.findGroup(DATA_FIELDS);
+    Group dataG = parent.findGroupLocal(DATA_FIELDS);
     if (dataG == null) {
-      dataG = parent.findGroup(DATA_FIELDS2); // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
+      dataG = parent.findGroupLocal(DATA_FIELDS2); // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
     }
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");

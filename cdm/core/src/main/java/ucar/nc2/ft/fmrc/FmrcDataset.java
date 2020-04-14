@@ -471,7 +471,7 @@ class FmrcDataset {
 
     // nested groups - check if target already has it
     for (Group srcNested : srcGroup.getGroups()) {
-      Group nested = targetGroup.findGroup(srcNested.getShortName());
+      Group nested = targetGroup.findGroupLocal(srcNested.getShortName());
       if (null == nested) {
         nested = new Group(target, targetGroup, srcNested.getShortName());
         targetGroup.addGroup(nested);

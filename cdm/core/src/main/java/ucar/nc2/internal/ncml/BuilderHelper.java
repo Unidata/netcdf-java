@@ -91,7 +91,7 @@ class BuilderHelper {
 
     // nested groups - check if target already has it
     for (Group srcNested : src.getGroups()) {
-      Optional<Builder> existing = targetGroup.findGroup(srcNested.getShortName());
+      Optional<Builder> existing = targetGroup.findGroupLocal(srcNested.getShortName());
       if (!existing.isPresent()) {
         Group.Builder nested = Group.builder().setName(srcNested.getShortName());
         targetGroup.addGroup(nested);

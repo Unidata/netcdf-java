@@ -974,12 +974,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return (result == null) ? null : result.trim();
     }
 
+    // TODO use parentBuilder only
     public String getFullName() {
       String groups = "";
       if (orgVar != null && !orgVar.getParentGroup().isRoot()) {
         groups = orgVar.getParentGroup().getFullName() + "/";
       } else if (parent != null && !parent.isRoot()) {
         groups = parent.getFullName() + "/";
+      } else if (parentBuilder != null) {
+        groups = parentBuilder.makeFullName();
       }
       return groups + this.shortName;
     }

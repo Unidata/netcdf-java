@@ -57,7 +57,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     Group vhrr = ds.findGroup("VHRR");
     if (vhrr == null)
       throw new IllegalStateException();
-    Group loc = vhrr.findGroup("Geo-Location");
+    Group loc = vhrr.findGroupLocal("Geo-Location");
     if (loc == null)
       throw new IllegalStateException();
     Variable lat = loc.findVariable("Latitude");
@@ -77,7 +77,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     lat.setDimensions("scan xscan");
     lon.setDimensions("scan xscan");
 
-    Group data = vhrr.findGroup("Image Data");
+    Group data = vhrr.findGroupLocal("Image Data");
     if (data == null)
       throw new IllegalStateException();
     for (Variable v : data.getVariables()) {

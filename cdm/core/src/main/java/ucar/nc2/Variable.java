@@ -1893,6 +1893,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     public Group parent; // set in Group.build()
     public Structure parentStruct; // set in Structure.build()
 
+    protected Group.Builder parentBuilder; // if set, use to search for dimensions
     private String dimString; // if set, supercedes dimensions
     private List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
     public Object spiObject;
@@ -2026,6 +2027,9 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     public ImmutableList<Dimension> getDimensions(@Nullable Group.Builder gb) {
+      if (parentBuilder != null) {
+        gb = parentBuilder;
+      }
       if (this.dimString != null && !this.dimString.isEmpty() && gb != null) {
         return gb.makeDimensionsList(this.dimString);
       }
@@ -2099,6 +2103,12 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     // Generally this is not directly set.
     public T setGroup(Group parent) {
       this.parent = parent;
+      return self();
+    }
+
+    // LOOK we need to start setting always
+    public T setParentGroupBuilder(Group.Builder parent) {
+      this.parentBuilder = parent;
       return self();
     }
 

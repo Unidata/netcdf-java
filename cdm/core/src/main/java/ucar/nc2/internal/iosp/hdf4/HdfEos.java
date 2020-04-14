@@ -301,7 +301,8 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group.Builder geoFieldsG = parent.findGroup(GEOLOC_FIELDS).orElse(parent.findGroup(GEOLOC_FIELDS2).orElse(null));
+    Group.Builder geoFieldsG =
+        parent.findGroupLocal(GEOLOC_FIELDS).orElse(parent.findGroupLocal(GEOLOC_FIELDS2).orElse(null));
     if (geoFieldsG != null) {
       Variable.Builder<?> latAxis = null;
       Variable.Builder<?> lonAxis = null;
@@ -360,7 +361,7 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group.Builder dataG = parent.findGroup(DATA_FIELDS).orElse(parent.findGroup(DATA_FIELDS2).orElse(null));
+    Group.Builder dataG = parent.findGroupLocal(DATA_FIELDS).orElse(parent.findGroupLocal(DATA_FIELDS2).orElse(null));
     if (dataG != null) {
       Element f = swathElem.getChild("DataField");
       List<Element> vars = f.getChildren();
@@ -503,7 +504,8 @@ public class HdfEos {
     }
 
     // Geolocation Variables
-    Group.Builder geoFieldsG = parent.findGroup(GEOLOC_FIELDS).orElse(parent.findGroup(GEOLOC_FIELDS2).orElse(null));
+    Group.Builder geoFieldsG =
+        parent.findGroupLocal(GEOLOC_FIELDS).orElse(parent.findGroupLocal(GEOLOC_FIELDS2).orElse(null));
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
       List<Element> varsLoc = floc.getChildren();
@@ -518,7 +520,7 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group.Builder dataG = parent.findGroup(DATA_FIELDS).orElse(parent.findGroup(DATA_FIELDS2).orElse(null));
+    Group.Builder dataG = parent.findGroupLocal(DATA_FIELDS).orElse(parent.findGroupLocal(DATA_FIELDS2).orElse(null));
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
       List<Element> vars = f.getChildren();

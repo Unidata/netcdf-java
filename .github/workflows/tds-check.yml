@@ -41,7 +41,7 @@ jobs:
           sed -i 's/\/\/mavenLocal()/mavenLocal()/g' ./gradle/any/dependencies.gradle
           # make sure we are using the version of netCDF-Java specified in the PR to build the TDS
           sed -i 's/versions\["ncj"\] =.*$/versions["ncj"] ="'${NCJ_VERSION}'"/g' ./gradle/any/dependencies.gradle
-          # setup env vars for tds build
+          # setup env vars for tds buildTestDSR
           CONTENT_ROOT="-Dtds.content.root.path=${TDS_BUILD_DIR}/tds/src/test/content"
           DOWNLOAD_DIR="-Dtds.download.dir=/tmp/download"
           UPLOAD_DIR="-Dtds.upload.dir=/tmp/upload"

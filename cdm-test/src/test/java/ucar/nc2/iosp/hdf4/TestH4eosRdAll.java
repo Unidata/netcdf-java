@@ -65,7 +65,7 @@ public class TestH4eosRdAll {
     System.out.printf("TestH4eosReadAll %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       Group root = ncfile.getRootGroup();
-      Group g = root.findGroup("HDFEOS INFORMATION");
+      Group g = root.findGroupLocal("HDFEOS INFORMATION");
       if (g == null)
         g = ncfile.getRootGroup();
 

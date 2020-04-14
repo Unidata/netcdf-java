@@ -34,10 +34,13 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class SearchForConventions {
-  private static final String tempDir = "/usr/local/google/home/jlcaron/temp/conv/";
+  private static final int MAX_SHOW = 1000;
+  private static final String tempDir = "C:/Temp/conv/";
   private static String convDir = TestDir.cdmUnitTestDir + "/conventions";
-  private static List<String> otherDirs =
+  private static List<String> pointDirs =
       ImmutableList.of(TestDir.cdmUnitTestDir + "/ft", TestDir.cdmUnitTestDir + "/cfPoint");
+  private static List<String> hdfDirs =
+      ImmutableList.of(TestDir.cdmUnitTestDir + "/formats/hdf4/", TestDir.cdmUnitTestDir + "/formats/hdf5/");
   private static Multimap<String, String> convMap = ArrayListMultimap.create();
   private static Multimap<String, String> builderMap = ArrayListMultimap.create();
 
@@ -45,9 +48,14 @@ public class SearchForConventions {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(convDir, (file) -> !file.getPath().endsWith(".pdf"), filenames, true);
-      for (String dir : otherDirs) {
-        TestDir.actOnAllParameterized(dir, (file) -> file.getPath().endsWith(".nc"), filenames, true);
+      /*
+       * TestDir.actOnAllParameterized(convDir, (file) -> !file.getPath().endsWith(".pdf"), filenames, true);
+       * for (String dir : pointDirs) {
+       * TestDir.actOnAllParameterized(dir, (file) -> file.getPath().endsWith(".nc"), filenames, true);
+       * }
+       */
+      for (String dir : hdfDirs) {
+        TestDir.actOnAllParameterized(dir, (file) -> !file.getPath().endsWith(".xml"), filenames, true);
       }
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
@@ -78,7 +86,7 @@ public class SearchForConventions {
       int count = 0;
       for (String filename : mmap.get(key)) {
         out.write(String.format("   %s%n", filename));
-        if (count > 5)
+        if (count > MAX_SHOW)
           break;
         count++;
       }
@@ -92,10 +100,10 @@ public class SearchForConventions {
   }
 
   @Test
-  @Ignore("Not a test - really a utility program")
+  // @Ignore("Not a test - really a utility program")
   public void findConventions() throws IOException {
+    System.out.printf("%s%n", filename);
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
-      System.out.printf("%s%n", filename);
       String convName = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("Conventions", null);
       if (convName == null)
         convName = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("Convention", null);

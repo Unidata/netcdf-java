@@ -58,7 +58,7 @@ class GribIospBuilder {
       boolean useGroups) {
     Group.Builder g;
     if (useGroups) {
-      if (parent.findGroup(group.getId()).isPresent()) {
+      if (parent.findGroupLocal(group.getId()).isPresent()) {
         logger.warn("Duplicate Group - skipping");
         return;
       }

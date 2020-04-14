@@ -855,7 +855,7 @@ public class NcMLReader {
 
       // see if it exists in referenced dataset
       if (refParent != null)
-        refg = refParent.findGroup(nameInFile);
+        refg = refParent.findGroupLocal(nameInFile);
       if (refg == null) { // new
         g = new Group(newds, parent, name);
         parent.addGroup(g);
