@@ -3,31 +3,32 @@
 //
 
 /*
- * This source file is part of the edu.wisc.ssec.mcidas package and is
- * Copyright (C) 1998 - 2011 by Tom Whittaker, Tommy Jasmin, Tom Rink,
- * Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
- * and others.
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA 02111-1307, USA
- */
+This source file is part of the edu.wisc.ssec.mcidas package and is
+Copyright (C) 1998 - 2020 by Tom Whittaker, Tommy Jasmin, Tom Rink,
+Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
+and others.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free
+Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA
+*/
 
 package ucar.mcidas;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.String;
 
 /**
  * AncillaryData creates an object providing access to image
@@ -37,7 +38,7 @@ import java.io.IOException;
  * @version 1.6 6 Aug 1999
  * @author Tommy Jasmin, SSEC
  */
-
+ 
 public class AncillaryData {
 
   private static final int DIR_SIZE = 64;
@@ -70,15 +71,18 @@ public class AncillaryData {
    *
    * constructor
    *
-   * @param dis data input stream
+   * @param dis		data input stream 
    *
    */
 
-  public AncillaryData(DataInputStream dis) throws IOException
+  public AncillaryData (
+    DataInputStream dis
+  ) 
+    throws IOException
 
   {
 
-    int[] directory;
+    int [] directory;
     int i;
 
     // read in what corresponds to the McIDAS area directory
@@ -89,18 +93,18 @@ public class AncillaryData {
 
     // byte swap if necessary
     if (directory[1] > 255) {
-      ConversionUtility.swap(directory, 0, 19);
+      ConversionUtility.swap(directory,0,19);
       // word 20 may contain characters -- if small integer, swap it...
       if ((directory[20] & 0xffff) == 0) {
-        ConversionUtility.swap(directory, 20, 20);
+        ConversionUtility.swap(directory,20,20);
       }
-      ConversionUtility.swap(directory, 21, 23);
+      ConversionUtility.swap(directory,21,23);
       // words 24-31 contain memo field
-      ConversionUtility.swap(directory, 32, 50);
+      ConversionUtility.swap(directory,32, 50);
       // words 51-2 contain cal info
-      ConversionUtility.swap(directory, 53, 55);
+      ConversionUtility.swap(directory,53,55);
       // word 56 contains original source type (ascii)
-      ConversionUtility.swap(directory, 57, 63);
+      ConversionUtility.swap(directory,57,63);
       swapWords = true;
     }
 
@@ -132,7 +136,7 @@ public class AncillaryData {
   }
 
   public int getCalType() {
-    char[] calBuf = new char[4];
+    char [] calBuf = new char[4];
     calBuf[0] = (char) ((calType >> 24) & 0xFF);
     calBuf[1] = (char) ((calType >> 16) & 0xFF);
     calBuf[2] = (char) ((calType >> 8) & 0xFF);

@@ -3,33 +3,40 @@
 //
 
 /*
- * This source file is part of the edu.wisc.ssec.mcidas package and is
- * Copyright (C) 1998 - 2011 by Tom Whittaker, Tommy Jasmin, Tom Rink,
- * Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
- * and others.
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA 02111-1307, USA
- */
+This source file is part of the edu.wisc.ssec.mcidas package and is
+Copyright (C) 1998 - 2020 by Tom Whittaker, Tommy Jasmin, Tom Rink,
+Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
+and others.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free
+Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA
+*/
 
 package ucar.mcidas;
 
+
+import java.applet.Applet;
+
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -37,26 +44,26 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.wisc.ssec.mcidas.adde.GetAreaGUI;
 
 
 /**
  * AreaFile interface with McIDAS 'area' file format image data.
  *
- * <p>
- * This will allow 'area' format data to be read from disk; the
- * navigation block is made available (see GVARnav for example).
- * </p>
+ * <p>This will allow 'area' format data to be read from disk; the
+ * navigation block is made available (see GVARnav for example).</p>
  *
- * <p>
- * Calibration is handled via classes that implement the {@link Calibrator}
- * interface.
- * </p>
+ * <p>Calibration is handled via classes that implement the {@link Calibrator}
+ * interface.</p>
  *
- * <p>
- * This implementation does not check the 'valcode' on each line.
- * </p>
+ * <p>This implementation does not check the 'valcode' on each line.</p>
  *
  * @author Tom Whittaker, SSEC
  * @author Tommy Jasmin, SSEC
@@ -138,7 +145,7 @@ public class AreaFile implements java.io.Serializable {
 
   /**
    * AD_STARTTIME - actual image start time, hhmmss;
-   * in milliseconds for POES data
+   *  in milliseconds for POES data
    */
   public static final int AD_STARTTIME = 46;
 
@@ -196,19 +203,20 @@ public class AreaFile implements java.io.Serializable {
     try {
       String handlers = System.getProperty("java.protocol.handler.pkgs");
       String newProperty = null;
-      if (handlers == null)
-        newProperty = "edu.wisc.ssec.mcidas";
+      if (handlers == null) newProperty = "edu.wisc.ssec.mcidas";
       else if (handlers.indexOf("edu.wisc.ssec.mcidas") < 0)
-        newProperty = "edu.wisc.ssec.mcidas | " + handlers;
+             newProperty = "edu.wisc.ssec.mcidas | " + handlers;
       if (newProperty != null) { // was set above
-        // Properties sysP = System.getProperties();
-        // sysP.put("java.protocol.handler.pkgs", newProperty);
-        // System.setProperties(sysP);
+        //Properties sysP = System.getProperties();
+        //sysP.put("java.protocol.handler.pkgs", newProperty);
+        //System.setProperties(sysP);
         System.setProperty("java.protocol.handler.pkgs", newProperty);
       }
       handlerLoaded = true;
-    } catch (Exception e) {
-      System.out.println("Unable to set System Property: java.protocol.handler.pkgs");
+    }
+    catch (Exception e) {
+      System.out.println(
+        "Unable to set System Property: java.protocol.handler.pkgs");
     }
 
     handlerLoaded = true;
@@ -217,7 +225,7 @@ public class AreaFile implements java.io.Serializable {
   /**
    *
    *
-   * @return status
+   * @return status 
    */
   public static boolean isURLHandlerLoaded() {
     return handlerLoaded;
@@ -236,7 +244,7 @@ public class AreaFile implements java.io.Serializable {
   transient private DataInputStream af;
 
   /** status flag */
-  // private int status = 0;
+//  private int status = 0;
 
   /** location of nav, cal, aux and data blocks */
   private int navLoc, calLoc, auxLoc, datLoc;
@@ -245,7 +253,8 @@ public class AreaFile implements java.io.Serializable {
   private int navbytes, calbytes, auxbytes;
 
   /** original line data length, line length, num lines/eles bands */
-  private int lineDataLen, lineLength, origNumLines, origNumElements, origNumBands;
+  private int lineDataLen, lineLength, origNumLines, origNumElements,
+              origNumBands;
 
   /** line prefix length */
   private int linePrefixLength;
@@ -301,8 +310,10 @@ public class AreaFile implements java.io.Serializable {
      * @return
      */
     public String toString() {
-      return "Start_line:" + lineNumber + " Num_lines:" + numLines + " Line_mag:" + lineMag + " Start_ele:" + eleNumber
-          + " Num_ele:" + numEles + " Ele_mag:" + eleMag + " Band:" + bandNumber;
+      return "Start_line:" + lineNumber + " Num_lines:" + numLines +
+             " Line_mag:" + lineMag + " Start_ele:" + eleNumber +
+             " Num_ele:" + numEles + " Ele_mag:" + eleMag + " Band:" +
+             bandNumber;
     }
   }
 
@@ -311,7 +322,7 @@ public class AreaFile implements java.io.Serializable {
 
   /**
    * Creates an AreaFile object that allows reading
-   * of McIDAS 'area' file format image data. allows reading
+   * of McIDAS 'area' file format image data.  allows reading
    * either from a disk file, or a server via ADDE.
    *
    * @param source the file name, ADDE URL, or local file URL to read from
@@ -322,11 +333,26 @@ public class AreaFile implements java.io.Serializable {
   public AreaFile(String source) throws AreaFileException {
 
     imageSource = source;
+    if (imageSource.startsWith("adde://") &&
+        (imageSource.endsWith("image?") ||
+         imageSource.endsWith("imagedata?"))) {
+
+      GetAreaGUI gag = new GetAreaGUI((Frame)null, true, "Get data", false,
+                                      true);
+      gag.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          imageSource = e.getActionCommand();
+        }
+      });
+      gag.show();
+    }
 
     // try as a disk file first
     try {
-      af = new DataInputStream(new BufferedInputStream(new FileInputStream(imageSource), 2048));
-    } catch (IOException eIO) {
+      af = new DataInputStream(new BufferedInputStream(new FileInputStream(imageSource),
+              2048));
+    }
+    catch (IOException eIO) {
       // if opening as a file failed, try as a URL
       URL url;
       try {
@@ -335,9 +361,10 @@ public class AreaFile implements java.io.Serializable {
         URLConnection urlc = url.openConnection();
         InputStream is = urlc.getInputStream();
         af = new DataInputStream(new BufferedInputStream(is));
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         fileok = false;
-        throw new AreaFileException("Error opening AreaFile: " + e);
+        throw new AreaFileException("Error opening AreaFile", e);
       }
       isRemote = url.getProtocol().equalsIgnoreCase("adde");
     }
@@ -347,10 +374,50 @@ public class AreaFile implements java.io.Serializable {
   }
 
   /**
+   * creates an AreaFile object that allows reading
+   * of McIDAS 'area' file format image data from an applet
+   *
+   * @param filename the disk filename (incl path) to read from
+   * @param parent the parent applet
+   *
+   * @exception AreaFileException if file cannot be opened
+   *
+   */
+
+  public AreaFile(String filename, Applet parent) throws AreaFileException {
+
+    URL url;
+    imageSource = filename;
+    try {
+      url = new URL(parent.getDocumentBase(), filename);
+    }
+    catch (MalformedURLException e) {
+      fileok = false;
+      throw new AreaFileException("Error opening URL for AreaFile", e);
+    }
+
+    try {
+      af = new DataInputStream(new BufferedInputStream(url.openStream()));
+    }
+    catch (IOException e) {
+      fileok = false;
+      throw new AreaFileException("Error opening AreaFile", e);
+    }
+
+    isRemote = url.getProtocol().equalsIgnoreCase("adde");
+
+    fileok = true;
+    position = 0;
+    readMetaData();
+
+  }
+    private static final Logger LOGGER =
+        Logger.getLogger(AreaFile.class.getName());
+  /**
    * create an <code>AreaFile</code> that allows reading of McIDAS 'area'
    * file format image data from a <code>URL</code> with a protocol of either
-   * <code>file</code> or <code>ADDE</code>. See
-   * {@link adde.AddeURLConnection} for more information on
+   * <code>file</code> or <code>ADDE</code>.  See
+   * {@link edu.wisc.ssec.mcidas.adde.AddeURLConnection} for more information on
    * constructing ADDE urls.
    *
    *
@@ -362,9 +429,11 @@ public class AreaFile implements java.io.Serializable {
     imageSource = url.toString();
     try {
       af = new DataInputStream(new BufferedInputStream(url.openStream()));
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       fileok = false;
-      throw new AreaFileException("Error opening URL for AreaFile:" + e);
+        LOGGER.log(Level.SEVERE, "UGH", e);
+      throw new AreaFileException("Error opening URL for AreaFile", e);
     }
 
     isRemote = url.getProtocol().equalsIgnoreCase("adde");
@@ -380,50 +449,48 @@ public class AreaFile implements java.io.Serializable {
    * being updated with the subsetting parameters.
    *
    *
-   * @param source the path to the file
+   * @param source  the path to the file
    * @param startLine the starting image line
    * @param numLines the total number of lines to return
    * @param lineMag the line magnification. Valid values are &lt;= -1.
-   *        -1, 0, and 1 are all taken to be full line resolution,
-   *        -2 is every other line, -3 every third, etc...
+   *                -1, 0, and 1 are all taken to be full line resolution,
+   *                -2 is every other line, -3 every third, etc...
    * @param startElem the starting image element
    * @param numEles the total number of elements to return
    * @param eleMag the element magnification. Valid values are &lt;= -1.
-   *        -1, 0, and 1 are all taken to be full element resolution,
-   *        -2 is every other element, -3 every third, etc...
+   *               -1, 0, and 1 are all taken to be full element resolution,
+   *               -2 is every other element, -3 every third, etc...
    * @param band the 1-based band number for the subset, which must be present
-   *        in the directory blocks band map or -1 for the first band
+   *             in the directory blocks band map or -1 for the first band
    *
    * @throws AreaFileException if file cannot be opened
    * @throws IllegalArgumentException If the magnification is greater than 1,
-   *         the band number is not in the band map, or either of the following are
-   *         true:
-   * 
-   *         <pre>
+   * the band number is not in the band map, or either of the following are
+   * true:
+   * <pre>
    *  startLine + (numLines * abs(lineMag)) &gt; total number of lines
    *  startElem + (numEles * abs(eleMag)) &gt; total number of elements
-   *         </pre>
+   * </pre>
    */
-  public AreaFile(String source, int startLine, int numLines, int lineMag, int startElem, int numEles, int eleMag,
-      int band) throws AreaFileException {
+  public AreaFile(String source, int startLine, int numLines, int lineMag,
+                  int startElem, int numEles, int eleMag, int band)
+          throws AreaFileException {
 
     this(source);
 
     // must have subsetted in the url
-    if (isSubsetted())
-      return;
+    if (isSubsetted()) return;
 
     // 0, 1, -1 are all full res
-    if (eleMag == 0)
-      eleMag = 1;
-    if (lineMag == 0)
-      lineMag = 1;
+    if (eleMag == 0) eleMag = 1;
+    if (lineMag == 0) lineMag = 1;
 
     if (lineMag > 1 || eleMag > 1) {
       throw new IllegalArgumentException("Magnifications greater that 1 are not currently supported");
 
-    } else if (startLine + numLines * Math.abs(lineMag) > origNumLines
-        || startElem + numEles * Math.abs(eleMag) > origNumElements) {
+    }
+    else if (startLine + numLines * Math.abs(lineMag) > origNumLines ||
+             startElem + numEles * Math.abs(eleMag) > origNumElements) {
       throw new IllegalArgumentException("Arguments outside of file line/element counts");
     }
 
@@ -431,10 +498,10 @@ public class AreaFile implements java.io.Serializable {
     int[] bands = getAreaDirectory().getBands();
     if (band == -1) {
       bandIdx = 0;
-    } else {
+    }
+    else {
       for (int i = 0; i < bands.length; i++) {
-        if (bands[i] == band)
-          bandIdx = i;
+        if (bands[i] == band) bandIdx = i;
       }
     }
 
@@ -455,7 +522,7 @@ public class AreaFile implements java.io.Serializable {
     int newDatOffset = startLine * lineLength;
     newDatOffset += linePrefixLength;
     newDatOffset += startElem * (origNumBands * dir[AD_DATAWIDTH]);
-    newDatOffset += (band - 1) * dir[AD_DATAWIDTH];
+    newDatOffset += bandIdx * dir[AD_DATAWIDTH];
 
     // reflect subset in directory
     dir[AD_DATAOFFSET] = newDatOffset;
@@ -471,19 +538,22 @@ public class AreaFile implements java.io.Serializable {
     // resolution is based on the instrument, not the file.
     if (lineMag < 0) {
       dir[AD_LINERES] = dir[AD_LINERES] * Math.abs(lineMag);
-    } else {
+    }
+    else {
       dir[AD_LINERES] = dir[AD_LINERES] / lineMag;;
     }
     if (eleMag < 0) {
       dir[AD_ELEMRES] = dir[AD_ELEMRES] * Math.abs(eleMag);
-    } else {
+    }
+    else {
       dir[AD_ELEMRES] = dir[AD_ELEMRES] / eleMag;
     }
 
     // set the band in the band map. Bandmap is in words 18 and 19
     if (band <= 32) {
       dir[AD_BANDMAP] = 1 << (band - 1);
-    } else {
+    }
+    else {
       dir[AD_BANDMAP + 1] = 1 << (band - 32);
     }
 
@@ -497,7 +567,7 @@ public class AreaFile implements java.io.Serializable {
    * Is this <code>AreaFile</code> instance subseted.
    *
    * @return True if this instance represents a subset of the total data
-   *         available.
+   * available.
    */
   public boolean isSubsetted() {
     return !(subset == null);
@@ -505,7 +575,6 @@ public class AreaFile implements java.io.Serializable {
 
   /**
    * Was this instance create with a remote data source.
-   * 
    * @return True if created with an ADDE url
    */
   public boolean isRemote() {
@@ -516,7 +585,7 @@ public class AreaFile implements java.io.Serializable {
    * Read the metadata for an area file (directory, nav, and cal).
    *
    * @exception AreaFileException
-   *            if there is a problem reading any portion of the metadata.
+   *              if there is a problem reading any portion of the metadata.
    *
    */
   private void readMetaData() throws AreaFileException {
@@ -533,8 +602,9 @@ public class AreaFile implements java.io.Serializable {
     for (i = 0; i < AD_DIRSIZE; i++) {
       try {
         dir[i] = af.readInt();
-      } catch (IOException e) {
-        throw new AreaFileException("Error reading AreaFile directory:" + e);
+      }
+      catch (IOException e) {
+        throw new AreaFileException("Error reading AreaFile directory", e);
       }
     }
     position += AD_DIRSIZE * 4;
@@ -547,8 +617,7 @@ public class AreaFile implements java.io.Serializable {
       if (dir[AD_VERSION] != VERSION_NUMBER)
         throw new AreaFileException("Invalid version number - probably not an AREA file");
       // word 20 may contain characters -- if small integer, flip it...
-      if ((dir[20] & 0xffff) == 0)
-        McIDASUtil.flip(dir, 20, 20);
+      if ((dir[20] & 0xffff) == 0) McIDASUtil.flip(dir, 20, 20);
       McIDASUtil.flip(dir, 21, 23);
       // words 24-31 contain memo field
       McIDASUtil.flip(dir, 32, 50);
@@ -567,9 +636,9 @@ public class AreaFile implements java.io.Serializable {
     auxLoc = dir[AD_AUXOFFSET];
     datLoc = dir[AD_DATAOFFSET];
     origNumBands = dir[AD_NUMBANDS];
-    linePrefixLength = dir[AD_DOCLENGTH] + dir[AD_CALLENGTH] + dir[AD_LEVLENGTH];
-    if (dir[AD_VALCODE] != 0)
-      linePrefixLength = linePrefixLength + 4;
+    linePrefixLength = dir[AD_DOCLENGTH] + dir[AD_CALLENGTH] +
+                       dir[AD_LEVLENGTH];
+    if (dir[AD_VALCODE] != 0) linePrefixLength = linePrefixLength + 4;
     if (linePrefixLength != dir[AD_PFXSIZE])
       throw new AreaFileException("Invalid line prefix length in AREA file.");
     lineDataLen = origNumBands * dir[AD_NUMELEMS] * dir[AD_DATAWIDTH];
@@ -598,23 +667,24 @@ public class AreaFile implements java.io.Serializable {
 
       nav = new int[navbytes / 4];
 
-      newPosition = (long) navLoc;
-      skipByteCount = (int) (newPosition - position);
+      newPosition = (long)navLoc;
+      skipByteCount = (int)(newPosition - position);
       try {
         af.skipBytes(skipByteCount);
-      } catch (IOException e) {
-        throw new AreaFileException("Error skipping AreaFile bytes: " + e);
+      }
+      catch (IOException e) {
+        throw new AreaFileException("Error skipping AreaFile bytes", e);
       }
 
       for (i = 0; i < navbytes / 4; i++) {
         try {
           nav[i] = af.readInt();
-        } catch (IOException e) {
-          throw new AreaFileException("Error reading AreaFile navigation:" + e);
+        }
+        catch (IOException e) {
+          throw new AreaFileException("Error reading AreaFile navigation", e);
         }
       }
-      if (flipwords)
-        flipnav(nav);
+      if (flipwords) flipnav(nav);
       position = navLoc + navbytes;
     }
 
@@ -625,22 +695,25 @@ public class AreaFile implements java.io.Serializable {
 
       cal = new int[calbytes / 4];
 
-      newPosition = (long) calLoc;
-      skipByteCount = (int) (newPosition - position);
+      newPosition = (long)calLoc;
+      skipByteCount = (int)(newPosition - position);
       try {
         af.skipBytes(skipByteCount);
-      } catch (IOException e) {
-        throw new AreaFileException("Error skipping AreaFile bytes: " + e);
+      }
+      catch (IOException e) {
+        throw new AreaFileException("Error skipping AreaFile bytes", e);
       }
 
       for (i = 0; i < calbytes / 4; i++) {
         try {
           cal[i] = af.readInt();
-        } catch (IOException e) {
-          throw new AreaFileException("Error reading AreaFile calibration:" + e);
+        }
+        catch (IOException e) {
+          throw new AreaFileException("Error reading AreaFile calibration", e);
         }
       }
-      // if (flipwords) flipcal(cal);
+      if (flipwords) //flipcal(cal);
+        McIDASUtil.flip(cal, 0, cal.length-1);
       position = calLoc + calbytes;
     }
 
@@ -648,18 +721,20 @@ public class AreaFile implements java.io.Serializable {
 
     if (auxLoc > 0 && auxbytes > 0) {
       aux = new int[auxbytes / 4];
-      newPosition = (long) auxLoc;
-      skipByteCount = (int) (newPosition - position);
+      newPosition = (long)auxLoc;
+      skipByteCount = (int)(newPosition - position);
       try {
         af.skipBytes(skipByteCount);
-      } catch (IOException e) {
-        throw new AreaFileException("Error skipping AreaFile bytes: " + e);
+      }
+      catch (IOException e) {
+        throw new AreaFileException("Error skipping AreaFile bytes", e);
       }
       for (i = 0; i < auxbytes / 4; i++) {
         try {
           aux[i] = af.readInt();
-        } catch (IOException e) {
-          throw new AreaFileException("Error reading AreaFile aux block:" + e);
+        }
+        catch (IOException e) {
+          throw new AreaFileException("Error reading AreaFile aux block", e);
         }
       }
       position = auxLoc + auxbytes;
@@ -726,7 +801,7 @@ public class AreaFile implements java.io.Serializable {
    * for the ImageStart and Res (from Directory block), and
    * the file start (0,0), and Mag (1,1).
    *
-   * @return AREAnav for this image (may be null)
+   * @return  AREAnav for this image  (may be null)
    *
    * @throws AreaFileException
    */
@@ -740,7 +815,8 @@ public class AreaFile implements java.io.Serializable {
         areaNav.setStart(0, 0);
         areaNav.setMag(1, 1);
 
-      } catch (McIDASException excp) {
+      }
+      catch (McIDASException excp) {
         areaNav = null;
       }
     }
@@ -787,8 +863,8 @@ public class AreaFile implements java.io.Serializable {
    * Read the AREA data.
    *
    * @return int array[band][lines][element] - If the <code>AreaFile</code>
-   *         was created as a subset only the band and subset indicated are returned,
-   *         otherwise all bands are returned.
+   * was created as a subset only the band and subset indicated are returned,
+   * otherwise all bands are returned.
    *
    * @exception AreaFileException if there is a problem
    *
@@ -797,37 +873,39 @@ public class AreaFile implements java.io.Serializable {
     data = new int[origNumBands][dir[AD_NUMLINES]][dir[AD_NUMELEMS]];
     return getData(data);
   }
-
+  
   /**
    * Read AREA file data by reference. After reading the internal
-   * data array is will be a reference to the target array, so any changes made
-   * to the target array will be reflected in the internal data array.
-   *
+   *  data array is will be a reference to the target array, so any changes made
+   *  to the target array will be reflected in the internal data array.
+   * 
    * @param target Array to use as the destination of the data read. This array
-   *        must be appropriately dimensioned as [#bands][#lines][#elems].
+   *  must be appropriately dimensioned as [#bands][#lines][#elems].
    * @return int array[band][lines][element] - If the <code>AreaFile</code>
-   *         was created as a subset only the band and subset indicated are returned,
-   *         otherwise all bands are returned.
-   * @throws IllegalArgumentException If the target array is not dimensioned
-   *         according to the subset, if subsetted, or otherwise has dimensions other than
-   *         [bands][lines][elements].
-   * @throws AreaFileException If an error occurs while reading data.
+   * was created as a subset only the band and subset indicated are returned,
+   * otherwise all bands are returned.
+   * @throws IllegalArgumentException If the target array is not dimensioned 
+   *  according to the subset, if subsetted, or otherwise has dimensions other than
+   *  [bands][lines][elements].
+   * @throws AreaFileException If an error occurs while reading data. 
    */
   public int[][][] getData(int[][][] target) throws AreaFileException {
-    if (target == null
-        || (isSubsetted() && target.length != 1 && target[0].length != subset.numLines
+    if (target == null ||
+        (isSubsetted() && target.length != 1 && target[0].length != subset.numLines
             && target[0][0].length != subset.numEles)
-        || (target.length != origNumBands && target[0].length != dir[AD_NUMLINES]
+      || (target.length != origNumBands && target[0].length != dir[AD_NUMLINES]
             && target[0][0].length != dir[AD_NUMELEMS])) {
       throw new IllegalArgumentException("target array is not dimensioned correctly");
     }
-
+    
     if (!hasReadData) {
       if (subset == null) {
         readData(target);
-      } else {
-        readData(target, subset.lineNumber, subset.numLines, subset.lineMag, subset.eleNumber, subset.numEles,
-            subset.eleMag, subset.bandNumber);
+      }
+      else {
+        readData(target, 
+          subset.lineNumber, subset.numLines, subset.lineMag,
+          subset.eleNumber, subset.numEles, subset.eleMag, subset.bandNumber);
       }
     }
     hasReadData = true;
@@ -840,7 +918,6 @@ public class AreaFile implements java.io.Serializable {
    * <code>getCalibratedData()</code>. This must be called before
    * <code>getCalibratedData()</code> to get calibrated data, otherwise it will
    * just return the data in the format specified in the directory.
-   * 
    * @param cal calibration type from {@link Calibrator}.
    */
   public void setCalType(int cal) {
@@ -850,7 +927,6 @@ public class AreaFile implements java.io.Serializable {
   /**
    * Get the calibration type that will be used on data returned form
    * <code>getCalibratedData()</code>.
-   * 
    * @return calibration type from {@link Calibrator}.
    */
   public int getCalType() {
@@ -872,18 +948,23 @@ public class AreaFile implements java.io.Serializable {
   public float[][][] getFloatData() throws AreaFileException {
 
     int[][][] inData = getData();
-    float[][][] outData = new float[dir[AD_NUMBANDS]][dir[AD_NUMLINES]][dir[AD_NUMELEMS]];
+    float[][][] outData =
+      new float[dir[AD_NUMBANDS]][dir[AD_NUMLINES]][dir[AD_NUMELEMS]];
 
     // create the appropriate calibrator
     Calibrator calibrator = null;
 
-    int origType = AreaFileFactory.calStrToInt(areaDirectory.getCalibrationType());
+    int origType =
+      AreaFileFactory.calStrToInt(areaDirectory.getCalibrationType());
 
-    if (!isRemote() && getCalType() != Calibrator.CAL_NONE && origType != getCalType()) {
+    if (!isRemote() && getCalType() != Calibrator.CAL_NONE &&
+        origType != getCalType()) {
 
       try {
-        calibrator = CalibratorFactory.getCalibrator(areaDirectory.getSensorID(), cal);
-      } catch (CalibratorException e) {
+        calibrator =
+          CalibratorFactory.getCalibrator(areaDirectory.getSensorID(), cal);
+      }
+      catch (CalibratorException e) {
         // can't calibrate
       }
     }
@@ -895,8 +976,10 @@ public class AreaFile implements java.io.Serializable {
           for (int elem = 0; elem < inData[0][0].length; elem++) {
             if (calibrator != null) {
               outData[band_idx][line][elem] =
-                  calibrator.calibrate((float) inData[band_idx][line][elem], band_idx + 1, calType);
-            } else {
+                calibrator.calibrate((float)inData[band_idx][line][elem],
+                                     band_idx + 1, calType);
+            }
+            else {
               outData[band_idx][line][elem] = inData[band_idx][line][elem];
             }
           }
@@ -904,12 +987,17 @@ public class AreaFile implements java.io.Serializable {
       }
 
       // just subsetted band
-    } else {
+    }
+    else {
       for (int line = 0; line < inData[0].length; line++) {
         for (int elem = 0; elem < inData[0][0].length; elem++) {
-          if (!isRemote && calType != Calibrator.CAL_NONE && calibrator != null) {
-            outData[0][line][elem] = calibrator.calibrate((float) inData[0][line][elem], subset.bandNumber, calType);
-          } else {
+          if (!isRemote && calType != Calibrator.CAL_NONE &&
+              calibrator != null) {
+            outData[0][line][elem] =
+              calibrator.calibrate((float)inData[0][line][elem],
+                                   subset.bandNumber, calType);
+          }
+          else {
             outData[0][line][elem] = inData[0][line][elem];
           }
         }
@@ -921,48 +1009,51 @@ public class AreaFile implements java.io.Serializable {
 
   /**
    * Read the specified 2-dimensional array of
-   * data values from the AREA file. Values will always be returned
+   * data values from the AREA file.  Values will always be returned
    * as int regardless of whether they are 1, 2, or 4 byte values.
    *
    * @param lineNumber the file-relative image line number that will
-   *        be put in array[0][j]
-   * @param eleNumber the file-relative image element number that will
-   *        be put into array[i][0]
-   * @param numLines the number of lines to return
-   * @param numEles the number of elements to return for each line
+   *                   be put in array[0][j]
+   * @param eleNumber  the file-relative image element number that will
+   *                   be put into array[i][0]
+   * @param numLines   the number of lines to return
+   * @param numEles    the number of elements to return for each line
    *
    * @return int array[lines][elements] with data values.
    * @deprecated Use one of the factory methods from {@link AreaFileFactory}
-   *             with the appropriate subsetting parameters.
+   * with the appropriate subsetting parameters.
    * @exception AreaFileException if the is a problem reading the file
    */
-  public int[][] getData(int lineNumber, int eleNumber, int numLines, int numEles) throws AreaFileException {
+  public int[][] getData(int lineNumber, int eleNumber, int numLines,
+                         int numEles)
+          throws AreaFileException {
     return getData(lineNumber, eleNumber, numLines, numEles, 1);
   }
 
 
   /**
    * Read the specified 2-dimensional array of
-   * data values from the AREA file. Values will always be returned
+   * data values from the AREA file.  Values will always be returned
    * as int regardless of whether they are 1, 2, or 4 byte values.
    *
    * @param lineNumber the file-relative image line number that will
-   *        be put in array[0][j]
-   * @param eleNumber the file-relative image element number that will
-   *        be put into array[i][0]
-   * @param numLines the number of lines to return
-   * @param numEles the number of elements to return for each line
+   *                   be put in array[0][j]
+   * @param eleNumber  the file-relative image element number that will
+   *                   be put into array[i][0]
+   * @param numLines   the number of lines to return
+   * @param numEles    the number of elements to return for each line
    * @param bandNumber the spectral band to return
    *
    * @return int array[lines][elements] with data values.
    * @deprecated Use one of the factory methods from {@link AreaFileFactory}
-   *             with the appropriate subsetting parameters.
+   * with the appropriate subsetting parameters.
    * @exception AreaFileException if the is a problem reading the file
    */
-  public int[][] getData(int lineNumber, int eleNumber, int numLines, int numEles, int bandNumber)
-      throws AreaFileException {
+  public int[][] getData(int lineNumber, int eleNumber, int numLines,
+                         int numEles, int bandNumber)
+          throws AreaFileException {
 
-    // data = new int[1][numLines][numEles];
+    //data = new int[1][numLines][numEles];
     if (!hasReadData) {
       data = new int[origNumBands][dir[AD_NUMLINES]][dir[AD_NUMELEMS]];
       readData(data);
@@ -972,9 +1063,11 @@ public class AreaFile implements java.io.Serializable {
       int ii = i + lineNumber;
       for (int j = 0; j < numEles; j++) {
         int jj = j + eleNumber;
-        if (ii < 0 || ii > (dir[AD_NUMLINES] - 1) || jj < 0 || jj > (dir[AD_NUMELEMS] - 1)) {
+        if (ii < 0 || ii > (dir[AD_NUMLINES] - 1) || jj < 0 ||
+            jj > (dir[AD_NUMELEMS] - 1)) {
           subset[i][j] = 0;
-        } else {
+        }
+        else {
           subset[i][j] = data[bandNumber - 1][ii][jj];
         }
       }
@@ -990,7 +1083,7 @@ public class AreaFile implements java.io.Serializable {
    * @return flipped value
    */
   private int flipShort(short s) {
-    return (int) (((s >> 8) & 0xff) | ((s << 8) & 0xff00));
+    return (int)(((s >> 8) & 0xff) | ((s << 8) & 0xff00));
   }
 
   /**
@@ -1001,7 +1094,8 @@ public class AreaFile implements java.io.Serializable {
    * @return flipped value
    */
   private int flipInt(int i) {
-    return ((i >>> 24) & 0xff) | ((i >>> 8) & 0xff00) | ((i & 0xff) << 24) | ((i & 0xff00) << 8);
+    return ((i >>> 24) & 0xff) | ((i >>> 8) & 0xff00) | ((i & 0xff) << 24)
+           | ((i & 0xff00) << 8);
   }
 
   /**
@@ -1017,25 +1111,35 @@ public class AreaFile implements java.io.Serializable {
    *
    * @throws AreaFileException
    */
-  private void readData(int[][][] target, int lineNumber, int numLines, int lineMag, int eleNumber, int numEles,
-      int eleMag, int bandNumber) throws AreaFileException {
+  private void readData(int[][][] target, 
+                        int lineNumber, int numLines, int lineMag,
+                        int eleNumber, int numEles, int eleMag,
+                        int bandNumber)
+          throws AreaFileException {
 
     if (!fileok) {
       throw new AreaFileException("Error reading AreaFile data");
     }
 
     // multipliers for line/element skips
-    int lineMagMult = (lineMag >= 1) ? 0 : Math.abs(lineMag) - 1;
-    int eleMagMult = (eleMag >= 1) ? 0 : Math.abs(eleMag) - 1;
+    int lineMagMult = (lineMag >= 1)
+                      ? 0
+                      : Math.abs(lineMag) - 1;
+    int eleMagMult = (eleMag >= 1)
+                     ? 0
+                     : Math.abs(eleMag) - 1;
 
     int startLoc = dir[AD_DATAOFFSET];
     int elementSize = origNumBands * dir[AD_DATAWIDTH];
-    int readElements = eleMagMult == 0 ? numEles : numEles * Math.abs(eleMag);
+    int readElements = eleMagMult == 0
+                       ? numEles
+                       : numEles * Math.abs(eleMag);
 
     // num of lines to skip due to line resolution
     int lineSkip = lineMagMult * lineLength;
     // skip to read position on next line
-    int readSkip = (origNumElements - readElements) * elementSize + linePrefixLength;
+    int readSkip = (origNumElements - readElements) * elementSize +
+                   linePrefixLength;
 
     // number of element to skip due to resolution
     int elementSkip = eleMagMult * elementSize;
@@ -1053,15 +1157,17 @@ public class AreaFile implements java.io.Serializable {
       if (df != af) {
         af = df;
       }
-    } catch (IOException ioe) {
-      throw new AreaFileException("Error getting input stream for data");
+    }
+    catch (IOException ioe) {
+      throw new AreaFileException("Error getting input stream for data", ioe);
 
     }
 
     try {
       af.skipBytes(startLoc);
-    } catch (IOException e) {
-      throw new AreaFileException("Error skipping to start of data");
+    }
+    catch (IOException e) {
+      throw new AreaFileException("Error skipping to start of data", e);
     }
 
     for (int i = 0; i < numLines; i++) {
@@ -1070,37 +1176,44 @@ public class AreaFile implements java.io.Serializable {
         try {
           // all 1- and 2-byte data are un-signed!
           if (dir[AD_DATAWIDTH] == 1) {
-            target[0][i][j] = ((int) af.readByte()) & 0xff;
+            target[0][i][j] = ((int)af.readByte()) & 0xff;
 
-          } else if (dir[AD_DATAWIDTH] == 2) {
+          }
+          else if (dir[AD_DATAWIDTH] == 2) {
             shdata = af.readShort();
             if (flipwords) {
               target[0][i][j] = flipShort(shdata) & 0xffff;
-            } else {
-              target[0][i][j] = ((int) shdata) & 0xffff;
+            }
+            else {
+              target[0][i][j] = ((int)shdata) & 0xffff;
             }
 
-          } else if (dir[AD_DATAWIDTH] == 4) {
+          }
+          else if (dir[AD_DATAWIDTH] == 4) {
             intdata = af.readInt();
             if (flipwords) {
               target[0][i][j] = flipInt(intdata);
-            } else {
+            }
+            else {
               target[0][i][j] = intdata;
             }
           }
 
           af.skipBytes(nextElementSkip);
 
-        } catch (IOException e) {
-          throw new AreaFileException("Error reading element " + i + " in line " + j);
+        }
+        catch (IOException e) {
+          throw new AreaFileException("Error reading element " + i +
+                                      " in line " + j, e);
         }
       }
 
       // done with line, skip to relavent element in next relavent line
       try {
         af.skipBytes(nextReadSkip);
-      } catch (IOException e) {
-        throw new AreaFileException("Error skipping to next line");
+      }
+      catch (IOException e) {
+        throw new AreaFileException("Error skipping to next line", e);
       }
 
     }
@@ -1127,23 +1240,25 @@ public class AreaFile implements java.io.Serializable {
         position = 0;
         af = df;
       }
-    } catch (IOException ioe) {
-      throw new AreaFileException("Error getting input stream for data");
+    }
+    catch (IOException ioe) {
+      throw new AreaFileException("Error getting input stream for data", ioe);
 
     }
-
+    
     short shdata;
     int intdata;
 
     for (i = 0; i < numLines; i++) {
 
       try {
-        newPosition = (long) (datLoc + linePrefixLength + i * lineLength);
-        skipByteCount = (int) (newPosition - position);
+        newPosition = (long)(datLoc + linePrefixLength + i * lineLength);
+        skipByteCount = (int)(newPosition - position);
         af.skipBytes(skipByteCount);
         position = newPosition;
 
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         for (j = 0; j < numEles; j++) {
           for (k = 0; k < origNumBands; k++) {
             target[k][i][j] = 0;
@@ -1158,33 +1273,39 @@ public class AreaFile implements java.io.Serializable {
 
           if (j > lineDataLen) {
             target[k][i][j] = 0;
-          } else {
+          }
+          else {
 
             try {
               // all 1- and 2-byte data are un-signed!
 
               if (dir[AD_DATAWIDTH] == 1) {
-                target[k][i][j] = ((int) af.readByte()) & 0xff;
+                target[k][i][j] = ((int)af.readByte()) & 0xff;
                 position = position + 1;
-              } else if (dir[AD_DATAWIDTH] == 2) {
+              }
+              else if (dir[AD_DATAWIDTH] == 2) {
                 shdata = af.readShort();
                 if (flipwords) {
                   target[k][i][j] = flipShort(shdata) & 0xffff;
-                } else {
-                  target[k][i][j] = ((int) shdata) & 0xffff;
+                }
+                else {
+                  target[k][i][j] = ((int)shdata) & 0xffff;
                 }
                 position = position + 2;
-              } else if (dir[AD_DATAWIDTH] == 4) {
+              }
+              else if (dir[AD_DATAWIDTH] == 4) {
                 intdata = af.readInt();
                 if (flipwords) {
                   target[k][i][j] = flipInt(intdata);
-                } else {
+                }
+                else {
                   target[k][i][j] = intdata;
                 }
                 position = position + 4;
               }
 
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
               target[k][i][j] = 0;
             }
           }
@@ -1197,7 +1318,8 @@ public class AreaFile implements java.io.Serializable {
 
     try {
       af.close();
-    } catch (IOException excp) {
+    }
+    catch (IOException excp) {
       System.out.println("Couldn't close input stream for " + imageSource);
     }
 
@@ -1233,8 +1355,8 @@ public class AreaFile implements java.io.Serializable {
       McIDASUtil.flip(nav, 1, 119);
     }
 
-    else if (nav[0] == AREAnav.GMSX) {
-    } else {
+    else if (nav[0] == AREAnav.GMSX) {}
+    else {
       McIDASUtil.flip(nav, 1, nav.length - 1);
     }
 
@@ -1266,32 +1388,31 @@ public class AreaFile implements java.io.Serializable {
     buff.append("Sensor ID: " + dir.getSensorID() + EOL);
     buff.append("Cal Type: " + dir.getCalibrationType() + EOL);
     buff.append(
-        "Nominal Time: " + dir.getDirectoryBlock()[AD_IMGDATE] + " " + dir.getDirectoryBlock()[AD_IMGTIME] + EOL);
+      "Nominal Time: " + dir.getDirectoryBlock()[AD_IMGDATE] + " " +
+      dir.getDirectoryBlock()[AD_IMGTIME] + EOL);
     buff.append("==========================" + EOL);
     try {
       buff.append("Nav: " + getNavigation() + EOL);
-    } catch (AreaFileException e) {
     }
-    buff.append("User Cal Type: " + AreaFileFactory.calIntToStr(getCalType()).toUpperCase());
+    catch (AreaFileException e) {
+    }
+    buff.append(
+      "User Cal Type: " +
+      AreaFileFactory.calIntToStr(getCalType()).toUpperCase());
     return buff.toString();
   }
 
   /**
    * Test Method.
-   * 
    * <pre>
    * USAGE: AreaFile &lt;source&gt; [(raw|temp|brit|rad|refl)]
    * </pre>
-   * <p>
-   * If source is a file path or url without subsetting information directory
+   * <p>If source is a file path or url without subsetting information directory
    * information is printed. If source is a local file url with subsetting
-   * information data is printed according to the parameters.
-   * </p>
+   * information data is printed according to the parameters.</p>
    *
-   * <p>
-   * This has not been tested with an ADDE url, but it should work ...
-   * maybe.
-   * </p>
+   * <p>This has not been tested with an ADDE url, but it should work ...
+   * maybe.</p>
    *
    * @param args
    * @throws Exception
@@ -1315,11 +1436,14 @@ public class AreaFile implements java.io.Serializable {
     System.out.print("Getting data ... ");
     float data[][][] = af.getFloatData();
 
-    System.out.println("" + (System.currentTimeMillis() - time) + "ms to retrieve "
-        + AreaFileFactory.calIntToStr(af.getCalType()).toUpperCase() + " data");
+    System.out.println(
+      "" + (System.currentTimeMillis() - time) + "ms to retrieve " +
+      AreaFileFactory.calIntToStr(af.getCalType()).toUpperCase() + " data");
     System.out.println();
 
-    System.out.println("DATA [" + data.length + "][" + data[0].length + "][" + data[0][0].length + "]");
+    System.out.println(
+      "DATA [" + data.length + "][" + data[0].length + "][" +
+      data[0][0].length + "]");
 
     if (args.length > 1 && !af.isSubsetted()) {
       System.err.println("Sorry, I won't print an unsubsetted file");
@@ -1339,38 +1463,38 @@ public class AreaFile implements java.io.Serializable {
   }
 
   /**
-   * Get the input stream for the image. Handles Unidata PNG
+   * Get the input stream for the image.  Handles Unidata PNG
    * compressed images.
    *
-   * @return the input stream for the reading
+   * @return  the input stream for the reading
    *
    * @throws IOException
    */
   private DataInputStream getInputStreamForData() throws IOException {
 
     if (af.markSupported()) {
-      // System.out.println("mark is supported");
+      //System.out.println("mark is supported");
       // calculate offset to potentially compressed data block
       int numComments = dir[AD_NUMCOMMENTS];
-      // System.out.println("number of comment cards = " + numComments);
+      // System.out.println("number  of comment cards = " + numComments);
       int compressedDataStart = numComments * 80 + datLoc;
-      af.mark((int) (compressedDataStart - position + 10));
+      af.mark((int)(compressedDataStart - position + 10));
       af.skip(compressedDataStart - position);
       byte[] test = new byte[8];
       af.read(test);
       af.reset();
       if (isPNG(test)) {
-        // System.out.println("isPNG");
+        //System.out.println("isPNG");
         if (numComments > 0) {
           byte[] comments = new byte[numComments * 80];
           af.read(comments);
           /*
-           * for (int i = 0; i < numComments; i++) {
-           * byte[] comment = new byte[80];
-           * System.arraycopy(comments, i*80, comment, 0, 80);
-           * System.out.println("card["+i+"] = " + new String(comment));
-           * }
-           */
+          for (int i = 0; i < numComments; i++) {
+              byte[] comment = new byte[80];
+              System.arraycopy(comments, i*80, comment, 0, 80);
+              System.out.println("card["+i+"] = " + new String(comment));
+          }
+          */
         }
         int available = af.available();
 
@@ -1384,13 +1508,14 @@ public class AreaFile implements java.io.Serializable {
         DataBuffer db = raster.getDataBuffer();
 
         if (db instanceof DataBufferByte) {
-          DataBufferByte dbb = (DataBufferByte) db;
+          DataBufferByte dbb = (DataBufferByte)db;
           byte[] udata = dbb.getData();
           ByteArrayInputStream newios = new ByteArrayInputStream(udata);
           return new DataInputStream(newios);
 
         }
-      } else {
+      }
+      else {
         return af;
       }
     }
@@ -1401,38 +1526,37 @@ public class AreaFile implements java.io.Serializable {
   /**
    * Check if this is a PNG compressed image
    *
-   * @param bytes bytes to check
+   * @param bytes  bytes to check
    *
-   * @return true if it fits the profile
+   * @return  true if it fits the profile
    */
   private boolean isPNG(byte[] bytes) {
 
-    if (bytes.length != 8)
-      return false;
+    if (bytes.length != 8) return false;
     return bytes[0] == -119 && bytes[1] == 80 && // P
-        bytes[2] == 78 && // N
-        bytes[3] == 71 && // G
-        bytes[4] == 13 && bytes[5] == 10 && bytes[6] == 26 && bytes[7] == 10;
+           bytes[2] == 78 && // N
+           bytes[3] == 71 && // G
+           bytes[4] == 13 && bytes[5] == 10 && bytes[6] == 26 &&
+           bytes[7] == 10;
   }
 
   /**
    * Close this instance.
    */
   public void close() {
-    if (af == null)
-      return;
+    if (af == null) return;
     try {
       af.close();
-    } catch (IOException ioe) {
+    }
+    catch (IOException ioe) {
     }
   }
 
   /**
    * Save this AreaFile to the output location
-   * 
-   * @param outputFile path to the output file
+   * @param outputFile  path to the output file
    *
-   * @throws AreaFileException problem saving to the file
+   * @throws AreaFileException  problem saving to the file
    */
   public void save(String outputFile) throws AreaFileException {
     save(outputFile, false);
@@ -1440,12 +1564,12 @@ public class AreaFile implements java.io.Serializable {
 
   /**
    * Save this AreaFile to the output location
-   * 
-   * @param outputFile path to the output file
-   * @param verbose true to print out status messages
+   * @param outputFile  path to the output file
+   * @param verbose   true to print out status messages
    * @throws AreaFileException on any error writing the file
    */
-  public void save(String outputFile, boolean verbose) throws AreaFileException {
+  public void save(String outputFile, boolean verbose)
+          throws AreaFileException {
 
     int[] dir = getDir();
     if (dir == null) {
@@ -1462,29 +1586,26 @@ public class AreaFile implements java.io.Serializable {
 
     int[] nav = getNav();
     if (nav == null) {
-      if (verbose)
-        System.out.println("No navigation block!");
-    } else {
-      if (verbose)
-        System.out.println("Length of nav block = " + nav.length);
+      if (verbose) System.out.println("No navigation block!");
+    }
+    else {
+      if (verbose) System.out.println("Length of nav block = " + nav.length);
     }
 
     int[] cal = getCal();
     if (cal == null) {
-      if (verbose)
-        System.out.println("No calibration block!");
-    } else {
-      if (verbose)
-        System.out.println("Length of cal block = " + cal.length);
+      if (verbose) System.out.println("No calibration block!");
+    }
+    else {
+      if (verbose) System.out.println("Length of cal block = " + cal.length);
     }
 
     int[] aux = getAux();
     if (aux == null) {
-      if (verbose)
-        System.out.println("No aux block");
-    } else {
-      if (verbose)
-        System.out.println("Length of aux block = " + aux.length);
+      if (verbose) System.out.println("No aux block");
+    }
+    else {
+      if (verbose) System.out.println("Length of aux block = " + aux.length);
     }
 
     int NL = dir[8];
@@ -1497,54 +1618,50 @@ public class AreaFile implements java.io.Serializable {
 
     data = getData(0, 0, NL, NE);
 
-    if (verbose)
-      System.out.println("Finished reading data");
+    if (verbose) System.out.println("Finished reading data");
 
     try {
       RandomAccessFile raf = new RandomAccessFile(outputFile, "rw");
 
-      if (verbose)
-        System.out.println("Dir to word 0");
+      if (verbose) System.out.println("Dir to word 0");
       raf.seek(0);
       dir[0] = 0; // make sure this is zero!!
       for (int i = 0; i < dir.length; i++)
         raf.writeInt(dir[i]);
 
-      if (verbose)
-        System.out.println("Nav to word " + dir[AD_NAVOFFSET]);
+      if (verbose) System.out.println("Nav to word " + dir[AD_NAVOFFSET]);
       if (nav != null && dir[AD_NAVOFFSET] > 0) {
         raf.seek(dir[AD_NAVOFFSET]);
         for (int i = 0; i < nav.length; i++)
           raf.writeInt(nav[i]);
       }
 
-      if (verbose)
-        System.out.println("Cal to word " + dir[AD_CALOFFSET]);
+      if (verbose) System.out.println("Cal to word " + dir[AD_CALOFFSET]);
       if (cal != null && dir[AD_NAVOFFSET] > 0) {
         raf.seek(dir[AD_CALOFFSET]);
         for (int i = 0; i < cal.length; i++)
           raf.writeInt(cal[i]);
       }
 
-      if (verbose)
-        System.out.println("Aux to word " + dir[AD_AUXOFFSET]);
+      if (verbose) System.out.println("Aux to word " + dir[AD_AUXOFFSET]);
       if (aux != null && dir[AD_NAVOFFSET] > 0) {
         raf.seek(dir[AD_AUXOFFSET]);
         for (int i = 0; i < aux.length; i++)
           raf.writeInt(aux[i]);
       }
 
-      if (verbose)
-        System.out.println("Data to word " + dir[AD_DATAOFFSET]);
+      if (verbose) System.out.println("Data to word " + dir[AD_DATAOFFSET]);
       if (dir[AD_NAVOFFSET] > 0) {
         raf.seek(dir[AD_DATAOFFSET]);
         for (int i = 0; i < data.length; i++) {
           for (int j = 0; j < data[i].length; j++) {
             if (dir[AD_DATAWIDTH] == 1) {
               raf.writeByte(data[i][j]);
-            } else if (dir[AD_DATAWIDTH] == 2) {
+            }
+            else if (dir[AD_DATAWIDTH] == 2) {
               raf.writeShort(data[i][j]);
-            } else if (dir[AD_DATAWIDTH] == 4) {
+            }
+            else if (dir[AD_DATAWIDTH] == 4) {
               raf.writeInt(data[i][j]);
             }
           }
@@ -1552,8 +1669,9 @@ public class AreaFile implements java.io.Serializable {
       }
 
       raf.close();
-    } catch (Exception we) {
-      throw new AreaFileException("Unable to save file " + we.getMessage());
+    }
+    catch (Exception we) {
+      throw new AreaFileException("Unable to save file", we);
     }
     if (verbose)
       System.out.println("Completed. Data saved to: " + outputFile);

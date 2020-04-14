@@ -3,26 +3,26 @@
 //
 
 /*
- * This source file is part of the edu.wisc.ssec.mcidas package and is
- * Copyright (C) 1998 - 2011 by Tom Whittaker, Tommy Jasmin, Tom Rink,
- * Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
- * and others.
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA 02111-1307, USA
- */
+This source file is part of the edu.wisc.ssec.mcidas package and is
+Copyright (C) 1998 - 2020 by Tom Whittaker, Tommy Jasmin, Tom Rink,
+Don Murray, James Kelly, Bill Hibbard, Dave Glowacki, Curtis Rueden
+and others.
+ 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free
+Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA
+*/
 
 package ucar.mcidas;
 
@@ -42,27 +42,29 @@ import java.io.IOException;
 public class CalibratorDefault implements Calibrator {
 
   // public static final int CAL_NONE = -1;
-  // public static final int CAL_MIN = 1;
-  // public static final int CAL_RAW = 1;
-  // public static final int CAL_RAD = 2;
-  // public static final int CAL_ALB = 3;
+  // public static final int CAL_MIN  = 1;
+  // public static final int CAL_RAW  = 1;
+  // public static final int CAL_RAD  = 2;
+  // public static final int CAL_ALB  = 3;
   // public static final int CAL_TEMP = 4;
   // public static final int CAL_BRIT = 5;
-  // public static final int CAL_MAX = 5;
+  // public static final int CAL_MAX  = 5;
 
   // var to store current cal type
   protected static int curCalType = 0;
 
+  public boolean isPreCalibrated = false;
   /**
    *
    * constructor - does nothing for default calibrator
    *
-   * @param dis data input stream
-   * @param ad AncillaryData object
+   * @param dis         data input stream
+   * @param ad          AncillaryData object
    *
    */
 
-  public CalibratorDefault(DataInputStream dis, AncillaryData ad) throws IOException
+  public CalibratorDefault(DataInputStream dis, AncillaryData ad) 
+    throws IOException
 
   {
     return;
@@ -72,7 +74,7 @@ public class CalibratorDefault implements Calibrator {
    *
    * set calibration type of current (input) data
    *
-   * @param calType one of the types defined in Calibrator interface
+   * @param calType     one of the types defined in Calibrator interface
    *
    */
 
@@ -88,13 +90,17 @@ public class CalibratorDefault implements Calibrator {
    *
    * calibrate data buffer to specified units.
    *
-   * @param inputData input data buffer
-   * @param band channel/band number
-   * @param calTypeOut units to convert input buffer to
+   * @param inputData   input data buffer
+   * @param band        channel/band number
+   * @param calTypeOut  units to convert input buffer to
    *
    */
 
-  public float[] calibrate(float[] inputData, int band, int calTypeOut)
+  public float[] calibrate (
+    float[] inputData,
+    int band,
+    int calTypeOut
+  )
 
   {
 
@@ -115,13 +121,17 @@ public class CalibratorDefault implements Calibrator {
    *
    * calibrate single value to specified units.
    *
-   * @param inputPixel input data value
-   * @param band channel/band number
-   * @param calTypeOut units to convert input buffer to
+   * @param inputPixel  input data value
+   * @param band        channel/band number
+   * @param calTypeOut  units to convert input buffer to
    *
    */
 
-  public float calibrate(float inputPixel, int band, int calTypeOut)
+  public float calibrate (
+    float inputPixel,
+    int band,
+    int calTypeOut
+  )
 
   {
 
@@ -156,4 +166,78 @@ public class CalibratorDefault implements Calibrator {
 
   }
 
+  public int[] calibratedList( final int band, final boolean isPreCal ) {
+    int[] cList;
+
+    cList = new int[]{CAL_RAW, CAL_BRIT};
+
+    return cList;
+  }
+
+  public  String calibratedUnit (int calType ){
+    return null;
+  }
+
+  /**
+   *
+   * convert a gray scale value to brightness temperature
+   *
+   * @param inVal       input data value
+   *
+   */
+  public float convertBritToTemp(int inVal) {
+
+    int con1 = 418;
+    int con2 = 660;
+    int ilim = 176;
+
+    float outVal;
+    if(inVal > ilim){
+      outVal = con1 - inVal;
+    } else {
+      outVal = (con2 - inVal)/2;
+    }
+
+    return (outVal);
+  }
+
+  /**
+   *
+   * convert a gray scale value to brightness temperature
+   *
+   * @param inputData   input data array
+   *
+   */
+  public float[] convertBritToTemp (float[] inputData) {
+
+    // create the output data buffer
+    float[] outputData = new float[inputData.length];
+
+    // just call the other calibrate routine for each data point
+    for (int i = 0; i < inputData.length; i++) {
+      outputData[i] = convertBritToTemp((int) inputData[i]);
+    }
+
+    // return the calibrated buffer
+    return outputData;
+
+  }
+
+  /**
+   *
+   * return isPrecalibrated value
+   *
+   */
+  public boolean getIsPreCalibrated(){
+    return isPreCalibrated;
+  }
+
+  /**
+   *
+   * set isPrecalibrated value
+   *
+   */
+  public void setIsPreCalibrated(boolean isPrecalibrated){
+    this.isPreCalibrated = isPrecalibrated;
+  }
 }
