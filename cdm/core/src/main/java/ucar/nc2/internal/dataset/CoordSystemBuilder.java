@@ -560,12 +560,10 @@ public class CoordSystemBuilder {
   }
 
   protected CoordinateTransform.Builder makeCoordinateTransform(VariableDS.Builder<?> vb) {
-    return CoordinateTransform.builder().setName(vb.shortName).setAttributeContainer(vb.getAttributeContainer());
+    return CoordinateTransform.builder().setName(vb.getFullName()).setAttributeContainer(vb.getAttributeContainer());
   }
 
-  /**
-   * Assign CoordinateTransform objects to Variables and Coordinate Systems.
-   */
+  /** Assign CoordinateTransform objects to Variables and Coordinate Systems. */
   protected void assignCoordinateTransforms() {
     // look for explicit transform assignments on the coordinate systems
     for (VarProcess vp : varList) {
@@ -670,6 +668,9 @@ public class CoordSystemBuilder {
     // prefer ones in the same group
     if (from != null) {
       for (VarProcess vp : varList) {
+        if (vp.vb == null || vp.vb.parent == null || from.vb == null) {
+          continue;
+        }
         if (name.equals(vp.vb.shortName) && vp.vb.parent.equals(from.vb.parent)) {
           return vp;
         }

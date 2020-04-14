@@ -37,7 +37,6 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.write.NetcdfFileFormat;
 import ucar.nc2.iosp.hdf4.H4type;
 import ucar.nc2.iosp.hdf4.TagEnum;
 import ucar.nc2.write.Ncdump;
@@ -625,7 +624,8 @@ public class H4header implements HdfHeaderIF {
     // may have to reparent the group
     root.removeGroup(g.shortName);
 
-    parent.findGroup(g.shortName).ifPresent(groupExisting -> g.setName(g.shortName + tag.refno)); // disambiguate name
+    parent.findGroupLocal(g.shortName).ifPresent(groupExisting -> g.setName(g.shortName + tag.refno)); // disambiguate
+                                                                                                       // name
 
     parent.addGroup(g);
   }

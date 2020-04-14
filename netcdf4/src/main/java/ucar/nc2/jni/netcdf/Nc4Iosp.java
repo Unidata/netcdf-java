@@ -6,13 +6,11 @@
 package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -360,7 +358,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     makeGroup(new Group4(ncid, ncfile.getRootGroup(), null));
 
     // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
     if (eosInfo != null && useHdfEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }

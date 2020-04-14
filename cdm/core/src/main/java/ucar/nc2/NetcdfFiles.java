@@ -826,7 +826,7 @@ public class NetcdfFiles {
 
   // reservedFullName defines the characters that must be escaped
   // when a short name is inserted into a full name
-  private static final String reservedFullName = ".\\";
+  public static final String reservedFullName = ".\\";
 
   // reservedSectionSpec defines the characters that must be escaped
   // when a short name is inserted into a section specification.

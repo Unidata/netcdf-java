@@ -532,7 +532,7 @@ public class NcMLReaderNew {
       }
       // see if it exists in referenced dataset
       if (refParent != null) {
-        refGroup = refParent.findGroup(nameInFile);
+        refGroup = refParent.findGroupLocal(nameInFile);
       }
       if (refGroup == null) { // new
         groupBuilder = Group.builder().setName(name);
@@ -543,8 +543,8 @@ public class NcMLReaderNew {
 
       } else { // existing
         String finalName = nameInFile;
-        groupBuilder =
-            parent.findGroup(finalName).orElseThrow(() -> new IllegalStateException("Cant find Group " + finalName));
+        groupBuilder = parent.findGroupLocal(finalName)
+            .orElseThrow(() -> new IllegalStateException("Cant find Group " + finalName));
         groupBuilder.setName(name);
       }
     }

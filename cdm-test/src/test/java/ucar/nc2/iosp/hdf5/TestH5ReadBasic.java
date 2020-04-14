@@ -71,7 +71,7 @@ public class TestH5ReadBasic {
   public void testReadH5attributeString() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/attstr.h5")) {
 
-      Group g = ncfile.getRootGroup().findGroup("MyGroup");
+      Group g = ncfile.getRootGroup().findGroupLocal("MyGroup");
       assert null != g;
       Attribute att = g.findAttribute("data_contents");
       assert (null != att);

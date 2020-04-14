@@ -257,7 +257,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
       CoordinateTransform ct =
           CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
       if (ct != null) {
-        // ct.name = this.name;
+        // ct.name = this.name; // LOOK why is this commented out? Dont know name until this point? Not going to
+        // work....
         ct.attributeContainer = new AttributeContainerMutable(this.name);
         ct.attributeContainer.addAll(attributeContainer);
       }

@@ -79,7 +79,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public void getEosInfo(Formatter f) throws IOException {
     NetcdfFile ncfile = headerParser.ncfile;
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
     if (eosInfo != null) {
       HdfEos.getEosInfo(ncfile, eosInfo, f);
     } else {
@@ -108,7 +108,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     headerParser.read(null);
 
     // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
+    Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
     if (eosInfo != null && useHdfEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }

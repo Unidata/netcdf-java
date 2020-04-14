@@ -8,6 +8,8 @@ ucar.nc2.internal.dataset.conv.CSMConvention$Factory
 ucar.nc2.internal.dataset.conv.FslWindProfiler$Factory
 ucar.nc2.internal.dataset.conv.GDVConvention$Factory
 ucar.nc2.internal.dataset.conv.GIEFConvention$Factory
+ucar.nc2.internal.dataset.conv.HdfEosModisConvention$Factory
+ucar.nc2.internal.dataset.conv.HdfEosOmiConvention$Factory
 ucar.nc2.internal.dataset.conv.IFPSConvention$Factory
 ucar.nc2.internal.dataset.conv.M3IOConvention$Factory
 ucar.nc2.internal.dataset.conv.MADISStation$Factory

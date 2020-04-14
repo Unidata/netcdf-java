@@ -120,7 +120,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     if (useHdfEos) {
-      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
+      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
           isEos = HdfEos.amendFromODL(header, eosGroup);
         } catch (IOException e) {
@@ -168,7 +168,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     if (useHdfEos) {
-      rootGroup.findGroup(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
+      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
           isEos = HdfEos.amendFromODL(header, eosGroup);
         } catch (IOException e) {

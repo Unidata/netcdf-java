@@ -734,7 +734,7 @@ public class CoordinateSystem {
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
       CoordinateAxis axis = axes.stream().filter(a -> a.getFullName().equals(vname)).findFirst()
-          .orElseThrow(() -> new IllegalStateException("Cant find vname " + vname));
+          .orElseThrow(() -> new IllegalStateException("Cant find axis " + vname));
       axesList.add(axis);
     }
     this.coordAxes = axesList;

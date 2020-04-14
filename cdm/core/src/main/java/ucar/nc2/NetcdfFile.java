@@ -975,7 +975,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     StringTokenizer stoke = new StringTokenizer(fullName, "/");
     while (stoke.hasMoreTokens()) {
       String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
-      g = g.findGroup(groupName);
+      g = g.findGroupLocal(groupName);
       if (g == null)
         return null;
     }
@@ -1024,7 +1024,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
         String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
-        g = g.findGroup(token);
+        g = g.findGroupLocal(token);
         if (g == null)
           return null;
       }
@@ -1105,7 +1105,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
         String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
-        group = group.findGroup(token);
+        group = group.findGroupLocal(token);
 
         if (group == null) {
           return null;
@@ -1246,7 +1246,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
         String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
-        g = g.findGroup(token);
+        g = g.findGroupLocal(token);
         if (g == null)
           return null;
       }

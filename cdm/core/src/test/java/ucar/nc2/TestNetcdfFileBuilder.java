@@ -39,7 +39,7 @@ public class TestNetcdfFileBuilder {
 
     assertThat(group.getGroups()).isNotEmpty();
     assertThat(group.getGroups()).hasSize(1);
-    Group child = group.findGroup("child");
+    Group child = group.findGroupLocal("child");
     assertThat(child.getParentGroup()).isEqualTo(group);
 
     assertThat(group.getVariables()).isNotEmpty();

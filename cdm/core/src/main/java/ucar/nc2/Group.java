@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import static ucar.nc2.NetcdfFiles.reservedFullName;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -11,11 +12,13 @@ import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
+import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -143,7 +146,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param groupShortName short name of the nested group you are looking for.
    * @return the Group, or null if not found
    */
-  public Group findGroup(String groupShortName) {
+  public Group findGroupLocal(String groupShortName) {
     if (groupShortName == null)
       return null;
     // groupShortName = NetcdfFile.makeNameUnescaped(groupShortName);
@@ -156,9 +159,15 @@ public class Group extends CDMNode implements AttributeContainer {
     return null;
   }
 
+  /** @deprecated use findGroupLocal() */
+  @Deprecated
+  public Group findGroup(String groupShortName) {
+    return findGroupLocal(groupShortName);
+  }
+
   /**
    * Get the shared Dimensions contained directly in this group.
-   * 
+   *
    * @return List of type Dimension; may be empty, not null.
    *         Will return ImmutableList<> in version 6
    */
@@ -596,7 +605,7 @@ public class Group extends CDMNode implements AttributeContainer {
     if (immutable)
       throw new IllegalStateException("Cant modify");
 
-    if (findGroup(g.getShortName()) != null)
+    if (findGroupLocal(g.getShortName()) != null)
       throw new IllegalArgumentException(
           "Group name (" + g.getShortName() + ") must be unique within Group " + getShortName());
 
@@ -804,7 +813,7 @@ public class Group extends CDMNode implements AttributeContainer {
       if (name == null)
         continue;
       String clearname = NetcdfFile.makeNameUnescaped(name); // ??
-      Group next = current.findGroup(clearname);
+      Group next = current.findGroupLocal(clearname);
       if (next == null) {
         next = new Group(ncf, current, clearname);
         current.addGroup(next);
@@ -875,7 +884,7 @@ public class Group extends CDMNode implements AttributeContainer {
   public static class Builder {
     static private final Logger logger = LoggerFactory.getLogger(Builder.class);
 
-    private @Nullable Group.Builder parentGroup; // ignored during build()
+    private @Nullable Group.Builder parentGroup; // null for root group; ignored during build()
     public List<Group.Builder> gbuilders = new ArrayList<>();
     public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     public String shortName;
@@ -984,7 +993,7 @@ public class Group extends CDMNode implements AttributeContainer {
      */
     public Builder addGroup(Group.Builder nested) {
       Preconditions.checkNotNull(nested);
-      this.findGroup(nested.shortName).ifPresent(g -> {
+      this.findGroupLocal(nested.shortName).ifPresent(g -> {
         throw new IllegalStateException("Nested group already exists " + nested.shortName);
       });
       gbuilders.add(nested);
@@ -1004,13 +1013,37 @@ public class Group extends CDMNode implements AttributeContainer {
      * @return true if there was an existing group of that name
      */
     public boolean removeGroup(String name) {
-      Optional<Group.Builder> want = findGroup(name);
+      Optional<Group.Builder> want = findGroupLocal(name);
       want.ifPresent(v -> gbuilders.remove(v));
       return want.isPresent();
     }
 
-    public Optional<Builder> findGroup(String name) {
-      return this.gbuilders.stream().filter(g -> g.shortName.equals(name)).findFirst();
+    public Optional<Group.Builder> findGroupLocal(String shortName) {
+      return this.gbuilders.stream().filter(g -> g.shortName.equals(shortName)).findFirst();
+    }
+
+    /**
+     * Find a subgroup of this Group, with the specified reletive name.
+     * An embedded "/" is interpreted as separating group names.
+     *
+     * @param fullName eg "/group/subgroup/wantGroup".
+     * @return Group or empty if not found.
+     */
+    public Optional<Group.Builder> findGroupNested(String fullName) {
+      if (fullName == null || fullName.isEmpty())
+        return Optional.empty();
+
+      Group.Builder g = this;
+      StringTokenizer stoke = new StringTokenizer(fullName, "/");
+      while (stoke.hasMoreTokens()) {
+        String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
+        Optional<Group.Builder> sub = g.findGroupLocal(groupName);
+        if (!sub.isPresent()) {
+          return Optional.empty();
+        }
+        g = sub.get();
+      }
+      return Optional.of(g);
     }
 
     // Is this group a parent of the other group ?
@@ -1070,6 +1103,7 @@ public class Group extends CDMNode implements AttributeContainer {
         throw new IllegalArgumentException("Variable '" + v.shortName + "' already exists");
       });
       vbuilders.add(variable);
+      variable.setParentGroupBuilder(this);
       return this;
     }
 
@@ -1123,6 +1157,24 @@ public class Group extends CDMNode implements AttributeContainer {
 
     public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
       return Dimensions.makeDimensionsList(dimName -> this.findDimension(dimName).orElse(null), dimString);
+    }
+
+    public String makeFullName() {
+      if (parentGroup == null) {
+        return "";
+      }
+      StringBuilder sbuff = new StringBuilder();
+      appendGroupName(sbuff, this);
+      return sbuff.toString();
+    }
+
+    private void appendGroupName(StringBuilder sbuff, Group.Builder g) {
+      if (g == null || g.getParentGroup() == null) {
+        return;
+      }
+      appendGroupName(sbuff, g.getParentGroup());
+      sbuff.append(EscapeStrings.backslashEscape(g.shortName, reservedFullName));
+      sbuff.append("/");
     }
 
     /** Build the root group, with parent = null. */

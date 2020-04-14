@@ -317,8 +317,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), "copy");
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), "org");
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), copy.getFullName() + " copy");
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), org.getFullName() + " org");
 
     // attributes
     ok &= checkAttributes(org, org.attributes(), copy.attributes(), filter);
@@ -465,7 +465,7 @@ public class CompareNetcdf2 {
       if (d1.isShared()) {
         boolean hasit = listContains(list2, d1);
         if (!hasit) {
-          f.format("  ** Missing Variable dim %s not in %s %n", d1, where);
+          f.format("  ** Missing Variable dim '%s' not in %s %n", d1, where);
         }
         ok &= hasit;
       }
@@ -517,9 +517,9 @@ public class CompareNetcdf2 {
         if (!group2.getDimensions().contains(d1)) {
           // not in local, is it in a parent?
           if (findDimension(group2, d1) != null) {
-            f.format("  ** Dimension %s in parent group %s %n", d1, where);
+            f.format("  ** Dimension '%s' found in parent group of %s %s%n", d1, where, group2.getFullName());
           } else {
-            f.format("  ** Missing Group dim %s not in %s %n", d1, where);
+            f.format("  ** Missing Group dim '%s' not in %s %s%n", d1, where, group2.getFullName());
             ok = false;
           }
         }
