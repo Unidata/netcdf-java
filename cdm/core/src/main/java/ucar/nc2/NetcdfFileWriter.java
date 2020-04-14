@@ -917,6 +917,7 @@ public class NetcdfFileWriter implements Closeable {
    * @throws java.io.IOException on read/write error
    */
   public boolean setRedefineMode(boolean redefineMode) throws IOException {
+    boolean rewroteEntireFile = false;
     if (redefineMode && !defineMode) {
       defineMode = true;
 
@@ -925,10 +926,13 @@ public class NetcdfFileWriter implements Closeable {
       ncfile.finish();
 
       // try to rewrite header, if it fails, then we have to rewrite entire file
-      boolean ok = spiw.rewriteHeader(isLargeFile); // LOOK seems like we should be using isNewFile
-      if (!ok)
+      boolean rewriteInPlace = spiw.rewriteHeader(isLargeFile); // LOOK seems like we should be using isNewFile
+      if (!rewriteInPlace) {
+        // rewrite the whole thing
         rewrite();
-      return !ok;
+        rewroteEntireFile = true;
+      }
+      return rewroteEntireFile;
     }
 
     return false;
