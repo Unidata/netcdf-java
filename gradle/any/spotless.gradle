@@ -4,7 +4,7 @@ apply plugin: "com.diffplug.gradle.spotless"
 spotless {
   java {
     target '**/*.java'
-    targetExclude 'waterml/src/main/java/ucar/nc2/ogc/erddap/**/*.java'
+    targetExclude 'waterml/src/main/java/ucar/nc2/ogc/erddap/**/*.java', 'visad/mcidas/src/main/java/ucar/mcidas/**/*.java'
     eclipse().configFile 'eclipse-style-guide.xml'
     encoding 'UTF-8'
   }
