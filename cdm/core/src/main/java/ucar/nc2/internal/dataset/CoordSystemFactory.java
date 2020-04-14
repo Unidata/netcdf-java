@@ -231,14 +231,11 @@ public class CoordSystemFactory {
       coordSysFactory = findConventionByIsMine(ds.orgFile);
     }
 
-    // TODO, if convention not explicitly found, bail out to use the old one.
-    // This will go away once all are ported to use Builders.
     boolean isDefault = false;
+    // if no convention class found, use the default
     if (coordSysFactory == null) {
-      return Optional.empty();
-      // if no convention class found, use the default
-      // coordSysFactory = new DefaultConventions.Factory();
-      // isDefault = true;
+      coordSysFactory = new DefaultConventions.Factory();
+      isDefault = true;
     }
 
     // Now process it.

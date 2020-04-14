@@ -130,12 +130,12 @@ class EnhancementsImpl implements Enhancements {
    * @return the Unit String for the Variable, or null if none.
    */
   public String getUnitsString() {
-    String result = units;
-    if ((result == null) && (forVar != null)) {
+    String result = null;
+    if (forVar != null) {
       Attribute att = forVar.findAttributeIgnoreCase(CDM.UNITS);
       if ((att != null) && att.isString())
         result = att.getStringValue();
     }
-    return (result == null) ? null : result.trim();
+    return (result == null) ? units : result.trim();
   }
 }

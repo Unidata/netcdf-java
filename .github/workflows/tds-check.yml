@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: Unidata/tds
-          path: tds_buil_dir
+          path: tds_build_dir
       - name: Modify, build, and test the TDS
         shell: bash
         env:
@@ -34,7 +34,7 @@ jobs:
           echo "Find netcdf-java version as specified in the PR"
           NCJ_VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
           echo "Change directory to local TDS repository"
-          cd tds_buil_dir
+          cd tds_build_dir
           TDS_BUILD_DIR=`pwd`
           # tell tds build to use snapshots from the local maven repo
           echo "Tell the TDS build to look in the local maven repository for artifacts first..."

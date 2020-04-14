@@ -12,12 +12,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.ncml.NcMLReaderNew;
 import ucar.nc2.util.CompareNetcdf2;
 
-/**
- * Compare old and new NcmlReaders on specific problem datasets.
- *
- * @author caron
- * @since 10/4/2019.
- */
+/** Compare old and new NcmlReaders on specific problem datasets. */
 public class TestNcmlReaderProblems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -29,7 +24,7 @@ public class TestNcmlReaderProblems {
     // This used to fail in NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
     // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
 
-    compare("file:" + TestNcMLRead.topDir + "enhance/testStandaloneEnhance.ncml");
+    compare("file:" + TestNcMLRead.topDir + "aggUbyte.ncml");
   }
 
   private void compare(String ncmlLocation) throws IOException {

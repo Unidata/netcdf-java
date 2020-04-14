@@ -165,7 +165,7 @@ public class NetcdfDatasets {
       NetcdfDataset.Builder builder = ncd.toBuilder();
       if (DatasetEnhancer.enhanceNeeded(mode, ncd.getEnhanceMode())) {
         DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
-        return enhancer.enhance(ncfile);
+        return enhancer.enhance().build();
       } else {
         return ncd;
       }
@@ -175,7 +175,7 @@ public class NetcdfDatasets {
     NetcdfDataset.Builder builder = NetcdfDataset.builder(ncfile);
     if (DatasetEnhancer.enhanceNeeded(mode, null)) {
       DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
-      return enhancer.enhance(ncfile);
+      return enhancer.enhance().build();
     }
     return builder.build();
   }

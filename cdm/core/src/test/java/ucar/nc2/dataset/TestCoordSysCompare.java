@@ -10,7 +10,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,8 +31,8 @@ public class TestCoordSysCompare {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, pathname -> pathname.getName().endsWith("nc"),
-          filenames, true);
+      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir,
+          pathname -> pathname.getName().endsWith("nc") && !pathname.getName().startsWith("cfrad."), filenames, true);
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }

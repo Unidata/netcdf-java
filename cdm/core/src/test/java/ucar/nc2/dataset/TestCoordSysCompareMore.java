@@ -40,7 +40,8 @@ public class TestCoordSysCompareMore {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(convDir, (file) -> !file.getPath().endsWith(".pdf"), filenames, true);
+      TestDir.actOnAllParameterized(convDir,
+          (file) -> !file.getPath().endsWith(".pdf") && !file.getName().startsWith("cfrad."), filenames, true);
       for (String dir : otherDirs) {
         TestDir.actOnAllParameterized(dir, (file) -> file.getPath().endsWith(".nc"), filenames, true);
       }

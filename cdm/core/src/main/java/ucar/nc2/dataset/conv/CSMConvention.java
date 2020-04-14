@@ -33,7 +33,6 @@ public class CSMConvention extends COARDSConvention {
 
   @Override
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-
     List<Variable> vars = ds.getVariables();
     for (Variable var : vars) {
       String unit = var.getUnitsString();

@@ -96,40 +96,7 @@ public class DatasetEnhancer {
    * 2) enhance(EnumSet<Enhance> mode) is called.
    *
    * Possible remove all direct access to Variable.enhance
-   * 
-   * @deprecated use enhance() which does not default to old CoordSysBuilder
    */
-  @Deprecated
-  public NetcdfDataset enhance(NetcdfFile ncfile) throws IOException {
-    // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
-    CoordSystemBuilder coordSysBuilder = null;
-    if (wantEnhance.contains(Enhance.CoordSystems) && !dsBuilder.getEnhanceMode().contains(Enhance.CoordSystems)) {
-      Optional<CoordSystemBuilder> hasNewBuilder = CoordSystemFactory.factory(dsBuilder, cancelTask);
-      if (!hasNewBuilder.isPresent()) {
-        return useOldBuilder(ncfile);
-      }
-      coordSysBuilder = hasNewBuilder.get();
-      coordSysBuilder.augmentDataset(cancelTask);
-      dsBuilder.setConventionUsed(coordSysBuilder.getConventionUsed());
-    }
-
-    enhanceGroup(dsBuilder.rootGroup);
-
-    // now find coord systems which may change some Variables to axes, etc
-    if (coordSysBuilder != null) {
-      // temporarily set enhanceMode if incomplete coordinate systems are allowed
-      if (wantEnhance.contains(Enhance.IncompleteCoordSystems)) {
-        dsBuilder.addEnhanceMode(Enhance.IncompleteCoordSystems);
-        coordSysBuilder.buildCoordinateSystems();
-        dsBuilder.removeEnhanceMode(Enhance.IncompleteCoordSystems);
-      } else {
-        coordSysBuilder.buildCoordinateSystems();
-      }
-    }
-
-    dsBuilder.addEnhanceModes(wantEnhance);
-    return dsBuilder.build();
-  }
 
   public NetcdfDataset.Builder enhance() throws IOException {
     // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
@@ -227,14 +194,8 @@ public class DatasetEnhancer {
 
     if (varEnhance.contains(Enhance.ConvertEnums) && vb.dataType.isEnum()) {
       vb.setDataType(DataType.STRING);
-      return; // We can return here, because the other conversions don't apply to STRING.
     }
 
     vb.addEnhanceMode(varEnhance);
-  }
-
-  // TODO remove after all conventions are ported.
-  private NetcdfDataset useOldBuilder(NetcdfFile ncfile) throws IOException {
-    return NetcdfDataset.wrap(ncfile, wantEnhance);
   }
 }

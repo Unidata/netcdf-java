@@ -744,7 +744,7 @@ public class CoordSysTable extends JPanel {
     }
 
     public String getDataType() {
-      return (coordSysBean == null) ? "" : coordSysBean.getDataType();
+      return v.getDataType().toString();
     }
 
     public String getCoverage() {
