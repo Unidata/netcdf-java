@@ -208,12 +208,6 @@ public abstract class CDMNode {
    */
   public String getFullName() {
     return NetcdfFile.makeFullName(this);
-    /*
-     * getting called before complete
-     * if (this.fullName == null)
-     * this.fullName = NetcdfFile.makeFullName(this);
-     * return this.fullName;
-     */
   }
 
   /**

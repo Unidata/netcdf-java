@@ -575,7 +575,7 @@ public class H4header extends NCheader {
   }
 
   private void addGroupToGroup(Group parent, Group g, Tag tag) {
-    Group groupExisting = parent.findGroup(g.getShortName());
+    Group groupExisting = parent.findGroupLocal(g.getShortName());
     if (groupExisting != null) {
       g.setName(g.getShortName() + tag.refno);
     }

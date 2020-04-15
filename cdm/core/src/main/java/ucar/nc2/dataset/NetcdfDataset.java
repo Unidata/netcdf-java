@@ -1664,6 +1664,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return;
       coords.replaceCoordinateAxis(axis);
       group.replaceVariable(axis);
+      axis.setParentGroupBuilder(group);
     }
 
     public T setOrgFile(NetcdfFile orgFile) {

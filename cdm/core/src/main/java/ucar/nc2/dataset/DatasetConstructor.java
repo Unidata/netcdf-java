@@ -80,7 +80,7 @@ public class DatasetConstructor {
 
     // nested groups - check if target already has it
     for (Group srcNested : src.getGroups()) {
-      Group nested = targetGroup.findGroup(srcNested.getShortName());
+      Group nested = targetGroup.findGroupLocal(srcNested.getShortName());
       if (null == nested) {
         nested = new Group(ds, targetGroup, srcNested.getShortName());
         targetGroup.addGroup(nested);
@@ -132,7 +132,7 @@ public class DatasetConstructor {
 
     Group newg = newFile.getRootGroup();
     for (Group oldg : chain) {
-      newg = newg.findGroup(oldg.getShortName());
+      newg = newg.findGroupLocal(oldg.getShortName());
       if (newg == null)
         return null;
     }

@@ -48,7 +48,7 @@ public class TestH5aura {
     try (NetcdfFile ncfile = TestH5.open(testDir + "HIRDLS2-Aura73p_b029_2000d275.he5")) {
 
       Group root = ncfile.getRootGroup();
-      Group g = root.findGroup("HDFEOS_INFORMATION");
+      Group g = root.findGroupLocal("HDFEOS_INFORMATION");
       Variable dset = g.findVariable("StructMetadata.0");
       assert (null != dset);
       assert (dset.getDataType() == DataType.CHAR);
