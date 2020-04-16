@@ -5,6 +5,7 @@
 
 package ucar.nc2;
 
+import static com.google.common.truth.Truth.assertThat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -141,6 +142,31 @@ public class TestWriteMiscProblems {
       ncfile.setExtraHeaderBytes(1024);
       ncfile.addVariable("header_data", DataType.FLOAT, tvar.getDimensions());
       System.out.println(ncfile);
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFileHandleReleaseAfterHeaderWriteFailure() throws IOException {
+    String tempFile = tempFolder.newFile().getAbsolutePath();
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(tempFile, true)) {
+      Attribute invalidNc3Attr = Attribute.builder().setName("will_fail").setNumericValue(1, true).build();
+      Attribute addedAttribute = writer.addGlobalAttribute(invalidNc3Attr);
+      // make sure we actually added in the invalid netCDF3 attribute to the writer
+      assertThat(addedAttribute).isEqualTo(invalidNc3Attr);
+      // this call *should* trigger a runtime exception (IllegalArgumentException)
+      writer.create();
+    } catch (IllegalArgumentException iae) {
+      // if we throw a runtime error during the creation of the header, we ended up in a state
+      // where the underlying RAF was not closed because the code would encounter the same issue and
+      // throw another runtime error. If a user was trying to handle the runtime error, this could end
+      // up causing a file handle leak.
+      // this test makes sure we are able to close the file file.
+      File fileToDelete = new File(tempFile);
+      assertThat(fileToDelete.exists()).isTrue();
+      // if the file handle has not been release, the file delete will fail
+      assertThat(fileToDelete.delete()).isTrue();
+      // still want the IllegalArgumentException to happen, we'd just like to make sure the file handle is released
+      throw iae;
     }
   }
 }

@@ -84,6 +84,8 @@ public class N3header extends NCheader {
 
   private long globalAttsPos; // global attributes start here - used for update
 
+  private Optional<Boolean> headerCreated = Optional.empty();
+
   /*
    * Notes
    * - dimensions are signed or unsigned ? in java, must be signed, so are limited to 2^31, not 2^32
@@ -340,10 +342,15 @@ public class N3header extends NCheader {
   }
 
   long calcFileSize() {
-    if (udim != null)
-      return recStart + recsize * numrecs;
-    else
-      return dataStart + nonRecordDataSize;
+    long size = 0;
+    // only calculate a file size if an attempt to write the header was made and was successful.
+    if (headerCreated.isPresent() && headerCreated.get().booleanValue()) {
+      if (udim != null)
+        size = recStart + recsize * numrecs;
+      else
+        size = dataStart + nonRecordDataSize;
+    }
+    return size;
   }
 
   void showDetail(Formatter out) throws IOException {
@@ -631,15 +638,30 @@ public class N3header extends NCheader {
    *
    * @param largeFile is large file format
    * @param fout put debug messages here, mnay be null
-   * @return true if it worked
+   * @return true if rewrite occurred
    */
   boolean rewriteHeader(boolean largeFile, Formatter fout) throws IOException {
-    int want = sizeHeader(largeFile);
-    if (want > dataStart)
-      return false;
+    boolean rewriteInPlace = true;
 
-    writeHeader(0, largeFile, true, fout);
-    return true;
+    int want = sizeHeader(largeFile);
+
+    if (want > dataStart) {
+      // if the size of the new header has been computed and
+      // is in the data portion of the file, bail
+      rewriteInPlace = false;
+    } else if (want != -1 && !headerCreated.isPresent()) {
+      writeHeader(0, largeFile, true, fout);
+      // didn't write the header in place, but rather wrote it for the first time,
+      // so will return true
+      rewriteInPlace = true;
+    } else if ((headerCreated.isPresent() && headerCreated.get())) {
+      writeHeader(0, largeFile, true, fout);
+      rewriteInPlace = true;
+    } else if (headerCreated.isPresent() && !headerCreated.get()) {
+      rewriteInPlace = true;
+    }
+
+    return rewriteInPlace;
   }
 
   void writeHeader(int extra, boolean largeFile, boolean keepDataStart, Formatter fout) throws IOException {
@@ -647,6 +669,7 @@ public class N3header extends NCheader {
     nonRecordDataSize = 0; // length of non-record data
     recsize = 0; // length of single record
     recStart = Long.MAX_VALUE; // where the record data starts
+    headerCreated = Optional.of(false);
 
     // magic number
     raf.seek(0);
@@ -750,35 +773,44 @@ public class N3header extends NCheader {
       nonRecordDataSize -= dataStart;
     if (uvars.isEmpty()) // if there are no record variables
       recStart = 0;
+    // if we make it here, we can assume the header was created
+    // and that we didn't throw any runtime exceptions along the way
+    headerCreated = Optional.of(true);
   }
 
   // calculate the size writing a header would take
   int sizeHeader(boolean largeFile) {
-    int size = 4; // magic number
-    size += 4; // numrecs
+    // start off by assuming the header was not fully created,
+    // and therefore cannot be trusted to be used to compute size
+    int size = -1;
+    // if the header was created, use what is inside of it to compute the header size
+    if (!headerCreated.isPresent() || headerCreated.isPresent() && headerCreated.get()) {
+      size = 4; // magic number
+      size += 4; // numrecs
 
-    // dims
-    size += 8; // magic, ndims
-    for (Dimension dim : ncfile.getDimensions())
-      size += sizeString(dim.getShortName()) + 4; // name, len
+      // dims
+      size += 8; // magic, ndims
+      for (Dimension dim : ncfile.getDimensions())
+        size += sizeString(dim.getShortName()) + 4; // name, len
 
-    // global attributes
-    size += sizeAtts(ncfile.getGlobalAttributes());
+      // global attributes
+      size += sizeAtts(ncfile.getGlobalAttributes());
 
-    // variables
-    size += 8; // magic, nvars
-    for (Variable var : ncfile.getVariables()) {
-      size += sizeString(var.getShortName());
+      // variables
+      size += 8; // magic, nvars
+      for (Variable var : ncfile.getVariables()) {
+        size += sizeString(var.getShortName());
 
-      // dimensions
-      size += 4; // ndims
-      size += 4 * var.getDimensions().size(); // dim id
+        // dimensions
+        size += 4; // ndims
+        size += 4 * var.getDimensions().size(); // dim id
 
-      // variable attributes
-      size += sizeAtts(var.attributes());
+        // variable attributes
+        size += sizeAtts(var.attributes());
 
-      size += 8; // data type, variable size
-      size += (largeFile) ? 8 : 4;
+        size += 8; // data type, variable size
+        size += (largeFile) ? 8 : 4;
+      }
     }
 
     return size;
