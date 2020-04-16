@@ -38,9 +38,9 @@ public class ZebraConvention extends CoordSystemBuilder {
     // the time coord var is created in the NcML
     // set its values = base_time + time_offset(time)
     Dimension timeDim = rootGroup.findDimension("time").orElse(null);
-    VariableDS.Builder base_time = (VariableDS.Builder) rootGroup.findVariable("base_time").orElse(null);
-    VariableDS.Builder time_offset = (VariableDS.Builder) rootGroup.findVariable("time_offset").orElse(null);
-    Variable.Builder time = rootGroup.findVariable("time").orElse(null);
+    VariableDS.Builder base_time = (VariableDS.Builder) rootGroup.findVariableLocal("base_time").orElse(null);
+    VariableDS.Builder time_offset = (VariableDS.Builder) rootGroup.findVariableLocal("time_offset").orElse(null);
+    Variable.Builder time = rootGroup.findVariableLocal("time").orElse(null);
     if ((timeDim == null) || (base_time == null) || (time_offset == null) || (time == null))
       return;
 

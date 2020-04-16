@@ -60,7 +60,7 @@ class BuilderHelper {
 
     // variables
     for (Variable v : src.getVariables()) {
-      Optional<Variable.Builder<?>> targetV = targetGroup.findVariable(v.getShortName());
+      Optional<Variable.Builder<?>> targetV = targetGroup.findVariableLocal(v.getShortName());
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
       if (replace || !targetV.isPresent()) { // replace it
         // LOOK not needed ??

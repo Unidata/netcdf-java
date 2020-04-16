@@ -384,7 +384,7 @@ class GribIospBuilder {
     if (runtime.getNCoords() != 1) {
       // for this case we have to generate a separate reftime, because have to use the same dimension
       String refName = "ref" + tcName;
-      if (!g.findVariable(refName).isPresent()) {
+      if (!g.findVariableLocal(refName).isPresent()) {
         Variable.Builder vref =
             Variable.builder().setName(refName).setDataType(DataType.DOUBLE).setDimensionsByName(tcName);
         g.addVariable(vref);

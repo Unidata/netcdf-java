@@ -64,9 +64,9 @@ public class Nimbus extends CoardsConventions {
       hasTime = setAxisType("time", AxisType.Time);
 
     if (!hasTime) {
-      rootGroup.findVariable("time_offset").ifPresent(time -> {
+      rootGroup.findVariableLocal("time_offset").ifPresent(time -> {
         try {
-          VariableDS.Builder base = (VariableDS.Builder) rootGroup.findVariable("base_time").get();
+          VariableDS.Builder base = (VariableDS.Builder) rootGroup.findVariableLocal("base_time").get();
           int base_time = base.orgVar.readScalarInt();
           DateUnit dunit = new DateUnit("seconds since 1970-01-01 00:00");
           String time_units = "seconds since " + dunit.makeStandardDateString(base_time);
@@ -82,7 +82,7 @@ public class Nimbus extends CoardsConventions {
     String coordinates = rootGroup.getAttributeContainer().findAttValueIgnoreCase("coordinates", null);
     if (coordinates != null) {
       for (String vname : StringUtil2.split(coordinates)) {
-        rootGroup.findVariable(vname).ifPresent(v -> {
+        rootGroup.findVariableLocal(vname).ifPresent(v -> {
           AxisType atype = getAxisType((VariableDS.Builder) v);
           if (atype != null) {
             v.addAttribute(new Attribute(_Coordinate.AxisType, atype.name()));
@@ -93,10 +93,10 @@ public class Nimbus extends CoardsConventions {
   }
 
   private boolean setAxisType(String varName, AxisType atype) {
-    if (!rootGroup.findVariable(varName).isPresent()) {
+    if (!rootGroup.findVariableLocal(varName).isPresent()) {
       return false;
     }
-    rootGroup.findVariable(varName)
+    rootGroup.findVariableLocal(varName)
         .ifPresent(v -> v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString())));
     return true;
   }

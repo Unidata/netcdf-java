@@ -49,14 +49,14 @@ public class CEDRICRadarConvention extends CF1Convention {
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
     NcMLReaderNew.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "CEDRICRadar.ncml", cancelTask);
 
-    VariableDS.Builder lat = (VariableDS.Builder) rootGroup.findVariable("radar_latitude")
+    VariableDS.Builder lat = (VariableDS.Builder) rootGroup.findVariableLocal("radar_latitude")
         .orElseThrow(() -> new IllegalStateException("Must have radar_latitude variable"));
-    VariableDS.Builder lon = (VariableDS.Builder) rootGroup.findVariable("radar_longitude")
+    VariableDS.Builder lon = (VariableDS.Builder) rootGroup.findVariableLocal("radar_longitude")
         .orElseThrow(() -> new IllegalStateException("Must have radar_longitude variable"));
     float latv = (float) lat.orgVar.readScalarDouble();
     float lonv = (float) lon.orgVar.readScalarDouble();
 
-    VariableDS.Builder pv = (VariableDS.Builder) rootGroup.findVariable("Projection")
+    VariableDS.Builder pv = (VariableDS.Builder) rootGroup.findVariableLocal("Projection")
         .orElseThrow(() -> new IllegalStateException("Must have Projection variable"));
     pv.addAttribute(new Attribute("longitude_of_projection_origin", lonv));
     pv.addAttribute(new Attribute("latitude_of_projection_origin", latv));

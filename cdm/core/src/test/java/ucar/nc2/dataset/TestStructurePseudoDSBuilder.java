@@ -11,9 +11,9 @@ public class TestStructurePseudoDSBuilder {
 
   @Test
   public void testBuilder() {
-    Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT).setGroup(makeDummyGroup());
+    Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
     StructurePseudoDS struct = StructurePseudoDS.builder().setName("name").setDataType(DataType.FLOAT)
-        .addMemberVariable(var).setGroup(makeDummyGroup()).build();
+        .addMemberVariable(var).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("name");
     assertThat(struct.isScalar()).isTrue();
@@ -27,7 +27,7 @@ public class TestStructurePseudoDSBuilder {
   @Test
   public void testBuilderChain() {
     StructurePseudoDS struct = StructurePseudoDS.builder().setName("struct").addMemberVariables(ImmutableList.of())
-        .setGroup(makeDummyGroup()).build();
+        .build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
@@ -36,11 +36,11 @@ public class TestStructurePseudoDSBuilder {
 
   @Test
   public void testToBuilderChain() {
-    Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT).setGroup(makeDummyGroup());
+    Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
     StructurePseudoDS struct = StructurePseudoDS.builder().setName("name").setUnits("units").addMemberVariable(var)
-        .setGroup(makeDummyGroup()).build();
+        .build(makeDummyGroup());
 
-    StructurePseudoDS struct2 = struct.toBuilder().setName("s2").build();
+    StructurePseudoDS struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct2.getShortName()).isEqualTo("s2");
     assertThat(struct2.getUnitsString()).isEqualTo("units");

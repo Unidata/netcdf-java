@@ -7,6 +7,7 @@ package ucar.nc2.dataset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.Group;
 import ucar.nc2.time.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Dimension;
@@ -387,8 +388,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private CoordinateAxisTimeHelper helper;
   private List<CalendarDate> cdates;
 
-  protected CoordinateAxis1DTime(Builder<?> builder) {
-    super(builder);
+  protected CoordinateAxis1DTime(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
   }
 
   public Builder<?> toBuilder() {
@@ -421,11 +422,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     protected abstract T self();
 
-    public CoordinateAxis1DTime build() {
+    public CoordinateAxis1DTime build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateAxis1DTime(this);
+      return new CoordinateAxis1DTime(this, parentGroup);
     }
   }
 }

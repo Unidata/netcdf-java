@@ -48,7 +48,7 @@ public class ADASConvention extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    if (!rootGroup.findVariable("x").isPresent()) {
+    if (!rootGroup.findVariableLocal("x").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }
 
@@ -82,7 +82,7 @@ public class ADASConvention extends CoordSystemBuilder {
         projName = "lambert_conformal_conic";
     }
 
-    Optional<Variable.Builder<?>> coordOpt = rootGroup.findVariable("x_stag");
+    Optional<Variable.Builder<?>> coordOpt = rootGroup.findVariableLocal("x_stag");
     if (coordOpt.isPresent()) {
       Variable.Builder<?> coord = coordOpt.get();
       if (!Double.isNaN(false_easting) || !Double.isNaN(false_northing)) {
@@ -118,7 +118,7 @@ public class ADASConvention extends CoordSystemBuilder {
     makeCoordAxis("y");
     makeCoordAxis("z");
 
-    rootGroup.findVariable("ZPSOIL")
+    rootGroup.findVariableLocal("ZPSOIL")
         .ifPresent(vb -> vb.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString())));
   }
 
@@ -130,7 +130,7 @@ public class ADASConvention extends CoordSystemBuilder {
     LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
     ProjectionPoint ppt0 = proj.latLonToProj(lpt0);
 
-    VariableDS.Builder xstag = (VariableDS.Builder) rootGroup.findVariable("x_stag")
+    VariableDS.Builder xstag = (VariableDS.Builder) rootGroup.findVariableLocal("x_stag")
         .orElseThrow(() -> new IllegalStateException("Must have x_stag Variable"));
     Variable xstagOrg = xstag.orgVar;
     int nxpts = (int) xstagOrg.getSize();
@@ -138,7 +138,7 @@ public class ADASConvention extends CoordSystemBuilder {
     float center_x = xstagData.get(nxpts - 1);
     double false_easting = center_x / 2000 - ppt0.getX() * 1000.0;
 
-    VariableDS.Builder ystag = (VariableDS.Builder) rootGroup.findVariable("y_stag")
+    VariableDS.Builder ystag = (VariableDS.Builder) rootGroup.findVariableLocal("y_stag")
         .orElseThrow(() -> new IllegalStateException("Must have y_stag Variable"));
     Variable ystagOrg = ystag.orgVar;
     int nypts = (int) ystagOrg.getSize();
@@ -222,10 +222,10 @@ public class ADASConvention extends CoordSystemBuilder {
 
   private void makeCoordAxis(String axisName) throws IOException {
     String name = axisName + "_stag";
-    if (!rootGroup.findVariable(name).isPresent()) {
+    if (!rootGroup.findVariableLocal(name).isPresent()) {
       return;
     }
-    VariableDS.Builder stagV = (VariableDS.Builder) rootGroup.findVariable(name).get();
+    VariableDS.Builder stagV = (VariableDS.Builder) rootGroup.findVariableLocal(name).get();
     Array data_stag = stagV.orgVar.read();
     int n = (int) data_stag.getSize() - 1;
     DataType dt = DataType.getType(data_stag);

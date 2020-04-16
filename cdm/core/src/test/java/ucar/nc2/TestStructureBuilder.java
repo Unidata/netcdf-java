@@ -10,9 +10,9 @@ public class TestStructureBuilder {
 
   @Test
   public void testBuilder() {
-    Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT).setGroup(makeDummyGroup());
-    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup())
-        .addMemberVariable(var).build();
+    Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
+    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT)
+        .addMemberVariable(var).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("name");
     assertThat(struct.isScalar()).isTrue();
@@ -26,7 +26,7 @@ public class TestStructureBuilder {
   @Test
   public void testBuilderChain() {
     Structure struct =
-        Structure.builder().setName("struct").addMemberVariables(ImmutableList.of()).setGroup(makeDummyGroup()).build();
+        Structure.builder().setName("struct").addMemberVariables(ImmutableList.of()).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
@@ -35,10 +35,9 @@ public class TestStructureBuilder {
 
   @Test
   public void testToBuilderChain() {
-    Variable.Builder var = Variable.builder().setName("member").setGroup(makeDummyGroup()).setDataType(DataType.FLOAT);
-    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup())
-        .addMemberVariable(var).build();
-    Structure struct2 = struct.toBuilder().setName("s2").build();
+    Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
+    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build(makeDummyGroup());
+    Structure struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct2.getShortName()).isEqualTo("s2");
 

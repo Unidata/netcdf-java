@@ -1008,8 +1008,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private boolean isRegular;
   private double start, increment;
 
-  protected CoordinateAxis1D(Builder<?> builder) {
-    super(builder);
+  protected CoordinateAxis1D(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
   }
 
   public Builder<?> toBuilder() {
@@ -1042,11 +1042,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     protected abstract T self();
 
-    public CoordinateAxis1D build() {
+    public CoordinateAxis1D build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateAxis1D(this);
+      return new CoordinateAxis1D(this, parentGroup);
     }
   }
 

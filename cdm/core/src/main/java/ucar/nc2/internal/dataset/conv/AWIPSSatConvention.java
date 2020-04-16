@@ -74,7 +74,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    if (rootGroup.findVariable("x").isPresent()) {
+    if (rootGroup.findVariableLocal("x").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }
 
@@ -100,7 +100,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     }
 
     // long_name; LOOK: not sure of units
-    VariableDS.Builder datav = (VariableDS.Builder) rootGroup.findVariable("image")
+    VariableDS.Builder datav = (VariableDS.Builder) rootGroup.findVariableLocal("image")
         .orElseThrow(() -> new RuntimeException("must have varible 'image'"));
     String long_name = rootGroup.getAttributeContainer().findAttValueIgnoreCase("channel", null);
     if (null != long_name) {

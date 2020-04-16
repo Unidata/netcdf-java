@@ -85,7 +85,7 @@ public class M3IOConvention extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    if (rootGroup.findVariable("x").isPresent() || rootGroup.findVariable("lon").isPresent())
+    if (rootGroup.findVariableLocal("x").isPresent() || rootGroup.findVariableLocal("lon").isPresent())
       return; // check if its already been done - aggregating enhanced datasets.
 
     int projType = rootGroup.getAttributeContainer().findAttributeInteger("GDTYP", 1);
