@@ -660,10 +660,10 @@ public class Structure extends Variable {
   protected HashMap<String, Variable> memberHash;
   protected boolean isSubset;
 
-  protected Structure(Builder<?> builder) {
-    super(builder);
-    builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile).setGroup(builder.parent));
-    this.members = builder.vbuilders.stream().map(Variable.Builder::build).collect(Collectors.toList());
+  protected Structure(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
+    builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile));
+    this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(Collectors.toList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
   }
@@ -723,12 +723,12 @@ public class Structure extends Variable {
     }
 
     /** Normally this is only called by Group.build() */
-    public Structure build() {
+    public Structure build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
-      return new Structure(this);
+      return new Structure(this, parentGroup);
     }
   }
 

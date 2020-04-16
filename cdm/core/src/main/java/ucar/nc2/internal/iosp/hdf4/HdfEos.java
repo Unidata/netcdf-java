@@ -118,7 +118,7 @@ public class HdfEos {
 
     int n = 0;
     while (true) {
-      Variable.Builder<?> structMetadataVar = eosGroup.findVariable("StructMetadata." + n).orElse(null);
+      Variable.Builder<?> structMetadataVar = eosGroup.findVariableLocal("StructMetadata." + n).orElse(null);
       if (structMetadataVar == null) {
         break;
       }
@@ -311,7 +311,7 @@ public class HdfEos {
       Element floc = swathElem.getChild("GeoField");
       for (Element elem : floc.getChildren()) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        Variable.Builder<?> vb = geoFieldsG.findVariable(varname).orElse(null);
+        Variable.Builder<?> vb = geoFieldsG.findVariableLocal(varname).orElse(null);
         if (vb != null) {
           AxisType axis = addAxisType(vb);
           if (axis == AxisType.Lat) {
@@ -371,7 +371,7 @@ public class HdfEos {
           continue;
         }
         String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
-        Variable.Builder v = dataG.findVariable(varname).orElse(null);
+        Variable.Builder v = dataG.findVariableLocal(varname).orElse(null);
         if (v == null) {
           log.error("Cant find variable {} {}", varname, location);
           continue;
@@ -511,7 +511,7 @@ public class HdfEos {
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        geoFieldsG.findVariable(varname).ifPresent(vb -> {
+        geoFieldsG.findVariableLocal(varname).ifPresent(vb -> {
           Element dimList = elem.getChild("DimList");
           List<Element> values = dimList.getChildren("value");
           setSharedDimensions(geoFieldsG, vb, values, unknownDims, location);
@@ -527,7 +527,7 @@ public class HdfEos {
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText().trim();
         varname = NetcdfFiles.makeValidCdmObjectName(varname);
-        dataG.findVariable(varname).ifPresent(vb -> {
+        dataG.findVariableLocal(varname).ifPresent(vb -> {
           Element dimList = elem.getChild("DimList");
           List<Element> values = dimList.getChildren("value");
           setSharedDimensions(dataG, vb, values, unknownDims, location);

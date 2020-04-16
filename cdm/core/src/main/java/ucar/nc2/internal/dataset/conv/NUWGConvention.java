@@ -113,7 +113,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
     grib = new Grib1(mode);
 
-    if (!rootGroup.findVariable(xaxisName).isPresent()) {
+    if (!rootGroup.findVariableLocal(xaxisName).isPresent()) {
       grib.makeXCoordAxis(xaxisName);
       parseInfo.format("Generated x axis from NUWG nav= %s%n", xaxisName);
 
@@ -121,7 +121,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       try {
         // check monotonicity
         boolean ok = true;
-        VariableDS.Builder dc = (VariableDS.Builder) rootGroup.findVariable(xaxisName).get();
+        VariableDS.Builder dc = (VariableDS.Builder) rootGroup.findVariableLocal(xaxisName).get();
         Array coordVal = dc.orgVar.read();
         IndexIterator coordIndex = coordVal.getIndexIterator();
 
@@ -147,7 +147,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       }
     }
 
-    if (!rootGroup.findVariable(yaxisName).isPresent()) {
+    if (!rootGroup.findVariableLocal(yaxisName).isPresent()) {
       grib.makeYCoordAxis(yaxisName);
       parseInfo.format("Generated y axis from NUWG nav=%s%n", yaxisName);
     }
@@ -155,7 +155,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     // "referential" variables
     for (Dimension dim : rootGroup.getDimensions()) {
       String dimName = dim.getShortName();
-      if (rootGroup.findVariable(dimName).isPresent())
+      if (rootGroup.findVariableLocal(dimName).isPresent())
         continue; // already has coord axis
       List<Variable.Builder> ncvars = searchAliasedDimension(dim);
       if ((ncvars == null) || (ncvars.isEmpty())) // no alias
@@ -247,10 +247,10 @@ public class NUWGConvention extends CoordSystemBuilder {
     StringTokenizer parser = new StringTokenizer(alias, " ,");
     while (parser.hasMoreTokens()) {
       String token = parser.nextToken();
-      if (!rootGroup.findVariable(token).isPresent()) {
+      if (!rootGroup.findVariableLocal(token).isPresent()) {
         continue;
       }
-      Variable.Builder ncvar = rootGroup.findVariable(token).get();
+      Variable.Builder ncvar = rootGroup.findVariableLocal(token).get();
       if (ncvar.getRank() != 1)
         continue;
       String firstDimName = ncvar.getFirstDimensionName();

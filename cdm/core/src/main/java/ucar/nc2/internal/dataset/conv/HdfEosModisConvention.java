@@ -176,7 +176,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
   }
 
   private void augmentGroup(Group.Builder g) {
-    Optional<Variable.Builder<?>> crs = g.findVariable(HdfEos.HDFEOS_CRS);
+    Optional<Variable.Builder<?>> crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
     if (crs != null) {
       augmentGroupWithProjectionInfo(g);
     }
@@ -201,7 +201,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     Dimension dimX = dimXopt.get();
     Dimension dimY = dimYopt.get();
 
-    g.findVariable(HdfEos.HDFEOS_CRS).ifPresent(crs -> {
+    g.findVariableLocal(HdfEos.HDFEOS_CRS).ifPresent(crs -> {
       Attribute projAtt = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_Projection);
       if (projAtt == null) {
         return;

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
+import ucar.nc2.Group.Builder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.IospHelper;
@@ -420,7 +421,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
-    return sliceV.build();
+    return sliceV.build(getParentGroup());
   }
 
   /**
@@ -448,7 +449,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     // remove dimension(s) - reduce rank
     for (Dimension d : dims)
       sliceV.dimensions.remove(d);
-    return sliceV.build();
+    return sliceV.build(getParentGroup());
   }
 
   /** @deprecated Use Variable.toBuilder() */
@@ -1764,10 +1765,11 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   protected Cache cache = new Cache(); // cache cannot be null
   protected int sizeToCache = -1; // bytes
 
-  protected Variable(Builder<?> builder) {
+  // TODO change to build(builder, parentGroup) in ver6
+  protected Variable(Builder<?> builder, Group parentGroup) {
     super(builder.shortName);
 
-    if (builder.parent == null) {
+    if (parentGroup == null) {
       throw new IllegalStateException(String.format("Parent Group must be set for Variable %s", builder.shortName));
     }
 
@@ -1779,7 +1781,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       throw new IllegalStateException(String.format("Name must be set for Variable"));
     }
 
-    this.group = builder.parent;
+    this.group = parentGroup;
     this.ncfile = builder.ncfile;
     this.parentstruct = builder.parentStruct;
     this.dataType = builder.dataType;
@@ -1855,7 +1857,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   // build() replaces parent but respects ncfile and proxyReader.
   // Normally on a copy you want to set proxyReader to null;
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setName(this.shortName).setGroup(this.group).setNcfile(this.ncfile)
+    builder.setName(this.shortName).setNcfile(this.ncfile)
         .setParentStructure(this.getParentStructure()).setDataType(this.dataType)
         .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
         .addDimensions(this.dimensions).addAttributes(this.attributes).setProxyReader(this.proxyReader)
@@ -1890,7 +1892,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     private int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
-    public Group parent; // set in Group.build()
     public Structure parentStruct; // set in Structure.build()
 
     protected Group.Builder parentBuilder; // if set, use to search for dimensions
@@ -2100,16 +2101,21 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
-    // Generally this is not directly set.
-    public T setGroup(Group parent) {
-      this.parent = parent;
-      return self();
+    public String getFullName() {
+      String groups = "";
+      if (parentBuilder != null) {
+        groups = parentBuilder.makeFullName();
+      }
+      return groups + this.shortName;
     }
 
-    // LOOK we need to start setting always
     public T setParentGroupBuilder(Group.Builder parent) {
       this.parentBuilder = parent;
       return self();
+    }
+
+    public Group.Builder getParentGroupBuilder() {
+      return parentBuilder;
     }
 
     public T setParentStructure(Structure parent) {
@@ -2153,7 +2159,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       if (orgVar.getEnumTypedef() != null) {
         setEnumTypeName(orgVar.getEnumTypedef().getShortName());
       }
-      setGroup(orgVar.getParentGroup());
       setSPobject(orgVar.getSPobject());
       addDimensions(orgVar.getDimensions());
       addAttributes(orgVar); // copy
@@ -2171,7 +2176,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       this.elementSize = builder.elementSize;
       setEnumTypeName(builder.getEnumTypeName());
       setNcfile(builder.ncfile);
-      setGroup(builder.parent);
+      this.parentBuilder = builder.parentBuilder;
       setParentStructure(this.parentStruct);
       setProxyReader(builder.proxyReader);
       setName(builder.shortName);
@@ -2180,11 +2185,11 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     /** Normally this is called by Group.build() */
-    public Variable build() {
+    public Variable build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new Variable(this);
+      return new Variable(this, parentGroup);
     }
   }
 

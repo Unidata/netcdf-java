@@ -282,7 +282,7 @@ public class H4header implements HdfHeaderIF {
     for (Variable.Builder v : vars) {
       Vinfo vinfo = (Vinfo) v.spiObject;
       // if (vinfo.group == null) {
-      if (vinfo.group == null && !root.findVariable(v.shortName).isPresent()) {
+      if (vinfo.group == null && !root.findVariableLocal(v.shortName).isPresent()) {
         root.addVariable(v);
         vinfo.group = root;
       }
@@ -615,7 +615,7 @@ public class H4header implements HdfHeaderIF {
   }
 
   private void addVariableToGroup(Group.Builder g, Variable.Builder v, Tag tag) {
-    g.findVariable(v.shortName).ifPresent(varExisting -> v.setName(v.shortName + tag.refno)); // disambiguate
+    g.findVariableLocal(v.shortName).ifPresent(varExisting -> v.setName(v.shortName + tag.refno)); // disambiguate
     g.addVariable(v);
     tag.vinfo.group = g;
   }

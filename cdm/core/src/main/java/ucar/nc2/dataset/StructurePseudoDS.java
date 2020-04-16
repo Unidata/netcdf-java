@@ -186,8 +186,8 @@ public class StructurePseudoDS extends StructureDS {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   protected List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
 
-  protected StructurePseudoDS(Builder<?> builder) {
-    super(builder);
+  protected StructurePseudoDS(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
     this.orgVariables = builder.orgVariables;
   }
 
@@ -228,12 +228,12 @@ public class StructurePseudoDS extends StructureDS {
     }
 
     /** Normally this is called by Group.build() */
-    public StructurePseudoDS build() {
+    public StructurePseudoDS build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
-      return new StructurePseudoDS(this);
+      return new StructurePseudoDS(this, parentGroup);
     }
   }
 

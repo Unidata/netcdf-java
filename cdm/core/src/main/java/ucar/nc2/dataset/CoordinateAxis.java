@@ -428,8 +428,8 @@ public class CoordinateAxis extends VariableDS {
   protected String boundaryRef;
   protected boolean isContiguous = true;
 
-  protected CoordinateAxis(Builder<?> builder) {
-    super(builder);
+  protected CoordinateAxis(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
     this.ncd = (NetcdfDataset) this.ncfile;
     this.axisType = builder.axisType;
     this.positive = builder.positive;
@@ -499,11 +499,11 @@ public class CoordinateAxis extends VariableDS {
       return self();
     }
 
-    public CoordinateAxis build() {
+    public CoordinateAxis build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateAxis(this);
+      return new CoordinateAxis(this, parentGroup);
     }
   }
 

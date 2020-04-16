@@ -876,7 +876,7 @@ public class NcMLReaderNew {
 
     // see if it already exists
     Variable refv = (refGroup == null) ? null : refGroup.findVariable(nameInFile);
-    Optional<Variable.Builder<?>> addedFromAgg = groupBuilder.findVariable(nameInFile);
+    Optional<Variable.Builder<?>> addedFromAgg = groupBuilder.findVariableLocal(nameInFile);
     if (refv == null && !addedFromAgg.isPresent()) { // new
       if (dtype == null) {
         errlog.format("NcML Variable dtype is required for new variable (%s)%n", name);
@@ -926,7 +926,7 @@ public class NcMLReaderNew {
     if (this.explicit) { // all metadata is in the ncml, do not copy
       v = VariableDS.builder().setOriginalVariable(refv);
     } else { // modify existing
-      v = (VariableDS.Builder) groupBuilder.findVariable(nameInFile)
+      v = (VariableDS.Builder) groupBuilder.findVariableLocal(nameInFile)
           .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
     }
     v.setName(name).setDataType(dtype);
@@ -1062,7 +1062,7 @@ public class NcMLReaderNew {
         structBuilder = SequenceDS.builder().setName(name).setOriginalVariable(refv);
       }
     } else { // modify existing
-      structBuilder = (StructureDS.Builder) groupBuilder.findVariable(nameInFile)
+      structBuilder = (StructureDS.Builder) groupBuilder.findVariableLocal(nameInFile)
           .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
     }
 

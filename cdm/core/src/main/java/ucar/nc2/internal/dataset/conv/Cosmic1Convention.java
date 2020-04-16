@@ -63,7 +63,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
 
     Attribute leoAtt = gatts.findAttribute("leoId");
     if (leoAtt == null) {
-      if (!rootGroup.findVariable("time").isPresent()) {
+      if (!rootGroup.findVariableLocal("time").isPresent()) {
         // create a time Variable.Builder - assume its linear along the vertical dimension
         double start = gatts.findAttributeDouble("start_time", Double.NaN);
         double stop = gatts.findAttributeDouble("stop_time", Double.NaN);
@@ -83,7 +83,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         }
 
         Dimension dim = rootGroup.findDimension("MSL_alt").get();
-        VariableDS.Builder dimV = (VariableDS.Builder) rootGroup.findVariable("MSL_alt").get();
+        VariableDS.Builder dimV = (VariableDS.Builder) rootGroup.findVariableLocal("MSL_alt").get();
         Array dimU = dimV.orgVar.read();
         int inscr = (dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
         int n = dim.getLength();
@@ -115,11 +115,11 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         timeVar.setCachedData(data, false);
       }
 
-      Variable.Builder lat = rootGroup.findVariable("Lat").orElse(rootGroup.findVariable("GEO_lat").orElse(null));
+      Variable.Builder lat = rootGroup.findVariableLocal("Lat").orElse(rootGroup.findVariableLocal("GEO_lat").orElse(null));
       lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      Variable.Builder lon = rootGroup.findVariable("Lon").orElse(rootGroup.findVariable("GEO_lon").orElse(null));
+      Variable.Builder lon = rootGroup.findVariableLocal("Lon").orElse(rootGroup.findVariableLocal("GEO_lon").orElse(null));
       lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      Variable.Builder alt = rootGroup.findVariable("MSL_alt").orElse(null);
+      Variable.Builder alt = rootGroup.findVariableLocal("MSL_alt").orElse(null);
       alt.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     } else {
       Dimension dim = rootGroup.findDimension("time").get();
@@ -159,18 +159,18 @@ public class Cosmic1Convention extends CoordSystemBuilder {
       // cal the dtheta based pm attributes
       double dtheta = gast(iyr, mon, iday, ihr, min, sec, t);
 
-      VariableDS.Builder tVar = (VariableDS.Builder) rootGroup.findVariable("time").get();
+      VariableDS.Builder tVar = (VariableDS.Builder) rootGroup.findVariableLocal("time").get();
       String timeUnits = "seconds since 1980-01-06 00:00:00"; // dtime.getUnit().toString();
       tVar.getAttributeContainer().removeAttributeIgnoreCase(CDM.VALID_RANGE);
       tVar.getAttributeContainer().removeAttributeIgnoreCase(CDM.UNITS);
       tVar.setUnits(timeUnits);
       tVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
-      VariableDS.Builder xLeoVar = (VariableDS.Builder) rootGroup.findVariable("xLeo").get();
+      VariableDS.Builder xLeoVar = (VariableDS.Builder) rootGroup.findVariableLocal("xLeo").get();
       Array xLeoData = xLeoVar.orgVar.read();
-      VariableDS.Builder yLeoVar = (VariableDS.Builder) rootGroup.findVariable("yLeo").get();
+      VariableDS.Builder yLeoVar = (VariableDS.Builder) rootGroup.findVariableLocal("yLeo").get();
       Array yLeoData = yLeoVar.orgVar.read();
-      VariableDS.Builder zLeoVar = (VariableDS.Builder) rootGroup.findVariable("zLeo").get();
+      VariableDS.Builder zLeoVar = (VariableDS.Builder) rootGroup.findVariableLocal("zLeo").get();
       Array zLeoData = zLeoVar.orgVar.read();
 
       double a = 6378.1370;

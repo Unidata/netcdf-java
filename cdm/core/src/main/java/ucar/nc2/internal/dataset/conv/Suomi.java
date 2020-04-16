@@ -73,7 +73,7 @@ public class Suomi extends CoordSystemBuilder {
       throw new RuntimeException("Cant read start_date=" + start_date);
     }
 
-    rootGroup.findVariable("time_offset")
+    rootGroup.findVariableLocal("time_offset")
         .ifPresent(v -> v.addAttribute(new Attribute(CDM.UNITS, "seconds since " + dfo.toDateTimeString(start))));
 
     rootGroup.addAttribute(new Attribute(CDM.CONVENTIONS, "Suomi-Station-CDM"));

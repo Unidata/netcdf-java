@@ -11,7 +11,6 @@ import java.util.Optional;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -52,7 +51,7 @@ public class AggregationNew extends AggregationOuter {
     List<String> aggVarNames = getAggVariableNames();
 
     // Look for a variable matching the new aggregation dimension
-    Optional<Variable.Builder<?>> joinAggCoord = root.findVariable(dimName);
+    Optional<Variable.Builder<?>> joinAggCoord = root.findVariableLocal(dimName);
 
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
@@ -98,7 +97,7 @@ public class AggregationNew extends AggregationOuter {
     // now we can create all the aggNew variables
     // use only named variables
     for (String varname : aggVarNames) {
-      Optional<Variable.Builder<?>> aggVarOpt = root.findVariable(varname);
+      Optional<Variable.Builder<?>> aggVarOpt = root.findVariableLocal(varname);
       if (!aggVarOpt.isPresent()) {
         logger.error(ncDataset.location + " aggNewDimension cant find variable " + varname);
         continue;
@@ -130,7 +129,7 @@ public class AggregationNew extends AggregationOuter {
     typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire
 
     if (isDate && timeUnitsChange) {
-      root.findVariable(dimName).ifPresent(v -> {
+      root.findVariableLocal(dimName).ifPresent(v -> {
         try {
           readTimeCoordinates(v, cancelTask);
         } catch (IOException e) {

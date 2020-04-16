@@ -35,16 +35,16 @@ public class GIEFConvention extends CoordSystemBuilder {
     NcMLReaderNew.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "GIEF.ncml", cancelTask);
 
     Dimension timeDim = rootGroup.findDimension("time").orElse(null);
-    VariableDS.Builder base_time = (VariableDS.Builder) rootGroup.findVariable("base_time").orElse(null);
-    VariableDS.Builder time_offset = (VariableDS.Builder) rootGroup.findVariable("time_offset").orElse(null);
+    VariableDS.Builder base_time = (VariableDS.Builder) rootGroup.findVariableLocal("base_time").orElse(null);
+    VariableDS.Builder time_offset = (VariableDS.Builder) rootGroup.findVariableLocal("time_offset").orElse(null);
 
     Variable.Builder timeVar =
-        rootGroup.findVariable("time").orElseThrow(() -> new IllegalStateException("must have time variable"));
+        rootGroup.findVariableLocal("time").orElseThrow(() -> new IllegalStateException("must have time variable"));
     String time_units = rootGroup.getAttributeContainer().findAttValueIgnoreCase("time_units", null);
     timeVar.addAttribute(new Attribute(CDM.UNITS, time_units));
 
     Variable.Builder levelVar =
-        rootGroup.findVariable("level").orElseThrow(() -> new IllegalStateException("must have level variable"));
+        rootGroup.findVariableLocal("level").orElseThrow(() -> new IllegalStateException("must have level variable"));
     String level_units = rootGroup.getAttributeContainer().findAttValueIgnoreCase("level_units", null);
     String level_name = rootGroup.getAttributeContainer().findAttValueIgnoreCase("level_name", null);
     levelVar.addAttribute(new Attribute(CDM.UNITS, level_units));
@@ -69,13 +69,13 @@ public class GIEFConvention extends CoordSystemBuilder {
     double startLat = translation.getNumericValue(1).doubleValue();
     double incrLat = affine.getNumericValue(6).doubleValue();
     Variable.Builder latVar =
-        rootGroup.findVariable("latitude").orElseThrow(() -> new IllegalStateException("must have latitude variable"));
+        rootGroup.findVariableLocal("latitude").orElseThrow(() -> new IllegalStateException("must have latitude variable"));
     latVar.setAutoGen(startLat, incrLat);
 
     // add lon
     double startLon = translation.getNumericValue(0).doubleValue();
     double incrLon = affine.getNumericValue(3).doubleValue();
-    Variable.Builder lonVar = rootGroup.findVariable("longitude")
+    Variable.Builder lonVar = rootGroup.findVariableLocal("longitude")
         .orElseThrow(() -> new IllegalStateException("must have longitude variable"));
     lonVar.setAutoGen(startLon, incrLon);
   }

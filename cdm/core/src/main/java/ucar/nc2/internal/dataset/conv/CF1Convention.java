@@ -177,7 +177,7 @@ public class CF1Convention extends CSMConvention {
       // look for horiz transforms. only ones that are referenced by another variable.
       String grid_mapping = vb.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING, null);
       if (grid_mapping != null) {
-        Optional<Variable.Builder<?>> gridMapOpt = rootGroup.findVariable(grid_mapping);
+        Optional<Variable.Builder<?>> gridMapOpt = rootGroup.findVariableLocal(grid_mapping);
         if (gridMapOpt.isPresent()) {
           // TODO might be group relative - CF does not specify - see original version
           Variable.Builder<?> gridMap = gridMapOpt.get();
@@ -202,7 +202,7 @@ public class CF1Convention extends CSMConvention {
 
         if (vb.getAttributeContainer().findAttribute(CF.GEOMETRY) != null) {
           String geomValue = vb.getAttributeContainer().findAttValueIgnoreCase(CF.GEOMETRY, null);
-          rootGroup.findVariable(geomValue).ifPresent(coordsvar -> {
+          rootGroup.findVariableLocal(geomValue).ifPresent(coordsvar -> {
             vb.addAttribute(findAttributeIn(coordsvar, CF.GEOMETRY_TYPE));
             vb.addAttribute(findAttributeIn(coordsvar, CF.NODE_COORDINATES));
             vb.addAttribute(findAttributeIn(coordsvar, CF.PART_NODE_COUNT));
@@ -222,7 +222,7 @@ public class CF1Convention extends CSMConvention {
               String[] coords = nodeCoords.split(" ");
               final StringBuilder cds = new StringBuilder();
               for (String coord : coords) {
-                rootGroup.findVariable(coord).ifPresent(temp -> {
+                rootGroup.findVariableLocal(coord).ifPresent(temp -> {
                   Attribute axis = temp.getAttributeContainer().findAttribute(CF.AXIS);
                   if (axis != null) {
                     if ("x".equalsIgnoreCase(axis.getStringValue())) {
@@ -251,7 +251,7 @@ public class CF1Convention extends CSMConvention {
               for (int i = dimNames.size() - 1; i >= 0; i--) {
                 String dimName = dimNames.get(i);
                 if (!dimName.equals("time")) {
-                  rootGroup.findVariable(dimName).ifPresent(coordvar -> {
+                  rootGroup.findVariableLocal(dimName).ifPresent(coordvar -> {
                     coordvar.getAttributeContainer()
                         .addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
                   });

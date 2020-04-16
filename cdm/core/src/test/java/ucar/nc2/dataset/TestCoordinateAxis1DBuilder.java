@@ -16,16 +16,17 @@ public class TestCoordinateAxis1DBuilder {
 
   @Test
   public void testFromVariableDS() throws IOException {
-    Group parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build();
+    Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+        .addDimension(new Dimension("dim2", 27));
 
     VariableDS.Builder vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units")
         .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
-        .addAttribute(new Attribute("missing_value", 0.0f)).setDimensionsByName("dim1").setGroup(parent);
+        .addAttribute(new Attribute("missing_value", 0.0f)).setDimensionsByName("dim1");
+    parent.addVariable(vdsBuilder);
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.GeoX);
     assertThat(builder instanceof CoordinateAxis1D.Builder<?>).isTrue();
-    CoordinateAxis axis = builder.build();
+    CoordinateAxis axis = builder.build(parent.build());
     assertThat(axis instanceof CoordinateAxis1D).isTrue();
     CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
 
