@@ -11,10 +11,13 @@ site_title: netCDF-Java Documentation
 site_topic: netCDF-Java
 # this appears in the footer
 
+doc_version: 5.4
+# this will appear in an HTML meta tag
+
 company_name: Unidata
 # this appears in the footer
 
-github_editme_path: 
+github_editme_path:
 
 #github_editme_path: tomjohnson1492/documentation-theme-jekyll/blob/gh-pages/pages/
 # if you're using Github, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.
