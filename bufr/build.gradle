@@ -16,4 +16,6 @@ dependencies {
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
     compile libraries["guava"]
+
+    testCompile libraries["truth"]
 }
