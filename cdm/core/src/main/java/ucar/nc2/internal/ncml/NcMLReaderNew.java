@@ -895,11 +895,11 @@ public class NcMLReaderNew {
       if (dtype == null) {
         dtype = refv.getDataType();
       }
-
       if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
-        readStructureExisting(groupBuilder, dtype, (Structure) refv, varElem).ifPresent(groupBuilder::addVariable);
+        readStructureExisting(groupBuilder, null, dtype, (Structure) refv, varElem)
+            .ifPresent(groupBuilder::addVariable);
       } else {
-        readVariableExisting(groupBuilder, dtype, refv, varElem).ifPresent(groupBuilder::addVariable);
+        readVariableExisting(groupBuilder, null, dtype, refv, varElem).ifPresent(groupBuilder::addVariable);
       }
       return;
     }
@@ -916,52 +916,57 @@ public class NcMLReaderNew {
     });
   }
 
-  private Optional<Builder> readVariableExisting(Group.Builder groupBuilder, DataType dtype, Variable refv,
-      Element varElem) {
+  private Optional<Builder> readVariableExisting(Group.Builder groupBuilder,
+      @Nullable StructureDS.Builder<?> parentStructure, DataType dtype, Variable refv, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
 
-    VariableDS.Builder v;
+    VariableDS.Builder vb;
     if (this.explicit) { // all metadata is in the ncml, do not copy
-      v = VariableDS.builder().setOriginalVariable(refv);
+      vb = VariableDS.builder().setOriginalVariable(refv);
     } else { // modify existing
-      v = (VariableDS.Builder) groupBuilder.findVariable(nameInFile)
-          .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
+      if (parentStructure != null) {
+        vb = (VariableDS.Builder<?>) parentStructure.findMemberVariable(nameInFile)
+            .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
+      } else {
+        vb = (VariableDS.Builder) groupBuilder.findVariable(nameInFile)
+            .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
+      }
     }
-    v.setName(name).setDataType(dtype);
+    vb.setName(name).setDataType(dtype);
     if (typedefS != null) {
-      v.setEnumTypeName(typedefS);
+      vb.setEnumTypeName(typedefS);
     }
 
     String dimNames = varElem.getAttributeValue("shape"); // list of dimension names
     if (dimNames != null) {
       List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
-      v.setDimensions(varDims); // TODO check conformable
+      vb.setDimensions(varDims); // TODO check conformable
     }
 
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
-      readAtt(v.getAttributeContainer(), refv, attElem);
+      readAtt(vb.getAttributeContainer(), refv, attElem);
     }
 
     // deal with legacy use of attribute with Unsigned = true
-    Attribute att = v.getAttributeContainer().findAttribute(CDM.UNSIGNED);
+    Attribute att = vb.getAttributeContainer().findAttribute(CDM.UNSIGNED);
     boolean isUnsignedSet = att != null && att.getStringValue().equalsIgnoreCase("true");
     if (isUnsignedSet) {
       dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
-      v.setDataType(dtype);
+      vb.setDataType(dtype);
     }
 
     // process remove command
     java.util.List<Element> removeList = varElem.getChildren("remove", ncNS);
     for (Element remElem : removeList) {
-      cmdRemove(v, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
+      cmdRemove(vb, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
     }
 
     Element valueElem = varElem.getChild("values", ncNS);
     if (valueElem != null) {
-      readValues(v, dtype, varElem, valueElem);
+      readValues(vb, dtype, varElem, valueElem);
     }
     /*
      * else {
@@ -985,7 +990,7 @@ public class NcMLReaderNew {
     // look for logical views
     // processLogicalViews(v, refGroup, varElem);
     // only return if it needs to be added
-    return (this.explicit) ? Optional.of(v) : Optional.empty();
+    return (this.explicit) ? Optional.of(vb) : Optional.empty();
   }
 
   /**
@@ -1049,21 +1054,26 @@ public class NcMLReaderNew {
     }
   }
 
-  private Optional<StructureDS.Builder> readStructureExisting(Group.Builder groupBuilder, DataType dtype,
-      Structure refv, Element varElem) {
+  private Optional<StructureDS.Builder> readStructureExisting(Group.Builder groupBuilder,
+      @Nullable StructureDS.Builder<?> parentStructure, DataType dtype, Structure refStructure, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
 
-    StructureDS.Builder structBuilder;
+    StructureDS.Builder<?> structBuilder;
     if (this.explicit) { // all metadata is in the ncml, do not copy
       if (dtype == DataType.STRUCTURE) {
-        structBuilder = StructureDS.builder().setName(name).setOriginalVariable(refv);
+        structBuilder = StructureDS.builder().setName(name).setOriginalVariable(refStructure);
       } else {
-        structBuilder = SequenceDS.builder().setName(name).setOriginalVariable(refv);
+        structBuilder = SequenceDS.builder().setName(name).setOriginalVariable(refStructure);
       }
     } else { // modify existing
-      structBuilder = (StructureDS.Builder) groupBuilder.findVariable(nameInFile)
-          .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
+      if (parentStructure != null) {
+        structBuilder = (StructureDS.Builder<?>) parentStructure.findMemberVariable(nameInFile)
+            .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
+      } else {
+        structBuilder = (StructureDS.Builder<?>) groupBuilder.findVariable(nameInFile)
+            .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
+      }
     }
 
     String dimNames = varElem.getAttributeValue("shape"); // list of dimension names
@@ -1074,12 +1084,12 @@ public class NcMLReaderNew {
 
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
-      readAtt(structBuilder.getAttributeContainer(), refv, attElem);
+      readAtt(structBuilder.getAttributeContainer(), refStructure, attElem);
     }
 
     java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
     for (Element vElem : varList) {
-      readVariableNested(groupBuilder, structBuilder, null, vElem);
+      readMemberVariable(groupBuilder, structBuilder, refStructure, vElem);
     }
 
     // process remove command
@@ -1114,7 +1124,7 @@ public class NcMLReaderNew {
 
     java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
     for (Element vElem : varList) {
-      readVariableNested(groupBuilder, structBuilder, null, vElem);
+      readMemberVariable(groupBuilder, structBuilder, null, vElem);
     }
 
     // look for attributes
@@ -1126,8 +1136,8 @@ public class NcMLReaderNew {
     return structBuilder;
   }
 
-  private void readVariableNested(Group.Builder groupBuilder, StructureDS.Builder structBuilder,
-      @Nullable Structure refStructure, Element varElem) {
+  private void readMemberVariable(Group.Builder groupBuilder, StructureDS.Builder parentStructure,
+      @Nullable Structure refParentStructure, Element varElem) {
     String name = varElem.getAttributeValue("name");
     if (name == null) {
       errlog.format("NcML Variable name is required (%s)%n", varElem);
@@ -1142,16 +1152,16 @@ public class NcMLReaderNew {
     }
 
     // see if it already exists
-    Variable refv = (refStructure == null) ? null : refStructure.findVariable(nameInFile);
+    Variable refv = (refParentStructure == null) ? null : refParentStructure.findVariable(nameInFile);
     if (refv == null) { // new
       if (dtype == null) {
         errlog.format("NcML Variable dtype is required for new (nested) variable (%s)%n", name);
         return;
       }
       if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
-        structBuilder.addMemberVariable(readStructureNew(groupBuilder, varElem));
+        parentStructure.addMemberVariable(readStructureNew(groupBuilder, varElem));
       } else {
-        structBuilder.addMemberVariable(readVariableNew(groupBuilder, dtype, varElem));
+        parentStructure.addMemberVariable(readVariableNew(groupBuilder, dtype, varElem));
       }
       return;
     }
@@ -1162,9 +1172,11 @@ public class NcMLReaderNew {
     }
 
     if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
-      readStructureExisting(groupBuilder, dtype, (Structure) refv, varElem).ifPresent(structBuilder::addMemberVariable);
+      readStructureExisting(groupBuilder, parentStructure, dtype, (Structure) refv, varElem)
+          .ifPresent(parentStructure::addMemberVariable);
     } else {
-      readVariableExisting(groupBuilder, dtype, refv, varElem).ifPresent(structBuilder::addMemberVariable);
+      readVariableExisting(groupBuilder, parentStructure, dtype, refv, varElem)
+          .ifPresent(parentStructure::addMemberVariable);
     }
   }
 

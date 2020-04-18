@@ -327,7 +327,7 @@ class BufrIospBuilder {
     }
 
     String vwant = NetcdfFiles.makeValidCdmObjectName(want);
-    Optional<Variable.Builder> oldV = struct.findMemberVariable(vwant);
+    Optional<Variable.Builder<?>> oldV = struct.findMemberVariable(vwant);
     if (!oldV.isPresent()) {
       return vwant;
     }

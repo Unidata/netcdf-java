@@ -533,9 +533,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (builder != null) {
       // temporarily set enhanceMode if incomplete coordinate systems are allowed
       if (mode.contains(Enhance.IncompleteCoordSystems)) {
-        ds.enhanceMode.add(Enhance.IncompleteCoordSystems);
+        ds.addEnhanceMode(Enhance.IncompleteCoordSystems);
         builder.buildCoordinateSystems(ds);
-        ds.enhanceMode.remove(Enhance.IncompleteCoordSystems);
+        ds.removeEnhanceMode(Enhance.IncompleteCoordSystems);
       } else {
         builder.buildCoordinateSystems(ds);
       }
@@ -550,7 +550,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
 
     ds.finish(); // recalc the global lists
-    ds.enhanceMode.addAll(mode);
+    ds.addEnhanceModes(mode);
 
     return builder;
   }
@@ -883,6 +883,26 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return enhanceMode;
   }
 
+  private void addEnhanceModes(Set<Enhance> addEnhanceModes) {
+    ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
+    result.addAll(this.enhanceMode);
+    result.addAll(addEnhanceModes);
+    this.enhanceMode = result.build();
+  }
+
+  private void addEnhanceMode(Enhance addEnhanceMode) {
+    ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
+    result.addAll(this.enhanceMode);
+    result.add(addEnhanceMode);
+    this.enhanceMode = result.build();
+  }
+
+  private void removeEnhanceMode(Enhance removeEnhanceMode) {
+    ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
+    this.enhanceMode.stream().filter(e -> !e.equals(removeEnhanceMode)).forEach(result::add);
+    this.enhanceMode = result.build();
+  }
+
   /**
    * Get the list of all CoordinateTransform objects used by this dataset.
    *
@@ -917,7 +937,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       ve.clearCoordinateSystems(); // ??
     }
 
-    enhanceMode.remove(Enhance.CoordSystems);
+    removeEnhanceMode(Enhance.CoordSystems);
   }
 
   /**

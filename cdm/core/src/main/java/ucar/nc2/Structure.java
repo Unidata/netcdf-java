@@ -698,7 +698,7 @@ public class Structure extends Variable {
 
   /** A builder of Structures. */
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
-    public List<Variable.Builder> vbuilders = new ArrayList<>();
+    public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     private boolean built;
 
     public T addMemberVariable(Variable.Builder v) {
@@ -706,19 +706,19 @@ public class Structure extends Variable {
       return self();
     }
 
-    public T addMemberVariables(List<Variable.Builder> vars) {
+    public T addMemberVariables(List<Variable.Builder<?>> vars) {
       vbuilders.addAll(vars);
       return self();
     }
 
     /** Remove memeber variable, if present. Return whether it was present */
     public boolean removeMemberVariable(String memberName) {
-      Optional<Variable.Builder> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();
+      Optional<Variable.Builder<?>> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();
       want.ifPresent(v -> vbuilders.remove(v));
       return want.isPresent();
     }
 
-    public Optional<Variable.Builder> findMemberVariable(String name) {
+    public Optional<Variable.Builder<?>> findMemberVariable(String name) {
       return vbuilders.stream().filter(d -> d.shortName.equals(name)).findFirst();
     }
 

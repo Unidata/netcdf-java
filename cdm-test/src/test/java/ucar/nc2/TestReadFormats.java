@@ -72,7 +72,7 @@ public class TestReadFormats {
 
   @Test
   public void problem() {
-    openAllInDir(TestDir.cdmUnitTestDir + "/formats/grib1", new MyFileFilter());
+    openAllInDir(TestDir.cdmUnitTestDir + "/formats/gempak", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
     for (String f : failFiles)
