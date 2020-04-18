@@ -1,6 +1,6 @@
 package ucar.nc2.iosp.bufr;
 
-import static org.junit.Assert.fail;
+import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -25,6 +28,7 @@ public class TestBufrBuilderProblem {
     // showOrg(filename);
     // showNew(filename);
     compareWithBuilder(filename);
+    compareCoordSysBuilders(filename);
   }
 
   private void compareWithBuilder(String filename) throws IOException {
@@ -33,10 +37,26 @@ public class TestBufrBuilderProblem {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        if (!compare.compare(org, withBuilder, null)) {
-          System.out.printf("Compare %s%n%s%n", filename, f);
-          fail();
-        }
+        boolean ok = compare.compare(org, withBuilder, null);
+        System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
+        assertThat(ok).isTrue();
+      }
+    }
+  }
+
+  public void compareCoordSysBuilders(String fileLocation) throws IOException {
+    System.out.printf("Compare %s%n", fileLocation);
+    logger.info("TestCoordSysCompare on {}%n", fileLocation);
+    try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
+      try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
+        Formatter f = new Formatter();
+        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
+        boolean ok = compare.compare(org, withBuilder, null);
+        System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
+        System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
+        System.out.printf("new = %s%n",
+            withBuilder.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
+        assertThat(ok).isTrue();
       }
     }
   }
