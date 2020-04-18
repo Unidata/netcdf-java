@@ -28,8 +28,7 @@ public class TestStructureDSBuilder {
 
   @Test
   public void testBuilder2() {
-    StructureDS var =
-        StructureDS.builder().setName("name").setUnits("units").setDesc("desc").build(makeDummyGroup());
+    StructureDS var = StructureDS.builder().setName("name").setUnits("units").setDesc("desc").build(makeDummyGroup());
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
     assertThat(var.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
@@ -38,8 +37,8 @@ public class TestStructureDSBuilder {
 
   @Test
   public void testBuilderChain() {
-    StructureDS struct = StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of())
-        .build(makeDummyGroup());
+    StructureDS struct =
+        StructureDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
@@ -49,8 +48,8 @@ public class TestStructureDSBuilder {
   @Test
   public void testToBuilderChain() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    StructureDS struct = StructureDS.builder().setName("name").setUnits("units").addMemberVariable(var)
-        .build(makeDummyGroup());
+    StructureDS struct =
+        StructureDS.builder().setName("name").setUnits("units").addMemberVariable(var).build(makeDummyGroup());
 
     StructureDS struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
@@ -66,8 +65,7 @@ public class TestStructureDSBuilder {
 
   @Test
   public void testBuilderOrgValues() {
-    Structure orgVar =
-        Structure.builder().setName("orgName").setDataType(DataType.INT).build(makeDummyGroup());
+    Structure orgVar = Structure.builder().setName("orgName").setDataType(DataType.INT).build(makeDummyGroup());
     StructureDS var = StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar)
         .build(makeDummyGroup());
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.STRUCTURE);

@@ -26,8 +26,8 @@ public class TestStructurePseudoDSBuilder {
 
   @Test
   public void testBuilderChain() {
-    StructurePseudoDS struct = StructurePseudoDS.builder().setName("struct").addMemberVariables(ImmutableList.of())
-        .build(makeDummyGroup());
+    StructurePseudoDS struct =
+        StructurePseudoDS.builder().setName("struct").addMemberVariables(ImmutableList.of()).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
@@ -37,8 +37,8 @@ public class TestStructurePseudoDSBuilder {
   @Test
   public void testToBuilderChain() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    StructurePseudoDS struct = StructurePseudoDS.builder().setName("name").setUnits("units").addMemberVariable(var)
-        .build(makeDummyGroup());
+    StructurePseudoDS struct =
+        StructurePseudoDS.builder().setName("name").setUnits("units").addMemberVariable(var).build(makeDummyGroup());
 
     StructurePseudoDS struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);

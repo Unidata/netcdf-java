@@ -21,7 +21,8 @@ public class TestVariableBuilder {
   public void testWithDims() {
     try {
       // Must set dimension first
-      Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(makeDummyGroup());
+      Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2")
+          .build(makeDummyGroup());
       fail();
     } catch (Exception e) {
       // ok
@@ -30,7 +31,8 @@ public class TestVariableBuilder {
     Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27)).build();
 
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(group);
+    Variable var =
+        Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(group);
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
@@ -42,8 +44,8 @@ public class TestVariableBuilder {
   @Test
   public void testWithAnonymousDims() {
     int[] shape = new int[] {3, 6, -1};
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT)
-        .setDimensionsAnonymous(shape).build(makeDummyGroup());
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
+        .build(makeDummyGroup());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
@@ -57,8 +59,8 @@ public class TestVariableBuilder {
     Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27)).build();
 
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT)
-        .setDimensionsByName("dim1 dim2").build(group);
+    Variable var =
+        Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(group);
 
     Variable copy = var.toBuilder().build(group);
 

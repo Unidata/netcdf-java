@@ -11,8 +11,8 @@ public class TestStructureBuilder {
   @Test
   public void testBuilder() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT)
-        .addMemberVariable(var).build(makeDummyGroup());
+    Structure struct =
+        Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build(makeDummyGroup());
     assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("name");
     assertThat(struct.isScalar()).isTrue();
@@ -36,7 +36,8 @@ public class TestStructureBuilder {
   @Test
   public void testToBuilderChain() {
     Variable.Builder var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
-    Structure struct = Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build(makeDummyGroup());
+    Structure struct =
+        Structure.builder().setName("name").setDataType(DataType.FLOAT).addMemberVariable(var).build(makeDummyGroup());
     Structure struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
     assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
     assertThat(struct2.getShortName()).isEqualTo("s2");
