@@ -22,8 +22,7 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testVarBuilder() {
-    VariableDS var =
-        VariableDS.builder().setName("name").setDataType(DataType.FLOAT).build(makeDummyGroup());
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).build(makeDummyGroup());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isTrue();
@@ -42,8 +41,7 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testVarDSBuilderOrgValues() {
-    Variable orgVar =
-        Variable.builder().setName("orgName").setDataType(DataType.INT).build(makeDummyGroup());
+    Variable orgVar = Variable.builder().setName("orgName").setDataType(DataType.INT).build(makeDummyGroup());
     VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setOriginalName("orgName")
         .setOriginalDataType(DataType.INT).setOriginalVariable(orgVar).build(makeDummyGroup());
     assertThat(var.getOriginalDataType()).isEqualTo(DataType.INT);
@@ -55,7 +53,8 @@ public class TestVariableDSBuilder {
   public void testWithDims() {
     try {
       // Must set dimension first
-      VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(makeDummyGroup());
+      VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2")
+          .build(makeDummyGroup());
       fail();
     } catch (Exception e) {
       // ok
@@ -81,8 +80,8 @@ public class TestVariableDSBuilder {
   public void testWithAnonymousDims() {
     // No parent group needed
     int[] shape = new int[] {3, 6, -1};
-    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-        .setDimensionsAnonymous(shape).build(makeDummyGroup());
+    VariableDS var = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
+        .build(makeDummyGroup());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();

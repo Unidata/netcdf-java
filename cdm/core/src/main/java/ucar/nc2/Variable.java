@@ -1765,7 +1765,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   protected Cache cache = new Cache(); // cache cannot be null
   protected int sizeToCache = -1; // bytes
 
-  // TODO change to build(builder, parentGroup) in ver6
   protected Variable(Builder<?> builder, Group parentGroup) {
     super(builder.shortName);
 
@@ -1857,9 +1856,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   // build() replaces parent but respects ncfile and proxyReader.
   // Normally on a copy you want to set proxyReader to null;
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setName(this.shortName).setNcfile(this.ncfile)
-        .setParentStructure(this.getParentStructure()).setDataType(this.dataType)
-        .setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
+    builder.setName(this.shortName).setNcfile(this.ncfile).setParentStructure(this.getParentStructure())
+        .setDataType(this.dataType).setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
         .addDimensions(this.dimensions).addAttributes(this.attributes).setProxyReader(this.proxyReader)
         .setSPobject(this.spiObject);
 

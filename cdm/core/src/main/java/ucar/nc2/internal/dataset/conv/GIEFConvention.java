@@ -68,8 +68,8 @@ public class GIEFConvention extends CoordSystemBuilder {
     // add lat
     double startLat = translation.getNumericValue(1).doubleValue();
     double incrLat = affine.getNumericValue(6).doubleValue();
-    Variable.Builder latVar =
-        rootGroup.findVariableLocal("latitude").orElseThrow(() -> new IllegalStateException("must have latitude variable"));
+    Variable.Builder latVar = rootGroup.findVariableLocal("latitude")
+        .orElseThrow(() -> new IllegalStateException("must have latitude variable"));
     latVar.setAutoGen(startLat, incrLat);
 
     // add lon

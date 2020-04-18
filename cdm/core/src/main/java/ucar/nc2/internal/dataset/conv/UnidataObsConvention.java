@@ -135,7 +135,8 @@ public class UnidataObsConvention extends CoordSystemBuilder {
   private boolean addAxisType(String vname, AxisType a) {
     if (vname == null)
       return false;
-    rootGroup.findVariableLocal(vname).ifPresent(v -> v.addAttribute(new Attribute(_Coordinate.AxisType, a.toString())));
+    rootGroup.findVariableLocal(vname)
+        .ifPresent(v -> v.addAttribute(new Attribute(_Coordinate.AxisType, a.toString())));
     return rootGroup.findVariableLocal(vname).isPresent();
   }
 

@@ -115,9 +115,11 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         timeVar.setCachedData(data, false);
       }
 
-      Variable.Builder lat = rootGroup.findVariableLocal("Lat").orElse(rootGroup.findVariableLocal("GEO_lat").orElse(null));
+      Variable.Builder lat =
+          rootGroup.findVariableLocal("Lat").orElse(rootGroup.findVariableLocal("GEO_lat").orElse(null));
       lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      Variable.Builder lon = rootGroup.findVariableLocal("Lon").orElse(rootGroup.findVariableLocal("GEO_lon").orElse(null));
+      Variable.Builder lon =
+          rootGroup.findVariableLocal("Lon").orElse(rootGroup.findVariableLocal("GEO_lon").orElse(null));
       lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       Variable.Builder alt = rootGroup.findVariableLocal("MSL_alt").orElse(null);
       alt.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
