@@ -760,8 +760,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
   String orgFileTypeId; // the original fileTypeId.
 
-  protected VariableDS(Builder<?> builder) {
-    super(builder);
+  protected VariableDS(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
 
     this.enhanceMode = builder.enhanceMode;
     this.orgVar = builder.orgVar;
@@ -974,25 +974,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return (result == null) ? null : result.trim();
     }
 
-    // TODO use parentBuilder only
-    public String getFullName() {
-      String groups = "";
-      if (orgVar != null && !orgVar.getParentGroup().isRoot()) {
-        groups = orgVar.getParentGroup().getFullName() + "/";
-      } else if (parent != null && !parent.isRoot()) {
-        groups = parent.getFullName() + "/";
-      } else if (parentBuilder != null) {
-        groups = parentBuilder.makeFullName();
-      }
-      return groups + this.shortName;
-    }
-
     /** Normally this is called by Group.build() */
-    public VariableDS build() {
+    public VariableDS build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new VariableDS(this);
+      return new VariableDS(this, parentGroup);
     }
   }
 }

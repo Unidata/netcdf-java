@@ -611,12 +611,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private EnhancementsImpl proxy; // API relies that this cant be null
+  protected EnhancementsImpl proxy; // API relies that this cant be null
   protected Structure orgVar; // wrap this Variable
-  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
+  protected String orgName; // in case Variable was renamed, and we need the original name for aggregation
 
-  protected StructureDS(Builder<?> builder) {
-    super(builder);
+  protected StructureDS(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
     this.orgVar = builder.orgVar;
     this.orgName = builder.orgName;
     this.proxy = new EnhancementsImpl(this, builder.units, builder.desc);
@@ -647,9 +647,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
     private Structure orgVar; // wrap this Variable
-    private String orgName; // in case Variable was renamed, and we need the original name for aggregation
-    private String units;
-    private String desc;
+    protected String orgName; // in case Variable was renamed, and we need the original name for aggregation
+    protected String units;
+    protected String desc;
     private boolean built;
 
     public T setOriginalVariable(Structure orgVar) {
@@ -682,7 +682,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     public T copyFrom(Structure orgVar) {
       super.copyFrom(orgVar);
       for (Variable v : orgVar.getVariables()) {
-        Variable.Builder newVar;
+        Variable.Builder<?> newVar;
         if (v instanceof Sequence) {
           newVar = SequenceDS.builder().copyFrom((Sequence) v);
         } else if (v instanceof Structure) {
@@ -698,12 +698,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     /** Normally this is called by Group.build() */
-    public StructureDS build() {
+    public StructureDS build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.STRUCTURE);
-      return new StructureDS(this);
+      return new StructureDS(this, parentGroup);
     }
   }
 

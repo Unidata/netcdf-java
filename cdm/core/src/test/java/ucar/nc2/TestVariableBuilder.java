@@ -11,7 +11,7 @@ public class TestVariableBuilder {
 
   @Test
   public void testBuilder() {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup()).build();
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).build(makeDummyGroup());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isTrue();
@@ -21,7 +21,8 @@ public class TestVariableBuilder {
   public void testWithDims() {
     try {
       // Must set dimension first
-      Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build();
+      Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2")
+          .build(makeDummyGroup());
       fail();
     } catch (Exception e) {
       // ok
@@ -30,8 +31,8 @@ public class TestVariableBuilder {
     Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27)).build();
 
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
-        .setDimensionsByName("dim1 dim2").build();
+    Variable var =
+        Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(group);
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
@@ -43,8 +44,8 @@ public class TestVariableBuilder {
   @Test
   public void testWithAnonymousDims() {
     int[] shape = new int[] {3, 6, -1};
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(makeDummyGroup())
-        .setDimensionsAnonymous(shape).build();
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
+        .build(makeDummyGroup());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
@@ -58,10 +59,10 @@ public class TestVariableBuilder {
     Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27)).build();
 
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setGroup(group)
-        .setDimensionsByName("dim1 dim2").build();
+    Variable var =
+        Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(group);
 
-    Variable copy = var.toBuilder().build();
+    Variable copy = var.toBuilder().build(group);
 
     assertThat(copy.getParentGroup()).isEqualTo(group);
     assertThat(copy.getDataType()).isEqualTo(DataType.FLOAT);

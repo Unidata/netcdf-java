@@ -51,7 +51,7 @@ public class MADISStation extends CoordSystemBuilder {
     StringTokenizer stoker = new StringTokenizer(timeVars, ", ");
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      rootGroup.findVariable(vname)
+      rootGroup.findVariableLocal(vname)
           .ifPresent(v -> v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString())));
     }
 
@@ -60,8 +60,8 @@ public class MADISStation extends CoordSystemBuilder {
     int count = 0;
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      if (rootGroup.findVariable(vname).isPresent()) {
-        Variable.Builder v = rootGroup.findVariable(vname).get();
+      if (rootGroup.findVariableLocal(vname).isPresent()) {
+        Variable.Builder v = rootGroup.findVariableLocal(vname).get();
         AxisType atype = count == 0 ? AxisType.Lat : count == 1 ? AxisType.Lon : AxisType.Height;
         v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));
       } else {

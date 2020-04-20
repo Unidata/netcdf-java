@@ -77,7 +77,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    if (rootGroup.findVariable("x").isPresent()) {
+    if (rootGroup.findVariableLocal("x").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }
 
@@ -112,8 +112,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
     for (Variable.Builder ncvar : ImmutableList.copyOf(rootGroup.vbuilders)) {
       String levelName = ncvar.shortName + "Levels";
-      if (rootGroup.findVariable(levelName).isPresent()) {
-        VariableDS.Builder levelVar = (VariableDS.Builder) rootGroup.findVariable(levelName).get();
+      if (rootGroup.findVariableLocal(levelName).isPresent()) {
+        VariableDS.Builder levelVar = (VariableDS.Builder) rootGroup.findVariableLocal(levelName).get();
         if (levelVar.getRank() != 2)
           continue;
         if (levelVar.dataType != DataType.CHAR)
@@ -232,7 +232,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (rootGroup.findDimension(name).isPresent()) {
       Dimension dim = rootGroup.findDimension(name).get();
       if (dim.getLength() == len) {
-        if (rootGroup.findVariable(name).isPresent()) {
+        if (rootGroup.findVariableLocal(name).isPresent()) {
           return dim;
         }
       }
@@ -512,7 +512,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   }
 
   private CoordinateAxis.Builder makeTimeCoordAxis() {
-    VariableDS.Builder timeVar = (VariableDS.Builder) rootGroup.findVariable("valtimeMINUSreftime")
+    VariableDS.Builder timeVar = (VariableDS.Builder) rootGroup.findVariableLocal("valtimeMINUSreftime")
         .orElseThrow(() -> new RuntimeException("must have varible 'valtimeMINUSreftime'"));
 
     Dimension recordDim =
@@ -584,9 +584,9 @@ public class AWIPSConvention extends CoordSystemBuilder {
   // construct time coordinate from reftime variable
   @Nullable
   private CoordinateAxis.Builder makeTimeCoordAxisFromReference(Array vals) {
-    if (!rootGroup.findVariable("reftime").isPresent())
+    if (!rootGroup.findVariableLocal("reftime").isPresent())
       return null;
-    VariableDS.Builder refVar = (VariableDS.Builder) rootGroup.findVariable("reftime").get();
+    VariableDS.Builder refVar = (VariableDS.Builder) rootGroup.findVariableLocal("reftime").get();
 
     double refValue;
     try {

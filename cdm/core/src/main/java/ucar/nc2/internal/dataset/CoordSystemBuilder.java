@@ -258,10 +258,10 @@ public class CoordSystemBuilder {
       String vname = stoker.nextToken();
       VarProcess ap = findVarProcess(vname, vp);
       if (ap == null) {
-        Group g = vp.vb.parent; // LOOK is the group heirarchy in place ?
-        Variable v = g.findVariableOrInParent(vname);
-        if (v != null) {
-          ap = findVarProcess(v.getFullName(), vp);
+        Group.Builder gb = vp.vb.getParentGroupBuilder();
+        Optional<Variable.Builder<?>> vopt = gb.findVariableOrInParent(vname);
+        if (vopt.isPresent()) {
+          ap = findVarProcess(vopt.get().getFullName(), vp);
         } else {
           parseInfo.format("***Cant find coordAxis %s referenced from var= %s%n", vname, vp);
           userAdvice.format("***Cant find coordAxis %s referenced from var= %s%n", vname, vp);
@@ -668,10 +668,10 @@ public class CoordSystemBuilder {
     // prefer ones in the same group
     if (from != null) {
       for (VarProcess vp : varList) {
-        if (vp.vb == null || vp.vb.parent == null || from.vb == null) {
+        if (vp.vb == null || vp.vb.getParentGroupBuilder() == null || from.vb == null) {
           continue;
         }
-        if (name.equals(vp.vb.shortName) && vp.vb.parent.equals(from.vb.parent)) {
+        if (name.equals(vp.vb.shortName) && vp.vb.getParentGroupBuilder().equals(from.vb.getParentGroupBuilder())) {
           return vp;
         }
       }

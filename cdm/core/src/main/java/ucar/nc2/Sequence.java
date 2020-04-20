@@ -112,8 +112,8 @@ public class Sequence extends Structure {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected Sequence(Builder<?> builder) {
-    super(builder);
+  protected Sequence(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
@@ -148,12 +148,12 @@ public class Sequence extends Structure {
 
     protected abstract T self();
 
-    public Sequence build() {
+    public Sequence build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
       this.setDataType(DataType.SEQUENCE);
-      return new Sequence(this);
+      return new Sequence(this, parentGroup);
     }
   }
 

@@ -169,7 +169,7 @@ public class WRFConvention extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) {
-    if (rootGroup.findVariable("x").isPresent()) {
+    if (rootGroup.findVariableLocal("x").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }
 
@@ -197,7 +197,7 @@ public class WRFConvention extends CoordSystemBuilder {
 
     if (projType == 203) {
 
-      Optional<Variable.Builder<?>> glatOpt = rootGroup.findVariable("GLAT");
+      Optional<Variable.Builder<?>> glatOpt = rootGroup.findVariableLocal("GLAT");
       if (!glatOpt.isPresent()) {
         parseInfo.format("Projection type 203 - expected GLAT variable not found%n");
       } else {
@@ -210,7 +210,7 @@ public class WRFConvention extends CoordSystemBuilder {
         ((VariableDS.Builder) glat).setUnits(CDM.LAT_UNITS);
       }
 
-      Optional<Variable.Builder<?>> glonOpt = rootGroup.findVariable("GLON");
+      Optional<Variable.Builder<?>> glonOpt = rootGroup.findVariableLocal("GLON");
       if (!glonOpt.isPresent()) {
         parseInfo.format("Projection type 203 - expected GLON variable not found%n");
       } else {
@@ -230,7 +230,7 @@ public class WRFConvention extends CoordSystemBuilder {
       v.setCachedData(data, true);
       rootGroup.addVariable(v);
 
-      rootGroup.findVariable("LANDMASK")
+      rootGroup.findVariableLocal("LANDMASK")
           .ifPresent(dataVar -> dataVar.addAttribute(new Attribute(_Coordinate.Systems, "LatLonCoordSys")));
 
     } else {
@@ -327,7 +327,7 @@ public class WRFConvention extends CoordSystemBuilder {
     }
 
     // time coordinate variations
-    Optional<Variable.Builder<?>> timeVar = rootGroup.findVariable("Time");
+    Optional<Variable.Builder<?>> timeVar = rootGroup.findVariableLocal("Time");
     if (!timeVar.isPresent()) { // Can skip this if its already there, eg from NcML
       CoordinateAxis.Builder taxis = makeTimeCoordAxis("Time", "Time");
       if (taxis == null)
@@ -570,7 +570,7 @@ public class WRFConvention extends CoordSystemBuilder {
     // create eta values from file variables: ZNU, ZNW
     // But they are a function of time though the values are the same in the sample file
     // NOTE: Use first time sample assuming all are the same!!
-    Optional<Variable.Builder<?>> etaVarOpt = rootGroup.findVariable(fromWhere);
+    Optional<Variable.Builder<?>> etaVarOpt = rootGroup.findVariableLocal(fromWhere);
     if (!etaVarOpt.isPresent()) {
       return makeFakeCoordAxis(axisName, dim);
     } else {
@@ -620,7 +620,7 @@ public class WRFConvention extends CoordSystemBuilder {
     }
     Dimension dim = dimOpt.get();
     int nt = dim.getLength();
-    Optional<Variable.Builder<?>> timeOpt = rootGroup.findVariable("Times");
+    Optional<Variable.Builder<?>> timeOpt = rootGroup.findVariableLocal("Times");
     if (!timeOpt.isPresent()) {
       return null;
     }
@@ -704,7 +704,7 @@ public class WRFConvention extends CoordSystemBuilder {
 
   @Nullable
   private CoordinateAxis.Builder makeSoilDepthCoordAxis(String coordVarName) {
-    Optional<Variable.Builder<?>> varOpt = rootGroup.findVariable(coordVarName);
+    Optional<Variable.Builder<?>> varOpt = rootGroup.findVariableLocal(coordVarName);
     if (!varOpt.isPresent()) {
       return null;
     }
@@ -769,8 +769,8 @@ public class WRFConvention extends CoordSystemBuilder {
   protected void assignCoordinateTransforms() {
     super.assignCoordinateTransforms();
 
-    if (rootGroup.findVariable("PH").isPresent() && rootGroup.findVariable("PHB").isPresent()
-        && rootGroup.findVariable("P").isPresent() && rootGroup.findVariable("PB").isPresent()) {
+    if (rootGroup.findVariableLocal("PH").isPresent() && rootGroup.findVariableLocal("PHB").isPresent()
+        && rootGroup.findVariableLocal("P").isPresent() && rootGroup.findVariableLocal("PB").isPresent()) {
 
       // public Optional<CoordinateAxis.Builder> findZAxis(CoordinateSystem.Builder csys) {
       // any cs with a vertical coordinate with no units gets one

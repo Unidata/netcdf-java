@@ -833,7 +833,7 @@ public class Group extends CDMNode implements AttributeContainer {
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
   private int hashCode;
 
-  private Group(Builder builder, Group parent) {
+  private Group(Builder builder, @Nullable Group parent) {
     super(builder.shortName);
     this.group = parent;
     this.ncfile = builder.ncfile;
@@ -847,14 +847,13 @@ public class Group extends CDMNode implements AttributeContainer {
         builder.gbuilders.stream().map(g -> g.setNcfile(this.ncfile).build(this)).collect(Collectors.toList());
 
     builder.vbuilders.forEach(v -> {
-      v.setGroup(this);
       // dont override ncfile if its been set.
       if (v.ncfile == null) {
         v.setNcfile(this.ncfile);
       }
     });
     for (Variable.Builder<?> vb : builder.vbuilders) {
-      Variable var = vb.build();
+      Variable var = vb.build(this);
       this.variables.add(var);
     }
 
@@ -1099,7 +1098,7 @@ public class Group extends CDMNode implements AttributeContainer {
      */
     public Builder addVariable(Variable.Builder<?> variable) {
       Preconditions.checkNotNull(variable);
-      findVariable(variable.shortName).ifPresent(v -> {
+      findVariableLocal(variable.shortName).ifPresent(v -> {
         throw new IllegalArgumentException("Variable '" + v.shortName + "' already exists");
       });
       vbuilders.add(variable);
@@ -1118,7 +1117,7 @@ public class Group extends CDMNode implements AttributeContainer {
      * @return true if there was an existing variable of that name
      */
     public boolean replaceVariable(Variable.Builder<?> vb) {
-      Optional<Variable.Builder<?>> want = findVariable(vb.shortName);
+      Optional<Variable.Builder<?>> want = findVariableLocal(vb.shortName);
       want.ifPresent(v -> vbuilders.remove(v));
       addVariable(vb);
       return want.isPresent();
@@ -1130,13 +1129,32 @@ public class Group extends CDMNode implements AttributeContainer {
      * @return true if there was an existing variable of that name
      */
     public boolean removeVariable(String name) {
-      Optional<Variable.Builder<?>> want = findVariable(name);
+      Optional<Variable.Builder<?>> want = findVariableLocal(name);
       want.ifPresent(v -> vbuilders.remove(v));
       return want.isPresent();
     }
 
-    public Optional<Variable.Builder<?>> findVariable(String name) {
+    public Optional<Variable.Builder<?>> findVariableLocal(String name) {
       return vbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
+    }
+
+    /**
+     * Find the Variable with the specified (short) name in this group or a parent group.
+     *
+     * @param varShortName short name of Variable.
+     * @return the Variable or empty.
+     */
+    public Optional<Variable.Builder<?>> findVariableOrInParent(String varShortName) {
+      if (varShortName == null)
+        return Optional.empty();
+
+      Optional<Variable.Builder<?>> vopt = findVariableLocal(varShortName);
+
+      Group.Builder parent = getParentGroup();
+      if (!vopt.isPresent() && (parent != null)) {
+        vopt = parent.findVariableOrInParent(varShortName);
+      }
+      return vopt;
     }
 
     // Generally ncfile is set in NetcdfFile.build()
@@ -1183,7 +1201,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     /** Normally this is called by NetcdfFile.build() */
-    Group build(Group parent) {
+    Group build(@Nullable Group parent) {
       if (built)
         throw new IllegalStateException("Group was already built " + this.shortName);
       built = true;

@@ -5,8 +5,7 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
-import ucar.nc2.Variable;
+import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.CalendarDate;
@@ -441,8 +440,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
   private boolean isInterval;
   private boolean intervalWasComputed;
 
-  protected CoordinateAxis2D(Builder<?> builder) {
-    super(builder);
+  protected CoordinateAxis2D(Builder<?> builder, Group parentGroup) {
+    super(builder, parentGroup);
   }
 
   public Builder<?> toBuilder() {
@@ -476,11 +475,11 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
     protected abstract T self();
 
-    public CoordinateAxis2D build() {
+    public CoordinateAxis2D build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateAxis2D(this);
+      return new CoordinateAxis2D(this, parentGroup);
     }
   }
 }

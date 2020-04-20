@@ -84,11 +84,11 @@ public class TestGroupBuilder {
     Group.Builder builder = Group.builder().setName("name");
 
     assertThat(builder.replaceVariable(vb)).isFalse();
-    assertThat(builder.findVariable("varName")).isEqualTo(Optional.of(vb));
+    assertThat(builder.findVariableLocal("varName")).isEqualTo(Optional.of(vb));
 
     Variable.Builder vb2 = Variable.builder().setName("varName").setDimensionsByName("dim");
     assertThat(builder.replaceVariable(vb2)).isTrue();
-    assertThat(builder.findVariable("varName")).isEqualTo(Optional.of(vb2));
+    assertThat(builder.findVariableLocal("varName")).isEqualTo(Optional.of(vb2));
   }
 
   @Test

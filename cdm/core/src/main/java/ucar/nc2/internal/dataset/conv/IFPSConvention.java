@@ -8,7 +8,6 @@ package ucar.nc2.internal.dataset.conv;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -19,7 +18,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
@@ -94,16 +92,16 @@ public class IFPSConvention extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    if (rootGroup.findVariable("xCoord").isPresent()) {
+    if (rootGroup.findVariableLocal("xCoord").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }
     parseInfo.format("IFPS augmentDataset %n");
 
     // Figure out projection info. Assume the same for all variables
-    VariableDS.Builder lonVar = (VariableDS.Builder) rootGroup.findVariable("longitude").get();
+    VariableDS.Builder lonVar = (VariableDS.Builder) rootGroup.findVariableLocal("longitude").get();
     lonVar.setUnits(CDM.LON_UNITS);
     lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-    VariableDS.Builder latVar = (VariableDS.Builder) rootGroup.findVariable("latitude").get();
+    VariableDS.Builder latVar = (VariableDS.Builder) rootGroup.findVariableLocal("latitude").get();
     latVar.setUnits(CDM.LAT_UNITS);
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
