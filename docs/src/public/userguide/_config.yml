@@ -2,6 +2,8 @@
 output: web
 # this property is useful for conditional filtering of content that is separate from the PDF.
 
+docset_version: 5.4
+
 topnav_title: netCDF-Java Documentation
 # this appears on the top navigation bar next to the home button
 
@@ -13,8 +15,6 @@ site_topic: netCDF-Java
 
 company_name: Unidata
 # this appears in the footer
-
-github_editme_path: 
 
 #github_editme_path: tomjohnson1492/documentation-theme-jekyll/blob/gh-pages/pages/
 # if you're using Github, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.

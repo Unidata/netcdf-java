@@ -70,7 +70,7 @@ apply from: "$rootDir/gradle/any/javadoc.gradle"
 evaluationDependsOn(":uicdm")  // Evaluate ":uicdm" first so that all :cdm SourceSets will have been added to the Project.
                                // Not sure this is true, but let's see...
 
-task buildJavadocCdm(type: Javadoc) {
+task buildJavadocPublicApi(type: Javadoc) {
     description = "Generate Javadoc for the CDM subproject."
     
     title = "NetCDF-Java CDM Public API v${version}"
@@ -123,7 +123,7 @@ gradle.projectsEvaluated {  // Evaluate all projects first so that SourceSets wi
     
     tasks.build {
         // Aggregates the individual "build*" tasks.
-        dependsOn buildUserGuide, buildJavadocCdm, buildJavadocAll
+        dependsOn buildUserGuide, buildJavadocPublicApi, buildJavadocAll
     }
 }
 
@@ -148,39 +148,67 @@ tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask confi
     }
 }
 
-task publishUserGuide(type: PublishToRawRepoTask, dependsOn: buildUserGuide) {
-    description = "Publish user guide to Nexus."
+task publishAsVersionedUserGuide(type: PublishToRawRepoTask, dependsOn: buildUserGuide) {
+    description = "Publish user guide (versioned) to Nexus under /major.minor/."
 
     srcFile = userGuideDestDir
     destPath = "netcdf-java/$project.docVersion/userguide/"
 }
 
-task publishJavadocCdm(type: PublishToRawRepoTask, dependsOn: buildJavadocCdm) {
-    description = "Publish Javadoc for the CDM subproject to Nexus."
+task publishAsCurrentUserGuide(type: PublishToRawRepoTask, dependsOn: buildUserGuide) {
+    description = "Publish the user guide to Nexus under /current/."
+
+    srcFile = userGuideDestDir
+    destPath = "netcdf-java/current/userguide/"
+}
+
+task publishAsVersionedJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
+    description = "Publish Javadoc for the CDM subproject to Nexus under /major.minor/."
     
-    srcFile = tasks.buildJavadocCdm.destinationDir
+    srcFile = tasks.buildJavadocPublicApi.destinationDir
     destPath = "netcdf-java/$project.docVersion/javadoc/"
+}
+
+task publishAsCurrentJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
+    description = "Publish Javadoc for the CDM subproject to Nexus under /current/."
+
+    srcFile = tasks.buildJavadocPublicApi.destinationDir
+    destPath = "netcdf-java/current/javadoc/"
 }
 
 gradle.projectsEvaluated {
     // These tasks must be in a "projectsEvaluated" block because they depend on tasks that are also in a
     // "projectsEvaluated" block.
     
-    task publishJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
-        description = "Publish Javadoc for all Java subprojects to Nexus."
+    task publishAsVersionedJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
+        description = "Publish Javadoc for all Java subprojects to Nexus under /major.minor/."
         
         srcFile = tasks.buildJavadocAll.destinationDir
         destPath = "netcdf-java/$project.docVersion/javadocAll/"
     }
-    
+
+    task publishAsCurrentJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
+        description = "Publish Javadoc for all Java subprojects to Nexus under /current/."
+
+        srcFile = tasks.buildJavadocAll.destinationDir
+        destPath = "netcdf-java/current/javadocAll/"
+    }
+
     // We're deliberately NOT naming this task "publish", because we don't want it running when we do a:
     //     ./gradlew publish
     // from the root directory. It simply takes too long.
-    task publishDocs(group: "Documentation") {
-        description = "Publish user guide and both Javadoc sets to Nexus."
+    task publishAllDocsAsVersioned(group: "Documentation") {
+        description = "Publish user guide and both Javadoc sets to Nexus under /major.minor/."
         
         // Aggregates the individual "publish*" tasks.
-        dependsOn publishUserGuide, publishJavadocCdm, publishJavadocAll
+        dependsOn publishAsVersionedUserGuide, publishAsVersionedJavadocPublicApi, publishAsVersionedJavadocAll
+    }
+
+    task publishAllDocsAsCurrent(group: "Documentation") {
+        description = "Publish user guide and both Javadoc sets to Nexus under /current/."
+
+        // Aggregates the individual "publish*" tasks.
+        dependsOn publishAsCurrentUserGuide, publishAsCurrentJavadocPublicApi, publishAsCurrentJavadocAll
     }
 }
 
@@ -188,10 +216,26 @@ import edu.ucar.build.publishing.DeleteFromNexusTask
 
 // By default, this will perform a dry run, which simply prints the components that the query matched.
 // To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
-task deleteFromNexus(type: DeleteFromNexusTask) {
+task deleteVersionedDocsFromNexus(group: "Documentation", type: DeleteFromNexusTask) {
+    description = "Remove user guide and both Javadoc sets on Nexus under /major.minor/."
     host = "https://artifacts.unidata.ucar.edu/"
     searchQueryParameters.repository = 'netcdf-java-docs'
     searchQueryParameters.group = "/netcdf-java/$project.docVersion/*"
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+task deleteCurrentDocsFromNexus(group: "Documentation", type: DeleteFromNexusTask) {
+    description = "Remove user guide and both Javadoc sets on Nexus under /current/."
+    host = "https://artifacts.unidata.ucar.edu/"
+    searchQueryParameters.repository = 'netcdf-java-docs'
+    searchQueryParameters.group = "/netcdf-java/current/*"
 
     onlyIf {
         // Will be evaluated at task execution time, not during configuration.
