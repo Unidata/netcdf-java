@@ -45,7 +45,12 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     // Only enable cache if given size is at least twice the buffer size
     if (maxRemoteCacheSize >= 2 * bufferSize) {
       this.readCacheBlockSize = 2 * bufferSize;
-      this.readCache = initCache(maxRemoteCacheSize, Duration.ofMillis(defaultReadCacheTimeToLive));
+      // user set max cache size in bytes
+      // guava cache set as number of objects
+      // The question here is, how many readCacheBlockSize objects would there be in maxRemoteCacheSize bytes?
+      // total max cache size in bytes / size of one cache block, rounded up.
+      long numberOfCacheBlocks = (long) Math.ceil(maxRemoteCacheSize / readCacheBlockSize);
+      this.readCache = initCache(numberOfCacheBlocks, Duration.ofMillis(defaultReadCacheTimeToLive));
       readCacheEnabled = true;
     } else {
       this.readCacheBlockSize = -1;
@@ -54,9 +59,9 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     }
   }
 
-  private LoadingCache<Long, byte[]> initCache(long cacheSizeInBytes, java.time.Duration timeToLive) {
+  private LoadingCache<Long, byte[]> initCache(long maximumNumberOfCacheBlocks, java.time.Duration timeToLive) {
     CacheBuilder<Object, Object> cb =
-        CacheBuilder.newBuilder().maximumSize(cacheSizeInBytes).expireAfterWrite(timeToLive);
+        CacheBuilder.newBuilder().maximumSize(maximumNumberOfCacheBlocks).expireAfterWrite(timeToLive);
     if (debugAccess) {
       cb.recordStats();
     }
