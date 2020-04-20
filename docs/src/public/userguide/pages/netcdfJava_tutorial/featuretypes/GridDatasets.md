@@ -21,7 +21,7 @@ A GridDatatype (aka GeoGrid or just Grid) has a Grid Coordinate System, whose di
 
 A Grid Dataset has Grids that are grouped into Gridsets based on common Grid Coordinate Systems. Here is the UML for the Grid interface classes, found in the ucar.nc2.dt package:
 
-{% include image.html file="netcdf-java/tutorial/feature_types/feature_types/Grid.png" alt="Grid" caption="Grid Interface" %}
+{% include image.html file="netcdf-java/tutorial/feature_types/Grid.png" alt="Grid" caption="Grid Interface" %}
 
 ### Opening a GridDataset
 
