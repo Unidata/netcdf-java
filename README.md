@@ -1,4 +1,4 @@
-![netcdf-java icon](https://www.unidata.ucar.edu/images/logos/cdm_netcdfjava-150x150.png)
+![netcdf-java icon](https://www.unidata.ucar.edu/images/logos/thredds_netcdf-150x150.png)
 <br>
 <br>
 
@@ -16,7 +16,7 @@ For more information about netCDF-Java/CDM, see the netCDF-Java web page at
 
 and the CDM web page at
 
-https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/common_data_model_overview.html
+https://docs.unidata.ucar.edu/netcdf-java/current/userguide/common_data_model_overview.html
 
 You can obtain a copy of the latest released version of netCDF-Java software from
 
@@ -24,7 +24,7 @@ You can obtain a copy of the latest released version of netCDF-Java software fro
 
 More documentation can be found at
 
-* https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/index.html
+* https://docs.unidata.ucar.edu/netcdf-java/current/userguide/index.html
 
 A mailing list, netcdf-java@unidata.ucar.edu, exists for discussion of all things netCDF-Java/CDM including announcements about netCDF-Java/CDM bugs, fixes, enhancements, and releases.
 For information about how to subscribe, see the "Subscribe" link on this page
@@ -50,7 +50,7 @@ A limited number of tools, mainly netCDF-Java based tools, support these feature
 
 For more information about NcML, see the NcML web page at
 
-https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/ncml_overview.html
+https://docs.unidata.ucar.edu/netcdf-java/current/userguide/ncml_overview.html
 
 ## THREDDS Catalogs
 
@@ -61,7 +61,7 @@ These XML documents are how THREDDS-enabled data consumers find out what data is
 
 THREDDS Catalog documentation (including the specification) is available at
 
-* https://docs.unidata.ucar.edu/tds/5.2/userguide/basic_client_catalog.html
+* https://docs.unidata.ucar.edu/tds/5.0/userguide/basic_client_catalog.html
 
 ## Licensing
 
@@ -72,18 +72,21 @@ Furthermore, this project includes code from third-party open-source software co
 * [ERDDAP](https://coastwatch.pfeg.noaa.gov/erddap/index.html): for details, see `waterml/README.md`
 * [JUnit](https://github.com/junit-team/junit4): for details, see `testUtil/README.md`
 
-Each of these software components have their own license. Please see `docs/src/private/licenses/third-party/`.
+Each of these software components have their own license.
+Please see `docs/src/private/licenses/third-party/`.
 
 ## How to use
 
-The latest released and snapshot software artifacts (e.g. .jar files) are available from Unidata's Nexus repository:
+The latest released and snapshot software artifacts (e.g. `.jar` files) are available from Unidata's Nexus repository:
 
 * https://artifacts.unidata.ucar.edu/#browse/browse:unidata-all
 
-To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/building_from_source.html).
+To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/building_from_source.html).
 
-To use the netCDF-Java library as a dependency using maven or gradle, follow [these instructions](https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/using_netcdf_java_artifacts.html).
+To use the netCDF-Java library as a dependency using maven or gradle, follow [these instructions](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/using_netcdf_java_artifacts.html).
 
 ## Previous releases
 
-Prior to `v5.0.0`, the netCDF-Java/CDM library and the THREDDS Data Server (TDS) have been built and released together. Starting with version 5, these two packages have been decoupled, allowing new features or bug fixes to be implemented in each package separately, and released independently. Releases prior to `v5.0.0` were managed at <https://github.com/unidata/thredds>, which holds the combined code based used by `v4.6` and earlier.
+Prior to `v5.0.0`, the netCDF-Java/CDM library and the THREDDS Data Server (TDS) have been built and released together.
+Starting with version 5, these two packages have been decoupled, allowing new features or bug fixes to be implemented in each package separately, and released independently.
+Releases prior to `v5.0.0` were managed at <https://github.com/unidata/thredds>, which holds the combined code based used by `v4.6` and earlier.

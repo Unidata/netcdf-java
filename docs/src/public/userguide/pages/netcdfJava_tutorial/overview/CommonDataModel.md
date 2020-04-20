@@ -1,6 +1,6 @@
 ---
 title: The Common Data Model
-last_updated: 2019-07-22
+last_updated: 2020-04-18
 sidebar: netcdfJavaTutorial_sidebar 
 permalink: common_data_model_overview.html
 toc: false
@@ -166,6 +166,6 @@ With these Feature Types objects, mapping into other data models like ISO/OGC be
 
 Feature Type definitions, APIU, and encodings are still being developed, so applications using these must be able to evolve along with the APIs.
 
-* [Feature Dataset API](feature_types.html)
+* [Feature Dataset API](feature_datasets.html)
 * [CDM Point Feature Types](pointfeature_ref.html)
 * {% include link_file.html file="netcdf-java/cdm/CDMfeatures.doc" text="CDM Feature Types-draft" %}

@@ -1,4 +1,4 @@
-image::https://www.unidata.ucar.edu/images/logos/cdm_netcdfjava-150x150.png[netcdf-java icon]
+image::https://www.unidata.ucar.edu/images/logos/thredds_netcdf-150x150.png[netcdf-java icon]
 
 = Welcome contributors!
 
