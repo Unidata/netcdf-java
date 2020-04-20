@@ -24,7 +24,7 @@ topnav_dropdowns:
     - title: Javadocs
       folderitems:
         - title: netCDF-Java Public Javadocs
-          external_url: https://docs.unidata.ucar.edu/netcdf-java/5.3/javadoc/
+          external_url: ../javadoc/
 
     - title: External Docs
       folderitems:
