@@ -26,7 +26,7 @@ function updateVersionMenu(package) {
     method: "GET",
     async: true
   });
-  
+
   request.success(function(data) {
     // Remove menu placeholder
     $("li#remove").remove();
@@ -36,7 +36,7 @@ function updateVersionMenu(package) {
     $.each(data.releases, function(index, rel) {
       var pVer = rel.version;
       var pDoc = rel.docURL;
-      var menuURL = "<li><a href=\""+ pDoc +"\">" + pName + " version " + pVer + "</a></li>";
+      var menuURL = "<li><a href=\""+ pDoc +"\">" + " version " + pVer + "</a></li>";
       if (parseInt(rel.include) && (thisVersion != rel.version)) {
         $("#docmenu").append(menuURL);
       }
