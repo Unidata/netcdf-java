@@ -24,6 +24,8 @@ As such, we no longer utilize WebStart.
 * [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
 * [Summary of changes for v5.2.x](#netcdf-java-api-changes-52x)
+* [Summary of changes for v5.3.x](#netcdf-java-api-changes-53x)
+* [Summary of changes for v5.4.x](#netcdf-java-api-changes-54x)
 
 ## netCDF-Java API Changes (5.0.x)
 
@@ -292,4 +294,14 @@ This new functionality is not available in the now deprecated `NetcdfFile` and `
 You will also need to include the `cdm-s3` artifact in your build.
 This is currently not part of `netcdfAll.jar`..
 This is done through the use of `S3RandomAccessFile` and byte range-requests, so downloading the entire object may not be needed.
-For more information, see [dataset_urls.html#aws-s3].
+For more information, see the [DatasetUrl](dataset_urls.html#object-stores) documentation.
+
+## netCDF-Java API Changes (5.4.x)
+
+### Opening remote files on Object Stores that support the AWS S3 API
+
+Object Store support has been extended to interface with any AWS S3 API compatible system, and has been tested against Google Cloud Storage, Azure Blob Storage, ActiveScale Object Store, and Ceph.
+Note: AWS specific S3 support was added in `5.3`.
+Objects were identified using a specific URI of the form `s3://bucket-name/key`.
+Usage of that URI has been deprecated in favor of the more flexible `cdms3 ":" [ // [ userinfo "@" ] host [ ":" port ] / ]  [path] "/" bucket_name ? key`.
+For more information, see the [DatasetUrl](dataset_urls.html#object-stores) documentation.

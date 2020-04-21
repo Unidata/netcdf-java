@@ -14,10 +14,8 @@ If you are unsure, check `git remote -v`.
 If so, you can skip to step 4.
 
 1. Make sure userguide is up-to-date:
-   - `docs/src/public/userguide/_data/topnav.yml`
-       - Update netcdf-java javadoc link to point to release version.
-   - `docs/src/public/userguide/_data/sidebars/netcdfJavaTutorial_sidebar.yml`
-       - Update version referenced in sidebar `version` attribute (near the top of the file).
+   - `docs/src/public/userguide/_config.yml`
+       - Update the docset_version to the release version (major.minor).
    - `docs/src/public/userguide/pages/netcdfJava/UpgradeTo50.md`
        - make sure changes for minor version are documented.
    - Note: this is a safety check.
@@ -53,14 +51,8 @@ If so, you can skip to step 4.
     - As long as we don't make it to the artifact publishing step, we can always fix any issues by squashing new commits and pushing to the branch on Unidata/netcdf-java
 
 1. Update Unidata download page
-    - check https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
-      * Edit (on machine www) `/content/downloads/netcdf-java/toc.xml` as needed
-
-1. Update netcdf-java landing page (if major or minor version change)
-    - Edit (on machine www) /web/content/software/netcdf-java/index.html, update major.minor version string as needed.
-      There are only links to docs, so it is really just major.minor, so in `vim`, something like:
-   
-      `:%s/5.0/5.1/gc`
+    - check https://www.unidata.ucar.edu/downloads/netcdf-java/
+      * Edit (on machine www) `/content/downloads/netcdf-java/index.html` as needed
 
 1. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.

@@ -1,6 +1,6 @@
 ---
 title: Dataset URLs
-last_updated: 2018-12-31
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: dataset_urls.html
@@ -31,10 +31,9 @@ When using a file location that has an embedded `:` char, eg `C:/share/data/mode
 ### Remote Files
 
 #### HTTP
-`NetcdfFile` can open HTTP remote files, [served over HTTP](read_over_http.html
-), for example:
+`NetcdfFile` can open HTTP remote files, [served over HTTP](read_over_http.html), for example:
 
-* http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
+* https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
 
 The HTTP server must implement the getRange header and functionality.
 Performance will be strongly affected by file format and the data access pattern.
@@ -43,31 +42,128 @@ To disambiguate HTTP remote files from OPeNDAP or other URLS, you can use `https
 
 * `httpserver://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc`
 
-#### AWS S3
-`NetcdfFiles` and `NetcdfDatasets` can open files stored as a single object on S3 using the AWS RESTful API with byte range-requests, similar to HTTP.
+#### Object Stores
+
+`NetcdfFiles` and `NetcdfDatasets` can open files stored as a single objects on any Object Store that supports the AWS RESTful API with byte range-requests, similar to HTTP.
 This new functionality is not available in the now deprecated `NetcdfFile` and `NetcdfDataset` open methods.
 You will also need to include the `cdm-s3` artifact in your build.
 This is currently not part of `netcdfAll.jar`.
-To disambiguate S3 files from other URLs, you mush use the following URI pattern:
+netCDF-Java implements a custom URI for identifying objects in an Object Store.
+Using the generic URI syntax from <a href="https://tools.ietf.org/html/rfc3986">RFC3986</a>, the CDM will identify resources located in an object store as follows:
+* scheme (**required**): defined to be cdms3
+* authority (**optional for AWS S3, otherwise required**): If present, the authority component is preceded by a double slash ("//") and is terminated by the next slash ("/").
+  As with the generic URI syntax, the authority is composed of three parts:
+    * authority = `[ userinfo "@" ] host [ ":" port ]`
+       * userinfo (**optional**): name of the profile to be used by the AWS SDK
+       * host (**required**): host name of the object store
+          Note: If you need to supply a profile name when accessing an AWS S3 object, you must use the generic host name AWS in order to have a valid URI.
+       * port(**optional**): default: 443
+* path (**required**): path associated with the bucket
+  * may not be empty.
+  * the final path segment is interpreted to be the name of the object stores bucket.
+* query (**required**): the object's key
 
-* `s3://bucket/key`
+Example `cdms3` URIs (Any S3 compatiable Object Store):
+* cdms3://profile_name@my.endpoint.edu/endpoint/path/bucket-name?super/long/key
+* cdms3://profile_name@my.endpoint.edu/bucket-name?super/long/key
+* cdms3://my.endpoint.edu/endpoint/path/bucket-name?super/long/key
+* cdms3://my.endpoint.edu/bucket-name?super/long/key
 
-In addition to knowing the bucket and key, you will need to specify the region in which the bucket you are trying to access is located, and potentially credentials.
-However, these are not specified through the S3 URI.
-The netCDF-Java `S3RandomAccessFile` class uses the Amazon S3 SDK library, which provides a few ways to specify both.
-We use the default [Default Region Provider Chain](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-region-selection.html){:target="_blank"} and the [Default Credential Provider Chain](https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html){:target="_blank"}
-As a last resort, we try the AnonymousCredentialsProvider, which requires no configuration on your part.
+Secure HTTP access is assumed by default.
+Insecure HTTP access is attempted when of the following ports is explicitly referenced in the authority portion of the `cdms3` URI:
+* 80
+* 8008
+* 8080
+* 7001 (used by WebLogic)
+* 9080 (used by WebSphere)
+* 16080 (used by Mac OS X Server)
 
-As an example, if we would like to open a GOES 16 data file from the [NOAA Big Data project's](https://www.noaa.gov/big-data-project){:target="_blank"} [AWS S3 bucket](https://registry.opendata.aws/noaa-goes/) in the US East 1 region (open access), we could do the following:
+##### Credentials
+
+netCDF-Java uses the AWS SDK to manage credentials, even for non-AWS object stores.
+One method for supplying credentials is through the use of a special credentials file, in which named profiles can be used to manage multiple sets of credentials.
+References to `profile_name` in the above examples corresponds to a named profile in an AWS credentials file.
+The default credentials file is located in your home directory at `<home-dir>/.aws/credentials`.
+The `aws.sharedCredentialsFile` Java System property can be used to define a different credentials file, for example:
+
+~~~java
+System.setProperty("aws.sharedCredentialsFile", "C:/Users/me/mycredfile");
+try (NetcdfFile ncfile = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
+  ...
+} finally {
+  System.clearProperty(AWS_SHARED_CREDENTIALS_FILE_PROP);
+}
+~~~
+
+The format of the credentials file is:
+
+~~~
+[default]
+aws_access_key_id={DEFAULT_ACCESS_KEY_ID}
+aws_secret_access_key={DEFAULT_SECRET_ACCESS_KEY}
+
+[profile-name1]
+aws_access_key_id={PROFILE_NAME1_ACCESS_KEY_ID}
+aws_secret_access_key={PROFILE_NAME1_SECRET_ACCESS_KEY}
+region=us-east-1
+
+[region-only-profile]
+region=us-gov-west-1
+~~~
+
+The `aws_access_key_id` and `aws_secret_access_key` parameters are used to define your credentials, even for non-AWS S3 Object Store systems.
+Note that an AWS region can be set for a given profile in this same file.
+For more information, please see the [AWS Documentation](https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html#setting-credentials){:target="_blank"}.
+
+Example `cdms3` URIs (specific to AWS S3):
+* cdms3:bucket-name?super/long/key
+* cdms3://profile_name@aws/bucket-name?super/long/key
+
+Note: In order to supply a profile name (one way to set the region and/or credentials) while maintaining conformance to the URI specification, you may use "aws" as the host.
+When the generic "aws" host is used, netCDF-Java will allow the AWS SDK to set the appropriate host based on region.
+There are multiple to set a region, and they are described in the [AWS Documentation](https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/java-dg-region-selection.html#default-region-provider-chain){:target="_blank"}.
+Use of the credentials file, as described above, takes precedence over all others.
+ 
+The following examples show how one could access the same GOES 16 data file across a variety of Object Store technologies (special thanks to the [NOAA Big Data project's](https://www.noaa.gov/big-data-project){:target="_blank"}):
+
+[AWS S3 bucket](https://registry.opendata.aws/noaa-goes/){:target="_blank"} in the US East 1 region (open access):
 
 ~~~java
 String region = Region.US_EAST_1.toString();
 String bucket = "noaa-goes16";
-String key = "ABI-L1b-RadC/2019/363/21/OR_ABI-L1b-RadC-M6C16_G16_s20193632101189_e20193632103574_c20193632104070.nc";
-String s3uri = "s3://" + bucket + "/" + key;
+String key = "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
+String cdmS3Uri = "cdms3:" + bucket + "?" + key;
 
 System.setProperty("aws.region", region);
-try (NetcdfFile ncfile = NetcdfFiles.open(s3uri)) {
+try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
+  ...
+} finally {
+  System.clearProperty("aws.region");
+}
+~~~
+
+[Google Cloud Storage](https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16){:target="_blank"} (open access):
+
+~~~java
+String host = "storage.googleapis.com";
+String bucket = "gcp-public-data-goes-16";
+String key = "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
+String cdmS3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
+
+try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
+  ...
+}
+~~~
+
+[Open Science Data Cloud](https://www.opensciencedatacloud.org/){:target="_blank"} (Ceph) (open access):
+
+~~~java
+String host = "griffin-objstore.opensciencedatacloud.org";
+String bucket = "noaa-goes16-hurricane-archive-2017";
+String key = "242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
+String cdmS3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
+
+try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
   ...
 }
 ~~~
@@ -212,7 +308,7 @@ This can be more efficient than opening the dataset through the index-based serv
 
 ### Collection Datasets
 
-`FeatureDatasetFactoryManager` can open collections of datasets specified with a [collection specification string](collection_spec_string_ref.html).
+`FeatureDatasetFactoryManager` can open collections of datasets specified with a [collection specification string](https://docs.unidata.ucar.edu/tds/5.0/userguide/collection_spec_string_ref.html){:target="_blank"}.
 This has the form
 
 `collection:spec`

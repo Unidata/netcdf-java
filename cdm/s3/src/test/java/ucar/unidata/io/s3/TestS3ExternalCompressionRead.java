@@ -21,17 +21,12 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
 @Category(NeedsExternalResource.class)
 public class TestS3ExternalCompressionRead {
 
-  @Before()
-  public void registerLevel2Iosp() throws InstantiationException, IllegalAccessException {
-    // NetcdfFiles.registerIOProvider(ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider.class);
-  }
-
   @Test
   public void testCompressedObjectRead() throws IOException {
     String region = Region.US_EAST_1.toString();
     String bucket = "noaa-nexrad-level2";
     String key = "1991/07/20/KTLX/KTLX19910720_160529.gz";
-    String s3uri = "s3://" + bucket + "/" + key;
+    String s3uri = "cdms3:" + bucket + "?" + key;
 
     System.setProperty("aws.region", region);
     try (NetcdfFile ncfile = NetcdfFiles.open(s3uri)) {
@@ -51,6 +46,31 @@ public class TestS3ExternalCompressionRead {
       assertThat(array.getShape()).isEqualTo(new int[] {1, 366, 460});
     } finally {
       System.clearProperty("aws.region");
+    }
+  }
+
+  @Test
+  public void testMicrosoftBlobS3() throws IOException {
+    // https://nexradsa.blob.core.windows.net/nexrad-l2/1997/07/07/KHPX/KHPX19970707_000827.gz
+    String host = "nexradsa.blob.core.windows.net";
+    String bucket = "nexrad-l2";
+    String key = "1991/07/20/KTLX/KTLX19910720_160529.gz";
+    String s3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
+    try (NetcdfFile ncfile = NetcdfFiles.open(s3Uri)) {
+
+      assertThat(ncfile.findDimension("scanR")).isNotNull();
+      assertThat(ncfile.findDimension("gateR")).isNotNull();
+      assertThat(ncfile.findDimension("radialR")).isNotNull();
+
+      Variable reflectivity = ncfile.findVariable("Reflectivity");
+      Assert.assertNotNull(reflectivity);
+
+      // read array
+      Array array = reflectivity.read();
+
+      assertThat(array.getRank()).isEqualTo(3);
+
+      assertThat(array.getShape()).isEqualTo(new int[] {1, 366, 460});
     }
   }
 }

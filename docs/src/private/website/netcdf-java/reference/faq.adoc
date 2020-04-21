@@ -128,7 +128,7 @@ the CDM?*
 You write a class that implements the IO Service Provider interface,
 typically by subclassing **ucar.nc2.iosp.AbstractIOServiceProvider**.
 See section 4 of the
-http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html[tutorial].
+https://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html[tutorial].
 
 *Q: I want to create a NetcdfFile from some other source than a file.
 But an IOSP is designed to get data from a RandomAccessFile. So what do
@@ -319,7 +319,7 @@ the <<Caching#,cache directory>> defined by *ucar.nc2.util.DiskCache*.
 *Q: Ok, so you read a lot of files, what about writing?*
 
 Netcdf-Java library supports writing netCDF-3 file format using the
-http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2[classic
+https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2[classic
 data model]. Writing to the netCDF-4 file format is supported using a
 http://en.wikipedia.org/wiki/Java_Native_Interface[JNI] interface to
 the <<netcdf4Clibrary#,netCDF C library.>> See:
@@ -333,9 +333,9 @@ the <<netcdf4Clibrary#,netCDF C library.>> See:
 The netCDF-4 file format is built on top of the
 http://www.hdfgroup.org/HDF5/[HDF5 file format]. NetCDF adds shared
 dimensions, so it is unfortunately not a strict subset of HDF5. Gory
-details are here: http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales[Part 1],
-http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2[Part 2],
-http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3[Part 3].
+details are here: https://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales[Part 1],
+https://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2[Part 2],
+https://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3[Part 3].
 
 HDF5 is a very complicated format, and we do not plan to write a pure
 Java version for _writing_ netCDF4 files (Netcdf-Java is a pure Java version for _reading_ both HDF5 and netCDF-4).
@@ -358,7 +358,7 @@ can tolerate non-stable APIs and formats.
 
 Thank you for asking, See:
 
-* General Guidelines:http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
+* General Guidelines:https://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
 * Recommended Conventions: http://cfconventions.org/[CF Conventions]
 
 *Q: How do I put a valid_range attribute on a unsigned variable?*

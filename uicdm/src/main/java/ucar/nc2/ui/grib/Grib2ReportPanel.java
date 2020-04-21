@@ -185,7 +185,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   /*
-   * http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
+   * https://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
    * Packed Data Values
    * 
    * Packed data is stored in a netCDF file by limiting precision and using a smaller data type than the original data,

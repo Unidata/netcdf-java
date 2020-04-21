@@ -17,7 +17,7 @@ map variables) but I think none have done a complete job.
 Most well-written datasets specify the coordinate systems in the
 dataset, but without explicit library support, they do so in different
 ways, often documented by a
-http://www.unidata.ucar.edu/packages/netcdf/conventions.html[Convention].
+https://www.unidata.ucar.edu/software/netcdf/conventions.html[Convention].
 We are working closely with the HDF5 developers, who are interested in
 extending dimensions scales, and we are considering extensions of the
 netCDF model to comprise netCDF-4. With OpenDAP 4.0 under consideration,
@@ -27,11 +27,11 @@ consider new features in ways that are compatible with each other.
 I have done some prototyping of the functionality I think we need for
 coordinate systems in the netcdf-Java library, see the user manual,
 chapter
-http://www.unidata.ucar.edu/packages/netcdf-java/v2.1/NetcdfJavaUserManual.htm#_Toc42914935[3.2]
+https://www.unidata.ucar.edu/software/netcdf-java/v2.1/NetcdfJavaUserManual.htm#_Toc42914935[3.2]
 for some of the details, and implemented the prototype in the
 CoordinateSystem, CoordinateAxis, and CoordinateTransform classes of the
 ucar.nc2.dataset package (see the
-http://www.unidata.ucar.edu/packages/netcdf-java/v2.1/javadoc/index.html[javadoc]).
+https://www.unidata.ucar.edu/software/netcdf-java/v2.1/javadoc/index.html[javadoc]).
 
 To summarize some definitions:
 

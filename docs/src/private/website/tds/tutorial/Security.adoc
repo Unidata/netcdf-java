@@ -72,7 +72,7 @@ vulnerabilities.
 SE Security] +
  Oracle’s Java security page which includes a chronology of Java
 security issues and user forums.
-* http://www.unidata.ucar.edu/mailing_lists/archives/thredds/[`thredds`
+* https://www.unidata.ucar.edu/mailing_lists/archives/thredds/['thredds'
 mailing list] +
  The THREDDS mailing list where announcements of new releases will be
 made.

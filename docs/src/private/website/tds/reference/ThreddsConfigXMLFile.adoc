@@ -433,7 +433,7 @@ detail on the <<ncISO#,ncISO page>>.
 -----------------------------------------
 
 In order to write netCDF-4 files, you must have the
-http://www.unidata.ucar.edu/downloads/netcdf/index.jsp[netCDF-4 C library]—version 4.3.1 or above—compiled and
+https://www.unidata.ucar.edu/downloads/netcdf/[netCDF-4 C library]—version 4.3.1 or above—compiled and
 available on your system, along with all supporting libraries (HDF5, zlib, and curl). The
 <<../../netcdf-java/reference/netcdf4Clibrary.html#,details>> of this differ for each operating system. The elements
 above allow you to configure how the library is discovered and used.
@@ -462,10 +462,10 @@ For TDS users, we recommend setting the library path and name in `threddsConfig.
 -------------------------------------------------------------------------------------------------------
 
 These elements allow you to specify
-http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html[runtime
+https://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html[runtime
 parameters] for the Netcdf-Java library from the threddsConfig file. See
 the Netcdf-Java
-http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html[tutorial]
+https://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html[tutorial]
 for an overview.
 
 === Aggregation

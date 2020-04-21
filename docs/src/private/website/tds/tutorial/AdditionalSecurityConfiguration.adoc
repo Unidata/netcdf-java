@@ -25,7 +25,7 @@ Tomcat are likely to be announced here.
 * http://java.sun.com/javase/technologies/security/[Java SE Security] +
  Sun’s Java security page which includes a chronology of Java security
 issues and user forums.
-* http://www.unidata.ucar.edu/mailing_lists/[`thredds` mailing list] +
+* https://www.unidata.ucar.edu/mailing_lists/['thredds' mailing list] +
  The THREDDS mailing list where announcements of new releases will be
 made.
 * http://www.securityfocus.com/vulnerabilities[Buqtraq vunerability

@@ -60,10 +60,10 @@ as the open-source http://tomcat.apache.org/[Tomcat] web server.
 Configuration is made as simple and as automatic as possible, and we
 have made the server as secure as possible. The library is freely
 available and the source code is released under the (MIT-style) netCDF
-library http://www.unidata.ucar.edu/software/netcdf/copyright.html[license].
+library https://www.unidata.ucar.edu/software/netcdf/copyright.html[license].
 
 Much of the realtime data available over the Unidata
-http://www.unidata.ucar.edu/software/idd/index.html[Internet Data
+https://www.unidata.ucar.edu/software/idd/index.html[Internet Data
 Distribution] (IDD) is available through a THREDDS Data Server hosted at
 Unidata on http://thredds.ucar.edu/thredds/[thredds.ucar.edu]. You are
 welcome to browse and access these meteorological datasets. If you need
@@ -85,12 +85,10 @@ Java 8 is necessary for production use of the TDS in all cases.
 *TDS 5.0 is the development release. It requires Tomcat 8 and Java 8.*
 
 * Download the latest development release:
-** ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war[thredds.war]
-(ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.md5[MD5])
-(ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.sha1[SHA1])
+** https://www.unidata.ucar.edu/downloads/tds/[thredds.war]
 ** https://github.com/Unidata/thredds[source on GitHub]
 ** https://artifacts.unidata.ucar.edu/#browse/search=repository_name%3Dunidata-releases%20AND%20name.raw%3Dtds[artifacts in Unidata’s maven repository]
-** The THREDDS Data Manager (TDM) ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/tdm-5.0.jar[tdm.jar]
+** The THREDDS Data Manager (TDM) https://www.unidata.ucar.edu/downloads/tds/[tdm.jar]
 * Documentation:
 ** <<reference/index#,Reference>>
 ** <<tutorial/index#,Tutorial>>
@@ -101,13 +99,11 @@ Java 8 is necessary for production use of the TDS in all cases.
 *TDS 4.6 is the stable release. It requires Tomcat 7+ and Java 7+.*
 
 * Download the latest stable release:
-** ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war[thredds.war]
-(ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.md5[MD5])
-(ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.sha1[SHA1])
+** https://www.unidata.ucar.edu/downloads/tds/[thredds.war]
 ** https://github.com/Unidata/thredds[source on GitHub]
 ** https://artifacts.unidata.ucar.edu/#browse/search=repository_name%3Dunidata-releases%20AND%20name.raw%3Dtds[artifacts in Unitdata’s maven repository]
-** The THREDDS Data Manager (TDM) ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/tdm-4.6.jar[tdm.jar]
-* http://www.unidata.ucar.edu/software/thredds/v4.6/tds/TDS.html[Documentation]
+** The THREDDS Data Manager (TDM) https://www.unidata.ucar.edu/downloads/tds/tdm.jar]
+* https://www.unidata.ucar.edu/software/thredds/v4.6/tds/TDS.html[Documentation]
 
 
 == TDS Services
@@ -139,8 +135,8 @@ Ferret-THREDDS Data Server (F-TDS)]
 * <<reference/index#,Reference>>
 * <<tutorial/index#,Tutorial>>
 * <<catalog/index#,THREDDS Catalogs>>
-* Fact Sheet http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc[Word]
-http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf[PDF]
+* Fact Sheet https://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc[Word]
+https://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf[PDF]
 
 '''''
 

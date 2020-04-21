@@ -648,7 +648,7 @@ You indicate how often the directories should be rescanned using the *recheckEve
 ----
 
 The value of *recheckEvery* must be a
-http://www.unidata.ucar.edu/software/udunits/[udunit] time unit, e.g.
+https://www.unidata.ucar.edu/software/udunits/[udunit] time unit, e.g.
 uses units of __sec, min, hour, day__, etc. If you do not specify a
 recheckEvery attribute, the collection will be assumed to be
 non-changing.

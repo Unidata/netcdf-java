@@ -188,7 +188,7 @@ consists of a single 2D (x, y) slice of data. The CDM library reads a
 GRIB file and creates a 2, 3,4, or 5 dimension Variable (time, ensemble,
 z, y, x), by finding the records with the same parameter, with different
 time / level / ensemble coordinates. This amounts to
-http://www.unidata.ucar.edu/blogs/developer/en/entry/dataset_schemas_are_lost_in[guessing
+https://www.unidata.ucar.edu/blogs/developer/en/entry/dataset_schemas_are_lost_in[guessing
 the dataset schema] and the intent of the data provider, and is
 unfortunately a bit arbitrary. Most of our testing is against the NCEP
 operational models from the IDD, and so are influenced by those.

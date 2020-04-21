@@ -17,11 +17,12 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// not immutable because RandomAccessFile is not immutable.
 public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAccessFile implements ReadableRemoteFile {
+  private static final Logger logger = LoggerFactory.getLogger(RemoteRandomAccessFile.class);
 
-  protected final String url;
   // 10 MiB default maximum loading cache size
-  protected static final int defaultMaxReadCacheSize = 10485760;
+  protected static final long defaultMaxReadCacheSize = 10485760;
   // 256 KiB default remote file buffer size
   protected static final int defaultRemoteFileBufferSize = 262144;
   // default connection timeout in milliseconds (10 seconds)
@@ -29,15 +30,12 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
   // default cache time to live in milliseconds
   private static final long defaultReadCacheTimeToLive = 30 * 1000;
 
+  protected final String url;
   private final boolean readCacheEnabled;
-
-
   private final int readCacheBlockSize;
-  private LoadingCache<Long, byte[]> readCache;
+  private final LoadingCache<Long, byte[]> readCache;
 
-  private static final Logger logger = LoggerFactory.getLogger(RemoteRandomAccessFile.class);
-
-  protected RemoteRandomAccessFile(String url, int bufferSize, int maxRemoteCacheSize) {
+  protected RemoteRandomAccessFile(String url, int bufferSize, long maxRemoteCacheSize) {
     super(bufferSize);
 
     this.url = url;
@@ -47,21 +45,27 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     // Only enable cache if given size is at least twice the buffer size
     if (maxRemoteCacheSize >= 2 * bufferSize) {
       this.readCacheBlockSize = 2 * bufferSize;
-      initCache(maxRemoteCacheSize, Duration.ofMillis(defaultReadCacheTimeToLive));
+      // user set max cache size in bytes
+      // guava cache set as number of objects
+      // The question here is, how many readCacheBlockSize objects would there be in maxRemoteCacheSize bytes?
+      // total max cache size in bytes / size of one cache block, rounded up.
+      long numberOfCacheBlocks = (long) Math.ceil(maxRemoteCacheSize / readCacheBlockSize);
+      this.readCache = initCache(numberOfCacheBlocks, Duration.ofMillis(defaultReadCacheTimeToLive));
       readCacheEnabled = true;
     } else {
       this.readCacheBlockSize = -1;
       readCacheEnabled = false;
+      readCache = null;
     }
   }
 
-  private void initCache(int cacheBlockSizeInBytes, java.time.Duration timeToLive) {
+  private LoadingCache<Long, byte[]> initCache(long maximumNumberOfCacheBlocks, java.time.Duration timeToLive) {
     CacheBuilder<Object, Object> cb =
-        CacheBuilder.newBuilder().maximumSize(cacheBlockSizeInBytes).expireAfterWrite(timeToLive);
+        CacheBuilder.newBuilder().maximumSize(maximumNumberOfCacheBlocks).expireAfterWrite(timeToLive);
     if (debugAccess) {
       cb.recordStats();
     }
-    this.readCache = cb.build(new CacheLoader<Long, byte[]>() {
+    return cb.build(new CacheLoader<Long, byte[]>() {
       public byte[] load(@Nonnull Long key) throws IOException {
         return readRemoteCacheSizedChunk(key);
       }
@@ -119,7 +123,7 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
 
     int srcPos = (int) (pos - (key * readCacheBlockSize));
     int toEOB = src.length - srcPos;
-    int length = toEOB < len ? toEOB : len;
+    int length = Math.min(toEOB, len);
     // copy byte array fulfilling the request as obtained from the cache or a fresh read
     // of the remote data into the destination buffer
     System.arraycopy(src, srcPos, buff, offset, length);
@@ -130,13 +134,12 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
   /**
    * read a readCacheBlockSize chunk of the remote file
    */
-
   private byte[] readRemoteCacheSizedChunk(Long cacheBlockNumber) throws IOException {
     long position = cacheBlockNumber * readCacheBlockSize;
-    int toEOF = (int) (length() - position);
+    long toEOF = length() - position;
     // if size to EOF less than readCacheBlockSize, just read to EOF
-    int bytes = toEOF < readCacheBlockSize ? toEOF : readCacheBlockSize;
-
+    long bytesToRead = toEOF < readCacheBlockSize ? toEOF : readCacheBlockSize;
+    int bytes = Math.toIntExact(bytesToRead);
     byte[] buffer = new byte[bytes];
 
     readRemote(position, buffer, 0, bytes);

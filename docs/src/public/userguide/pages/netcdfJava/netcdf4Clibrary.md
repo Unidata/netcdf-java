@@ -1,6 +1,6 @@
 ---
 title: netCDF C Library
-last_updated: 2018-10-24
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: netcdf4_c_library.html
@@ -33,7 +33,7 @@ Details will vary with each program but "netcdf" is usually the package name you
 
 #### Build from source
 
-Instructions for how to build libnetcdf from source can be [found here](https://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html){:target="_blank"}.
+Instructions for how to build libnetcdf from source can be [found here](https://www.unidata.ucar.edu/software/netcdf/docs/netCDF-CMake.html){:target="_blank"}.
 
 ### Mac
 

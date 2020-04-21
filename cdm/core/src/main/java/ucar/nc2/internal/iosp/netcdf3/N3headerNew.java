@@ -19,10 +19,12 @@ import java.io.IOException;
 public class N3headerNew {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
 
-  private static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
-  private static final int MAGIC_DIM = 10;
-  private static final int MAGIC_VAR = 11;
-  private static final int MAGIC_ATT = 12;
+  static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
+  // 64-bit offset format : only affects the variable offset value
+  static final byte[] MAGIC_LONG = {0x43, 0x44, 0x46, 0x02};
+  static final int MAGIC_DIM = 10;
+  static final int MAGIC_VAR = 11;
+  static final int MAGIC_ATT = 12;
 
   public static boolean disallowFileTruncation; // see NetcdfFile.setDebugFlags
   public static boolean debugHeaderSize; // see NetcdfFile.setDebugFlags
@@ -56,7 +58,7 @@ public class N3headerNew {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  ucar.unidata.io.RandomAccessFile raf;
+  protected ucar.unidata.io.RandomAccessFile raf;
 
   // N3iosp needs access to these
   private boolean isStreaming; // is streaming (numrecs = -1)
@@ -64,29 +66,18 @@ public class N3headerNew {
   long recsize; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
-  private boolean useLongOffset;
-  private long nonRecordDataSize; // size of non-record variables
-  private Dimension udim; // the unlimited dimension
-  private List<Vinfo> vars = new ArrayList<>();
-
-  private long dataStart = Long.MAX_VALUE; // where the data starts
+  boolean useLongOffset;
+  private N3iospNew n3iospNew;
+  long nonRecordDataSize; // size of non-record variables
+  Dimension udim; // the unlimited dimension
+  List<Vinfo> vars = new ArrayList<>();
+  long dataStart = Long.MAX_VALUE; // where the data starts
 
   private final Charset valueCharset;
 
-  /*
-   * Notes:
-   * In netcdf-3 are dimensions signed or unsigned?
-   * In java, integers are signed, so are limited to 2^31, not 2^32
-   * "Each fixed-size variable and the data for one record's worth of a single record variable are limited in size to a
-   * little less than 4 GiB, which is twice the size limit in versions earlier than netCDF 3.6."
-   */
-
-  public N3headerNew() {
-    valueCharset = StandardCharsets.UTF_8;
-  }
-
-  protected N3headerNew(N3iospNew n3iospNew) {
-    valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
+  N3headerNew(N3iospNew n3iospNew) {
+    this.n3iospNew = n3iospNew;
+    this.valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
   }
 
   /**
@@ -324,11 +315,16 @@ public class N3headerNew {
     long calcSize = dataStart + nonRecordDataSize + recsize * numrecs;
     if (calcSize > actualSize + 3) {
       if (disallowFileTruncation)
-        throw new IOException("File is truncated calculated size= " + calcSize + " actual = " + actualSize);
+        throw new IOException("File is truncated, calculated size= " + calcSize + " actual = " + actualSize);
       else {
         // log.info("File is truncated calculated size= "+calcSize+" actual = "+actualSize);
         raf.setExtendMode();
       }
+    }
+
+    // add a record structure if asked to do so
+    if (n3iospNew.useRecordStructure && uvars.size() > 0) {
+      // makeRecordStructure(root, uvars);
     }
   }
 
@@ -458,7 +454,7 @@ public class N3headerNew {
     return natts;
   }
 
-  private int readAttributeValue(DataType type, IndexIterator ii) throws IOException {
+  int readAttributeValue(DataType type, IndexIterator ii) throws IOException {
     if (type == DataType.BYTE) {
       byte b = (byte) raf.read();
       // if (debug) out.println(" byte val = "+b);
@@ -499,7 +495,7 @@ public class N3headerNew {
   }
 
   // read a string = (nelems, byte array), then skip to 4 byte boundary
-  private String readString() throws IOException {
+  String readString() throws IOException {
     return readString(StandardCharsets.UTF_8);
   }
 
@@ -524,7 +520,7 @@ public class N3headerNew {
   }
 
   // skip to a 4 byte boundary in the file
-  private void skip(int nbytes) throws IOException {
+  void skip(int nbytes) throws IOException {
     int pad = padding(nbytes);
     if (pad > 0)
       raf.seek(raf.getFilePointer() + pad);

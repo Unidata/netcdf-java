@@ -24,7 +24,7 @@ import java.util.Date;
 /**
  * Test NcML AggExisting ways to define coordinate variable values
  * 
- * @see "http://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html#JoinExistingTypes"
+ * @see "https://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html#JoinExistingTypes"
  **/
 
 public class TestAggExistingCoordVars extends TestCase {

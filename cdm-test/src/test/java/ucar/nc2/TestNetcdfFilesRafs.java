@@ -29,7 +29,7 @@ public class TestNetcdfFilesRafs {
   private final String s3Bucket = "noaa-goes16";
   private final String s3Key =
       "ABI-L1b-RadM/2017/241/23/OR_ABI-L1b-RadM1-M3C11_G16_s20172412359247_e20172412359304_c20172412359341.nc";
-  private final String s3uri = "s3://" + s3Bucket + "/" + s3Key;
+  private final String s3uri = "cdms3:" + s3Bucket + "?" + s3Key;
 
   private final String baseHttpLocation = "noaa-goes16.s3.amazonaws.com/" + s3Key;
   private final String inMemLocation = "slurp://" + baseHttpLocation;

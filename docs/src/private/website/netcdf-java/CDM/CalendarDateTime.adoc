@@ -6,7 +6,7 @@
 
 == Overview
 
-As of CDM version 4.3, dates are no longer handled by the http://www.unidata.ucar.edu/software/udunits/[udunits library].
+As of CDM version 4.3, dates are no longer handled by the https://www.unidata.ucar.edu/software/udunits/[udunits library].
 This allows handling {cf}#calendar[non-standard Calendars].
 This change only affects *_datetime_* coordinate handling, called {cf}#time-coordinate[time coordinates] in CF.
 For all http://en.wikipedia.org/wiki/Dimensional_analysis[dimensional units], the udunits package is still used.
@@ -88,7 +88,7 @@ time coordinate units, but it doesn’t use the udunit library to process
 them.
 
 The
-http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar[udunit
+https://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar[udunit
 date grammar] is difficult to understand. Heres an approximate regular
 expression:
 

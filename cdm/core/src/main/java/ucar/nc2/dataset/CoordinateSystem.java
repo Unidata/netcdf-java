@@ -44,8 +44,8 @@ import java.util.*;
  * ucar.nc2.ft2.coverage.grid.GridCoordSys.
  *
  * @author caron
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System Object
- *      Model</a>
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System
+ *      Object Model</a>
  */
 public class CoordinateSystem {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);

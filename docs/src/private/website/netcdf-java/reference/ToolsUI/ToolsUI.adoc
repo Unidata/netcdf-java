@@ -4,13 +4,13 @@
 
 = ToolsUI
 :linkcss:
-:stylesheet: ../../cdm.css
+:stylesheet: ../../cdm.css:
 
 == Running ToolsUI
 
 === Download and run locally
 You can download `toolsUI.jar` from either the NetCDF-Java
-link:/downloads/netcdf/netcdf-java-4/index.jsp[downloads] or
+link:/downloads/netcdf-java/[downloads] or
 link:../../documentation.htm#current[documentation] pages.
 You can then run the ToolsUI application using a command similar to: 
 ----
