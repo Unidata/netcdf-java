@@ -3,6 +3,7 @@ output: web
 # this property is useful for conditional filtering of content that is separate from the PDF.
 
 docset_version: 5.4
+# this will appear in an HTML meta tag, sidebar, and perhaps elsewhere
 
 topnav_title: netCDF-Java Documentation
 # this appears on the top navigation bar next to the home button
