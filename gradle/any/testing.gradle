@@ -17,33 +17,36 @@ tasks.withType(Test).all {
     }
     
     useJUnit {
-        if (isJenkins) {
-            excludeCategories 'ucar.unidata.util.test.category.NotJenkins'
-        }
-        
-        if (isTravis) {
-            excludeCategories 'ucar.unidata.util.test.category.NotTravis'
-            excludeCategories 'ucar.unidata.util.test.category.NeedsExternalResource'
-        }
-        
-        if (!isContentRootAvailable && !isJenkins) { // Don't skip tests on Jenkins, except NotJenkins ones.
-            excludeCategories 'ucar.unidata.util.test.category.NeedsContentRoot'
-        }
-        
-        if (!isCdmUnitTestDirAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
-            excludeCategories 'ucar.unidata.util.test.category.NeedsCdmUnitTest'
-        }
-        
-        if (!isRdaDataAvailable) {
-            excludeCategories 'ucar.unidata.util.test.category.NeedsRdaData'
-        }
+        // if we are not explicitly trying to run all tests, allow some categories to be ignored
+        if (!runAllTests) {
+            if (isJenkins) {
+                excludeCategories 'ucar.unidata.util.test.category.NotJenkins'
+            }
 
-        if (!runSlowTests) {
-            excludeCategories 'ucar.unidata.util.test.category.Slow'
-        }
+            if (isTravis) {
+                excludeCategories 'ucar.unidata.util.test.category.NotTravis'
+                excludeCategories 'ucar.unidata.util.test.category.NeedsExternalResource'
+            }
 
-        if (!isUcarNetworkAvailable) {
-            excludeCategories 'ucar.unidata.util.test.category.NeedsUcarNetwork'
+            if (!isContentRootAvailable && !isJenkins) { // Don't skip tests on Jenkins, except NotJenkins ones.
+                excludeCategories 'ucar.unidata.util.test.category.NeedsContentRoot'
+            }
+
+            if (!isCdmUnitTestDirAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
+                excludeCategories 'ucar.unidata.util.test.category.NeedsCdmUnitTest'
+            }
+
+            if (!isRdaDataAvailable) {
+                excludeCategories 'ucar.unidata.util.test.category.NeedsRdaData'
+            }
+
+            if (!runSlowTests) {
+                excludeCategories 'ucar.unidata.util.test.category.Slow'
+            }
+
+            if (!isUcarNetworkAvailable) {
+                excludeCategories 'ucar.unidata.util.test.category.NeedsUcarNetwork'
+            }
         }
     }
 }

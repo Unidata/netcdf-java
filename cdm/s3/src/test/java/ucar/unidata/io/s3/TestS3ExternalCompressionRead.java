@@ -26,7 +26,7 @@ public class TestS3ExternalCompressionRead {
     String region = Region.US_EAST_1.toString();
     String bucket = "noaa-nexrad-level2";
     String key = "1991/07/20/KTLX/KTLX19910720_160529.gz";
-    String s3uri = "cdms3://" + bucket + "?" + key;
+    String s3uri = "cdms3:" + bucket + "?" + key;
 
     System.setProperty("aws.region", region);
     try (NetcdfFile ncfile = NetcdfFiles.open(s3uri)) {
