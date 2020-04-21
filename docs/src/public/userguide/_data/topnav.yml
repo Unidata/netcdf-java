@@ -6,17 +6,19 @@
 #    - title: Introduction
 #      url: /index.html
 
+# Documentation version menu
+topnav_docvermenu:
+- title: Version
+  id: docmenu
+  folderitems:
+    - title: Menu Loading...
+      url:
+      id: remove
+
 #Topnav dropdowns
 topnav_dropdowns:
 - title: Topnav dropdowns
   folders:
-    - title: netCDF-Java Versions
-      id: docmenu
-      folderitems:
-        - title: Menu Loading...
-          url:
-          id: remove
-
     - title: THREDDS Source
       folderitems:
         - title: netCDF-Java Github Repo
