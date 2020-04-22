@@ -64,7 +64,7 @@ public class TestCoordSysCompareMore {
       // transforms
       "MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MOD10A1.A2008001.h23v15.005.2008003161138.hdf",
       // dont have group names right
-      "OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "AMSR_E_L2_Land_T06_200801012345_A.hdf",
+      "AMSR_E_L2_Land_T06_200801012345_A.hdf",
       "AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf",
       // anon dimensions
       "MOD02OBC.A2007001.0005.005.2007307210540.hdf",

@@ -351,7 +351,7 @@ public class H4header implements HdfHeaderIF {
         }
       }
       if (lowest != null) {
-        root.removeFromAny(root, dim);
+        root.removeDimensionFromAllGroups(root, dim);
         lowest.addDimensionIfNotExists(dim);
       }
     }

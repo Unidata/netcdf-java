@@ -733,9 +733,16 @@ public class CoordinateSystem {
     StringTokenizer stoker = new StringTokenizer(builder.coordAxesNames);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      CoordinateAxis axis = axes.stream().filter(a -> a.getFullName().equals(vname)).findFirst()
+      /* CoordinateAxis axis = axes.stream().filter(a -> a.getFullName().equals(vname)).findFirst()
           .orElseThrow(() -> new IllegalStateException("Cant find axis " + vname));
-      axesList.add(axis);
+      axesList.add(axis); */
+
+      for (CoordinateAxis a : axes) {
+        String aname = a.getFullName();
+        if (aname.equals(vname)) {
+          axesList.add(a);
+        }
+      }
     }
     this.coordAxes = axesList;
 

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
-import ucar.nc2.Group.Builder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.IospHelper;
@@ -1890,9 +1889,10 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     private int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
-    public Structure parentStruct; // set in Structure.build()
+    private Structure parentStruct; // set in Structure.build(), no not use otherwise
 
-    protected Group.Builder parentBuilder; // if set, use to search for dimensions
+    protected Group.Builder parentBuilder;
+    protected Structure.Builder<?> parentStructureBuilder;
     private String dimString; // if set, supercedes dimensions
     private List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
     public Object spiObject;
@@ -1953,7 +1953,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
-    public boolean replaceDimension(Dimension dim) {
+    /** Find the dimension with the same name as dim, and replace it with dim */
+    public boolean replaceDimensionByName(Dimension dim) {
       int idx = -1;
       for (int i = 0; i < dimensions.size(); i++) {
         if (dimensions.get(i).getShortName().equals(dim.getShortName())) {
@@ -1966,7 +1967,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return (idx >= 0);
     }
 
-    // Set dimensions by name. If set, supercedes addDimension()
+    /** Set dimensions by name. If set, supercedes addDimension() */
     public T setDimensionsByName(String dimString) {
       this.dimString = dimString;
       return self();
@@ -2043,8 +2044,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     private void addDimensionsAll(ImmutableSet.Builder<String> result, Variable.Builder<?> v) {
-      if (v.parentStruct != null) {
-        parentStruct.getDimensions().forEach(dim -> result.add(dim.getShortName()));
+      if (v.parentStructureBuilder != null) {
+        v.parentStructureBuilder.getDimensionsAll().forEach(result::add);
       }
       getDimensionNames().forEach(result::add);
     }
@@ -2100,11 +2101,15 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     public String getFullName() {
-      String groups = "";
-      if (parentBuilder != null) {
-        groups = parentBuilder.makeFullName();
+      String full = "";
+      Group.Builder group = parentStructureBuilder != null ? parentStructureBuilder.parentBuilder : parentBuilder;
+      if (group != null) {
+        full = group.makeFullName();
       }
-      return groups + this.shortName;
+      if (parentStructureBuilder != null) {
+        full += parentStructureBuilder.shortName + ".";
+      }
+      return full + this.shortName;
     }
 
     public T setParentGroupBuilder(Group.Builder parent) {
@@ -2116,7 +2121,17 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return parentBuilder;
     }
 
-    public T setParentStructure(Structure parent) {
+    T setParentStructureBuilder(Structure.Builder<?> structureBuilder) {
+      this.parentStructureBuilder = structureBuilder;
+      return self();
+    }
+
+    public Structure.Builder<?> getParentStructureBuilder() {
+      return parentStructureBuilder;
+    }
+
+    // Only the parent Structure should call this.
+    T setParentStructure(Structure parent) {
       this.parentStruct = parent;
       return self();
     }
@@ -2175,7 +2190,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       setEnumTypeName(builder.getEnumTypeName());
       setNcfile(builder.ncfile);
       this.parentBuilder = builder.parentBuilder;
-      setParentStructure(this.parentStruct);
+      setParentStructure(builder.parentStruct);
+      setParentStructureBuilder(builder.parentStructureBuilder);
       setProxyReader(builder.proxyReader);
       setName(builder.shortName);
       setSPobject(builder.spiObject);

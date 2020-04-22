@@ -28,9 +28,9 @@ public class TestCoordSysCompareProblem {
   @Test
   public void compareProblemFile() throws IOException {
     String filename =
-        TestDir.cdmUnitTestDir + "formats/hdf5/aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5";
-    showOrg(filename);
-    showNew(filename);
+        TestDir.cdmUnitTestDir + "formats/hdf4/ncidc/AMSR_E_L2_Land_T06_200801012345_A.hdf";
+    //showOrg(filename);
+    // showNew(filename);
     compare(filename);
   }
 
