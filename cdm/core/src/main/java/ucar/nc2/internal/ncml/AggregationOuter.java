@@ -295,9 +295,10 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
       pv.dtype = DataType.getType(data);
       VariableDS.Builder promotedVar =
-          VariableDS.builder().setName(pv.varName).setDataType(pv.dtype).setDimensionsByName(dimName);
+          VariableDS.builder().setName(pv.varName).setDataType(pv.dtype)
+              .setParentGroupBuilder(ncDataset.rootGroup).setDimensionsByName(dimName);
       /*
-       * if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not delat with
+       * if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not dealt with
        * Dimension outer = ncDataset.getRootGroup().findDimension(dimName);
        * Dimension inner = new Dimension("", (int) data.getSize(), false); //anonymous
        * List<Dimension> dims = new ArrayList<Dimension>(2);

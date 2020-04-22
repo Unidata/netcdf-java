@@ -100,10 +100,10 @@ public class CoordSystemBuilder {
     return false;
   }
 
-  public static int countDomainSize(Group.Builder gb, Variable.Builder<?>... axes) {
+  public static int countDomainSize(Variable.Builder<?>... axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable.Builder<?> axis : axes) {
-      domain.addAll(axis.getDimensions(gb));
+      domain.addAll(axis.getDimensions());
     }
     return domain.size();
   }
@@ -117,8 +117,8 @@ public class CoordSystemBuilder {
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
   protected boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VarProcess vp) {
-    ImmutableList<Dimension> varDims = vp.vb.getDimensions(vp.gb);
-    ImmutableList<Dimension> axisDims = axis.getDimensions(rootGroup);
+    ImmutableList<Dimension> varDims = vp.vb.getDimensions();
+    ImmutableList<Dimension> axisDims = axis.getDimensions();
 
     // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
     int checkDims = axisDims.size();

@@ -69,7 +69,8 @@ class AggregationExisting extends AggregationOuter {
         // docs claim we can add the coord variable in the outer ncml, so make a fake one for now, make
         // sure it gets removed if user adds it outside of aggregation.
         VariableDS.Builder fake =
-            VariableDS.builder().setName(dimName).setDataType(DataType.INT).setDimensionsByName(dimName);
+            VariableDS.builder().setName(dimName).setDataType(DataType.INT)
+                .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName);
         fake.setAutoGen(0, 1);
         rootGroup.addVariable(fake);
         System.out.printf("HEY adding a fake coord var for %s%n", dimName);
@@ -108,6 +109,7 @@ class AggregationExisting extends AggregationOuter {
 
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(rootGroup, v.getParentGroup());
       VariableDS.Builder vagg = VariableDS.builder().setName(v.getShortName()).setDataType(v.getDataType())
+          .setParentGroupBuilder(rootGroup)
           .setDimensionsByName(v.getDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(v, vagg.getAttributeContainer());
@@ -134,7 +136,8 @@ class AggregationExisting extends AggregationOuter {
       // replace aggregation coordinate variable
       joinAggCoordOpt.ifPresent(joinAgg -> rootGroup.removeVariable(joinAgg.shortName));
 
-      joinAggCoord = VariableDS.builder().setName(dimName).setDataType(DataType.STRING).setDimensionsByName(dimName);
+      joinAggCoord = VariableDS.builder().setName(dimName).setDataType(DataType.STRING)
+          .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName);
       joinAggCoord.setProxyReader(this);
       rootGroup.addVariable(joinAggCoord);
       aggVars.add(joinAggCoord);

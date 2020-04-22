@@ -180,7 +180,7 @@ public class H4header implements HdfHeaderIF {
     construct(alltags);
 
     if (useHdfEos) {
-      isEos = HdfEos.amendFromODL(this, root);
+      isEos = HdfEos.amendFromODL(raf.getLocation(), this, root);
       if (isEos) {
         adjustDimensions();
         String history = root.getAttributeContainer().findAttValueIgnoreCase("_History", "");
@@ -198,7 +198,7 @@ public class H4header implements HdfHeaderIF {
   }
 
   public void getEosInfo(Formatter f) throws IOException {
-    HdfEos.getEosInfo(this, root, f);
+    HdfEos.getEosInfo(raf.getLocation(), this, root, f);
   }
 
   private static int tagid(short refno, short code) {
@@ -921,7 +921,7 @@ public class H4header implements HdfHeaderIF {
     // apparently the 701 SDDimension tag overrides the VGroup dimensions
     assert dim.shape.length == vb.getRank();
     boolean ok = true;
-    List<Dimension> vdimensions = vb.getDimensions(null);
+    List<Dimension> vdimensions = vb.getDimensions();
     for (int i = 0; i < dim.shape.length; i++) {
       Dimension vdim = vdimensions.get(i);
       if (dim.shape[i] != vdim.getLength()) {

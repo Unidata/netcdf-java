@@ -79,16 +79,39 @@ public class TestGroupBuilder {
   }
 
   @Test
+  public void testSetDimensionsByNameNeedsParent() {
+    try {
+      Variable.builder().setName("varName").setDimensionsByName("dim");
+      fail();
+    } catch (Exception e) {
+      assertThat(e instanceof NullPointerException);
+    }
+  }
+
+  @Test
+  public void testDimNotExist() {
+    Group.Builder gb = Group.builder().setName("name");
+    try {
+      Variable.Builder vb = Variable.builder().setName("varName")
+          .setParentGroupBuilder(gb).setDimensionsByName("dim");
+      fail();
+    } catch (Exception e) {
+      assertThat(e.getMessage()).contains("Dimension dim does not exist");
+    }
+  }
+
+  @Test
   public void testReplaceVariable() {
     Variable.Builder vb = Variable.builder().setName("varName");
-    Group.Builder builder = Group.builder().setName("name");
+    Group.Builder gb = Group.builder().setName("name").addDimension(new Dimension("dim", 42));
 
-    assertThat(builder.replaceVariable(vb)).isFalse();
-    assertThat(builder.findVariableLocal("varName")).isEqualTo(Optional.of(vb));
+    assertThat(gb.replaceVariable(vb)).isFalse();
+    assertThat(gb.findVariableLocal("varName")).isEqualTo(Optional.of(vb));
 
-    Variable.Builder vb2 = Variable.builder().setName("varName").setDimensionsByName("dim");
-    assertThat(builder.replaceVariable(vb2)).isTrue();
-    assertThat(builder.findVariableLocal("varName")).isEqualTo(Optional.of(vb2));
+    Variable.Builder vb2 = Variable.builder().setName("varName")
+        .setParentGroupBuilder(gb).setDimensionsByName("dim");
+    assertThat(gb.replaceVariable(vb2)).isTrue();
+    assertThat(gb.findVariableLocal("varName")).isEqualTo(Optional.of(vb2));
   }
 
   @Test

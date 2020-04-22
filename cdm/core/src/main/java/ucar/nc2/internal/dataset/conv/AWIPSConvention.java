@@ -254,7 +254,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
 
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(name).setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(name)
+        .setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
     String positive = getZisPositive(v);
     if (null != positive) {
       v.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
@@ -460,7 +461,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   CoordinateAxis.Builder makeXCoordAxis(String xname) {
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(xname).setUnits("km").setDesc("x on projection");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits("km").setDesc("x on projection");
     v.setAutoGen(startx, dx);
 
     parseInfo.format("Created X Coordinate Axis = %s%n", xname);
@@ -469,7 +470,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   CoordinateAxis.Builder makeYCoordAxis(String yname) {
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(yname).setUnits("km").setDesc("y on projection");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits("km").setDesc("y on projection");
     v.setAutoGen(starty, dy);
 
     parseInfo.format("Created Y Coordinate Axis = %s%n", yname);
@@ -485,7 +486,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
       return null;
 
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setAutoGen(min, d);
 
@@ -502,7 +503,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
       return null;
 
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(name).setUnits(CDM.LAT_UNITS).setDesc("latitude");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(name).setUnits(CDM.LAT_UNITS).setDesc("latitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setAutoGen(min, d);
 
@@ -547,7 +548,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     String name = "timeCoord";
     String desc = "synthesized time coordinate from valtimeMINUSreftime and filename YYYYMMDD_HHMM";
     CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name).setDataType(DataType.INT)
-        .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(vals, true);
+        .setParentGroupBuilder(rootGroup).setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(vals, true);
 
     parseInfo.format("Created Time Coordinate Axis = %s%n", name);
     return timeCoord;
@@ -610,7 +611,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     units = normalize(units);
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
     CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(dvals, true);
+        .setParentGroupBuilder(rootGroup).setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(dvals, true);
 
     parseInfo.format("Created Time Coordinate Axis From reftime Variable%n");
     return timeCoord;

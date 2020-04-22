@@ -497,7 +497,8 @@ public class NUWGConvention extends CoordSystemBuilder {
 
     void makeXCoordAxis(String xname) {
       CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
-          .setDimensionsByName(xname).setUnits((0 == grid_code) ? CDM.LON_UNITS : "km").setDesc("synthesized X coord");
+          .setParentGroupBuilder(rootGroup).setDimensionsByName(xname)
+          .setUnits((0 == grid_code) ? CDM.LON_UNITS : "km").setDesc("synthesized X coord");
       v.addAttribute(
           new Attribute(_Coordinate.AxisType, (0 == grid_code) ? AxisType.Lon.toString() : AxisType.GeoX.toString()));
       v.setAutoGen(startx, dx);
@@ -506,7 +507,8 @@ public class NUWGConvention extends CoordSystemBuilder {
 
     void makeYCoordAxis(String yname) {
       CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
-          .setDimensionsByName(yname).setUnits((0 == grid_code) ? CDM.LAT_UNITS : "km").setDesc("synthesized Y coord");
+          .setParentGroupBuilder(rootGroup).setDimensionsByName(yname)
+          .setUnits((0 == grid_code) ? CDM.LAT_UNITS : "km").setDesc("synthesized Y coord");
       v.addAttribute(
           new Attribute(_Coordinate.AxisType, (0 == grid_code) ? AxisType.Lat.toString() : AxisType.GeoY.toString()));
       v.setAutoGen(starty, dy);

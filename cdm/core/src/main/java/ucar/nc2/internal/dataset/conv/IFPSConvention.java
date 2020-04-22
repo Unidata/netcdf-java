@@ -172,7 +172,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     String desc = "time coordinate for " + ncVar.shortName;
 
     CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(dimName).setDataType(dtype)
-        .setDimensionsByName(dimName).setUnits(units).setDesc(desc);
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(units).setDesc(desc);
     timeCoord.setCachedData(timesArray, true);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
@@ -180,7 +180,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     parseInfo.format(" added coordinate variable %s%n", dimName);
 
     // now make the original variable use the new dimension
-    ArrayList<Dimension> newDims = new ArrayList<>(ncVar.getDimensions(rootGroup));
+    ArrayList<Dimension> newDims = new ArrayList<>(ncVar.getDimensions());
     newDims.set(0, newDim);
     ncVar.setDimensions(newDims);
 
@@ -256,13 +256,13 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
 
     VariableDS.Builder xaxis = VariableDS.builder().setName("xCoord").setDataType(DataType.FLOAT)
-        .setDimensionsByName(x_dim.getShortName()).setUnits("km").setDesc("x on projection");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(x_dim.getShortName()).setUnits("km").setDesc("x on projection");
     xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "x on projection"));
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
     VariableDS.Builder yaxis = VariableDS.builder().setName("yCoord").setDataType(DataType.FLOAT)
-        .setDimensionsByName(y_dim.getShortName()).setUnits("km").setDesc("y on projection");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(y_dim.getShortName()).setUnits("km").setDesc("y on projection");
     yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "y on projection"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));

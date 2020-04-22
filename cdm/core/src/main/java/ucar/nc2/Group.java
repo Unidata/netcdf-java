@@ -1231,13 +1231,9 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     private List<Dimension> getDimensionsFor(Group.Builder gb, Variable.Builder<?> vb) {
-      if (vb.getDimensionString() != null && !vb.getDimensionString().isEmpty()) {
-        return gb.makeDimensionsList(vb.getDimensionString());
-      }
-
       // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
       List<Dimension> dims = new ArrayList<>();
-      for (Dimension dim : vb.getDimensions(this)) {
+      for (Dimension dim : vb.getDimensions()) {
         if (dim.isShared()) {
           Dimension sharedDim = gb.findDimension(dim.getShortName()).orElse(null);
           if (sharedDim == null) {
