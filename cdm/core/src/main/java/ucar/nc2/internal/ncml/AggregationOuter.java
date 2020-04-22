@@ -294,9 +294,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         throw new IOException("cant read " + typicalDataset);
 
       pv.dtype = DataType.getType(data);
-      VariableDS.Builder promotedVar =
-          VariableDS.builder().setName(pv.varName).setDataType(pv.dtype)
-              .setParentGroupBuilder(ncDataset.rootGroup).setDimensionsByName(dimName);
+      VariableDS.Builder promotedVar = VariableDS.builder().setName(pv.varName).setDataType(pv.dtype)
+          .setParentGroupBuilder(ncDataset.rootGroup).setDimensionsByName(dimName);
       /*
        * if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not dealt with
        * Dimension outer = ncDataset.getRootGroup().findDimension(dimName);

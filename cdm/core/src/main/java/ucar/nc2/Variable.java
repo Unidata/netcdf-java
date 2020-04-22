@@ -2012,7 +2012,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     public ImmutableList<Dimension> getDimensions() {
-       return ImmutableList.copyOf(this.dimensions);
+      return ImmutableList.copyOf(this.dimensions);
     }
 
     // Get all dimension names, including parent structure

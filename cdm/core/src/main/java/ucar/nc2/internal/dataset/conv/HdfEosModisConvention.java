@@ -229,8 +229,10 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
         crss.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
         dataG.addVariable(crss);
 
-        datasetBuilder.replaceCoordinateAxis(dataG, makeCoordAxis(dataG, DIMX_NAME, dimX.getLength(), minX, maxX, true));
-        datasetBuilder.replaceCoordinateAxis(dataG, makeCoordAxis(dataG, DIMY_NAME, dimY.getLength(), minY, maxY, false));
+        datasetBuilder.replaceCoordinateAxis(dataG,
+            makeCoordAxis(dataG, DIMX_NAME, dimX.getLength(), minX, maxX, true));
+        datasetBuilder.replaceCoordinateAxis(dataG,
+            makeCoordAxis(dataG, DIMY_NAME, dimY.getLength(), minY, maxY, false));
         coordinates = addTimeCoord ? TIME_NAME + " " + DIMX_NAME + " " + DIMY_NAME : DIMX_NAME + " " + DIMY_NAME;
 
       } else if (projAtt.getStringValue().equals("GCTP_GEO")) {
@@ -270,10 +272,11 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
    * • The LowerRightMtrs identifies the very lower right corner of the lower right pixel of the image data. These
    * projection coordinates are the only metadata that accurately reflect the extreme corners of the gridded image
    */
-  private CoordinateAxis.Builder makeCoordAxis(Group.Builder dataG, String name, int n, double start, double end, boolean isX) {
-    CoordinateAxis.Builder vb = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setParentGroupBuilder(dataG).setDimensionsByName(name)
-        .setUnits("km").setDesc(isX ? "x coordinate" : "y coordinate");
+  private CoordinateAxis.Builder makeCoordAxis(Group.Builder dataG, String name, int n, double start, double end,
+      boolean isX) {
+    CoordinateAxis.Builder vb =
+        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(dataG)
+            .setDimensionsByName(name).setUnits("km").setDesc(isX ? "x coordinate" : "y coordinate");
 
     double incr = (end - start) / n;
     vb.setAutoGen(start * .001, incr * .001); // km
@@ -289,7 +292,8 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
    * :UpperLeftPointMtrs = -1.8E8, 9.0E7; // double
    * :LowerRightMtrs = 1.8E8, -9.0E7; // double
    */
-  private CoordinateAxis.Builder makeLatLonCoordAxis(Group.Builder dataG, int n, double start, double end, boolean isLon) {
+  private CoordinateAxis.Builder makeLatLonCoordAxis(Group.Builder dataG, int n, double start, double end,
+      boolean isLon) {
     String name = isLon ? AxisType.Lon.toString() : AxisType.Lat.toString();
     String dimName = isLon ? DIMX_NAME : DIMY_NAME;
 

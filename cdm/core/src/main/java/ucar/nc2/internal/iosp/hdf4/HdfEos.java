@@ -97,7 +97,8 @@ public class HdfEos {
     return true;
   }
 
-  public static boolean getEosInfo(String location, HdfHeaderIF header, Group.Builder eosGroup, Formatter f) throws IOException {
+  public static boolean getEosInfo(String location, HdfHeaderIF header, Group.Builder eosGroup, Formatter f)
+      throws IOException {
     String smeta = getStructMetadata(header, eosGroup);
     if (smeta == null) {
       f.format("No StructMetadata variables in group %s %n", eosGroup.shortName);

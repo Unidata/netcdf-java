@@ -21,8 +21,7 @@ public class TestCoordinateAxis1DBuilder {
 
     VariableDS.Builder vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units")
         .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
-        .addAttribute(new Attribute("missing_value", 0.0f))
-        .setParentGroupBuilder(parent).setDimensionsByName("dim1");
+        .addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent).setDimensionsByName("dim1");
     parent.addVariable(vdsBuilder);
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.GeoX);

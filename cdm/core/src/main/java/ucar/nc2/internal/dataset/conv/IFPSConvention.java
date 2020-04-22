@@ -255,14 +255,16 @@ public class IFPSConvention extends CoordSystemBuilder {
       yData.setDouble(yIndex.set(i), pp.getY());
     }
 
-    VariableDS.Builder xaxis = VariableDS.builder().setName("xCoord").setDataType(DataType.FLOAT)
-        .setParentGroupBuilder(rootGroup).setDimensionsByName(x_dim.getShortName()).setUnits("km").setDesc("x on projection");
+    VariableDS.Builder xaxis =
+        VariableDS.builder().setName("xCoord").setDataType(DataType.FLOAT).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName(x_dim.getShortName()).setUnits("km").setDesc("x on projection");
     xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "x on projection"));
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
-    VariableDS.Builder yaxis = VariableDS.builder().setName("yCoord").setDataType(DataType.FLOAT)
-        .setParentGroupBuilder(rootGroup).setDimensionsByName(y_dim.getShortName()).setUnits("km").setDesc("y on projection");
+    VariableDS.Builder yaxis =
+        VariableDS.builder().setName("yCoord").setDataType(DataType.FLOAT).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName(y_dim.getShortName()).setUnits("km").setDesc("y on projection");
     yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "y on projection"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));

@@ -56,9 +56,8 @@ public class AggregationNew extends AggregationOuter {
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
       DataType coordType = getCoordinateType();
-      VariableDS.Builder joinAggCoordVar =
-          VariableDS.builder().setName(dimName).setDataType(coordType)
-              .setParentGroupBuilder(root).setDimensionsByName(dimName);
+      VariableDS.Builder joinAggCoordVar = VariableDS.builder().setName(dimName).setDataType(coordType)
+          .setParentGroupBuilder(root).setDimensionsByName(dimName);
       root.addVariable(joinAggCoordVar);
       joinAggCoordVar.setProxyReader(this);
       if (isDate)

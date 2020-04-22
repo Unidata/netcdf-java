@@ -233,8 +233,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
 
   private CoordinateAxis.Builder makeLonCoordAxis(String xname) {
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
-        .setParentGroupBuilder(rootGroup).setDimensionsByName(xname)
-        .setUnits(CDM.LON_UNITS).setDesc("longitude");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setAutoGen(startx, dx);
 
@@ -244,8 +243,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
 
   private CoordinateAxis.Builder makeLatCoordAxis(String yname) {
     CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
-        .setParentGroupBuilder(rootGroup).setDimensionsByName(yname)
-        .setUnits(CDM.LAT_UNITS).setDesc("latitude");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits(CDM.LAT_UNITS).setDesc("latitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setAutoGen(starty, dy);
     parseInfo.format("Created Lat Coordinate Axis = %s%n", yname);

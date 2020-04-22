@@ -17,7 +17,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
-import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -26,6 +25,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
@@ -221,22 +221,27 @@ public class CoordSystemBuilder {
   }
 
   private void addVariables(Group.Builder group) {
-    for (Variable.Builder v : group.vbuilders) {
-      if (v instanceof VariableDS.Builder) {
-        varList.add(new VarProcess(group, (VariableDS.Builder) v));
-      }
-
-      if (v instanceof Structure.Builder) {
-        Structure.Builder s = (Structure.Builder) v;
-        List<Variable.Builder<?>> nested = s.vbuilders;
-        for (Variable.Builder<?> vb : nested) {
-          varList.add(new VarProcess(group, (VariableDS.Builder) vb));
-        }
+    for (Variable.Builder vb : group.vbuilders) {
+      if (vb instanceof VariableDS.Builder) {
+        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+      } else if (vb instanceof StructureDS.Builder) {
+        addStructure(group, (StructureDS.Builder) vb);
       }
     }
 
     for (Group.Builder nested : group.gbuilders) {
       addVariables(nested);
+    }
+  }
+
+  private void addStructure(Group.Builder group, StructureDS.Builder structure) {
+    List<Variable.Builder<?>> nested = structure.vbuilders;
+    for (Variable.Builder<?> vb : nested) {
+      if (vb instanceof VariableDS.Builder) {
+        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+      } else if (vb instanceof StructureDS.Builder) { // LOOK the actual Structure isnt in the VarProcess list.
+        addStructure(group, (StructureDS.Builder) vb);
+      }
     }
   }
 

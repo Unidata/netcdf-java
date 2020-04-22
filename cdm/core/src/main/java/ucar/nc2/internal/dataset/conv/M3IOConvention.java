@@ -187,10 +187,9 @@ public class M3IOConvention extends CoordSystemBuilder {
       dataLev.set(i, midpoint);
     }
 
-    CoordinateAxis.Builder v =
-        CoordinateAxis1D.builder().setName("level").setDataType(DataType.DOUBLE)
-            .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName)
-            .setUnits(unitName).setDesc("synthesized coordinate from " + levelsName + " global attributes");
+    CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName("level").setDataType(DataType.DOUBLE)
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(unitName)
+        .setDesc("synthesized coordinate from " + levelsName + " global attributes");
     v.setCachedData(dataLev, true);
     v.addAttribute(new Attribute("positive", "down"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
@@ -199,10 +198,9 @@ public class M3IOConvention extends CoordSystemBuilder {
     String edge_name = "layer";
     Dimension lay_edge = new Dimension(edge_name, nz + 1);
     rootGroup.addDimension(lay_edge);
-    CoordinateAxis.Builder vedge =
-        CoordinateAxis1D.builder().setName(edge_name).setDataType(DataType.DOUBLE)
-            .setParentGroupBuilder(rootGroup).setDimensionsByName(edge_name)
-            .setUnits(unitName).setDesc("synthesized coordinate from " + levelsName + " global attributes");
+    CoordinateAxis.Builder vedge = CoordinateAxis1D.builder().setName(edge_name).setDataType(DataType.DOUBLE)
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(edge_name).setUnits(unitName)
+        .setDesc("synthesized coordinate from " + levelsName + " global attributes");
     vedge.setCachedData(dataLayers, true);
     v.setBoundary(edge_name);
 
@@ -243,10 +241,9 @@ public class M3IOConvention extends CoordSystemBuilder {
     time_step = hour * 3600 + min * 60 + sec;
 
     // create the coord axis
-    CoordinateAxis1D.Builder timeCoord =
-        CoordinateAxis1D.builder().setName("time").setDataType(DataType.INT)
-            .setParentGroupBuilder(rootGroup).setDimensionsByName(timeName)
-            .setUnits(units).setDesc("synthesized time coordinate from SDATE, STIME, STEP global attributes");
+    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName("time").setDataType(DataType.INT)
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(timeName).setUnits(units)
+        .setDesc("synthesized time coordinate from SDATE, STIME, STEP global attributes");
     timeCoord.setAutoGen(0, time_step);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 

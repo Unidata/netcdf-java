@@ -726,7 +726,6 @@ public class Structure extends Variable {
       return wasPresent;
     }
 
-
     public Optional<Variable.Builder<?>> findMemberVariable(String name) {
       return vbuilders.stream().filter(d -> d.shortName.equals(name)).findFirst();
     }

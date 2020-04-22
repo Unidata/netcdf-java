@@ -96,10 +96,8 @@ public class TestVariableDSBuilder {
     Group.Builder gb =
         Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
             .addDimension(Dimension.builder().setName("dim2").setLength(27).build());
-    Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT)
-        .setParentGroupBuilder(gb)
-        .setDimensionsByName("dim1 dim2")
-        .addAttribute(new Attribute("units", "flower"));
+    Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT).setParentGroupBuilder(gb)
+        .setDimensionsByName("dim1 dim2").addAttribute(new Attribute("units", "flower"));
     vb.getAttributeContainer().addAttribute(new Attribute("attName", "AttValue"));
     Group group = gb.build();
     Variable v = vb.build(group);

@@ -253,9 +253,9 @@ public class AWIPSConvention extends CoordSystemBuilder {
       parseInfo.format("  make ZCoordAxis = = %s length = %d%n", name, len);
     }
 
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setParentGroupBuilder(rootGroup).setDimensionsByName(name)
-        .setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
+    CoordinateAxis1D.Builder v =
+        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName(name).setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
     String positive = getZisPositive(v);
     if (null != positive) {
       v.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
@@ -547,8 +547,9 @@ public class AWIPSConvention extends CoordSystemBuilder {
     // create the coord axis
     String name = "timeCoord";
     String desc = "synthesized time coordinate from valtimeMINUSreftime and filename YYYYMMDD_HHMM";
-    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name).setDataType(DataType.INT)
-        .setParentGroupBuilder(rootGroup).setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(vals, true);
+    CoordinateAxis1D.Builder timeCoord =
+        CoordinateAxis1D.builder().setName(name).setDataType(DataType.INT).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(vals, true);
 
     parseInfo.format("Created Time Coordinate Axis = %s%n", name);
     return timeCoord;
@@ -610,8 +611,9 @@ public class AWIPSConvention extends CoordSystemBuilder {
     String units = refVar.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, "seconds since 1970-1-1 00:00:00");
     units = normalize(units);
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
-    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setParentGroupBuilder(rootGroup).setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(dvals, true);
+    CoordinateAxis1D.Builder timeCoord =
+        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(dvals, true);
 
     parseInfo.format("Created Time Coordinate Axis From reftime Variable%n");
     return timeCoord;

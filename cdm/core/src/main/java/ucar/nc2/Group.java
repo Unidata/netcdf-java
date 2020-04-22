@@ -1189,8 +1189,8 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     /**
-     *  Make the full name of the this group.
-     *  TODO In light of CF groups, we may have to start full names with '/'
+     * Make the full name of the this group.
+     * TODO In light of CF groups, we may have to start full names with '/'
      */
     public String makeFullName() {
       if (parentGroup == null) {

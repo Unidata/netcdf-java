@@ -92,8 +92,7 @@ public class TestGroupBuilder {
   public void testDimNotExist() {
     Group.Builder gb = Group.builder().setName("name");
     try {
-      Variable.Builder vb = Variable.builder().setName("varName")
-          .setParentGroupBuilder(gb).setDimensionsByName("dim");
+      Variable.Builder vb = Variable.builder().setName("varName").setParentGroupBuilder(gb).setDimensionsByName("dim");
       fail();
     } catch (Exception e) {
       assertThat(e.getMessage()).contains("Dimension dim does not exist");
@@ -108,8 +107,7 @@ public class TestGroupBuilder {
     assertThat(gb.replaceVariable(vb)).isFalse();
     assertThat(gb.findVariableLocal("varName")).isEqualTo(Optional.of(vb));
 
-    Variable.Builder vb2 = Variable.builder().setName("varName")
-        .setParentGroupBuilder(gb).setDimensionsByName("dim");
+    Variable.Builder vb2 = Variable.builder().setName("varName").setParentGroupBuilder(gb).setDimensionsByName("dim");
     assertThat(gb.replaceVariable(vb2)).isTrue();
     assertThat(gb.findVariableLocal("varName")).isEqualTo(Optional.of(vb2));
   }

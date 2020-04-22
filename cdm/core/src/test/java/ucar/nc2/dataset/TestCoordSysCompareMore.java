@@ -64,8 +64,7 @@ public class TestCoordSysCompareMore {
       // transforms
       "MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MOD10A1.A2008001.h23v15.005.2008003161138.hdf",
       // dont have group names right
-      "AMSR_E_L2_Land_T06_200801012345_A.hdf",
-      "AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf",
+      "AMSR_E_L2_Land_T06_200801012345_A.hdf", "AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf",
       // anon dimensions
       "MOD02OBC.A2007001.0005.005.2007307210540.hdf",
       // attributes changed, see DimensionsFilter in H4 and 5 iosp compare
