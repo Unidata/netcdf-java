@@ -18,6 +18,8 @@ function updateVersionMenu(package) {
   }
   // Get the version currently being displayed from an HTML meta tag.
   var thisVersion = $('meta[name=doc_version]').attr("content");
+  // Get the page currently being displayed, so we can go there in the selected doc set.
+  var thisPage = window.location.pathname;
 
   // Get version info from static JSON file
   var request = $.ajax({
@@ -32,11 +34,15 @@ function updateVersionMenu(package) {
     $("li#remove").remove();
 
     // Build menu entries
-    var pName = data.packageName;
     $.each(data.releases, function(index, rel) {
       var pVer = rel.version;
       var pDoc = rel.docURL;
-      var menuURL = "<li><a href=\""+ pDoc +"\">" + " version " + pVer + "</a></li>";
+      // docURL is a full path to the docset index file. Build path to current page instead.
+      pDoc = pDoc.substring(0, pDoc.lastIndexOf("/"));
+      pDoc = pDoc + ((typeof thisPage === 'string') ? thisPage : "/");
+      // Build the link
+      var menuURL = "<li><a href=\""+ pDoc +"\">" + " Version " + pVer + "</a></li>";
+      // Add menuURL to menu if json file says it's okay, and if it's not the current version.
       if (parseInt(rel.include) && (thisVersion != rel.version)) {
         $("#docmenu").append(menuURL);
       }
