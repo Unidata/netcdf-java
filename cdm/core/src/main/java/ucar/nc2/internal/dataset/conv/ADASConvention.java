@@ -240,7 +240,8 @@ public class ADASConvention extends CoordSystemBuilder {
     DataType dtype = DataType.getType(data);
     String units = stagV.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, "m");
     CoordinateAxis.Builder cb = CoordinateAxis1D.builder().setName(axisName).setDataType(dtype)
-        .setDimensionsByName(axisName).setUnits(units).setDesc("synthesized non-staggered " + axisName + " coordinate");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(axisName).setUnits(units)
+        .setDesc("synthesized non-staggered " + axisName + " coordinate");
     cb.setCachedData(data, true);
     datasetBuilder.replaceCoordinateAxis(rootGroup, cb);
   }

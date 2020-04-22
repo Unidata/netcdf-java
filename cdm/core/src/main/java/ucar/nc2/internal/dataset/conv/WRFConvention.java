@@ -196,7 +196,6 @@ public class WRFConvention extends CoordSystemBuilder {
     boolean isLatLon = false;
 
     if (projType == 203) {
-
       Optional<Variable.Builder<?>> glatOpt = rootGroup.findVariableLocal("GLAT");
       if (!glatOpt.isPresent()) {
         parseInfo.format("Projection type 203 - expected GLAT variable not found%n");

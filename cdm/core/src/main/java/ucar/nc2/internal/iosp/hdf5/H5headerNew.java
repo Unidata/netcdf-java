@@ -1448,7 +1448,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     }
 
     if (mdt.type == 6) {
-      Structure.Builder sb = Structure.builder().setName(name);
+      Structure.Builder sb = Structure.builder().setName(name).setParentGroupBuilder(parentGroup);
       makeVariableShapeAndType(parentGroup, sb, mdt, null, vinfo, null);
       addMembersToStructure(parentGroup, sb, mdt);
       sb.setElementSize(mdt.byteSize);
@@ -1458,7 +1458,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       return sb;
 
     } else {
-      Variable.Builder vb = Variable.builder().setName(name);
+      Variable.Builder vb = Variable.builder().setName(name).setParentGroupBuilder(parentGroup);
       makeVariableShapeAndType(parentGroup, vb, mdt, null, vinfo, null);
 
       // special case of variable length strings

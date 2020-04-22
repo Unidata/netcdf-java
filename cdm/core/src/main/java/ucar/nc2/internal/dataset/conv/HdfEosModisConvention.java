@@ -146,7 +146,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     // add the coordinate variable
     String units = "seconds since " + cd;
     CoordinateAxis.Builder timeCoord = CoordinateAxis1D.builder().setName(TIME_NAME).setDataType(DataType.DOUBLE)
-        .setDimensionsByName("").setUnits(units).setDesc("time coordinate");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName("").setUnits(units).setDesc("time coordinate");
     timeCoord.setAutoGen(0, 0);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
