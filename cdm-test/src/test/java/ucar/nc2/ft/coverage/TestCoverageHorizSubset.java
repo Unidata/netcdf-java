@@ -148,7 +148,7 @@ public class TestCoverageHorizSubset {
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteSubset() throws Exception {
     String filename =
-        "cdmremote:http://thredds-dev.unidata.ucar.edu/thredds/cdmremote/grib/NCEP/NAM/CONUS_40km/conduit/best";
+        "cdmremote:https://thredds-dev.unidata.ucar.edu/thredds/cdmremote/grib/NCEP/NAM/CONUS_40km/conduit/best";
     System.out.printf("open %s%n", filename);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
