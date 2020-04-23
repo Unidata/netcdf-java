@@ -34,7 +34,8 @@ import java.util.Collections;
  *
  * TODO Group will be immutable in 6.
  * TODO Group will not implement AttributeContainer in 6.
- * 
+ * TODO Group will not extend CDMNode in 6.
+ *
  * @author caron
  */
 public class Group extends CDMNode implements AttributeContainer {
@@ -83,6 +84,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param varShortName short name of Variable within this group.
    * @return the Variable, or null if not found
    */
+  @Nullable
   public Variable findVariable(String varShortName) {
     if (varShortName == null)
       return null;
@@ -100,6 +102,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param varShortName short name of Variable.
    * @return the Variable, or null if not found
    */
+  @Nullable
   public Variable findVariableOrInParent(String varShortName) {
     if (varShortName == null)
       return null;
@@ -146,6 +149,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param groupShortName short name of the nested group you are looking for.
    * @return the Group, or null if not found
    */
+  @Nullable
   public Group findGroupLocal(String groupShortName) {
     if (groupShortName == null)
       return null;
@@ -204,6 +208,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param name Dimension name.
    * @return the Dimension, or null if not found
    */
+  @Nullable
   public Dimension findDimension(String name) {
     if (name == null)
       return null;
@@ -224,6 +229,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param dim Dimension .
    * @return the Dimension, or null if not found
    */
+  @Nullable
   public Dimension findDimension(Dimension dim) {
     if (dim == null) {
       return null;
@@ -246,6 +252,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param shortName Dimension name.
    * @return the Dimension, or null if not found
    */
+  @Nullable
   public Dimension findDimensionLocal(String shortName) {
     if (shortName == null)
       return null;
@@ -342,6 +349,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param name Enumeration name.
    * @return the Enumeration, or null if not found
    */
+  @Nullable
   public EnumTypedef findEnumeration(String name) {
     if (name == null)
       return null;
@@ -846,10 +854,10 @@ public class Group extends CDMNode implements AttributeContainer {
     this.groups =
         builder.gbuilders.stream().map(g -> g.setNcfile(this.ncfile).build(this)).collect(Collectors.toList());
 
-    builder.vbuilders.forEach(v -> {
+    builder.vbuilders.forEach(vb -> {
       // dont override ncfile if its been set.
-      if (v.ncfile == null) {
-        v.setNcfile(this.ncfile);
+      if (vb.ncfile == null) {
+        vb.setNcfile(this.ncfile);
       }
     });
     for (Variable.Builder<?> vb : builder.vbuilders) {
@@ -918,6 +926,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return attributes;
     }
 
+    /** Add Dimension with error if it already exists */
     public Builder addDimension(Dimension dim) {
       Preconditions.checkNotNull(dim);
       findDimensionLocal(dim.shortName).ifPresent(d -> {
@@ -927,6 +936,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
+    /** Add Dimension if it doesnt already exist */
     public boolean addDimensionIfNotExists(Dimension dim) {
       Preconditions.checkNotNull(dim);
       if (!findDimensionLocal(dim.shortName).isPresent()) {
@@ -936,6 +946,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return false;
     }
 
+    /** Add Dimensions with error if any already exist */
     public Builder addDimensions(Collection<Dimension> dims) {
       Preconditions.checkNotNull(dims);
       dims.forEach(this::addDimension);
@@ -943,7 +954,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     /**
-     * Replace dimension of same name, if it exists, else just add it.
+     * Replace dimension if it exists, else just add it.
      *
      * @return true if there was an existing dimension of that name
      */
@@ -965,10 +976,12 @@ public class Group extends CDMNode implements AttributeContainer {
       return want.isPresent();
     }
 
+    /** Find Dimension local to this Group */
     public Optional<Dimension> findDimensionLocal(String name) {
       return dimensions.stream().filter(d -> d.shortName.equals(name)).findFirst();
     }
 
+    /** Find Dimension in this Group or a parent Group */
     public Optional<Dimension> findDimension(String name) {
       if (name == null) {
         return Optional.empty();
@@ -987,9 +1000,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return dimensions;
     }
 
-    /**
-     * Add a nested Group.
-     */
+    /** Add a nested Group. */
     public Builder addGroup(Group.Builder nested) {
       Preconditions.checkNotNull(nested);
       this.findGroupLocal(nested.shortName).ifPresent(g -> {
@@ -1023,7 +1034,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
     /**
      * Find a subgroup of this Group, with the specified reletive name.
-     * An embedded "/" is interpreted as separating group names.
+     * An embedded "/" separates group names.
      *
      * @param fullName eg "/group/subgroup/wantGroup".
      * @return Group or empty if not found.
@@ -1045,13 +1056,14 @@ public class Group extends CDMNode implements AttributeContainer {
       return Optional.of(g);
     }
 
-    // Is this group a parent of the other group ?
+    /** Is this group a parent of the other group ? */
     public boolean isParent(Group.Builder other) {
       while ((other != this) && (other.parentGroup != null))
         other = other.parentGroup;
       return (other == this);
     }
 
+    /** Find the common parent with the other group ? */
     public Group.Builder commonParent(Group.Builder other) {
       if (isParent(other))
         return this;
@@ -1093,9 +1105,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
     }
 
-    /**
-     * Add a Variable, replacing one of same name if its exists.
-     */
+    /** Add a Variable, replacing one of same name if its exists. */
     public Builder addVariable(Variable.Builder<?> variable) {
       Preconditions.checkNotNull(variable);
       findVariableLocal(variable.shortName).ifPresent(v -> {
@@ -1173,10 +1183,15 @@ public class Group extends CDMNode implements AttributeContainer {
       return this.ncfile;
     }
 
+    /** Make list of dimensions by looking in this Group or parent groups */
     public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
       return Dimensions.makeDimensionsList(dimName -> this.findDimension(dimName).orElse(null), dimString);
     }
 
+    /**
+     * Make the full name of the this group.
+     * TODO In light of CF groups, we may have to start full names with '/'
+     */
     public String makeFullName() {
       if (parentGroup == null) {
         return "";
@@ -1195,24 +1210,10 @@ public class Group extends CDMNode implements AttributeContainer {
       sbuff.append("/");
     }
 
-    /** Build the root group, with parent = null. */
-    public Group build() {
-      return build(null);
-    }
-
-    /** Normally this is called by NetcdfFile.build() */
-    Group build(@Nullable Group parent) {
-      if (built)
-        throw new IllegalStateException("Group was already built " + this.shortName);
-      built = true;
-      return new Group(this, parent);
-    }
-
-
-    // utility methods
-    public void removeFromAny(Group.Builder group, Dimension want) {
-      group.dimensions.removeIf(dim -> dim.equals(want));
-      group.gbuilders.forEach(g -> removeFromAny(g, want));
+    /** Remove the given dimension from this group and any subgroups */
+    public void removeDimensionFromAllGroups(Group.Builder group, Dimension remove) {
+      group.dimensions.removeIf(dim -> dim.equals(remove));
+      group.gbuilders.forEach(g -> removeDimensionFromAllGroups(g, remove));
     }
 
     /** Make a multimap of Dimensions and all the variables that reference them, in this group and its nested groups. */
@@ -1230,13 +1231,9 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     private List<Dimension> getDimensionsFor(Group.Builder gb, Variable.Builder<?> vb) {
-      if (vb.getDimensionString() != null && !vb.getDimensionString().isEmpty()) {
-        return gb.makeDimensionsList(vb.getDimensionString());
-      }
-
       // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
       List<Dimension> dims = new ArrayList<>();
-      for (Dimension dim : vb.getDimensions(this)) {
+      for (Dimension dim : vb.getDimensions()) {
         if (dim.isShared()) {
           Dimension sharedDim = gb.findDimension(dim.getShortName()).orElse(null);
           if (sharedDim == null) {
@@ -1249,6 +1246,19 @@ public class Group extends CDMNode implements AttributeContainer {
         }
       }
       return dims;
+    }
+
+    /** Build the root group, with parent = null. */
+    public Group build() {
+      return build(null);
+    }
+
+    /** Normally this is called by NetcdfFile.build() */
+    Group build(@Nullable Group parent) {
+      if (built)
+        throw new IllegalStateException("Group was already built " + this.shortName);
+      built = true;
+      return new Group(this, parent);
     }
   }
 }

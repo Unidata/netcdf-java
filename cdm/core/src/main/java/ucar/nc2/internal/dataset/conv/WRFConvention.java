@@ -196,7 +196,6 @@ public class WRFConvention extends CoordSystemBuilder {
     boolean isLatLon = false;
 
     if (projType == 203) {
-
       Optional<Variable.Builder<?>> glatOpt = rootGroup.findVariableLocal("GLAT");
       if (!glatOpt.isPresent()) {
         parseInfo.format("Projection type 203 - expected GLAT variable not found%n");
@@ -511,7 +510,7 @@ public class WRFConvention extends CoordSystemBuilder {
     double startx = centerX - dx * (nx - 1) / 2; // ya just gotta know
 
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dim.getShortName()).setUnits("km")
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("km")
         .setDesc("synthesized GeoX coordinate from DX attribute");
     v.setAutoGen(startx, dx);
     v.setAxisType(AxisType.GeoX);
@@ -536,7 +535,7 @@ public class WRFConvention extends CoordSystemBuilder {
     double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
 
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dim.getShortName()).setUnits("km")
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("km")
         .setDesc("synthesized GeoY coordinate from DY attribute");
     v.setAxisType(AxisType.GeoY);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
@@ -559,8 +558,9 @@ public class WRFConvention extends CoordSystemBuilder {
 
     String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
 
-    CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("eta values from variable " + fromWhere);
+    CoordinateAxis.Builder v =
+        CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("eta values from variable " + fromWhere);
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // eta coordinate is 1.0 at bottom, 0 at top
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
@@ -601,8 +601,9 @@ public class WRFConvention extends CoordSystemBuilder {
   private CoordinateAxis.Builder makeFakeCoordAxis(String axisName, Dimension dim) {
     if (dim == null)
       return null;
-    CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.SHORT)
-        .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("synthesized coordinate: only an index");
+    CoordinateAxis.Builder v =
+        CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.SHORT).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("synthesized coordinate: only an index");
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals(dim.getShortName()))
@@ -691,8 +692,8 @@ public class WRFConvention extends CoordSystemBuilder {
     }
 
     CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dim.getShortName()).setUnits("secs since 1970-01-01 00:00:00")
-        .setDesc("synthesized time coordinate from Times(time)");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName())
+        .setUnits("secs since 1970-01-01 00:00:00").setDesc("synthesized time coordinate from Times(time)");
     v.setAxisType(AxisType.Time);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     if (!axisName.equals(dim.getShortName()))
@@ -731,8 +732,9 @@ public class WRFConvention extends CoordSystemBuilder {
 
     String units = coordVar.attributes().findAttValueIgnoreCase(CDM.UNITS, "");
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("soilDepth").setDataType(DataType.DOUBLE)
-        .setDimensionsByName(soilDim.getShortName()).setUnits(units).setDesc("soil depth");
+    CoordinateAxis.Builder<?> v =
+        CoordinateAxis1D.builder().setName("soilDepth").setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName(soilDim.getShortName()).setUnits(units).setDesc("soil depth");
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // soil depth gets larger as you go down
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));

@@ -184,8 +184,8 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
           continue;
         }
 
-        datasetBuilder.replaceCoordinateAxis(g2, makeLonCoordAxis(nlon.getNumericValue().intValue(), "XDim"));
-        datasetBuilder.replaceCoordinateAxis(g2, makeLatCoordAxis(nlat.getNumericValue().intValue(), "YDim"));
+        datasetBuilder.replaceCoordinateAxis(g2, makeLonCoordAxis(g2, nlon.getNumericValue().intValue(), "XDim"));
+        datasetBuilder.replaceCoordinateAxis(g2, makeLatCoordAxis(g2, nlat.getNumericValue().intValue(), "YDim"));
 
         for (Group.Builder g3 : g2.gbuilders) {
           for (Variable.Builder vb : g3.vbuilders) {
@@ -196,9 +196,9 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
     });
   }
 
-  private CoordinateAxis.Builder makeLatCoordAxis(int n, String dimName) {
+  private CoordinateAxis.Builder makeLatCoordAxis(Group.Builder g2, int n, String dimName) {
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName("lat").setDataType(DataType.FLOAT)
-        .setDimensionsByName(dimName).setUnits(CDM.LAT_UNITS).setDesc("latitude");
+        .setParentGroupBuilder(g2).setDimensionsByName(dimName).setUnits(CDM.LAT_UNITS).setDesc("latitude");
 
     double incr = 180.0 / n;
     v.setAutoGen(-90.0 + 0.5 * incr, incr);
@@ -206,9 +206,9 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
     return v;
   }
 
-  private CoordinateAxis.Builder makeLonCoordAxis(int n, String dimName) {
+  private CoordinateAxis.Builder makeLonCoordAxis(Group.Builder g2, int n, String dimName) {
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName("lon").setDataType(DataType.FLOAT)
-        .setDimensionsByName(dimName).setUnits(CDM.LON_UNITS).setDesc("longitude");
+        .setParentGroupBuilder(g2).setDimensionsByName(dimName).setUnits(CDM.LON_UNITS).setDesc("longitude");
 
     double incr = 360.0 / n;
     v.setAutoGen(-180.0 + 0.5 * incr, incr);

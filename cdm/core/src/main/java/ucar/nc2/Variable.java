@@ -5,6 +5,7 @@
 package ucar.nc2;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
-import ucar.nc2.Group.Builder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.IospHelper;
@@ -1798,25 +1798,21 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     // Convert dimension to shared dimensions that live in a parent group.
-    if (builder.dimString != null && !builder.dimString.isEmpty()) {
-      this.dimensions = this.group.makeDimensionsList(builder.dimString);
-    } else {
-      // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
-      List<Dimension> dims = new ArrayList<>();
-      for (Dimension dim : builder.dimensions) {
-        if (dim.isShared()) {
-          Dimension sharedDim = this.group.findDimension(dim.getShortName());
-          if (sharedDim == null) {
-            throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
-          } else {
-            dims.add(sharedDim);
-          }
+    // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
+    List<Dimension> dims = new ArrayList<>();
+    for (Dimension dim : builder.dimensions) {
+      if (dim.isShared()) {
+        Dimension sharedDim = this.group.findDimension(dim.getShortName());
+        if (sharedDim == null) {
+          throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
         } else {
-          dims.add(dim);
+          dims.add(sharedDim);
         }
+      } else {
+        dims.add(dim);
       }
-      this.dimensions = dims;
     }
+    this.dimensions = dims;
     if (builder.autoGen != null) {
       this.cache.data = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
     }
@@ -1890,10 +1886,10 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     private int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
-    public Structure parentStruct; // set in Structure.build()
+    private Structure parentStruct; // set in Structure.build(), no not use otherwise
 
-    protected Group.Builder parentBuilder; // if set, use to search for dimensions
-    private String dimString; // if set, supercedes dimensions
+    protected Group.Builder parentBuilder;
+    protected Structure.Builder<?> parentStructureBuilder;
     private List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
     public Object spiObject;
     public ProxyReader proxyReader;
@@ -1953,7 +1949,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
-    public boolean replaceDimension(Dimension dim) {
+    /** Find the dimension with the same name as dim, and replace it with dim */
+    public boolean replaceDimensionByName(Dimension dim) {
       int idx = -1;
       for (int i = 0; i < dimensions.size(); i++) {
         if (dimensions.get(i).getShortName().equals(dim.getShortName())) {
@@ -1966,9 +1963,10 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return (idx >= 0);
     }
 
-    // Set dimensions by name. If set, supercedes addDimension()
+    /** Set dimensions by name. The parent group builder must be set. */
     public T setDimensionsByName(String dimString) {
-      this.dimString = dimString;
+      Preconditions.checkNotNull(this.parentBuilder);
+      this.dimensions = this.parentBuilder.makeDimensionsList(dimString);
       return self();
     }
 
@@ -1979,29 +1977,21 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     @Nullable
     public String getDimensionName(int index) {
-      if (dimString != null) {
-        Iterable<String> iter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
-        return Iterators.get(iter.iterator(), index, null);
-      } else if (dimensions.size() > index) {
+      if (dimensions.size() > index) {
         return dimensions.get(index).getShortName();
       }
       return null;
     }
 
     public Iterable<String> getDimensionNames() {
-      if (dimString != null) {
-        return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
-      } else if (dimensions.size() > 0) {
-        // TODO test if tis always works
+      if (dimensions.size() > 0) {
+        // TODO test if this always works
         return dimensions.stream().map(d -> d.getShortName()).filter(Objects::nonNull).collect(Collectors.toList());
       }
       return ImmutableList.of();
     }
 
     public String makeDimensionsString() {
-      if (dimString != null) {
-        return dimString;
-      }
       return Dimensions.makeDimensionsString(this.dimensions);
     }
 
@@ -2021,17 +2011,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
-    String getDimensionString() {
-      return this.dimString;
-    }
-
-    public ImmutableList<Dimension> getDimensions(@Nullable Group.Builder gb) {
-      if (parentBuilder != null) {
-        gb = parentBuilder;
-      }
-      if (this.dimString != null && !this.dimString.isEmpty() && gb != null) {
-        return gb.makeDimensionsList(this.dimString);
-      }
+    public ImmutableList<Dimension> getDimensions() {
       return ImmutableList.copyOf(this.dimensions);
     }
 
@@ -2043,8 +2023,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     private void addDimensionsAll(ImmutableSet.Builder<String> result, Variable.Builder<?> v) {
-      if (v.parentStruct != null) {
-        parentStruct.getDimensions().forEach(dim -> result.add(dim.getShortName()));
+      if (v.parentStructureBuilder != null) {
+        v.parentStructureBuilder.getDimensionsAll().forEach(result::add);
       }
       getDimensionNames().forEach(result::add);
     }
@@ -2055,12 +2035,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     public int getRank() {
-      if (dimString != null) {
-        Iterable<String> iter = Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(dimString);
-        return Iterators.size(iter.iterator());
-      } else {
-        return dimensions.size();
-      }
+      return dimensions.size();
     }
 
     public T setDataType(DataType dataType) {
@@ -2100,11 +2075,15 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     public String getFullName() {
-      String groups = "";
-      if (parentBuilder != null) {
-        groups = parentBuilder.makeFullName();
+      String full = "";
+      Group.Builder group = parentStructureBuilder != null ? parentStructureBuilder.parentBuilder : parentBuilder;
+      if (group != null) {
+        full = group.makeFullName();
       }
-      return groups + this.shortName;
+      if (parentStructureBuilder != null) {
+        full += parentStructureBuilder.shortName + ".";
+      }
+      return full + this.shortName;
     }
 
     public T setParentGroupBuilder(Group.Builder parent) {
@@ -2116,7 +2095,17 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return parentBuilder;
     }
 
-    public T setParentStructure(Structure parent) {
+    T setParentStructureBuilder(Structure.Builder<?> structureBuilder) {
+      this.parentStructureBuilder = structureBuilder;
+      return self();
+    }
+
+    public Structure.Builder<?> getParentStructureBuilder() {
+      return parentStructureBuilder;
+    }
+
+    // Only the parent Structure should call this.
+    T setParentStructure(Structure parent) {
       this.parentStruct = parent;
       return self();
     }
@@ -2170,12 +2159,12 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       this.cache = builder.cache;
       setDataType(builder.dataType);
       addDimensions(builder.dimensions);
-      setDimensionsByName(builder.dimString);
       this.elementSize = builder.elementSize;
       setEnumTypeName(builder.getEnumTypeName());
       setNcfile(builder.ncfile);
       this.parentBuilder = builder.parentBuilder;
-      setParentStructure(this.parentStruct);
+      setParentStructure(builder.parentStruct);
+      setParentStructureBuilder(builder.parentStructureBuilder);
       setProxyReader(builder.proxyReader);
       setName(builder.shortName);
       setSPobject(builder.spiObject);

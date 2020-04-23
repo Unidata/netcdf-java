@@ -1002,7 +1002,7 @@ public class NcMLReaderNew {
    */
   private VariableDS.Builder readVariableNew(Group.Builder groupBuilder, DataType dtype, Element varElem) {
     String name = varElem.getAttributeValue("name");
-    VariableDS.Builder v = VariableDS.builder().setName(name).setDataType(dtype);
+    VariableDS.Builder v = VariableDS.builder().setName(name).setDataType(dtype).setParentGroupBuilder(groupBuilder);
 
     // list of dimension names
     String dimNames = varElem.getAttributeValue("shape");

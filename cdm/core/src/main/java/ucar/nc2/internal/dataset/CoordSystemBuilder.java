@@ -25,6 +25,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
@@ -80,7 +81,7 @@ public class CoordSystemBuilder {
    */
   public static boolean isCoordinateVariable(Variable.Builder<?> vb) {
     // Structures and StructureMembers cant be coordinate variables
-    if ((vb.dataType == DataType.STRUCTURE) || vb.parentStruct != null)
+    if ((vb.dataType == DataType.STRUCTURE) || vb.getParentStructureBuilder() != null)
       return false;
 
     int rank = vb.getRank();
@@ -99,10 +100,10 @@ public class CoordSystemBuilder {
     return false;
   }
 
-  public static int countDomainSize(Group.Builder gb, Variable.Builder<?>... axes) {
+  public static int countDomainSize(Variable.Builder<?>... axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable.Builder<?> axis : axes) {
-      domain.addAll(axis.getDimensions(gb));
+      domain.addAll(axis.getDimensions());
     }
     return domain.size();
   }
@@ -116,8 +117,8 @@ public class CoordSystemBuilder {
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
   protected boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VarProcess vp) {
-    ImmutableList<Dimension> varDims = vp.vb.getDimensions(vp.gb);
-    ImmutableList<Dimension> axisDims = axis.getDimensions(rootGroup);
+    ImmutableList<Dimension> varDims = vp.vb.getDimensions();
+    ImmutableList<Dimension> axisDims = axis.getDimensions();
 
     // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
     int checkDims = axisDims.size();
@@ -220,22 +221,27 @@ public class CoordSystemBuilder {
   }
 
   private void addVariables(Group.Builder group) {
-    for (Variable.Builder v : group.vbuilders) {
-      if (v instanceof VariableDS.Builder) {
-        varList.add(new VarProcess(group, (VariableDS.Builder) v));
+    for (Variable.Builder vb : group.vbuilders) {
+      if (vb instanceof VariableDS.Builder) {
+        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+      } else if (vb instanceof StructureDS.Builder) {
+        addStructure(group, (StructureDS.Builder) vb);
       }
-
-      // TODO
-      /*
-       * if (v instanceof Structure.Builder) {
-       * List<Variable.Builder> nested = ((Structure.Builder v).vbuilders();
-       * addVariables(nested, varProcessList);
-       * }
-       */
     }
 
     for (Group.Builder nested : group.gbuilders) {
       addVariables(nested);
+    }
+  }
+
+  private void addStructure(Group.Builder group, StructureDS.Builder structure) {
+    List<Variable.Builder<?>> nested = structure.vbuilders;
+    for (Variable.Builder<?> vb : nested) {
+      if (vb instanceof VariableDS.Builder) {
+        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+      } else if (vb instanceof StructureDS.Builder) { // LOOK the actual Structure isnt in the VarProcess list.
+        addStructure(group, (StructureDS.Builder) vb);
+      }
     }
   }
 
@@ -390,8 +396,8 @@ public class CoordSystemBuilder {
             parseInfo.format("***Not a Coordinate System variable %s referenced from var= %s%n", vname, vp);
             userAdvice.format("***Not a Coordinate System variable %s referenced from var= %s%n", vname, vp);
           } else {
-            String sysName = coords.makeCanonicalName(ap.cs.coordAxesNames);
-            vp.vb.addCoordinateSystem(sysName);
+            String sysName = coords.makeCanonicalName(vp.vb, ap.cs.coordAxesNames);
+            vp.vb.addCoordinateSystemName(sysName);
           }
         }
       }
@@ -422,7 +428,7 @@ public class CoordSystemBuilder {
         if (!vp.hasCoordinateSystem() && vp.isData() && (csVar.cs != null)) {
           if (CoordinateSystem.isSubset(dimList, vp.vb.getDimensionsAll())
               && CoordinateSystem.isSubset(vp.vb.getDimensionsAll(), dimList)) {
-            vp.vb.addCoordinateSystem(csVar.cs.coordAxesNames);
+            vp.vb.addCoordinateSystemName(csVar.cs.coordAxesNames);
           }
         }
       }
@@ -431,15 +437,15 @@ public class CoordSystemBuilder {
     // look for explicit listings of coordinate axes
     for (VarProcess vp : varList) {
       if (!vp.hasCoordinateSystem() && (vp.coordinateAxes != null) && vp.isData()) {
-        String coordSysName = coords.makeCanonicalName(vp.coordinateAxes);
+        String coordSysName = coords.makeCanonicalName(vp.vb, vp.coordinateAxes);
         Optional<CoordinateSystem.Builder> cso = coords.findCoordinateSystem(coordSysName);
         if (cso.isPresent()) {
-          vp.vb.addCoordinateSystem(coordSysName);
+          vp.vb.addCoordinateSystemName(coordSysName);
           parseInfo.format(" assigned explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
         } else {
           CoordinateSystem.Builder csnew = CoordinateSystem.builder().setCoordAxesNames(coordSysName);
           coords.addCoordinateSystem(csnew);
-          vp.vb.addCoordinateSystem(coordSysName);
+          vp.vb.addCoordinateSystemName(coordSysName);
           parseInfo.format(" created explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
         }
       }
@@ -465,12 +471,12 @@ public class CoordSystemBuilder {
         String csName = coords.makeCanonicalName(dataAxesList);
         Optional<CoordinateSystem.Builder> csOpt = coords.findCoordinateSystem(csName);
         if (csOpt.isPresent() && coords.isComplete(csOpt.get(), vp.vb)) {
-          vp.vb.addCoordinateSystem(csName);
+          vp.vb.addCoordinateSystemName(csName);
           parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s%n", csName, vp);
         } else {
           CoordinateSystem.Builder csnew = CoordinateSystem.builder().setCoordAxesNames(csName).setImplicit(true);
           if (coords.isComplete(csnew, vp.vb)) {
-            vp.vb.addCoordinateSystem(csName);
+            vp.vb.addCoordinateSystemName(csName);
             coords.addCoordinateSystem(csnew);
             parseInfo.format(" created implicit CoordSystem '%s' for var= %s%n", csName, vp);
           }
@@ -523,7 +529,7 @@ public class CoordSystemBuilder {
       }
 
       if (csOpt.isPresent() && okToBuild) {
-        vp.vb.addCoordinateSystem(csName);
+        vp.vb.addCoordinateSystemName(csName);
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", csName, vp);
 
       } else {
@@ -536,7 +542,7 @@ public class CoordSystemBuilder {
         }
         if (okToBuild) {
           csnew.setImplicit(true);
-          vp.vb.addCoordinateSystem(csName);
+          vp.vb.addCoordinateSystemName(csName);
           coords.addCoordinateSystem(csnew);
           parseInfo.format(" created maximal CoordSystem '%s' for var= %s%n", csnew.coordAxesNames, vp);
         }
@@ -873,7 +879,11 @@ public class CoordSystemBuilder {
         }
       }
       coords.replaceCoordinateAxis(axis);
-      gb.replaceVariable(axis);
+      if (axis.getParentStructureBuilder() != null) {
+        axis.getParentStructureBuilder().replaceMemberVariable(axis);
+      } else {
+        gb.replaceVariable(axis);
+      }
       return axis;
     }
 
@@ -898,7 +908,7 @@ public class CoordSystemBuilder {
     /** For explicit coordinate system variables, make a CoordinateSystem. */
     protected void makeCoordinateSystem() {
       if (coordinateAxes != null) {
-        String sysName = coords.makeCanonicalName(coordinateAxes);
+        String sysName = coords.makeCanonicalName(vb, coordinateAxes);
         this.cs = CoordinateSystem.builder().setCoordAxesNames(sysName);
         parseInfo.format(" Made Coordinate System '%s'", sysName);
         coords.addCoordinateSystem(this.cs);
@@ -942,7 +952,7 @@ public class CoordSystemBuilder {
       }
 
       if (addCoordVariables) {
-        for (String d : vb.getDimensionNames()) {
+        for (String d : vb.getDimensionsAll()) {
           for (VarProcess vp : coordVarsForDimension.get(d)) {
             CoordinateAxis.Builder axis = vp.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) {

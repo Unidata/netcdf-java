@@ -274,7 +274,7 @@ public class N3headerNew {
       if (udim != null) {
         udim = udim.toBuilder().setLength(numrecs).build();
         root.replaceDimension(udim);
-        uvars.forEach(v -> v.replaceDimension(udim));
+        uvars.forEach(v -> v.replaceDimensionByName(udim));
       }
     }
 

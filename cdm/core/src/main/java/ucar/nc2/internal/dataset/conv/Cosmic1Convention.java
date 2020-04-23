@@ -91,7 +91,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
 
         String timeUnits = "seconds since 1980-01-06 00:00:00";
         VariableDS.Builder timeVar = VariableDS.builder().setName("time").setDataType(DataType.DOUBLE)
-            .setDimensionsByName(dim.getShortName()).setUnits(timeUnits);
+            .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits(timeUnits);
         rootGroup.addVariable(timeVar);
         timeVar.setUnits(timeUnits);
         timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -127,15 +127,15 @@ public class Cosmic1Convention extends CoordSystemBuilder {
       Dimension dim = rootGroup.findDimension("time").get();
       int n = dim.getLength();
       Variable.Builder latVar = VariableDS.builder().setName("Lat").setDataType(DataType.FLOAT)
-          .setDimensionsByName(dim.getShortName()).setUnits("degree");
+          .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("degree");
       latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
       rootGroup.addVariable(latVar);
       Variable.Builder lonVar = VariableDS.builder().setName("Lon").setDataType(DataType.FLOAT)
-          .setDimensionsByName(dim.getShortName()).setUnits("degree");
+          .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("degree");
       lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       rootGroup.addVariable(lonVar);
       Variable.Builder altVar = VariableDS.builder().setName("MSL_alt").setDataType(DataType.FLOAT)
-          .setDimensionsByName(dim.getShortName()).setUnits("meter");
+          .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("meter");
       altVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
       rootGroup.addVariable(altVar);
 

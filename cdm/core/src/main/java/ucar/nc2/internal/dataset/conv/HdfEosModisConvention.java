@@ -146,7 +146,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     // add the coordinate variable
     String units = "seconds since " + cd;
     CoordinateAxis.Builder timeCoord = CoordinateAxis1D.builder().setName(TIME_NAME).setDataType(DataType.DOUBLE)
-        .setDimensionsByName("").setUnits(units).setDesc("time coordinate");
+        .setParentGroupBuilder(rootGroup).setDimensionsByName("").setUnits(units).setDesc("time coordinate");
     timeCoord.setAutoGen(0, 0);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
@@ -229,15 +229,17 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
         crss.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
         dataG.addVariable(crss);
 
-        datasetBuilder.replaceCoordinateAxis(dataG, makeCoordAxis(DIMX_NAME, dimX.getLength(), minX, maxX, true));
-        datasetBuilder.replaceCoordinateAxis(dataG, makeCoordAxis(DIMY_NAME, dimY.getLength(), minY, maxY, false));
+        datasetBuilder.replaceCoordinateAxis(dataG,
+            makeCoordAxis(dataG, DIMX_NAME, dimX.getLength(), minX, maxX, true));
+        datasetBuilder.replaceCoordinateAxis(dataG,
+            makeCoordAxis(dataG, DIMY_NAME, dimY.getLength(), minY, maxY, false));
         coordinates = addTimeCoord ? TIME_NAME + " " + DIMX_NAME + " " + DIMY_NAME : DIMX_NAME + " " + DIMY_NAME;
 
       } else if (projAtt.getStringValue().equals("GCTP_GEO")) {
         datasetBuilder.replaceCoordinateAxis(dataG,
-            makeLatLonCoordAxis(dimX.getLength(), minX * 1e-6, maxX * 1e-6, true));
+            makeLatLonCoordAxis(dataG, dimX.getLength(), minX * 1e-6, maxX * 1e-6, true));
         datasetBuilder.replaceCoordinateAxis(dataG,
-            makeLatLonCoordAxis(dimY.getLength(), minY * 1e-6, maxY * 1e-6, false));
+            makeLatLonCoordAxis(dataG, dimY.getLength(), minY * 1e-6, maxY * 1e-6, false));
         coordinates = addTimeCoord ? TIME_NAME + " Lat Lon" : "Lat Lon";
       }
 
@@ -270,9 +272,11 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
    * • The LowerRightMtrs identifies the very lower right corner of the lower right pixel of the image data. These
    * projection coordinates are the only metadata that accurately reflect the extreme corners of the gridded image
    */
-  private CoordinateAxis.Builder makeCoordAxis(String name, int n, double start, double end, boolean isX) {
-    CoordinateAxis.Builder vb = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(name).setUnits("km").setDesc(isX ? "x coordinate" : "y coordinate");
+  private CoordinateAxis.Builder makeCoordAxis(Group.Builder dataG, String name, int n, double start, double end,
+      boolean isX) {
+    CoordinateAxis.Builder vb =
+        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(dataG)
+            .setDimensionsByName(name).setUnits("km").setDesc(isX ? "x coordinate" : "y coordinate");
 
     double incr = (end - start) / n;
     vb.setAutoGen(start * .001, incr * .001); // km
@@ -288,12 +292,13 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
    * :UpperLeftPointMtrs = -1.8E8, 9.0E7; // double
    * :LowerRightMtrs = 1.8E8, -9.0E7; // double
    */
-  private CoordinateAxis.Builder makeLatLonCoordAxis(int n, double start, double end, boolean isLon) {
+  private CoordinateAxis.Builder makeLatLonCoordAxis(Group.Builder dataG, int n, double start, double end,
+      boolean isLon) {
     String name = isLon ? AxisType.Lon.toString() : AxisType.Lat.toString();
     String dimName = isLon ? DIMX_NAME : DIMY_NAME;
 
     CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
-        .setDimensionsByName(dimName).setUnits(isLon ? "degrees_east" : "degrees_north");
+        .setParentGroupBuilder(dataG).setDimensionsByName(dimName).setUnits(isLon ? "degrees_east" : "degrees_north");
 
     double incr = (end - start) / n;
     v.setAutoGen(start, incr);

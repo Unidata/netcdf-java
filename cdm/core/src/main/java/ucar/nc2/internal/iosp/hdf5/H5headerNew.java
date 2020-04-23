@@ -1298,6 +1298,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     if (facade.dobj.mdt.type == 6) { // Compound
       String vname = facade.name;
       vb = sb = Structure.builder().setName(vname);
+      vb.setParentGroupBuilder(parentGroup);
       if (!makeVariableShapeAndType(parentGroup, sb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
         return null;
       addMembersToStructure(parentGroup, sb, facade.dobj.mdt);
@@ -1308,6 +1309,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       if (vname.startsWith(Nc4.NETCDF4_NON_COORD))
         vname = vname.substring(Nc4.NETCDF4_NON_COORD.length()); // skip prefix
       vb = Variable.builder().setName(vname);
+      vb.setParentGroupBuilder(parentGroup);
       if (!makeVariableShapeAndType(parentGroup, vb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
         return null;
 
@@ -1446,7 +1448,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     }
 
     if (mdt.type == 6) {
-      Structure.Builder sb = Structure.builder().setName(name);
+      Structure.Builder sb = Structure.builder().setName(name).setParentGroupBuilder(parentGroup);
       makeVariableShapeAndType(parentGroup, sb, mdt, null, vinfo, null);
       addMembersToStructure(parentGroup, sb, mdt);
       sb.setElementSize(mdt.byteSize);
@@ -1456,7 +1458,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       return sb;
 
     } else {
-      Variable.Builder vb = Variable.builder().setName(name);
+      Variable.Builder vb = Variable.builder().setName(name).setParentGroupBuilder(parentGroup);
       makeVariableShapeAndType(parentGroup, vb, mdt, null, vinfo, null);
 
       // special case of variable length strings
@@ -2305,7 +2307,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   }
 
   public void getEosInfo(Formatter f) throws IOException {
-    HdfEos.getEosInfo(this, root, f);
+    HdfEos.getEosInfo(raf.getLocation(), this, root, f);
   }
 
   // debug - hdf5Table

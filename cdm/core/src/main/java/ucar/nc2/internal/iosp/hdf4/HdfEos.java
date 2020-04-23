@@ -85,19 +85,20 @@ public class HdfEos {
    * @return true if HDF-EOS info was found
    * @throws IOException on read error
    */
-  public static boolean amendFromODL(HdfHeaderIF header, Group.Builder eosGroup) throws IOException {
+  public static boolean amendFromODL(String location, HdfHeaderIF header, Group.Builder eosGroup) throws IOException {
     String smeta = getStructMetadata(header, eosGroup);
     if (smeta == null) {
       return false;
     }
 
-    HdfEos fixer = new HdfEos();
+    HdfEos fixer = new HdfEos(location, header);
     fixer.fixAttributes(eosGroup);
-    fixer.amendFromODL(header, header.getRootGroup(), smeta);
+    fixer.amendFromODL(header.getRootGroup(), smeta);
     return true;
   }
 
-  public static boolean getEosInfo(HdfHeaderIF header, Group.Builder eosGroup, Formatter f) throws IOException {
+  public static boolean getEosInfo(String location, HdfHeaderIF header, Group.Builder eosGroup, Formatter f)
+      throws IOException {
     String smeta = getStructMetadata(header, eosGroup);
     if (smeta == null) {
       f.format("No StructMetadata variables in group %s %n", eosGroup.shortName);
@@ -139,8 +140,13 @@ public class HdfEos {
   }
 
   ///////////////////////////////////////////
-  private String location;
+  private String location; // for debug messages
   private HdfHeaderIF header;
+
+  private HdfEos(String location, HdfHeaderIF header) {
+    this.location = location;
+    this.header = header;
+  }
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata
@@ -148,8 +154,7 @@ public class HdfEos {
    * @param rootg Amend this
    * @param structMetadata structMetadata as String
    */
-  private void amendFromODL(HdfHeaderIF header, Group.Builder rootg, String structMetadata) {
-    this.header = header;
+  private void amendFromODL(Group.Builder rootg, String structMetadata) {
     ODLparser parser = new ODLparser();
     Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
     FeatureType featureType = null;
@@ -288,11 +293,11 @@ public class HdfEos {
 
       // make new variable for this dimension map
       Variable.Builder v = Variable.builder().setName(dataDimName);
+      parent.addVariable(v);
       v.setDimensionsByName(geoDimName);
       v.setDataType(DataType.INT);
       v.setAutoGen(offset, incr);
       v.addAttribute(new Attribute("_DimensionMap", ""));
-      parent.addVariable(v);
       header.makeVinfoForDimensionMapVariable(parent, v);
 
       if (showWork) {
@@ -338,7 +343,7 @@ public class HdfEos {
         // This could/should be expanded to consider other FTs.
         if ((latAxis != null) && (lonAxis != null)) {
           log.debug("found lonAxis and latAxis -- testing XY domain");
-          int xyDomainSize = CoordSystemBuilder.countDomainSize(geoFieldsG, latAxis, lonAxis);
+          int xyDomainSize = CoordSystemBuilder.countDomainSize(latAxis, lonAxis);
           log.debug("xyDomain size {}", xyDomainSize);
           if (xyDomainSize < 2) {
             if (timeAxis != null) {
@@ -604,7 +609,7 @@ public class HdfEos {
     }
 
     // gotta have same number of dimensions
-    List<Dimension> oldDims = v.getDimensions(group);
+    List<Dimension> oldDims = v.getDimensions();
     if (oldDims.size() != values.size()) {
       log.error("Different number of dimensions for {} {}", v.shortName, location);
       return;

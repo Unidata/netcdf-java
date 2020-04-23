@@ -122,7 +122,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     if (useHdfEos) {
       rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
-          isEos = HdfEos.amendFromODL(header, eosGroup);
+          isEos = HdfEos.amendFromODL(raf.getLocation(), header, eosGroup);
         } catch (IOException e) {
           log.warn(" HdfEos.amendFromODL failed");
         }
@@ -170,7 +170,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     if (useHdfEos) {
       rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
         try {
-          isEos = HdfEos.amendFromODL(header, eosGroup);
+          isEos = HdfEos.amendFromODL(raf.getLocation(), header, eosGroup);
         } catch (IOException e) {
           log.warn(" HdfEos.amendFromODL failed");
         }

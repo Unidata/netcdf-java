@@ -205,7 +205,7 @@ public class NetcdfCopier {
 
     // Variables
     for (Variable oldVar : oldGroup.getVariables()) {
-      Variable.Builder newVar = copyVariable(oldVar);
+      Variable.Builder newVar = copyVariable(newGroup, oldVar);
       if (debug) {
         System.out.println("add var= " + oldVar.getShortName());
       }
@@ -219,7 +219,7 @@ public class NetcdfCopier {
     return newGroup;
   }
 
-  private Variable.Builder copyVariable(Variable oldVar) throws IOException {
+  private Variable.Builder copyVariable(Group.Builder parent, Variable oldVar) throws IOException {
     Variable.Builder vb;
     DataType newType = oldVar.getDataType();
     String dimNames = Dimensions.makeDimensionsString(oldVar.getDimensions());
@@ -228,7 +228,7 @@ public class NetcdfCopier {
       Structure oldStruct = (Structure) oldVar;
       Structure.Builder sb = Structure.builder().setName(oldVar.getShortName());
       for (Variable nested : oldStruct.getVariables()) {
-        sb.addMemberVariable(copyVariable(nested));
+        sb.addMemberVariable(copyVariable(parent, nested));
       }
       vb = sb;
     } else {
@@ -251,7 +251,7 @@ public class NetcdfCopier {
         dimNames += " " + strlenDimName;
       }
     }
-    vb.setDimensionsByName(dimNames);
+    vb.setParentGroupBuilder(parent).setDimensionsByName(dimNames);
 
     if (newType.isEnum()) {
       EnumTypedef en = oldVar.getEnumTypedef();

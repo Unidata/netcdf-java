@@ -93,12 +93,13 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testCopyFrom() {
-    Group group =
+    Group.Builder gb =
         Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())
-            .addDimension(Dimension.builder().setName("dim2").setLength(27).build()).build();
-    Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT)
+            .addDimension(Dimension.builder().setName("dim2").setLength(27).build());
+    Variable.Builder vb = Variable.builder().setName("name").setDataType(DataType.FLOAT).setParentGroupBuilder(gb)
         .setDimensionsByName("dim1 dim2").addAttribute(new Attribute("units", "flower"));
     vb.getAttributeContainer().addAttribute(new Attribute("attName", "AttValue"));
+    Group group = gb.build();
     Variable v = vb.build(group);
 
     VariableDS.Builder builder = VariableDS.builder().copyFrom(v);
@@ -113,12 +114,12 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testMissingData() throws IOException {
-    Group parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build();
+    Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+        .addDimension(new Dimension("dim2", 27));
 
     VariableDS vds = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units").setDesc("desc")
         .setEnhanceMode(NetcdfDataset.getEnhanceAll()).addAttribute(new Attribute("missing_value", 0.0f))
-        .setDimensionsByName("dim1").build(parent);
+        .setParentGroupBuilder(parent).setDimensionsByName("dim1").build(parent.build());
 
     Array data = vds.read();
     System.out.printf("data = %s%n", data);

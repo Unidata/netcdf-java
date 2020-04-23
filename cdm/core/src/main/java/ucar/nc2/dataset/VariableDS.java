@@ -904,7 +904,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       return self();
     }
 
-    public void addCoordinateSystem(String coordSysName) {
+    public void addCoordinateSystemName(String coordSysName) {
       coordSysNames.add(coordSysName);
     }
 
@@ -937,7 +937,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     public T copyFrom(VariableDS.Builder<?> builder) {
       super.copyFrom(builder);
 
-      builder.coordSysNames.forEach(name -> this.addCoordinateSystem(name));
+      builder.coordSysNames.forEach(name -> this.addCoordinateSystemName(name));
       setDesc(builder.desc);
       setEnhanceMode(builder.enhanceMode);
       setFillValueIsMissing(builder.fillValueIsMissing);

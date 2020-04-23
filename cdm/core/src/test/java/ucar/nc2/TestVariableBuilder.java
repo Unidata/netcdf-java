@@ -28,11 +28,11 @@ public class TestVariableBuilder {
       // ok
     }
 
-    Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build();
+    Group.Builder gb = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+        .addDimension(new Dimension("dim2", 27));
 
-    Variable var =
-        Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(group);
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setParentGroupBuilder(gb)
+        .setDimensionsByName("dim1 dim2").build(gb.build());
     assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
@@ -56,11 +56,12 @@ public class TestVariableBuilder {
 
   @Test
   public void testCopy() {
-    Group group = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-        .addDimension(new Dimension("dim2", 27)).build();
+    Group.Builder gb = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
+        .addDimension(new Dimension("dim2", 27));
+    Group group = gb.build();
 
-    Variable var =
-        Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2").build(group);
+    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setParentGroupBuilder(gb)
+        .setDimensionsByName("dim1 dim2").build(group);
 
     Variable copy = var.toBuilder().build(group);
 

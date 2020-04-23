@@ -56,8 +56,8 @@ public class AggregationNew extends AggregationOuter {
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
       DataType coordType = getCoordinateType();
-      VariableDS.Builder joinAggCoordVar =
-          VariableDS.builder().setName(dimName).setDataType(coordType).setDimensionsByName(dimName);
+      VariableDS.Builder joinAggCoordVar = VariableDS.builder().setName(dimName).setDataType(coordType)
+          .setParentGroupBuilder(root).setDimensionsByName(dimName);
       root.addVariable(joinAggCoordVar);
       joinAggCoordVar.setProxyReader(this);
       if (isDate)
@@ -107,7 +107,7 @@ public class AggregationNew extends AggregationOuter {
       // construct new variable, replace old one LOOK what about Structures?
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(ncDataset, aggVar.getParentGroup());
       VariableDS.Builder vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
-          .setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
+          .setParentGroupBuilder(root).setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(aggVar.getAttributeContainer(), vagg.getAttributeContainer());
 
