@@ -100,6 +100,7 @@ description: "This is a documentation site for the netCDF-Java and THREDDS Data 
 # the description is used in the feed.xml file
 
 # needed for sitemap.xml file only
-url: www.unidata.ucar.edu
+# must include trailing slash, leave off the version :-)
+base_docs_url: https://docs.unidata.ucar.edu/netcdf-java/
 
 google_analytics: UA-92978945-1
