@@ -20,6 +20,7 @@ function updateVersionMenu(package) {
   var thisVersion = $('meta[name=doc_version]').attr("content");
   // Get the page currently being displayed, so we can go there in the selected doc set.
   var thisPage = window.location.pathname;
+  thisPage = thisPage.substring(thisPage.lastIndexOf("/"));
 
   // Get version info from static JSON file
   var request = $.ajax({
