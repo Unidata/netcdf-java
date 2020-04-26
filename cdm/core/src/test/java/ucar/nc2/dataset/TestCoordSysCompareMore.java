@@ -61,9 +61,9 @@ public class TestCoordSysCompareMore {
       // Skip these because old code doesnt push Dims up properly.
       "PR1B0000-2000101203_010_001.hdf", "misr", "MISR_AM1_AGP_P040_F01_24.subset.eos",
       "AMSR_E_L3_DailyLand_B04_20080101.hdf",
-      // transforms
+      // transforms, i think equivilent but names dont match
       "MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MOD10A1.A2008001.h23v15.005.2008003161138.hdf",
-      // dont have group names right
+      // these are EOS Point data, which we have not yet correctly done.
       "AMSR_E_L2_Land_T06_200801012345_A.hdf", "AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf",
       // anon dimensions
       "MOD02OBC.A2007001.0005.005.2007307210540.hdf",

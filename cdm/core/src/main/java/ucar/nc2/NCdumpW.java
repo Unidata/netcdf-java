@@ -33,9 +33,8 @@ public class NCdumpW {
   private static String usage =
       "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
-  /**
-   * Tell NCdumpW if you want values printed.
-   */
+  /** @deprecated do not use  */
+  @Deprecated
   public enum WantValues {
     none, coordsOnly, all
   }

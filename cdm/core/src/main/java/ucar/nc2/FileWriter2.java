@@ -69,7 +69,7 @@ public class FileWriter2 {
     this.version = version;
   }
 
-  /** @deprecated TODO use ucar.nc2.write.FileWriter */
+  /** @deprecated do not use */
   @Deprecated
   public enum N3StructureStrategy {
     flatten, exclude
@@ -526,7 +526,7 @@ public class FileWriter2 {
    * of contiguous writes to a multidimensional array.
    * It writes the first n elements (n < maxChunkElems), then the next, etc.
    * 
-   * @deprecated TODO use ucar.nc2.writer.FileWriter
+   * @deprecated use ucar.nc2.write.ChunkingIndex
    */
   @Deprecated
   public static class ChunkingIndex extends Index {

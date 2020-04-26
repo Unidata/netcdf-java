@@ -275,7 +275,10 @@ public class CF {
 
   }
 
-  // http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#appendix-cell-methods
+  /**
+   * Enumeration of CF cell methods.
+   * see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#appendix-cell-methods"
+   */
   public enum CellMethods {
     point, sum, maximum, median, mid_range, minimum, mean, mode, standard_deviation, variance;
 

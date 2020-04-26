@@ -31,10 +31,10 @@ import ucar.nc2.util.CancelTaskImpl;
  * If copying from an extended model to classic model, Strings are converted to Chars; nested groups are not allowed.
  * <p/>
  * The fileIn may be an NcML file which has a referenced dataset in the location URL, the underlying data (modified by
- * the NcML)
- * is written to the new file. If the NcML does not have a referenced dataset, then the new file is filled with fill
- * values, like ncgen.
+ * the NcML) is written to the new file. If the NcML does not have a referenced dataset, then the new file is filled with
+ * fill values, like ncgen.
  * <p/>
+ * Use Nccopy for a command line interface.
  * Use NetcdfFormatWriter object for a lower level API.
  */
 public class NetcdfCopier {
@@ -42,9 +42,6 @@ public class NetcdfCopier {
   private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
   private static boolean debug, debugWrite;
 
-  /**
-   * Set debugging flags
-   */
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     debug = debugFlags.isSet("ncfileWriter/debug");
     debugWrite = debugFlags.isSet("ncfileWriter/debugWrite");
@@ -280,7 +277,6 @@ public class NetcdfCopier {
   }
 
   private class Count {
-
     long bytes;
     int countVars;
   }
