@@ -2,8 +2,7 @@
 
 entries:
 - title: Sidebar
-  product: netCDF-Java Tutorial and Reference Documentation
-  version: 5.4
+  product: Tutorial and Reference Documentation
   folders:
 
   - title:
@@ -287,4 +286,3 @@ entries:
     - title: 5.0 Changes
       url: /upgrade_to_50.html
       output: web, pdf
-
