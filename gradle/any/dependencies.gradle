@@ -169,7 +169,7 @@ libraries["joda-time"] = "joda-time:joda-time:2.10.3"
 // HTML scraper used in GRIB
 libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 
-//// Annotations
+//// Annotations: Nullable
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.2"
 
 libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.9.1"

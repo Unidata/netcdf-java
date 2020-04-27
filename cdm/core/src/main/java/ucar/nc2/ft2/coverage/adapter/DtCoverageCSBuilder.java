@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ft2.coverage.adapter;
 
-import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Lists;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;

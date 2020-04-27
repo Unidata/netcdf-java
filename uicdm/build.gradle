@@ -28,7 +28,7 @@ dependencies {
     compile libraries["jcommon"]
     compile libraries["jfreechart"]
     compile libraries["jgoodies-forms"]
-    compile libraries["httpcore"]
+    compile libraries["httpclient"]
     compile libraries["bounce"]
     compile libraries["re2j"]
     compile libraries["lgooddatepicker"]
