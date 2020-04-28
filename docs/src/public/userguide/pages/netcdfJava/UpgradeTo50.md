@@ -25,7 +25,6 @@ As such, we no longer utilize WebStart.
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
 * [Summary of changes for v5.2.x](#netcdf-java-api-changes-52x)
 * [Summary of changes for v5.3.x](#netcdf-java-api-changes-53x)
-* [Summary of changes for v5.4.x](#netcdf-java-api-changes-54x)
 
 ## netCDF-Java API Changes (5.0.x)
 
@@ -286,17 +285,6 @@ When reading a remote file over http using byte-range requests, the default buff
 Starting with v5.2.0, users can set the maximum buffer size in bytes using the Java System Property `ucar.unidata.io.http.maxHTTPBufferSize` (default is 10 MB).
 
 ## netCDF-Java API Changes (5.3.x)
-
-### Opening remote files on AWS S3
-
-`NetcdfFiles` and `NetcdfDatasets` can now open files stored as a single object on S3 using the AWS RESTful API with byte range-requests, similar to HTTP.
-This new functionality is not available in the now deprecated `NetcdfFile` and `NetcdfDataset` open methods.
-You will also need to include the `cdm-s3` artifact in your build.
-This is currently not part of `netcdfAll.jar`..
-This is done through the use of `S3RandomAccessFile` and byte range-requests, so downloading the entire object may not be needed.
-For more information, see the [DatasetUrl](dataset_urls.html#object-stores) documentation.
-
-## netCDF-Java API Changes (5.4.x)
 
 ### Opening remote files on Object Stores that support the AWS S3 API
 
