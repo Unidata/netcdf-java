@@ -38,8 +38,6 @@ import ucar.unidata.geoloc.projection.Mercator;
  * @see <a href=
  *      "http://www.nws.noaa.gov/mdl/awips/aifmdocs/sec_4_e.htm">http://www.nws.noaa.gov/mdl/awips/aifmdocs/sec_4_e.htm</a>
  */
-
-/** AWIPS netcdf output. */
 public class AWIPSSatConvention extends AWIPSConvention {
   private static final String CONVENTION_NAME = "AWIPS-Sat";
 

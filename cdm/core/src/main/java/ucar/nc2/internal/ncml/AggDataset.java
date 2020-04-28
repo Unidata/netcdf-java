@@ -22,7 +22,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.util.CancelTask;
 
 /** Encapsolates a NetcdfFile, used by AggProxyReader. */

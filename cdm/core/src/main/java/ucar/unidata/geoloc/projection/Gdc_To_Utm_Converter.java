@@ -34,7 +34,6 @@ package ucar.unidata.geoloc.projection;
 
 
 import ucar.unidata.geoloc.EarthEllipsoid;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;

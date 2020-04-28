@@ -1424,7 +1424,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     return newData;
   }
 
-  private void addMembersToStructure(Group.Builder parent, Structure.Builder s, MessageDatatype mdt)
+  private void addMembersToStructure(Group.Builder parent, Structure.Builder<?> s, MessageDatatype mdt)
       throws IOException {
     for (StructureMember m : mdt.members) {
       Variable.Builder v = makeVariableMember(parent, m.name, m.offset, m.mdt);

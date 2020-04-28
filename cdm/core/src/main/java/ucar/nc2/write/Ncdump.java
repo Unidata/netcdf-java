@@ -657,7 +657,6 @@ public class Ncdump {
    * @param ncfile write NcML for this file
    * @param showValues do you want the variable values printed?
    * @param url use this for the url attribute; if null use getLocation(). // ??
-   * @throws IOException on write error
    */
   private static String writeNcML(NetcdfFile ncfile, WantValues showValues, @Nullable String url) {
     Preconditions.checkNotNull(ncfile);

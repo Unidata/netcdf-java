@@ -151,11 +151,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     header.read(raf, rootGroup, null);
   }
 
-  /**
-   * Create header for reading netcdf file.
-   * 
-   * @return
-   */
+  /** Create header for reading netcdf file. */
   protected N3headerNew createHeader() {
     return new N3headerNew(this);
   }

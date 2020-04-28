@@ -192,7 +192,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
           if (timeUnits != null) {
             calendar = timeCoordVar.getCalendarFromAttribute();
           } else {
-            String msg = String.format("Time coordinate must have a non-null unit attribute.");
+            String msg =
+                String.format("Time coordinate %s must have a non-null unit attribute.", timeCoordVar.getShortName());
             logger.error(msg);
             if (cancelTask != null) {
               cancelTask.setError(msg);

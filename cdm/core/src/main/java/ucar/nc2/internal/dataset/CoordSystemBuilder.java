@@ -234,7 +234,7 @@ public class CoordSystemBuilder {
     }
   }
 
-  private void addStructure(Group.Builder group, StructureDS.Builder structure) {
+  private void addStructure(Group.Builder group, StructureDS.Builder<?> structure) {
     List<Variable.Builder<?>> nested = structure.vbuilders;
     for (Variable.Builder<?> vb : nested) {
       if (vb instanceof VariableDS.Builder) {
@@ -756,7 +756,7 @@ public class CoordSystemBuilder {
     public boolean isCoordinateVariable; // classic coordinate variable
     public boolean isCoordinateAxis;
     public AxisType axisType;
-    public CoordinateAxis.Builder axis; // if its made into a Coordinate Axis, this is not null
+    public CoordinateAxis.Builder<?> axis; // if its made into a Coordinate Axis, this is not null
 
     // coord systems
     public boolean isCoordinateSystem;

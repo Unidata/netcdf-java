@@ -30,7 +30,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
 
 /**

@@ -4,12 +4,9 @@
  */
 package ucar.nc2;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterators;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -1777,7 +1774,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     if (builder.shortName == null || builder.shortName.isEmpty()) {
-      throw new IllegalStateException(String.format("Name must be set for Variable"));
+      throw new IllegalStateException("Name must be set for Variable");
     }
 
     this.group = parentGroup;

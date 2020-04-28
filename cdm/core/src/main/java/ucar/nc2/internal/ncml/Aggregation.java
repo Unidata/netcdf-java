@@ -319,15 +319,6 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
    */
   protected abstract void buildNetcdfDataset(CancelTask cancelTask) throws IOException;
 
-
-  /**
-   * Call this when rescan has found changed datasets
-   *
-   * @throws IOException on read error
-   */
-  // protected abstract void rebuildDataset() throws IOException;
-
-
   /**
    * Allow information to be made persistent. Overridden in AggregationExisting
    *

@@ -232,7 +232,7 @@ public final class CdmrFeatureProto {
 
     private final int value;
 
-    private AxisType(int value) {
+    AxisType(int value) {
       this.value = value;
     }
 
@@ -359,7 +359,7 @@ public final class CdmrFeatureProto {
 
     private final int value;
 
-    private AxisSpacing(int value) {
+    AxisSpacing(int value) {
       this.value = value;
     }
 
@@ -526,7 +526,7 @@ public final class CdmrFeatureProto {
 
     private final int value;
 
-    private DependenceType(int value) {
+    DependenceType(int value) {
       this.value = value;
     }
 
@@ -673,7 +673,7 @@ public final class CdmrFeatureProto {
 
     private final int value;
 
-    private Calendar(int value) {
+    Calendar(int value) {
       this.value = value;
     }
 
@@ -796,7 +796,7 @@ public final class CdmrFeatureProto {
 
     private final int value;
 
-    private CoverageType(int value) {
+    CoverageType(int value) {
       this.value = value;
     }
 

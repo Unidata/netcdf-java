@@ -7,12 +7,7 @@ package ucar.ma2;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/**
- * Describe
- *
- * @author caron
- * @since 5/31/2015
- */
+/** Make a section of an ArrayStructureBB */
 public class ArrayStructureBBsection extends ArrayStructureBB {
   protected int[] orgRecnum;
 

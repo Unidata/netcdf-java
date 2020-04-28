@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 import ucar.ma2.DataType;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;

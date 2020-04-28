@@ -121,7 +121,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     if (offsetAtt != null && !offsetAtt.isString()) {
       offsetType = getAttributeDataType(offsetAtt);
       offset = convertUnsigned(offsetAtt.getNumericValue(), offsetType).doubleValue();
-      useScaleOffset = enhancements.contains(Enhance.ApplyScaleOffset);;
+      useScaleOffset = enhancements.contains(Enhance.ApplyScaleOffset);
       logger.debug("offset = {}", offset);
     }
 

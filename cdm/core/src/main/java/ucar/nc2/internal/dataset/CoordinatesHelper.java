@@ -245,7 +245,7 @@ public class CoordinatesHelper {
       // TODO Might reconsider in 6.
       Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionsAll().iterator());
       HashSet<String> csDomain = new HashSet<>();
-      getAxesForSystem(cs).forEach(axis -> axis.getDimensionsAll().forEach(csDomain::add));
+      getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.getDimensionsAll()));
       return CoordinateSystem.isSubset(varDomain, csDomain);
     }
 

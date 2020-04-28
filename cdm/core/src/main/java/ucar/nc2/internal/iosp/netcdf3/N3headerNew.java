@@ -282,7 +282,7 @@ public class N3headerNew {
     // the file contained only one record variable and it was of type byte, char, or short).
     // Example TestDir.cdmLocalTestDataDir + "byteArrayRecordVarPaddingTest-bad.nc"
     if (uvars.size() == 1) {
-      Variable.Builder uvar = uvars.get(0);
+      Variable.Builder<?> uvar = uvars.get(0);
       DataType dtype = uvar.dataType;
       if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
         long vsize = dtype.getSize(); // works for all netcdf-3 data types

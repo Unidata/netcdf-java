@@ -6,7 +6,6 @@
 package ucar.nc2.iosp.hdf5;
 
 import ucar.ma2.Section;
-import ucar.nc2.Variable;
 import ucar.nc2.iosp.LayoutTiled;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;

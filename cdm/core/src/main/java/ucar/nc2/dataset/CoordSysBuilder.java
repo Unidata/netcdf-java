@@ -83,7 +83,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   private static boolean useMaximalCoordSys = true;
   private static boolean userMode;
 
-  /** @deprecated do not use  */
+  /** @deprecated do not use */
   @Deprecated
   public interface ConventionNameOk {
 
