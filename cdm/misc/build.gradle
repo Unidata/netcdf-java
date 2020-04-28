@@ -14,7 +14,7 @@ dependencies {
     compile project(':udunits')
     compile project(':cdm:cdm-core')
 
-    compile libraries["jsr305"]  // Nonnull
+    compile libraries["jsr305"]
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
 

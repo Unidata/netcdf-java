@@ -4,9 +4,9 @@
  */
 package ucar.nc2.ft.point;
 
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
-import com.beust.jcommander.internal.Lists;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.DsgFeatureCollection;
