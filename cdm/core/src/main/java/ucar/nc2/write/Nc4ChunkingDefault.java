@@ -11,7 +11,7 @@ import ucar.nc2.Variable;
 import java.util.List;
 
 /**
- * Default chunking strategy
+ * Default chunking strategy.
  *
  * @author caron
  * @since 5/10/14

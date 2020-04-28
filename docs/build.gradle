@@ -93,6 +93,7 @@ task buildJavadocPublicApi(type: Javadoc) {
     
     // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
     include 'thredds/client/catalog/*.java'
+    include 'thredds/client/catalog/builder/*.java'
     include 'ucar/ma2/*.java'
     include 'ucar/nc2/*.java'
     include 'ucar/nc2/constants/*.java'

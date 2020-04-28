@@ -28,6 +28,8 @@ import java.util.ArrayList;
 public class CompareNetcdf2 {
   public static final ObjFilter IDENTITY_FILTER = new ObjFilter() {};
 
+  /** @deprecated will move in ver6. */
+  @Deprecated
   public interface ObjFilter {
     // if true, compare attribute, else skip comparision
     default boolean attCheckOk(Variable v, Attribute att) {
@@ -55,6 +57,7 @@ public class CompareNetcdf2 {
     }
   }
 
+  /** @deprecated will move in ver6. */
   public static class Netcdf4ObjectFilter implements ObjFilter {
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {

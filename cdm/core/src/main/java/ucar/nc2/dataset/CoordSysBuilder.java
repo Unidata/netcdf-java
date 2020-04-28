@@ -83,9 +83,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   private static boolean useMaximalCoordSys = true;
   private static boolean userMode;
 
-  /**
-   * Allow plug-ins to determine if it owns a file based on the file's Convention attribute.
-   */
+  /** @deprecated do not use */
+  @Deprecated
   public interface ConventionNameOk {
 
     /**

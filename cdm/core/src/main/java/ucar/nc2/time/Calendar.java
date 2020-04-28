@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * Implements CF calendar attribute.
- * Uses joda-time, may switch to JSP 310 at a later date.
+ * Uses joda-time, will switch to java.time at a later date.
  * So joda-time classes are not exposed.
  *
  * @author caron

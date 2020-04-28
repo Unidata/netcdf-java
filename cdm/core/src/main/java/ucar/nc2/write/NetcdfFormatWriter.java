@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;

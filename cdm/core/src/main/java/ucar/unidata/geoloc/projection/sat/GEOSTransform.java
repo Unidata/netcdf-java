@@ -424,7 +424,7 @@ public class GEOSTransform {
 
   }
 
-  class GeoidWGS84 extends Geoid {
+  static class GeoidWGS84 extends Geoid {
     // - WGS84 parameters ------------------------------------------
     public GeoidWGS84() {
       r_pol = 6356.7523; // kilometers
@@ -433,7 +433,7 @@ public class GEOSTransform {
     }
   }
 
-  class GeoidGRS80 extends Geoid {
+  static class GeoidGRS80 extends Geoid {
     // - GRS80 parameters (GOES-R) --------------------------------------
     public GeoidGRS80() {
       r_pol = 6356.7523; // kilometers

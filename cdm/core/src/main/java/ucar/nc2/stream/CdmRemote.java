@@ -287,7 +287,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
           int wantSize = (int) (v.getSize());
 
           Optional<String> contentLength = method.getResponseHeaderValue("Content-Length");
-          if (contentLength != null) {
+          if (contentLength.isPresent()) {
             int readLen = Integer.parseInt(contentLength.get());
             if (readLen != wantSize)
               throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);

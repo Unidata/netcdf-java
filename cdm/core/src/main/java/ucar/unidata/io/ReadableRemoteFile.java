@@ -8,6 +8,7 @@ package ucar.unidata.io;
 import java.io.Closeable;
 import java.io.IOException;
 
+/** A remote file that can be read from. */
 public interface ReadableRemoteFile extends Closeable {
 
   /**

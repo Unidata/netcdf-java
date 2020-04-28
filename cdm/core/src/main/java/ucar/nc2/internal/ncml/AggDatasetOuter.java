@@ -9,8 +9,6 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import org.jdom2.Element;
 import thredds.inventory.MFile;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;

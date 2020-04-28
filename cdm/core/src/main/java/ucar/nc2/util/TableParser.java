@@ -194,10 +194,7 @@ public class TableParser {
     return fields.size();
   }
 
-
-  /**
-   * Describes one field in the record.
-   */
+  /** @deprecated will move in ver6. */
   public static class Field {
     int start, end;
     Class type;
@@ -269,6 +266,7 @@ public class TableParser {
     return fld;
   }
 
+  /** @deprecated will move in ver6. */
   public static class DerivedField extends Field {
     Field from;
     Transform transform;
@@ -285,13 +283,12 @@ public class TableParser {
     }
   }
 
+  /** @deprecated will move in ver6. */
   public interface Transform {
     Object derive(Object org);
   }
 
-  /**
-   * A set of values for one line.
-   */
+  /** @deprecated will move in ver6. */
   public static class Record {
     List<Object> values = new ArrayList<>();
 

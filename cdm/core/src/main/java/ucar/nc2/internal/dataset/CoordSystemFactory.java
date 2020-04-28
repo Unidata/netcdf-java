@@ -312,11 +312,7 @@ public class CoordSystemFactory {
 
   private static CoordSystemBuilderFactory findRegisteredConventionByName(String convName) {
     // look for registered conventions using convention name
-    CoordSystemBuilderFactory coordSysFactory = matchConvention(convName);
-    if (coordSysFactory != null) {
-      return coordSysFactory;
-    }
-    return null;
+    return matchConvention(convName);
   }
 
   private static CoordSystemBuilderFactory findLoadedConventionByName(String convName) {

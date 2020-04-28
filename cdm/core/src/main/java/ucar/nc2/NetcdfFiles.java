@@ -335,12 +335,12 @@ public class NetcdfFiles {
     // do we have a RandomAccessFile class that will work?
     try (ucar.unidata.io.RandomAccessFile raf = getRaf(location, -1)) {
       if (raf != null) {
-        log.info(String.format("{} can be accessed with {}", raf.getLocation(), raf.getClass()));
+        log.info(String.format("%s can be accessed with %s", raf.getLocation(), raf.getClass()));
         // do we have an appropriate IOSP?
         IOServiceProvider iosp = getIosp(raf);
         if (iosp != null) {
           canOpen = true;
-          log.info(String.format("{} can be opened by {}", raf.getLocation(), iosp.getClass()));
+          log.info(String.format("%s can be opened by %s", raf.getLocation(), iosp.getClass()));
         }
       }
     }

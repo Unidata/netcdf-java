@@ -177,7 +177,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
 
   private void augmentGroup(Group.Builder g) {
     Optional<Variable.Builder<?>> crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
-    if (crs != null) {
+    if (crs.isPresent()) {
       augmentGroupWithProjectionInfo(g);
     }
 

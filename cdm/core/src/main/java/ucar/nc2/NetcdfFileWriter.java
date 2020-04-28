@@ -56,7 +56,7 @@ public class NetcdfFileWriter implements Closeable {
   /**
    * The kinds of netcdf file that can be written.
    * 
-   * @deprecated TODO use ucar.nc2.write.NetcdfFileWriter
+   * @deprecated use NetcdfFileFormat
    */
   @Deprecated
   public enum Version {

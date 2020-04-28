@@ -31,10 +31,11 @@ import ucar.nc2.util.CancelTaskImpl;
  * If copying from an extended model to classic model, Strings are converted to Chars; nested groups are not allowed.
  * <p/>
  * The fileIn may be an NcML file which has a referenced dataset in the location URL, the underlying data (modified by
- * the NcML)
- * is written to the new file. If the NcML does not have a referenced dataset, then the new file is filled with fill
- * values, like ncgen.
+ * the NcML) is written to the new file. If the NcML does not have a referenced dataset, then the new file is filled
+ * with
+ * fill values, like ncgen.
  * <p/>
+ * Use Nccopy for a command line interface.
  * Use NetcdfFormatWriter object for a lower level API.
  */
 public class NetcdfCopier {
@@ -42,9 +43,6 @@ public class NetcdfCopier {
   private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
   private static boolean debug, debugWrite;
 
-  /**
-   * Set debugging flags
-   */
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     debug = debugFlags.isSet("ncfileWriter/debug");
     debugWrite = debugFlags.isSet("ncfileWriter/debugWrite");
@@ -76,50 +74,51 @@ public class NetcdfCopier {
     return ncwriter.getFormat();
   }
 
-  /**
+  /*
    * /////////////////////////////////////////////////////////////////////////////////////////////
    * // might be better to push these next up into NetcdfCFWriter, but we want to use copyVarData
    *
    * Specify which variable will get written
    *
    * @param oldVar add this variable, and all parent groups
+   * 
    * @return new Variable.
    *
-   *         public Variable addVariable(Variable oldVar) {
-   *         List<Dimension> newDims = getNewDimensions(oldVar);
+   * public Variable addVariable(Variable oldVar) {
+   * List<Dimension> newDims = getNewDimensions(oldVar);
    * 
-   *         Variable newVar;
-   *         if ((oldVar.getDataType() == DataType.STRING) && (!getFormat().isExtendedModel())) {
-   *         newVar = ncwriter.addStringVariable(null, oldVar, newDims);
-   *         } else {
-   *         newVar = ncwriter.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
-   *         }
-   *         varMap.put(oldVar, newVar);
-   *         varList.add(oldVar);
+   * Variable newVar;
+   * if ((oldVar.getDataType() == DataType.STRING) && (!getFormat().isExtendedModel())) {
+   * newVar = ncwriter.addStringVariable(null, oldVar, newDims);
+   * } else {
+   * newVar = ncwriter.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
+   * }
+   * varMap.put(oldVar, newVar);
+   * varList.add(oldVar);
    * 
-   *         for (Attribute orgAtt : oldVar.attributes())
-   *         ncwriter.addVariableAttribute(newVar, convertAttribute(orgAtt));
+   * for (Attribute orgAtt : oldVar.attributes())
+   * ncwriter.addVariableAttribute(newVar, convertAttribute(orgAtt));
    * 
-   *         return newVar;
-   *         }
+   * return newVar;
+   * }
    * 
-   *         private List<Dimension> getNewDimensions(Variable oldVar) {
-   *         List<Dimension> result = new ArrayList<>(oldVar.getRank());
+   * private List<Dimension> getNewDimensions(Variable oldVar) {
+   * List<Dimension> result = new ArrayList<>(oldVar.getRank());
    * 
-   *         // dimensions
-   *         for (Dimension oldD : oldVar.getDimensions()) {
-   *         Dimension newD = gdimHash.get(oldD.getShortName());
-   *         if (newD == null) {
-   *         newD = ncwriter.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-   *         oldD.isUnlimited(), oldD.isVariableLength());
-   *         gdimHash.put(oldD.getShortName(), newD);
-   *         if (debug)
-   *         System.out.println("add dim= " + newD);
-   *         }
-   *         result.add(newD);
-   *         }
-   *         return result;
-   *         }
+   * // dimensions
+   * for (Dimension oldD : oldVar.getDimensions()) {
+   * Dimension newD = gdimHash.get(oldD.getShortName());
+   * if (newD == null) {
+   * newD = ncwriter.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+   * oldD.isUnlimited(), oldD.isVariableLength());
+   * gdimHash.put(oldD.getShortName(), newD);
+   * if (debug)
+   * System.out.println("add dim= " + newD);
+   * }
+   * result.add(newD);
+   * }
+   * return result;
+   * }
    */
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,8 +278,7 @@ public class NetcdfCopier {
     return new Attribute(org.getShortName(), nc3Values);
   }
 
-  private class Count {
-
+  private static class Count {
     long bytes;
     int countVars;
   }

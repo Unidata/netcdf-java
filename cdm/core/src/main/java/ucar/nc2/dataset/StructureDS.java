@@ -5,9 +5,7 @@
 
 package ucar.nc2.dataset;
 
-import java.util.Optional;
 import ucar.nc2.*;
-import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;

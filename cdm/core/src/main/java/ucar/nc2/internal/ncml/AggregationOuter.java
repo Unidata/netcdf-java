@@ -192,7 +192,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
           if (timeUnits != null) {
             calendar = timeCoordVar.getCalendarFromAttribute();
           } else {
-            String msg = String.format("Time coordinate must have a non-null unit attribute.");
+            String msg = String.format("Time coordinate %s must have a non-null unit attribute.", timeAxis.shortName);
             logger.error(msg);
             if (cancelTask != null) {
               cancelTask.setError(msg);
@@ -273,7 +273,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       // if calendar attribute is missing from the first file in the aggregation,
       // it must be missing from the new file in order for the calendars to be
       // considered "equivalent"
-      equivalent = b != null ? false : true;
+      equivalent = b == null;
     }
     return equivalent;
   }
@@ -890,7 +890,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     }
 
     f.format("%nAggregation Variables%n");
-    for (VariableDS.Builder vds : aggVars) {
+    for (VariableDS.Builder<?> vds : aggVars) {
       f.format("   %s %s%n", vds.shortName, String.join(",", vds.getDimensionNames()));
     }
 

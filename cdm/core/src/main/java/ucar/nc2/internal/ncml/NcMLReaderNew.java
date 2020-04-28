@@ -1136,7 +1136,7 @@ public class NcMLReaderNew {
     return structBuilder;
   }
 
-  private void readMemberVariable(Group.Builder groupBuilder, StructureDS.Builder parentStructure,
+  private void readMemberVariable(Group.Builder groupBuilder, StructureDS.Builder<?> parentStructure,
       @Nullable Structure refParentStructure, Element varElem) {
     String name = varElem.getAttributeValue("name");
     if (name == null) {

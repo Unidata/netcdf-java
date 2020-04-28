@@ -121,8 +121,8 @@ public class StructurePseudoDS extends StructureDS {
     return result;
   }
 
-  @Override
   /** @deprecated Use StructurePseudoDS.builder() */
+  @Override
   @Deprecated
   public boolean removeMemberVariable(Variable v) {
     if (super.removeMemberVariable(v)) {

@@ -524,7 +524,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
    * @param endian byte order
    * @return primitive array with data read in
    * @throws java.io.IOException if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian,
       boolean convertChar) throws IOException {
