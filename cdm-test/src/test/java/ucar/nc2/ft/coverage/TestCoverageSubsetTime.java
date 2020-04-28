@@ -1,5 +1,6 @@
 package ucar.nc2.ft.coverage;
 
+import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import org.junit.AfterClass;
@@ -12,23 +13,26 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis.Spacing;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.TimeOffsetAxis;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.util.test.Assert2;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
  * Test CoverageSubsetTime, esp 2DTime
@@ -543,6 +547,212 @@ public class TestCoverageSubsetTime {
       CoverageCoordAxis toAxis2 = geocs.getAxis(AxisType.Time);
       Assert.assertNotNull("timeoffset axis", toAxis2);
       Assert.assertEquals(1, toAxis2.getNcoords());
+    }
+  }
+
+  @Test
+  public void testDiscontiguousIntervalSubsetSingleTime() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
+    String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+
+    logger.debug("testDiscontiguousIntervalSubsetSingleTime Dataset {} coverage {}", endpoint, covName);
+
+    try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
+      assertThat(featureDatasetCoverage).isNotNull();
+      CoverageCollection coverageCollection = featureDatasetCoverage.findCoverageDataset(FeatureType.GRID);
+      assertThat(coverageCollection).isNotNull();
+      Coverage coverage = coverageCollection.findCoverage(covName);
+      assertThat(coverage).isNotNull();
+      SubsetParams params = new SubsetParams();
+
+      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      params.setRunTime(runTime);
+      CalendarDate validTime = CalendarDate.parseISOformat(null, "2015-03-02T06:00:00Z");
+      params.setTime(validTime);
+      logger.debug("  subset {}", params);
+      // expect: any interval [start, stop] containing the requested time
+      // idx interval
+      // 08 (24.000000, 27.000000) == (2015-03-02T00:00:00Z, 2015-03-02T03:00:00Z)
+      // 09 (24.000000, 30.000000) == (2015-03-02T00:00:00Z, 2015-03-02T06:00:00Z)
+      // 10 (30.000000, 33.000000) == (2015-03-02T06:00:00Z, 2015-03-02T09:00:00Z)
+      // 11 (30.000000, 36.000000) == (2015-03-02T06:00:00Z, 2015-03-02T12:00:00Z)
+      // 12 (36.000000, 39.000000) == (2015-03-02T12:00:00Z, 2015-03-02T15:00:00Z)
+      int expectedStartIndex = 9;
+      int expectedEndIndex = 11;
+
+      GeoReferencedArray geo = coverage.readData(params);
+      assertThat(geo).isNotNull();
+      CoverageCoordAxis timeAxis = geo.findCoordAxis("time");
+      assertThat(timeAxis).isNotNull();
+      assertThat(timeAxis.getSpacing()).isEqualTo(Spacing.discontiguousInterval);
+      assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
+
+      // multiple matches
+      params = new SubsetParams();
+      params.setRunTime(runTime);
+      validTime = CalendarDate.parseISOformat(null, "2015-03-02T7:00:00Z");
+      params.setTime(validTime);
+      expectedStartIndex = 10;
+      expectedEndIndex = 11;
+
+      geo = coverage.readData(params);
+      assertThat(geo).isNotNull();
+      timeAxis = geo.findCoordAxis("time");
+      assertThat(timeAxis).isNotNull();
+      assertThat(timeAxis.getSpacing()).isEqualTo(Spacing.discontiguousInterval);
+      assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
+    }
+  }
+
+  @Test
+  public void testDiscontiguousIntervalSubsetSpecificOffsets() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
+    String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+
+    logger.debug("testDiscontiguousIntervalSubsetSpecificOffsets Dataset {} coverage {}", endpoint, covName);
+
+    try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
+      assertThat(featureDatasetCoverage).isNotNull();
+      CoverageCollection coverageCollection = featureDatasetCoverage.findCoverageDataset(FeatureType.GRID);
+      assertThat(coverageCollection).isNotNull();
+      Coverage coverage = coverageCollection.findCoverage(covName);
+      assertThat(coverage).isNotNull();
+      SubsetParams params = new SubsetParams();
+
+      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      params.setRunTime(runTime);
+      double intervalStart = 30;
+      double intervalStop = 33;
+      params.setTimeOffsetIntv(new double[] {intervalStart, intervalStop});
+      logger.debug("  subset {}", params);
+      // expect: any interval [(]start, stop] containing the requested time
+      // idx interval
+      // 08 (24.000000, 27.000000) == (2015-03-02T00:00:00Z, 2015-03-02T03:00:00Z)
+      // 09 (24.000000, 30.000000) == (2015-03-02T00:00:00Z, 2015-03-02T06:00:00Z)
+      // 10 (30.000000, 33.000000) == (2015-03-02T06:00:00Z, 2015-03-02T09:00:00Z)
+      // 11 (30.000000, 36.000000) == (2015-03-02T06:00:00Z, 2015-03-02T12:00:00Z)
+      // 12 (36.000000, 39.000000) == (2015-03-02T12:00:00Z, 2015-03-02T15:00:00Z)
+      int expectedStartIndex = 10; // only one match :-)
+      int expectedEndIndex = expectedStartIndex;
+
+      GeoReferencedArray geo = coverage.readData(params);
+      assertThat(geo).isNotNull();
+      CoverageCoordAxis timeAxis = geo.findCoordAxis("time");
+      assertThat(timeAxis).isNotNull();
+      assertThat(timeAxis.getSpacing()).isEqualTo(Spacing.discontiguousInterval);
+      assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
+
+      params = new SubsetParams();
+      params.setRunTime(runTime);
+      intervalStart = 30;
+      intervalStop = 36;
+      params.setTimeOffsetIntv(new double[] {intervalStart, intervalStop});
+      logger.debug("  subset {}", params);
+      // expect: any interval [(]start, stop] containing the requested time
+      // idx interval
+      // 08 (24.000000, 27.000000) == (2015-03-02T00:00:00Z, 2015-03-02T03:00:00Z)
+      // 09 (24.000000, 30.000000) == (2015-03-02T00:00:00Z, 2015-03-02T06:00:00Z)
+      // 10 (30.000000, 33.000000) == (2015-03-02T06:00:00Z, 2015-03-02T09:00:00Z)
+      // 11 (30.000000, 36.000000) == (2015-03-02T06:00:00Z, 2015-03-02T12:00:00Z)
+      // 12 (36.000000, 39.000000) == (2015-03-02T12:00:00Z, 2015-03-02T15:00:00Z)
+      expectedStartIndex = 11; // only one match :-)
+      expectedEndIndex = expectedStartIndex;
+
+      geo = coverage.readData(params);
+      assertThat(geo).isNotNull();
+      timeAxis = geo.findCoordAxis("time");
+      assertThat(timeAxis).isNotNull();
+      assertThat(timeAxis.getSpacing()).isEqualTo(Spacing.discontiguousInterval);
+      assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
+
+    }
+  }
+
+  @Test
+  public void testDiscontiguousIntervalSubsetSpecificOffsetsNoExactMatch() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
+    String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+
+    logger.debug("testDiscontiguousIntervalSubsetSpecificOffsetsNoExactMatch Dataset {} coverage {}", endpoint,
+        covName);
+
+    try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
+      assertThat(featureDatasetCoverage).isNotNull();
+      CoverageCollection coverageCollection = featureDatasetCoverage.findCoverageDataset(FeatureType.GRID);
+      assertThat(coverageCollection).isNotNull();
+      Coverage coverage = coverageCollection.findCoverage(covName);
+      assertThat(coverage).isNotNull();
+      SubsetParams params = new SubsetParams();
+
+      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      params.setRunTime(runTime);
+      double intervalStart = 30;
+      double intervalStop = 39;
+      params.setTimeOffsetIntv(new double[] {intervalStart, intervalStop});
+      logger.debug("  subset {}", params);
+      // expect: any interval [(]start, stop] containing the requested time
+      // idx interval
+      // 08 (24.000000, 27.000000) == (2015-03-02T00:00:00Z, 2015-03-02T03:00:00Z)
+      // 09 (24.000000, 30.000000) == (2015-03-02T00:00:00Z, 2015-03-02T06:00:00Z)
+      // 10 (30.000000, 33.000000) == (2015-03-02T06:00:00Z, 2015-03-02T09:00:00Z)
+      // 11 (30.000000, 36.000000) == (2015-03-02T06:00:00Z, 2015-03-02T12:00:00Z)
+      // 12 (36.000000, 39.000000) == (2015-03-02T12:00:00Z, 2015-03-02T15:00:00Z)
+      // no exact match on interval, so for now match closest midpoint with smallest width
+      // midpoint is 34.9
+      // 10 has midpoint of 31.5
+      // 11 has midpoint of 33
+      // 12 has midpoint of 37.5
+      // so index 11 is closest
+      int expectedStartIndex = 11;
+      int expectedEndIndex = expectedStartIndex;
+
+      GeoReferencedArray geo = coverage.readData(params);
+      assertThat(geo).isNotNull();
+      CoverageCoordAxis timeAxis = geo.findCoordAxis("time");
+      assertThat(timeAxis).isNotNull();
+      assertThat(timeAxis.getSpacing()).isEqualTo(Spacing.discontiguousInterval);
+      assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
+    }
+  }
+
+  @Test
+  public void testDiscontiguousIntervalSubsetTimeRange() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
+    String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+
+    logger.debug("testDiscontiguousIntervalTime Dataset {} coverage {}", endpoint, covName);
+
+    try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
+      assertThat(featureDatasetCoverage).isNotNull();
+      CoverageCollection coverageCollection = featureDatasetCoverage.findCoverageDataset(FeatureType.GRID);
+      assertThat(coverageCollection).isNotNull();
+      Coverage coverage = coverageCollection.findCoverage(covName);
+      assertThat(coverage).isNotNull();
+      SubsetParams params = new SubsetParams();
+
+      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      params.setRunTime(runTime);
+
+      CalendarDate subsetTimeStart = CalendarDate.parseISOformat(null, "2015-03-02T06:00:00Z");
+      CalendarDate subsetTimeEnd = CalendarDate.parseISOformat(null, "2015-03-02T12:00:00Z");
+      // expect: any interval containing or ending on the start or end times
+      // idx keep interval
+      // 08 N (24.000000, 27.000000) == (2015-03-02T00:00:00Z, 2015-03-02T03:00:00Z)
+      // 09 Y (24.000000, 30.000000) == (2015-03-02T00:00:00Z, 2015-03-02T06:00:00Z)
+      // 10 Y (30.000000, 33.000000) == (2015-03-02T06:00:00Z, 2015-03-02T09:00:00Z)
+      // 11 Y (30.000000, 36.000000) == (2015-03-02T06:00:00Z, 2015-03-02T12:00:00Z)
+      // 12 N (36.000000, 39.000000) == (2015-03-02T12:00:00Z, 2015-03-02T15:00:00Z)
+      int expectedStartIndex = 9;
+      int expectedEndIndex = 11;
+      params.setTimeRange(CalendarDateRange.of(subsetTimeStart, subsetTimeEnd));
+      logger.debug("  subset {}", params);
+
+      GeoReferencedArray geo = coverage.readData(params);
+      assertThat(geo).isNotNull();
+      CoverageCoordAxis timeAxis = geo.findCoordAxis("time");
+      assertThat(timeAxis).isNotNull();
+      assertThat(timeAxis.getSpacing()).isEqualTo(Spacing.discontiguousInterval);
+      assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
     }
   }
 
