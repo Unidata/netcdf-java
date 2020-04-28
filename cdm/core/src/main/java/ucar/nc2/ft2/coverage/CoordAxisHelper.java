@@ -11,8 +11,6 @@ import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.Misc;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import ucar.nc2.util.Optional;
 
@@ -325,23 +323,19 @@ class CoordAxisHelper {
     return subsetValues(minValue, maxValue, stride);
   }
 
-  @Nonnull
   public CoverageCoordAxisBuilder subsetClosest(double want) {
     return subsetValuesClosest(want);
   }
 
-  @Nonnull
   public CoverageCoordAxisBuilder subsetLatest() {
     return subsetValuesLatest();
   }
 
-  @Nonnull
   public CoverageCoordAxisBuilder subsetClosest(CalendarDate date) {
     double want = axis.convert(date);
     return isDiscontiguousInterval() ? subsetClosestDiscontiguousInterval(date) : subsetValuesClosest(want);
   }
 
-  @Nonnull
   private CoverageCoordAxisBuilder subsetClosestDiscontiguousInterval(CalendarDate date) {
     // this is specific to dates
     double target = axis.convert(date);
@@ -374,8 +368,6 @@ class CoordAxisHelper {
         : subsetValuesClosest(axis.convert(date));
   }
 
-
-  @Nonnull
   public CoverageCoordAxisBuilder subsetClosest(CalendarDate[] date) {
     double[] want = new double[2];
     want[0] = axis.convert(date[0]);
@@ -449,7 +441,6 @@ class CoordAxisHelper {
   }
 
   // Range must be contained in this range
-  @Nonnull
   CoverageCoordAxisBuilder subsetByIndex(Range range) throws InvalidRangeException {
     int ncoords = range.length();
     if (range.last() >= axis.getNcoords())
@@ -496,7 +487,6 @@ class CoordAxisHelper {
     return builder;
   }
 
-  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesClosest(double[] want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
 
@@ -518,7 +508,6 @@ class CoordAxisHelper {
     return builder;
   }
 
-  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesClosest(double want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
@@ -561,7 +550,6 @@ class CoordAxisHelper {
     return Optional.of(builder);
   }
 
-  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesLatest() {
     int last = axis.getNcoords() - 1;
     double val = axis.getCoordMidpoint(last);

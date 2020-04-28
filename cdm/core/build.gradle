@@ -22,7 +22,6 @@ dependencies {
     compile libraries["guava"]
     compile libraries["jcommander"]
     compile libraries["httpcore"]
-    compile libraries["jsr305"]  // Nonnull
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
 
