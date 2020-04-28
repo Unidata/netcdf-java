@@ -375,8 +375,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     for (int i = 0; i < getRank(); i++) {
       Dimension oldD = getDimension(i);
       Dimension newD = (oldD.getLength() == shape[i]) ? oldD
-          : Dimension.builder(oldD.getShortName(), shape[i]).setIsShared(false).setIsUnlimited(oldD.isUnlimited())
-              .build();
+          : Dimension.builder().setName(oldD.getShortName()).setIsUnlimited(oldD.isUnlimited()).setIsShared(false)
+              .setLength(shape[i]).build();
       dimensions.add(newD);
     }
     sectionV.dimensions = dimensions;

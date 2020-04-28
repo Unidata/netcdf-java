@@ -40,6 +40,10 @@ package ucar.unidata.util.test;
  */
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 /**
@@ -62,7 +66,8 @@ class fileInfo {
   public fileInfo(String filename) throws Exception {
     symbol = new node[MAXLINECOUNT + 2];
     other = null; // allocated later!
-    file = new BufferedReader(new FileReader(filename));
+    Path filepath = Paths.get(filename);
+    file = Files.newBufferedReader(filepath, StandardCharsets.UTF_8);
   }
 
   public fileInfo(Reader rdr) throws Exception {

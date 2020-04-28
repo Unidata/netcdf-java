@@ -7,9 +7,12 @@ package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -82,6 +85,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private static final boolean debugUserTypes = false;
   private static final boolean debugWrite = false;
 
+  // if the default charset being used by java isn't UTF-8, then we will
+  // need to transcode any string read into netCDf-Java via netCDF-C
+  private static final boolean transcodeStrings = Charset.defaultCharset() != StandardCharsets.UTF_8;
+
   /**
    * set the path and name of the netcdf c library.
    * must be called before load() is called.
@@ -116,6 +123,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private static Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null) {
+        // netCDF-C will return strings encoded as UTF-8 (not default C behavior).
+        // JNA assumes c code is returning using the system encoding by default
+        // So, if the system encoding isn't UTF_8 (hello, windows!), set the jna
+        // encoding to utf_8. LOOK: This might hose other application use JNA and
+        // not expect their c code to return UTF-8
+        if (!Charset.defaultCharset().equals(StandardCharsets.UTF_8)) {
+          log.info("Setting System Property jna.encoding to UTF8");
+          // System.setProperty("jna.encoding", StandardCharsets.UTF_8.name());
+        }
         setLibraryAndPath(null, null);
       }
       try {
@@ -493,6 +509,28 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return false;
   }
 
+  /**
+   * By default, JNA assumes strings coming into java from the C side are using
+   * the system encoding. However, netCDF-C encodes using UTF-8. Because of this,
+   * if we are on a platform where java is not using UTF-8 as the default encoding,
+   * we will need to transcode the incoming strings fix the incorrect assumption
+   * made by JNA.
+   *
+   * Note, we could set the system property jna.encode=UTF-8, but would impact the
+   * behavior of other libraries that use JNA, and would not be very nice of us to
+   * set globally (and often times isn't the right thing to set anyways, since the
+   * default in C to use the system encoding).
+   *
+   * @param systemStrings String array encoded using the default charset
+   * @return String array encoded using the UTF-8 charset
+   */
+  private String[] transcodeString(String[] systemStrings) {
+    return Arrays.stream(systemStrings).map(systemString -> {
+      byte[] byteArray = systemString.getBytes(Charset.defaultCharset());
+      return new String(byteArray, StandardCharsets.UTF_8);
+    }).toArray(String[]::new);
+  }
+
   private String makeString(byte[] b) {
     // null terminates
     int count = 0;
@@ -708,6 +746,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_string(grpid, varid, attname, valss);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+          if (transcodeStrings) {
+            valss = transcodeString(valss);
+          }
           values = Array.factory(DataType.STRING, new int[] {len}, valss);
           break;
 
@@ -1657,6 +1698,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_vars_string(grpid, varid, origin, shape, stride, valss);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        if (transcodeStrings) {
+          valss = transcodeString(valss);
+        }
         return Array.factory(DataType.STRING, section.getShape(), valss);
 
       default:
@@ -1769,6 +1813,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_var_string(grpid, varid, valss);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        if (transcodeStrings) {
+          valss = transcodeString(valss);
+        }
         return Array.factory(DataType.STRING, shape, valss);
 
       default:
@@ -3536,7 +3583,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public static long getNativeAddr(int pos, ByteBuffer buf) {
-    return (NativeLong.SIZE == (Integer.SIZE / 8) ? buf.getInt(pos) : buf.getLong(pos));
+    return Platform.is64Bit() ? buf.getLong(pos) : buf.getInt(pos);
   }
 
   @Override

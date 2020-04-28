@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage;
 
+import com.google.common.math.DoubleMath;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.Misc;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import ucar.nc2.util.Optional;
 
@@ -135,14 +135,14 @@ class CoordAxisHelper {
       int mid;
       while (high > low + 1) {
         mid = (low + high) / 2; // binary search
-        if (contains(target, mid, true))
+        if (intervalContains(target, mid, true))
           return mid;
         else if (axis.getCoordEdge2(mid) < target)
           low = mid;
         else
           high = mid;
       }
-      return contains(target, low, true) ? low : high;
+      return intervalContains(target, low, true) ? low : high;
 
     } else { // descending
 
@@ -156,33 +156,45 @@ class CoordAxisHelper {
       int mid;
       while (high > low + 1) {
         mid = (low + high) / 2; // binary search
-        if (contains(target, mid, false))
+        if (intervalContains(target, mid, false))
           return mid;
         else if (axis.getCoordEdge2(mid) < target)
           high = mid;
         else
           low = mid;
       }
-      return contains(target, low, false) ? low : high;
+      return intervalContains(target, low, false) ? low : high;
     }
   }
 
-  private boolean contains(double target, int coordIdx, boolean ascending) {
-    double midVal1 = axis.getCoordEdge1(coordIdx);
-    double midVal2 = axis.getCoordEdge2(coordIdx);
-    if (ascending)
-      return (midVal1 <= target && target <= midVal2);
-    else
-      return (midVal1 >= target && target >= midVal2);
-  }
+  // same contract as findCoordElement(); in addition, -1 is returned when the target is not found
+  // will return immediately if an exact match is found (i.e. interval with edges equal to target)
+  // If bounded is true, then we will also look for the interval closest to the midpoint of the
+  // target
+  private int findCoordElementDiscontiguousInterval(double[] target, boolean bounded) {
+    // Check that the target is within range
+    int n = axis.getNcoords();
+    double upperIndex = target[1] > target[0] ? target[1] : target[0];
+    double lowerIndex = upperIndex == target[1] ? target[0] : target[1];
+    if (lowerIndex < axis.getCoordEdge1(0))
+      return bounded ? 0 : -1;
+    else if (upperIndex > axis.getCoordEdgeLast())
+      return bounded ? n - 1 : n;
+    // see if we can find an exact match
+    int index = -1;
+    for (int i = 0; i < axis.getNcoords(); i++) {
+      double edge1 = axis.getCoordEdge1(i);
+      double edge2 = axis.getCoordEdge2(i);
 
-  private boolean contains(double target, int coordIdx) {
-    double midVal1 = axis.getCoordEdge1(coordIdx);
-    double midVal2 = axis.getCoordEdge2(coordIdx);
-    if (midVal1 < midVal2)
-      return (midVal1 <= target && target <= midVal2);
-    else
-      return (midVal1 >= target && target >= midVal2);
+      if (DoubleMath.fuzzyEquals(edge1, target[0], 1.0e-8) && DoubleMath.fuzzyEquals(edge2, target[1], 1.0e-8))
+        return i;
+    }
+    // ok, give up on exact match, try to find interval closest to midpoint of the target
+    if (bounded) {
+      index = findCoordElementDiscontiguousInterval(lowerIndex + (upperIndex - lowerIndex) / 2, bounded);
+    }
+
+    return index;
   }
 
   // same contract as findCoordElement(); in addition, -1 is returned when the target is not contained in any interval
@@ -194,20 +206,24 @@ class CoordAxisHelper {
     if (idx == -1)
       return -1; // no hits
 
-    // multiple hits = choose closest to the midpoint
-    return findClosest(target);
+    // multiple hits = choose closest (definition of closest will be based on axis type)
+    return findClosestDiscontiguousInterval(target);
   }
 
-  // same contract as findCoordElement(); in addition, -1 is returned when the target is not found
-  // LOOK not using bounded
-  private int findCoordElementDiscontiguousInterval(double[] target, boolean bounded) {
-    for (int i = 0; i < axis.getNcoords(); i++) {
-      double edge1 = axis.getCoordEdge1(i);
-      double edge2 = axis.getCoordEdge2(i);
-      if (Misc.nearlyEquals(edge1, target[0]) && Misc.nearlyEquals(edge2, target[1]))
-        return i;
-    }
-    return -1;
+  boolean intervalContains(double target, int coordIdx) {
+    // Target must be in the closed bounds defined by the discontiguous interval at index coordIdx.
+    double midVal1 = axis.getCoordEdge1(coordIdx);
+    double midVal2 = axis.getCoordEdge2(coordIdx);
+    boolean ascending = midVal1 < midVal2;
+    return intervalContains(target, coordIdx, ascending);
+  }
+
+  private boolean intervalContains(double target, int coordIdx, boolean ascending) {
+    // Target must be in the closed bounds defined by the discontiguous interval at index coordIdx.
+    double lowerVal = ascending ? axis.getCoordEdge1(coordIdx) : axis.getCoordEdge2(coordIdx);
+    double upperVal = ascending ? axis.getCoordEdge2(coordIdx) : axis.getCoordEdge1(coordIdx);
+
+    return lowerVal <= target && target <= upperVal;
   }
 
   // return index if only one match, if no matches return -1, if > 1 match return -nhits
@@ -216,7 +232,7 @@ class CoordAxisHelper {
     int idxFound = -1;
     int n = axis.getNcoords();
     for (int i = 0; i < n; i++) {
-      if (contains(target, i)) {
+      if (intervalContains(target, i)) {
         hits++;
         idxFound = i;
       }
@@ -229,18 +245,73 @@ class CoordAxisHelper {
   }
 
   // return index of closest value to target
-  // if its a tie, use the larger one
-  private int findClosest(double target) {
+  // For Discontiguous Intervals, "closest" means:
+  // - time coordinate axis? Interval such that the end of the interval is closest to the target value
+  // - otherwise, interval midpoint closest to target
+  // If there are multiple matches for closest:
+  // - time coordinate axis? Use the interval with the smallest non-zero interval width
+  // - otherwise, use the one with the largest midpoint value
+  private int findClosestDiscontiguousInterval(double target) {
+    boolean isTemporal = axis.getAxisType().equals(AxisType.Time);
+    return isTemporal ? findClosestDiscontiguousTimeInterval(target) : findClosestDiscontiguousNonTimeInterval(target);
+  }
+
+  private int findClosestDiscontiguousTimeInterval(double target) {
     double minDiff = Double.MAX_VALUE;
     double useValue = Double.MIN_VALUE;
     int idxFound = -1;
+
     for (int i = 0; i < axis.getNcoords(); i++) {
-      double coord = axis.getCoordMidpoint(i);
-      double diff = Math.abs(coord - target);
-      if (diff < minDiff || (diff == minDiff && coord > useValue)) {
-        minDiff = diff;
-        idxFound = i;
-        useValue = coord;
+      // only check if target is in discontiguous interval i
+      if (intervalContains(target, i)) {
+        // find the end of the time interval
+        double coord = axis.getCoordEdge2(i);
+        // We want to make sure the interval includes our target point, and that means the end of the interval
+        // must be greater than or equal to the target.
+        if (coord >= target) {
+          // compute the width (in time) of the interval
+          double width = axis.getCoordEdge2(i) - axis.getCoordEdge1(i);
+          // we want to identify the interval with the end point closest to our target
+          // why? Because a statistic computed over a time window will only have meaning at the end
+          // of that interval, so the closer we can get to that the better.
+          double diff = Math.abs(coord - target);
+          // Here we minimize the difference between the end of an interval and our target value. If multiple
+          // intervals result in the same difference value, we will pick the one with the smallest non-zero
+          // width interval.
+          boolean tiebreaker = (diff == minDiff) && (width != 0) && (width < useValue);
+          if (diff < minDiff || tiebreaker) {
+            minDiff = diff;
+            idxFound = i;
+            useValue = width;
+          }
+        }
+      }
+    }
+    return idxFound;
+  }
+
+  private int findClosestDiscontiguousNonTimeInterval(double target) {
+    int idxFound = -1;
+    double minDiff = Double.MAX_VALUE;
+    double useValue = Double.MIN_VALUE;
+
+    for (int i = 0; i < axis.getNcoords(); i++) {
+      // only check if target is in discontiguous interval i
+      if (intervalContains(target, i)) {
+        // get midpoint of interval
+        double coord = axis.getCoordMidpoint(i);
+        // how close is the midpoint of this interval to our target value?
+        double diff = Math.abs(coord - target);
+        // Look for the interval with the minimum difference. If multiple intervals have the same
+        // difference between their midpoint and the target value, pick then one with the larger
+        // midpoint value
+        // LOOK - is maximum midpoint value the right tie breaker?
+        boolean tiebreaker = (diff == minDiff) && (coord > useValue);
+        if (diff < minDiff || tiebreaker) {
+          minDiff = diff;
+          idxFound = i;
+          useValue = coord;
+        }
       }
     }
     return idxFound;
@@ -252,23 +323,51 @@ class CoordAxisHelper {
     return subsetValues(minValue, maxValue, stride);
   }
 
-  @Nonnull
   public CoverageCoordAxisBuilder subsetClosest(double want) {
     return subsetValuesClosest(want);
   }
 
-  @Nonnull
   public CoverageCoordAxisBuilder subsetLatest() {
     return subsetValuesLatest();
   }
 
-  @Nonnull
   public CoverageCoordAxisBuilder subsetClosest(CalendarDate date) {
     double want = axis.convert(date);
-    return subsetValuesClosest(want);
+    return isDiscontiguousInterval() ? subsetClosestDiscontiguousInterval(date) : subsetValuesClosest(want);
   }
 
-  @Nonnull
+  private CoverageCoordAxisBuilder subsetClosestDiscontiguousInterval(CalendarDate date) {
+    // this is specific to dates
+    double target = axis.convert(date);
+
+    double maxDateToSearch = 0;
+    int intervals = 0;
+    // if there are multiple intervals that contain the target
+    // we want to find the maximum amount of time to subset based
+    // on the end of the widest interval
+    for (int i = 0; i < axis.getNcoords(); i++) {
+      if (intervalContains(target, i)) {
+        intervals += 1;
+        double bound1 = axis.getCoordEdge1(i);
+        double bound2 = axis.getCoordEdge2(i);
+        double intervalEnd = bound1 < bound2 ? bound2 : bound1;
+        if (intervalEnd > maxDateToSearch) {
+          maxDateToSearch = intervalEnd;
+        }
+      }
+    }
+
+    // if we found one or more intervals, try to handle that by subsetting over a range of time
+    Optional<CoverageCoordAxisBuilder> multipleIntervalBuilder = Optional.empty("");
+    if (intervals > 0) {
+      multipleIntervalBuilder = subset(target, maxDateToSearch, 1);
+    }
+
+    // if multipleIntervalBuilder exists, return it. Otherwise fallback to subsetValuesClosest.
+    return multipleIntervalBuilder.isPresent() ? multipleIntervalBuilder.get()
+        : subsetValuesClosest(axis.convert(date));
+  }
+
   public CoverageCoordAxisBuilder subsetClosest(CalendarDate[] date) {
     double[] want = new double[2];
     want[0] = axis.convert(date[0]);
@@ -282,11 +381,8 @@ class CoordAxisHelper {
     return subsetValues(min, max, stride);
   }
 
-  // look could specialize when only one point
-  // look must handle discon interval different
+  // LOOK could specialize when only one point
   private Optional<CoverageCoordAxisBuilder> subsetValues(double minValue, double maxValue, int stride) {
-    if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
-      return subsetValuesDiscontinuous(minValue, maxValue, stride);
 
     double lower = axis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = axis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
@@ -316,8 +412,6 @@ class CoordAxisHelper {
   }
 
   public Optional<RangeIterator> makeRange(double minValue, double maxValue, int stride) {
-    // if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
-    // return subsetValuesDiscontinuous(minValue, maxValue, stride);
 
     double lower = axis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = axis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
@@ -346,12 +440,7 @@ class CoordAxisHelper {
     }
   }
 
-  private Optional<CoverageCoordAxisBuilder> subsetValuesDiscontinuous(double minValue, double maxValue, int stride) {
-    return Optional.empty("subsetValuesDiscontinuous not done yet"); // LOOK
-  }
-
   // Range must be contained in this range
-  @Nonnull
   CoverageCoordAxisBuilder subsetByIndex(Range range) throws InvalidRangeException {
     int ncoords = range.length();
     if (range.last() >= axis.getNcoords())
@@ -398,18 +487,15 @@ class CoordAxisHelper {
     return builder;
   }
 
-  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesClosest(double[] want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
-    if (closest_index < 0)
-      findCoordElement(want, true);
+
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
 
     if (axis.spacing == CoverageCoordAxis.Spacing.regularInterval) {
       double val1 = axis.getCoordEdge1(closest_index);
       double val2 = axis.getCoordEdge2(closest_index);
       builder.subset(1, val1, val2, val2 - val1, null);
-
     } else {
       builder.subset(1, 0, 0, 0.0, makeValues(closest_index));
     }
@@ -422,7 +508,6 @@ class CoordAxisHelper {
     return builder;
   }
 
-  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesClosest(double want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
@@ -465,7 +550,6 @@ class CoordAxisHelper {
     return Optional.of(builder);
   }
 
-  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesLatest() {
     int last = axis.getNcoords() - 1;
     double val = axis.getCoordMidpoint(last);
@@ -501,15 +585,23 @@ class CoordAxisHelper {
 
   int search(double want) {
     if (axis.getNcoords() == 1) {
-      return Misc.nearlyEquals(want, axis.getStartValue()) ? 0 : -1;
+      return DoubleMath.fuzzyEquals(want, axis.getStartValue(), 1.0e-8) ? 0 : -1;
     }
     if (axis.isRegular()) {
       double fval = (want - axis.getStartValue()) / axis.getResolution();
       double ival = Math.rint(fval);
-      return Misc.nearlyEquals(fval, ival) ? (int) ival : (int) -ival - 1; // LOOK
+      return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1; // LOOK
     }
 
     // otherwise do a binary search
     return Arrays.binarySearch(axis.getValues(), want);
+  }
+
+  private boolean isDiscontiguousInterval() {
+    CoverageCoordAxis.Spacing spacing = axis.getSpacing();
+    if (spacing != null) {
+      return spacing.equals(CoverageCoordAxis.Spacing.discontiguousInterval);
+    }
+    return false;
   }
 }

@@ -51,8 +51,11 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
    * @return canonical form
    */
   public static String canonicalURL(String urlName) {
-    if (urlName.startsWith("http:"))
+    if (urlName.startsWith("http:")) {
       return SCHEME + urlName.substring(5);
+    } else if (urlName.startsWith("https:")) {
+      return SCHEME + urlName.substring(6);
+    }
     return urlName;
   }
 
@@ -68,10 +71,11 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     // get http URL
     String temp = _remoteURI;
     try {
-      if (temp.startsWith(SCHEME))
+      if (temp.startsWith(SCHEME)) {
         temp = temp.substring(SCHEME.length());
-      if (!temp.startsWith("http:"))
+      } else if (!(temp.startsWith("http:") | temp.startsWith("https:"))) {
         temp = "http:" + temp;
+      }
     } catch (Exception e) {
       throw new IOException(e);
     }
