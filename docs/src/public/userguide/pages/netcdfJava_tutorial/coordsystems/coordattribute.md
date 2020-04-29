@@ -1,13 +1,13 @@
 ---
 title: Coordinate Attribute Examples
-last_updated: 2019-07-22
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 permalink: coord_attribute_ex.html
 toc: false
 ---
 ## Coordinate Attribute Convention (Tutorial)
 
-{% include image.html file="netcdf-java/tutorial/CoordSys.png" alt="Coord Sys Object Model" caption="Coordinate Systems UML" %}
+{% include image.html file="netcdf-java/tutorial/coordsystems/CoordSys.png" alt="Coord Sys Object Model" caption="Coordinate Systems UML" %}
 
 ### See Also:
 * <a href="common_data_model_overview.html">CDM Object Model</a>

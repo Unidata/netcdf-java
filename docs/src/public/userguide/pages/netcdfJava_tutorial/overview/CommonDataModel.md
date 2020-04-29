@@ -1,13 +1,13 @@
 ---
 title: The Common Data Model
-last_updated: 2019-07-22
+last_updated: 2020-04-18
 sidebar: netcdfJavaTutorial_sidebar 
 permalink: common_data_model_overview.html
 toc: false
 ---
 ## Unidiata's Common Data Model Version 4file formats
 
-Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many file types. Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many [file formats](file_types.html) besides netCDF. We call these CDM files, a shorthand for files that can be read by the NetCDF Java library and accessed through the CDM data model.
+Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="https://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many file types. Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="https://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many [file formats](file_types.html) besides netCDF. We call these CDM files, a shorthand for files that can be read by the NetCDF Java library and accessed through the CDM data model.
 
 The Common Data Model has three layers, which build on top of each other to add successively richer semantics:
 
@@ -56,7 +56,7 @@ An Object name refers to the name of a Group, Dimension, Variable, Attribute, or
 
 ### Comparision to netCDF-4
 
-The CDM data model is close to, but not identical with the <a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_data_model.html" target="_blank">netCDF-4 data model</a> <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html" target="_blank">(informal UML)</a>. However there is a complete 2-way mapping between the two models. In the CDM:
+The CDM data model is close to, but not identical with the <a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_data_model.html" target="_blank">netCDF-4 data model</a> <a href="https://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html" target="_blank">(informal UML)</a>. However there is a complete 2-way mapping between the two models. In the CDM:
 
 Non-shared dimensions are allowed, but netCDF-4 does not support these.
 * An attribute type may only be a scalar or 1D array of byte, short, int, long, float, double, or String.
@@ -87,7 +87,7 @@ As of version 4.1, the CDM can read all versions of HDF5 through version 1.8.4, 
 
 * SZIP compression. The <a href="http://www.hdfgroup.org/doc_resource/SZIP/" target="_blank">SZIP library</a> is proprietary and does not have a Java implementation. Its not clear if we can even legally write one if we wanted to.
 * Dataset region references. <a href="http://www.google.com/search?q=HDF5+region+reference" target="_blank">These</a> are used in NPOESS, but their purpose is unclear. Since they point to other datasets that are accessible through the CDM, all the data in the file can still be read by the CDM. However, whatever information the region reference represents is not currently accessible.
-* Since HDF5 does not support shared dimensions, however, reading HDF5 files into the higher levels of the CDM (Coordinate Systems, Grids, etc) may not work like you want. For this reason we recommend using the <a href="http://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF-4 C library</a> for writing HDF5 files. <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales" target="_blank">Here</a>is why.
+* Since HDF5 does not support shared dimensions, however, reading HDF5 files into the higher levels of the CDM (Coordinate Systems, Grids, etc) may not work like you want. For this reason we recommend using the <a href="https://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF-4 C library</a> for writing HDF5 files. <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales" target="_blank">Here</a>is why.
 * Hard links that cause cycles in the group structure are ignored. These break the CDM and netCDF-4 data model, in which groups comprise a tree. All info in the HDF-5 file is still available to CDM users, but certain paths that one could call from the HDF-5 library are not available.
 * Please send file examples if you find a problem with the CDM reading HDF5 files, other than the ones listed above.
 
@@ -166,6 +166,6 @@ With these Feature Types objects, mapping into other data models like ISO/OGC be
 
 Feature Type definitions, APIU, and encodings are still being developed, so applications using these must be able to evolve along with the APIs.
 
-* [Feature Dataset API](feature_types.html)
+* [Feature Dataset API](feature_datasets.html)
 * [CDM Point Feature Types](pointfeature_ref.html)
 * {% include link_file.html file="netcdf-java/cdm/CDMfeatures.doc" text="CDM Feature Types-draft" %}

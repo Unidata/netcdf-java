@@ -10,7 +10,7 @@ permalink: toolsui_ref.html
 
 ### Download and run locally
 
-You can download toolsUI.jar from the [netCDF-Java downloads page](https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp){:target="_blank"}.
+You can download toolsUI.jar from the [netCDF-Java downloads page](https://www.unidata.ucar.edu/downloads/netcdf-java/){:target="_blank"}.
 You can then run the ToolsUI application using a command similar to:
 
 ~~~bash

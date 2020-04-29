@@ -556,8 +556,6 @@ Instead, the first time it is opened, the values are read, then subsequent opens
 
 If using a `scan` element on changing directories, be sure to specify the `recheckEvery` attribute to make sure that the cached information gets updated.
 
-For more information on controlling caching in the TDS, please see [here](tds_config_ref.html#aggregation-cache).
-
 ### Nested Aggregation
 
 One can nest netcdf elements in aggregation, for example:

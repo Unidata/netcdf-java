@@ -3,8 +3,17 @@
 #topnav:
 #- title: Topnav
 #  items:
-#    - title: Introduction 
+#    - title: Introduction
 #      url: /index.html
+
+# Documentation version menu
+topnav_docvermenu:
+- title: Version
+  id: docmenu
+  folderitems:
+    - title: Menu Loading...
+      url:
+      id: remove
 
 #Topnav dropdowns
 topnav_dropdowns:
@@ -24,7 +33,7 @@ topnav_dropdowns:
     - title: Javadocs
       folderitems:
         - title: netCDF-Java Public Javadocs
-          external_url: https://docs.unidata.ucar.edu/netcdf-java/5.1/javadoc/
+          external_url: ../javadoc/
 
     - title: External Docs
       folderitems:

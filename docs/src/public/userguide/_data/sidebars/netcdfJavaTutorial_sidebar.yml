@@ -1,10 +1,8 @@
 # This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
 
-
 entries:
 - title: Sidebar
-  product: netCDF-Java Tutorial and Reference Documentation
-  version: 5.1
+  product: Tutorial and Reference Documentation
   folders:
 
   - title:
@@ -37,7 +35,7 @@ entries:
       output: web, pdf
 
     - title: CDM Object Names
-      url: / cdm_objectnames.html
+      url: /cdm_objectnames.html
       output: web, pdf
 
     - title: Building from Source
@@ -120,7 +118,11 @@ entries:
     output: web, pdf
     folderitems:
     - title: Feature Dataset Overview
-      url: /feature_types.html
+      url: /feature_datasets.html
+      output: web, pdf
+
+    - title: Coverage Feature Reference
+      url: /coverage_feature.html
       output: web, pdf
 
     - title: Grid Datasets
@@ -131,7 +133,7 @@ entries:
       url: /radial_datasets.html
       output: web, pdf
 
-    - title: Point Feature Datasets (aka Discrete Sampling Geometry datasets)
+    - title: Point Feature Datasets
       url: /point_feature_datasets.html
       output: web, pdf
 
@@ -140,6 +142,13 @@ entries:
     folderitems:
     - title: Summary
       url: /runtime_loading.html
+      output: web, pdf
+
+  - title: Frequently Asked Questions
+    output: web, pdf
+    folderitems:
+    - title: FAQ
+      url: /faq.html
       output: web, pdf
 
   - title: netCDF-Java Reference Docs
@@ -162,16 +171,16 @@ entries:
       url: /file_types.html
       output: web, pdf
 
+    - title: CDM Calendar Date Handling
+      url: /cdm_calendar_date_time_ref.html
+      output: web, pdf
+
     - title: CDM Disk Caching
       url: /disk_caching.html
       output: web, pdf
 
     - title: CDMRemote
       url: /cdmremote.html
-      output: web, pdf
-
-    - title: CDM Feature Datasets
-      url: /feature_datasets.html
       output: web, pdf
 
     - title: CDMRemote Feature Datasets
@@ -202,20 +211,12 @@ entries:
       url: /coord_attr_conv.html
       output: web, pdf
 
-    - title: Coverage Feature Reference
-      url: /coverage_feature.html
-      output: web, pdf
-
     - title: Dataset URLs
       url: /dataset_urls.html
       output: web, pdf
 
-    - title: Feature Datasets Reference
-      url: /feature_types.html
-      output: web, pdf
-
-    - title: Frequently Asked Questions
-      url: /faq.html
+    - title:  Forecast Model Run Collection
+      url: /fmrc_ref.html
       output: web, pdf
 
     - title: GRIB Files in CDM
@@ -224,6 +225,10 @@ entries:
 
     - title: GRIB Tables in CDM
       url: /grib_tables.html
+      output: web, pdf
+
+    - title: GRIB Collection Specification
+      url: /grib_feature_collections_ref.html
       output: web, pdf
 
     - title: NcML Overview
@@ -272,4 +277,12 @@ entries:
 
     - title: ToolsUI Reference
       url: /toolsui_ref.html
+      output: web, pdf
+
+    - title: Unidata Defined System Properties
+      url: /systemproperties.html
+      output: web, pdf
+
+    - title: 5.0 Changes
+      url: /upgrade_to_50.html
       output: web, pdf

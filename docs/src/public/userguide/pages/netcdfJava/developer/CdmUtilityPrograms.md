@@ -77,6 +77,12 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.write.Nccopy [options]
        Enable the shuffle filter, which may improve compression. Only used in
        NetCDF 4. This option is ignored unless a non-zero deflate level is specified.
        Default: true
+    --diskCacheRoot
+      Set the DiskCache root. This parameter controls where temporary files 
+      will be stored, if necessary (e.g. intermediate uncompressed NEXRAD 
+      files created when reading compressed files). Must be a valid filesystem 
+      path. Note: this directory is not automatically cleaned, so be sure to 
+      clean-up as needed
     -h, --help
        Display this help and exit
        Default: false
@@ -146,7 +152,7 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.point.writer.CFPointW
 
 ## GribCdmIndex
 
-Write GRIB Collection Indexes from an XML file containing a [GRIB `<featureCollection>`](grib_feature_collections_ref.html) XML element.
+Write GRIB Collection Indexes from an XML file containing a [GRIB `<featureCollection>`](/grib_feature_collections_ref.html) XML element.
 
 ~~~bash
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmIndex [options]
@@ -167,7 +173,7 @@ Example:
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmIndex -fc /data/fc/gfs_example.xml
 ~~~
 
-Note that the output file is placed in the root directory of the collection, as specified by the [Collection Specification](collection_spec_string_ref.html) of the GRIB [`<featureCollection>`](feature_collections_ref.html).
+Note that the output file is placed in the root directory of the collection, as specified by the [Collection Specification](/collection_spec_string_ref.html) of the GRIB [`<featureCollection>`](feature_collections_ref.html).
 
 ## FeatureScan
 
