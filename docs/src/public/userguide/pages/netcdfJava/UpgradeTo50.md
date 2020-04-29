@@ -51,10 +51,6 @@ As such, we no longer utilize WebStart.
 * `ArrayObject.factory(Class classType, Index index)` is now `ArrayObject.factory(DataType dtype, Class classType, boolean isVlen, Index index)`
 * Use `Array.makeVlenArray(int[] shape, Array[] data)` to construct _vlen_ data.
 
-
-
-
-
 ### AutoCloseable
 
 _AutoCloseable_ was introduced in Java 7, along with the _try-with-resources_ language feature.
@@ -232,7 +228,7 @@ shared and allowing them to be private is confusing and error-prone.
 
 ## netCDF-Java API Changes (5.1.x)
 
-List of GitHub commits since 5.0.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.0.0...v5.1.0)])
+List of GitHub commits since 5.0.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.0.0...v5.1.0){:target="_blank"})
 
 ### Many checked exceptions removed
 
@@ -265,7 +261,7 @@ Remove usages of `org.joda.time` outside of `ucar.nc2.time`.
 
 ## netCDF-Java API Changes (5.2.x)
 
-List of GitHub commits since 5.1.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.1.0...v5.2.0)])
+List of GitHub commits since 5.1.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.1.0...v5.2.0){:target="_blank"})
 
 ### netcdf-java artifact changes
 
@@ -291,7 +287,7 @@ Starting with v5.2.0, users can set the maximum buffer size in bytes using the J
 
 ## netCDF-Java API Changes (5.3.x)
 
-List of GitHub commits since 5.2.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.2.0...v5.3.2)])
+List of GitHub commits since 5.2.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.2.0...v5.3.2){:target="_blank"})
 
 ### Opening remote files on Object Stores that support the AWS S3 API
 
@@ -303,6 +299,6 @@ For more information, see the [DatasetUrl](dataset_urls.html#object-stores) docu
 
 ## netCDF-Java API Changes (5.4.x)
 
-List of GitHub commits since 5.3.2 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.3.2...master)])
+List of GitHub commits since 5.3.2 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.3.2...master){:target="_blank"})
 
 Lots of work on establishing a public API. For more information about these efforts and why this work is being done, please visit https://www.unidata.ucar.edu/blogs/developer/en/entry/netcdf-java-looking-ahead.
