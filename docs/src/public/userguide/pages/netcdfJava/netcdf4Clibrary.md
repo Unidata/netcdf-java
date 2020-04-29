@@ -1,6 +1,6 @@
 ---
 title: netCDF C Library
-last_updated: 2018-10-24
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: netcdf4_c_library.html
@@ -33,7 +33,7 @@ Details will vary with each program but "netcdf" is usually the package name you
 
 #### Build from source
 
-Instructions for how to build libnetcdf from source can be [found here](https://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html){:target="_blank"}.
+Instructions for how to build libnetcdf from source can be [found here](https://www.unidata.ucar.edu/software/netcdf/docs/netCDF-CMake.html){:target="_blank"}.
 
 ### Mac
 
@@ -112,8 +112,6 @@ This is a particular issue on Windows, because the libraries are installed in se
 In addition to the library path, the CDM also needs to know the library name.
 This is almost always \"netcdf\", unless you’ve renamed it.
 
-For TDS users, we recommend setting the library path and name in the [THREDDS configuration file](http://localhost:4005/tds_config_ref.html#netcdf-4-c-library-loading).
-
 For standalone CDM library use, you can:
 
 * create a system environment variable: `JNA_PATH=/path/to/library`
@@ -147,8 +145,7 @@ Make sure that you don’t have an old version of `libhdf5` in your system libra
 
 ## Writing NetCDF-4 files
 
-* From the command line: see [nccopy man page](cdm_utility_programs.html#nccopy
-)
+* From the command line: see [nccopy man page](cdm_utility_programs.html)
 * From ToolsUI: in Viewer tab, bring up the file to copy, then click \"Write netCDF file\" button to get dialog.
 * From TDS NetCDF Subset Service: choose netcdf-4 output type.
 * From a Java program (see `ucar.nc2.dataset.NetcdfDataset.main()` for complete example):
