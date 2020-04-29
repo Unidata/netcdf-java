@@ -29,6 +29,7 @@ If so, you can skip to step 4.
    - `git pull`
 
 1. Create a new branch for the release and switch to it.
+   Branch from an up-to-date `Unidata/netcdf-java master` or appropriate maintenance branch (e.g. `Unidata/netcdf-java 5.3-maint`).
    - `git checkout -b ${releaseVersion}`
 
 1. In `/build.gradle`, update the project's version for the release.
@@ -52,7 +53,11 @@ If so, you can skip to step 4.
 
 1. Update Unidata download page
     - check https://www.unidata.ucar.edu/downloads/netcdf-java/
-      * Edit (on machine www) `/content/downloads/netcdf-java/index.html` as needed
+      * Edit (on machine www) `/content/downloads/netcdf-java/index.html` as needed. for example in `vim`:
+      ```bash
+      :%s/5.2.0/5.3.2/gc
+      ```
+      This will update the links to the release artifacts.
 
 1. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
@@ -63,22 +68,20 @@ If so, you can skip to step 4.
       * `git commit -m "Begin work on 5.0.1-SNAPSHOT"`
     - If moving directly to new minor version (i.e. `5.0.0` to `5.1.0`), revisit step 1 and update with new minor version.
 
-1. Update README.md to point to correct documentation
-    - Should point to the latest release, not current snapshot.
-
 1. Push the new commits upstream.
     - `git push origin ${releaseVersion}`
 
 1. Create a pull request on GitHub and wait for it to be merged.
-    - It should pull your changes on `Unidata/${releaseVersion}` into `Unidata/netcdf-java master`.
+    - It should pull your changes on `Unidata/${releaseVersion}` into `Unidata/netcdf-java master` (or the appropriate maintenance branch, e.g. `Unidata/netcdf-java 5.3-maint`).
     - Alternatively, merge it yourself. As long as the changeset is small and non-controversial, nobody will care.
 
-1. Once merged, pull down the latest changes from master. You can also delete the local release branch.
+1. Once merged, pull down the latest changes from master or appropriate maintenance branch (e.g. `Unidata/netcdf-java 5.3-maint`).
+   You can also delete the local release branch.
     - `git checkout master`
     - `git pull`
     - `git branch -d ${releaseVersion}`
 
-1. In the git log of master, find the "Release ${releaseVersion}" commit and tag it with the version number.
+1. In the git log of master (or appropriate maintenance branch), find the "Release ${releaseVersion}" commit and tag it with the version number.
     - `git log`
     - `git tag v${releaseVersion} <commit-id>`
     - You can't create this tag earlier because when our PR was merged above, GitHub rebased our original

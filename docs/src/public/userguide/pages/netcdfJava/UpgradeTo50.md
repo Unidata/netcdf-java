@@ -25,7 +25,6 @@ As such, we no longer utilize WebStart.
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
 * [Summary of changes for v5.2.x](#netcdf-java-api-changes-52x)
 * [Summary of changes for v5.3.x](#netcdf-java-api-changes-53x)
-* [Summary of changes for v5.4.x](#netcdf-java-api-changes-54x)
 
 ## netCDF-Java API Changes (5.0.x)
 
@@ -50,10 +49,6 @@ As such, we no longer utilize WebStart.
 * Use `Array.isVlen()` to discover if an Array represents vlen data.
 * `ArrayObject.factory(Class classType, Index index)` is now `ArrayObject.factory(DataType dtype, Class classType, boolean isVlen, Index index)`
 * Use `Array.makeVlenArray(int[] shape, Array[] data)` to construct _vlen_ data.
-
-
-
-
 
 ### AutoCloseable
 
@@ -232,6 +227,8 @@ shared and allowing them to be private is confusing and error-prone.
 
 ## netCDF-Java API Changes (5.1.x)
 
+List of GitHub commits since 5.0.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.0.0...v5.1.0){:target="_blank"})
+
 ### Many checked exceptions removed
 
 Many unneeded checked Exceptions were removed in 5.1.
@@ -263,6 +260,8 @@ Remove usages of `org.joda.time` outside of `ucar.nc2.time`.
 
 ## netCDF-Java API Changes (5.2.x)
 
+List of GitHub commits since 5.1.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.1.0...v5.2.0){:target="_blank"})
+
 ### netcdf-java artifact changes
 
 The following artifacts have changed:
@@ -287,16 +286,7 @@ Starting with v5.2.0, users can set the maximum buffer size in bytes using the J
 
 ## netCDF-Java API Changes (5.3.x)
 
-### Opening remote files on AWS S3
-
-`NetcdfFiles` and `NetcdfDatasets` can now open files stored as a single object on S3 using the AWS RESTful API with byte range-requests, similar to HTTP.
-This new functionality is not available in the now deprecated `NetcdfFile` and `NetcdfDataset` open methods.
-You will also need to include the `cdm-s3` artifact in your build.
-This is currently not part of `netcdfAll.jar`..
-This is done through the use of `S3RandomAccessFile` and byte range-requests, so downloading the entire object may not be needed.
-For more information, see the [DatasetUrl](dataset_urls.html#object-stores) documentation.
-
-## netCDF-Java API Changes (5.4.x)
+List of GitHub commits since 5.2.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.2.0...v5.3.2){:target="_blank"})
 
 ### Opening remote files on Object Stores that support the AWS S3 API
 
