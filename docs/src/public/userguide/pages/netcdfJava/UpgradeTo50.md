@@ -50,10 +50,6 @@ As such, we no longer utilize WebStart.
 * `ArrayObject.factory(Class classType, Index index)` is now `ArrayObject.factory(DataType dtype, Class classType, boolean isVlen, Index index)`
 * Use `Array.makeVlenArray(int[] shape, Array[] data)` to construct _vlen_ data.
 
-
-
-
-
 ### AutoCloseable
 
 _AutoCloseable_ was introduced in Java 7, along with the _try-with-resources_ language feature.
@@ -231,6 +227,8 @@ shared and allowing them to be private is confusing and error-prone.
 
 ## netCDF-Java API Changes (5.1.x)
 
+List of GitHub commits since 5.0.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.0.0...v5.1.0){:target="_blank"})
+
 ### Many checked exceptions removed
 
 Many unneeded checked Exceptions were removed in 5.1.
@@ -262,6 +260,8 @@ Remove usages of `org.joda.time` outside of `ucar.nc2.time`.
 
 ## netCDF-Java API Changes (5.2.x)
 
+List of GitHub commits since 5.1.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.1.0...v5.2.0){:target="_blank"})
+
 ### netcdf-java artifact changes
 
 The following artifacts have changed:
@@ -285,6 +285,8 @@ When reading a remote file over http using byte-range requests, the default buff
 Starting with v5.2.0, users can set the maximum buffer size in bytes using the Java System Property `ucar.unidata.io.http.maxHTTPBufferSize` (default is 10 MB).
 
 ## netCDF-Java API Changes (5.3.x)
+
+List of GitHub commits since 5.2.0 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.2.0...v5.3.2){:target="_blank"})
 
 ### Opening remote files on Object Stores that support the AWS S3 API
 
