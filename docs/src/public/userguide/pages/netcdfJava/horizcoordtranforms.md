@@ -195,7 +195,7 @@ Adapted from proj4 / jhlabs. See Snyder, p 76. As of version 4.3.10
    char McIDAS_Projection;
      :grid_mapping_name = "mcidas_area";
      :AreaHeader = 33.0, 45.0, ...;   // an integer array
-     :NavHeader = -97.0, ...; 		// an integer array
+     :NavHeader = -97.0, ...;     // an integer array
 ~~~
  
 This is not a standard CF projection. The headers are read from a McIDAS Area file, and placed in the attributes as int arrays.
@@ -275,7 +275,7 @@ If the <b>_standard_parallel_</b> is specified, this indicates the parallel wher
  scale = (1.0 + sin)/2;
 rotated_pole
  char rotated_pole;
- 	 :grid_mapping_name = "rotated_latitude_longitude";
+    :grid_mapping_name = "rotated_latitude_longitude";
    :grid_north_pole_latitude = 37.0f; // float
    :grid_north_pole_longitude = -153.0f; // float
 ~~~

@@ -157,7 +157,7 @@ You may subset a PointFeatureCollection with a lat/lon bounding box, and/or a da
 ~~~
   ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
   PointFeatureCollection subset = pointFeatureCollection.subset(new LatLonRect("40,-105,2,2"), 
-		new DateRange( dformat.getISODate("1999-09-31T12:00:00"), null, new TimeDuration("3 days"), null); 
+    new DateRange( dformat.getISODate("1999-09-31T12:00:00"), null, new TimeDuration("3 days"), null); 
 
   // get all the points in that subset
   while(subset.hasNext()) {
@@ -246,7 +246,7 @@ You may flatten a ProfileFeatureCollection with a lat/lon bounding box, and/or a
 ~~~
   ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
   PointFeatureCollection subset = profileFeatureCollection.flatten(new LatLonRect("-60,120,12,20"), 
-		new DateRange( dformat.getISODate("1999-09-30T00:00:00"), dformat.getISODate("1999-09-31T00:00:00"));
+    new DateRange( dformat.getISODate("1999-09-30T00:00:00"), dformat.getISODate("1999-09-31T00:00:00"));
   // get all the points in that subset
   subset.resetIteration();
   while(subset.hasNext()) {

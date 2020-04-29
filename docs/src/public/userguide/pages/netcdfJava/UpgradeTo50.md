@@ -1,6 +1,6 @@
 ---
-title: Upgrading to netCDF-Java version 5.0
-last_updated: 2019-07-23
+title: Upgrading to netCDF-Java version 5.x
+last_updated: 2019-12-31
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: upgrade_to_50.html
@@ -20,7 +20,10 @@ Deprecated classes and methods have been removed, and the module structure and t
 Java WebStart has been deprecated as of [Java 9](https://www.oracle.com/technetwork/java/javase/9-deprecated-features-3745636.html#JDK-8184998){:target="_blank"}.
 As such, we no longer utilize WebStart.
 
-## netCDF-Java API Changes
+## Quick Navigation
+* [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
+
+## netCDF-Java API Changes (5.0.x)
 
 ### Unsigned Types
 
@@ -43,7 +46,6 @@ As such, we no longer utilize WebStart.
 * Use `Array.isVlen()` to discover if an Array represents vlen data.
 * `ArrayObject.factory(Class classType, Index index)` is now `ArrayObject.factory(DataType dtype, Class classType, boolean isVlen, Index index)`
 * Use `Array.makeVlenArray(int[] shape, Array[] data)` to construct _vlen_ data.
-* See [here](variable_length_data.html) for more information.
 
 ### AutoCloseable
 
@@ -201,7 +203,7 @@ instead of the exact comparison done by `equals(Array, Array)`.
 * Completely new package `ucar.nc2.ft2.coverage` that replaces `ucar.nc2.dt.grid`
   The class `FeatureDatasetCoverage` replaces `GridDataset`.
 * Uses of classes in `car.nc2.dt.grid` are deprecated, though the code is still in the core jar file for now.
-* For new API see [Coverage Datasets](coverage_datasets.html)
+* For new API see [Coverage Datasets](coverage_feature.html)
 * `FeatureType.COVERAGE` is the general term for `GRID`, `FMRC`, `SWATH`, `CURVILINEAR` types.
   Previously, `GRID` was used as the general type, now it refers to a specific type of Coverage.
   Affects `FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, ...)`

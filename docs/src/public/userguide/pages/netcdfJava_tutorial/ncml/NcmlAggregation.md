@@ -44,6 +44,11 @@ Go to the NcML/Aggregation Tab of ToolsUI and cut and paste the full path of the
 
 {% include image.html file="netcdf-java/tutorial/aggregation/aggUnionSimple.png" alt="ToolsUI NcML Agg Panel - union" caption="" %}
 
+{%include note.html content="
+Depending on the Look and Feel chosen by toolsUI on startup (based on your OS), you may need to scroll through the tab elements to see certain tabs.
+This is the case for accessing the NcML tab on MacOS when the toolsUI window is on the smaller side.
+" %}
+
 The files that comprise the aggregation are listed in the top table, various information about the aggregation is listed in the lower pane.
 Select one of the files, and right click to bring up the context menu.
 Choose **Open as NetCDF File** so that you can look at the contents of that file.
@@ -521,7 +526,7 @@ You indicate how often the directories should be re-scanned using the `recheckEv
 </netcdf>
 ~~~
 
-The value of `recheckEvery` must be a [udunit](http://www.unidata.ucar.edu/software/udunits/){:target="_blank"} time unit, e.g. units of sec, min, hour, day.
+The value of `recheckEvery` must be a [udunit](https://www.unidata.ucar.edu/software/udunits/){:target="_blank"} time unit, e.g. units of sec, min, hour, day.
 If you do not specify a `recheckEvery` attribute, the collection will be assumed to be non-changing.
 
 When using the scan element on directories whose contents may change, you must use a `recheckEvery` attribute.
@@ -550,8 +555,6 @@ When this is enabled, `joinExisting` aggregations will save information to speci
 Instead, the first time it is opened, the values are read, then subsequent opens will use the cached values.
 
 If using a `scan` element on changing directories, be sure to specify the `recheckEvery` attribute to make sure that the cached information gets updated.
-
-For more information on controlling caching in the TDS, please see [here](tds_config_ref.html#aggregation-cache).
 
 ### Nested Aggregation
 

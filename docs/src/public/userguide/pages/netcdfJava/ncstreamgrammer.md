@@ -78,7 +78,7 @@ message Data {
 6. compress (deflate)
 7. crc32 (not used yet)
 
-<b>_Primitive types (byte, char, short, int, long, float, double)_<b/>: arrays of primitives are stored in row-major order. The endian-ness is specified in the NcStreamProto.Data message when needed.
+<b>_Primitive types (byte, char, short, int, long, float, double)_</b>: arrays of primitives are stored in row-major order. The endian-ness is specified in the NcStreamProto.Data message when needed.
 
 * <b>_char_</b> is a legacy data type contains uninterpreted characters, one character per byte. Typically these contain 7-bit ASCII characters.
 * <b>_byte, short, int, long_</b> may be interpreted as signed or unsigned. This is specified in the variable's header information.

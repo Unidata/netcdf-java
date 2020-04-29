@@ -101,3 +101,10 @@ li.sidebarTitle {
     margin-left: 5px;
 
 }
+/* left-floated version menu */ /* DD 2020_04 */
+@media (min-width: 768px) {
+  ul.navbar-left > li#vermenu > a {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}

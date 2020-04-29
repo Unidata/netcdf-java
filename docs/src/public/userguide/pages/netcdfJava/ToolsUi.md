@@ -10,7 +10,7 @@ permalink: toolsui_ref.html
 
 ### Download and run locally
 
-You can download toolsUI.jar from either the NetCDF-Java downloads or documentation pages.
+You can download toolsUI.jar from the [netCDF-Java downloads page](https://www.unidata.ucar.edu/downloads/netcdf-java/){:target="_blank"}.
 You can then run the ToolsUI application using a command similar to:
 
 ~~~bash
@@ -20,6 +20,11 @@ java -Xmx1g -jar toolsUI.jar
 Alternatively, on many operating systems, you can simply double-click the JAR file.
 
 ## Tabs
+
+{%include note.html content="
+Depending on the Look and Feel chosen by toolsUI on startup (based on your OS), you may need to scroll through the tab elements to see certain tabs.
+This is the case for accessing the NcML tab on MacOS when the toolsUI window is on the smaller side.
+" %}
 
 ### Viewer
 

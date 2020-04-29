@@ -3,8 +3,17 @@
 #topnav:
 #- title: Topnav
 #  items:
-#    - title: Introduction 
+#    - title: Introduction
 #      url: /index.html
+
+# Documentation version menu
+topnav_docvermenu:
+- title: Version
+  id: docmenu
+  folderitems:
+    - title: Menu Loading...
+      url:
+      id: remove
 
 #Topnav dropdowns
 topnav_dropdowns:
@@ -24,12 +33,12 @@ topnav_dropdowns:
     - title: Javadocs
       folderitems:
         - title: netCDF-Java Public Javadocs
-          external_url: https://docs.unidata.ucar.edu/thredds/netcdf-java/5.0/javadoc/
+          external_url: ../javadoc/
 
     - title: External Docs
       folderitems:
         - title: THREDDS Data Server
-          external_url: https://docs.unidata.ucar.edu/thredds/tds/5.0/userguide/index.html
+          external_url: https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html
         - title: Rosetta
           external_url: https://www.unidata.ucar.edu/software/rosetta/docs/
         - title: Siphon

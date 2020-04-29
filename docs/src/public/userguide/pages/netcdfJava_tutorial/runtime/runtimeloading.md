@@ -1,6 +1,6 @@
 ---
 title: Runtime Loading
-last_updated: 2019-07-22
+last_updated: 2019-09-14
 sidebar: netcdfJavaTutorial_sidebar
 permalink: runtime_loading.html
 toc: false
@@ -9,11 +9,26 @@ toc: false
 
 These are the various classes that can be plugged in at runtime:
 
-### Register an IOServiceProvider:
+### Register an IOServiceProvider
+
+1) The recommended way is to use the [Service Provider](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html)
+mechanism and include your IOSP in a jar on the classpath, where it is dynamically loaded at runtime. In your
+jar, include a file named **META-INF/services/ucar.nc2.iosp.IOServiceProvider** containing the
+name(s) of your implementations, eg:
+
+~~~
+ucar.nc2.iosp.fysat.Fysatiosp
+ucar.nc2.iosp.gini.Giniiosp
+~~~
+
+2) Alternatively, from your code, register your IOSP by calling:
+
 ~~~
 ucar.nc2.NetcdfFile.registerIOProvider( String className);
 ~~~
-The registered class must implement <b>_ucar.nc2.IOServiceProvider_</b>. When a <b>_NetcdfFile_</b> is opened, we loop through the <b>_IOServiceProvider_<b> classes and call
+
+In all cases your class must implement <b>_ucar.nc2.IOServiceProvider_</b>. 
+When a <b>_NetcdfFile_</b> is opened, we loop through the <b>_IOServiceProvider_</b> classes and call
 ~~~
 boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
 ~~~

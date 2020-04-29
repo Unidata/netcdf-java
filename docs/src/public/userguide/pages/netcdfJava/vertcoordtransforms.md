@@ -38,14 +38,14 @@ So in this example, anywhere you see `s(k)` in the definition, one uses the vari
 Similarly for the rest:
 
 ~~~
-Definition term		actual variable name
----------------		-------------------
-s 					s_rho 
-eta 					zeta 
-depth 				h 
-a 					theta_s 
-b 					theta_b 
-depth_c 				hc
+Definition term    actual variable name
+---------------    -------------------
+s           s_rho 
+eta           zeta 
+depth         h 
+a           theta_s 
+b           theta_b 
+depth_c         hc
 ~~~
 
 All of these variables must exist in your file, and be the proper dimension etc, as spelled out in the CF doc.

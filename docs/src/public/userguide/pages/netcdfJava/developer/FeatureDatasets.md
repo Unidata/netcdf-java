@@ -1,6 +1,6 @@
 ---
 title: CDM Feature Datasets
-last_updated: 2019-07-22
+last_updated: 2020-04-18
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: feature_datasets.html
@@ -177,9 +177,9 @@ The catalog API is significantly changed in version 5.0.
 ### Resources
 [Point Dataset](pointfeature_ref.html){:target="_blank"}: Discrete Sampling Geometry (DSG) datasets 
 
-[Coverage Dataset](coverages.html): Data in a multidimensional grid, eg model output, satellite data
+[Coverage Dataset](coverage_feature.html): Data in a multidimensional grid, eg model output, satellite data
 
-[Forecast Model Run Collection (FMRC)](runtime_loading.html): Gridded data with two time coordinates, Run Time (aka Reference Time) and Forecast Time (aka Valid Time)
+[Forecast Model Run Collection (FMRC)](fmrc_ref.html): Gridded data with two time coordinates, Run Time (aka Reference Time) and Forecast Time (aka Valid Time)
 
 [Radial Dataset](radial_datasets.html): uses polar coordinates (elevation, azimuth, distance), for example scanning radars, lidars.
 

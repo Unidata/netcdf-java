@@ -1,6 +1,6 @@
 ---
 title: Dataset URLs
-last_updated: 2018-10-10
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: dataset_urls.html
@@ -30,10 +30,10 @@ When using a file location that has an embedded `:` char, eg `C:/share/data/mode
 
 ### Remote Files
 
-`NetcdfFile` can open HTTP remote files, [served over HTTP](read_over_http.html
-), for example:
+#### HTTP
+`NetcdfFile` can open HTTP remote files, [served over HTTP](read_over_http.html), for example:
 
-* http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
+* https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
 
 The HTTP server must implement the getRange header and functionality.
 Performance will be strongly affected by file format and the data access pattern.
@@ -182,7 +182,7 @@ This can be more efficient than opening the dataset through the index-based serv
 
 ### Collection Datasets
 
-`FeatureDatasetFactoryManager` can open collections of datasets specified with a [collection specification string](collection_spec_string_ref.html).
+`FeatureDatasetFactoryManager` can open collections of datasets specified with a [collection specification string](https://docs.unidata.ucar.edu/tds/5.0/userguide/collection_spec_string_ref.html){:target="_blank"}.
 This has the form
 
 `collection:spec`

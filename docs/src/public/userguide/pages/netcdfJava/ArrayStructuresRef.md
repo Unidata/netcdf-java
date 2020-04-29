@@ -300,7 +300,7 @@ Member offsets must be the same for each record. However, more complex objects c
 
 ~~~
   int heapIndex = arrayStructureBB.addObjectToHeap(stringData);   // add object into the Heap
-  arrayStructureBB.setInt(bbPos, heapIndex); 	                 // store the index
+  arrayStructureBB.setInt(bbPos, heapIndex);                    // store the index
 ~~~
 
 or

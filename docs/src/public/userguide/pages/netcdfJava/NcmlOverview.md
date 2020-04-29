@@ -1,6 +1,6 @@
 ---
 title: NcML Overview
-last_updated: 2019-07-22
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: ncml_overview.html
@@ -8,11 +8,11 @@ permalink: ncml_overview.html
 
 ## Overview
 NcML is an XML representation of netCDF metadata, (approximately) the header information one gets from a netCDF file with the "ncdump -h" command.
-NcML is similar to the netCDF [CDL](https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#cdl_guide){:target="_blank"} (network Common data form Description Language), except, of course, it uses XML syntax.
+NcML is similar to the netCDF [CDL](https://www.unidata.ucar.edu/software/netcdf/documentation/NUG/netcdf_utilities_guide.html#cdl_guidee){:target="_blank"} (network Common data form Description Language), except, of course, it uses XML syntax.
 
 NcML development is happening on two fronts:
 
-1. [NcML-2.2](#ncml-22) as implemented by the [NetCDF-Java library](https://www.unidata.ucar.edu/software/netcdf-java/index.html){:target="_blank"}.
+1. [NcML-2.2](#ncml-22) as implemented by the [NetCDF-Java library](https://www.unidata.ucar.edu/software/netcdf-java/){:target="_blank"}.
 2. [ncML-Gml](https://www.researchgate.net/publication/221646728_NcML-GML_Encoding_NetCDF_Datasets_Using_GML){:target="_blank"} is an extension of ncML core schema, based on GML grammar.
    It uses both NcML and [GML](http://en.wikipedia.org/wiki/Geography_Markup_Language){:target="_blank"} to create a bridge to GIS Systems.
    This work is led by Stefano Nativi at the [Università degli Studi di Firenze](https://www.unifi.it/){:target="_blank"}.
@@ -64,7 +64,7 @@ A more advanced use is to modify existing NetCDF files, as well as to create "vi
 * [Aggregation](ncml_aggregation.html)
 * [Cookbook Examples](ncml_cookbook.html)
 * [Annotated Schema for Netcdf-Java 4](annotated_ncml_schema.html)
-* [ncml-2.2.xsd](www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd)
+* [ncml-2.2.xsd](https://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd)
 
 ### Acknowledgments and History
 

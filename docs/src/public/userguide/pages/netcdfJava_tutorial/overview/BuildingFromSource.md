@@ -1,6 +1,6 @@
 ---
 title: Building From Source
-last_updated: 2019-07-23
+last_updated: 2020-04-06
 sidebar: netcdfJavaTutorial_sidebar
 permalink: building_from_source.html
 toc: false
@@ -41,7 +41,7 @@ Next, use the Gradle wrapper to execute the assemble task:
 ~~~
 
 There will be various artifacts within the `<subproject>/build/libs/` subdirectories.
-For example, the `cdm.jar` file will be in `cdm/build/libs/`.
+For example, the `cdm-core.jar` file will be in `cdm/core/build/libs/`.
 The uber jars, such as `toolsUI.jar` and `netcdfAll.jar`, will be found in `build/libs/`.
 
 ## Publishing
@@ -60,5 +60,5 @@ git checkout master
 
 You will find the artifacts in `~/.m2/repository/edu/ucar/`.
 If you’re building your projects using Maven, artifacts in your local repo will be preferred over remote ones by default; you don’t have to do any additional configuration in order for them to be picked up.
-If you’re building with Gradle, you’ll need to do [a little more work](https://docs.gradle.org/current/userguide/repository_types.html#sub:maven_local){:target="_blank"}.
+If you’re building with Gradle, you’ll need to do [a little more work](https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:maven_local){:target="_blank"}.
 
