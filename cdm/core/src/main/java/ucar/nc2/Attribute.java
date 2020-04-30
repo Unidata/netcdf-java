@@ -74,10 +74,15 @@ public class Attribute extends CDMNode {
   ///////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Get the data type of the Attribute value.
-   *
-   * @return DataType
+   * Get the Attribute name.
+   * Not deprecated in version 5 for Attribute.
    */
+  @SuppressWarnings("deprecated")
+  public String getName() {
+    return shortName;
+  }
+
+  /** Get the data type of the Attribute value. */
   public DataType getDataType() {
     return dataType;
   }

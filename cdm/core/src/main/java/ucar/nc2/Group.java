@@ -60,15 +60,6 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
-   * Get the "short" name, unique within its parent Group.
-   *
-   * @return group short name
-   */
-  public String getShortName() {
-    return shortName;
-  }
-
-  /**
    * Get the Variables contained directly in this group.
    *
    * @return List of type Variable; may be empty, not null.
@@ -139,12 +130,23 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /**
    * Get its parent Group, or null if its the root group.
-   *
-   * @return parent Group
+   * Not deprecated.
    */
+  @SuppressWarnings("deprecated")
   @Nullable
   public Group getParentGroup() {
     return this.group;
+  }
+
+  /**
+   * Get the full name of this object.
+   * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Group))
+   * Not deprecated.
+   * @return full name with backslash escapes
+   */
+  @SuppressWarnings("deprecated")
+  public String getFullName() {
+    return NetcdfFiles.makeFullName(this);
   }
 
   /**

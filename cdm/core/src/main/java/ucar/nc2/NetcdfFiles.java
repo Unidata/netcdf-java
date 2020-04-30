@@ -870,7 +870,7 @@ public class NetcdfFiles {
    * @param vname the name
    * @return escaped version of it
    */
-  public static String makeValidPathName(String vname) {
+  private static String makeValidPathName(String vname) {
     return EscapeStrings.backslashEscape(vname, reservedFullName);
   }
 
@@ -881,7 +881,7 @@ public class NetcdfFiles {
    * @param vname the name
    * @return escaped version of it
    */
-  public static String makeValidSectionSpecName(String vname) {
+  static String makeValidSectionSpecName(String vname) {
     return EscapeStrings.backslashEscape(vname, reservedSectionSpec);
   }
 
@@ -891,30 +891,40 @@ public class NetcdfFiles {
    * @param vname the escaped name
    * @return unescaped version of it
    */
-  public static String makeNameUnescaped(String vname) {
+  static String makeNameUnescaped(String vname) {
     return EscapeStrings.backslashUnescape(vname);
   }
 
+  /** Create a Groups's full name with appropriate backslash escaping. */
+  public static String makeFullName(Group g) {
+    // return makeFullName(g, reservedFullName);
+    Group parent = g.getParentGroup();
+    if ((parent == null) || parent.isRoot()) // common case?
+      return EscapeStrings.backslashEscape(g.getShortName(), reservedFullName);
+    StringBuilder sbuff = new StringBuilder();
+    appendGroupName(sbuff, parent, reservedFullName);
+    return sbuff.toString();
+  }
+
   /**
-   * Given a CDMNode, create its full name with
-   * appropriate backslash escaping.
+   * Create a Variable's full name with appropriate backslash escaping.
    * Warning: do not use for a section spec.
    *
-   * @param v the cdm node
+   * @param v the Variable
    * @return full name
    */
-  protected static String makeFullName(CDMNode v) {
+  public static String makeFullName(Variable v) {
     return makeFullName(v, reservedFullName);
   }
 
   /**
-   * Given a CDMNode, create its full name with
+   * Create a Variable's full name with
    * appropriate backslash escaping for use in a section spec.
    *
    * @param v the cdm node
    * @return full name
    */
-  static String makeFullNameSectionSpec(CDMNode v) {
+  public static String makeFullNameSectionSpec(Variable v) {
     return makeFullName(v, reservedSectionSpec);
   }
 
@@ -926,7 +936,7 @@ public class NetcdfFiles {
    * @param reservedChars the set of characters to escape
    * @return full name
    */
-  private static String makeFullName(CDMNode node, String reservedChars) {
+  private static String makeFullName(Variable node, String reservedChars) {
     Group parent = node.getParentGroup();
     if (((parent == null) || parent.isRoot()) && !node.isMemberOfStructure()) // common case?
       return EscapeStrings.backslashEscape(node.getShortName(), reservedChars);
@@ -946,7 +956,7 @@ public class NetcdfFiles {
     sbuff.append("/");
   }
 
-  private static void appendStructureName(StringBuilder sbuff, CDMNode n, String reserved) {
+  private static void appendStructureName(StringBuilder sbuff, Variable n, String reserved) {
     if (n.isMemberOfStructure()) {
       appendStructureName(sbuff, n.getParentStructure(), reserved);
       sbuff.append(".");

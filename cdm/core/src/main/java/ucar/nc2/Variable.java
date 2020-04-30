@@ -145,7 +145,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return shape.length;
   }
 
-  /** Get the parent group. */
+  /* Get the parent group.
+  LOOK this is wrong. Does anyone depend on this behavior?
   public Group getParentGroup() {
     Group g = super.getParentGroup();
     if (g == null) {
@@ -155,7 +156,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     assert g != null;
     return g;
-  }
+  } */
 
   /**
    * Is this variable metadata?. True if its values need to be included explicitly in NcML output.
@@ -811,16 +812,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return ncfile.readData(this, section);
   }
 
-  /*
-   * structure-member Variable; section has a Range for each array in the parent
-   * // stuctures(s) and for the Variable.
-   * private Array _readMemberData(List<Range> section, boolean flatten) throws IOException, InvalidRangeException {
-   * /*Variable useVar = (ioVar != null) ? ioVar : this;
-   * NetcdfFile useFile = (ncfileIO != null) ? ncfileIO : ncfile;
-   * return useFile.readMemberData(useVar, section, flatten);
-   * }
-   */
-
   /** @deprecated do not use */
   @Deprecated
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
@@ -838,16 +829,44 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return ncfile.readToOutputStream(this, section, out);
   }
 
-  ///////////////// nicely formatted string representation
+  /**
+   * Get its containing Group.
+   * Not deprecated.
+   */
+  @SuppressWarnings("deprecated")
+  public Group getParentGroup() {
+    return this.group;
+  }
 
   /**
-   * Get the Full name of this object. Certain characters are
-   * backslash escaped (see NetcdfFile)
-   *
+   * Get its parent structure, or null if not in structure
+   * Not deprecated.
+   * @return parent structure
+   */
+  @SuppressWarnings("deprecated")
+  @Nullable
+  public Structure getParentStructure() {
+    return this.parentstruct;
+  }
+
+  /**
+   * Test for presence of parent Structure.
+   * Not deprecated.
+   */
+  @SuppressWarnings("deprecated")
+  public boolean isMemberOfStructure() {
+    return this.parentstruct != null;
+  }
+
+  /**
+   * Get the full name of this Variable.
+   * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Variable))
+   * Not deprecated.
    * @return full name with backslash escapes
    */
+  @SuppressWarnings("deprecated")
   public String getFullName() {
-    return NetcdfFile.makeFullName(this);
+    return NetcdfFiles.makeFullName(this);
   }
 
   /**
@@ -890,6 +909,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @param buf add info to this StringBuffer
    * @deprecated use getNameAndDimensions(StringBuilder buf)
    */
+  @Deprecated
   public void getNameAndDimensions(StringBuffer buf) {
     Formatter proxy = new Formatter();
     getNameAndDimensions(proxy, true, false);

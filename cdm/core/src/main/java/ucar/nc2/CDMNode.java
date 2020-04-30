@@ -237,7 +237,7 @@ public abstract class CDMNode {
    * Alias for getFullName
    *
    * @return full name with backslash escapes
-   * @deprecated use NetcdfFiles.getFullNameEscaped()
+   * @deprecated use getFullName() when it exists in ver6.
    */
   public String getFullNameEscaped() {
     return getFullName();
