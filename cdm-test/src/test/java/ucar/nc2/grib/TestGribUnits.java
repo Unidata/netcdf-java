@@ -27,7 +27,7 @@ public class TestGribUnits {
     // Make sure we return the udunits string of "count"
     String filename = "tds/ncep/WW3_Coastal_Alaska_20140804_0000.grib2";
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + filename)) {
-      Variable var = ds.findVariable(null, "ordered_sequence_of_data");
+      Variable var = ds.getRootGroup().findVariable("ordered_sequence_of_data");
       Attribute att = var.findAttribute("units");
       Assert.assertNotNull(att);
       Assert.assertEquals("count", att.getStringValue());

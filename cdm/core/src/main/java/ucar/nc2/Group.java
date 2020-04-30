@@ -115,6 +115,29 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
+   * Look in this Group and in its nested Groups for a Variable with a String valued Attribute with the given name
+   * and value.
+   *
+   * @param attName look for an Attribuite with this name.
+   * @param attValue look for an Attribuite with this value.
+   * @return the first Variable that matches, or null if none match.
+   */
+  @Nullable
+  public Variable findVariableByAttribute(String attName, String attValue) {
+    for (Variable v : getVariables()) {
+      for (Attribute att : v.attributes())
+        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
+          return v;
+    }
+    for (Group nested : getGroups()) {
+      Variable v = nested.findVariableByAttribute(attName, attValue);
+      if (v != null)
+        return v;
+    }
+    return null;
+  }
+
+  /**
    * Get its parent Group, or null if its the root group.
    *
    * @return parent Group

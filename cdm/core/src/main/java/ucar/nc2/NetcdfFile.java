@@ -142,9 +142,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();
   private static final StringLocker stringLocker = new StringLocker();
 
-  protected static boolean debugSPI, debugCompress, showRequest;
+  static boolean debugSPI, debugCompress;
   static boolean debugStructureIterator;
-  static boolean loadWarnings;
+  private static boolean loadWarnings, showRequest;
   private static boolean userLoads;
 
   // IOSPs are loaded by reflection.
@@ -878,13 +878,24 @@ public class NetcdfFile implements FileCacheable, Closeable {
     }
   }
 
-  // optionally release any resources like file handles
+  /**
+   * Public by accident.
+   * Release any resources like file handles
+   * 
+   * @deprecated do not use
+   */
   public void release() throws IOException {
     if (iosp != null)
       iosp.release();
   }
 
-  // reacquire any resources like file handles
+  /**
+   * Public by accident.
+   * Reacquire any resources like file handles
+   * 
+   * @deprecated do not use
+   */
+  @Deprecated
   public void reacquire() throws IOException {
     if (iosp != null)
       iosp.reacquire();
@@ -893,6 +904,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
   /**
    * Public by accident.
    * Optional file caching.
+   * 
+   * @deprecated do not use
    */
   @Deprecated
   public synchronized void setFileCache(FileCacheIF cache) {
@@ -904,7 +917,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Get the name used in the cache, if any.
    *
    * @return name in the cache.
-   * @deprecated
+   * @deprecated do not use
    */
   @Deprecated
   public String getCacheName() {
@@ -915,6 +928,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Public by accident.
    *
    * @param cacheName name in the cache, should be unique for this NetcdfFile. Usually the location.
+   * @deprecated do not use
    */
   @Deprecated
   protected void setCacheName(String cacheName) {
@@ -961,13 +975,14 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   /**
    * Find a Group, with the specified (full) name.
-   * An embedded "/" is interpreted as separating group names.
+   * A full name should start with a '/'. For backwards compatibility, we accept full names that omit the leading '/'.
+   * An embedded '/' separates subgroup names.
    *
    * @param fullName eg "/group/subgroup/wantGroup". Null or empty string returns the root group.
    * @return Group or null if not found.
    */
   @Nullable
-  public Group findGroup(String fullName) {
+  public Group findGroup(@Nullable String fullName) {
     if (fullName == null || fullName.isEmpty())
       return rootGroup;
 
@@ -982,13 +997,18 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return g;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////
+  // compatibilty API
+
   /**
    * Find a Variable by short name, in the given group.
    *
    * @param g A group in this file. Null for root group.
    * @param shortName short name of the Variable.
    * @return Variable if found, else null.
+   * @deprecated use g.findVariable(shortName)
    */
+  @Deprecated
   @Nullable
   public Variable findVariable(Group g, String shortName) {
     if (g == null)
@@ -1060,7 +1080,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @param attName look for an Attribuite with this name.
    * @param attValue look for an Attribuite with this value.
    * @return the first Variable that matches, or null if none match.
+   * @deprecated use g.findVariableByAttribute(String attName, String attValue)
    */
+  @Deprecated
   @Nullable
   public Variable findVariableByAttribute(Group g, String attName, String attValue) {
     if (g == null)
@@ -1142,37 +1164,38 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   /**
    * Get the shared Dimensions used in this file.
-   * This is part of "version 3 compatibility" interface.
    * <p>
    * If the dimensions are in a group, the dimension name will have the
    * group name, in order to disambiguate the dimensions. This means that
    * a Variable's dimensions will not match Dimensions in this list.
    * Therefore it is better to get the shared Dimensions directly from the Groups.
    *
-   * @return List of type Dimension.
+   * @deprecated will be ImmutableList<Dimension> in ver6.
    */
+  @Deprecated
   public List<Dimension> getDimensions() {
     return immutable ? dimensions : new ArrayList<>(dimensions);
   }
 
   /**
    * Get all of the variables in the file, in all groups.
-   * This is part of "version 3 compatibility" interface.
    * Alternatively, use groups.
    *
    * @return List of type Variable.
+   * @deprecated will be ImmutableList<Variable> in ver6.
    */
+  @Deprecated
   public List<Variable> getVariables() {
     return variables;
   }
 
   /**
-   * Returns the set of global attributes associated with this file.
-   * This is part of "version 3 compatibility" interface.
+   * Returns the set of global attributes associated with this file, which are the attributes associated
+   * with the root group, or any subgroup.
    * Alternatively, use groups.
    *
    * @return List of type Attribute
-   * @deprecated use getRootGroup().getAttributeContainer()
+   * @deprecated will be ImmutableList<Attribute> in ver6.
    */
   @Deprecated
   public List<Attribute> getGlobalAttributes() {
@@ -1180,15 +1203,15 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Look up global Attribute by (full) name.
+   * Look up global Attribute by name.
    *
-   * @param name the name of the attribute
-   * @return the attribute, or null if not found
+   * @param attName the name of the attribute
+   * @return the first group attribute with given Attribute name, or null if not found
    */
   @Nullable
-  public Attribute findGlobalAttribute(String name) {
+  public Attribute findGlobalAttribute(String attName) {
     for (Attribute a : gattributes) {
-      if (name.equals(a.getShortName()))
+      if (attName.equals(a.getShortName()))
         return a;
     }
     return null;
@@ -1198,7 +1221,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Look up global Attribute by name, ignore case.
    *
    * @param name the name of the attribute
-   * @return the attribute, or null if not found
+   * @return the first group attribute with given Attribute name, ignoronmg case, or null if not found
    */
   @Nullable
   public Attribute findGlobalAttributeIgnoreCase(String name) {
@@ -1296,7 +1319,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return v.attributes().findAttValueIgnoreCase(attName, defaultValue);
   }
 
-  /** @deprecated use Group.attributes().findAttributeDouble */
+  /** @deprecated use use getRootGroup() or Variable attributes().findAttributeDouble */
   @Deprecated
   public double readAttributeDouble(Variable v, String attName, double defValue) {
     Attribute att;
@@ -1314,7 +1337,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return att.getNumericValue().doubleValue();
   }
 
-  /** @deprecated use Group.attributes().findAttributeInteger */
+  /** @deprecated use use getRootGroup() or Variable attributes().findAttributeInteger */
   @Deprecated
   public int readAttributeInteger(Variable v, String attName, int defValue) {
     Attribute att;
@@ -2053,7 +2076,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   private void finishGroup(Group g) {
-
     variables.addAll(g.variables);
 
     // LOOK should group atts be promoted to global atts?
@@ -2558,13 +2580,17 @@ public class NetcdfFile implements FileCacheable, Closeable {
   protected IOServiceProvider iosp;
   private boolean immutable;
 
-  // LOOK can we get rid of internal caching
+  // LOOK can we get rid of internal caching?
   private String cacheName;
   protected FileCacheIF cache;
 
+  // TODO get rid of these in ver 6, or make them private.
   // "global view" over all groups.
+  @Deprecated
   protected List<Variable> variables;
+  @Deprecated
   protected List<Dimension> dimensions;
+  @Deprecated
   protected List<Attribute> gattributes;
 
   protected NetcdfFile(Builder<?> builder) {

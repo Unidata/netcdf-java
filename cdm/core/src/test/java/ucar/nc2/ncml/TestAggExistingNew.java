@@ -173,7 +173,7 @@ public class TestAggExistingNew {
 
     try {
       ncd = NetcdfDatasets.openDataset(filename, true, null);
-      Variable time = ncd.findVariable(null, "time");
+      Variable time = ncd.getRootGroup().findVariable("time");
       Array data = time.read();
       // all missing
       // assert data.getInt(0) ==

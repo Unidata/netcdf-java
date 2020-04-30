@@ -841,6 +841,16 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   ///////////////// nicely formatted string representation
 
   /**
+   * Get the Full name of this object. Certain characters are
+   * backslash escaped (see NetcdfFile)
+   *
+   * @return full name with backslash escapes
+   */
+  public String getFullName() {
+    return NetcdfFile.makeFullName(this);
+  }
+
+  /**
    * Get the display name plus the dimensions, eg 'float name(dim1, dim2)'
    *
    * @return display name plus the dimensions

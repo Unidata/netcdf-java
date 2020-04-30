@@ -1385,7 +1385,7 @@ public class NcMLReader {
 
         } else { // attName or @attName
           String attName = (pos == 0) ? fromAttribute.substring(1) : fromAttribute;
-          att = ds.getRootGroup().findAttribute(attName);
+          att = ds.findAttribute(attName);
         }
         if (att == null) {
           errlog.format("Cant find attribute %s %n", fromAttribute);

@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
  * Note: this class has a natural ordering that is inconsistent with equals.
  *
  * TODO Dimensions will be immutable in 6.
- * TODO Dimensions will not have a reference to their owning Group in 6.
+ * QUESTION Dimensions will not? have a reference to their owning Group in 6.
  *
  * @author caron
  */
