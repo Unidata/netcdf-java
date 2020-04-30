@@ -201,7 +201,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   @Deprecated
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims)
       throws IOException {
-    super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(),
+    super(ncd, org.getParentGroupOrRoot(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(),
         org.getDescription());
 
     // Gotta set the original var. Otherwise it would be unable to read the values

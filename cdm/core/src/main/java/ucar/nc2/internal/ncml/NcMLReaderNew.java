@@ -1247,6 +1247,7 @@ public class NcMLReaderNew {
         } else { // attName or @attName
           String attName = (pos == 0) ? fromAttribute.substring(1) : fromAttribute;
           att = this.refFile.getRootGroup().findAttribute(attName);
+          // att = this.refFile.findAttribute(attName);
         }
         if (att == null) {
           errlog.format("Cant find attribute %s %n", fromAttribute);

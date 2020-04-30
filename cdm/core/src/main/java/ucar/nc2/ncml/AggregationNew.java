@@ -94,7 +94,7 @@ public class AggregationNew extends AggregationOuterDimension {
       }
 
       // construct new variable, replace old one LOOK what about Structures?
-      Group newGroup = DatasetConstructor.findGroup(ncDataset, aggVar.getParentGroup());
+      Group newGroup = DatasetConstructor.findGroup(ncDataset, aggVar.getParentGroupOrRoot());
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
       vagg.setProxyReader(this);

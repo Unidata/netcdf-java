@@ -57,7 +57,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   public static String getDAPName(String name, Variable context) {
     if (RC.getUseGroups()) {
       // leave off leading '/' for root entries
-      Group xg = context.getParentGroup();
+      Group xg = context.getParentGroupOrRoot();
       if (!xg.isRoot()) {
         // Get the list of parent groups
         List<Group> path = Group.collectPath(xg);
@@ -145,20 +145,20 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return shape.length;
   }
 
-  /*
-   * Get the parent group.
-   * LOOK this is wrong. Does anyone depend on this behavior?
-   * public Group getParentGroup() {
-   * Group g = super.getParentGroup();
-   * if (g == null) {
-   * g = ncfile.getRootGroup();
-   * super.setParentGroup(g); // TODO: WTF?
-   * }
+  /**
+   * Get the parent group, or if null, the root group.
    * 
-   * assert g != null;
-   * return g;
-   * }
+   * @deprecated Will go away in ver6, shouldnt be needed when builders are used.
    */
+  @Deprecated
+  public Group getParentGroupOrRoot() {
+    Group g = this.getParentGroup();
+    if (g == null) {
+      g = ncfile.getRootGroup();
+      // super.setParentGroup(g); // TODO: WTF?
+    }
+    return g;
+  }
 
   /**
    * Is this variable metadata?. True if its values need to be included explicitly in NcML output.
@@ -421,7 +421,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
-    return sliceV.build(getParentGroup());
+    return sliceV.build(getParentGroupOrRoot());
   }
 
   /**
@@ -449,7 +449,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     // remove dimension(s) - reduce rank
     for (Dimension d : dims)
       sliceV.dimensions.remove(d);
-    return sliceV.build(getParentGroup());
+    return sliceV.build(getParentGroupOrRoot());
   }
 
   /** @deprecated Use Variable.toBuilder() */
@@ -834,6 +834,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   /**
    * Get its containing Group.
    * Not deprecated.
+   * LOOK if you relied on Group being set during construction, use getParentGroupOrRoot().
    */
   @SuppressWarnings("deprecated")
   public Group getParentGroup() {
@@ -1408,8 +1409,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     if (immutable)
       throw new IllegalStateException("Cant modify");
     try {
-      setDimensions(Dimensions.makeDimensionsList(getParentGroup()::findDimension, dimString));
-      // this.dimensions = Dimension.makeDimensionsList(getParentGroup(), dimString);
+      setDimensions(Dimensions.makeDimensionsList(getParentGroupOrRoot()::findDimension, dimString));
       resetShape();
     } catch (IllegalStateException e) {
       throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString + "' FAILED: "
@@ -1431,7 +1431,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     for (Dimension dim : dimensions) {
       if (dim.isShared()) {
-        Dimension newD = getParentGroup().findDimension(dim.getShortName());
+        Dimension newD = getParentGroupOrRoot().findDimension(dim.getShortName());
         if (newD == null)
           throw new IllegalArgumentException(
               "Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);

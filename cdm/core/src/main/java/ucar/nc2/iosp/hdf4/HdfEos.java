@@ -638,7 +638,7 @@ public class HdfEos {
     }
 
     List<Dimension> newDims = new ArrayList<>();
-    Group group = v.getParentGroup();
+    Group group = v.getParentGroupOrRoot();
 
     for (int i = 0; i < values.size(); i++) {
       Element value = values.get(i);

@@ -132,7 +132,7 @@ public class CoordinateAxis extends VariableDS {
    * @return copy of this CoordinateAxis
    */
   public CoordinateAxis copyNoCache() {
-    CoordinateAxis axis = new CoordinateAxis(ncd, getParentGroup(), getShortName(), getDataType(),
+    CoordinateAxis axis = new CoordinateAxis(ncd, getParentGroupOrRoot(), getShortName(), getDataType(),
         getDimensionsString(), getUnitsString(), getDescription());
 
     // other state

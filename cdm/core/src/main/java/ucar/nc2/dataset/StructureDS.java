@@ -129,14 +129,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   @Override
   protected StructureDS copy() {
-    return new StructureDS(getParentGroup(), this);
+    return new StructureDS(getParentGroupOrRoot(), this);
   }
 
   // copy() doesnt work because convert gets called twice
 
   @Override
   public Structure select(List<String> memberNames) {
-    StructureDS result = new StructureDS(getParentGroup(), orgVar);
+    StructureDS result = new StructureDS(getParentGroupOrRoot(), orgVar);
     List<Variable> members = new ArrayList<>();
     for (String name : memberNames) {
       Variable m = findVariable(name);
@@ -333,7 +333,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (Variable v : getVariables()) {
       if (!varHasData(v, sm)) {
         try {
-          Variable completeVar = getParentGroup().findVariable(v.getShortName()); // LOOK BAD
+          Variable completeVar = getParentGroupOrRoot().findVariable(v.getShortName()); // LOOK BAD
           Array mdata = completeVar.read(section);
           StructureMembers.Member m =
               sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
@@ -427,7 +427,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (Variable v : getVariables()) {
       if (!varHasData(v, sm)) {
         try {
-          Variable completeVar = getParentGroup().findVariable(v.getShortName()); // LOOK BAD
+          Variable completeVar = getParentGroupOrRoot().findVariable(v.getShortName()); // LOOK BAD
           Array mdata = completeVar.read(new Section().appendRange(recno, recno));
           StructureMembers.Member m =
               sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());

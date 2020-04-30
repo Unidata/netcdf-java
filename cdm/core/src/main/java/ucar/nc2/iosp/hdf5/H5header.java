@@ -1730,7 +1730,7 @@ public class H5header extends NCheader implements H5headerIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
-      Group ncGroup = v.getParentGroup();
+      Group ncGroup = v.getParentGroupOrRoot();
       EnumTypedef enumTypedef = ncGroup.findEnumeration(mdt.enumTypeName);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
