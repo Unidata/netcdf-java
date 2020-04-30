@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
 
@@ -28,14 +28,14 @@ public class TestValuesFromAttribute extends TestCase {
   String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
       + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='file:src/test/data/ncml/nc/lflx.mean.nc'>\n"
       + "   <variable name='titleAsVariable' type='String' shape=''>\n" // dont mess
-      + "     <values fromAttribute='title'/>\n"                        // dont mess
-      + "   </variable>\n"                                              // dont mess
+      + "     <values fromAttribute='title'/>\n" // dont mess
+      + "   </variable>\n" // dont mess
       + "   <variable name='titleAsVariable2' type='String' shape=''>\n"// dont mess
-      + "     <values fromAttribute='@title'/>\n"                        // dont mess
-      + "   </variable>\n"                                              // dont mess
+      + "     <values fromAttribute='@title'/>\n" // dont mess
+      + "   </variable>\n" // dont mess
       + "   <variable name='VariableAttribute' type='double' shape='2'>\n"// dont mess
-      + "     <values fromAttribute='time@actual_range'/>\n"             // dont mess
-      + "   </variable>\n" + "</netcdf>";                                // dont mess
+      + "     <values fromAttribute='time@actual_range'/>\n" // dont mess
+      + "   </variable>\n" + "</netcdf>"; // dont mess
 
   public void testValuesFromAttribute() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "TestValuesFromAttribute.xml";

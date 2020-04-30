@@ -303,7 +303,8 @@ public class NcMLReaderNew {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static NetcdfDataset.Builder readNcML(Reader r, String ncmlLocation, CancelTask cancelTask) throws IOException {
+  public static NetcdfDataset.Builder readNcML(Reader r, String ncmlLocation, CancelTask cancelTask)
+      throws IOException {
 
     org.jdom2.Document doc;
     try {

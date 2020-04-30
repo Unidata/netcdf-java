@@ -142,6 +142,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the full name of this object.
    * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Group))
    * Not deprecated.
+   * 
    * @return full name with backslash escapes
    */
   @SuppressWarnings("deprecated")

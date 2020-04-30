@@ -145,18 +145,20 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return shape.length;
   }
 
-  /* Get the parent group.
-  LOOK this is wrong. Does anyone depend on this behavior?
-  public Group getParentGroup() {
-    Group g = super.getParentGroup();
-    if (g == null) {
-      g = ncfile.getRootGroup();
-      super.setParentGroup(g); // TODO: WTF?
-    }
-
-    assert g != null;
-    return g;
-  } */
+  /*
+   * Get the parent group.
+   * LOOK this is wrong. Does anyone depend on this behavior?
+   * public Group getParentGroup() {
+   * Group g = super.getParentGroup();
+   * if (g == null) {
+   * g = ncfile.getRootGroup();
+   * super.setParentGroup(g); // TODO: WTF?
+   * }
+   * 
+   * assert g != null;
+   * return g;
+   * }
+   */
 
   /**
    * Is this variable metadata?. True if its values need to be included explicitly in NcML output.
@@ -841,6 +843,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   /**
    * Get its parent structure, or null if not in structure
    * Not deprecated.
+   * 
    * @return parent structure
    */
   @SuppressWarnings("deprecated")
@@ -862,6 +865,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * Get the full name of this Variable.
    * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Variable))
    * Not deprecated.
+   * 
    * @return full name with backslash escapes
    */
   @SuppressWarnings("deprecated")
