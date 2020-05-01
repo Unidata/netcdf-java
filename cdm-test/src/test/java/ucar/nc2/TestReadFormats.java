@@ -56,6 +56,8 @@ public class TestReadFormats {
         return false;
       if (name.endsWith(".HDR") && pathname.getPath().contains("gtopo"))
         return false;
+      if (pathname.getPath().contains("/eumetsat.exclude/"))
+        return false;
       return true;
     }
   }
