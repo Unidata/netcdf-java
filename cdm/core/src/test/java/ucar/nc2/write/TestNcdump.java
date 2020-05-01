@@ -26,7 +26,8 @@ public class TestNcdump {
   // Asserts that GitHub issue #929 has been fixed. See https://github.com/Unidata/thredds/issues/929
   @Test
   public void testUnsignedFillValue() throws IOException {
-    try (NetcdfFile ncfile = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml", null)) {
+    try (
+        NetcdfFile ncfile = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml", null)) {
       Ncdump ncdump = Ncdump.builder(ncfile).setShowAllValues().build();
       String ncdumpOut = ncdump.print();
 
