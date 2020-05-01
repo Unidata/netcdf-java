@@ -7,7 +7,7 @@ package ucar.nc2.internal.ncml;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -18,25 +18,22 @@ import ucar.nc2.Variable;
 import ucar.nc2.ncml.TestNcMLRead;
 
 /** Test reading and processing NcML attributes */
-public class TestValuesFromAttribute extends TestCase {
+public class TestValuesFromAttribute {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestValuesFromAttribute(String name) {
-    super(name);
-  }
+  private String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='file:src/test/data/ncml/nc/lflx.mean.nc'>\n" // leaavit
+      + "   <variable name='titleAsVariable' type='String' shape=''>\n" // leaavit
+      + "     <values fromAttribute='title'/>\n" // leaavit
+      + "   </variable>\n" // leaavit
+      + "   <variable name='titleAsVariable2' type='String' shape=''>\n" // leaavit
+      + "     <values fromAttribute='@title'/>\n" // leaavit
+      + "   </variable>\n" // leaavit
+      + "   <variable name='VariableAttribute' type='double' shape='2'>\n" // leaavit
+      + "     <values fromAttribute='time@actual_range'/>\n" // leaavit
+      + "   </variable>\n" + "</netcdf>"; // leaavit
 
-  String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='file:src/test/data/ncml/nc/lflx.mean.nc'>\n"
-      + "   <variable name='titleAsVariable' type='String' shape=''>\n" // dont mess
-      + "     <values fromAttribute='title'/>\n" // dont mess
-      + "   </variable>\n" // dont mess
-      + "   <variable name='titleAsVariable2' type='String' shape=''>\n"// dont mess
-      + "     <values fromAttribute='@title'/>\n" // dont mess
-      + "   </variable>\n" // dont mess
-      + "   <variable name='VariableAttribute' type='double' shape='2'>\n"// dont mess
-      + "     <values fromAttribute='time@actual_range'/>\n" // dont mess
-      + "   </variable>\n" + "</netcdf>"; // dont mess
-
+  @Test
   public void testValuesFromAttribute() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "TestValuesFromAttribute.xml";
 
