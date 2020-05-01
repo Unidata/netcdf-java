@@ -99,7 +99,7 @@ public class SearchForConventions {
     this.filename = filename;
   }
 
-  // @Test
+  @Test
   @Ignore("Not a test - really a utility program")
   public void findConventions() throws IOException {
     System.out.printf("%s%n", filename);
