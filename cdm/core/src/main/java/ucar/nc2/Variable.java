@@ -57,7 +57,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   public static String getDAPName(String name, Variable context) {
     if (RC.getUseGroups()) {
       // leave off leading '/' for root entries
-      Group xg = context.getParentGroup();
+      Group xg = context.getParentGroupOrRoot();
       if (!xg.isRoot()) {
         // Get the list of parent groups
         List<Group> path = Group.collectPath(xg);
@@ -145,15 +145,18 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return shape.length;
   }
 
-  /** Get the parent group. */
-  public Group getParentGroup() {
-    Group g = super.getParentGroup();
+  /**
+   * Get the parent group, or if null, the root group.
+   * 
+   * @deprecated Will go away in ver6, shouldnt be needed when builders are used.
+   */
+  @Deprecated
+  public Group getParentGroupOrRoot() {
+    Group g = this.getParentGroup();
     if (g == null) {
       g = ncfile.getRootGroup();
-      super.setParentGroup(g); // TODO: WTF?
+      // super.setParentGroup(g); // TODO: WTF?
     }
-
-    assert g != null;
     return g;
   }
 
@@ -418,7 +421,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
-    return sliceV.build(getParentGroup());
+    return sliceV.build(getParentGroupOrRoot());
   }
 
   /**
@@ -446,7 +449,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     // remove dimension(s) - reduce rank
     for (Dimension d : dims)
       sliceV.dimensions.remove(d);
-    return sliceV.build(getParentGroup());
+    return sliceV.build(getParentGroupOrRoot());
   }
 
   /** @deprecated Use Variable.toBuilder() */
@@ -811,16 +814,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return ncfile.readData(this, section);
   }
 
-  /*
-   * structure-member Variable; section has a Range for each array in the parent
-   * // stuctures(s) and for the Variable.
-   * private Array _readMemberData(List<Range> section, boolean flatten) throws IOException, InvalidRangeException {
-   * /*Variable useVar = (ioVar != null) ? ioVar : this;
-   * NetcdfFile useFile = (ncfileIO != null) ? ncfileIO : ncfile;
-   * return useFile.readMemberData(useVar, section, flatten);
-   * }
-   */
-
   /** @deprecated do not use */
   @Deprecated
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
@@ -838,7 +831,48 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return ncfile.readToOutputStream(this, section, out);
   }
 
-  ///////////////// nicely formatted string representation
+  /**
+   * Get its containing Group.
+   * Not deprecated.
+   * LOOK if you relied on Group being set during construction, use getParentGroupOrRoot().
+   */
+  @SuppressWarnings("deprecated")
+  public Group getParentGroup() {
+    return this.group;
+  }
+
+  /**
+   * Get its parent structure, or null if not in structure
+   * Not deprecated.
+   * 
+   * @return parent structure
+   */
+  @SuppressWarnings("deprecated")
+  @Nullable
+  public Structure getParentStructure() {
+    return this.parentstruct;
+  }
+
+  /**
+   * Test for presence of parent Structure.
+   * Not deprecated.
+   */
+  @SuppressWarnings("deprecated")
+  public boolean isMemberOfStructure() {
+    return this.parentstruct != null;
+  }
+
+  /**
+   * Get the full name of this Variable.
+   * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Variable))
+   * Not deprecated.
+   * 
+   * @return full name with backslash escapes
+   */
+  @SuppressWarnings("deprecated")
+  public String getFullName() {
+    return NetcdfFiles.makeFullName(this);
+  }
 
   /**
    * Get the display name plus the dimensions, eg 'float name(dim1, dim2)'
@@ -880,6 +914,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @param buf add info to this StringBuffer
    * @deprecated use getNameAndDimensions(StringBuilder buf)
    */
+  @Deprecated
   public void getNameAndDimensions(StringBuffer buf) {
     Formatter proxy = new Formatter();
     getNameAndDimensions(proxy, true, false);
@@ -1374,8 +1409,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     if (immutable)
       throw new IllegalStateException("Cant modify");
     try {
-      setDimensions(Dimensions.makeDimensionsList(getParentGroup()::findDimension, dimString));
-      // this.dimensions = Dimension.makeDimensionsList(getParentGroup(), dimString);
+      setDimensions(Dimensions.makeDimensionsList(getParentGroupOrRoot()::findDimension, dimString));
       resetShape();
     } catch (IllegalStateException e) {
       throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString + "' FAILED: "
@@ -1397,7 +1431,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     for (Dimension dim : dimensions) {
       if (dim.isShared()) {
-        Dimension newD = getParentGroup().findDimension(dim.getShortName());
+        Dimension newD = getParentGroupOrRoot().findDimension(dim.getShortName());
         if (newD == null)
           throw new IllegalArgumentException(
               "Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);

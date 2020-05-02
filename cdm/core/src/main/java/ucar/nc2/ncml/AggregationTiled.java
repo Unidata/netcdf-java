@@ -87,7 +87,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     // run through all variables
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
-        Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
+        Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroupOrRoot());
         VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
             v.getDimensionsString(), null, null); // LOOK what about anon dimensions?
         vagg.setProxyReader(this); // do the reading here

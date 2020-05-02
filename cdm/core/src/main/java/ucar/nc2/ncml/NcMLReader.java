@@ -1282,7 +1282,7 @@ public class NcMLReader {
     if (refv == null) { // new
       if (debugConstruct)
         System.out.println(" add new var = " + name);
-      Variable nested = readVariableNew(ds, parentS.getParentGroup(), parentS, varElem);
+      Variable nested = readVariableNew(ds, parentS.getParentGroupOrRoot(), parentS, varElem);
       if (nested != null)
         parentS.addMemberVariable(nested);
       return;
@@ -1295,11 +1295,11 @@ public class NcMLReader {
 
     } else { // explicit
       if (refv instanceof Structure) {
-        v = new StructureDS(parentS.getParentGroup(), (Structure) refv); // true
+        v = new StructureDS(parentS.getParentGroupOrRoot(), (Structure) refv); // true
         v.setName(name);
         v.setParentStructure(parentS);
       } else {
-        v = new VariableDS(parentS.getParentGroup(), refv, false);
+        v = new VariableDS(parentS.getParentGroupOrRoot(), refv, false);
         v.setName(name);
         v.setParentStructure(parentS);
       }

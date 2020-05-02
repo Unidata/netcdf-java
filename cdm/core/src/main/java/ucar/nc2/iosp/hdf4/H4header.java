@@ -239,7 +239,7 @@ public class H4header extends NCheader {
     // not in a group
     Group root = ncfile.getRootGroup();
     for (Variable v : vars) {
-      if ((v.getParentGroup() == root) && root.findVariable(v.getShortName()) == null)
+      if ((v.getParentGroupOrRoot() == root) && root.findVariable(v.getShortName()) == null)
         root.addVariable(v);
     }
 
@@ -293,9 +293,9 @@ public class H4header extends NCheader {
       List<Variable> vlist = dimUsedMap.get(dim);
       for (Variable v : vlist) {
         if (lowest == null)
-          lowest = v.getParentGroup();
+          lowest = v.getParentGroupOrRoot();
         else {
-          lowest = lowest.commonParent(v.getParentGroup());
+          lowest = lowest.commonParent(v.getParentGroupOrRoot());
         }
       }
       Group current = dim.getGroup();

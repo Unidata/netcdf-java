@@ -60,15 +60,6 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
-   * Get the "short" name, unique within its parent Group.
-   *
-   * @return group short name
-   */
-  public String getShortName() {
-    return shortName;
-  }
-
-  /**
    * Get the Variables contained directly in this group.
    *
    * @return List of type Variable; may be empty, not null.
@@ -115,13 +106,48 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
-   * Get its parent Group, or null if its the root group.
+   * Look in this Group and in its nested Groups for a Variable with a String valued Attribute with the given name
+   * and value.
    *
-   * @return parent Group
+   * @param attName look for an Attribuite with this name.
+   * @param attValue look for an Attribuite with this value.
+   * @return the first Variable that matches, or null if none match.
    */
+  @Nullable
+  public Variable findVariableByAttribute(String attName, String attValue) {
+    for (Variable v : getVariables()) {
+      for (Attribute att : v.attributes())
+        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
+          return v;
+    }
+    for (Group nested : getGroups()) {
+      Variable v = nested.findVariableByAttribute(attName, attValue);
+      if (v != null)
+        return v;
+    }
+    return null;
+  }
+
+  /**
+   * Get its parent Group, or null if its the root group.
+   * Not deprecated.
+   */
+  @SuppressWarnings("deprecated")
   @Nullable
   public Group getParentGroup() {
     return this.group;
+  }
+
+  /**
+   * Get the full name of this object.
+   * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Group))
+   * Not deprecated.
+   * 
+   * @return full name with backslash escapes
+   */
+  @SuppressWarnings("deprecated")
+  public String getFullName() {
+    return NetcdfFiles.makeFullName(this);
   }
 
   /**

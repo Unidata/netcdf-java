@@ -43,7 +43,7 @@ public class TestN4problems {
     // java.lang.AssertionError: shape[2] (385) >= pt[2] (390)
     String filename = TestN4reading.testDir + "UpperDeschutes_t4p10_swemelt.nc";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-      Variable v = ncfile.findVariable(null, "UpperDeschutes_t4p10_swemelt");
+      Variable v = ncfile.getRootGroup().findVariable("UpperDeschutes_t4p10_swemelt");
       Array data = v.read("8087, 150:155, 150:155");
       assert data != null;
     }

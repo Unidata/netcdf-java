@@ -246,7 +246,7 @@ public class TestNc4IospWriting {
 
     // Make sure file has what we expect
     try (NetcdfFile ncFile = NetcdfFile.open(fname)) {
-      Variable arr = ncFile.findVariable(null, "arr");
+      Variable arr = ncFile.getRootGroup().findVariable("arr");
       Assert.assertEquals(5, arr.getSize());
       Array arrData = arr.read();
       float[] data = (float[]) arrData.get1DJavaArray(Float.class);
@@ -336,7 +336,7 @@ public class TestNc4IospWriting {
      */
 
     try (NetcdfFile ncFile = NetcdfFile.open(outFile.getAbsolutePath())) {
-      Variable tableVar = ncFile.findVariable(null, "table");
+      Variable tableVar = ncFile.getRootGroup().findVariable("table");
       Array actualVals = tableVar.read();
 
       int fill = -2147483647; // See EnhanceScaleMissingImpl.NC_FILL_INT

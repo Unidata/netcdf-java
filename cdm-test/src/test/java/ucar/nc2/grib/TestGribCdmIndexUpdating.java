@@ -143,7 +143,8 @@ public class TestGribCdmIndexUpdating {
       try (NetcdfFile ncfile = NetcdfFiles.open(dataDir + indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        Variable v = ncfile.findVariable(g, varName);
+        assert g != null;
+        Variable v = g.findVariable(varName);
         Assert.assertNotNull(varName, v);
         Dimension dim0 = v.getDimension(0);
         Assert.assertEquals(v.getFullName(), remLen, dim0.getLength());
@@ -162,7 +163,8 @@ public class TestGribCdmIndexUpdating {
       try (NetcdfFile ncfile = NetcdfFiles.open(dataDir + indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        Variable v = ncfile.findVariable(g, varName);
+        assert g != null;
+        Variable v = g.findVariable(varName);
         assert v != null;
 
         Dimension dim0 = v.getDimension(0);

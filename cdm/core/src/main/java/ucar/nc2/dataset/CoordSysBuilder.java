@@ -590,7 +590,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       String vname = stoker.nextToken();
       VarProcess ap = findVarProcess(vname, vp);
       if (ap == null) {
-        Group g = vp.v.getParentGroup();
+        Group g = vp.v.getParentGroupOrRoot();
         Variable v = g.findVariableOrInParent(vname);
         if (v != null)
           ap = findVarProcess(v.getFullName(), vp);

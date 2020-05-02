@@ -267,7 +267,7 @@ public class TestWriteMisc {
       Attribute att3 = ncfile.findGlobalAttribute("name2");
       assert att3 != null;
 
-      Variable vv = ncfile.findVariable(null, "time");
+      Variable vv = ncfile.getRootGroup().findVariable("time");
       assert vv.getSize() == 9 : vv.getSize();
     }
   }

@@ -136,7 +136,7 @@ public class VariablePlot extends JPanel {
     if (title != null)
       chart.setTitle(title.getStringValue());
 
-    Variable varXdim = file.findVariable(null, dimName);
+    Variable varXdim = file.getRootGroup().findVariable(dimName);
     boolean hasXdim = false;
     if (varXdim != null)
       hasXdim = true;

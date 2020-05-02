@@ -7,6 +7,7 @@ package ucar.nc2.internal.ncml;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
@@ -289,6 +290,48 @@ public class NcMLReaderNew {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Read NcML doc from a Reader, and construct a NetcdfDataset.
+   * eg: NcMLReader.readNcML(new StringReader(ncml), location, null);
+   *
+   * @param r the Reader containing the NcML document
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   *        dataset,
+   *        or may be just a unique name for caching purposes.
+   * @param cancelTask allow user to cancel the task; may be null
+   * @return the resulting NetcdfDataset
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  public static NetcdfDataset.Builder readNcML(Reader r, String ncmlLocation, CancelTask cancelTask)
+      throws IOException {
+
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(r);
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+    if (debugXML)
+      System.out.println(" SAXBuilder done");
+
+    if (showParsedXML) {
+      XMLOutputter xmlOut = new XMLOutputter();
+      System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+    }
+    Element netcdfElem = doc.getRootElement();
+
+    // the ncml probably refers to another dataset, but doesnt have to
+    String referencedDatasetUri = netcdfElem.getAttributeValue("location");
+    if (referencedDatasetUri == null)
+      referencedDatasetUri = netcdfElem.getAttributeValue("url");
+    if (referencedDatasetUri != null)
+      referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
+
+    NcMLReaderNew reader = new NcMLReaderNew();
+    return reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
+  }
 
   /**
    * Read an NcML file from a URL location, and construct a NetcdfDataset.
@@ -1203,7 +1246,8 @@ public class NcMLReaderNew {
 
         } else { // attName or @attName
           String attName = (pos == 0) ? fromAttribute.substring(1) : fromAttribute;
-          att = this.refFile.findAttribute(attName);
+          att = this.refFile.getRootGroup().findAttribute(attName);
+          // att = this.refFile.findAttribute(attName);
         }
         if (att == null) {
           errlog.format("Cant find attribute %s %n", fromAttribute);

@@ -180,7 +180,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   @Override
   public CoordinateAxis copyNoCache() {
-    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(),
+    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroupOrRoot(), getShortName(), getDataType(),
         getDimensionsString(), getUnitsString(), getDescription());
 
     // other state
@@ -878,7 +878,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (boundsVarName == null) {
       return false;
     }
-    VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
+    VariableDS boundsVar = (VariableDS) getParentGroupOrRoot().findVariable(boundsVarName);
     if (null == boundsVar)
       return false;
     if (2 != boundsVar.getRank())
