@@ -5,6 +5,8 @@ netcdf file:../core/src/test/data/testUnsignedFillValue.ncml {
       :_FillValue = 55555US; // ushort
       :_Unsigned = "true";
 
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.internal.dataset.conv.DefaultConventions";
 
   data:
     my_var = 55555

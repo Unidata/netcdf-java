@@ -532,10 +532,10 @@ public class NcMLReaderNew {
     Set<NetcdfDataset.Enhance> mode = parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     if (mode != null) {
       // cant just set enhance mode
-      builder.setEnhanceMode(mode);
       if (DatasetEnhancer.enhanceNeeded(mode, null)) {
         DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
         enhancer.enhance();
+        builder.setEnhanceMode(mode);
       }
     }
 
