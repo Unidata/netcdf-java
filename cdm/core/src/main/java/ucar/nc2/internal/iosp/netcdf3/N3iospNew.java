@@ -31,7 +31,7 @@ import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
 /**
- * Read-only using Builders for immutability.
+ * Netcdf 3 version iosp, using Builders for immutability.
  *
  * @author caron
  * @since 9/29/2019.
@@ -394,9 +394,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
     header.raf = this.raf;
   }
 
-  /**
-   * Debug info for this object.
-   */
   @Override
   public String toStringDebug(Object o) {
     return null;

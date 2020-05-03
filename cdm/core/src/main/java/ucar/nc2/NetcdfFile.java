@@ -71,14 +71,10 @@ import ucar.unidata.util.StringUtil2;
  * Read-only scientific datasets that are accessible through the netCDF API.
  * Immutable after {@code setImmutable()} is called. Reading data is not
  * thread-safe because of the use of {@code RandomAccessFile}.
- * </p>
- *
  * <p>
  * Using this class's {@code Builder} scheme to create a {@code NetcdfFile} object could, for
  * example, be accomplished as follows, using a try/finally block to ensure that the
  * {@code NetcdfFile} is closed when done.
- * </p>
- *
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
@@ -90,12 +86,8 @@ import ucar.unidata.util.StringUtil2;
  *   }
  * }
  * </pre>
- *
- * <p>
  * More conveniently, a {@code NetcdfFile} object may be created using one of the static methods
  * in {@code NetcdfFiles}:
- * </p>
- *
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
@@ -106,10 +98,8 @@ import ucar.unidata.util.StringUtil2;
  *     ncfile.close();
  *   }
  * }
- * <p>
+ * </pre>
  * Or better yet, use try-with-resources:
- * </p>
- *
  * <pre>
  * try (NetcdfFile ncfile = NetcdfFiles.open(fileName)) {
  *   // do stuff
@@ -128,15 +118,13 @@ import ucar.unidata.util.StringUtil2;
  * <li>Variable Attribute: group1/group2/varName@attName
  * </ol>
  * </p>
- * 
- * @author caron
  */
 public class NetcdfFile implements FileCacheable, Closeable {
   private static final Logger log = LoggerFactory.getLogger(NetcdfFile.class);
 
-  public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
-  public static final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
-  public static final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
+  @Deprecated public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
+  @Deprecated public static final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
+  @Deprecated public static final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
   public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
   private static final int default_buffersize = 8092;
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();
@@ -1895,20 +1883,13 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   /**
    * Generic way to send a "message" to the underlying IOSP.
-   * This message is sent after the file is open. To affect the creation of the file, you must send into the factory
-   * method.
+   * This message is sent after the file is open. To affect the creation of the file,
+   * use a factory method like NetcdfFile.open().
+   * In ver6, IOSP_MESSAGE_ADD_RECORD_STRUCTURE, IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE will not work here.
    *
    * @param message iosp specific message
-   *        Special:
-   *        <ul>
-   *        <li>NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE : tells Netcdf-3 files to make record (unlimited) variables
-   *        into a structure.
-   *        return true if it has a Nectdf-3 record structure
-   *        </ul>
    * @return iosp specific return, may be null
-   * @deprecated Use NetcdfFile.builder()
    */
-  @Deprecated
   public Object sendIospMessage(Object message) {
     if (null == message)
       return null;

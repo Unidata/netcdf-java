@@ -14,8 +14,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Netcdf version 3 file format.
- * Read-only version using Builders for testing against old version.
+ * Netcdf version 3 header. Read-only version using Builders for immutablility.
  */
 public class N3headerNew {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
@@ -61,7 +60,7 @@ public class N3headerNew {
 
   protected ucar.unidata.io.RandomAccessFile raf;
 
-  // N3iosp needs access to these
+  // N3iospNew needs access to these
   private boolean isStreaming; // is streaming (numrecs = -1)
   int numrecs; // number of records written
   long recsize; // size of each record (padded)
@@ -71,7 +70,7 @@ public class N3headerNew {
   private N3iospNew n3iospNew;
   long nonRecordDataSize; // size of non-record variables
   Dimension udim; // the unlimited dimension
-  List<Vinfo> vars = new ArrayList<>();
+  private List<Vinfo> vars = new ArrayList<>();
   long dataStart = Long.MAX_VALUE; // where the data starts
 
   private final Charset valueCharset;
@@ -87,7 +86,7 @@ public class N3headerNew {
    * 
    * @return {@link Charset charset}
    */
-  protected Charset getValueCharset() {
+  private Charset getValueCharset() {
     return valueCharset;
   }
 
@@ -144,7 +143,7 @@ public class N3headerNew {
     }
 
     // Must keep dimensions in strict order
-    List<Variable.Builder> uvars = new ArrayList<>(); // vars that have the unlimited dimension
+    List<Variable.Builder<?>> uvars = new ArrayList<>(); // vars that have the unlimited dimension
     ArrayList<Dimension> fileDimensions = new ArrayList<>();
     for (int i = 0; i < numdims; i++) {
       if (debugOut != null)
@@ -185,7 +184,7 @@ public class N3headerNew {
     // loop over variables
     for (int i = 0; i < nvars; i++) {
       String name = readString();
-      Variable.Builder var = Variable.builder().setName(name);
+      Variable.Builder<?> var = Variable.builder().setName(name);
 
       // get element count in non-record dimensions
       long velems = 1;
@@ -325,7 +324,7 @@ public class N3headerNew {
 
     // add a record structure if asked to do so
     if (n3iospNew.useRecordStructure && uvars.size() > 0) {
-      // makeRecordStructure(root, uvars);
+      makeRecordStructure(root, uvars);
     }
   }
 
@@ -579,25 +578,22 @@ public class N3headerNew {
     throw new IllegalArgumentException("unknown DataType == " + dt);
   }
 
-  /*
-   * Dont implement this yet - see if its needed.
-   * private boolean makeRecordStructure(Group.Builder root, List<Variable.Builder> uvars) {
-   * Structure.Builder recordStructure = Structure.builder().setName("record");
-   * recordStructure.setDimensionsByName(udim.getShortName());
-   * for (Variable.Builder v : uvars) {
-   * Variable.Builder memberV;
-   * try {
-   * memberV = v.slice(0, 0); // set unlimited dimension to 0
-   * } catch (InvalidRangeException e) {
-   * log.warn("N3header.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
-   * return false;
-   * }
-   * recordStructure.addMemberVariable(memberV);
-   * }
-   * 
-   * root.addVariable(recordStructure);
-   * uvars.add(recordStructure);
-   * return true;
-   * }
-   */
+  private boolean makeRecordStructure(Group.Builder root, List<Variable.Builder<?>> uvars) {
+    Structure.Builder<?> recordStructure = Structure.builder().setName("record");
+    recordStructure.setDimensionsByName(udim.getShortName());
+    for (Variable.Builder<?> v : uvars) {
+      Variable.Builder memberV;
+      try {
+        memberV = v.slice(0, 0); // set unlimited dimension to 0
+      } catch (InvalidRangeException e) {
+        log.warn("N3headerNew.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
+        return false;
+      }
+      recordStructure.addMemberVariable(memberV);
+    }
+
+    root.addVariable(recordStructure);
+    uvars.add(recordStructure);
+    return true;
+  }
 }

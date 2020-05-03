@@ -109,8 +109,8 @@ public class NcmlWriter {
   /**
    * Constructor allows you to set parameters. Any parameters may be null for default.
    *
-   * @param namespace, if null use ncmlDefaultNamespace.
-   * @param xmlFormat, if null, use Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX).
+   * @param namespace if null use ncmlDefaultNamespace.
+   * @param xmlFormat if null, use Format.getPrettyFormat().setLineSeparator(LineSeparator.UNIX).
    * @param writeValuesPredicate if null, write a Variable's values if Variable.isMetadata(). This determines whether
    *        values should be written or not. The values will be contained within a {@code <values>} element.
    *        By default, the predicate will be {@link #writeMetadataVariablesPredicate}. There could be data loss if the
