@@ -296,7 +296,9 @@ class Construct2 {
       // v.removeAttribute(CDM.UNITS);
       v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.getFxyName() + ")"));
 
-      Group g = struct.getParentGroup();
+      Group g = struct.getParentGroupOrRoot();
+      if (g == null)
+        System.out.printf("HEY%n");
       EnumTypedef enumTypedef = g.findEnumeration(ct.getName());
       if (enumTypedef == null) {
         enumTypedef = new EnumTypedef(ct.getName(), ct.getMap());

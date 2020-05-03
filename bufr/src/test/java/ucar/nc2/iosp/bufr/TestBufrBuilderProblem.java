@@ -24,8 +24,7 @@ public class TestBufrBuilderProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename =
-        TestDir.cdmUnitTestDir + "/formats/bufr/userExamples/US058MCUS-BUFtdp.SPOUT_00011_buoy_20091101021700.bufr";
+    String filename = TestDir.cdmUnitTestDir + "/formats/bufr/userExamples/20120317_1800_JUBE99_EGRR.bufr";
     // showOrg(filename);
     // showNew(filename);
     compareWithBuilder(filename);
@@ -33,7 +32,7 @@ public class TestBufrBuilderProblem {
 
   private void compareWithBuilder(String filename) throws IOException {
     logger.info("TestBuilders on {}%n", filename);
-    try (NetcdfFile org = NetcdfFiles.open(filename)) {
+    try (NetcdfFile org = NetcdfFile.open(filename)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
@@ -67,7 +66,7 @@ public class TestBufrBuilderProblem {
 
   private void showOrg(String filename) throws IOException {
 
-    try (NetcdfFile org = NetcdfFiles.open(filename)) {
+    try (NetcdfFile org = NetcdfFile.open(filename)) {
       // Variable v = org.findVariable("catchments_part_node_count");
       // Array data = v.read();
       System.out.printf("org = %s%n", org);
