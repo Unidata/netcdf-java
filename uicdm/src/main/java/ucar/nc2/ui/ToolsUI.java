@@ -1199,10 +1199,12 @@ public class ToolsUI extends JPanel {
   public NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {
 
     NetcdfFile ncfile = null;
+    Object iospMessage = useRecordStructure ? NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE : null;
     try {
       DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
       if (addCoords) {
-        ncfile = useBuilders ? NetcdfDatasets.acquireDataset(durl, true, task)
+        ncfile = useBuilders
+            ? NetcdfDatasets.acquireDataset(null, durl, NetcdfDataset.getDefaultEnhanceMode(), -1, task, iospMessage)
             : NetcdfDataset.acquireDataset(durl, true, task);
       } else {
         ncfile = useBuilders ? NetcdfDatasets.acquireFile(durl, task) : NetcdfDataset.acquireFile(durl, task);

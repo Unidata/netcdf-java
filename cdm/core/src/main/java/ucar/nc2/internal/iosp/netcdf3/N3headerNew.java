@@ -108,7 +108,7 @@ public class N3headerNew {
 
     // netcdf magic number
     long pos = 0;
-    raf.order(getByteOrder());
+    raf.order(RandomAccessFile.BIG_ENDIAN);
     raf.seek(pos);
 
     byte[] b = new byte[4];
@@ -285,7 +285,7 @@ public class N3headerNew {
       DataType dtype = uvar.dataType;
       if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
         long vsize = dtype.getSize(); // works for all netcdf-3 data types
-        List<Dimension> dims = uvar.copyDimensions(); // TODO you really do need the dimensions here, huh?
+        List<Dimension> dims = uvar.getDimensions();
         for (Dimension curDim : dims) {
           if (!curDim.isUnlimited())
             vsize *= curDim.getLength();
@@ -329,17 +329,6 @@ public class N3headerNew {
   }
 
   /**
-   * Return the byte order that will be used by
-   * {@link #read(RandomAccessFile, Group.Builder, Formatter) reading file}.
-   * 
-   * @return file byte order ({@link RandomAccessFile#BIG_ENDIAN big endian} or
-   *         {@link RandomAccessFile#LITTLE_ENDIAN little endian})
-   */
-  protected int getByteOrder() {
-    return RandomAccessFile.BIG_ENDIAN;
-  }
-
-  /**
    * Check if the given bytes correspond to
    * {@link #MAGIC magic bytes} of the header.
    * 
@@ -347,7 +336,7 @@ public class N3headerNew {
    * @return <code>true</code> if the given bytes correspond to
    *         {@link #MAGIC magic bytes} of the header. Otherwise <code>false</code>.
    */
-  protected boolean isMagicBytes(byte[] bytes) {
+  private boolean isMagicBytes(byte[] bytes) {
     for (int i = 0; i < 3; i++) {
       if (bytes[i] != MAGIC[i]) {
         return false;
@@ -391,7 +380,7 @@ public class N3headerNew {
     }
   }
 
-  private int readAtts(AttributeContainer atts, Formatter fout) throws IOException {
+  private int readAtts(AttributeContainerMutable atts, Formatter fout) throws IOException {
     int natts = 0;
     int magic = raf.readInt();
     if (magic == 0) {
@@ -580,18 +569,11 @@ public class N3headerNew {
 
   private boolean makeRecordStructure(Group.Builder root, List<Variable.Builder<?>> uvars) {
     Structure.Builder<?> recordStructure = Structure.builder().setName("record");
-    recordStructure.setDimensionsByName(udim.getShortName());
+    recordStructure.setParentGroupBuilder(root).setDimensionsByName(udim.getShortName());
     for (Variable.Builder<?> v : uvars) {
-      Variable.Builder memberV;
-      try {
-        memberV = v.slice(0, 0); // set unlimited dimension to 0
-      } catch (InvalidRangeException e) {
-        log.warn("N3headerNew.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
-        return false;
-      }
+      Variable.Builder memberV = v.makeSliceBuilder(0, 0); // set unlimited dimension to 0
       recordStructure.addMemberVariable(memberV);
     }
-
     root.addVariable(recordStructure);
     uvars.add(recordStructure);
     return true;

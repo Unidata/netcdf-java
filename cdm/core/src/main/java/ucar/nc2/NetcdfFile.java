@@ -75,6 +75,7 @@ import ucar.unidata.util.StringUtil2;
  * Using this class's {@code Builder} scheme to create a {@code NetcdfFile} object could, for
  * example, be accomplished as follows, using a try/finally block to ensure that the
  * {@code NetcdfFile} is closed when done.
+ * 
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
@@ -86,8 +87,10 @@ import ucar.unidata.util.StringUtil2;
  *   }
  * }
  * </pre>
+ * 
  * More conveniently, a {@code NetcdfFile} object may be created using one of the static methods
  * in {@code NetcdfFiles}:
+ * 
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
@@ -99,7 +102,9 @@ import ucar.unidata.util.StringUtil2;
  *   }
  * }
  * </pre>
+ * 
  * Or better yet, use try-with-resources:
+ * 
  * <pre>
  * try (NetcdfFile ncfile = NetcdfFiles.open(fileName)) {
  *   // do stuff
@@ -122,9 +127,12 @@ import ucar.unidata.util.StringUtil2;
 public class NetcdfFile implements FileCacheable, Closeable {
   private static final Logger log = LoggerFactory.getLogger(NetcdfFile.class);
 
-  @Deprecated public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
-  @Deprecated public static final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
-  @Deprecated public static final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
+  @Deprecated
+  public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
+  @Deprecated
+  public static final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
+  @Deprecated
+  public static final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
   public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
   private static final int default_buffersize = 8092;
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();

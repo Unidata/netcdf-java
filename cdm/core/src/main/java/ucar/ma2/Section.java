@@ -1156,4 +1156,39 @@ public class Section {
     }
   } // Section.Iterator
 
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    ArrayList<Range> ranges = new ArrayList<Range>();
+
+    public Builder addRanges(List<Range> ranges) {
+      ranges.forEach(r -> this.ranges.add(r));
+      return this;
+    }
+
+    public Builder add(Range range) {
+      ranges.add(range);
+      return this;
+    }
+
+    /**
+     * Replace a range at the specified index in the list.
+     *
+     * @param index replace here in the list.
+     * @param r use this Range
+     * @return this
+     * @throws IndexOutOfBoundsException if bad index
+     */
+    public Section.Builder replaceRange(int index, Range r) {
+      ranges.set(index, r);
+      return this;
+    }
+
+    public Section build() {
+      return new Section(ranges);
+    }
+  }
+
 }

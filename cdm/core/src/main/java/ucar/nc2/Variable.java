@@ -317,7 +317,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   public Section getShapeAsSection() {
     if (shapeAsSection == null) {
-      shapeAsSection = Dimensions.makeSectionFromDimensions(this.dimensions);
+      shapeAsSection = Dimensions.makeSectionFromDimensions(this.dimensions).build();
     }
     return shapeAsSection;
   }
@@ -1525,8 +1525,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     return immutable;
   }
 
-  /** @deprecated Do not use. */
-  @Deprecated
+  /** Get immutable service provider opaque object. */
   public Object getSPobject() {
     return spiObject;
   }
@@ -1843,6 +1842,19 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
         dims.add(dim);
       }
     }
+
+    // possible slice of another variable
+    if (builder.slicer != null) {
+      int dim = builder.slicer.dim;
+      int index = builder.slicer.index;
+      Section slice = Dimensions.makeSectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
+      Variable orgClient = parentGroup.findVariable(builder.slicer.orgName);
+      setProxyReader(new SliceReader(orgClient, dim, slice));
+      setCaching(false); // dont cache
+      // remove that dimension - reduce rank
+      dims.remove(dim);
+    }
+
     this.dimensions = dims;
     if (builder.autoGen != null) {
       this.cache.data = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
@@ -1928,6 +1940,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     private String enumTypeName;
     private AutoGen autoGen;
+    private Slicer slicer;
     private AttributeContainerMutable attributes = new AttributeContainerMutable("");
 
     private boolean built;
@@ -2024,11 +2037,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     public String makeDimensionsString() {
       return Dimensions.makeDimensionsString(this.dimensions);
-    }
-
-    @Deprecated
-    public List<Dimension> copyDimensions() {
-      return dimensions.stream().map(d -> d.toBuilder().build()).collect(Collectors.toList());
     }
 
     /**
@@ -2170,6 +2178,21 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
+    /**
+     * Create a new Variable.Builder that is a logical slice of this one, by
+     * fixing the specified dimension at the specified index value.
+     * 
+     * @param dim which dimension to fix
+     * @param index at what index value
+     */
+    public Variable.Builder<?> makeSliceBuilder(int dim, int index) {
+      System.out.printf(" slice of %s%n", this.shortName);
+      // create a copy of this variable with a proxy reader
+      Variable.Builder<?> sliced = builder().copyFrom(this);
+      sliced.slicer = new Slicer(dim, index, this.shortName);
+      return sliced;
+    }
+
     /** TODO Copy metadata from orgVar. */
     public T copyFrom(Variable orgVar) {
       setName(orgVar.getShortName());
@@ -2222,8 +2245,21 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     private Array makeDataArray(DataType dtype, List<Dimension> dimensions) {
-      Section section = Dimensions.makeSectionFromDimensions(dimensions);
+      Section section = Dimensions.makeSectionFromDimensions(dimensions).build();
       return Array.makeArray(dtype, (int) section.getSize(), start, incr).reshape(section.getShape());
+    }
+  }
+
+  @Immutable
+  private static class Slicer {
+    final int dim;
+    final int index;
+    final String orgName;
+
+    Slicer(int dim, int index, String orgName) {
+      this.dim = dim;
+      this.index = index;
+      this.orgName = orgName;
     }
   }
 
