@@ -43,7 +43,7 @@ public class TestGribCollectionReadingIosp {
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(endpoint)) {
       assert ds != null;
-      Variable v = ds.getRootGroup().findVariable(covName);
+      Variable v = ds.findVariable(covName);
       assert v != null;
       assert v instanceof VariableDS;
 

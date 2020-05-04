@@ -64,8 +64,8 @@ public class TestGribMiscCoordinates {
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFiles.open(filename);
     Group best = ncfile.findGroup("Best");
-    assert best != null;
-    Variable hybrid = best.findVariable("hybrid1");
+    assert best == null;
+    Variable hybrid = ncfile.findVariable("hybrid1");
     assert hybrid != null;
     assert (hybrid.getDimensions().size() == 1);
     Dimension d = hybrid.getDimension(0);
@@ -81,8 +81,8 @@ public class TestGribMiscCoordinates {
 
     NetcdfFile ncfile = NetcdfFiles.open(filename);
     Group best = ncfile.findGroup("Best");
-    assert best != null;
-    Variable lat = best.findVariable("lat");
+    assert best == null;
+    Variable lat = ncfile.findVariable("lat");
     assert lat != null;
     assert lat.getSize() == 48;
     ncfile.close();

@@ -619,7 +619,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       Group gnew = rootgroup.makeRelativeGroup(this, dodsname, true);
       // Get current group for the variable
       Group gold = null;
-      gold = dodsv.getParentGroup();
+      gold = dodsv.getParentGroupOrRoot();
       if (gnew != gold) {
         gold.remove(dodsv);
         dodsv.setParentGroup(gnew);
@@ -633,7 +633,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   private void reGroupVariableAttributes(Group rootgroup, Variable v) {
     String vname = v.getShortName();
-    Group vgroup = v.getParentGroup();
+    Group vgroup = v.getParentGroupOrRoot();
     for (Attribute ncatt : v.attributes()) {
       String adodsname = ncatt.getDODSName();
       NamePieces pieces = parseName(adodsname);
