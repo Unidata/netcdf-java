@@ -4,7 +4,7 @@
  */
 package ucar.nc2;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,36 +17,51 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/**
- * @author caron
- * @since Jan 25, 2008
- */
+/** Test StructureIterator works when opened with IOSP_MESSAGE_ADD_RECORD_STRUCTURE. */
 @Category(NeedsCdmUnitTest.class)
-public class TestStructureIterator extends TestCase {
+public class TestStructureIterator {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestStructureIterator(String name) {
-    super(name);
-  }
+  @Test
+  public void testStructureIteratorOld() throws IOException, InvalidRangeException {
+    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc")) {
+      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-  public void testStructureIterator() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      Structure v = (Structure) ncfile.findVariable("record");
+      assert v != null;
+      assert (v.getDataType() == DataType.STRUCTURE);
 
-    Structure v = (Structure) ncfile.findVariable("record");
-    assert v != null;
-    assert (v.getDataType() == DataType.STRUCTURE);
-
-    int count = 0;
-    try (StructureDataIterator si = v.getStructureIterator()) {
-      while (si.hasNext()) {
-        StructureData sd = si.next();
-        count++;
+      int count = 0;
+      try (StructureDataIterator si = v.getStructureIterator()) {
+        while (si.hasNext()) {
+          StructureData sd = si.next();
+          count++;
+        }
       }
+      assert count == v.getSize();
     }
-    assert count == v.getSize();
-
-    ncfile.close();
   }
+
+  @Test
+  public void testStructureIterator() throws IOException, InvalidRangeException {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc", -1,
+        null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+
+      Structure v = (Structure) ncfile.findVariable("record");
+      assert v != null;
+      assert (v.getDataType() == DataType.STRUCTURE);
+
+      int count = 0;
+      try (StructureDataIterator si = v.getStructureIterator()) {
+        while (si.hasNext()) {
+          StructureData sd = si.next();
+          count++;
+        }
+      }
+      assert count == v.getSize();
+    }
+  }
+
+
 }
 

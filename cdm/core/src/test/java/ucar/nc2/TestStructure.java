@@ -16,9 +16,7 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
-/**
- * Test reading record data
- */
+/** Test reading record data */
 public class TestStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -26,7 +24,7 @@ public class TestStructure {
 
   @Before
   public void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
+    ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 
@@ -211,7 +209,7 @@ public class TestStructure {
   }
 
   private void readBothWays(String filename) throws IOException {
-    NetcdfFile ncfile = NetcdfFiles.open(filename);
+    NetcdfFile ncfile = NetcdfFile.open(filename);
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     // System.out.println(ncfile);
     ncfile.close();

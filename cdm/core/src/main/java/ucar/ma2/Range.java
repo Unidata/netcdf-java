@@ -45,6 +45,14 @@ public class Range implements RangeIterator {
     }
   }
 
+  public static Range make(int first, int last) {
+    try {
+      return new Range(first, last);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen if len > 0
+    }
+  }
+
   ////////////////////////////////////////////////////////
 
   protected final int length; // number of elements

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
@@ -114,6 +115,14 @@ public class TestCoordSysCompareMore {
     @Override
     public boolean compareCoordinateTransform(CoordinateTransform ct1, CoordinateTransform ct2) {
       return ct2.getName().startsWith(ct1.getName());
+    }
+
+    // override att comparision if needed
+    public boolean attsAreEqual(Attribute att1, Attribute att2) {
+      if (att1.getShortName().equalsIgnoreCase(CDM.UNITS) && att2.getShortName().equalsIgnoreCase(CDM.UNITS)) {
+        return att1.getStringValue().trim().equals(att2.getStringValue().trim());
+      }
+      return att1.equals(att2);
     }
   }
 

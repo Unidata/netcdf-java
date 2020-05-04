@@ -584,10 +584,15 @@ public class NcMLReaderNew {
           System.out.println(" add new group = " + name);
         }
 
-      } else { // existing
-        String finalName = nameInFile;
-        groupBuilder = parent.findGroupLocal(finalName)
-            .orElseThrow(() -> new IllegalStateException("Cant find Group " + finalName));
+      } else { // exists in refGroup.
+        if (explicit) {
+          groupBuilder = Group.builder();
+          parent.addGroup(groupBuilder);
+        } else {
+          String finalName = nameInFile;
+          groupBuilder = parent.findGroupLocal(finalName)
+              .orElseThrow(() -> new IllegalStateException("Cant find Group " + finalName));
+        }
         groupBuilder.setName(name);
       }
     }
@@ -823,7 +828,7 @@ public class NcMLReaderNew {
           .setIsVariableLength(isVariableLength).setLength(len).build());
 
     } else { // existing - modify it
-      Dimension.Builder newDim = dim.toBuilder();
+      Dimension.Builder newDim = this.explicit ? Dimension.builder() : dim.toBuilder();
       newDim.setName(name);
 
       String lengthS = dimElem.getAttributeValue("length");

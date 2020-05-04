@@ -14,8 +14,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Netcdf version 3 file format.
- * Read-only version using Builders for testing against old version.
+ * Netcdf version 3 header. Read-only version using Builders for immutablility.
  */
 public class N3headerNew {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
@@ -61,7 +60,7 @@ public class N3headerNew {
 
   protected ucar.unidata.io.RandomAccessFile raf;
 
-  // N3iosp needs access to these
+  // N3iospNew needs access to these
   private boolean isStreaming; // is streaming (numrecs = -1)
   int numrecs; // number of records written
   long recsize; // size of each record (padded)
@@ -71,7 +70,7 @@ public class N3headerNew {
   private N3iospNew n3iospNew;
   long nonRecordDataSize; // size of non-record variables
   Dimension udim; // the unlimited dimension
-  List<Vinfo> vars = new ArrayList<>();
+  private List<Vinfo> vars = new ArrayList<>();
   long dataStart = Long.MAX_VALUE; // where the data starts
 
   private final Charset valueCharset;
@@ -87,7 +86,7 @@ public class N3headerNew {
    * 
    * @return {@link Charset charset}
    */
-  protected Charset getValueCharset() {
+  private Charset getValueCharset() {
     return valueCharset;
   }
 
@@ -109,7 +108,7 @@ public class N3headerNew {
 
     // netcdf magic number
     long pos = 0;
-    raf.order(getByteOrder());
+    raf.order(RandomAccessFile.BIG_ENDIAN);
     raf.seek(pos);
 
     byte[] b = new byte[4];
@@ -144,7 +143,7 @@ public class N3headerNew {
     }
 
     // Must keep dimensions in strict order
-    List<Variable.Builder> uvars = new ArrayList<>(); // vars that have the unlimited dimension
+    List<Variable.Builder<?>> uvars = new ArrayList<>(); // vars that have the unlimited dimension
     ArrayList<Dimension> fileDimensions = new ArrayList<>();
     for (int i = 0; i < numdims; i++) {
       if (debugOut != null)
@@ -185,7 +184,7 @@ public class N3headerNew {
     // loop over variables
     for (int i = 0; i < nvars; i++) {
       String name = readString();
-      Variable.Builder var = Variable.builder().setName(name);
+      Variable.Builder<?> var = Variable.builder().setName(name);
 
       // get element count in non-record dimensions
       long velems = 1;
@@ -286,7 +285,7 @@ public class N3headerNew {
       DataType dtype = uvar.dataType;
       if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
         long vsize = dtype.getSize(); // works for all netcdf-3 data types
-        List<Dimension> dims = uvar.copyDimensions(); // TODO you really do need the dimensions here, huh?
+        List<Dimension> dims = uvar.getDimensions();
         for (Dimension curDim : dims) {
           if (!curDim.isUnlimited())
             vsize *= curDim.getLength();
@@ -325,19 +324,8 @@ public class N3headerNew {
 
     // add a record structure if asked to do so
     if (n3iospNew.useRecordStructure && uvars.size() > 0) {
-      // makeRecordStructure(root, uvars);
+      makeRecordStructure(root, uvars);
     }
-  }
-
-  /**
-   * Return the byte order that will be used by
-   * {@link #read(RandomAccessFile, Group.Builder, Formatter) reading file}.
-   * 
-   * @return file byte order ({@link RandomAccessFile#BIG_ENDIAN big endian} or
-   *         {@link RandomAccessFile#LITTLE_ENDIAN little endian})
-   */
-  protected int getByteOrder() {
-    return RandomAccessFile.BIG_ENDIAN;
   }
 
   /**
@@ -348,7 +336,7 @@ public class N3headerNew {
    * @return <code>true</code> if the given bytes correspond to
    *         {@link #MAGIC magic bytes} of the header. Otherwise <code>false</code>.
    */
-  protected boolean isMagicBytes(byte[] bytes) {
+  private boolean isMagicBytes(byte[] bytes) {
     for (int i = 0; i < 3; i++) {
       if (bytes[i] != MAGIC[i]) {
         return false;
@@ -392,7 +380,7 @@ public class N3headerNew {
     }
   }
 
-  private int readAtts(AttributeContainer atts, Formatter fout) throws IOException {
+  private int readAtts(AttributeContainerMutable atts, Formatter fout) throws IOException {
     int natts = 0;
     int magic = raf.readInt();
     if (magic == 0) {
@@ -579,25 +567,15 @@ public class N3headerNew {
     throw new IllegalArgumentException("unknown DataType == " + dt);
   }
 
-  /*
-   * Dont implement this yet - see if its needed.
-   * private boolean makeRecordStructure(Group.Builder root, List<Variable.Builder> uvars) {
-   * Structure.Builder recordStructure = Structure.builder().setName("record");
-   * recordStructure.setDimensionsByName(udim.getShortName());
-   * for (Variable.Builder v : uvars) {
-   * Variable.Builder memberV;
-   * try {
-   * memberV = v.slice(0, 0); // set unlimited dimension to 0
-   * } catch (InvalidRangeException e) {
-   * log.warn("N3header.makeRecordStructure cant slice variable " + v + " " + e.getMessage());
-   * return false;
-   * }
-   * recordStructure.addMemberVariable(memberV);
-   * }
-   * 
-   * root.addVariable(recordStructure);
-   * uvars.add(recordStructure);
-   * return true;
-   * }
-   */
+  private boolean makeRecordStructure(Group.Builder root, List<Variable.Builder<?>> uvars) {
+    Structure.Builder<?> recordStructure = Structure.builder().setName("record");
+    recordStructure.setParentGroupBuilder(root).setDimensionsByName(udim.getShortName());
+    for (Variable.Builder<?> v : uvars) {
+      Variable.Builder memberV = v.makeSliceBuilder(0, 0); // set unlimited dimension to 0
+      recordStructure.addMemberVariable(memberV);
+    }
+    root.addVariable(recordStructure);
+    uvars.add(recordStructure);
+    return true;
+  }
 }

@@ -93,6 +93,14 @@ public class CompareNetcdf2 {
         return false; // temp workaround
       return v.getDataType() != DataType.STRING;
     }
+
+    // override att comparision if needed
+    public boolean attsAreEqual(Attribute att1, Attribute att2) {
+      if (att1.getShortName().equalsIgnoreCase(CDM.UNITS) && att2.getShortName().equalsIgnoreCase(CDM.UNITS)) {
+        return att1.getStringValue().trim().equals(att2.getStringValue().trim());
+      }
+      return att1.equals(att2);
+    }
   }
 
   public static boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f) {
@@ -288,7 +296,7 @@ public class CompareNetcdf2 {
 
     // nested groups
     List groups = new ArrayList();
-    String name = org.isRoot() ? "root" : org.getFullName();
+    String name = org.isRoot() ? "root group" : org.getFullName();
     ok &= checkAll(name, org.getGroups(), copy.getGroups(), groups);
     for (int i = 0; i < groups.size(); i += 2) {
       Group orgGroup = (Group) groups.get(i);

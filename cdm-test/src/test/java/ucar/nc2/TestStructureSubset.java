@@ -4,7 +4,9 @@
  */
 package ucar.nc2;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,27 +18,26 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author caron
- * @since Jan 19, 2008
- */
+/** Test StructureIterator works when opened with IOSP_MESSAGE_ADD_RECORD_STRUCTURE. */
 @Category(NeedsCdmUnitTest.class)
-public class TestStructureSubset extends TestCase {
+public class TestStructureSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  NetcdfFile ncfile;
+  private NetcdfFile ncfile;
 
-  protected void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+  @Before
+  public void setUp() throws Exception {
+    ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc", -1, null,
+        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     ncfile.close();
   }
 
-  public void testReadStructureSubset() throws IOException, InvalidRangeException {
-
+  @Test
+  public void testReadStructureSubset() throws IOException {
     Structure record = (Structure) ncfile.findVariable("record");
     assert record != null;
 
@@ -61,6 +62,7 @@ public class TestStructureSubset extends TestCase {
     System.out.println("*** TestStructureSubset ok");
   }
 
+  @Test
   public void testReadStructureSection() throws IOException, InvalidRangeException {
 
     Structure record = (Structure) ncfile.findVariable("record");

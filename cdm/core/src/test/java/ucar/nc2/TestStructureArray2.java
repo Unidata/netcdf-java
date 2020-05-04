@@ -26,7 +26,7 @@ public class TestStructureArray2 {
 
   @Test
   public void testBB() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
+    NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     Structure v = (Structure) ncfile.findVariable("record");
