@@ -163,7 +163,7 @@ public class HTTPSession implements Closeable {
   // deprecated, so just use an enum
 
   /* package */ enum Prop {
-    ALLOW_CIRCULAR_REDIRECTS, HANDLE_REDIRECTS, HANDLE_AUTHENTICATION, MAX_REDIRECTS, MAX_CONNECTIONS, SO_TIMEOUT, CONN_TIMEOUT, CONN_REQ_TIMEOUT, USER_AGENT, COOKIE_STORE, RETRIES, UNAVAILRETRIES, COMPRESSION, CREDENTIALS, USESESSIONS,
+    ALLOW_CIRCULAR_REDIRECTS, HANDLE_REDIRECTS, HANDLE_AUTHENTICATION, MAX_REDIRECTS, MAX_CONNECTIONS, SO_TIMEOUT, CONN_TIMEOUT, CONN_REQ_TIMEOUT, USER_AGENT, COOKIE_STORE, RETRIES, UNAVAILRETRIES, COMPRESSION, CREDENTIALS, USESESSIONS, COOKIE_SPEC,
   }
 
   // Header names
@@ -188,6 +188,8 @@ public class HTTPSession implements Closeable {
   static final String DCONNTIMEOUT = "tds.http.conntimeout";
   static final String DSOTIMEOUT = "tds.http.sotimeout";
   static final String DMAXCONNS = "tds.http.maxconns";
+
+  static final String DEFAULT_COOKIESPEC = "standard";
 
   //////////////////////////////////////////////////////////////////////////
   // Type Declaration(s)
@@ -422,6 +424,7 @@ public class HTTPSession implements Closeable {
     props.put(Prop.CONN_TIMEOUT, (Integer) DFALTCONNTIMEOUT);
     props.put(Prop.CONN_REQ_TIMEOUT, (Integer) DFALTCONNREQTIMEOUT);
     props.put(Prop.USER_AGENT, DFALTUSERAGENT);
+    props.put(Prop.COOKIE_SPEC, DEFAULT_COOKIESPEC);
   }
 
   static void buildsslfactory(AuthControls authcontrols) {
