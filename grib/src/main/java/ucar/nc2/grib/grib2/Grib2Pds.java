@@ -62,6 +62,8 @@ public abstract class Grib2Pds {
         return new Grib2Pds30(input);
       case 31:
         return new Grib2Pds31(input);
+      case 32:
+        return new Grib2Pds32(input);
       case 48:
         return new Grib2Pds48(input);
       case 61:
@@ -162,7 +164,7 @@ public abstract class Grib2Pds {
 
   /**
    * Get Background generating process identifier (defined by originating centre)
-   * 
+   *
    * @return Background generating process identifier
    */
   public int getBackProcessId() {
@@ -171,7 +173,7 @@ public abstract class Grib2Pds {
 
   /**
    * Indicator of unit of time range (see Code table 4.4)
-   * 
+   *
    * @return unit of time range
    */
   public abstract int getTimeUnit();
@@ -179,7 +181,7 @@ public abstract class Grib2Pds {
   /**
    * Forecast time in units of getTimeUnit()
    * forecast time for points, should not be used for intervals
-   * 
+   *
    * @return Forecast time
    */
   public int getForecastTime() {
@@ -234,19 +236,23 @@ public abstract class Grib2Pds {
     return (template == 15);
   }
 
+  public boolean isSatellite() {
+    return (template >= 30 && template <= 32);
+  }
+
   /*
    * public int getPerturbationNumber() {
    * return GribNumbers.UNDEFINED;
    * }
-   * 
+   *
    * public int getPerturbationType() {
    * return GribNumbers.UNDEFINED;
    * }
-   * 
+   *
    * public boolean isEnsembleDerived() {
    * return false;
    * }
-   * 
+   *
    * public int getNumberEnsembleForecasts() {
    * return GribNumbers.UNDEFINED;
    * }
@@ -256,19 +262,19 @@ public abstract class Grib2Pds {
    * public double getProbabilityLowerLimit() {
    * return GribNumbers.UNDEFINED;
    * }
-   * 
+   *
    * public double getProbabilityUpperLimit() {
    * return GribNumbers.UNDEFINED;
    * }
-   * 
+   *
    * public int getProbabilityType() {
    * return GribNumbers.UNDEFINED;
    * }
-   * 
+   *
    * public boolean isPercentile() {
    * return false;
    * }
-   * 
+   *
    * public int getPercentileValue() {
    * return -1;
    * }
@@ -397,6 +403,12 @@ public abstract class Grib2Pds {
     int getProbabilityHashcode();
 
     String getProbabilityName();
+  }
+
+  public interface PdsSatellite {
+    int getNumSatelliteBands();
+
+    SatelliteBand[] getSatelliteBands();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1323,7 +1335,7 @@ public abstract class Grib2Pds {
    *
    * @deprecated 4.31 should be used
    */
-  private static class Grib2Pds30 extends Grib2Pds {
+  private static class Grib2Pds30 extends Grib2Pds implements PdsSatellite {
 
     Grib2Pds30(byte[] input) {
       super(input);
@@ -1371,8 +1383,8 @@ public abstract class Grib2Pds {
       int pos = 15;
       for (int i = 0; i < nb; i++) {
         SatelliteBand sb = new SatelliteBand();
-        sb.number = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
-        sb.series = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
+        sb.series = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
+        sb.number = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
         sb.instrumentType = getOctet(pos + 4);
         int scaleFactor = getOctetSigned(pos + 5);
         int svalue = GribNumbers.int4(getOctet(pos + 6), getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9));
@@ -1400,7 +1412,7 @@ public abstract class Grib2Pds {
   /**
    * Product definition template 4.31 - satellite product
    */
-  private static class Grib2Pds31 extends Grib2Pds {
+  private static class Grib2Pds31 extends Grib2Pds implements PdsSatellite {
 
     static final int octetsPerBand = 11;
 
@@ -1449,8 +1461,8 @@ public abstract class Grib2Pds {
       int pos = 15;
       for (int i = 0; i < nb; i++) {
         SatelliteBand sb = new SatelliteBand();
-        sb.number = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
-        sb.series = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
+        sb.series = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
+        sb.number = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
         sb.instrumentType = GribNumbers.int2(getOctet(pos + 4), getOctet(pos + 5));
         int scaleFactor = getOctetSigned(pos + 6);
         int svalue = GribNumbers.int4(getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9), getOctet(pos + 10));
@@ -1463,6 +1475,83 @@ public abstract class Grib2Pds {
 
     public int templateLength() {
       return 14 + getNumSatelliteBands() * octetsPerBand;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Product definition template 4.32 - satellite product
+   */
+  private static class Grib2Pds32 extends Grib2Pds implements PdsSatellite {
+
+    static final int octetsPerBand = 11;
+
+    Grib2Pds32(byte[] input) {
+      super(input);
+    }
+
+    @Override
+    public int getGenProcessType() {
+      return getOctet(12);
+    }
+
+    @Override
+    public int getBackProcessId() {
+      return getOctet(13);
+    }
+
+    @Override
+    public int getGenProcessId() {
+      return getOctet(14);
+    }
+
+    public int getHoursAfterCutoff() {
+      return GribNumbers.int2(getOctet(15), getOctet(16));
+    }
+
+    public int getMinutesAfterCutoff() {
+      return getOctet(17);
+    }
+
+    public int getTimeUnit() {
+      return getOctet(18);
+    }
+
+    /**
+     * Number of contributing spectral bands (NB)
+     *
+     * @return Number of contributing spectral
+     */
+    public int getNumSatelliteBands() {
+      return getOctet(23);
+    }
+
+    /**
+     * SatelliteBand
+     *
+     * @return SatelliteBands
+     */
+    public SatelliteBand[] getSatelliteBands() {
+      int nb = getNumSatelliteBands();
+      SatelliteBand[] result = new SatelliteBand[nb];
+      int pos = 24;
+      for (int i = 0; i < nb; i++) {
+        SatelliteBand sb = new SatelliteBand();
+        sb.series = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
+        sb.number = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
+        sb.instrumentType = GribNumbers.int2(getOctet(pos + 4), getOctet(pos + 5));
+        int scaleFactor = getOctetSigned(pos + 6);
+        int svalue = GribNumbers.int4(getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9), getOctet(pos + 10));
+        sb.value = applyScaleFactor(scaleFactor, svalue);
+        pos += octetsPerBand;
+        result[i] = sb;
+      }
+      return result;
+    }
+
+    public int templateLength() {
+      return 24 + getNumSatelliteBands() * octetsPerBand;
     }
   }
 
@@ -1702,29 +1791,29 @@ public abstract class Grib2Pds {
 }
 
 /*
- * 
+ *
  * Hi John,
- * 
+ *
  * I did create the degrib program, but I'm fairly positive you're using your own software and are just wondering about
  * how to interpret NDFD's encoding of the valid time. The correct people to answer that would be the people who encoded
  * the messages which is why I've included nws.ndfd@noaa.gov. There probably should be a FAQ on this subject.
- * 
+ *
  * As you point out, the reference time (Ref) is easy (The reference time is 2010-09-21T12:00:00Z)
  * The forecast time (ForeT) can similarly be read (Forecast time in units defined by previous octet == 6) (Presumably
  * the earlier units was hours)
  * The time range (range) also can be read (51: Length of the time range over which statistical processing is done, in
  * units defined by the previous octet == 6)
- * 
+ *
  * So now the question is what does one do with these? We know we have a 6 hour interval which starts or stops around
  * Ref + ForeT. So we could either have:
  * A) End of Interval = Ref + ForeT + range; Begin of Interval = Ref + ForeT
  * or
  * B) End of Interval = Ref + ForeT; Begin of Interval = Ref + ForeT - range
- * 
+ *
  * The way NDFD decided to encode it is with B). The reasoning was that the valid times are always the end of the
  * period, so B made more sense to the folks encoding the NDFD. Also, the logic went, if decoders were confused, then
  * the "end of overall time interval" would clarify whether A) or B) was chosen.
- * 
+ *
  * So now we go back to the note:
  * > (2) The reference time in section 1 and the forecast time together
  * > define the beginning of the overall time interval.
@@ -1733,22 +1822,22 @@ public abstract class Grib2Pds {
  * "the sum of those two values equals the beginning of the overall time interval". If you think that is funky logic,
  * consider the statement that "Pressure and Volume together define Temperature". Does that mean P + V = T? No, it meas
  * P*V / nR = T. So note 2, as written, unfortunately has a lot of wiggle room.
- * 
+ *
  * The result is that when I was writing degrib, I couldn't trust either equation A) or B), so I went with a simpler
  * method... I simply read the end of the interval. If there was a range I used:
- * 
+ *
  * End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
  * C1) End of Interval = EI; Begin of Interval = EI - range
- * 
+ *
  * and if there was no interval then I used:
  * C2) End of Interval = Begin of Interval = Ref + ForeT.
- * 
+ *
  * Using equations C1 and C2 has the elegance of being simple, and not having to convert the word 'define' into an
  * equation.
- * 
+ *
  * Does that help?
- * 
+ *
  * Arthur
  * Arthur.Taylor@noaa.gov
- * 
+ *
  */

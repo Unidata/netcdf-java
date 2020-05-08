@@ -42,6 +42,7 @@ public class TestGrib2Records {
     result.add(new Object[] {"sref.pds12.grib2", 30, 12, 23865, "2009-01-25T21:00:00Z"});
     result.add(new Object[] {"rugley.pds15.grib2", 0, 15, 41760, "2010-10-13T18:00:00Z"});
     result.add(new Object[] {"Lannion.pds31.grib2", 0, 31, 5760000, "2013-11-18T02:00:00Z"});
+    result.add(new Object[] {"BOM_synsat.pds32.grib2", 0, 32, 9690, "2020-05-06T12:00:00Z"});
     return result;
   }
 
@@ -85,6 +86,13 @@ public class TestGrib2Records {
         Assert.assertEquals(datalen, data.length);
       System.out.printf("%s: template,param,len=  %d, %d, %d, \"%s\" %n", filename, gds.template,
           pdss.getPDSTemplateNumber(), data.length, gr.getReferenceDate());
+
+      if (check && pds.isSatellite()) {
+        Grib2Pds.PdsSatellite sat = (Grib2Pds.PdsSatellite) pds;
+        int numBands = sat.getNumSatelliteBands();
+        Assert.assertNotEquals(0, numBands);
+        Assert.assertEquals(numBands, sat.getSatelliteBands().length);
+      }
       return true;
     });
   }
