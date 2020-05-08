@@ -399,6 +399,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
         rcb.setConnectTimeout((Integer) value);
       } else if (key == Prop.CONN_REQ_TIMEOUT) {
         rcb.setConnectionRequestTimeout((Integer) value);
+      } else if (key == Prop.COOKIE_SPEC) {
+        rcb.setCookieSpec(value.toString());
       } /* else ignore */
     }
     RequestConfig cfg = rcb.build();
