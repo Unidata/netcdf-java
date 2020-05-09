@@ -331,7 +331,7 @@ public class TestTransforms {
       System.out.printf("3dcoord = %s %n", sv);
 
       if (vt.isTimeDependent())
-        s = s.removeRange(0);
+        s = s.toBuilder().removeRange(0).build();
       assert s.equals(sv);
     }
     return true;

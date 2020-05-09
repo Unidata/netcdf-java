@@ -588,10 +588,10 @@ public class Structure extends Variable {
     private void readNextGeneralRank() throws IOException {
 
       try {
-        Section section = new Section(shape);
-        section.setRange(0, new Range(outerCount, outerCount));
+        Section.Builder sb = Section.builder().appendRanges(shape);
+        sb.setRange(0, new Range(outerCount, outerCount));
 
-        as = (ArrayStructure) read(section);
+        as = (ArrayStructure) read(sb.build());
 
         if (NetcdfFile.debugStructureIterator)
           System.out.println("readNext inner=" + outerCount + " total=" + outerCount);

@@ -855,9 +855,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       for (Variable v : ncfile.getVariables()) {
         if (!v.isUnlimited() || (v instanceof Structure))
           continue;
-        Section recordSection = new Section(v.getRanges());
+        Section.Builder recordSection = Section.builder().appendRanges(v.getRanges());
         recordSection.setRange(0, r);
-        writeData(v, recordSection, makeConstantArray(v));
+        writeData(v, recordSection.build(), makeConstantArray(v));
       }
     }
   }
