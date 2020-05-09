@@ -279,7 +279,7 @@ public class WRFConvention extends CoordSystemBuilder {
               v = removeConstantTimeDim(v);
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
-            } else if (v.shortName.equals("T")) { // ANOTHER MAJOR KLUDGE to pick up 4D fields
+            } else if (v.shortName.equals("T")) { // TODO ANOTHER MAJOR KLUDGE to pick up 4D fields
               v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z"));
             } else if (v.shortName.equals("U")) {
               v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT_U XLONG_U z"));
@@ -357,6 +357,19 @@ public class WRFConvention extends CoordSystemBuilder {
     }
     return vds;
   }
+
+  /* TODO this doesnt work, leaving original way to do it, should revisit
+  private Variable.Builder<?> removeConstantTimeDim(Variable.Builder<?> vb) {
+    VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;
+    Variable v = vds.orgVar;
+    int[] shape = v.getShape();
+    if (v.getRank() == 3 && shape[0] == 1) {
+      Variable.Builder<?> vdslice = vds.makeSliceBuilder(0, 0);
+      rootGroup.replaceVariable(vdslice);
+      return vdslice;
+    }
+    return vds;
+  } */
 
   private Array convertToDegrees(Variable.Builder<?> vb) {
     VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;

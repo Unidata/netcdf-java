@@ -2187,10 +2187,14 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
      */
     public Variable.Builder<?> makeSliceBuilder(int dim, int index) {
       System.out.printf(" slice of %s%n", this.shortName);
-      // create a copy of this variable with a proxy reader
-      Variable.Builder<?> sliced = builder().copyFrom(this);
+      // create a copy of this builder with a slicer
+      Variable.Builder<?> sliced = this.copy();
       sliced.slicer = new Slicer(dim, index, this.shortName);
       return sliced;
+    }
+
+    public Builder<?> copy() {
+      return new Builder2().copyFrom(this);
     }
 
     /** TODO Copy metadata from orgVar. */
