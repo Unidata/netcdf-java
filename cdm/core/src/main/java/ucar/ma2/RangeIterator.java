@@ -18,11 +18,16 @@ public interface RangeIterator extends Iterable<Integer> {
   @Override
   Iterator<Integer> iterator();
 
+  /** The number of index in this iterator. */
   int length();
 
+  /** The name of this Range iterator. */
   String getName();
 
-  // copy on mutate
+  /** @deprecated use copyWithName(). */
+  @Deprecated
   RangeIterator setName(String name);
 
+  /** Make a copy with a different name. */
+  RangeIterator copyWithName(String name);
 }

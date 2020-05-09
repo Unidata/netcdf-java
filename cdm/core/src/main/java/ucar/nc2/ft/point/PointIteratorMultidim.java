@@ -77,13 +77,13 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     StructureDataW sdata = new StructureDataW(members);
 
     for (Variable var : vars) {
-      Section s = new Section();
+      Section.Builder sb = Section.builder();
       try {
-        s.appendRange(outerIndex, outerIndex);
-        s.appendRange(count, count);
+        sb.appendRange(outerIndex, outerIndex);
+        sb.appendRange(count, count);
         for (int i = 2; i < var.getRank(); i++)
-          s.appendRange(null);
-        Array data = var.read(s);
+          sb.appendRangeAll();
+        Array data = var.read(sb.build());
         sdata.setMemberData(var.getShortName(), data);
 
       } catch (InvalidRangeException | IOException e) {

@@ -1058,9 +1058,9 @@ class FmrcDataset {
 
     // assume time is first dimension LOOK: out of-order; ensemble; section different ??
     Range timeRange = new Range(timeInstance.getDatasetIndex(), timeInstance.getDatasetIndex());
-    Section s = new Section(innerSection);
-    s.insertRange(0, timeRange);
-    return v.read(s);
+    Section.Builder sb = Section.builder().appendRanges(innerSection);
+    sb.insertRange(0, timeRange);
+    return v.read(sb.build());
   }
 
   /**

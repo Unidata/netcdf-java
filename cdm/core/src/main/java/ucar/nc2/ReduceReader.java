@@ -51,12 +51,12 @@ class ReduceReader implements ProxyReader {
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
-    Section orgSection = new Section(section.getRanges());
-    for (int dim : dims)
+    Section.Builder orgSection = Section.builder().appendRanges(section.getRanges());
+    for (int dim : dims) {
       orgSection.insertRange(dim, Range.ONE); // lowest first
+    }
 
-    Array data = orgClient._read(orgSection);
-
+    Array data = orgClient._read(orgSection.build());
     for (int i = dims.size() - 1; i >= 0; i--)
       data = data.reduce(dims.get(i)); // highest first
 

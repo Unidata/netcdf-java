@@ -55,11 +55,11 @@ public class Range implements RangeIterator {
 
   ////////////////////////////////////////////////////////
 
-  protected final int length; // number of elements
+  private final int length; // number of elements
   private final int first; // first value in range
   private final int last; // last value in range, inclusive
   private final int stride; // stride, must be >= 1
-  protected final String name; // optional name
+  private final String name; // optional name
 
   /**
    * Used for EMPTY
@@ -164,13 +164,35 @@ public class Range implements RangeIterator {
     this.length = length;
   }
 
-  // copy on change
+  /** @deprecated use copyWithStride() */
+  @Deprecated
   public Range setStride(int stride) throws InvalidRangeException {
     return new Range(this.first(), this.last(), stride);
   }
 
+  /** Make a copy with a different stride. */
+  public Range copyWithStride(int stride) throws InvalidRangeException {
+    if (stride == this.stride)
+      return this;
+    return new Range(this.first(), this.last(), stride);
+  }
+
+  /** @deprecated use copyWithName() */
+  @Deprecated
   @Override
   public Range setName(String name) {
+    if (name.equals(this.getName()))
+      return this;
+    try {
+      return new Range(name, first, last, stride, length);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+  }
+
+  /** Make a copy with a different name. */
+  @Override
+  public Range copyWithName(String name) {
     if (name.equals(this.getName()))
       return this;
     try {

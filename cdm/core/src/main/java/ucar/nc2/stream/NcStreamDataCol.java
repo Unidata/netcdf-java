@@ -242,17 +242,14 @@ public class NcStreamDataCol {
 
     MemberData(StructureMembers.Member member, int[] parent) {
       this.member = member;
-      this.section = new Section(parent);
+      Section.Builder sb = Section.builder().appendRanges(parent);
       int[] mshape = member.getShape();
-      // if (mshape.length == 0) // scalar
-      // this.section.appendRange(Range.ONE);
-      // else
-      // compose with the parent
       for (int s : mshape) {
-        if (s < 0)
-          continue;
-        this.section.appendRange(s);
+        if (s >= 0) {
+          sb.appendRange(s);
+        }
       }
+      this.section = sb.build();
 
       this.dtype = member.getDataType();
       this.isVlen = member.isVariableLength();
@@ -692,11 +689,11 @@ public class NcStreamDataCol {
     Section section = NcStream.decodeSection(memberData.getSection());
     assert memberData.getIsVlen() || memberData.getNelems() == section.computeSize();
     // the dproto section includes parents, remove them
-    Section msection = section.removeFirst(parentSection);
+    Section.Builder msection = parentSection.toBuilder().removeRange(0);
     if (memberData.getIsVlen())
       msection = msection.appendRange(Range.VLEN);
 
-    StructureMembers.Member result = members.addMember(name, null, null, dataType, msection.getShape());
+    StructureMembers.Member result = members.addMember(name, null, null, dataType, msection.build().getShape());
     Array data = decode(memberData, parentSection);
     result.setDataArray(data);
   }

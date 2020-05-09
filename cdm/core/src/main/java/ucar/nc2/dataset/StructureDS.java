@@ -428,7 +428,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       if (!varHasData(v, sm)) {
         try {
           Variable completeVar = getParentGroupOrRoot().findVariable(v.getShortName()); // LOOK BAD
-          Array mdata = completeVar.read(new Section().appendRange(recno, recno));
+          Array mdata = completeVar.read(Section.builder().appendRange(recno, recno).build());
           StructureMembers.Member m =
               sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
           result.setMemberData(m, mdata);

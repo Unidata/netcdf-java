@@ -360,12 +360,12 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     // construct the Variable section pertaining to this Datatset by replacing the tiled dimensions
     Section makeVarSection(Variable mainv) {
       Section vSection = mainv.getShapeAsSection();
-      Section dataSection = new Section();
+      Section.Builder dataSection = Section.builder();
       for (Range r : vSection.getRanges()) {
         Range rr = section.find(r.getName());
         dataSection.appendRange(rr != null ? rr : r);
       }
-      return dataSection;
+      return dataSection.build();
     }
   }
 }

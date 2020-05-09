@@ -260,26 +260,26 @@ public class HorizCoordSys {
 
       } else if (horizStride > 1) { // no bounding box, just horiz stride
         if (isProjection) {
-          opt = xAxis.subsetByIndex(xAxis.getRange().setStride(horizStride));
+          opt = xAxis.subsetByIndex(xAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             xaxisSubset = (CoverageCoordAxis1D) opt.get();
           else
             errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
 
-          opt = yAxis.subsetByIndex(yAxis.getRange().setStride(horizStride));
+          opt = yAxis.subsetByIndex(yAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             yaxisSubset = (CoverageCoordAxis1D) opt.get();
           else
             errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
 
         } else {
-          opt = lonAxis.subsetByIndex(lonAxis.getRange().setStride(horizStride));
+          opt = lonAxis.subsetByIndex(lonAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             lonaxisSubset = opt.get();
           else
             errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
 
-          opt = latAxis.subsetByIndex(latAxis.getRange().setStride(horizStride));
+          opt = latAxis.subsetByIndex(latAxis.getRange().copyWithStride(horizStride));
           if (opt.isPresent())
             lataxisSubset = opt.get();
           else

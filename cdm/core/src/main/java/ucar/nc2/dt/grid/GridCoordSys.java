@@ -516,7 +516,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         if ((rt_range == null) && (t_range == null))
           tAxis = taxis;
         else {
-          Section timeSection = new Section().appendRange(rt_range).appendRange(t_range);
+          Section timeSection = Section.builder().appendRange(rt_range).appendRange(t_range).build();
           tAxis = (CoordinateAxis) taxis.section(timeSection);
         }
         coordAxes.add(tAxis);

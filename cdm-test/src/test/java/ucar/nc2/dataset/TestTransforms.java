@@ -290,18 +290,17 @@ public class TestTransforms {
       vt = vct.makeVerticalTransform(ncd, timeDim);
       assert vt.isTimeDependent();
 
-      varSection = varSection.removeRange(0); // remove time dependence for comparision
-
+      Section subV = varSection.toBuilder().removeRange(0).build(); // remove time dependence for comparision
       for (int i = 0; i < timeDim.getLength(); i++) {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
         assert (null != coordVals);
         Section cSection = new Section(coordVals.getShape());
-        if (show)
-          System.out.printf("%s: varSection shape = %s %n", v.getFullName(), varSection);
-        if (show)
+        if (show) {
+          System.out.printf("%s: varSection shape = %s %n", v.getFullName(), subV);
           System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
+        }
         if (varsMatch)
-          assert varSection.computeSize() == cSection.computeSize();
+          assert subV.computeSize() == cSection.computeSize();
       }
     }
     assert vt != null;

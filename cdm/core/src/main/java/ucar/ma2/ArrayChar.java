@@ -888,10 +888,8 @@ public class ArrayChar extends Array implements Iterable<String> {
    * @return equivilent ArrayChar. Unused are zero filled.
    */
   public static ArrayChar makeFromStringArray(ArrayObject values, int strlen) {
-
     // create shape for equivilent charArray
-    Section section = new Section(values.getShape());
-    section.appendRange(strlen);
+    Section section = Section.builder().appendRanges(values.getShape()).appendRange(strlen).build();
 
     int[] shape = section.getShape();
     long size = section.computeSize();

@@ -41,7 +41,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     // make sure range has axisType as the name
     String rangeName = (axisType != null) ? axisType.toString() : null;
     if (builder.range != null) {
-      this.range = (rangeName != null) ? builder.range.setName(rangeName) : builder.range;
+      this.range = (rangeName != null) ? builder.range.copyWithName(rangeName) : builder.range;
     } else {
       this.range = Range.make(rangeName, getNcoords());
     }
@@ -418,7 +418,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
 
         if (stride != 1)
           try {
-            return Optional.of(helper.subsetByIndex(getRange().setStride(stride)));
+            return Optional.of(helper.subsetByIndex(getRange().copyWithStride(stride)));
           } catch (InvalidRangeException e) {
             return Optional.empty(e.getMessage());
           }

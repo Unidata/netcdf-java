@@ -386,21 +386,20 @@ public class Structure extends Variable {
    * @throws ucar.ma2.InvalidRangeException if index out of range
    */
   public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
-    Section section = null; // works for scalars i think
+    Section.Builder sb = Section.builder();
 
     if (getRank() == 1) {
-      section = new Section().appendRange(index, index);
+      sb.appendRange(index, index);
 
     } else if (getRank() > 1) {
       Index ii = Index.factory(shape); // convert to nD index
       ii.setCurrentCounter(index);
       int[] origin = ii.getCurrentCounter();
-      section = new Section();
       for (int anOrigin : origin)
-        section.appendRange(anOrigin, anOrigin);
+        sb.appendRange(anOrigin, anOrigin);
     }
 
-    Array dataArray = read(section);
+    Array dataArray = read(sb.build());
     ArrayStructure data = (ArrayStructure) dataArray;
     return data.getStructureData(0);
   }
