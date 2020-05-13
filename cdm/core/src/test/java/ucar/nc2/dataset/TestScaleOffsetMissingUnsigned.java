@@ -122,7 +122,7 @@ public class TestScaleOffsetMissingUnsigned {
       Variable vs = ncd.findVariable("packed");
       assert vs != null;
 
-      Section s = new Section().appendRange(1, 1).appendRange(1, 1);
+      Section s = Section.builder().appendRange(1, 1).appendRange(1, 1).build();
       Array readEnhanced = vs.read(s);
       logger.debug(Ncdump.printArray(readEnhanced));
 

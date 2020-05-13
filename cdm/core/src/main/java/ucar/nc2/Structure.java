@@ -386,21 +386,20 @@ public class Structure extends Variable {
    * @throws ucar.ma2.InvalidRangeException if index out of range
    */
   public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
-    Section section = null; // works for scalars i think
+    Section.Builder sb = Section.builder();
 
     if (getRank() == 1) {
-      section = new Section().appendRange(index, index);
+      sb.appendRange(index, index);
 
     } else if (getRank() > 1) {
       Index ii = Index.factory(shape); // convert to nD index
       ii.setCurrentCounter(index);
       int[] origin = ii.getCurrentCounter();
-      section = new Section();
       for (int anOrigin : origin)
-        section.appendRange(anOrigin, anOrigin);
+        sb.appendRange(anOrigin, anOrigin);
     }
 
-    Array dataArray = read(section);
+    Array dataArray = read(sb.build());
     ArrayStructure data = (ArrayStructure) dataArray;
     return data.getStructureData(0);
   }
@@ -589,10 +588,10 @@ public class Structure extends Variable {
     private void readNextGeneralRank() throws IOException {
 
       try {
-        Section section = new Section(shape);
-        section.setRange(0, new Range(outerCount, outerCount));
+        Section.Builder sb = Section.builder().appendRanges(shape);
+        sb.setRange(0, new Range(outerCount, outerCount));
 
-        as = (ArrayStructure) read(section);
+        as = (ArrayStructure) read(sb.build());
 
         if (NetcdfFile.debugStructureIterator)
           System.out.println("readNext inner=" + outerCount + " total=" + outerCount);

@@ -969,7 +969,7 @@ public abstract class Table {
       int outerIndex = cursor.recnum[2];
       int middleIndex = cursor.recnum[1];
       try {
-        Section s = new Section().appendRange(outerIndex, outerIndex).appendRange(middleIndex, middleIndex);
+        Section s = Section.builder().appendRange(outerIndex, outerIndex).appendRange(middleIndex, middleIndex).build();
         ArrayStructure result = (ArrayStructure) struct.read(s);
         assert result.getSize() == 1;
         StructureData sdata = result.getStructureData(0); // should only be one
@@ -1013,11 +1013,11 @@ public abstract class Table {
     public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       int recnum = cursor.getParentRecnum();
       try {
-        Section section = new Section().appendRange(recnum, recnum);
+        Section.Builder sb = Section.builder().appendRange(recnum, recnum);
         int count = 1;
         while (count++ < struct.getRank()) // handles multidim case
-          section.appendRange(null);
-        ArrayStructure data = (ArrayStructure) struct.read(section); // read all the data for a fixed outer index
+          sb.appendRangeAll();
+        ArrayStructure data = (ArrayStructure) struct.read(sb.build()); // read all the data for a fixed outer index
         return data.getStructureDataIterator();
       } catch (InvalidRangeException e) {
         throw new IllegalStateException(e);

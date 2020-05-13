@@ -97,13 +97,13 @@ public class TestSubsettingUtils {
   }
 
   private static Section randomSubset(Section all, int stride) throws InvalidRangeException {
-    Section s = new Section();
+    Section.Builder sb = Section.builder();
     for (Range r : all.getRanges()) {
       int first = random(r.first(), r.last() / 2);
       int last = random(r.last() / 2, r.last());
-      s.appendRange(first, last, stride);
+      sb.appendRange(first, last, stride);
     }
-    return s;
+    return sb.build();
   }
 
   private static Random r = new Random(System.currentTimeMillis());

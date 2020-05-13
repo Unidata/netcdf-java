@@ -66,7 +66,7 @@ public class IndexConstant extends Index {
       throw new IllegalArgumentException("illegal reduce dim " + dim + " : length != 1");
 
     Section curr = new Section(shape);
-    Section want = curr.removeRange(dim);
+    Section want = curr.toBuilder().removeRange(dim).build();
     return new IndexConstant(want.getShape());
   }
 

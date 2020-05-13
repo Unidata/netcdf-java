@@ -33,12 +33,12 @@ public class Dimensions {
       for (Dimension d : dimensions) {
         int len = d.getLength();
         if (len > 0)
-          builder.add(new Range(d.getShortName(), 0, len - 1));
+          builder.appendRange(new Range(d.getShortName(), 0, len - 1));
         else if (len == 0)
-          builder.add(Range.EMPTY); // LOOK empty not named
+          builder.appendRange(Range.EMPTY); // LOOK empty not named
         else {
           assert d.isVariableLength();
-          builder.add(Range.VLEN); // LOOK vlen not named
+          builder.appendRange(Range.VLEN); // LOOK vlen not named
         }
       }
       return builder;

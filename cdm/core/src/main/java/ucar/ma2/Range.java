@@ -55,11 +55,11 @@ public class Range implements RangeIterator {
 
   ////////////////////////////////////////////////////////
 
-  protected final int length; // number of elements
+  private final int length; // number of elements
   private final int first; // first value in range
   private final int last; // last value in range, inclusive
   private final int stride; // stride, must be >= 1
-  protected final String name; // optional name
+  private final String name; // optional name
 
   /**
    * Used for EMPTY
@@ -144,7 +144,6 @@ public class Range implements RangeIterator {
     this.length = 1 + (last - first) / stride;
     this.last = first + (this.length - 1) * stride;
     assert stride != 1 || this.last == last;
-    assert this.length != 0;
   }
 
   protected Range(String name, int first, int last, int stride, int length) throws InvalidRangeException {
@@ -164,13 +163,35 @@ public class Range implements RangeIterator {
     this.length = length;
   }
 
-  // copy on change
+  /** @deprecated use copyWithStride() */
+  @Deprecated
   public Range setStride(int stride) throws InvalidRangeException {
     return new Range(this.first(), this.last(), stride);
   }
 
+  /** Make a copy with a different stride. */
+  public Range copyWithStride(int stride) throws InvalidRangeException {
+    if (stride == this.stride)
+      return this;
+    return new Range(this.first(), this.last(), stride);
+  }
+
+  /** @deprecated use copyWithName() */
+  @Deprecated
   @Override
   public Range setName(String name) {
+    if (name.equals(this.getName()))
+      return this;
+    try {
+      return new Range(name, first, last, stride, length);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+  }
+
+  /** Make a copy with a different name. */
+  @Override
+  public Range copyWithName(String name) {
     if (name.equals(this.getName()))
       return this;
     try {
@@ -262,7 +283,7 @@ public class Range implements RangeIterator {
     int sr_stride = this.stride * r.stride;
     int sr_first = element(r.first()); // MAP(this,i) == element(i)
     int lastx = element(r.last());
-    int sr_last = (last() < lastx ? last() : lastx); // min(last(),lastx)
+    int sr_last = Math.min(last(), lastx);
     // unused int sr_length = (sr_last + 1) - sr_first;
     return new Range(name, sr_first, sr_last, sr_stride);
   }
@@ -555,9 +576,7 @@ public class Range implements RangeIterator {
     }
   }
 
-  /**
-   * Get ith element; skip checking, for speed.
-   */
+  /** Get ith element; skip checking, for speed. */
   private int elementNC(int i) {
     return first + i * stride;
   }

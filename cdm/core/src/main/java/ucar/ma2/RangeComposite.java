@@ -33,8 +33,17 @@ public class RangeComposite implements RangeIterator {
     return ranges;
   }
 
+  /** @deprecated use copyWithName() */
+  @Deprecated
   @Override
   public RangeIterator setName(String name) {
+    if (name.equals(this.getName()))
+      return this;
+    return new RangeComposite(name, ranges);
+  }
+
+  @Override
+  public RangeIterator copyWithName(String name) {
     if (name.equals(this.getName()))
       return this;
     return new RangeComposite(name, ranges);

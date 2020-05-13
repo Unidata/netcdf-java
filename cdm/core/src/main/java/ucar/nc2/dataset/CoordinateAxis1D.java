@@ -117,7 +117,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @throws InvalidRangeException if IllegalRange
    */
   public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    Section section = new Section().appendRange(r);
+    Section section = Section.builder().appendRange(r).build();
     CoordinateAxis1D result = (CoordinateAxis1D) section(section);
     int len = r.length();
 

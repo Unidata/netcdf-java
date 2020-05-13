@@ -78,10 +78,11 @@ public class H5tiledLayoutBB implements LayoutBB {
     // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, reletive
     // to the Variable.
     DataType dtype = v2.getDataType();
-    if ((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length))
-      this.want = new Section(wantSection).appendRange(1);
-    else
+    if ((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length)) {
+      this.want = Section.builder().appendRanges(wantSection.getRanges()).appendRange(1).build();
+    } else {
       this.want = wantSection;
+    }
 
     // one less chunk dimension, except in the case of char
     nChunkDims = (dtype == DataType.CHAR) ? vinfo.storageSize.length : vinfo.storageSize.length - 1;

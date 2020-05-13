@@ -145,7 +145,7 @@ public class TestN4reading {
       data = v.read("0:9:2, :");
       logger.debug(Ncdump.printArray(data, "read(0:9:2,:)", null));
 
-      data = v.read(new Section().appendRange(0, 9, 2).appendRange(null));
+      data = v.read(Section.builder().appendRange(0, 9, 2).appendRangeAll().build());
       logger.debug(Ncdump.printArray(data, "read(Section)", null));
 
       // fail

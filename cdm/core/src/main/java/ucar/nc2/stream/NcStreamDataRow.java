@@ -73,7 +73,7 @@ public class NcStreamDataRow {
         ArrayChar cdata = (ArrayChar) data;
         for (String s : cdata)
           builder.addStringdata(s);
-        Section ssection = section.removeLast();
+        Section ssection = section.toBuilder().removeLast().build();
         builder.setSection(NcStream.encodeSection(ssection));
 
       } else if (data instanceof ArrayObject) {
@@ -124,7 +124,7 @@ public class NcStreamDataRow {
       count += vlensize;
     }
     builder.setNelems(count);
-    Section ssection = section.removeLast();
+    Section ssection = section.toBuilder().removeLast().build();
     builder.setSection(NcStream.encodeSection(ssection));
     assert section.computeSize() == count;
 

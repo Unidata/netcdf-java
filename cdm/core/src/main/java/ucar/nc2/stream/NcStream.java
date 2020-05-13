@@ -504,7 +504,7 @@ public class NcStream {
     // If shared, they must also exist in a parent Group. However, we dont yet have the Groups wired together,
     // so that has to wait until build().
     List<Dimension> dims = new ArrayList<>(6);
-    Section section = new Section();
+    Section.Builder section = Section.builder();
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : var.getShapeList()) {
       dims.add(decodeDim(dim));
       section.appendRange((int) dim.getLength());
@@ -517,7 +517,7 @@ public class NcStream {
     if (!var.getData().isEmpty()) {
       // LOOK may mess with ability to change var size later.
       ByteBuffer bb = ByteBuffer.wrap(var.getData().toByteArray());
-      Array data = Array.factory(varType, section.getShape(), bb);
+      Array data = Array.factory(varType, section.build().getShape(), bb);
       ncvar.setCachedData(data, true);
     }
 
@@ -531,10 +531,8 @@ public class NcStream {
     ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()));
 
     List<Dimension> dims = new ArrayList<>(6);
-    Section section = new Section();
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : s.getShapeList()) {
       dims.add(decodeDim(dim));
-      section.appendRange((int) dim.getLength());
     }
     ncvar.addDimensions(dims);
 
@@ -552,7 +550,7 @@ public class NcStream {
 
   @Nonnull
   public static Section decodeSection(NcStreamProto.Section proto) {
-    Section section = new Section();
+    Section.Builder section = Section.builder();
 
     for (ucar.nc2.stream.NcStreamProto.Range pr : proto.getRangeList()) {
       try {
@@ -570,7 +568,7 @@ public class NcStream {
         throw new RuntimeException("Bad Section in ncstream", e);
       }
     }
-    return section;
+    return section.build();
   }
 
   /*

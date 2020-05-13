@@ -47,9 +47,9 @@ class SliceReader implements ProxyReader {
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
-    Section orgSection = new Section(section.getRanges());
+    Section.Builder orgSection = Section.builder().appendRanges(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
-    Array data = orgClient._read(orgSection);
+    Array data = orgClient._read(orgSection.build());
     data = data.reduce(sliceDim);
     return data;
   }

@@ -413,9 +413,9 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     // create a copy of this variable with a proxy reader
     Variable.Builder sliceV = this.toBuilder(); // subclasses override toBuilder()
-    Section slice = new Section(getShapeAsSection());
-    slice.replaceRange(dim, new Range(value, value)).makeImmutable();
-    sliceV.setProxyReader(new SliceReader(this, dim, slice));
+    Section.Builder slice = Section.builder().appendRanges(getShape());
+    slice.replaceRange(dim, new Range(value, value));
+    sliceV.setProxyReader(new SliceReader(this, dim, slice.build()));
     sliceV.resetCache(); // dont share the cache
     sliceV.setCaching(false); // dont cache
 

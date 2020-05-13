@@ -99,7 +99,7 @@ public class TestGridVerticalTransforms extends TestCase {
     Section sv = new Section(z.getShape());
     System.out.printf("3dcoord = %s %n", sv);
 
-    s = s.removeRange(0);
+    s = s.toBuilder().removeRange(0).build();
     assert s.equals(sv);
   }
 
