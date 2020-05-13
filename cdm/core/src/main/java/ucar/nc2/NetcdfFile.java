@@ -880,6 +880,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * 
    * @deprecated do not use
    */
+  @Deprecated
   public void release() throws IOException {
     if (iosp != null)
       iosp.release();
