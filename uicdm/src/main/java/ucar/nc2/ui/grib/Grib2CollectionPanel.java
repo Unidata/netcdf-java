@@ -714,10 +714,10 @@ public class Grib2CollectionPanel extends JPanel {
    * dc.count++;
    * }
    * }
-   * 
+   *
    * List<DateCount> dcList= new ArrayList<DateCount>(runs.values());
    * Collections.sort(dcList);
-   * 
+   *
    * f.format("Run Dates%n");
    * for (DateCount dc : dcList)
    * f.format(" %s == %d%n", df.toDateTimeStringISO( dc.d), dc.count);
@@ -964,40 +964,40 @@ public class Grib2CollectionPanel extends JPanel {
    * List<Grib2RecordBean> all = new ArrayList<Grib2RecordBean>(pb.getRecordBeans());
    * List<Grib2RecordBean> hourAccum = new ArrayList<Grib2RecordBean>(all.size());
    * List<Grib2RecordBean> runAccum = new ArrayList<Grib2RecordBean>(all.size());
-   * 
+   *
    * Set<Integer> ftimes = new HashSet<Integer>();
-   * 
+   *
    * for (Grib2RecordBean rb : pb.getRecordBeans()) {
    * int ftime = rb.getForecastTime();
    * ftimes.add(ftime);
-   * 
+   *
    * int start = rb.getStartInterval();
    * int end = rb.getEndInterval();
    * if (end - start == 1) hourAccum.add(rb);
    * if (start == 0) runAccum.add(rb);
    * }
-   * 
+   *
    * int n = ftimes.size();
-   * 
+   *
    * Formatter f = new Formatter();
    * f.format("      all: ");
    * showList(all, f);
    * f.format("%n");
-   * 
+   *
    * if (hourAccum.size() > n - 2) {
    * for (Grib2RecordBean rb : hourAccum) all.remove(rb);
    * f.format("hourAccum: ");
    * showList(hourAccum, f);
    * f.format("%n");
    * }
-   * 
+   *
    * if (runAccum.size() > n - 2) {
    * for (Grib2RecordBean rb : runAccum) all.remove(rb);
    * f.format(" runAccum: ");
    * showList(runAccum, f);
    * f.format("%n");
    * }
-   * 
+   *
    * if (all.size() > 0) {
    * boolean same = true;
    * int intv = -1;
@@ -1009,15 +1009,15 @@ public class Grib2CollectionPanel extends JPanel {
    * else same = (intv == intv2);
    * if (!same) break;
    * }
-   * 
+   *
    * f.format("remaining: ");
    * showList(all, f);
    * f.format("%s %n", same ? " Interval=" + intv : " Mixed");
    * }
-   * 
+   *
    * return f.toString();
    * }
-   * 
+   *
    * private void showList(List<Grib2RecordBean> list, Formatter f) {
    * f.format("(%d) ", list.size());
    * for (Grib2RecordBean rb : list)
@@ -1534,6 +1534,11 @@ public class Grib2CollectionPanel extends JPanel {
 
         if (pds instanceof Grib2Pds.PdsProbability) {
           props.add(new PropertyDescriptor("probLimits", cl, "getProbLimits", null));
+        }
+
+        if (pds instanceof Grib2Pds.PdsSatellite) {
+          props.add(new PropertyDescriptor("numSatBands", cl, "getNumSatelliteBands", null));
+          props.add(new PropertyDescriptor("satBands", cl, "getSatelliteBands", null));
         }
 
       } catch (IntrospectionException e) {
