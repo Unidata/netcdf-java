@@ -920,6 +920,12 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
       this.missingDataIsMissing = b;
     }
 
+    /** Copy of this builder. */
+    @Override
+    public Variable.Builder<?> copy() {
+      return new Builder2().copyFrom(this);
+    }
+
     /** Copy metadata from orgVar. */
     @Override
     public T copyFrom(Variable orgVar) {
