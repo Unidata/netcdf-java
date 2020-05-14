@@ -138,6 +138,8 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
     return 0;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public void setFileCache(FileCacheIF fileCache) {
     ncd.setFileCache(fileCache);
@@ -214,13 +216,15 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
     return ncd.getConventionUsed();
   }
 
-  // release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (ncd != null)
       ncd.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (ncd != null)
       ncd.reacquire();

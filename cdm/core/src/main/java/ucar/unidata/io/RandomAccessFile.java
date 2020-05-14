@@ -442,16 +442,22 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     file = null; // help the gc
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public void release() { // one to one with java.io.RandomAccessFile
     cacheState = 2;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public void reacquire() {
     cacheState = 1;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     if (fileCache == null)

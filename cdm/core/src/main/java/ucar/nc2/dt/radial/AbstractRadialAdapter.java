@@ -201,6 +201,8 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
   //////////////////////////////////////////////////
   // FileCacheable
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
@@ -221,13 +223,15 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
     }
   }
 
-  // release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (netcdfDataset != null)
       netcdfDataset.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (netcdfDataset != null)
       netcdfDataset.reacquire();

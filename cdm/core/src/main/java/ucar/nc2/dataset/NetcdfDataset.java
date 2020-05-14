@@ -1026,13 +1026,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     orgFile = null;
   }
 
-  // optionally release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (orgFile != null)
       orgFile.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (orgFile != null)
       orgFile.reacquire();

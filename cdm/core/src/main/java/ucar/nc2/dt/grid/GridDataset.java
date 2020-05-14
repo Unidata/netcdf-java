@@ -506,13 +506,15 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     }
   }
 
-  // release any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void release() throws IOException {
     if (ncd != null)
       ncd.release();
   }
 
-  // reacquire any resources like file handles
+  /** @deprecated do not use */
+  @Deprecated
   public void reacquire() throws IOException {
     if (ncd != null)
       ncd.reacquire();
@@ -525,6 +527,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   protected FileCacheIF fileCache;
 
+  /** @deprecated do not use */
+  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
