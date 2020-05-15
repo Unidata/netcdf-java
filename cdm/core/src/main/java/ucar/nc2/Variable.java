@@ -32,6 +32,7 @@ import java.nio.channels.WritableByteChannel;
  * Immutable if setImmutable() was called.
  * TODO Variable will be immutable in 6.
  * TODO Variable will not implement AttributeContainer in 6, use Variable.attributes().
+ * TODO Variable will not extend CDMNode in 6.
  *
  * @author caron
  * @see ucar.ma2.Array

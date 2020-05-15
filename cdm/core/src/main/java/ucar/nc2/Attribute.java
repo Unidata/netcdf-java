@@ -25,9 +25,9 @@ import java.util.Map;
  * The value can be a one dimensional array of Strings or numeric values.
  * <p/>
  * TODO Attributes will be immutable in 6.
- * Attribute will not extend CDMNode in 6.
- * Attribute will not know who it belongs to in 6 (Group or Variable).
- * Attribute.getFullName() will not exist in 6.
+ * TODO Attribute will not extend CDMNode in 6.
+ * TODO Attribute will not know who it belongs to in 6 (Group or Variable).
+ * TODO Attribute.getFullName() will not exist in 6.
  *
  * @author caron
  */
