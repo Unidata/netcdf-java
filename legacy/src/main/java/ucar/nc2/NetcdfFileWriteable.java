@@ -513,7 +513,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       att = new Attribute(attName, att.getValues());
     }
 
-    Variable v = rootGroup.findVariable(varName);
+    Variable v = rootGroup.findVariableLocal(varName);
     if (null == v)
       throw new IllegalArgumentException("addVariableAttribute variable name not found = <" + varName + ">");
     v.addAttribute(att);

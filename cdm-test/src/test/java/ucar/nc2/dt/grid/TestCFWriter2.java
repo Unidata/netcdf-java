@@ -241,7 +241,7 @@ public class TestCFWriter2 {
 
       long total = 0;
       for (String grid : grids) {
-        Variable w = ncfile.getRootGroup().findVariable(grid);
+        Variable w = ncfile.getRootGroup().findVariableLocal(grid);
         assert w != null;
         total += w.getSize() * w.getElementSize();
         System.out.printf(" actual size of %s = %d%n", grid, w.getSize() * w.getElementSize());

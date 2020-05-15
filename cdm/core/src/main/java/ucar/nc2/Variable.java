@@ -1850,7 +1850,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       int dim = builder.slicer.dim;
       int index = builder.slicer.index;
       Section slice = Dimensions.makeSectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
-      Variable orgClient = parentGroup.findVariable(builder.slicer.orgName);
+      Variable orgClient = parentGroup.findVariableLocal(builder.slicer.orgName);
       setProxyReader(new SliceReader(orgClient, dim, slice));
       setCaching(false); // dont cache
       // remove that dimension - reduce rank

@@ -52,7 +52,7 @@ public class DatasetConstructor {
 
     // variables
     for (Variable v : src.getVariables()) {
-      Variable targetV = targetGroup.findVariable(v.getShortName());
+      Variable targetV = targetGroup.findVariableLocal(v.getShortName());
       VariableEnhanced targetVe = (VariableEnhanced) targetV;
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
 

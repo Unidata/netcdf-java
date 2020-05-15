@@ -144,7 +144,7 @@ public class TestGribCdmIndexUpdating {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
         assert g != null;
-        Variable v = g.findVariable(varName);
+        Variable v = g.findVariableLocal(varName);
         Assert.assertNotNull(varName, v);
         Dimension dim0 = v.getDimension(0);
         Assert.assertEquals(v.getFullName(), remLen, dim0.getLength());
@@ -164,7 +164,7 @@ public class TestGribCdmIndexUpdating {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
         assert g != null;
-        Variable v = g.findVariable(varName);
+        Variable v = g.findVariableLocal(varName);
         assert v != null;
 
         Dimension dim0 = v.getDimension(0);

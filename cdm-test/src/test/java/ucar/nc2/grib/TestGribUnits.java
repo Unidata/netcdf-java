@@ -27,7 +27,7 @@ public class TestGribUnits {
     // Make sure we return the udunits string of "count"
     String filename = "tds/ncep/WW3_Coastal_Alaska_20140804_0000.grib2";
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + filename)) {
-      Variable var = ds.getRootGroup().findVariable("ordered_sequence_of_data");
+      Variable var = ds.getRootGroup().findVariableLocal("ordered_sequence_of_data");
       Attribute att = var.findAttribute("units");
       Assert.assertNotNull(att);
       Assert.assertEquals("count", att.getStringValue());
@@ -42,7 +42,7 @@ public class TestGribUnits {
       Group grp = ds.getRootGroup();
       Assert.assertNotNull(grp);
 
-      Variable var = grp.findVariable("Wind_direction_from_which_blowing_height_above_ground");
+      Variable var = grp.findVariableLocal("Wind_direction_from_which_blowing_height_above_ground");
       Assert.assertNotNull(var);
 
       Attribute att = var.findAttribute("units");
@@ -59,7 +59,7 @@ public class TestGribUnits {
       Group grp = ds.getRootGroup();
       Assert.assertNotNull(grp);
 
-      Variable var = grp.findVariable("Categorical_Rain_surface");
+      Variable var = grp.findVariableLocal("Categorical_Rain_surface");
       Assert.assertNotNull(var);
 
       Attribute att = var.findAttribute("units");

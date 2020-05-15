@@ -54,11 +54,11 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
       Attribute att = ncfile.findGlobalAttribute("Instrument_Name");
       if ((att == null) || !att.getStringValue().equals("CrIS"))
         return false;
-      if (null == loc.findVariable(PRESSURE_COORD_NAME))
+      if (null == loc.findVariableLocal(PRESSURE_COORD_NAME))
         return false;
     }
 
-    return null != loc.findVariable("Latitude") && null != loc.findVariable("Longitude");
+    return null != loc.findVariableLocal("Latitude") && null != loc.findVariableLocal("Longitude");
   }
 
   public NppConvention() {
@@ -79,13 +79,13 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
       if (group == null)
         throw new IllegalStateException();
       hasPressureLevels = true;
-      spectralCoord = group.findVariable(SPECTRAL_COORD_NAME);
+      spectralCoord = group.findVariableLocal(SPECTRAL_COORD_NAME);
     }
 
-    Variable lat = group.findVariable("Latitude");
+    Variable lat = group.findVariableLocal("Latitude");
     lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    Variable lon = group.findVariable("Longitude");
+    Variable lon = group.findVariableLocal("Longitude");
     lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
@@ -101,7 +101,7 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
 
     Dimension altd = null;
     if (hasPressureLevels) {
-      Variable alt = group.findVariable(PRESSURE_COORD_NAME);
+      Variable alt = group.findVariableLocal(PRESSURE_COORD_NAME);
       alt.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       shape = alt.getShape();
       assert shape.length == 1;

@@ -75,7 +75,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     }
 
     private boolean checkGroup(Group g) {
-      Variable crs = g.findVariable(HdfEos.HDFEOS_CRS);
+      Variable crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
       Group dataG = g.findGroupLocal(DATA_GROUP);
       if (crs != null && dataG != null) {
         Attribute att = crs.findAttribute(HdfEos.HDFEOS_CRS_Projection);

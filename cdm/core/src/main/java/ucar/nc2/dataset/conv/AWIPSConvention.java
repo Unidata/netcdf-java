@@ -236,7 +236,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (null != (dim = ds.getRootGroup().findDimension(name))) {
       if (dim.getLength() == len) {
         // check against actual values
-        Variable coord = ds.getRootGroup().findVariable(name);
+        Variable coord = ds.getRootGroup().findVariableLocal(name);
         Array coordData = coord.read();
         Array newData = Array.makeArray(coord.getDataType(), values);
         if (MAMath.nearlyEquals(coordData, newData)) {

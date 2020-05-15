@@ -317,7 +317,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     aggDim.setLength(getTotalCoords());
 
     // reset coordinate var
-    VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
+    VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariableLocal(dimName);
     joinAggCoord.setDimensions(dimName); // reset its dimension
     joinAggCoord.invalidateCache(); // get rid of any cached data, since its now wrong
 

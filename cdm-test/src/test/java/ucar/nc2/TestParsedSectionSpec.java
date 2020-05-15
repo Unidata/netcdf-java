@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -73,7 +72,7 @@ public class TestParsedSectionSpec extends TestCase {
     Group g = ncfile.findGroup("group.name");
     assert g != null;
 
-    Variable v = g.findVariable("var.name");
+    Variable v = g.findVariableLocal("var.name");
     assert v != null;
 
     Variable v2 = ncfile.findVariable("group.name/var.name");
@@ -101,7 +100,7 @@ public class TestParsedSectionSpec extends TestCase {
     Group g = ncfile.findGroup("group(name");
     assert g != null;
 
-    Variable v = g.findVariable("var(name");
+    Variable v = g.findVariableLocal("var(name");
     assert v != null;
 
     Variable v2 = ncfile.findVariable("group(name/var(name");

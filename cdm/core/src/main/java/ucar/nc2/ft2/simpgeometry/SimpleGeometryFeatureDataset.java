@@ -121,7 +121,7 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
 
 
   public VariableSimpleIF getDataVariable(String shortName) {
-    return ncd.getRootGroup().findVariable(shortName);
+    return ncd.getRootGroup().findVariableLocal(shortName);
   }
 
   public NetcdfFile getNetcdfFile() {

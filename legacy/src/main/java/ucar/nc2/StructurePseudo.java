@@ -91,7 +91,7 @@ public class StructurePseudo extends Structure {
 
     // use the list of varnames that were passed in
     for (String name : varNames) {
-      Variable orgV = group.findVariable(name);
+      Variable orgV = group.findVariableLocal(name);
       if (orgV == null) {
         continue; // skip - should log message
       }

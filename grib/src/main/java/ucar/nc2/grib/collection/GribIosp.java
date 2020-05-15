@@ -599,7 +599,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     if (runtime.getNCoords() != 1) {
       // for this case we have to generate a separate reftime, because have to use the same dimension
       String refName = "ref" + tcName;
-      if (g.findVariable(refName) == null) {
+      if (g.findVariableLocal(refName) == null) {
         Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, timeDimName));
         vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
         vref.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));

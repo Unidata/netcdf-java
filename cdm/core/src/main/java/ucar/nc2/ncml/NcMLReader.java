@@ -970,7 +970,7 @@ public class NcMLReader {
       nameInFile = name;
 
     // see if it already exists
-    Variable refv = (refg == null) ? null : refg.findVariable(nameInFile);
+    Variable refv = (refg == null) ? null : refg.findVariableLocal(nameInFile);
     if (refv == null) { // new
       if (debugConstruct)
         System.out.println(" add new var = " + name);
@@ -1376,7 +1376,7 @@ public class NcMLReader {
         if (pos > 0) {
           String varName = fromAttribute.substring(0, pos);
           String attName = fromAttribute.substring(pos + 1);
-          Variable vFrom = ds.getRootGroup().findVariable(varName); // LOOK groups
+          Variable vFrom = ds.getRootGroup().findVariableLocal(varName); // LOOK groups
           if (vFrom == null) {
             errlog.format("Cant find variable %s %n", fromAttribute);
             return;
@@ -1691,7 +1691,7 @@ public class NcMLReader {
 
         break;
       case "variable":
-        Variable v = g.findVariable(name);
+        Variable v = g.findVariableLocal(name);
         if (v != null) {
           g.remove(v);
           if (debugCmd)

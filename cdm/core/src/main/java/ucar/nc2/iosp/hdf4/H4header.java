@@ -239,7 +239,7 @@ public class H4header extends NCheader {
     // not in a group
     Group root = ncfile.getRootGroup();
     for (Variable v : vars) {
-      if ((v.getParentGroupOrRoot() == root) && root.findVariable(v.getShortName()) == null)
+      if ((v.getParentGroupOrRoot() == root) && root.findVariableLocal(v.getShortName()) == null)
         root.addVariable(v);
     }
 
@@ -565,7 +565,7 @@ public class H4header extends NCheader {
   }
 
   private void addVariableToGroup(Group g, Variable v, Tag tag) {
-    Variable varExisting = g.findVariable(v.getShortName());
+    Variable varExisting = g.findVariableLocal(v.getShortName());
     if (varExisting != null) {
       // Vinfo vinfo = (Vinfo) v.getSPobject();
       // varExisting.setName(varExisting.getShortName()+vinfo.refno);

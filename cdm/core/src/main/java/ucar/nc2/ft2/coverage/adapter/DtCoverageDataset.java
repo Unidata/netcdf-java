@@ -257,7 +257,7 @@ public class DtCoverageDataset implements Closeable {
   }
 
   public VariableSimpleIF getDataVariable(String shortName) {
-    return ncd.getRootGroup().findVariable(shortName);
+    return ncd.getRootGroup().findVariableLocal(shortName);
   }
 
   public NetcdfFile getNetcdfFile() {

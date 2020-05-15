@@ -66,7 +66,7 @@ public class TestGribCollectionReadingIosp {
   public void testReadMrutpTimeRange() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a MRUTP, no vertical
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
-      Variable v = ds.getRootGroup().findVariable("Pressure_surface");
+      Variable v = ds.getRootGroup().findVariableLocal("Pressure_surface");
       assert v != null;
       Array data = v.read("0:1,50,50");
       assert data != null;
@@ -83,7 +83,7 @@ public class TestGribCollectionReadingIosp {
   public void testReadMrutpTimeRangeWithSingleVerticalLevel() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a MRUTP, with vertical
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
-      Variable v = ds.getRootGroup().findVariable("Relative_humidity_sigma");
+      Variable v = ds.getRootGroup().findVariableLocal("Relative_humidity_sigma");
       assert v != null;
       Array data = v.read("0:1, 0, 50, 50");
       assert data != null;
@@ -105,7 +105,7 @@ public class TestGribCollectionReadingIosp {
   public void testReadMrutpTimeRangeWithMultipleVerticalLevel() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a MRUTP. multiple verticals
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
-      Variable v = ds.getRootGroup().findVariable("Relative_humidity_isobaric");
+      Variable v = ds.getRootGroup().findVariableLocal("Relative_humidity_isobaric");
       assert v != null;
       Array data = v.read("0:1, 10:20:2, 50, 50");
       assert data != null;

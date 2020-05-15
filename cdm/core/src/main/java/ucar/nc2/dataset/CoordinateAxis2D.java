@@ -317,7 +317,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (boundsVarName == null) {
       return null;
     }
-    VariableDS boundsVar = (VariableDS) getParentGroupOrRoot().findVariable(boundsVarName);
+    VariableDS boundsVar = (VariableDS) getParentGroupOrRoot().findVariableLocal(boundsVarName);
 
     Array data;
     try {
@@ -346,7 +346,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (boundsVarName == null) {
       return false;
     }
-    VariableDS boundsVar = (VariableDS) getParentGroupOrRoot().findVariable(boundsVarName);
+    VariableDS boundsVar = (VariableDS) getParentGroupOrRoot().findVariableLocal(boundsVarName);
     if (null == boundsVar)
       return false;
     if (3 != boundsVar.getRank())

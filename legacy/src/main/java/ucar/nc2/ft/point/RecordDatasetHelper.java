@@ -87,7 +87,7 @@ public class RecordDatasetHelper {
 
     if (this.ncfile.hasUnlimitedDimension()) {
       this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-      this.recordVar = (StructureDS) this.ncfile.getRootGroup().findVariable("record");
+      this.recordVar = (StructureDS) this.ncfile.getRootGroup().findVariableLocal("record");
       this.obsDim = ncfile.getUnlimitedDimension();
 
     } else {

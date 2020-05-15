@@ -208,14 +208,14 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
     }
 
     Config trajConfig = new Config("1Hz data", ncf.getRootGroup().findDimension(timeDimName),
-        ncf.getRootGroup().findVariable(timeVarName), ncf.getRootGroup().findVariable(latVarName),
-        ncf.getRootGroup().findVariable(lonVarName), ncf.getRootGroup().findVariable(elevVarName));
+        ncf.getRootGroup().findVariableLocal(timeVarName), ncf.getRootGroup().findVariableLocal(latVarName),
+        ncf.getRootGroup().findVariableLocal(lonVarName), ncf.getRootGroup().findVariableLocal(elevVarName));
     this.setTrajectoryInfo(trajConfig);
 
   }
 
   private boolean timeVarAllZeros() throws IOException {
-    Variable curTimeVar = this.netcdfDataset.getRootGroup().findVariable(timeVarName);
+    Variable curTimeVar = this.netcdfDataset.getRootGroup().findVariableLocal(timeVarName);
     List section = new ArrayList(1);
     Array a = null;
     try {

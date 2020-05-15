@@ -164,7 +164,7 @@ public class CF1Convention extends CSMConvention {
         Variable gridMap = ds.findVariable(grid_mapping);
         if (gridMap == null) {
           Group g = v.getParentGroupOrRoot(); // might be group relative - CF does not specify
-          gridMap = g.findVariable(grid_mapping);
+          gridMap = g.findVariableLocal(grid_mapping);
         }
         if (gridMap != null) {
           gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
