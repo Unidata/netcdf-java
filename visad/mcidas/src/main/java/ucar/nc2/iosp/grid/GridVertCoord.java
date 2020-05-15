@@ -241,7 +241,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     int nlevs = levels.size();
     if (coordValues != null)
       nlevs = coordValues.length;
-    ncfile.addDimension(g, new Dimension(getVariableName(), nlevs, true));
+    ncfile.addDimension(g, new Dimension(getVariableName(), nlevs));
   }
 
   protected String getLevelDesc() {

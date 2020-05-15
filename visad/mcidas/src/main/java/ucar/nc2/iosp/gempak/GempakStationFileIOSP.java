@@ -51,17 +51,17 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
   /**
    * static for shared dimension of length 4
    */
-  protected static final Dimension DIM_LEN8 = new Dimension("len8", 8, true);
+  protected static final Dimension DIM_LEN8 = new Dimension("len8", 8);
 
   /**
    * static for shared dimension of length 4
    */
-  protected static final Dimension DIM_LEN4 = new Dimension("len4", 4, true);
+  protected static final Dimension DIM_LEN4 = new Dimension("len4", 4);
 
   /**
    * static for shared dimension of length 2
    */
-  protected static final Dimension DIM_LEN2 = new Dimension("len2", 2, true);
+  protected static final Dimension DIM_LEN2 = new Dimension("len2", 2);
 
   /**
    * name for the time variable

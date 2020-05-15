@@ -292,7 +292,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     for (GradsDimension dim : dims) {
       String name = getVarName(dim);
       int size = dim.getSize();
-      Dimension ncDim = new Dimension(name, size, true);
+      Dimension ncDim = new Dimension(name, size);
       ncFile.addDimension(null, ncDim);
       if (name.equals(ENS_VAR)) {
         v = new Variable(ncFile, null, null, name, DataType.STRING, name);
@@ -351,7 +351,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         if ((nl > 0) && (nl != numZ)) {
           String name = Z_VAR + nl;
           if (zDims.get(name) == null) {
-            Dimension ncDim = new Dimension(name, nl, true);
+            Dimension ncDim = new Dimension(name, nl);
             ncFile.addDimension(null, ncDim);
             Variable vz = new Variable(ncFile, null, null, name, DataType.DOUBLE, name);
             vz.addAttribute(new Attribute(CDM.LONG_NAME, name));

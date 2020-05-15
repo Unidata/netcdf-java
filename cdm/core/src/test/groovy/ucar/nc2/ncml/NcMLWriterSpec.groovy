@@ -187,7 +187,7 @@ recordsGroup/recordsStruct = UNREADABLE
 
     def "makeDimensionElement() throws exception for private Dimension"() {
         when:
-        ncmlWriter.makeDimensionElement(new Dimension("private", 8, false))
+        ncmlWriter.makeDimensionElement(Dimension.builder("private", 8).setIsShared(false).build());
 
         then:
         IllegalArgumentException e = thrown()

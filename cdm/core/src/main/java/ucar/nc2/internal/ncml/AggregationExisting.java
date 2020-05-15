@@ -101,6 +101,7 @@ class AggregationExisting extends AggregationOuter {
       if (v.getRank() < 1) {
         continue;
       }
+      // TODO whats with the full name ?
       String outerName = v.getDimension(0).makeFullName();
       if (!dimName.equals(outerName)) {
         continue;

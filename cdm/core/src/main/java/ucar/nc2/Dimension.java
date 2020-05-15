@@ -191,13 +191,19 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
         .setIsVariableLength(this.isVariableLength).setIsShared(this.isShared).setLength(this.length);
   }
 
-  /**
-   * Get the length of the Dimension.
-   *
-   * @return length of Dimension
-   */
+  /** Get the length of the Dimension. */
   public int getLength() {
     return length;
+  }
+
+  /** Get the name of the Dimension. Same as getShortName. Not deprecated. */
+  public String getName() {
+    return this.shortName;
+  }
+
+  /** Get the name of the Dimension. */
+  public String getShortName() {
+    return this.shortName;
   }
 
   /**
@@ -356,9 +362,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    * @param isShared whether its shared or local to Variable.
    * @param isUnlimited whether the length can grow.
    * @param isVariableLength whether the length is unknown until the data is read.
-   * @deprecated Use Dimension.builder()
    */
-  @Deprecated
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
     super(name);
     this.isShared = isShared;

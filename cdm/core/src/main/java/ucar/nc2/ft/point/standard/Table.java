@@ -374,7 +374,7 @@ public abstract class Table {
       super(ds, config);
       assert (config.as != null);
       this.as = config.as;
-      this.dim = new Dimension(config.structName, (int) config.as.getSize(), false);
+      this.dim = Dimension.builder(config.structName, (int) config.as.getSize()).setIsShared(false).build();
 
       for (StructureMembers.Member m : config.as.getStructureMembers().getMembers())
         cols.put(m.getName(), VariableSimpleBuilder.fromMember(m).build());

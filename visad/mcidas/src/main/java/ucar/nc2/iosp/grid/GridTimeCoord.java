@@ -127,7 +127,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * @param g the group in the file
    */
   void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
-    ncfile.addDimension(g, new Dimension(getName(), getNTimes(), true));
+    ncfile.addDimension(g, new Dimension(getName(), getNTimes()));
   }
 
   /**

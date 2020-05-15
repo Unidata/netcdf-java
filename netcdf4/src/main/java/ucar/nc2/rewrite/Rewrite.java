@@ -10,7 +10,12 @@ import ucar.nc2.*;
 import java.io.IOException;
 import java.util.List;
 
-/** Rewrite a NetcdfFile to netcdf-4. Experimental. */
+/**
+ * Rewrite a NetcdfFile to netcdf-4. Experimental.
+ * 
+ * @deprecated do not use.
+ */
+@Deprecated
 public class Rewrite {
   static final boolean NETCDF4 = true;
 

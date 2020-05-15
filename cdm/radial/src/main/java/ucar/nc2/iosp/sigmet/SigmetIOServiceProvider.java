@@ -283,15 +283,15 @@ public class SigmetIOServiceProvider extends AbstractIOServiceProvider {
     }
 
     // add Dimensions
-    Dimension scanR = new Dimension("scanR", number_sweeps, true);
-    Dimension radial = new Dimension("radial", num_rays, true);
+    Dimension scanR = new Dimension("scanR", number_sweeps);
+    Dimension radial = new Dimension("radial", num_rays);
     Dimension[] gateR = new Dimension[number_sweeps];
     String dim_name = "gateR";
     for (int j = 0; j < number_sweeps; j++) {
       if (number_sweeps > 1) {
         dim_name = "gateR_sweep_" + (j + 1);
       }
-      gateR[j] = new Dimension(dim_name, sweep_bins[j], true);
+      gateR[j] = new Dimension(dim_name, sweep_bins[j]);
     }
     ncfile.addDimension(null, scanR);
     ncfile.addDimension(null, radial);

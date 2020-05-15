@@ -192,7 +192,7 @@ public class GridCoordSys {
       return;
     }
     int nlevs = levels.size();
-    ncfile.addDimension(g, new Dimension(verticalName, nlevs, true));
+    ncfile.addDimension(g, new Dimension(verticalName, nlevs));
   }
 
   /**

@@ -446,6 +446,7 @@ class N3headerWriter extends N3headerNew {
     this.numrecs = n;
   }
 
+  // TODO udim.setLength : need UnlimitedDimension extends Dimension?
   synchronized boolean synchNumrecs() throws IOException {
     // check number of records in the header
     // gotta bypass the RAF buffer

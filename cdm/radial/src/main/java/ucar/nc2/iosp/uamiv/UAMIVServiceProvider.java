@@ -253,10 +253,10 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
 
 
     // Add dimensions based on header values
-    ncfile.addDimension(null, new Dimension("TSTEP", ntimes, true));
-    ncfile.addDimension(null, new Dimension("LAY", nz, true));
-    ncfile.addDimension(null, new Dimension("ROW", ny, true));
-    ncfile.addDimension(null, new Dimension("COL", nx, true));
+    ncfile.addDimension(null, new Dimension("TSTEP", ntimes));
+    ncfile.addDimension(null, new Dimension("LAY", nz));
+    ncfile.addDimension(null, new Dimension("ROW", ny));
+    ncfile.addDimension(null, new Dimension("COL", nx));
 
     // Force sync of dimensions
     ncfile.finish();

@@ -190,7 +190,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
   /**
    * static for shared dimension of length 4
    */
-  protected static final Dimension DIM_MAXMERGELEVELS = new Dimension("maxMergeLevels", 50, true);
+  protected static final Dimension DIM_MAXMERGELEVELS = new Dimension("maxMergeLevels", 50);
 
   /**
    * Make the station reader for this type
@@ -380,7 +380,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
 
     // Build station list
     List<GempakStation> stations = gemreader.getStations();
-    Dimension station = new Dimension("station", stations.size(), true);
+    Dimension station = new Dimension("station", stations.size());
     ncfile.addDimension(null, station);
     ncfile.addDimension(null, DIM_LEN8);
     ncfile.addDimension(null, DIM_LEN4);
@@ -396,7 +396,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     // time
     List<Date> timeList = gemreader.getDates();
     int numTimes = timeList.size();
-    Dimension times = new Dimension(TIME_VAR, numTimes, true);
+    Dimension times = new Dimension(TIME_VAR, numTimes);
     ncfile.addDimension(null, times);
     Array varArray;
     Variable timeVar = new Variable(ncfile, null, null, TIME_VAR, DataType.DOUBLE, TIME_VAR);

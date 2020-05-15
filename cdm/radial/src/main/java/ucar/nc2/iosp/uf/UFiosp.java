@@ -124,7 +124,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     String radialDimName = "radial" + abbrev;
     Dimension scanDim = new Dimension(scanDimName, nscans);
     Dimension gateDim = new Dimension(gateDimName, ngates);
-    Dimension radialDim = new Dimension(radialDimName, headerParser.getMaxRadials(), true);
+    Dimension radialDim = new Dimension(radialDimName, headerParser.getMaxRadials());
     ncfile.addDimension(null, scanDim);
     ncfile.addDimension(null, gateDim);
     ncfile.addDimension(null, radialDim);

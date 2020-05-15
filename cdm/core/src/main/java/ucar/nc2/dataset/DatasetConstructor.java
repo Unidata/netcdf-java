@@ -145,7 +145,7 @@ public class DatasetConstructor {
     Group g = ncfile.getRootGroup();
     Dimension d = g.findDimension(boundsDimName);
     if (d == null)
-      d = ncfile.addDimension(g, new Dimension(boundsDimName, 2, true));
+      d = ncfile.addDimension(g, new Dimension(boundsDimName, 2));
     return d;
   }
 
