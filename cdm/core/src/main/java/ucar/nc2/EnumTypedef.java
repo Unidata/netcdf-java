@@ -47,12 +47,13 @@ public class EnumTypedef extends CDMNode {
     this.basetype = basetype;
   }
 
+  /** @deprecated use getMap() */
   @Deprecated
   public ImmutableList<String> getEnumStrings() {
     return enumStrings;
   }
 
-  /** Will return ImmutableMap in version 6. */
+  /** TODO Will return ImmutableBiMap in version 6. */
   public Map<Integer, String> getMap() {
     return map;
   }
