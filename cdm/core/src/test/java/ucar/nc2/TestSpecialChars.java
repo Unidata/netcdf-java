@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.NcmlWriter;
 import java.io.FileOutputStream;
@@ -56,14 +55,14 @@ public class TestSpecialChars {
 
     String ncmlFilePath = tempFolder.newFile().getAbsolutePath();
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      String val = ncfile.getRootGroup().findAttValueIgnoreCase("omy", null);
+      String val = ncfile.getRootGroup().findAttributeString("omy", null);
       assert val != null;
       assert val.equals(trouble);
 
       Variable v = ncfile.findVariable("t");
       v.setCachedData(v.read(), true);
 
-      val = v.findAttValueIgnoreCase("yow", null);
+      val = v.findAttributeString("yow", null);
       assert val != null;
       assert val.equals(trouble);
 
@@ -74,14 +73,14 @@ public class TestSpecialChars {
       }
 
       try (NetcdfFile ncfile2 = NetcdfDatasets.openFile(ncmlFilePath, null)) {
-        String val2 = ncfile2.getRootGroup().findAttValueIgnoreCase("omy", null);
+        String val2 = ncfile2.getRootGroup().findAttributeString("omy", null);
         assert val2 != null;
         assert val2.equals(trouble);
 
         Variable v2 = ncfile2.findVariable("t");
         v2.setCachedData(v2.read(), true);
 
-        val2 = v2.findAttValueIgnoreCase("yow", null);
+        val2 = v2.findAttributeString("yow", null);
         assert val2 != null;
         assert val2.equals(trouble);
       }
@@ -90,14 +89,14 @@ public class TestSpecialChars {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(ncmlFilePath, null)) {
       System.out.println("ncml= " + ncfile.getLocation());
 
-      String val = ncfile.getRootGroup().findAttValueIgnoreCase("omy", null);
+      String val = ncfile.getRootGroup().findAttributeString("omy", null);
       assert val != null;
       assert val.equals(trouble);
 
       Variable v = ncfile.findVariable("t");
       v.setCachedData(v.read(), true);
 
-      val = v.findAttValueIgnoreCase("yow", null);
+      val = v.findAttributeString("yow", null);
       assert val != null;
       assert val.equals(trouble);
     }

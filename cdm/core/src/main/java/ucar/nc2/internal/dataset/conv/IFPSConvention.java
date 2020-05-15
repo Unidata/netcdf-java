@@ -54,7 +54,7 @@ public class IFPSConvention extends CoordSystemBuilder {
       boolean geoVarsCheck;
       Variable v = ncfile.findVariable("latitude");
       if (null != ncfile.findVariable("longitude") && (null != v)) {
-        geoVarsCheck = (null != v.findAttValueIgnoreCase("projectionType", null));
+        geoVarsCheck = (null != v.findAttributeString("projectionType", null));
       } else {
         // bail early
         return false;
@@ -106,7 +106,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     projVar = latVar;
-    String projName = projVar.getAttributeContainer().findAttValueIgnoreCase("projectionType", null);
+    String projName = projVar.getAttributeContainer().findAttributeString("projectionType", null);
     if ("LAMBERT_CONFORMAL".equals(projName)) {
       Projection proj = makeLCProjection();
       makeXYcoords(proj, latVar, lonVar);

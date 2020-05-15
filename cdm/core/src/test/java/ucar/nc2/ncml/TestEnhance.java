@@ -28,7 +28,7 @@ public class TestEnhance {
       assertThat((Object) unvar).isNotNull();
       assertThat(unvar.getDataType()).isEqualTo(DataType.SHORT);
       assertThat(unvar.attributes().hasAttribute("_Unsigned")).isTrue();
-      assertThat(unvar.attributes().findAttValueIgnoreCase("_Unsigned", "")).isEqualTo("true");
+      assertThat(unvar.attributes().findAttributeString("_Unsigned", "")).isEqualTo("true");
       assertThat(unvar.readScalarShort()).isEqualTo(-9981);
 
       Variable scaledvar = ncfile.findVariable("scaledvar");
@@ -47,7 +47,7 @@ public class TestEnhance {
       assertThat((Object) unvar).isNotNull();
       assertThat(unvar.getDataType()).isEqualTo(DataType.SHORT);
       assertThat(unvar.attributes().hasAttribute("_Unsigned")).isTrue();
-      assertThat(unvar.attributes().findAttValueIgnoreCase("_Unsigned", "")).isEqualTo("true");
+      assertThat(unvar.attributes().findAttributeString("_Unsigned", "")).isEqualTo("true");
       assertThat(unvar.readScalarShort()).isEqualTo(-9981);
 
       Variable scaledvar = ncfile.findVariable("scaledvar");
@@ -66,7 +66,7 @@ public class TestEnhance {
       assertThat((Object) unvar).isNotNull();
       assertThat(unvar.getDataType()).isEqualTo(DataType.UINT);
       assertThat(unvar.attributes().hasAttribute("_Unsigned")).isTrue();
-      assertThat(unvar.attributes().findAttValueIgnoreCase("_Unsigned", "")).isEqualTo("true");
+      assertThat(unvar.attributes().findAttributeString("_Unsigned", "")).isEqualTo("true");
       assertThat(unvar.readScalarInt()).isEqualTo(55555);
 
       Variable scaledvar = ncfile.findVariable("scaledvar");
@@ -85,7 +85,7 @@ public class TestEnhance {
       assertThat((Object) unvar).isNotNull();
       assertThat(unvar.getDataType()).isEqualTo(DataType.UINT);
       assertThat(unvar.attributes().hasAttribute("_Unsigned")).isTrue();
-      assertThat(unvar.attributes().findAttValueIgnoreCase("_Unsigned", "")).isEqualTo("true");
+      assertThat(unvar.attributes().findAttributeString("_Unsigned", "")).isEqualTo("true");
       assertThat(unvar.readScalarInt()).isEqualTo(55555);
 
       Variable scaledvar = ncfile.findVariable("scaledvar");
@@ -104,7 +104,7 @@ public class TestEnhance {
       assertThat((Object) unvar).isNotNull();
       assertThat(unvar.getDataType()).isEqualTo(DataType.UINT);
       assertThat(unvar.attributes().hasAttribute("_Unsigned")).isTrue();
-      assertThat(unvar.attributes().findAttValueIgnoreCase("_Unsigned", "")).isEqualTo("true");
+      assertThat(unvar.attributes().findAttributeString("_Unsigned", "")).isEqualTo("true");
       assertThat(unvar.readScalarInt()).isEqualTo(55555);
 
       Variable scaledvar = ncfile.findVariable("scaledvar");

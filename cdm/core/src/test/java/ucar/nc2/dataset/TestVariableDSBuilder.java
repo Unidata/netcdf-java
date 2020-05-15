@@ -35,8 +35,8 @@ public class TestVariableDSBuilder {
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
     assertThat(var.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
-    assertThat(var.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
-    assertThat(var.findAttValueIgnoreCase(CDM.LONG_NAME, "")).isEqualTo("desc");
+    assertThat(var.findAttributeString(CDM.UNITS, "")).isEqualTo("units");
+    assertThat(var.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
   }
 
   @Test
@@ -108,7 +108,7 @@ public class TestVariableDSBuilder {
     VariableDS varDS = builder.build(group);
     assertThat(varDS.getShortName()).isEqualTo("name");
     assertThat(varDS.getDataType()).isEqualTo(DataType.FLOAT);
-    assertThat(varDS.findAttValueIgnoreCase("attname", null)).isEqualTo("AttValue");
+    assertThat(varDS.findAttributeString("attname", null)).isEqualTo("AttValue");
     assertThat(varDS.getUnitsString()).isEqualTo("flower");
   }
 

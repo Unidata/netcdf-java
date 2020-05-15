@@ -28,7 +28,7 @@ public class MADISStation extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      String s = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("Conventions", "none");
+      String s = ncfile.getRootGroup().attributes().findAttributeString("Conventions", "none");
       return s.startsWith("MADIS");
     }
 
@@ -47,7 +47,7 @@ public class MADISStation extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    String timeVars = rootGroup.getAttributeContainer().findAttValueIgnoreCase("timeVariables", "");
+    String timeVars = rootGroup.getAttributeContainer().findAttributeString("timeVariables", "");
     StringTokenizer stoker = new StringTokenizer(timeVars, ", ");
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
@@ -55,7 +55,7 @@ public class MADISStation extends CoordSystemBuilder {
           .ifPresent(v -> v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString())));
     }
 
-    String locVars = rootGroup.getAttributeContainer().findAttValueIgnoreCase("stationLocationVariables", "");
+    String locVars = rootGroup.getAttributeContainer().findAttributeString("stationLocationVariables", "");
     stoker = new StringTokenizer(locVars, ", ");
     int count = 0;
     while (stoker.hasMoreTokens()) {

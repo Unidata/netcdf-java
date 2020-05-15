@@ -784,11 +784,11 @@ public class NetcdfFiles {
       spi.build(raf, root, cancelTask);
       builder.setRootGroup(root);
 
-      String id = root.getAttributeContainer().findAttValueIgnoreCase("_Id", null);
+      String id = root.getAttributeContainer().findAttributeString("_Id", null);
       if (id != null) {
         builder.setId(id);
       }
-      String title = root.getAttributeContainer().findAttValueIgnoreCase("_Title", null);
+      String title = root.getAttributeContainer().findAttributeString("_Title", null);
       if (title != null) {
         builder.setTitle(title);
       }

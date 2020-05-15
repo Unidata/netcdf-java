@@ -331,9 +331,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   public static CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // look for the Conventions attribute
-    String convName = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+    String convName = ds.getRootGroup().findAttributeString(CDM.CONVENTIONS, null);
     if (convName == null)
-      convName = ds.getRootGroup().findAttValueIgnoreCase("Convention", null); // common mistake Convention instead of
+      convName = ds.getRootGroup().findAttributeString("Convention", null); // common mistake Convention instead of
     // Conventions
     if (convName != null)
       convName = convName.trim();
@@ -1137,14 +1137,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         parseInfo.format(" Coordinate Variable added = %s for dimension %s%n", v.getFullName(), v.getDimension(0));
       }
 
-      String axisName = v.attributes().findAttValueIgnoreCase(_Coordinate.AxisType, null);
+      String axisName = v.attributes().findAttributeString(_Coordinate.AxisType, null);
       if (axisName != null) {
         axisType = AxisType.getType(axisName);
         isCoordinateAxis = true;
         parseInfo.format(" Coordinate Axis added = %s type= %s%n", v.getFullName(), axisName);
       }
 
-      coordVarAlias = v.attributes().findAttValueIgnoreCase(_Coordinate.AliasForDimension, null);
+      coordVarAlias = v.attributes().findAttributeString(_Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {

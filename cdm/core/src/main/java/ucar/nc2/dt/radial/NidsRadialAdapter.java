@@ -26,9 +26,9 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convention = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
+    String convention = ncd.getRootGroup().findAttributeString("Conventions", null);
     if (_Coordinate.Convention.equals(convention)) {
-      String format = ncd.getRootGroup().findAttValueIgnoreCase("Format", null);
+      String format = ncd.getRootGroup().findAttributeString("Format", null);
       if ("Level3/NIDS".equals(format))
         return this;
     }
@@ -148,7 +148,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
   protected void setStartDate() {
 
-    String start_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
+    String start_datetime = ds.getRootGroup().findAttributeString("time_coverage_start", null);
     if (start_datetime != null) {
       startDate = DateUnit.getStandardOrISO(start_datetime);
       return;
@@ -165,7 +165,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
 
   protected void setEndDate() {
 
-    String end_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
+    String end_datetime = ds.getRootGroup().findAttributeString("time_coverage_end", null);
     if (end_datetime != null) {
       endDate = DateUnit.getStandardOrISO(end_datetime);
     } else {

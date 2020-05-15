@@ -244,7 +244,7 @@ public class DtCoverage implements IsMissingEvaluator {
    * @return Attribute string value, or default if not found.
    */
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return vs.findAttValueIgnoreCase(attName, defaultValue);
+    return vs.findAttributeString(attName, defaultValue);
   }
 
   // implementation of GeoGrid interface

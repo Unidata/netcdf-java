@@ -118,9 +118,9 @@ public class GridDatasetInv {
 
     NetcdfFile ncfile = gds.getNetcdfFile();
     if (ncfile != null && this.runDate == null) {
-      runTimeString = ncfile.getRootGroup().findAttValueIgnoreCase(_Coordinate.ModelBaseDate, null);
+      runTimeString = ncfile.getRootGroup().findAttributeString(_Coordinate.ModelBaseDate, null);
       if (runTimeString == null) {
-        runTimeString = ncfile.getRootGroup().findAttValueIgnoreCase(_Coordinate.ModelRunDate, null);
+        runTimeString = ncfile.getRootGroup().findAttributeString(_Coordinate.ModelRunDate, null);
       }
 
       if (runTimeString != null) {

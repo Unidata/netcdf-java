@@ -612,7 +612,7 @@ public class TestAggExistingNew {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    String testAtt = time.findAttValueIgnoreCase("ncmlAdded", null);
+    String testAtt = time.findAttributeString("ncmlAdded", null);
     assert testAtt != null;
     assert testAtt.equals("timeAtt");
 

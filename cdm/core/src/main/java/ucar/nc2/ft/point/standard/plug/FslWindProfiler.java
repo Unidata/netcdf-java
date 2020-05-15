@@ -27,9 +27,9 @@ public class FslWindProfiler extends TableConfigurerImpl {
 
   // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String title = ds.getRootGroup().findAttValueIgnoreCase("title", null);
+    String title = ds.getRootGroup().findAttributeString("title", null);
     if (title == null) {
-      title = ds.getRootGroup().findAttValueIgnoreCase("DD_reference", null);
+      title = ds.getRootGroup().findAttributeString("DD_reference", null);
       if (title != null) {
         title = ds.findVariable("staLat") != null ? title : null;
       }
@@ -39,9 +39,9 @@ public class FslWindProfiler extends TableConfigurerImpl {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    String title = ds.getRootGroup().findAttValueIgnoreCase("title", null);
+    String title = ds.getRootGroup().findAttributeString("title", null);
     if (title == null)
-      title = ds.getRootGroup().findAttValueIgnoreCase("DD_reference", null);
+      title = ds.getRootGroup().findAttributeString("DD_reference", null);
     assert (title != null);
 
     boolean isRass = title.startsWith("RASS data");

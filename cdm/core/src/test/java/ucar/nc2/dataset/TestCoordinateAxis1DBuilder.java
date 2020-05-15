@@ -35,8 +35,8 @@ public class TestCoordinateAxis1DBuilder {
     assertThat(axis1D.getUnitsString()).isEqualTo("units");
     assertThat(axis1D.getDescription()).isEqualTo("desc");
     assertThat(axis1D.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
-    assertThat(axis1D.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
-    assertThat(axis1D.findAttValueIgnoreCase(CDM.LONG_NAME, "")).isEqualTo("desc");
+    assertThat(axis1D.findAttributeString(CDM.UNITS, "")).isEqualTo("units");
+    assertThat(axis1D.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
 
     Array data = axis1D.read();
     System.out.printf("data = %s%n", data);

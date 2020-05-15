@@ -1200,10 +1200,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Look up global Attribute by name.
+   * Look up an Attribute by (short) name in the root Group or nested Groups, exact match.
    *
    * @param attName the name of the attribute
-   * @return the first group attribute with given Attribute name, or null if not found
+   * @return the first Group attribute with given name, or null if not found
    */
   @Nullable
   public Attribute findGlobalAttribute(String attName) {
@@ -1215,7 +1215,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Look up global Attribute by name, ignore case.
+   * Look up an Attribute by (short) name in the root Group or nested Groups, ignore case.
    *
    * @param name the name of the attribute
    * @return the first group attribute with given Attribute name, ignoronmg case, or null if not found
@@ -1306,14 +1306,14 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @param attName the (full) name of the attribute, case insensitive
    * @param defaultValue return this if attribute not found
    * @return the attribute value, or defaultValue if not found
-   * @deprecated use getRootGroup() or Variable findAttValueIgnoreCase().
+   * @deprecated use getRootGroup() or Variable attributes().findAttributeString().
    */
   @Deprecated
   public String findAttValueIgnoreCase(Variable v, String attName, String defaultValue) {
     if (v == null)
-      return rootGroup.attributes().findAttValueIgnoreCase(attName, defaultValue);
+      return rootGroup.attributes().findAttributeString(attName, defaultValue);
     else
-      return v.attributes().findAttValueIgnoreCase(attName, defaultValue);
+      return v.attributes().findAttributeString(attName, defaultValue);
   }
 
   /** @deprecated use use getRootGroup() or Variable attributes().findAttributeDouble */
@@ -1589,9 +1589,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
     }
 
     if (id == null)
-      setId(rootGroup.findAttValueIgnoreCase("_Id", null));
+      setId(rootGroup.findAttributeString("_Id", null));
     if (title == null)
-      setTitle(rootGroup.findAttValueIgnoreCase("_Title", null));
+      setTitle(rootGroup.findAttributeString("_Title", null));
   }
 
   /**
@@ -1644,9 +1644,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
     }
 
     if (id == null)
-      setId(rootGroup.findAttValueIgnoreCase("_Id", null));
+      setId(rootGroup.findAttributeString("_Id", null));
     if (title == null)
-      setTitle(rootGroup.findAttValueIgnoreCase("_Title", null));
+      setTitle(rootGroup.findAttributeString("_Title", null));
 
     finish();
   }

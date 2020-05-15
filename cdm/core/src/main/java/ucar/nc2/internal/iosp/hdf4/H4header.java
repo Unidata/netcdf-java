@@ -183,7 +183,7 @@ public class H4header implements HdfHeaderIF {
       isEos = HdfEos.amendFromODL(raf.getLocation(), this, root);
       if (isEos) {
         adjustDimensions();
-        String history = root.getAttributeContainer().findAttValueIgnoreCase("_History", "");
+        String history = root.getAttributeContainer().findAttributeString("_History", "");
         root.addAttribute(new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
       }
     }

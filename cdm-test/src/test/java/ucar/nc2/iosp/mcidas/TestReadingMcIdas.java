@@ -50,7 +50,7 @@ public class TestReadingMcIdas {
     public int doAct(String filename) throws IOException {
       try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
         System.out.printf("  Open McIdas File %s ", filename);
-        String ft = ncfile.getRootGroup().findAttValueIgnoreCase("featureType", "none");
+        String ft = ncfile.getRootGroup().findAttributeString("featureType", "none");
         String iosp = ncfile.getIosp().getFileTypeId();
         System.out.printf(" iosp=%s ft=%s%n", iosp, ft);
         assert iosp.equals("McIDASArea") || iosp.equals("McIDASGrid") : iosp;

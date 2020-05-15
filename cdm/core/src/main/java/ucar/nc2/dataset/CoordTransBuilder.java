@@ -161,19 +161,19 @@ public class CoordTransBuilder {
   public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
       Formatter parseInfo, Formatter errInfo) {
     // standard name
-    String transform_name = ctv.findAttValueIgnoreCase("transform_name", null);
+    String transform_name = ctv.findAttributeString("transform_name", null);
     if (null == transform_name)
-      transform_name = ctv.findAttValueIgnoreCase("Projection_Name", null);
+      transform_name = ctv.findAttributeString("Projection_Name", null);
 
     // these names are from CF - dont want to have to duplicate
     if (null == transform_name)
-      transform_name = ctv.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+      transform_name = ctv.findAttributeString(CF.GRID_MAPPING_NAME, null);
     if (null == transform_name)
-      transform_name = ctv.findAttValueIgnoreCase(CF.STANDARD_NAME, null);
+      transform_name = ctv.findAttributeString(CF.STANDARD_NAME, null);
 
     // Finally check the units
     if (null == transform_name)
-      transform_name = ctv.findAttValueIgnoreCase(CDM.UNITS, null);
+      transform_name = ctv.findAttributeString(CDM.UNITS, null);
 
     if (null == transform_name) {
       parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
@@ -279,7 +279,7 @@ public class CoordTransBuilder {
   @Deprecated
   public static ProjectionImpl makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
-    String transform_name = gct.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+    String transform_name = gct.findAttributeString(CF.GRID_MAPPING_NAME, null);
 
     if (null == transform_name) {
       errInfo.format("**Failed to find Coordinate Transform name from GridCoordTransform= %s%n", gct);
@@ -315,7 +315,7 @@ public class CoordTransBuilder {
       return null;
     }
 
-    String units = gct.findAttValueIgnoreCase(CDM.UNITS, null);
+    String units = gct.findAttributeString(CDM.UNITS, null);
     builder.setErrorBuffer(errInfo);
     ProjectionCT ct = builder.makeCoordinateTransform(gct, units);
     assert ct != null;

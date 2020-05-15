@@ -239,7 +239,7 @@ public class NUWGConvention extends CoordSystemBuilder {
    */
   private List<Variable.Builder> searchAliasedDimension(Dimension dim) {
     String dimName = dim.getShortName();
-    String alias = rootGroup.getAttributeContainer().findAttValueIgnoreCase(dimName, null);
+    String alias = rootGroup.getAttributeContainer().findAttributeString(dimName, null);
     if (alias == null)
       return null;
 

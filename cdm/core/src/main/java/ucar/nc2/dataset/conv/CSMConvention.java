@@ -155,7 +155,7 @@ public class CSMConvention extends COARDSConvention {
   protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, AttributeContainer v,
       String attName, boolean readData) {
     String varName;
-    if (null == (varName = v.findAttValueIgnoreCase(attName, null))) {
+    if (null == (varName = v.findAttributeString(attName, null))) {
       parseInfo.format("CSMConvention No Attribute named %s%n", attName);
       return false;
     }

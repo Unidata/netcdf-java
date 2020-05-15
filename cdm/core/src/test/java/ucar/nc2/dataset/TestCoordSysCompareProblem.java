@@ -5,7 +5,6 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
-import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -42,9 +41,9 @@ public class TestCoordSysCompareProblem {
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, false);
         boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
-        System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
+        System.out.printf("org = %s%n", org.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, ""));
         System.out.printf("new = %s%n",
-            withBuilder.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
+            withBuilder.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, ""));
         assertThat(ok).isTrue();
       }
     }

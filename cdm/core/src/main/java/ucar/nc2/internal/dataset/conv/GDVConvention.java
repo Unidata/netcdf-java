@@ -179,22 +179,22 @@ public class GDVConvention extends CSMConvention {
 
   // look for an coord_axis or coord_alias attribute
   private String findAlias(Variable.Builder v) {
-    String alias = v.getAttributeContainer().findAttValueIgnoreCase("coord_axis", null);
+    String alias = v.getAttributeContainer().findAttributeString("coord_axis", null);
     if (alias == null)
-      alias = v.getAttributeContainer().findAttValueIgnoreCase("coord_alias", "");
+      alias = v.getAttributeContainer().findAttributeString("coord_alias", "");
     return alias;
   }
 
   private ProjectionCT makeProjectionCT() {
     // look for projection in global attribute
-    String projection = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projection", null);
+    String projection = rootGroup.getAttributeContainer().findAttributeString("projection", null);
     if (null == projection) {
       parseInfo.format("GDV Conventions error: NO projection name found %n");
       return null;
     }
-    String params = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projection_params", null);
+    String params = rootGroup.getAttributeContainer().findAttributeString("projection_params", null);
     if (null == params)
-      params = rootGroup.getAttributeContainer().findAttValueIgnoreCase("proj_params", null);
+      params = rootGroup.getAttributeContainer().findAttributeString("proj_params", null);
     if (null == params) {
       parseInfo.format("GDV Conventions error: NO projection parameters found %n");
       return null;

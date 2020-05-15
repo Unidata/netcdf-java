@@ -157,9 +157,9 @@ public class TableAnalyzer {
     String convUsed = null;
 
     // search for the Conventions attribute
-    String convName = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+    String convName = ds.getRootGroup().findAttributeString(CDM.CONVENTIONS, null);
     if (convName == null)
-      convName = ds.getRootGroup().findAttValueIgnoreCase("Convention", null);
+      convName = ds.getRootGroup().findAttributeString("Convention", null);
 
     // now search for TableConfigurer using that Convention
     Configurator anal = null;

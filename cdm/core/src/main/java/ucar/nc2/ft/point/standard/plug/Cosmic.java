@@ -21,7 +21,7 @@ import java.io.IOException;
  */
 public class Cosmic extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String center = ds.getRootGroup().findAttValueIgnoreCase("center", null);
+    String center = ds.getRootGroup().findAttributeString("center", null);
     return "UCAR/CDAAC".equals(center);
   }
 

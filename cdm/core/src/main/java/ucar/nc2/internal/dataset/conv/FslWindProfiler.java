@@ -27,7 +27,7 @@ public class FslWindProfiler extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      String title = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("title", null);
+      String title = ncfile.getRootGroup().attributes().findAttributeString("title", null);
       return title != null && (title.startsWith("WPDN data"));
     }
 

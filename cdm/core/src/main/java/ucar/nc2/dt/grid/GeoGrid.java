@@ -248,7 +248,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return Attribute string value, or default if not found.
    */
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return vs.attributes().findAttValueIgnoreCase(attName, defaultValue);
+    return vs.attributes().findAttributeString(attName, defaultValue);
   }
 
   // implementation of GridDatatype interface

@@ -27,9 +27,9 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
 
   /////////////////////////////////////////////////
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    String convention = ncd.getRootGroup().findAttValueIgnoreCase("Conventions", null);
+    String convention = ncd.getRootGroup().findAttributeString("Conventions", null);
     if (_Coordinate.Convention.equals(convention)) {
-      String format = ncd.getRootGroup().findAttValueIgnoreCase("Format", null);
+      String format = ncd.getRootGroup().findAttributeString("Format", null);
       if ("UNIVERSALFORMAT".equals(format))
         return this;
     }
@@ -169,7 +169,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setStartDate() {
-    String start_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_start", null);
+    String start_datetime = ds.getRootGroup().findAttributeString("time_coverage_start", null);
     if (start_datetime != null)
       startDate = formatter.getISODate(start_datetime);
     else
@@ -177,7 +177,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
   }
 
   protected void setEndDate() {
-    String end_datetime = ds.getRootGroup().findAttValueIgnoreCase("time_coverage_end", null);
+    String end_datetime = ds.getRootGroup().findAttributeString("time_coverage_end", null);
     if (end_datetime != null)
       endDate = formatter.getISODate(end_datetime);
     else
@@ -289,7 +289,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
         this.sweepno = sweepno;
         this.nrays = rays;
         this.ngates = gates;
-        abbrev = sweepVar.attributes().findAttValueIgnoreCase("abbrev", null);
+        abbrev = sweepVar.attributes().findAttributeString("abbrev", null);
       }
 
       public Variable getsweepVar() {

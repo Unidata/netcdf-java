@@ -94,10 +94,10 @@ public class SimpleGeometryCSBuilder {
     // Look through the variables and build a list of geometry variables, also build up map of simple geometry
     // containers
     for (Variable var : ds.getVariables()) {
-      if (!var.findAttValueIgnoreCase(CF.GEOMETRY, "").equals("")) {
+      if (!var.findAttributeString(CF.GEOMETRY, "").equals("")) {
 
         geometrySeriesVarNames.add(var.getFullNameEscaped());
-        String varName = var.findAttValueIgnoreCase(CF.GEOMETRY, "");
+        String varName = var.findAttributeString(CF.GEOMETRY, "");
 
         // Using the Geometry Container name, add this variable as a reference to that container
 
@@ -115,7 +115,7 @@ public class SimpleGeometryCSBuilder {
           }
 
           // Then add this variable as a reference.
-          geometryContainersAssoc.get(var.findAttValueIgnoreCase(CF.GEOMETRY, "")).add(var.getFullNameEscaped());
+          geometryContainersAssoc.get(var.findAttributeString(CF.GEOMETRY, "")).add(var.getFullNameEscaped());
         }
       }
     }

@@ -501,7 +501,7 @@ public class CFGridWriter2 {
     // see https://github.com/Unidata/python-workshop/issues/372
     for (String varName : varNameList) {
       Variable v = ncd.findVariable(varName);
-      String gridMappingName = v.attributes().findAttValueIgnoreCase(CF.GRID_MAPPING, null);
+      String gridMappingName = v.attributes().findAttributeString(CF.GRID_MAPPING, null);
       if (gridMappingName != null && (!coordTransformNames.contains(gridMappingName))) {
         coordTransformNames.add(gridMappingName);
       }

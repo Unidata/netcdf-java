@@ -38,7 +38,7 @@ public abstract class AbstractTransformBuilder {
   }
 
   public static String getGeoCoordinateUnits(NetcdfDataset ds, AttributeContainer ctv) {
-    String units = ctv.findAttValueIgnoreCase(CDM.UNITS, null);
+    String units = ctv.findAttributeString(CDM.UNITS, null);
     if (units == null) {
       List<CoordinateAxis> axes = ds.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
@@ -163,7 +163,7 @@ public abstract class AbstractTransformBuilder {
   }
 
   String getFormula(AttributeContainer ctv) {
-    String formula = ctv.findAttValueIgnoreCase("formula_terms", null);
+    String formula = ctv.findAttributeString("formula_terms", null);
     if (null == formula) {
       if (null != errBuffer)
         errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s%n", getTransformName(),

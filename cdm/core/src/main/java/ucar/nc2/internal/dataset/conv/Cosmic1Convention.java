@@ -42,7 +42,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         return false;
       }
 
-      String center = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("center", null);
+      String center = ncfile.getRootGroup().attributes().findAttributeString("center", null);
       return "UCAR/CDAAC".equals(center);
     }
 

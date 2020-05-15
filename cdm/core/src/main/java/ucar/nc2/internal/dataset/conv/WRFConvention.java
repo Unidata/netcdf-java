@@ -145,7 +145,7 @@ public class WRFConvention extends CoordSystemBuilder {
       if (dynOpt != -1 && dynOpt != 2) { // if it exists, it must equal 2.
         return false;
       } else {
-        String gridType = ncfile.getRootGroup().findAttValueIgnoreCase("GRIDTYPE", "null");
+        String gridType = ncfile.getRootGroup().findAttributeString("GRIDTYPE", "null");
         if (!gridType.equalsIgnoreCase("null") && !gridType.equalsIgnoreCase("C") && !gridType.equalsIgnoreCase("E"))
           return false;
       }
@@ -680,7 +680,7 @@ public class WRFConvention extends CoordSystemBuilder {
           parseInfo.format("ERROR: cant parse Time string = <%s> err= %s%n", dateS, e.getMessage());
 
           // one more try
-          String startAtt = rootGroup.getAttributeContainer().findAttValueIgnoreCase("START_DATE", null);
+          String startAtt = rootGroup.getAttributeContainer().findAttributeString("START_DATE", null);
           if ((nt == 1) && (null != startAtt)) {
             try {
               CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, startAtt);
@@ -745,7 +745,7 @@ public class WRFConvention extends CoordSystemBuilder {
       return CoordinateAxis.fromVariableDS(coordVarB);
     }
 
-    String units = coordVar.attributes().findAttValueIgnoreCase(CDM.UNITS, "");
+    String units = coordVar.attributes().findAttributeString(CDM.UNITS, "");
 
     CoordinateAxis.Builder<?> v =
         CoordinateAxis1D.builder().setName("soilDepth").setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)

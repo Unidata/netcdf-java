@@ -70,6 +70,7 @@ public class CoverageTransform implements AttributeContainer {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Attribute
 
+  /** The attributes contained by this CoverageTransform. */
   public AttributeContainer attributes() {
     return attributes;
   }
@@ -94,8 +95,8 @@ public class CoverageTransform implements AttributeContainer {
 
   /** @deprecated Use attributes() */
   @Deprecated
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  public String findAttributeString(String attName, String defaultValue) {
+    return attributes.findAttributeString(attName, defaultValue);
   }
 
   /** @deprecated Use attributes() */

@@ -120,7 +120,7 @@ public class AttributeContainerHelper implements AttributeContainer {
   }
 
   @Override
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+  public String findAttributeString(String attName, String defaultValue) {
     String attValue = null;
     Attribute att = findAttributeIgnoreCase(attName);
 
@@ -237,7 +237,7 @@ public class AttributeContainerHelper implements AttributeContainer {
     }
 
     @Override
-    public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    public String findAttributeString(String attName, String defaultValue) {
       return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().map(Attribute::getStringValue)
           .orElse(defaultValue);
     }

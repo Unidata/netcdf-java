@@ -21,7 +21,7 @@ import java.io.IOException;
  */
 public class Suomi extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String center = ds.getRootGroup().findAttValueIgnoreCase("Convention", null);
+    String center = ds.getRootGroup().findAttributeString("Convention", null);
     return "Suomi-Station-CDM".equals(center);
   }
 

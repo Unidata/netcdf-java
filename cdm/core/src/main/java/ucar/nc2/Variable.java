@@ -31,7 +31,7 @@ import java.nio.channels.WritableByteChannel;
  * <p>
  * Immutable if setImmutable() was called.
  * TODO Variable will be immutable in 6.
- * TODO Variable will not implement AttributeContainer in 6.
+ * TODO Variable will not implement AttributeContainer in 6, use Variable.attributes().
  *
  * @author caron
  * @see ucar.ma2.Array
@@ -1276,6 +1276,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Attributes
 
+  /** The attributes contained by this Variable. */
   @Override
   public AttributeContainer attributes() {
     return attributes;
@@ -1294,8 +1295,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @return the attribute value, or defaultValue if not found
    */
   @Override
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  public String findAttributeString(String attName, String defaultValue) {
+    return attributes.findAttributeString(attName, defaultValue);
   }
 
   /** @deprecated Use attributes() */

@@ -59,7 +59,7 @@ public class Suomi extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    String start_date = rootGroup.getAttributeContainer().findAttValueIgnoreCase("start_date", null);
+    String start_date = rootGroup.getAttributeContainer().findAttributeString("start_date", null);
     if (start_date == null)
       return;
 

@@ -201,10 +201,10 @@ public class CoordSystemFactory {
 
     // look for the Conventions attribute
     Group.Builder root = ds.rootGroup;
-    String convName = root.getAttributeContainer().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+    String convName = root.getAttributeContainer().findAttributeString(CDM.CONVENTIONS, null);
     if (convName == null) {
       // common mistake Convention instead of Conventions
-      convName = root.getAttributeContainer().findAttValueIgnoreCase("Convention", null);
+      convName = root.getAttributeContainer().findAttributeString("Convention", null);
     }
     if (convName != null) {
       convName = convName.trim();

@@ -116,7 +116,7 @@ public class CF1Convention extends CSMConvention {
   protected CF1Convention(NetcdfDataset.Builder datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
-    String conv = rootGroup.getAttributeContainer().findAttValueIgnoreCase(CF.CONVENTIONS, null);
+    String conv = rootGroup.getAttributeContainer().findAttributeString(CF.CONVENTIONS, null);
     if (conv != null) {
       this.cfVersion = getVersion(conv);
     }
@@ -129,7 +129,7 @@ public class CF1Convention extends CSMConvention {
     // look for transforms
     for (Variable.Builder<?> vb : rootGroup.vbuilders) {
       // look for special standard_names
-      String sname = vb.getAttributeContainer().findAttValueIgnoreCase(CF.STANDARD_NAME, null);
+      String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
       if (sname != null) {
         sname = sname.trim();
 
@@ -175,7 +175,7 @@ public class CF1Convention extends CSMConvention {
       }
 
       // look for horiz transforms. only ones that are referenced by another variable.
-      String grid_mapping = vb.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING, null);
+      String grid_mapping = vb.getAttributeContainer().findAttributeString(CF.GRID_MAPPING, null);
       if (grid_mapping != null) {
         Optional<Variable.Builder<?>> gridMapOpt = rootGroup.findVariableLocal(grid_mapping);
         if (gridMapOpt.isPresent()) {
@@ -183,7 +183,7 @@ public class CF1Convention extends CSMConvention {
           Variable.Builder<?> gridMap = gridMapOpt.get();
           gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
-          String grid_mapping_name = gridMap.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+          String grid_mapping_name = gridMap.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
           if (CF.LATITUDE_LONGITUDE.equals(grid_mapping_name)) {
             // "grid_mapping_name == latitude_longitude" is special in CF: it's applied to variables that describe
             // properties of lat/lon CRSes.
@@ -201,7 +201,7 @@ public class CF1Convention extends CSMConvention {
       if (cfVersion >= 8) { // only acknowledge simple geometry standard extension if CF-1.8 or higher
 
         if (vb.getAttributeContainer().findAttribute(CF.GEOMETRY) != null) {
-          String geomValue = vb.getAttributeContainer().findAttValueIgnoreCase(CF.GEOMETRY, null);
+          String geomValue = vb.getAttributeContainer().findAttributeString(CF.GEOMETRY, null);
           rootGroup.findVariableLocal(geomValue).ifPresent(coordsvar -> {
             vb.addAttribute(findAttributeIn(coordsvar, CF.GEOMETRY_TYPE));
             vb.addAttribute(findAttributeIn(coordsvar, CF.NODE_COORDINATES));
@@ -212,13 +212,13 @@ public class CF1Convention extends CSMConvention {
             addOptionalAttributeIn(coordsvar, vb, CF.NODE_COUNT);
 
             if (CF.POLYGON
-                .equalsIgnoreCase(coordsvar.getAttributeContainer().findAttValueIgnoreCase(CF.GEOMETRY_TYPE, ""))) {
+                .equalsIgnoreCase(coordsvar.getAttributeContainer().findAttributeString(CF.GEOMETRY_TYPE, ""))) {
               addOptionalAttributeIn(coordsvar, vb, CF.INTERIOR_RING);
             }
 
             if (vb.getAttributeContainer().findAttribute(CF.NODE_COORDINATES) != null) {
 
-              String nodeCoords = coordsvar.getAttributeContainer().findAttValueIgnoreCase(CF.NODE_COORDINATES, "");
+              String nodeCoords = coordsvar.getAttributeContainer().findAttributeString(CF.NODE_COORDINATES, "");
               String[] coords = nodeCoords.split(" ");
               final StringBuilder cds = new StringBuilder();
               for (String coord : coords) {
@@ -271,7 +271,7 @@ public class CF1Convention extends CSMConvention {
 
     if (!got_grid_mapping) { // see if there are any grid mappings anyway
       for (Variable.Builder vds : rootGroup.vbuilders) {
-        String grid_mapping_name = vds.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+        String grid_mapping_name = vds.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
         if (grid_mapping_name != null) {
           vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
@@ -285,15 +285,15 @@ public class CF1Convention extends CSMConvention {
     }
 
     // make corrections for specific datasets
-    String src = rootGroup.getAttributeContainer().findAttValueIgnoreCase("Source", "");
+    String src = rootGroup.getAttributeContainer().findAttributeString("Source", "");
     if (src.equals("NOAA/National Climatic Data Center")) {
-      String title = rootGroup.getAttributeContainer().findAttValueIgnoreCase("title", "");
+      String title = rootGroup.getAttributeContainer().findAttributeString("title", "");
       avhrr_oiv2 = title.indexOf("OI-V2") > 0;
     }
   }
 
   Attribute findAttributeIn(Variable.Builder coordsvar, String attName) {
-    return new Attribute(attName, coordsvar.getAttributeContainer().findAttValueIgnoreCase(attName, ""));
+    return new Attribute(attName, coordsvar.getAttributeContainer().findAttributeString(attName, ""));
   }
 
   void addOptionalAttributeIn(Variable.Builder src, Variable.Builder dest, String attName) {
@@ -398,7 +398,7 @@ public class CF1Convention extends CSMConvention {
   @Override
   public AxisType getAxisType(VariableDS.Builder vb) {
     // standard names for unitless vertical coords
-    String sname = vb.getAttributeContainer().findAttValueIgnoreCase(CF.STANDARD_NAME, null);
+    String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
     if (sname != null) {
       sname = sname.trim();
 
@@ -449,7 +449,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     // check axis attribute - only for X, Y, Z
-    String axis = vb.getAttributeContainer().findAttValueIgnoreCase(CF.AXIS, null);
+    String axis = vb.getAttributeContainer().findAttributeString(CF.AXIS, null);
     if (axis != null) {
       axis = axis.trim();
       String unit = vb.getUnits();

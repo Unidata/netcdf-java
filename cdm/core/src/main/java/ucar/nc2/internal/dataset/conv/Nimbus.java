@@ -79,7 +79,7 @@ public class Nimbus extends CoardsConventions {
     }
 
     // look for coordinates
-    String coordinates = rootGroup.getAttributeContainer().findAttValueIgnoreCase("coordinates", null);
+    String coordinates = rootGroup.getAttributeContainer().findAttributeString("coordinates", null);
     if (coordinates != null) {
       for (String vname : StringUtil2.split(coordinates)) {
         rootGroup.findVariableLocal(vname).ifPresent(v -> {

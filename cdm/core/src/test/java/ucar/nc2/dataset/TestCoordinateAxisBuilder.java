@@ -22,8 +22,8 @@ public class TestCoordinateAxisBuilder {
     assertThat(axis.getUnitsString()).isEqualTo("units");
     assertThat(axis.getDescription()).isEqualTo("desc");
     assertThat(axis.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
-    assertThat(axis.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
-    assertThat(axis.findAttValueIgnoreCase(CDM.LONG_NAME, "")).isEqualTo("desc");
+    assertThat(axis.findAttributeString(CDM.UNITS, "")).isEqualTo("units");
+    assertThat(axis.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
   }
 
 }

@@ -41,7 +41,7 @@ public class TestReadingGempak {
       long start = System.currentTimeMillis();
 
       try (NetcdfFile ncfile = NetcdfDataset.openFile(child.getPath(), null)) {
-        String ft = ncfile.getRootGroup().findAttValueIgnoreCase("featureType", "none");
+        String ft = ncfile.getRootGroup().findAttributeString("featureType", "none");
         String iosp = ncfile.getIosp().getFileTypeId();
         System.out.printf(" iosp=%s ft=%s took =%d ms%n", iosp, ft, (System.currentTimeMillis() - start));
 

@@ -45,9 +45,9 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
     this.title = netcdfDataset.getTitle();
     if (title == null)
-      title = netcdfDataset.getRootGroup().findAttValueIgnoreCase("title", null);
+      title = netcdfDataset.getRootGroup().findAttributeString("title", null);
     if (desc == null)
-      desc = netcdfDataset.getRootGroup().findAttValueIgnoreCase("description", null);
+      desc = netcdfDataset.getRootGroup().findAttributeString("description", null);
 
     // look for radial data variables
     parseInfo.append("RadialDatasetAdapter look for RadialVariables\n");

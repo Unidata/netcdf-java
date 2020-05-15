@@ -129,7 +129,7 @@ public class TestScaleOffsetMissingForStructure {
       assert v.getUnitsString().equals("m");
       v.setUnitsString("meters");
       assert v.getUnitsString().equals("meters");
-      assert v.attributes().findAttValueIgnoreCase("units", "").equals("meters");
+      assert v.attributes().findAttributeString("units", "").equals("meters");
 
       ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       Structure s = (Structure) ncfile.findVariable("record");

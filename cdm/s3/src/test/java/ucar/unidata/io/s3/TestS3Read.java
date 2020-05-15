@@ -470,7 +470,7 @@ public class TestS3Read {
     if (nc instanceof NetcdfDataset) {
       String partialConventionValue = "CF-1.";
       // read conventions string
-      String conventions = nc.getRootGroup().attributes().findAttValueIgnoreCase(CF.CONVENTIONS, "");
+      String conventions = nc.getRootGroup().attributes().findAttributeString(CF.CONVENTIONS, "");
 
       // check that the file was read the CF convention builder
       assertThat(conventions).startsWith(partialConventionValue);

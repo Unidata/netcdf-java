@@ -58,7 +58,7 @@ public class TestMiscIosp {
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
       logger.debug("open {}", ncf.getLocation());
 
-      String val = ncf.getRootGroup().findAttValueIgnoreCase("version", null);
+      String val = ncf.getRootGroup().findAttributeString("version", null);
       assert val != null;
       assert val.equals("SAT2004");
 

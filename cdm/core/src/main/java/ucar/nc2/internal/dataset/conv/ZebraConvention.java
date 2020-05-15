@@ -45,7 +45,7 @@ public class ZebraConvention extends CoordSystemBuilder {
       return;
 
     String units =
-        base_time.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, "seconds since 1970-01-01 00:00 UTC");
+        base_time.getAttributeContainer().findAttributeString(CDM.UNITS, "seconds since 1970-01-01 00:00 UTC");
     time.addAttribute(new Attribute(CDM.UNITS, units));
 
     Array data;
@@ -74,7 +74,7 @@ public class ZebraConvention extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      String s = ncfile.getRootGroup().findAttValueIgnoreCase("Convention", "none");
+      String s = ncfile.getRootGroup().findAttributeString("Convention", "none");
       return s.startsWith("Zebra");
     }
 

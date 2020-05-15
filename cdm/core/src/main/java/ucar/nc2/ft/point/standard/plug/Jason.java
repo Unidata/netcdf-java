@@ -22,8 +22,8 @@ import java.util.Formatter;
  */
 public class Jason extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String mission = ds.getRootGroup().findAttValueIgnoreCase("mission_name", null);
-    String center = ds.getRootGroup().findAttValueIgnoreCase("processing_center", null);
+    String mission = ds.getRootGroup().findAttributeString("mission_name", null);
+    String center = ds.getRootGroup().findAttributeString("processing_center", null);
     if ("ESPC".equals(center)) {
       return "OSTM/Jason-2".equals(mission);
     } else

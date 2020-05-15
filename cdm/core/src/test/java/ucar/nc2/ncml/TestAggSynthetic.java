@@ -27,7 +27,7 @@ public class TestAggSynthetic {
 
     Variable v = ncfile.findVariable("time");
     assert v != null;
-    String testAtt = v.findAttValueIgnoreCase("units", null);
+    String testAtt = v.findAttributeString("units", null);
     assert testAtt != null;
     assert testAtt.equals("months since 2000-6-16 6:00");
 
@@ -103,7 +103,7 @@ public class TestAggSynthetic {
 
     Variable v = ncfile.findVariable("time");
     assert v != null;
-    String testAtt = v.findAttValueIgnoreCase("units", null);
+    String testAtt = v.findAttributeString("units", null);
     assert testAtt != null;
     assert testAtt.equals("seconds since 2017-01-01");
 

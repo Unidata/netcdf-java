@@ -81,7 +81,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     int ny = rootGroup.findDimension("y").map(Dimension::getLength)
         .orElseThrow(() -> new RuntimeException("missing dimension y"));
 
-    String projName = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projName", "none");
+    String projName = rootGroup.getAttributeContainer().findAttributeString("projName", "none");
     if (projName.equalsIgnoreCase("CYLINDRICAL_EQUIDISTANT")) {
       makeLatLonProjection(nx, ny);
       datasetBuilder.replaceCoordinateAxis(rootGroup, makeLonCoordAxis("x"));
@@ -100,7 +100,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // long_name; LOOK: not sure of units
     VariableDS.Builder datav = (VariableDS.Builder) rootGroup.findVariableLocal("image")
         .orElseThrow(() -> new RuntimeException("must have varible 'image'"));
-    String long_name = rootGroup.getAttributeContainer().findAttValueIgnoreCase("channel", null);
+    String long_name = rootGroup.getAttributeContainer().findAttributeString("channel", null);
     if (null != long_name) {
       datav.addAttribute(new Attribute(CDM.LONG_NAME, long_name));
     }

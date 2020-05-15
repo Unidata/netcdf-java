@@ -26,7 +26,7 @@ public class TestReadRecord {
     try (NetcdfFile nc = TestDir.openFileLocal("testWriteRecord.nc")) {
 
       /* Get the value of the global attribute named "title" */
-      String title = nc.getRootGroup().findAttValueIgnoreCase("title", "N/A");
+      String title = nc.getRootGroup().findAttributeString("title", "N/A");
 
       /*
        * Read the latitudes into an array of double.
@@ -45,7 +45,7 @@ public class TestReadRecord {
         lats[ilat] = values.getDouble(ima.set0(ilat));
       }
       /* Read units attribute of lat variable */
-      String latUnits = lat.findAttValueIgnoreCase("units", "N/A");
+      String latUnits = lat.findAttributeString("units", "N/A");
       assert (latUnits.equals("degrees_north"));
 
       /* Read the longitudes. */
