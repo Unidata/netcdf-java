@@ -135,7 +135,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
-      String units = v.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
+      String units = v.attributes().findAttributeString(CDM.UNITS, null);
       if (units != null) {
         v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
       }

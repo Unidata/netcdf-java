@@ -24,7 +24,7 @@ public class VExplicitField extends AbstractTransformBuilder implements VertTran
 
   public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
     VerticalCT ct = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.Existing3DField, this);
-    String fieldName = ctv.findAttValueIgnoreCase(VTfromExistingData.existingDataField, null);
+    String fieldName = ctv.findAttributeString(VTfromExistingData.existingDataField, null);
     if (null == fieldName)
       throw new IllegalArgumentException(
           "ExplicitField Vertical Transform must have attribute " + VTfromExistingData.existingDataField);

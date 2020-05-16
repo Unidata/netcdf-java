@@ -961,10 +961,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     public String getUnits() {
       String result = units;
       if (result == null) {
-        result = getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, null);
+        result = getAttributeContainer().findAttributeString(CDM.UNITS, null);
       }
       if (result == null && orgVar != null) {
-        result = orgVar.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
+        result = orgVar.attributes().findAttributeString(CDM.UNITS, null);
       }
       return (result == null) ? null : result.trim();
     }
@@ -972,10 +972,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     public String getDescription() {
       String result = desc;
       if (result == null) {
-        result = getAttributeContainer().findAttValueIgnoreCase(CDM.LONG_NAME, null);
+        result = getAttributeContainer().findAttributeString(CDM.LONG_NAME, null);
       }
       if (result == null && orgVar != null) {
-        result = orgVar.attributes().findAttValueIgnoreCase(CDM.LONG_NAME, null);
+        result = orgVar.attributes().findAttributeString(CDM.LONG_NAME, null);
       }
       return (result == null) ? null : result.trim();
     }

@@ -63,7 +63,7 @@ public class CsmSigma extends AbstractTransformBuilder implements VertTransformB
   private static boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, AttributeContainer v,
       String attName, boolean readData) {
     String varName;
-    if (null == (varName = v.findAttValueIgnoreCase(attName, null))) {
+    if (null == (varName = v.findAttributeString(attName, null))) {
       return false;
     }
     varName = varName.trim();

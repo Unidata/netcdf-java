@@ -5,17 +5,11 @@
 
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.projection.UtmProjection;
 
-/**
- * Create a UTM Projection from the information in the Coordinate Transform Variable.
- * *
- * 
- * @author caron
- */
+/** Create a UTM Projection from the information in the Coordinate Transform Variable. */
 public class UTM extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
@@ -33,12 +27,8 @@ public class UTM extends AbstractTransformBuilder implements HorizTransformBuild
     boolean isNorth = zone > 0;
     zone = Math.abs(zone);
 
-    Attribute a;
-    double axis = 0.0, f = 0.0;
-    if (null != (a = ctv.findAttribute("semimajor_axis")))
-      axis = a.getNumericValue().doubleValue();
-    if (null != (a = ctv.findAttribute("inverse_flattening")))
-      f = a.getNumericValue().doubleValue();
+    double axis = ctv.findAttributeDouble("semimajor_axis", 0.0);
+    double f = ctv.findAttributeDouble("inverse_flattening", 0.0);
 
     // double a, double f, int zone, boolean isNorth
     UtmProjection proj = (axis != 0.0) ? new UtmProjection(axis, f, zone, isNorth) : new UtmProjection(zone, isNorth);

@@ -36,7 +36,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
     if (((ft != FeatureType.STATION) && (ft != FeatureType.POINT)))
       return false;
 
-    String conv = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+    String conv = ds.getRootGroup().findAttributeString(CDM.CONVENTIONS, null);
     if (conv == null)
       return false;
 

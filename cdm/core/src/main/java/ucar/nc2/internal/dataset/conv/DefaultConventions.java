@@ -80,7 +80,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     // coordinates is an alias for _CoordinateAxes
     for (VarProcess vp : varList) {
       if (vp.coordinateAxes == null) { // dont override if already set
-        String coordsString = vp.vb.getAttributeContainer().findAttValueIgnoreCase(CF.COORDINATES, null);
+        String coordsString = vp.vb.getAttributeContainer().findAttributeString(CF.COORDINATES, null);
         if (coordsString != null) {
           vp.coordinates = coordsString;
         }
@@ -243,9 +243,9 @@ public class DefaultConventions extends CoordSystemBuilder {
 
   // look for an coord_axis or coord_alias attribute
   private String findAlias(VariableDS.Builder vb) {
-    String alias = vb.getAttributeContainer().findAttValueIgnoreCase("coord_axis", null);
+    String alias = vb.getAttributeContainer().findAttributeString("coord_axis", null);
     if (alias == null) {
-      alias = vb.getAttributeContainer().findAttValueIgnoreCase("coord_alias", "");
+      alias = vb.getAttributeContainer().findAttributeString("coord_alias", "");
     }
     if (alias == null) {
       alias = "";
@@ -289,7 +289,7 @@ public class DefaultConventions extends CoordSystemBuilder {
       return AxisType.GeoZ;
     }
 
-    String positive = vb.getAttributeContainer().findAttValueIgnoreCase("positive", null);
+    String positive = vb.getAttributeContainer().findAttributeString("positive", null);
     if (positive != null) {
       if (SimpleUnit.isCompatible("m", unit)) {
         return AxisType.Height;
@@ -302,14 +302,14 @@ public class DefaultConventions extends CoordSystemBuilder {
 
   private ProjectionCT makeProjectionCT() {
     // look for projection in global attribute
-    String projection = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projection", null);
+    String projection = rootGroup.getAttributeContainer().findAttributeString("projection", null);
     if (null == projection) {
       parseInfo.format("Default Conventions error: NO projection name found %n");
       return null;
     }
-    String params = rootGroup.getAttributeContainer().findAttValueIgnoreCase("projection_params", null);
+    String params = rootGroup.getAttributeContainer().findAttributeString("projection_params", null);
     if (null == params) {
-      params = rootGroup.getAttributeContainer().findAttValueIgnoreCase("proj_params", null);
+      params = rootGroup.getAttributeContainer().findAttributeString("proj_params", null);
     }
     if (null == params) {
       parseInfo.format("Default Conventions error: NO projection parameters found %n");

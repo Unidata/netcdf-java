@@ -114,7 +114,7 @@ class CoardsConventions extends CoordSystemBuilder {
       return AxisType.GeoZ;
     }
 
-    String positive = vb.getAttributeContainer().findAttValueIgnoreCase(CF.POSITIVE, null);
+    String positive = vb.getAttributeContainer().findAttributeString(CF.POSITIVE, null);
     if (positive != null) {
       if (SimpleUnit.isCompatible("m", unit)) {
         return AxisType.Height;

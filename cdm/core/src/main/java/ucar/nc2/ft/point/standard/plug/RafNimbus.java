@@ -21,7 +21,7 @@ import java.util.Formatter;
  */
 public class RafNimbus extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String center = ds.getRootGroup().findAttValueIgnoreCase("Convention", null);
+    String center = ds.getRootGroup().findAttributeString("Convention", null);
     return "NCAR-RAF/nimbus".equals(center);
   }
 

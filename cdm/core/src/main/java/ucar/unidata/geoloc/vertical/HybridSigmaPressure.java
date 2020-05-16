@@ -76,7 +76,7 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     }
 
     if (aVar != null) {
-      String unitValue = aVar.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
+      String unitValue = aVar.attributes().findAttributeString(CDM.UNITS, null);
       if (unitValue != null) {
         apUnits = unitValue;
       }
@@ -84,7 +84,7 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
 
     psVar = ds.findVariable(psName);
     bVar = ds.findVariable(bName);
-    units = psVar.findAttValueIgnoreCase(CDM.UNITS, "none");
+    units = psVar.findAttributeString(CDM.UNITS, "none");
     if (p0Name != null) {
       p0Var = ds.findVariable(p0Name);
       apUnits = units; // Won't need transformation for AP = A * P0 * 1 (in this case)
@@ -207,7 +207,7 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     double p0 = p0Var.readScalarDouble();
 
     // Units check: P0 must have same units as PS
-    String p0UnitStr = p0Var.attributes().findAttValueIgnoreCase(CDM.UNITS, null);
+    String p0UnitStr = p0Var.attributes().findAttributeString(CDM.UNITS, null);
     if (p0UnitStr == null)
       throw new IllegalStateException();
     if (!units.equalsIgnoreCase(p0UnitStr)) {

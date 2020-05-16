@@ -22,7 +22,7 @@ import java.io.IOException;
  */
 public class Nldn extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String center = ds.getRootGroup().findAttValueIgnoreCase(CDM.CONVENTIONS, null);
+    String center = ds.getRootGroup().findAttributeString(CDM.CONVENTIONS, null);
     return "NLDN-CDM".equals(center);
   }
 

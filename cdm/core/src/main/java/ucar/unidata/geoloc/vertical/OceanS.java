@@ -93,7 +93,7 @@ public class OceanS extends VerticalTransformImpl {
     bVar = ds.findVariable(bName);
     depthCVar = ds.findVariable(depthCName);
 
-    units = depthVar.findAttValueIgnoreCase(CDM.UNITS, "none");
+    units = depthVar.findAttributeString(CDM.UNITS, "none");
   }
 
   /**

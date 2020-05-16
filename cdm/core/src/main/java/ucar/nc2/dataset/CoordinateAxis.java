@@ -213,7 +213,7 @@ public class CoordinateAxis extends VariableDS {
   public boolean isIndependentCoordinate() {
     if (isCoordinateVariable())
       return true;
-    return null != attributes.findAttribute(_Coordinate.AliasForDimension);
+    return attributes.hasAttribute(_Coordinate.AliasForDimension);
   }
 
   /*
@@ -401,9 +401,8 @@ public class CoordinateAxis extends VariableDS {
 
   // needed by time coordinates
   public ucar.nc2.time.Calendar getCalendarFromAttribute() {
-    Attribute cal = attributes.findAttribute(CF.CALENDAR);
-    String s = (cal == null) ? null : cal.getStringValue();
-    if (s == null) { // default for CF and COARDS
+    String cal = attributes.findAttributeString(CF.CALENDAR, null);
+    if (cal == null) { // default for CF and COARDS
       Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
       if (convention != null && convention.isString()) {
         String hasName = convention.getStringValue();
@@ -417,7 +416,7 @@ public class CoordinateAxis extends VariableDS {
           return Calendar.gregorian;
       }
     }
-    return ucar.nc2.time.Calendar.get(s);
+    return ucar.nc2.time.Calendar.get(cal);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

@@ -736,7 +736,7 @@ public class CoordSysTable extends JPanel {
 
     @Nullable
     public String getAbbrev() {
-      return v.attributes().findAttValueIgnoreCase(CDM.ABBREV, null);
+      return v.attributes().findAttributeString(CDM.ABBREV, null);
     }
 
     public String getCoordSys() {

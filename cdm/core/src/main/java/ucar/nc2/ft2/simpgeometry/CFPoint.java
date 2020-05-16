@@ -150,7 +150,7 @@ public class CFPoint implements Point {
     CoordinateAxis x = null;
     CoordinateAxis y = null;
 
-    String[] nodeCoords = vari.attributes().findAttValueIgnoreCase(CF.NODE_COORDINATES, "").split(" ");
+    String[] nodeCoords = vari.attributes().findAttributeString(CF.NODE_COORDINATES, "").split(" ");
 
     // Look for x and y
     for (CoordinateAxis ax : axes) {
@@ -163,7 +163,7 @@ public class CFPoint implements Point {
 
     // Node count is used very differently in points
     // Similar use to part_node_count in other geometries
-    String node_c_str = vari.findAttValueIgnoreCase(CF.NODE_COUNT, "");
+    String node_c_str = vari.findAttributeString(CF.NODE_COUNT, "");
 
     if (!node_c_str.equals("")) {
       nodeCounts = dataset.findVariable(node_c_str);

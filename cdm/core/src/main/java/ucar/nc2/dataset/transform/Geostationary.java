@@ -128,8 +128,8 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
       // If we were obsessive, we could do a sanity test to verify the values are consistent.
     }
 
-    String sweep_angle = ctv.findAttValueIgnoreCase(CF.SWEEP_ANGLE_AXIS, null);
-    String fixed_angle = ctv.findAttValueIgnoreCase(CF.FIXED_ANGLE_AXIS, null);
+    String sweep_angle = ctv.findAttributeString(CF.SWEEP_ANGLE_AXIS, null);
+    String fixed_angle = ctv.findAttributeString(CF.FIXED_ANGLE_AXIS, null);
 
     if (sweep_angle == null && fixed_angle == null)
       throw new IllegalArgumentException("Must specify " + CF.SWEEP_ANGLE_AXIS + " or " + CF.FIXED_ANGLE_AXIS);

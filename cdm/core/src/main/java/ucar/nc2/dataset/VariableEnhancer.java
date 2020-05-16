@@ -91,7 +91,7 @@ public class VariableEnhancer implements EnhanceScaleMissingUnsigned {
     // 1. origDataType is unsigned, but variable has "_Unsigned == false" attribute.
     // 2. origDataType is signed, but variable has "_Unsigned == true" attribute.
     if (signedness == Signedness.SIGNED) {
-      String unsignedAtt = forVar.getAttributeContainer().findAttValueIgnoreCase(CDM.UNSIGNED, null);
+      String unsignedAtt = forVar.getAttributeContainer().findAttributeString(CDM.UNSIGNED, null);
       if (unsignedAtt != null && unsignedAtt.equalsIgnoreCase("true")) {
         this.signedness = Signedness.UNSIGNED;
       }

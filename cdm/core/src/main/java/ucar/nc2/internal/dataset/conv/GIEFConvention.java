@@ -40,19 +40,19 @@ public class GIEFConvention extends CoordSystemBuilder {
 
     Variable.Builder timeVar =
         rootGroup.findVariableLocal("time").orElseThrow(() -> new IllegalStateException("must have time variable"));
-    String time_units = rootGroup.getAttributeContainer().findAttValueIgnoreCase("time_units", null);
+    String time_units = rootGroup.getAttributeContainer().findAttributeString("time_units", null);
     timeVar.addAttribute(new Attribute(CDM.UNITS, time_units));
 
     Variable.Builder levelVar =
         rootGroup.findVariableLocal("level").orElseThrow(() -> new IllegalStateException("must have level variable"));
-    String level_units = rootGroup.getAttributeContainer().findAttValueIgnoreCase("level_units", null);
-    String level_name = rootGroup.getAttributeContainer().findAttValueIgnoreCase("level_name", null);
+    String level_units = rootGroup.getAttributeContainer().findAttributeString("level_units", null);
+    String level_name = rootGroup.getAttributeContainer().findAttributeString("level_name", null);
     levelVar.addAttribute(new Attribute(CDM.UNITS, level_units));
     levelVar.addAttribute(new Attribute(CDM.LONG_NAME, level_name));
 
     // may be 1 or 2 data variables
-    String unit_name = rootGroup.getAttributeContainer().findAttValueIgnoreCase("unit_name", null);
-    String parameter_name = rootGroup.getAttributeContainer().findAttValueIgnoreCase("parameter_name", null);
+    String unit_name = rootGroup.getAttributeContainer().findAttributeString("unit_name", null);
+    String parameter_name = rootGroup.getAttributeContainer().findAttributeString("parameter_name", null);
     for (Variable.Builder v : rootGroup.vbuilders) {
       if (v.getRank() > 1) {
         v.addAttribute(new Attribute(CDM.UNITS, unit_name));

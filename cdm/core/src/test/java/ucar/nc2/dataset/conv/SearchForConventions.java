@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.AfterClass;
 import org.junit.Ignore;
@@ -21,13 +20,9 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordSysBuilderIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.dataset.CoordSystemFactory;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -104,9 +99,9 @@ public class SearchForConventions {
   public void findConventions() throws IOException {
     System.out.printf("%s%n", filename);
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
-      String convName = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("Conventions", null);
+      String convName = ncfile.getRootGroup().attributes().findAttributeString("Conventions", null);
       if (convName == null)
-        convName = ncfile.getRootGroup().attributes().findAttValueIgnoreCase("Convention", null);
+        convName = ncfile.getRootGroup().attributes().findAttributeString("Convention", null);
       if (convName != null) {
         convMap.put(convName, filename);
       }
@@ -114,7 +109,7 @@ public class SearchForConventions {
 
     try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(filename)) {
       String coordBuilderUsed =
-          withBuilder.getRootGroup().attributes().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, null);
+          withBuilder.getRootGroup().attributes().findAttributeString(_Coordinate._CoordSysBuilder, null);
       if (coordBuilderUsed == null) {
         System.out.printf("****coordBuilderUsed is null for %s%n", filename);
       } else {

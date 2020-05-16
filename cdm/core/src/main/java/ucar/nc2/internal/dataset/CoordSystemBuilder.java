@@ -788,7 +788,7 @@ public class CoordSystemBuilder {
         parseInfo.format(" Coordinate Axis added = %s type= %s%n", v.getFullName(), axisName);
       }
 
-      coordVarAlias = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.AliasForDimension, null);
+      coordVarAlias = v.getAttributeContainer().findAttributeString(_Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {
@@ -813,9 +813,9 @@ public class CoordSystemBuilder {
         }
       }
 
-      positive = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.ZisPositive, null);
+      positive = v.getAttributeContainer().findAttributeString(_Coordinate.ZisPositive, null);
       if (positive == null) {
-        positive = v.getAttributeContainer().findAttValueIgnoreCase(CF.POSITIVE, null);
+        positive = v.getAttributeContainer().findAttributeString(CF.POSITIVE, null);
       } else {
         isCoordinateAxis = true;
         positive = positive.trim();
@@ -823,14 +823,14 @@ public class CoordSystemBuilder {
             coordVarAlias);
       }
 
-      coordinateAxes = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.Axes, null);
-      coordinateSystems = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.Systems, null);
-      coordinateSystemsFor = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.SystemFor, null);
-      coordinateTransforms = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.Transforms, null);
+      coordinateAxes = v.getAttributeContainer().findAttributeString(_Coordinate.Axes, null);
+      coordinateSystems = v.getAttributeContainer().findAttributeString(_Coordinate.Systems, null);
+      coordinateSystemsFor = v.getAttributeContainer().findAttributeString(_Coordinate.SystemFor, null);
+      coordinateTransforms = v.getAttributeContainer().findAttributeString(_Coordinate.Transforms, null);
       isCoordinateSystem = (coordinateTransforms != null) || (coordinateSystemsFor != null);
 
-      coordAxisTypes = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.AxisTypes, null);
-      coordTransformType = v.getAttributeContainer().findAttValueIgnoreCase(_Coordinate.TransformType, null);
+      coordAxisTypes = v.getAttributeContainer().findAttributeString(_Coordinate.AxisTypes, null);
+      coordTransformType = v.getAttributeContainer().findAttributeString(_Coordinate.TransformType, null);
       isCoordinateTransform = (coordTransformType != null) || (coordAxisTypes != null);
     }
 

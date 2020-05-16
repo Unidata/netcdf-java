@@ -29,11 +29,11 @@ public class TestAttributes {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
 
     // global attributes
-    assert ("face".equals(ncfile.getRootGroup().findAttValueIgnoreCase("yo", "barf")));
+    assert ("face".equals(ncfile.getRootGroup().findAttributeString("yo", "barf")));
 
     Variable temp = null;
     assert (null != (temp = ncfile.findVariable("temperature")));
-    assert ("K".equals(temp.findAttValueIgnoreCase("units", "barf")));
+    assert ("K".equals(temp.findAttributeString("units", "barf")));
 
     Attribute att = temp.findAttribute("scale");
     assert (null != att);

@@ -56,9 +56,9 @@ public class TestBufrBuilderProblem {
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         boolean ok = compare.compare(org, withBuilder, null);
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
-        System.out.printf("org = %s%n", org.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
+        System.out.printf("org = %s%n", org.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, ""));
         System.out.printf("new = %s%n",
-            withBuilder.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, ""));
+            withBuilder.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, ""));
         assertThat(ok).isTrue();
       }
     }

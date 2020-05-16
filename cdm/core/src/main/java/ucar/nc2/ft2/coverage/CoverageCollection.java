@@ -144,7 +144,7 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
   }
 
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return atts.findAttValueIgnoreCase(attName, defaultValue);
+    return atts.findAttributeString(attName, defaultValue);
   }
 
   public Attribute findAttribute(String attName) {

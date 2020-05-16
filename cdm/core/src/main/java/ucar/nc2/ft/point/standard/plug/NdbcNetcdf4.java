@@ -26,17 +26,17 @@ public class NdbcNetcdf4 extends TableConfigurerImpl {
     if (ds.getFileTypeId().equals("HDF5"))
       return false;
 
-    String dataProvider = ds.getRootGroup().findAttValueIgnoreCase("data_provider", null);
+    String dataProvider = ds.getRootGroup().findAttributeString("data_provider", null);
     if (dataProvider == null)
-      dataProvider = ds.getRootGroup().findAttValueIgnoreCase("institution", "");
+      dataProvider = ds.getRootGroup().findAttributeString("institution", "");
     if (!dataProvider.contains("National Data Buoy Center"))
       return false;
 
-    if (null == ds.getRootGroup().findAttValueIgnoreCase("station_name", null))
+    if (null == ds.getRootGroup().findAttributeString("station_name", null))
       return false;
-    if (null == ds.getRootGroup().findAttValueIgnoreCase("nominal_latitude", null))
+    if (null == ds.getRootGroup().findAttributeString("nominal_latitude", null))
       return false;
-    return null != ds.getRootGroup().findAttValueIgnoreCase("nominal_longitude", null);
+    return null != ds.getRootGroup().findAttributeString("nominal_longitude", null);
 
   }
 
@@ -77,12 +77,12 @@ public class NdbcNetcdf4 extends TableConfigurerImpl {
     nt.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
     nt.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);
 
-    nt.stnId = ds.getRootGroup().findAttValueIgnoreCase("station_name", null);
-    nt.stnWmoId = ds.getRootGroup().findAttValueIgnoreCase("wmo_id", null);
+    nt.stnId = ds.getRootGroup().findAttributeString("station_name", null);
+    nt.stnWmoId = ds.getRootGroup().findAttributeString("wmo_id", null);
 
-    nt.stnDesc = ds.getRootGroup().findAttValueIgnoreCase("description", null);
+    nt.stnDesc = ds.getRootGroup().findAttributeString("description", null);
     if (nt.stnDesc == null)
-      nt.stnDesc = ds.getRootGroup().findAttValueIgnoreCase("comment", null);
+      nt.stnDesc = ds.getRootGroup().findAttributeString("comment", null);
 
     TableConfig obs = new TableConfig(Table.Type.Structure, hasStruct ? "record" : obsDim.getShortName());
     obs.structName = "record";

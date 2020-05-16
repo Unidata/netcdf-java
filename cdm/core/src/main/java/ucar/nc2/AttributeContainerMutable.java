@@ -35,6 +35,7 @@ public class AttributeContainerMutable implements AttributeContainer {
     return name;
   }
 
+  /** @deprecated do not use. */
   @Deprecated
   public void setImmutable() {
     this.atts = Collections.unmodifiableList(atts);
@@ -85,7 +86,7 @@ public class AttributeContainerMutable implements AttributeContainer {
   }
 
   @Override
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+  public String findAttributeString(String attName, String defaultValue) {
     String attValue = null;
     Attribute att = findAttributeIgnoreCase(attName);
 
@@ -200,7 +201,7 @@ public class AttributeContainerMutable implements AttributeContainer {
     }
 
     @Override
-    public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    public String findAttributeString(String attName, String defaultValue) {
       return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().map(Attribute::getStringValue)
           .orElse(defaultValue);
     }

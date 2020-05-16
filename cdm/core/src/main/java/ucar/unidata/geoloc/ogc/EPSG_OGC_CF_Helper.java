@@ -159,7 +159,7 @@ public class EPSG_OGC_CF_Helper {
       String gridMapping = gridMappingAtt.getStringValue();
       Variable gridMapVar = gridDataset.getNetcdfFile().getRootGroup().findVariable(gridMapping);
       if (gridMapVar != null) {
-        String gridMappingNameAtt = gridMapVar.attributes().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+        String gridMappingNameAtt = gridMapVar.attributes().findAttributeString(CF.GRID_MAPPING_NAME, null);
         if (gridMappingNameAtt != null)
           buf.append("EPSG:").append(ProjectionStandardsInfo.getProjectionByCfName(gridMappingNameAtt));
       }

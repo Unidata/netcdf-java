@@ -22,7 +22,7 @@ public class TestGroupBuilder {
     assertThat(group.getAttributes()).isNotEmpty();
     assertThat(group.getAttributes()).hasSize(1);
     assertThat(group.findAttribute("attName")).isEqualTo(att);
-    assertThat(group.findAttValueIgnoreCase("attName", null)).isEqualTo("value");
+    assertThat(group.findAttributeString("attName", null)).isEqualTo("value");
 
     assertThat(group.getDimensions()).isNotEmpty();
     assertThat(group.getDimensions()).hasSize(1);
@@ -135,8 +135,8 @@ public class TestGroupBuilder {
     assertThat(atts.getAttributes()).isNotEmpty();
     assertThat(atts.getAttributes()).hasSize(2);
     assertThat(atts.findAttribute("attName")).isEqualTo(att1);
-    assertThat(atts.findAttValueIgnoreCase("attName", null)).isEqualTo("value");
-    assertThat(atts.findAttValueIgnoreCase("attName2", null)).isEqualTo("value2");
+    assertThat(atts.findAttributeString("attName", null)).isEqualTo("value");
+    assertThat(atts.findAttributeString("attName2", null)).isEqualTo("value2");
   }
 
 }

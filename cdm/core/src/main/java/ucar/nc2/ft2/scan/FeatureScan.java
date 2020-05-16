@@ -158,7 +158,7 @@ public class FeatureScan {
         System.out.printf(" featureScan=%s%n", f.getPath());
       try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
         fileType = ds.getFileTypeId();
-        coordSysBuilder = ds.getRootGroup().findAttValueIgnoreCase(_Coordinate._CoordSysBuilder, "none");
+        coordSysBuilder = ds.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, "none");
 
         Formatter errlog = new Formatter();
         builder = DtCoverageCSBuilder.classify(ds, errlog);

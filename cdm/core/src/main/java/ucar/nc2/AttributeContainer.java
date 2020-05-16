@@ -14,51 +14,62 @@ import javax.annotation.Nullable;
  */
 public interface AttributeContainer extends Iterable<Attribute> {
 
-  /**
-   * Find a String-valued Attribute by name (ignore case), return the String value of the Attribute.
-   * 
-   * @return the attribute value, or defaultValue if not found
-   */
-  String findAttValueIgnoreCase(String attName, String defaultValue);
+  /** Find an Attribute by exact match on name. */
+  @Nullable
+  Attribute findAttribute(String attName);
+
+  /** Determine if named attribute exists (exact match). */
+  default boolean hasAttribute(String attName) {
+    return null != findAttribute(attName);
+  }
+
+  /** Find an Attribute by name, first doing an exact match, then ignoring case. */
+  @Nullable
+  Attribute findAttributeIgnoreCase(String attName);
+
+  /** Determine if named attribute exists, ignoring case. */
+  default boolean hasAttributeIgnoreCase(String attName) {
+    return null != findAttributeIgnoreCase(attName);
+  }
 
   /**
    * Find a Numeric Attribute by name (ignore case), return the double value of the Attribute.
-   * 
+   *
    * @return the attribute value, or defaultValue if not found
    */
   double findAttributeDouble(String attName, double defaultValue);
 
   /**
    * Find a Numeric Attribute by name (ignore case), return the integer value of the Attribute.
-   * 
+   *
    * @return the attribute value, or defaultValue if not found
    */
   int findAttributeInteger(String attName, int defaultValue);
 
-  /** Find an Attribute by name */
-  @Nullable
-  Attribute findAttribute(String attName);
-
-  /** Determine if named attribute exists. */
-  default boolean hasAttribute(String attName) {
-    return null != findAttribute(attName);
-  }
-
-  /** Find an Attribute by name, first try doing an exact match, then try ignoring case. */
-  @Nullable
-  Attribute findAttributeIgnoreCase(String attName);
+  /**
+   * Find a String Attribute by name (ignore case), return the String value of the Attribute.
+   *
+   * @return the attribute value, or defaultValue if not found
+   */
+  String findAttributeString(String attName, String defaultValue);
 
   /** Get the (optional) name of the AttributeContainer. */
   @Nullable
   String getName();
 
+  /** An unordered iterator over the contained attributes. */
   @Override
   default Iterator<Attribute> iterator() {
     return getAttributes().iterator();
   }
 
-  ///// will be removed in version 6 to make AttributeContainer immutable
+  /** @deprecated use findAttributeString(). */
+  @Deprecated
+  default String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return findAttributeString(attName, defaultValue);
+  }
 
+  ///// will be removed in version 6 to make AttributeContainer immutable
   /**
    * Returns immutable list of attributes.
    *

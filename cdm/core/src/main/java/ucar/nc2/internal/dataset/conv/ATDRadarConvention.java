@@ -36,7 +36,7 @@ public class ATDRadarConvention extends CoordSystemBuilder {
     @Override
     public boolean isMine(NetcdfFile ncfile) {
       // not really sure until we can examine more files
-      String s = ncfile.getRootGroup().findAttValueIgnoreCase("sensor_name", "none");
+      String s = ncfile.getRootGroup().findAttributeString("sensor_name", "none");
       return s.equalsIgnoreCase("CRAFT/NEXRAD");
     }
 

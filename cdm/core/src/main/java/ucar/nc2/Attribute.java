@@ -93,6 +93,7 @@ public class Attribute extends CDMNode {
     this.dataType = dt;
   }
 
+  /** Get the EnumTypedef of the Attribute value, if DataType is an ENUM. */
   @Nullable
   public EnumTypedef getEnumType() {
     return this.enumtype;

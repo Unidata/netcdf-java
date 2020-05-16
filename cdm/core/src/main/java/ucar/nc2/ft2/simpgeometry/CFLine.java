@@ -181,7 +181,7 @@ public class CFLine implements Line {
     CoordinateAxis x = null;
     CoordinateAxis y = null;
 
-    String[] nodeCoords = var.attributes().findAttValueIgnoreCase(CF.NODE_COORDINATES, "").split(" ");
+    String[] nodeCoords = var.attributes().findAttributeString(CF.NODE_COORDINATES, "").split(" ");
 
     // Look for x and y
     for (CoordinateAxis ax : axes) {
@@ -193,7 +193,7 @@ public class CFLine implements Line {
     }
 
     // Affirm node counts
-    String node_c_str = var.findAttValueIgnoreCase(CF.NODE_COUNT, "");
+    String node_c_str = var.findAttributeString(CF.NODE_COUNT, "");
 
     if (!node_c_str.equals("")) {
       nodeCounts = dataset.findVariable(node_c_str);
@@ -203,7 +203,7 @@ public class CFLine implements Line {
       return null;
 
     // Affirm part node counts
-    String pNodeCoStr = var.findAttValueIgnoreCase(CF.PART_NODE_COUNT, "");
+    String pNodeCoStr = var.findAttributeString(CF.PART_NODE_COUNT, "");
 
     if (!pNodeCoStr.equals("")) {
       partNodeCounts = dataset.findVariable(pNodeCoStr);

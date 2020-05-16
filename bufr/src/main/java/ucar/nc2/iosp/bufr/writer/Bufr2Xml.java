@@ -214,7 +214,7 @@ public class Bufr2Xml {
       staxWriter.writeAttribute(CDM.UNITS, escaper.escape(v.getUnitsString()));
     }
 
-    String desc = v.attributes().findAttValueIgnoreCase(BufrIosp2.fxyAttName, "N/A");
+    String desc = v.attributes().findAttributeString(BufrIosp2.fxyAttName, "N/A");
     staxWriter.writeAttribute("bufr", escaper.escape(desc));
 
     if (v.getDataType() == DataType.CHAR) {

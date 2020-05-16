@@ -31,8 +31,8 @@ public class TestStructureDSBuilder {
     StructureDS var = StructureDS.builder().setName("name").setUnits("units").setDesc("desc").build(makeDummyGroup());
     assertThat(var.getUnitsString()).isEqualTo("units");
     assertThat(var.getDescription()).isEqualTo("desc");
-    assertThat(var.findAttValueIgnoreCase(CDM.UNITS, "")).isEqualTo("units");
-    assertThat(var.findAttValueIgnoreCase(CDM.LONG_NAME, "")).isEqualTo("desc");
+    assertThat(var.findAttributeString(CDM.UNITS, "")).isEqualTo("units");
+    assertThat(var.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
   }
 
   @Test

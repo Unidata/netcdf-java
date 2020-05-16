@@ -51,7 +51,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
         return false;
       }
 
-      String typeName = ncfile.getRootGroup().findAttValueIgnoreCase(CF.FEATURE_TYPE, null);
+      String typeName = ncfile.getRootGroup().findAttributeString(CF.FEATURE_TYPE, null);
       if (typeName == null) {
         return false;
       }

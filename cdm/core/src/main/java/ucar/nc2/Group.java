@@ -33,7 +33,7 @@ import java.util.Collections;
  * Immutable if setImmutable() was called.
  *
  * TODO Group will be immutable in 6.
- * TODO Group will not implement AttributeContainer in 6.
+ * TODO Group will not implement AttributeContainer in 6, use Group.attributes().
  * TODO Group will not extend CDMNode in 6.
  *
  * @author caron
@@ -293,6 +293,7 @@ public class Group extends CDMNode implements AttributeContainer {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Attributes
 
+  /** The attributes contained by this Group. */
   public AttributeContainer attributes() {
     return attributes;
   }
@@ -308,8 +309,8 @@ public class Group extends CDMNode implements AttributeContainer {
    *
    * @return the attribute value, or defaultValue if not found
    */
-  public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  public String findAttributeString(String attName, String defaultValue) {
+    return attributes.findAttributeString(attName, defaultValue);
   }
 
   /** @deprecated Use attributes() */

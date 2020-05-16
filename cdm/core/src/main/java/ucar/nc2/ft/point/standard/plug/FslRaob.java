@@ -28,13 +28,13 @@ import java.io.IOException;
 public class FslRaob extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String title = ds.getRootGroup().findAttValueIgnoreCase("version", null);
+    String title = ds.getRootGroup().findAttributeString("version", null);
     return title != null
         && (title.startsWith("Forecast Systems Lab 1.3") || title.startsWith("Forecast Systems Lab 1.4"));
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    String title = ds.getRootGroup().findAttValueIgnoreCase("version", null);
+    String title = ds.getRootGroup().findAttributeString("version", null);
     assert title != null;
     boolean v4 = title.startsWith("Forecast Systems Lab 1.4");
     String xml = v4 ? "resources/nj22/pointConfig/FslRaob14.xml" : "resources/nj22/pointConfig/FslRaob13.xml";

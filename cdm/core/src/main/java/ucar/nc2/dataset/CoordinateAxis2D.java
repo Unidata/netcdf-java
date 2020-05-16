@@ -313,7 +313,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   private ArrayDouble.D3 makeBoundsFromAux() {
     if (!computeIsInterval())
       return null;
-    String boundsVarName = attributes().findAttValueIgnoreCase(CF.BOUNDS, null);
+    String boundsVarName = attributes().findAttributeString(CF.BOUNDS, null);
     if (boundsVarName == null) {
       return null;
     }
@@ -342,7 +342,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   private boolean computeIsInterval() {
     intervalWasComputed = true;
-    String boundsVarName = attributes().findAttValueIgnoreCase(CF.BOUNDS, null);
+    String boundsVarName = attributes().findAttributeString(CF.BOUNDS, null);
     if (boundsVarName == null) {
       return false;
     }

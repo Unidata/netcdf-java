@@ -18,7 +18,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestNetcdfFileBuilder;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -613,7 +612,7 @@ public class TestAggExistingNew {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    String testAtt = time.findAttValueIgnoreCase("ncmlAdded", null);
+    String testAtt = time.findAttributeString("ncmlAdded", null);
     assert testAtt != null;
     assert testAtt.equals("timeAtt");
 

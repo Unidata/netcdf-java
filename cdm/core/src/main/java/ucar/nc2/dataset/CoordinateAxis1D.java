@@ -874,7 +874,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private boolean makeBoundsFromAux() {
-    String boundsVarName = attributes().findAttValueIgnoreCase(CF.BOUNDS, null);
+    String boundsVarName = attributes().findAttributeString(CF.BOUNDS, null);
     if (boundsVarName == null) {
       return false;
     }

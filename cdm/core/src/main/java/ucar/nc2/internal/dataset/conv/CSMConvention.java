@@ -45,7 +45,7 @@ class CSMConvention extends CoardsConventions {
     // coordinates is an alias for _CoordinateAxes
     for (VarProcess vp : varList) {
       if (vp.coordinateAxes == null) { // dont override if already set
-        String coordsString = vp.vb.getAttributeContainer().findAttValueIgnoreCase(CF.COORDINATES, null);
+        String coordsString = vp.vb.getAttributeContainer().findAttributeString(CF.COORDINATES, null);
         if (coordsString != null) {
           vp.coordinates = coordsString;
         }

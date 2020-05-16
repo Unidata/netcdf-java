@@ -64,7 +64,7 @@ public class ADASConvention extends CoordSystemBuilder {
     double false_northing = 0.0;
 
     // new way with attributes
-    String projName = rootGroup.getAttributeContainer().findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+    String projName = rootGroup.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
     if (projName != null) {
       projName = projName.trim();
       lat_origin = rootGroup.getAttributeContainer().findAttributeDouble("latitude_of_projection_origin", Double.NaN);
@@ -86,7 +86,7 @@ public class ADASConvention extends CoordSystemBuilder {
     if (coordOpt.isPresent()) {
       Variable.Builder<?> coord = coordOpt.get();
       if (!Double.isNaN(false_easting) || !Double.isNaN(false_northing)) {
-        String units = coord.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, null);
+        String units = coord.getAttributeContainer().findAttributeString(CDM.UNITS, null);
         double scalef = 1.0;
         try {
           scalef = SimpleUnit.getConversionFactor(units, "km");
@@ -238,7 +238,7 @@ public class ADASConvention extends CoordSystemBuilder {
     }
 
     DataType dtype = DataType.getType(data);
-    String units = stagV.getAttributeContainer().findAttValueIgnoreCase(CDM.UNITS, "m");
+    String units = stagV.getAttributeContainer().findAttributeString(CDM.UNITS, "m");
     CoordinateAxis.Builder cb = CoordinateAxis1D.builder().setName(axisName).setDataType(dtype)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(axisName).setUnits(units)
         .setDesc("synthesized non-staggered " + axisName + " coordinate");

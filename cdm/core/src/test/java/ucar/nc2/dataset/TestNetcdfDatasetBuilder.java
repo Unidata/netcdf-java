@@ -35,7 +35,7 @@ public class TestNetcdfDatasetBuilder {
     assertThat(group.getAttributes()).isNotEmpty();
     assertThat(group.getAttributes()).hasSize(1);
     assertThat(group.findAttribute("attName")).isEqualTo(att);
-    assertThat(group.findAttValueIgnoreCase("attName", null)).isEqualTo("value");
+    assertThat(group.findAttributeString("attName", null)).isEqualTo("value");
 
     assertThat(group.getDimensions()).isNotEmpty();
     assertThat(group.getDimensions()).hasSize(1);

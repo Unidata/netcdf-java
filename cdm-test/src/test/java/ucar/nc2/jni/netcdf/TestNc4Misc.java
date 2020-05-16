@@ -337,7 +337,7 @@ public class TestNc4Misc {
       Variable var = ncd.findVariable(newVarName);
       Assert.assertNotNull(var);
       logger.debug(" check {}", var.getNameAndDimensions());
-      String attValue = var.findAttValueIgnoreCase(attrToChange, "");
+      String attValue = var.findAttributeString(attrToChange, "");
       Assert.assertEquals(attValue, newAttrValue);
 
       Array data = var.read();
