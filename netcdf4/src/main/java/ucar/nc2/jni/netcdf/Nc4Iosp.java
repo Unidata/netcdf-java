@@ -41,8 +41,7 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
  * @see "https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#How-can-I-convert-HDF5-files-into-netCDF-4-files"
  *      hdf5 features not supported
- * @see "https://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
- * @since Oct 30, 2008
+ *      TODO Read-only, will not implement IOServiceProviderWriter in ver6.
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
@@ -480,6 +479,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (!d.isUnlimited())
         throw new IllegalStateException("dimension " + dname + " should be unlimited");
 
+      // TODO udim.setLength : need UnlimitedDimension extends Dimension?
       int len = lenp.getValue().intValue();
       if (len != d.getLength()) {
         d.setLength(len);

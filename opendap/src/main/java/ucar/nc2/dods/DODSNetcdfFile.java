@@ -1191,7 +1191,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     if (dimLength <= 0)
       return null; // LOOK what about unlimited ??
-    return new Dimension(dimName, dimLength, dimName != null);
+    return Dimension.builder(dimName, dimLength).setIsShared(dimName != null).build();
   }
 
   /**
@@ -1234,7 +1234,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       Dimension myd;
 
       if (name == null) { // if no name, make an anonymous dimension
-        myd = new Dimension(null, dad.getSize(), false);
+        myd = Dimension.builder(null, dad.getSize()).setIsShared(false).build();
 
       } else { // see if shared
         if (RC.getUseGroups()) {
@@ -1249,7 +1249,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           myd = new Dimension(name, dad.getSize());
           group.addDimension(myd);
         } else if (myd.getLength() != dad.getSize()) { // make a non-shared dimension
-          myd = new Dimension(name, dad.getSize(), false);
+          myd = Dimension.builder(name, dad.getSize()).setIsShared(false).build();
         } // else use existing, shared dimension
       }
       dims.add(myd); // add it to the list

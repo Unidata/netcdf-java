@@ -91,7 +91,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
 
     if (sp == null) {
       // add Elevation
-      ds.addDimension(null, new Dimension("Elevation", 1, true));
+      ds.addDimension(null, new Dimension("Elevation", 1));
       String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
       CoordinateAxis v = new CoordinateAxis1D(ds, null, "Elevation", DataType.DOUBLE, "Elevation", "degrees", lName);
       ds.setValues(v, 1, ele, 0);
@@ -104,7 +104,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
       int spsize = spd.length;
 
       // add Elevation
-      ds.addDimension(null, new Dimension("Elevation", spsize, true));
+      ds.addDimension(null, new Dimension("Elevation", spsize));
       String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
       CoordinateAxis v = new CoordinateAxis1D(ds, null, "Elevation", DataType.DOUBLE, "Elevation", "degrees", lName);
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));

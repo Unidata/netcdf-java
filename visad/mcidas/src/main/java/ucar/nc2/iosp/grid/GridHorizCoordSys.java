@@ -228,11 +228,11 @@ public class GridHorizCoordSys {
   void addDimensionsToNetcdfFile(NetcdfFile ncfile) {
 
     if (isLatLon) {
-      ncfile.addDimension(g, new Dimension("lat", gds.getInt(GridDefRecord.NY), true));
-      ncfile.addDimension(g, new Dimension("lon", gds.getInt(GridDefRecord.NX), true));
+      ncfile.addDimension(g, new Dimension("lat", gds.getInt(GridDefRecord.NY)));
+      ncfile.addDimension(g, new Dimension("lon", gds.getInt(GridDefRecord.NX)));
     } else {
-      ncfile.addDimension(g, new Dimension("y", gds.getInt(GridDefRecord.NY), true));
-      ncfile.addDimension(g, new Dimension("x", gds.getInt(GridDefRecord.NX), true));
+      ncfile.addDimension(g, new Dimension("y", gds.getInt(GridDefRecord.NY)));
+      ncfile.addDimension(g, new Dimension("x", gds.getInt(GridDefRecord.NX)));
     }
   }
 

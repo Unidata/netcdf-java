@@ -272,7 +272,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     String radialDimName = "radial" + abbrev;
     Dimension scanDim = new Dimension(scanDimName, nscans);
     Dimension gateDim = new Dimension(gateDimName, ngates);
-    Dimension radialDim = new Dimension(radialDimName, volScan.getMaxRadials(rd), true);
+    Dimension radialDim = new Dimension(radialDimName, volScan.getMaxRadials(rd));
     ncfile.addDimension(null, scanDim);
     ncfile.addDimension(null, gateDim);
     ncfile.addDimension(null, radialDim);

@@ -18,7 +18,9 @@ import java.util.*;
  * For ENUM1, ENUM2, ENUM4 enumeration types.
  * Immutable.
  *
- * @author caron
+ * TODO EnumTypedef will not extend CDMNode in 6.
+ * TODO EnumTypedef will not have a reference to its owning Group in 6.
+ * TODO EnumTypedef.getFullName() will not exist in 6.
  */
 @Immutable
 public class EnumTypedef extends CDMNode {
@@ -47,12 +49,13 @@ public class EnumTypedef extends CDMNode {
     this.basetype = basetype;
   }
 
+  /** @deprecated use getMap() */
   @Deprecated
   public ImmutableList<String> getEnumStrings() {
     return enumStrings;
   }
 
-  /** Will return ImmutableMap in version 6. */
+  /** TODO Will return ImmutableBiMap in version 6. */
   public Map<Integer, String> getMap() {
     return map;
   }

@@ -140,12 +140,12 @@ public class AreaReader {
     calScale = (1.0f / ad.getCalibrationScaleFactor());
 
     // make the dimensions
-    Dimension elements = new Dimension("elements", numElements, true);
-    Dimension lines = new Dimension("lines", numLines, true);
-    Dimension bands = new Dimension("bands", numBands, true);
-    Dimension time = new Dimension("time", 1, true);
-    Dimension dirDim = new Dimension("dirSize", AreaFile.AD_DIRSIZE, true);
-    Dimension navDim = new Dimension("navSize", navBlock.length, true);
+    Dimension elements = new Dimension("elements", numElements);
+    Dimension lines = new Dimension("lines", numLines);
+    Dimension bands = new Dimension("bands", numBands);
+    Dimension time = new Dimension("time", 1);
+    Dimension dirDim = new Dimension("dirSize", AreaFile.AD_DIRSIZE);
+    Dimension navDim = new Dimension("navSize", navBlock.length);
     List<Dimension> image = new ArrayList<>();
     image.add(time);
     image.add(bands);

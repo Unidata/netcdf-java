@@ -646,6 +646,7 @@ public class HdfEos {
   }
 
   // look if the wanted dimension is in the unknownDims list.
+  // TODO this must be rewritten, stop using deprecated methods
   private Dimension checkUnknownDims(String wantDim, List<Dimension> unknownDims, Dimension oldDim, String location) {
     for (Dimension dim : unknownDims) {
       if (dim.getShortName().equals(wantDim)) {

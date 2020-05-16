@@ -26,7 +26,8 @@ import java.util.StringTokenizer;
  * Note: this class has a natural ordering that is inconsistent with equals.
  *
  * TODO Dimension will be immutable in 6.
- * TODO Dimension will not have a reference to their owning Group in 6.
+ * TODO Dimension will not extend CDMNode in 6.
+ * TODO Dimension will not have a reference to its owning Group in 6.
  * TODO Dimension.getFullName() will not exist in 6.
  *
  * @author caron
@@ -191,17 +192,25 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
         .setIsVariableLength(this.isVariableLength).setIsShared(this.isShared).setLength(this.length);
   }
 
-  /**
-   * Get the length of the Dimension.
-   *
-   * @return length of Dimension
-   */
+  /** Get the length of the Dimension. */
   public int getLength() {
     return length;
   }
 
+  /** Get the name of the Dimension. Same as getShortName. Not deprecated. */
+  public String getName() {
+    return this.shortName;
+  }
+
+  /** Get the name of the Dimension. */
+  public String getShortName() {
+    return this.shortName;
+  }
+
   /**
-   * If unlimited, then the length can increase; otherwise it is immutable.
+   * If this is a NetCDF unlimited dimension. The length might increase between invocations,
+   * but it remains fixed for the lifetime of the NetcdfFile.
+   * If you modify the file in a seperate process, you must close and reopen the file.
    *
    * @return if its an "unlimited" Dimension
    */
@@ -356,9 +365,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    * @param isShared whether its shared or local to Variable.
    * @param isUnlimited whether the length can grow.
    * @param isVariableLength whether the length is unknown until the data is read.
-   * @deprecated Use Dimension.builder()
    */
-  @Deprecated
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
     super(name);
     this.isShared = isShared;
