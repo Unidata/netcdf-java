@@ -26,7 +26,7 @@ jobs:
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: netCDF-Java_JUnit_Results_${GITHUB_SHA}_Zulu-JDK-8
+          name: netCDF-Java_JUnit_Results_${{ github.sha }}_Zulu-JDK-8
           path: build/reports/allTests
 
   tests-adpotopenjdk-hs-8:
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Latest AdoptOpenJDK (hotspot) 8
         uses: actions/setup-java@master
         with:
-          version: 8
+          java-version: 8
           architecture: x64
           jdkFile: ./aojdk8-hs.tar.gz
       - name: Print java version
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: netCDF-Java_JUnit_Results_${GITHUB_SHA}_AdoptOpenJDK-HS-8
+          name: netCDF-Java_JUnit_Results_${{ github.sha }}_AdoptOpenJDK-HS-8
           path: build/reports/allTests
 
   spotless:

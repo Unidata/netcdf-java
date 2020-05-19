@@ -12,7 +12,7 @@ jobs:
       - name: Setup Latest AdoptOpenJDK (hotspot) 8
         uses: actions/setup-java@master
         with:
-          version: 8
+          java-version: 8
           architecture: x64
           jdkFile: ./aojdk8-hs.tar.gz
       - name: Print java version
@@ -52,5 +52,60 @@ jobs:
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: TDS_JUnit_Results_${GITHUB_SHA}
+          name: TDS_JUnit_Results_${{ github.sha }}
+          path: tds_build_dir/build/reports/allTests
+
+  tests-with-builders-adpotopenjdk-hs-8:
+    name: TDS Tests (with builders) using netCDF-Java from PR (AdoptOpenJDK-HS 8)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout netCDF-Java PR
+        uses: actions/checkout@v2
+      - name: Fetch latest AdoptOpenJDK 8 (hotspot) built for linux"
+        run: curl -L "https://api.adoptopenjdk.net/v2/binary/releases/openjdk8?openjdk_impl=hotspot&arch=x64&release=latest&type=jdk&os=linux" -o aojdk8-hs.tar.gz
+      - name: Setup Latest AdoptOpenJDK (hotspot) 8
+        uses: actions/setup-java@master
+        with:
+          java-version: 8
+          architecture: x64
+          jdkFile: ./aojdk8-hs.tar.gz
+      - name: Print java version
+        run: java -version
+      - name: Install netCDF-C and sed
+        run: sudo apt-get install libnetcdf-dev sed
+      - name: Build netCDF-java and publish to local maven repository
+        run: ./gradlew assemble publishToMavenLocal
+      - name: Checkout TDS Master
+        uses: actions/checkout@v2
+        with:
+          repository: Unidata/tds
+          path: tds_build_dir
+      - name: Modify, build, and test the TDS
+        shell: bash
+        env:
+          TRAVIS: 'true'
+        run: |
+          echo "Find netcdf-java version as specified in the PR"
+          NCJ_VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
+          echo "Change directory to local TDS repository"
+          cd tds_build_dir
+          TDS_BUILD_DIR=`pwd`
+          # tell tds build to use snapshots from the local maven repo
+          echo "Tell the TDS build to look in the local maven repository for artifacts first..."
+          sed -i 's/\/\/mavenLocal()/mavenLocal()/g' ./gradle/any/dependencies.gradle
+          # make sure we are using the version of netCDF-Java specified in the PR to build the TDS
+          sed -i 's/versions\["ncj"\] =.*$/versions["ncj"] ="'${NCJ_VERSION}'"/g' ./gradle/any/dependencies.gradle
+          # setup env vars for tds buildTestDSR
+          CONTENT_ROOT="-Dtds.content.root.path=${TDS_BUILD_DIR}/tds/src/test/content"
+          DOWNLOAD_DIR="-Dtds.download.dir=/tmp/download"
+          UPLOAD_DIR="-Dtds.upload.dir=/tmp/upload"
+          BUILDERS="-Dthredds.test.experimental.useNetcdfJavaBuilders=true"
+          SYSTEM_PROPS="$CONTENT_ROOT $DOWNLOAD_DIR $UPLOAD_DIR $BUILDERS"
+          # run tds tests
+          echo "Run the TDS tests"
+          ./gradlew $SYSTEM_PROPS --info --stacktrace testAll
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: TDS_JUnit_Results_${{ github.sha }}
           path: tds_build_dir/build/reports/allTests
