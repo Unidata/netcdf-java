@@ -26,7 +26,7 @@ public class TestSpecialAttributes {
     NetcdfFile ncfile = TestDir.openFileLocal("testSpecialAttributes.nc4");
     // Iterate over all top-level attributes and see if it is special
     for (Attribute a : ncfile.getRootGroup().attributes()) {
-      Assert.assertTrue("Attribute iteration found special attribute: " + a.getShortName(), !Attribute.isspecial(a));
+      Assert.assertFalse("Attribute iteration found special attribute: " + a.getShortName(), Attribute.isspecial(a));
     }
     ncfile.close();
   }
