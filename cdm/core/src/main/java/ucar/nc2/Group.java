@@ -62,11 +62,10 @@ public class Group extends CDMNode implements AttributeContainer {
   /**
    * Get the Variables contained directly in this group.
    *
-   * @return List of type Variable; may be empty, not null.
-   *         TODO Will return ImmutableList<> in version 6
+   * @return ImmutableList of type Variable; may be empty, not null.
    */
-  public java.util.List<Variable> getVariables() {
-    return variables;
+  public ImmutableList<Variable> getVariables() {
+    return ImmutableList.copyOf(variables);
   }
 
   /** @deprecated use findVariableLocal() */
@@ -161,10 +160,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the Groups contained directly in this Group.
    *
    * @return List of type Group; may be empty, not null.
-   *         TODO Will return ImmutableList<> in version 6
    */
-  public java.util.List<Group> getGroups() {
-    return groups;
+  public ImmutableList<Group> getGroups() {
+    return ImmutableList.copyOf(groups);
   }
 
   /** Get the owning NetcdfFile */
@@ -201,11 +199,10 @@ public class Group extends CDMNode implements AttributeContainer {
   /**
    * Get the shared Dimensions contained directly in this group.
    *
-   * @return List of type Dimension; may be empty, not null.
-   *         TODO Will return ImmutableList<> in version 6
+   * @return ImmutableList of type Dimension; may be empty, not null.
    */
-  public List<Dimension> getDimensions() {
-    return dimensions;
+  public ImmutableList<Dimension> getDimensions() {
+    return ImmutableList.copyOf(dimensions);
   }
 
   /**
@@ -216,7 +213,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @return list of dimensions, will return ImmutableList<> in version 6
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
-  public List<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
+  public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
     return Dimensions.makeDimensionsList(this::findDimension, dimString);
   }
 
@@ -224,10 +221,9 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the enumerations contained directly in this group.
    *
    * @return List of type EnumTypedef; may be empty, not null.
-   *         TODO Will return ImmutableList<> in version 6
    */
-  public List<EnumTypedef> getEnumTypedefs() {
-    return enumTypedefs;
+  public ImmutableList<EnumTypedef> getEnumTypedefs() {
+    return ImmutableList.copyOf(enumTypedefs);
   }
 
   /**
