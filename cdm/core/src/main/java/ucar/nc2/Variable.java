@@ -308,7 +308,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @return List of Ranges, one for each Dimension.
    */
   public ImmutableList<Range> getRanges() {
-    return getShapeAsSection().getRanges();
+    // Ok to use Immutable as there are no nulls.
+    return ImmutableList.copyOf(getShapeAsSection().getRanges());
   }
 
   /**

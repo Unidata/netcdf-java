@@ -5,7 +5,6 @@
 
 package ucar.ma2;
 
-import com.google.common.collect.ImmutableList;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -15,6 +14,7 @@ import javax.annotation.Nullable;
  * Represented as List<Range>.
  * Immutable if makeImmutable() was called.
  * TODO Will be immutable in ver6.
+ * TODO evaluate use of null in ver7
  *
  * @author caron
  */
@@ -62,7 +62,7 @@ public class Section {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  private List<Range> list; // TODO make ImmutableList in ver6
+  private List<Range> list; // TODO make Immutable List in ver6
   private boolean immutable;
 
   /**
@@ -926,8 +926,8 @@ public class Section {
   }
 
   /** Get the list of Ranges. */
-  public ImmutableList<Range> getRanges() {
-    return ImmutableList.copyOf(list);
+  public List<Range> getRanges() {
+    return new ArrayList(list); // defensive copy. Cant use ImmutableList because of nulls.
   }
 
   /**
