@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nullable;
 import thredds.client.catalog.ServiceType;
@@ -861,8 +862,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateSystem; may be empty, not null.
    */
-  public List<CoordinateSystem> getCoordinateSystems() {
-    return coordSys;
+  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
+    return ImmutableList.copyOf(coordSys);
   }
 
   /**
@@ -908,8 +909,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateTransform; may be empty, not null.
    */
-  public List<CoordinateTransform> getCoordinateTransforms() {
-    return coordTransforms;
+  public ImmutableList<CoordinateTransform> getCoordinateTransforms() {
+    return ImmutableList.copyOf(coordTransforms);
   }
 
   /**
@@ -917,8 +918,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateAxis; may be empty, not null.
    */
-  public List<CoordinateAxis> getCoordinateAxes() {
-    return coordAxes;
+  public ImmutableList<CoordinateAxis> getCoordinateAxes() {
+    return ImmutableList.copyOf(coordAxes);
   }
 
   /**

@@ -5,6 +5,7 @@
 
 package ucar.ma2;
 
+import com.google.common.collect.ImmutableList;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -924,13 +925,9 @@ public class Section {
     return product;
   }
 
-  /**
-   * Get the list of Ranges.
-   *
-   * @return the List\<Range> Will be ImmutableList\<Range> in ver6.
-   */
-  public List<Range> getRanges() {
-    return list;
+  /** Get the list of Ranges. */
+  public ImmutableList<Range> getRanges() {
+    return ImmutableList.copyOf(list);
   }
 
   /**

@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import com.google.common.collect.ImmutableList;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -1166,37 +1167,26 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * group name, in order to disambiguate the dimensions. This means that
    * a Variable's dimensions will not match Dimensions in this list.
    * Therefore it is better to get the shared Dimensions directly from the Groups.
-   *
-   * @deprecated will be ImmutableList<Dimension> in ver6.
+   * 
+   * @deprecated use ncfile.getRootGroup().getDimensions() for files without nested groups,
+   *             or recurse through nested groups to get dimensions.
    */
   @Deprecated
-  public List<Dimension> getDimensions() {
-    return immutable ? dimensions : new ArrayList<>(dimensions);
+  public ImmutableList<Dimension> getDimensions() {
+    return ImmutableList.copyOf(dimensions);
   }
 
-  /**
-   * Get all of the variables in the file, in all groups.
-   * Alternatively, use groups.
-   *
-   * @return List of type Variable.
-   * @deprecated will be ImmutableList<Variable> in ver6.
-   */
-  @Deprecated
-  public List<Variable> getVariables() {
-    return variables;
+  /** Get all of the variables in the file, in all groups. Alternatively, use groups. */
+  public ImmutableList<Variable> getVariables() {
+    return ImmutableList.copyOf(variables);
   }
 
   /**
    * Returns the set of global attributes associated with this file, which are the attributes associated
-   * with the root group, or any subgroup.
-   * Alternatively, use groups.
-   *
-   * @return List of type Attribute
-   * @deprecated will be ImmutableList<Attribute> in ver6.
+   * with the root group, or any subgroup. Alternatively, use groups.
    */
-  @Deprecated
-  public List<Attribute> getGlobalAttributes() {
-    return immutable ? gattributes : new ArrayList<>(gattributes);
+  public ImmutableList<Attribute> getGlobalAttributes() {
+    return ImmutableList.copyOf(gattributes);
   }
 
   /**

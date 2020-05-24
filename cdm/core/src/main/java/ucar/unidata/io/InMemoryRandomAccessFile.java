@@ -13,15 +13,11 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
 
-/**
- * A RandomAccessFile stored entirely in memory as a byte array.
- * 
- * @author john
- */
+/** A RandomAccessFile stored entirely in memory as a byte array. */
 public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
-   * A RandomAccessFile stored entirely in memory as a byte array.
+   * Constructor.
    *
    * @param name used as the location
    * @param data the complete data file

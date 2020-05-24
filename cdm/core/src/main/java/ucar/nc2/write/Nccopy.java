@@ -17,9 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import ucar.nc2.util.DiskCache;
 
-/**
- * Utility to implement nccopy command line utility.
- */
+/** Utility to implement nccopy command line utility. */
 public class Nccopy {
 
   private static class CommandLine {

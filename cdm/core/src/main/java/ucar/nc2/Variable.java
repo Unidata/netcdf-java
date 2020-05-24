@@ -210,8 +210,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    *
    * @return List<Dimension>, will be ImmutableList in ver 6.
    */
-  public java.util.List<Dimension> getDimensions() {
-    return dimensions;
+  public ImmutableList<Dimension> getDimensions() {
+    return ImmutableList.copyOf(dimensions);
   }
 
   /**
@@ -307,7 +307,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    *
    * @return List of Ranges, one for each Dimension.
    */
-  public List<Range> getRanges() {
+  public ImmutableList<Range> getRanges() {
     return getShapeAsSection().getRanges();
   }
 
@@ -479,6 +479,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    * @param val the integer value of this enum
    * @return the String value
    */
+  @Nullable
   public String lookupEnumString(int val) {
     if (!dataType.isEnum())
       throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
@@ -705,7 +706,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       throw new IllegalArgumentException("readScalarString not STRING or CHAR " + getFullName());
   }
 
-  /** @deprecated do not use */
+  /** @deprecated use readScalarXXXX */
   @Deprecated
   protected Array getScalarData() throws IOException {
     Array scalarData = (cache.data != null) ? cache.data : read();

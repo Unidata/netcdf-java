@@ -18,7 +18,7 @@ import java.net.URL;
  * big- and little-endian representations.
  *
  * @author Russ Rew
- * @deprecated will move in ver6
+ * @deprecated not part of public API.
  */
 @Deprecated
 public class BeLeDataInputStream extends DataInputStream {

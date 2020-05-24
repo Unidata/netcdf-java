@@ -13,7 +13,9 @@ import java.io.*;
  * 
  * @author caron
  * @since Jan 3, 2008
+ * @deprecated not part of public API.
  */
+@Deprecated
 public class PositioningDataInputStream {
   private DataInputStream delegate;
   private long cpos;

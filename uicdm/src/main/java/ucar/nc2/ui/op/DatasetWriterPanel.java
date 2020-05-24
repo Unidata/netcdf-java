@@ -16,9 +16,6 @@ import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class DatasetWriterPanel extends OpPanel {
 
   private static final org.slf4j.Logger logger =
@@ -28,9 +25,6 @@ public class DatasetWriterPanel extends OpPanel {
   private JSplitPane split;
   private NetcdfFile ncfile;
 
-  /**
-   *
-   */
   public DatasetWriterPanel(PreferencesExt dbPrefs) {
     super(dbPrefs, "dataset:");
     dsWriter = new DatasetWriter(dbPrefs, fileChooser);
@@ -38,7 +32,6 @@ public class DatasetWriterPanel extends OpPanel {
     dsWriter.addActions(buttPanel);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -68,7 +61,6 @@ public class DatasetWriterPanel extends OpPanel {
     return (!err);
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (ncfile != null) {
@@ -77,9 +69,6 @@ public class DatasetWriterPanel extends OpPanel {
     ncfile = null;
   }
 
-  /**
-   *
-   */
   void setDataset(NetcdfFile nc) {
     try {
       if (ncfile != null) {
@@ -97,7 +86,6 @@ public class DatasetWriterPanel extends OpPanel {
     }
   }
 
-  /** */
   @Override
   public void save() {
     super.save();

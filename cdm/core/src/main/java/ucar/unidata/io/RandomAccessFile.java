@@ -74,21 +74,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   protected static boolean showOpen;
   protected static boolean showRead;
 
-  /**
-   * Debugging, do not use.
-   *
-   * @return true if debugLeaks is on
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   public static boolean getDebugLeaks() {
     return debugLeaks;
   }
 
-  /**
-   * Debugging, do not use in production.
-   * Set counters to zero, set debugging on
-   * 
-   * @param b set true to track java.io.RandomAccessFile
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   public static void setDebugLeaks(boolean b) {
     if (b) {
       count_openFiles.set(0);
@@ -98,39 +91,34 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     debugLeaks = b;
   }
 
-  /**
-   * Debugging, do not use.
-   *
-   * @return list of open files.
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   public static List<String> getOpenFiles() {
     return Collections.unmodifiableList(openFiles);
   }
 
+  /** @deprecated do not use. */
+  @Deprecated
   public static long getOpenFileCount() {
     return count_openFiles.get();
   }
 
+  /** @deprecated do not use. */
+  @Deprecated
   public static int getMaxOpenFileCount() {
     return maxOpenFiles.get();
   }
 
-  /**
-   * Debugging, do not use.
-   *
-   * @return list of all files used.
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   public static List<String> getAllFiles() {
     if (null == allFiles)
       return null;
     return allFiles.stream().sorted().collect(Collectors.toList());
   }
 
-  /**
-   * Debugging, do not use.
-   *
-   * @param b to debug file reading
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   public static void setDebugAccess(boolean b) {
     debugAccess = b;
     if (b) {
@@ -139,20 +127,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     }
   }
 
-  /**
-   * Debugging, do not use.
-   *
-   * @return number of seeks
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   public static int getDebugNseeks() {
     return (debug_nseeks == null) ? 0 : debug_nseeks.intValue();
   }
 
-  /**
-   * Debugging, do not use.
-   *
-   * @return number of bytes read
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   public static long getDebugNbytes() {
     return (debug_nbytes == null) ? 0 : debug_nbytes.longValue();
   }

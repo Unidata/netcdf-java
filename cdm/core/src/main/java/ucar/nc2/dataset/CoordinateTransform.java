@@ -82,8 +82,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     return transformType;
   }
 
-  public List<Parameter> getParameters() {
-    return params;
+  public ImmutableList<Parameter> getParameters() {
+    return ImmutableList.copyOf(params);
   }
 
   /**

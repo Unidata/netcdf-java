@@ -260,7 +260,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
 
     // TODO udim.setLength : need UnlimitedDimension extends Dimension?
     // need to let unlimited dimension know of new shape
-    for (Dimension dim : ncfile.getDimensions()) {
+    for (Dimension dim : ncfile.getRootGroup().getDimensions()) {
       if (dim.isUnlimited())
         dim.setLength(n);
     }

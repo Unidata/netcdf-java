@@ -5,20 +5,22 @@
 package ucar.ma2;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.Indent;
-import java.util.*;
 
 /**
  * A Collection of members contained in a StructureData.
- *
- * @author caron
+ * TODO make immutable, add Builder
  */
-// Effective Java 2nd Edition, Item 17: Design and document for inheritance or else prohibit it.
 public final class StructureMembers {
   private String name;
-  private Map<String, Member> memberHash;
-  private List<Member> members;
+  private HashMap<String, Member> memberHash;
+  private ArrayList<Member> members;
   private int structureSize = -1;
 
   public StructureMembers(String name) {
@@ -37,11 +39,7 @@ public final class StructureMembers {
     }
   }
 
-  /**
-   * Get the name.
-   *
-   * @return the name.
-   */
+  /** Get the name. */
   public String getName() {
     return name;
   }
@@ -117,27 +115,14 @@ public final class StructureMembers {
     this.structureSize = structureSize;
   }
 
-  /**
-   * Get the list of Member objects.
-   *
-   * @return the list of Member objects.
-   */
-  public java.util.List<Member> getMembers() {
-    return members;
+  /** Get the list of Member objects. */
+  public ImmutableList<Member> getMembers() {
+    return ImmutableList.copyOf(members);
   }
 
-
-  /**
-   * Get the names of the members.
-   *
-   * @return List of type String.
-   */
-  public java.util.List<String> getMemberNames() {
-    List<String> memberNames = new ArrayList<>();
-    for (Member m : members) {
-      memberNames.add(m.getName());
-    }
-    return memberNames;
+  /** Get the names of the members. */
+  public ImmutableList<String> getMemberNames() {
+    return members.stream().map(m -> m.getName()).collect(ImmutableList.toImmutableList());
   }
 
   /**
@@ -194,10 +179,10 @@ public final class StructureMembers {
     private int dataParam;
 
     public Member(String name, String desc, String units, DataType dtype, int[] shape) {
-      this.name = Objects.requireNonNull(name);
+      this.name = Preconditions.checkNotNull(name);
       this.desc = desc;
       this.units = units;
-      this.dtype = Objects.requireNonNull(dtype);
+      this.dtype = Preconditions.checkNotNull(dtype);
       setShape(shape);
     }
 
@@ -229,7 +214,7 @@ public final class StructureMembers {
     }
 
     public void setShape(int[] shape) {
-      this.shape = Objects.requireNonNull(shape);
+      this.shape = Preconditions.checkNotNull(shape);
       this.size = (int) Index.computeSize(shape);
       this.isVariableLength = (shape.length > 0 && shape[shape.length - 1] < 0);
     }
@@ -404,7 +389,7 @@ public final class StructureMembers {
         this.desc = desc;
     }
 
-    public void showInternal(Formatter f, Indent indent) {
+    void showInternal(Formatter f, Indent indent) {
       f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d", indent, name, desc,
           units, dtype, size, dataObject, dataParam);
       if (members != null) {

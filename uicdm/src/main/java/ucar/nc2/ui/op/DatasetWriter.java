@@ -12,7 +12,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.stream.NcStreamWriter;
@@ -65,12 +64,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 
-/**
- * UI for writing datasets to netcdf formatted disk files.
- *
- * @author caron
- * @since 12/7/12
- */
+/** UI for writing datasets to netcdf formatted disk files. */
 public class DatasetWriter extends JPanel {
 
   private static final org.slf4j.Logger logger =
