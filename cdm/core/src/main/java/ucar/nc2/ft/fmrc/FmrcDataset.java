@@ -565,7 +565,7 @@ class FmrcDataset {
     runtimeCoordVar.setCachedData(runCoordVals);
 
     // make the time coordinate(s) as 2D
-    List<Variable> nonAggVars = result.getVariables();
+    List<Variable> nonAggVars = new ArrayList<>(result.getVariables());
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
       Group newGroup = result.getRootGroup(); // can it be different ??
 
