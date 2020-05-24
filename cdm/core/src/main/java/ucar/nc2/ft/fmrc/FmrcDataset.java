@@ -761,7 +761,7 @@ class FmrcDataset {
     ProxyReader1D proxyReader1D = new ProxyReader1D();
 
     // make the time coordinate(s) for each runSeq
-    List<Variable> nonAggVars = result.getVariables();
+    List<Variable> nonAggVars = new ArrayList(result.getVariables());
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
       Group group = result.getRootGroup(); // can it be different ??
       String timeDimName = gridset.gridsetName;
