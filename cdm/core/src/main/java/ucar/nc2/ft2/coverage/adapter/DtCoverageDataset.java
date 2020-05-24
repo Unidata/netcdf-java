@@ -129,7 +129,7 @@ public class DtCoverageDataset implements Closeable {
 
     for (Variable v : ncd.getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
-      List<CoordinateSystem> css = ve.getCoordinateSystems();
+      List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
       if (css.isEmpty())
         continue;
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());

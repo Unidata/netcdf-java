@@ -614,7 +614,7 @@ class FmrcDataset {
         }
 
         // create dimension list
-        List<Dimension> dimList = aggVar.getDimensions();
+        List<Dimension> dimList = new ArrayList<>(aggVar.getDimensions());
         dimList = dimList.subList(1, dimList.size()); // LOOK assumes time is outer dimension
         dimList.add(0, timeDim);
         dimList.add(0, runDim);
@@ -814,7 +814,7 @@ class FmrcDataset {
         }
 
         // create dimension list
-        List<Dimension> dimList = aggVar.getDimensions();
+        List<Dimension> dimList = new ArrayList<>(aggVar.getDimensions());
         dimList = dimList.subList(1, dimList.size()); // LOOK assumes time is outer dimension
         dimList.add(0, timeDim);
 
