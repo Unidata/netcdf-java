@@ -51,7 +51,7 @@ public class SimpleTrajectory extends TableConfigurerImpl {
     }
 
     // Check that have variable time(time) with units that are udunits time
-    Variable var = ds.getRootGroup().findVariable(timeVarName);
+    Variable var = ds.getRootGroup().findVariableLocal(timeVarName);
     if (var == null) {
       return false;
     }
@@ -70,7 +70,7 @@ public class SimpleTrajectory extends TableConfigurerImpl {
     }
 
     // Check for variable latitude(time) with units of "deg".
-    var = ds.getRootGroup().findVariable(latVarName);
+    var = ds.getRootGroup().findVariableLocal(latVarName);
     if (var == null) {
       return false;
     }
@@ -88,7 +88,7 @@ public class SimpleTrajectory extends TableConfigurerImpl {
     }
 
     // Check for variable longitude(time) with units of "deg".
-    var = ds.getRootGroup().findVariable(lonVarName);
+    var = ds.getRootGroup().findVariableLocal(lonVarName);
     if (var == null) {
       return false;
     }
@@ -107,7 +107,7 @@ public class SimpleTrajectory extends TableConfigurerImpl {
 
 
     // Check for variable altitude(time) with units of "m".
-    var = ds.getRootGroup().findVariable(elevVarName);
+    var = ds.getRootGroup().findVariableLocal(elevVarName);
     if (var == null) {
       return false;
     }

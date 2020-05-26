@@ -563,7 +563,7 @@ public class NetcdfFileWriter implements Closeable {
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {
     if (g == null)
       g = ncfile.getRootGroup();
-    Variable oldVar = g.findVariable(shortName);
+    Variable oldVar = g.findVariableLocal(shortName);
     if (oldVar != null)
       return null;
     return addVariable(g, null, shortName, dataType, dims);

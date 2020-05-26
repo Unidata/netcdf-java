@@ -443,7 +443,7 @@ class FmrcDataset {
 
     // transfer variables - eliminate any references to component files
     for (Variable v : srcGroup.getVariables()) {
-      Variable targetV = targetGroup.findVariable(v.getShortName());
+      Variable targetV = targetGroup.findVariableLocal(v.getShortName());
 
       if (null == targetV) { // add it
         if (v instanceof Structure) {

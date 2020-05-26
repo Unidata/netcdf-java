@@ -1010,7 +1010,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   public Variable findVariable(Group g, String shortName) {
     if (g == null)
       return findVariable(shortName);
-    return g.findVariable(shortName);
+    return g.findVariableLocal(shortName);
   }
 
   /**
@@ -1053,7 +1053,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return null;
 
     String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
-    Variable v = g.findVariable(varShortName);
+    Variable v = g.findVariableLocal(varShortName);
     if (v == null)
       return null;
 
@@ -1280,7 +1280,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return null;
 
     String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
-    Variable v = g.findVariable(varShortName);
+    Variable v = g.findVariableLocal(varShortName);
     if (v == null)
       return null;
 
@@ -1904,12 +1904,12 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return null;
 
     if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
-      Variable v = rootGroup.findVariable("record");
+      Variable v = rootGroup.findVariableLocal("record");
       boolean gotit = (v instanceof Structure);
       return gotit || makeRecordStructure();
 
     } else if (message == IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE) {
-      Variable v = rootGroup.findVariable("record");
+      Variable v = rootGroup.findVariableLocal("record");
       boolean gotit = (v instanceof Structure);
       if (gotit) {
         rootGroup.remove(v);

@@ -116,7 +116,7 @@ public class HdfEos {
 
     int n = 0;
     while (true) {
-      Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
+      Variable structMetadataVar = eosGroup.findVariableLocal("StructMetadata." + n);
       if (structMetadataVar == null) {
         break;
       }
@@ -317,7 +317,7 @@ public class HdfEos {
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        Variable v = geoFieldsG.findVariable(varname);
+        Variable v = geoFieldsG.findVariableLocal(varname);
         // if (v == null)
         // v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
@@ -381,7 +381,7 @@ public class HdfEos {
           continue;
         }
         String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
-        Variable v = dataG.findVariable(varname);
+        Variable v = dataG.findVariableLocal(varname);
         // if (v == null)
         // v = dataG.findVariable( H4header.createValidObjectName(varname));
         if (v == null) {
@@ -530,7 +530,7 @@ public class HdfEos {
       List<Element> varsLoc = floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText().trim();
-        Variable v = geoFieldsG.findVariable(varname);
+        Variable v = geoFieldsG.findVariableLocal(varname);
         // if (v == null)
         // v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;
@@ -552,7 +552,7 @@ public class HdfEos {
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText().trim();
         varname = NetcdfFile.makeValidCdmObjectName(varname);
-        Variable v = dataG.findVariable(varname);
+        Variable v = dataG.findVariableLocal(varname);
         // if (v == null)
         // v = dataG.findVariable( H4header.createValidObjectName(varname));
         assert v != null : varname;

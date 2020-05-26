@@ -58,7 +58,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
     }
 
     for (String name : varNames) {
-      Variable orgV = group.findVariable(name);
+      Variable orgV = group.findVariableLocal(name);
       if (orgV == null) {
         log.warn("StructurePseudo2Dim cannot find variable " + name);
         continue;

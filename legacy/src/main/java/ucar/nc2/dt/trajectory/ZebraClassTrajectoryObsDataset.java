@@ -90,7 +90,7 @@ public class ZebraClassTrajectoryObsDataset extends SingleTrajectoryObsDataset i
     trajConfig.setTimeDim(d);
 
     // Check that have time variable with units that are udunits time
-    Variable var = ncd.getRootGroup().findVariable(timeVarName);
+    Variable var = ncd.getRootGroup().findVariableLocal(timeVarName);
     if (var == null)
       return null;
     list = var.getDimensions();
@@ -107,7 +107,7 @@ public class ZebraClassTrajectoryObsDataset extends SingleTrajectoryObsDataset i
     trajConfig.setTimeVar(var);
 
     // Check for latitude variable with time dimension and units convertable to "degrees_north".
-    var = ncd.getRootGroup().findVariable(latVarName);
+    var = ncd.getRootGroup().findVariableLocal(latVarName);
     if (var == null)
       return null;
     list = var.getDimensions();
@@ -123,7 +123,7 @@ public class ZebraClassTrajectoryObsDataset extends SingleTrajectoryObsDataset i
     trajConfig.setLatVar(var);
 
     // Check for longitude variable with time dimension and units convertable to "degrees_east".
-    var = ncd.getRootGroup().findVariable(lonVarName);
+    var = ncd.getRootGroup().findVariableLocal(lonVarName);
     if (var == null)
       return null;
     list = var.getDimensions();
@@ -139,7 +139,7 @@ public class ZebraClassTrajectoryObsDataset extends SingleTrajectoryObsDataset i
     trajConfig.setLonVar(var);
 
     // Check for altitude variable with time dimension and units convertable to "m".
-    var = ncd.getRootGroup().findVariable(elevVarName);
+    var = ncd.getRootGroup().findVariableLocal(elevVarName);
     if (var == null)
       return null;
     list = var.getDimensions();

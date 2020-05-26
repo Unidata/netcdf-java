@@ -120,7 +120,7 @@ public class MultiTrajectoryObsDataset extends TypedDatasetImpl implements Traje
 
     if (this.netcdfDataset.hasUnlimitedDimension() && this.netcdfDataset.getUnlimitedDimension().equals(timeDim)) {
       this.netcdfDataset.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-      this.recordVar = (Structure) this.netcdfDataset.getRootGroup().findVariable("record");
+      this.recordVar = (Structure) this.netcdfDataset.getRootGroup().findVariableLocal("record");
     } else {
       this.recordVar = new StructurePseudo(this.netcdfDataset, null, "record", timeDim);
     }
@@ -548,7 +548,7 @@ public class MultiTrajectoryObsDataset extends TypedDatasetImpl implements Traje
     }
 
     public Array getData(Range range, String parameterName) throws IOException, InvalidRangeException {
-      Variable variable = netcdfDataset.getRootGroup().findVariable(parameterName);
+      Variable variable = netcdfDataset.getRootGroup().findVariableLocal(parameterName);
       int varRank = variable.getRank();
       int[] varShape = variable.getShape();
       List section = new ArrayList(varRank);

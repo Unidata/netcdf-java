@@ -14,10 +14,7 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Test accessing special attributes
- */
-
+/** Test accessing special attributes */
 public class TestSpecialAttributes {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -26,7 +23,7 @@ public class TestSpecialAttributes {
     NetcdfFile ncfile = TestDir.openFileLocal("testSpecialAttributes.nc4");
     // Iterate over all top-level attributes and see if it is special
     for (Attribute a : ncfile.getRootGroup().getAttributes()) {
-      Assert.assertTrue("Attribute iteration found special attribute: " + a.getShortName(), !Attribute.isspecial(a));
+      Assert.assertFalse("Attribute iteration found special attribute: " + a.getShortName(), Attribute.isspecial(a));
     }
     ncfile.close();
   }

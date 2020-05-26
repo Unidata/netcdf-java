@@ -32,7 +32,7 @@ public class TestH5eos {
 
       Group root = ncfile.getRootGroup();
       Group g = root.findGroupLocal("HDFEOS_INFORMATION");
-      Variable dset = g.findVariable("StructMetadata.0");
+      Variable dset = g.findVariableLocal("StructMetadata.0");
       assert (null != dset);
       assert (dset.getDataType() == DataType.CHAR);
 

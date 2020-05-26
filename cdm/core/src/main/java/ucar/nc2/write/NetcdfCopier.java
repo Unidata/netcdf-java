@@ -288,7 +288,7 @@ public class NetcdfCopier {
       if (cancel.isCancel()) {
         break;
       }
-      Variable newVar = groupOut.findVariable(oldVar.getShortName());
+      Variable newVar = groupOut.findVariableLocal(oldVar.getShortName());
       if (debug) {
         System.out.format("write var= %s size = %d type = %s%n", oldVar.getFullName(), oldVar.getSize(),
             oldVar.getDataType());

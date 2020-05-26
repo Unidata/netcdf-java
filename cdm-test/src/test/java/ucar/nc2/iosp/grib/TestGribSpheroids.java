@@ -95,7 +95,7 @@ public class TestGribSpheroids {
     String filename = dir + "berkes.grb2";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Group grp = ncfile.getRootGroup().getGroups().get(0);
-      Variable v = grp.findVariable("LatLon_Projection");
+      Variable v = grp.findVariableLocal("LatLon_Projection");
       Attribute axis = v.findAttribute("earth_radius");
       Assert.assertEquals(6371229., axis.getNumericValue().doubleValue(), 0.1);
     }

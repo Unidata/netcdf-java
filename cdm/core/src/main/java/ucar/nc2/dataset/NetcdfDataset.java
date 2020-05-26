@@ -1187,7 +1187,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if ((hasRecord == null) || !hasRecord)
       return false;
 
-    Variable orgV = this.orgFile.getRootGroup().findVariable("record");
+    Variable orgV = this.orgFile.getRootGroup().findVariableLocal("record");
     if (!(orgV instanceof Structure))
       return false;
     Structure orgStructure = (Structure) orgV;

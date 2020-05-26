@@ -923,7 +923,7 @@ public class NcMLReaderNew {
     }
 
     // see if it already exists
-    Variable refv = (refGroup == null) ? null : refGroup.findVariable(nameInFile);
+    Variable refv = (refGroup == null) ? null : refGroup.findVariableLocal(nameInFile);
     Optional<Variable.Builder<?>> addedFromAgg = groupBuilder.findVariableLocal(nameInFile);
     if (refv == null && !addedFromAgg.isPresent()) { // new
       if (dtype == null) {

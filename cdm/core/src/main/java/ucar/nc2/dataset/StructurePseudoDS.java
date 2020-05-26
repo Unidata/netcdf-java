@@ -79,7 +79,7 @@ public class StructurePseudoDS extends StructureDS {
     }
 
     for (String name : varNames) {
-      Variable orgV = group.findVariable(name);
+      Variable orgV = group.findVariableLocal(name);
       if (orgV == null) {
         log.warn("StructurePseudoDS cannot find variable " + name);
         continue;

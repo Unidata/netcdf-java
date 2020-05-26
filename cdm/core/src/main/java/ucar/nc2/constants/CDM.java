@@ -53,7 +53,7 @@ public class CDM {
   public static final String RLATLON_UNITS = "degrees";
   public static final String TIME_OFFSET = "time offset from runtime";
 
-  // Special Attribute Names
+  // Special Attribute Names used in jni.Nc4Iosp
   public static final String NCPROPERTIES = "_NCProperties";
   public static final String ISNETCDF4 = "_IsNetcdf4";
   public static final String SUPERBLOCKVERSION = "_SuperblockVersion";

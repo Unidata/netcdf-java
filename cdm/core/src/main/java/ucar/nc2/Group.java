@@ -63,10 +63,17 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the Variables contained directly in this group.
    *
    * @return List of type Variable; may be empty, not null.
-   *         Will return ImmutableList<> in version 6
+   *         TODO Will return ImmutableList<> in version 6
    */
   public java.util.List<Variable> getVariables() {
     return variables;
+  }
+
+  /** @deprecated use findVariableLocal() */
+  @Deprecated
+  @Nullable
+  public Variable findVariable(String varShortName) {
+    return findVariableLocal(varShortName);
   }
 
   /**
@@ -76,7 +83,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @return the Variable, or null if not found
    */
   @Nullable
-  public Variable findVariable(String varShortName) {
+  public Variable findVariableLocal(String varShortName) {
     if (varShortName == null)
       return null;
 
@@ -98,7 +105,7 @@ public class Group extends CDMNode implements AttributeContainer {
     if (varShortName == null)
       return null;
 
-    Variable v = findVariable(varShortName);
+    Variable v = findVariableLocal(varShortName);
     Group parent = getParentGroup();
     if ((v == null) && (parent != null))
       v = parent.findVariableOrInParent(varShortName);
@@ -129,7 +136,7 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
-   * Get its parent Group, or null if its the root group.
+   * Get the parent Group, or null if its the root group.
    * Not deprecated.
    */
   @SuppressWarnings("deprecated")
@@ -154,17 +161,13 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the Groups contained directly in this Group.
    *
    * @return List of type Group; may be empty, not null.
-   *         Will return ImmutableList<> in version 6
+   *         TODO Will return ImmutableList<> in version 6
    */
   public java.util.List<Group> getGroups() {
     return groups;
   }
 
-  /**
-   * Get the owning NetcdfFile
-   *
-   * @return owning NetcdfFile.
-   */
+  /** Get the owning NetcdfFile */
   public NetcdfFile getNetcdfFile() {
     return ncfile;
   }
@@ -199,7 +202,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the shared Dimensions contained directly in this group.
    *
    * @return List of type Dimension; may be empty, not null.
-   *         Will return ImmutableList<> in version 6
+   *         TODO Will return ImmutableList<> in version 6
    */
   public List<Dimension> getDimensions() {
     return dimensions;
@@ -221,15 +224,14 @@ public class Group extends CDMNode implements AttributeContainer {
    * Get the enumerations contained directly in this group.
    *
    * @return List of type EnumTypedef; may be empty, not null.
-   *         Will return ImmutableList<> in version 6
+   *         TODO Will return ImmutableList<> in version 6
    */
   public List<EnumTypedef> getEnumTypedefs() {
     return enumTypedefs;
   }
 
   /**
-   * Retrieve a Dimension using its (short) name. If it doesnt exist in this group,
-   * recursively look in parent groups.
+   * Find a Dimension in this or a parent Group, matching on short name.
    *
    * @param name Dimension name.
    * @return the Dimension, or null if not found
@@ -273,7 +275,7 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
-   * Retrieve a Dimension using its (short) name, in this group only
+   * Find a Dimension using its (short) name, in this group only
    *
    * @param shortName Dimension name.
    * @return the Dimension, or null if not found
@@ -319,19 +321,19 @@ public class Group extends CDMNode implements AttributeContainer {
     return AttributeContainerHelper.filter(attributes, Attribute.SPECIALS).getAttributes();
   }
 
-  /** @deprecated Use attributes() */
+  /** @deprecated Use findAttributeString() */
   @Deprecated
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
   }
 
-  /** @deprecated Use attributes() */
+  /** @deprecated Use attributes().findAttributeDouble() */
   @Deprecated
   public double findAttributeDouble(String attName, double defaultValue) {
     return attributes.findAttributeDouble(attName, defaultValue);
   }
 
-  /** @deprecated Use attributes() */
+  /** @deprecated Use attributes().findAttributeInteger() */
   @Deprecated
   public int findAttributeInteger(String attName, int defaultValue) {
     return attributes.findAttributeInteger(attName, defaultValue);
@@ -369,13 +371,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
   ////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Find an Enumeration Typedef using its (short) name. If it doesnt exist in this group,
-   * recursively look in parent groups.
-   *
-   * @param name Enumeration name.
-   * @return the Enumeration, or null if not found
-   */
+  /** Find a Enumeration in this or a parent Group, using its short name. */
   @Nullable
   public EnumTypedef findEnumeration(String name) {
     if (name == null)
@@ -677,7 +673,7 @@ public class Group extends CDMNode implements AttributeContainer {
     if (v == null)
       return;
 
-    if (findVariable(v.getShortName()) != null) {
+    if (findVariableLocal(v.getShortName()) != null) {
       // Variable other = findVariable(v.getShortName()); // debug
       throw new IllegalArgumentException(
           "Variable name (" + v.getShortName() + ") must be unique within Group " + getShortName());
@@ -828,7 +824,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param path the path to the desired group
    * @param ignorelast true => ignore last element in the path
    * @return the Group, or null if not found
-   * @deprecated do not use
+   * @deprecated will move to dap2 in ver6
    */
   @Deprecated
   public Group makeRelativeGroup(NetcdfFile ncf, String path, boolean ignorelast) {

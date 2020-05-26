@@ -69,7 +69,7 @@ public class TestH4eosRdAll {
       if (g == null)
         g = ncfile.getRootGroup();
 
-      Variable dset = g.findVariable("StructMetadata.0");
+      Variable dset = g.findVariableLocal("StructMetadata.0");
       assert (dset != null);
     }
   }

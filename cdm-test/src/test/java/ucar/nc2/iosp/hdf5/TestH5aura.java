@@ -49,7 +49,7 @@ public class TestH5aura {
 
       Group root = ncfile.getRootGroup();
       Group g = root.findGroupLocal("HDFEOS_INFORMATION");
-      Variable dset = g.findVariable("StructMetadata.0");
+      Variable dset = g.findVariableLocal("StructMetadata.0");
       assert (null != dset);
       assert (dset.getDataType() == DataType.CHAR);
 
@@ -72,7 +72,7 @@ public class TestH5aura {
       System.out.println(" Value = " + sval);
 
       ////////////////
-      dset = g.findVariable("coremetadata.0");
+      dset = g.findVariableLocal("coremetadata.0");
       assert (null != dset);
       assert (dset.getDataType() == DataType.CHAR);
 

@@ -39,9 +39,9 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     Group loc = ncfile.findGroup("VHRR/Geo-Location");
     if (null == loc)
       return false;
-    if (null == loc.findVariable("Latitude"))
+    if (null == loc.findVariableLocal("Latitude"))
       return false;
-    if (null == loc.findVariable("Longitude"))
+    if (null == loc.findVariableLocal("Longitude"))
       return false;
 
     return null != ncfile.findGroup("VHRR/Image Data");
@@ -60,10 +60,10 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     Group loc = vhrr.findGroupLocal("Geo-Location");
     if (loc == null)
       throw new IllegalStateException();
-    Variable lat = loc.findVariable("Latitude");
+    Variable lat = loc.findVariableLocal("Latitude");
     lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
     lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    Variable lon = loc.findVariable("Longitude");
+    Variable lon = loc.findVariableLocal("Longitude");
     lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
     lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 

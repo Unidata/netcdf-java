@@ -554,9 +554,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     // Start by moving global attributes
     // An issue to be addressed is that some attributes that should be attached
     // to variables, instead get made global with name var.att.
-    Object[] gattlist = rootgroup.getAttributes().toArray();
-    for (Object att : gattlist) {
-      Attribute ncatt = (Attribute) att;
+    for (Attribute ncatt : rootgroup.attributes()) {
       String dodsname = ncatt.getDODSName();
       NamePieces pieces = parseName(dodsname);
       if (pieces.var != null) {
@@ -653,7 +651,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (pieces.var != null && !pieces.var.equals(vname)) {
         // move the attribute to the correct variable
         // (presumably in the same group)
-        Variable newvar = (Variable) agroup.findVariable(pieces.var);
+        Variable newvar = (Variable) agroup.findVariableLocal(pieces.var);
         if (newvar != null) {// if not found leave the attribute as is
           // otherwise, move the attribute and rename
           newvar.addAttribute(ncatt);
@@ -917,7 +915,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         for (int i = 1; i < dodsV.children.size(); i++) {
           DodsV map = dodsV.children.get(i);
           String shortName = DODSNetcdfFile.makeShortName(map.bt.getEncodedName());
-          Variable mapV = parentGroup.findVariable(shortName); // LOOK WRONG
+          Variable mapV = parentGroup.findVariableLocal(shortName); // LOOK WRONG
           if (mapV == null) { // if not, add it LOOK need to compare values
             mapV = addVariable(parentGroup, parentStructure, map);
             makeCoordinateVariable(parentGroup, mapV, map.data);

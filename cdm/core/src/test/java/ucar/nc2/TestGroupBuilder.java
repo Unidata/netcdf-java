@@ -19,8 +19,8 @@ public class TestGroupBuilder {
 
     assertThat(group.getShortName()).isEqualTo("name");
     assertThat(group.isRoot()).isTrue();
-    assertThat(group.getAttributes()).isNotEmpty();
-    assertThat(group.getAttributes()).hasSize(1);
+    assertThat(group.attributes()).isNotEmpty();
+    assertThat(group.attributes()).hasSize(1);
     assertThat(group.findAttribute("attName")).isEqualTo(att);
     assertThat(group.findAttributeString("attName", null)).isEqualTo("value");
 
@@ -35,7 +35,7 @@ public class TestGroupBuilder {
 
     assertThat(group.getVariables()).isNotEmpty();
     assertThat(group.getVariables()).hasSize(1);
-    Variable v = group.findVariable("varName");
+    Variable v = group.findVariableLocal("varName");
     assertThat(v.getParentGroup()).isEqualTo(group);
   }
 

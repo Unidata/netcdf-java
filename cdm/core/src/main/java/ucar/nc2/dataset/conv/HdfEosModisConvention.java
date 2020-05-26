@@ -43,7 +43,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   private static boolean checkGroup(Group g) {
-    Variable crs = g.findVariable(HdfEos.HDFEOS_CRS);
+    Variable crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
     Group dataG = g.findGroupLocal(DATA_GROUP);
     if (crs != null && dataG != null) {
       Attribute att = crs.findAttribute(HdfEos.HDFEOS_CRS_Projection);
@@ -142,7 +142,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   private void augmentGroup(NetcdfDataset ds, Group g) {
-    Variable crs = g.findVariable(HdfEos.HDFEOS_CRS);
+    Variable crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
     if (crs != null)
       augmentGroupWithProjectionInfo(ds, g);
 
@@ -160,7 +160,7 @@ public class HdfEosModisConvention extends ucar.nc2.dataset.CoordSysBuilder {
     if (dimX == null || dimY == null)
       return;
 
-    Variable crs = g.findVariable(HdfEos.HDFEOS_CRS);
+    Variable crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
     Attribute projAtt = crs.findAttribute(HdfEos.HDFEOS_CRS_Projection);
     if (projAtt != null) {
       Attribute upperLeft = crs.findAttribute(HdfEos.HDFEOS_CRS_UpperLeft);

@@ -685,7 +685,7 @@ public class HdfEos {
   private void fixAttributes(Group.Builder g) {
     for (Variable.Builder v : g.vbuilders) {
       AttributeContainerMutable attHelper = v.getAttributeContainer();
-      for (Attribute a : ImmutableList.copyOf(attHelper.getAttributes())) {
+      for (Attribute a : ImmutableList.copyOf(attHelper)) {
         if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS")) {
           attHelper.replace(a, CDM.UNITS);
         }

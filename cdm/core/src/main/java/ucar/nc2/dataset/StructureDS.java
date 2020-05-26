@@ -333,7 +333,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (Variable v : getVariables()) {
       if (!varHasData(v, sm)) {
         try {
-          Variable completeVar = getParentGroupOrRoot().findVariable(v.getShortName()); // LOOK BAD
+          Variable completeVar = getParentGroupOrRoot().findVariableLocal(v.getShortName()); // LOOK BAD
           Array mdata = completeVar.read(section);
           StructureMembers.Member m =
               sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
@@ -427,7 +427,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (Variable v : getVariables()) {
       if (!varHasData(v, sm)) {
         try {
-          Variable completeVar = getParentGroupOrRoot().findVariable(v.getShortName()); // LOOK BAD
+          Variable completeVar = getParentGroupOrRoot().findVariableLocal(v.getShortName()); // LOOK BAD
           Array mdata = completeVar.read(Section.builder().appendRange(recno, recno).build());
           StructureMembers.Member m =
               sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());

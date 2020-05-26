@@ -41,13 +41,13 @@ public class TestGribMiscCoordinates {
     NetcdfFile ncfile = NetcdfFiles.open(filename);
     Group best = ncfile.findGroup("Best");
     assert best != null;
-    Variable hybrid = best.findVariable("hybrid");
+    Variable hybrid = best.findVariableLocal("hybrid");
     assert hybrid != null;
     assert (hybrid.getNameAndDimensions().equals("hybrid(hybrid=91)"));
-    Variable hybrida = best.findVariable("hybrida");
+    Variable hybrida = best.findVariableLocal("hybrida");
     assert hybrida != null;
     assert (hybrida.getNameAndDimensions().equals("hybrida(hybrid=91)"));
-    Variable hybridb = best.findVariable("hybridb");
+    Variable hybridb = best.findVariableLocal("hybridb");
     assert hybridb != null;
     assert (hybridb.getNameAndDimensions().equals("hybridb(hybrid=91)"));
 

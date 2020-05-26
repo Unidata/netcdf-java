@@ -277,7 +277,7 @@ public class CompareNetcdf2 {
     // variables
     // cant use object equality, just match on short name
     for (Variable orgV : org.getVariables()) {
-      Variable copyVar = copy.findVariable(orgV.getShortName());
+      Variable copyVar = copy.findVariableLocal(orgV.getShortName());
       if (copyVar == null) {
         f.format(" ** cant find variable %s in 2nd file%n", orgV.getFullName());
         ok = false;
@@ -287,7 +287,7 @@ public class CompareNetcdf2 {
     }
 
     for (Variable copyV : copy.getVariables()) {
-      Variable orgV = org.findVariable(copyV.getShortName());
+      Variable orgV = org.findVariableLocal(copyV.getShortName());
       if (orgV == null) {
         f.format(" ** cant find variable %s in 1st file%n", copyV.getFullName());
         ok = false;

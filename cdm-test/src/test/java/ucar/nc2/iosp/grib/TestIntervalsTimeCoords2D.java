@@ -110,7 +110,7 @@ public class TestIntervalsTimeCoords2D {
       if (dim.getShortName().startsWith("reftime"))
         dim = var.getDimension(1);
       String bounds = dim.getShortName() + "_bounds";
-      Variable interval = best.findVariable(bounds);
+      Variable interval = best.findVariableLocal(bounds);
       assert interval != null : bounds;
 
       Array data = interval.read();

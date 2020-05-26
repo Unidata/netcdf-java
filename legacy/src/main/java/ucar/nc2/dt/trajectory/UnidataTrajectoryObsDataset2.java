@@ -142,7 +142,7 @@ public class UnidataTrajectoryObsDataset2 extends TypedDatasetImpl
     // If multi-trajectory structure, find trajectory coordinate variable.
     if (this.isMultiTrajStructure) {
       this.trajVarName = this.trajDimName;
-      this.trajVar = ncd.getRootGroup().findVariable(this.trajVarName);
+      this.trajVar = ncd.getRootGroup().findVariableLocal(this.trajVarName);
     }
 
 
@@ -169,19 +169,20 @@ public class UnidataTrajectoryObsDataset2 extends TypedDatasetImpl
       this.backingTraj = new SingleTrajectoryObsDataset(ncd);
       SingleTrajectoryObsDataset.Config trajConfig =
           new SingleTrajectoryObsDataset.Config("1Hz data", ncd.getRootGroup().findDimension(timeDimName),
-              ncd.getRootGroup().findVariable(timeVarName), ncd.getRootGroup().findVariable(latVarName),
-              ncd.getRootGroup().findVariable(lonVarName), ncd.getRootGroup().findVariable(elevVarName));
+              ncd.getRootGroup().findVariableLocal(timeVarName), ncd.getRootGroup().findVariableLocal(latVarName),
+              ncd.getRootGroup().findVariableLocal(lonVarName), ncd.getRootGroup().findVariableLocal(elevVarName));
       ((SingleTrajectoryObsDataset) this.backingTraj).setTrajectoryInfo(trajConfig);
     } else {
       this.backingTraj = new MultiTrajectoryObsDataset(ncd);
 
       ((MultiTrajectoryObsDataset) this.backingTraj).setTrajectoryInfo(
           netcdfDataset.getRootGroup().findDimension(trajDimName),
-          netcdfDataset.getRootGroup().findVariable(trajVarName),
+          netcdfDataset.getRootGroup().findVariableLocal(trajVarName),
           netcdfDataset.getRootGroup().findDimension(timeDimName),
-          netcdfDataset.getRootGroup().findVariable(timeVarName), netcdfDataset.getRootGroup().findVariable(latVarName),
-          netcdfDataset.getRootGroup().findVariable(lonVarName),
-          netcdfDataset.getRootGroup().findVariable(elevVarName));
+          netcdfDataset.getRootGroup().findVariableLocal(timeVarName),
+          netcdfDataset.getRootGroup().findVariableLocal(latVarName),
+          netcdfDataset.getRootGroup().findVariableLocal(lonVarName),
+          netcdfDataset.getRootGroup().findVariableLocal(elevVarName));
 
     }
 

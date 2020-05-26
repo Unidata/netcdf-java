@@ -95,7 +95,7 @@ public class TestNc4Structures {
 
       // Read the file back in and make sure that what we wrote is what we're getting back.
       try (NetcdfFile ncFileIn = NetcdfFile.open(outFile.getAbsolutePath())) {
-        Structure struct = (Structure) ncFileIn.getRootGroup().findVariable("struct");
+        Structure struct = (Structure) ncFileIn.getRootGroup().findVariableLocal("struct");
         Assert.assertEquals("bar", struct.readScalarString());
       }
     } finally {
@@ -137,7 +137,7 @@ public class TestNc4Structures {
 
       // Read the file back in and make sure that what we wrote is what we're getting back.
       try (NetcdfFile ncFileIn = NetcdfFile.open(outFile.getAbsolutePath())) {
-        Structure struct = (Structure) ncFileIn.getRootGroup().findVariable("outer");
+        Structure struct = (Structure) ncFileIn.getRootGroup().findVariableLocal("outer");
         StructureData outerStructureData = struct.readStructure();
         StructureData innerStructureData = outerStructureData.getScalarStructure("inner");
         int foo = innerStructureData.getScalarInt("foo");
