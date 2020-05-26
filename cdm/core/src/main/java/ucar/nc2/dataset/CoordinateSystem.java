@@ -4,6 +4,8 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
@@ -163,22 +165,14 @@ public class CoordinateSystem {
       coordTrans.addAll(ct);
   }
 
-  /**
-   * get the List of CoordinateAxis objects
-   * 
-   * @return the List of CoordinateAxis objects
-   */
-  public List<CoordinateAxis> getCoordinateAxes() {
-    return coordAxes;
+  /** Get the List of CoordinateAxis objects */
+  public ImmutableList<CoordinateAxis> getCoordinateAxes() {
+    return ImmutableList.copyOf(coordAxes);
   }
 
-  /**
-   * get the List of CoordinateTransform objects
-   * 
-   * @return the List of CoordinateTransform objects
-   */
-  public List<CoordinateTransform> getCoordinateTransforms() {
-    return coordTrans;
+  /** Get the List of CoordinateTransform objects */
+  public ImmutableList<CoordinateTransform> getCoordinateTransforms() {
+    return ImmutableList.copyOf(coordTrans);
   }
 
   /**
@@ -199,13 +193,9 @@ public class CoordinateSystem {
     return ds;
   }
 
-  /**
-   * List of Dimensions that constitute the domain.
-   * 
-   * @return the List of Dimensions that constitute the domain.
-   */
-  public Collection<Dimension> getDomain() {
-    return domain;
+  /** get the Collection of Dimensions that constitute the domain. */
+  public ImmutableCollection<Dimension> getDomain() {
+    return ImmutableList.copyOf(domain);
   }
 
   /**

@@ -204,7 +204,7 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
 
   /** Get the name of the Dimension. */
   public String getShortName() {
-    return this.shortName;
+    return this.getName();
   }
 
   /**

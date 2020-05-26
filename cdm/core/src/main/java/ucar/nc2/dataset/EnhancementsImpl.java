@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -52,8 +53,8 @@ class EnhancementsImpl implements Enhancements {
    * 
    * @return list of type ucar.nc2.dataset.CoordinateSystem; may be empty not null.
    */
-  public List<CoordinateSystem> getCoordinateSystems() {
-    return (coordSys == null) ? new ArrayList<>(0) : coordSys;
+  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
+    return (coordSys == null) ? ImmutableList.of() : ImmutableList.copyOf(coordSys);
   }
 
   /** Add a CoordinateSystem to the dataset. */

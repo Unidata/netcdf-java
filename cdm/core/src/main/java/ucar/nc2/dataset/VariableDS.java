@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -579,7 +580,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   @Override
-  public List<CoordinateSystem> getCoordinateSystems() {
+  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return enhanceProxy.getCoordinateSystems();
   }
 

@@ -108,7 +108,6 @@ task buildJavadocPublicApi(type: Javadoc) {
     include 'ucar/unidata/geoloc/*.java'
     include 'ucar/unidata/io/*.java'
     include 'ucar/unidata/io/spi/*.java'
-    include 'ucar/unidata/util/*.java'
 }
 
 gradle.projectsEvaluated {  // Evaluate all projects first so that SourceSets will have been created for each.

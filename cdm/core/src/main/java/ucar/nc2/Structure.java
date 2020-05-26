@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -279,31 +280,19 @@ public class Structure extends Variable {
     return this;
   }
 
-  /**
-   * Get the variables contained directly in this Structure.
-   * 
-   * @return List of type Variable.
-   */
-  public java.util.List<Variable> getVariables() {
-    return isImmutable() ? members : new ArrayList<>(members);
+  /** Get the variables contained directly in this Structure. */
+  public ImmutableList<Variable> getVariables() {
+    return ImmutableList.copyOf(members);
   }
 
-  /**
-   * Get the number of variables contained directly in this Structure.
-   * 
-   * @return number of member variables
-   */
+  /** Get the number of variables contained directly in this Structure. */
   public int getNumberOfMemberVariables() {
     return members.size();
   }
 
-  /**
-   * Get the (short) names of the variables contained directly in this Structure.
-   * 
-   * @return List of type String.
-   */
-  public java.util.List<String> getVariableNames() {
-    return new ArrayList<>(memberHash.keySet());
+  /** Get the (short) names of the variables contained directly in this Structure. */
+  public ImmutableList<String> getVariableNames() {
+    return members.stream().map(m -> m.getShortName()).collect(ImmutableList.toImmutableList());
   }
 
   /**
@@ -477,7 +466,7 @@ public class Structure extends Variable {
     private int readAtaTime;
     private ArrayStructure as;
 
-    protected IteratorRank1(int bufferSize) {
+    IteratorRank1(int bufferSize) {
       setBufferSize(bufferSize);
     }
 
@@ -552,7 +541,7 @@ public class Structure extends Variable {
     private int outerCount; // over the outer Dimension
     private ArrayStructure as;
 
-    protected Iterator(int bufferSize) {
+    Iterator(int bufferSize) {
       reset();
     }
 
@@ -656,7 +645,7 @@ public class Structure extends Variable {
   ////////////////////////////////////////////////////////
   // TODO make private final and Immutable in release 6.
   protected List<Variable> members;
-  protected HashMap<String, Variable> memberHash;
+  private HashMap<String, Variable> memberHash;
   protected boolean isSubset;
 
   protected Structure(Builder<?> builder, Group parentGroup) {

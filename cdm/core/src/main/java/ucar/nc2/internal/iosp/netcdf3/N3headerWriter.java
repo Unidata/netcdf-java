@@ -83,7 +83,7 @@ class N3headerWriter extends N3headerNew {
     raf.writeInt(0);
 
     // dims
-    List<Dimension> dims = ncfile.getDimensions();
+    List<Dimension> dims = ncfile.getRootGroup().getDimensions();
     int numdims = dims.size();
     if (numdims == 0) {
       raf.writeInt(0);
@@ -188,8 +188,9 @@ class N3headerWriter extends N3headerNew {
 
     // dims
     size += 8; // magic, ndims
-    for (Dimension dim : ncfile.getDimensions())
+    for (Dimension dim : ncfile.getRootGroup().getDimensions()) {
       size += sizeString(dim.getShortName()) + 4; // name, len
+    }
 
     // global attributes
     size += sizeAtts(ncfile.getGlobalAttributes());
@@ -420,7 +421,7 @@ class N3headerWriter extends N3headerNew {
   }
 
   private int findDimensionIndex(NetcdfFile ncfile, Dimension wantDim) {
-    List<Dimension> dims = ncfile.getDimensions();
+    List<Dimension> dims = ncfile.getRootGroup().getDimensions();
     for (int i = 0; i < dims.size(); i++) {
       Dimension dim = dims.get(i);
       if (dim.equals(wantDim))

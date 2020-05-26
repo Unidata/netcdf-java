@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
@@ -590,7 +591,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     proxy.removeCoordinateSystem(p0);
   }
 
-  public java.util.List<CoordinateSystem> getCoordinateSystems() {
+  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return proxy.getCoordinateSystems();
   }
 

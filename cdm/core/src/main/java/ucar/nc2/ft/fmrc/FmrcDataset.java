@@ -565,7 +565,7 @@ class FmrcDataset {
     runtimeCoordVar.setCachedData(runCoordVals);
 
     // make the time coordinate(s) as 2D
-    List<Variable> nonAggVars = result.getVariables();
+    List<Variable> nonAggVars = new ArrayList<>(result.getVariables());
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
       Group newGroup = result.getRootGroup(); // can it be different ??
 
@@ -614,7 +614,7 @@ class FmrcDataset {
         }
 
         // create dimension list
-        List<Dimension> dimList = aggVar.getDimensions();
+        List<Dimension> dimList = new ArrayList<>(aggVar.getDimensions());
         dimList = dimList.subList(1, dimList.size()); // LOOK assumes time is outer dimension
         dimList.add(0, timeDim);
         dimList.add(0, runDim);
@@ -761,7 +761,7 @@ class FmrcDataset {
     ProxyReader1D proxyReader1D = new ProxyReader1D();
 
     // make the time coordinate(s) for each runSeq
-    List<Variable> nonAggVars = result.getVariables();
+    List<Variable> nonAggVars = new ArrayList(result.getVariables());
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
       Group group = result.getRootGroup(); // can it be different ??
       String timeDimName = gridset.gridsetName;
@@ -814,7 +814,7 @@ class FmrcDataset {
         }
 
         // create dimension list
-        List<Dimension> dimList = aggVar.getDimensions();
+        List<Dimension> dimList = new ArrayList<>(aggVar.getDimensions());
         dimList = dimList.subList(1, dimList.size()); // LOOK assumes time is outer dimension
         dimList.add(0, timeDim);
 

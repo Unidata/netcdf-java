@@ -26,7 +26,9 @@ import java.io.*;
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschalar
  * @author Unidata Program Center
+ * @deprecated not part of public API.
  */
+@Deprecated
 public class UncompressInputStream extends FilterInputStream {
 
   // string table stuff
