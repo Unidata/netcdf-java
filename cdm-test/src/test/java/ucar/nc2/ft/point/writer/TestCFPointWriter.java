@@ -44,8 +44,8 @@ public class TestCFPointWriter {
     result.addAll(TestCFPointDatasets.getStationDatasets());
     result.addAll(TestCFPointDatasets.getProfileDatasets());
     result.addAll(TestCFPointDatasets.getTrajectoryDatasets());
-    result.addAll(TestCFPointDatasets.getStationProfileDatasets()); // */
-    result.addAll(TestCFPointDatasets.getSectionDatasets()); // */
+    result.addAll(TestCFPointDatasets.getStationProfileDatasets());
+    result.addAll(TestCFPointDatasets.getSectionDatasets());
 
     return result;
   }
