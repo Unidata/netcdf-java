@@ -10,17 +10,41 @@ import java.util.HashMap;
 /**
  * A composite of other StructureData.
  * If multiple members of same name exist, the first one added is used
- *
- * @author caron
- * @since Jan 21, 2009
+ * TODO make Immutable
  */
 public class StructureDataComposite extends StructureData {
   protected Map<StructureMembers.Member, StructureData> proxy = new HashMap<>(32);
 
+  public static StructureDataComposite create(Iterable<StructureData> sdatas) {
+    Map<StructureMembers.Member, StructureData> proxy = new HashMap<>(32);
+    StructureMembers.Builder builder = StructureMembers.builder();
+    for (StructureData sdata : sdatas) {
+      if (sdata != null) {
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          if (!builder.hasMember(m.getName())) {
+            builder.addMember(m.toBuilder(true));
+            proxy.put(m, sdata); // LOOK this is original, not the copy, is that ok?
+          }
+        }
+      }
+    }
+
+    return new StructureDataComposite(builder.build(), proxy);
+  }
+
+  private StructureDataComposite(StructureMembers smembers, Map<StructureMembers.Member, StructureData> proxy) {
+    super(smembers);
+    this.proxy = proxy;
+  }
+
+  /** @deprecated use StructureDataComposite.make(StructureData... sdatas) */
+  @Deprecated
   public StructureDataComposite() {
     super(new StructureMembers(""));
   }
 
+  /** @deprecated use StructureDataComposite.make(StructureData... sdatas) */
+  @Deprecated
   public void add(StructureData sdata) {
     for (StructureMembers.Member m : sdata.getMembers()) {
       if (this.members.findMember(m.getName()) == null) {
@@ -30,6 +54,8 @@ public class StructureDataComposite extends StructureData {
     }
   }
 
+  /** @deprecated use StructureDataComposite.make(StructureData... sdatas) */
+  @Deprecated
   public void add(int pos, StructureData sdata) {
     for (StructureMembers.Member m : sdata.getMembers()) {
       if (this.members.findMember(m.getName()) == null) {

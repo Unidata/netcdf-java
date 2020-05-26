@@ -347,13 +347,14 @@ public abstract class Table {
       // make members restricted to column names
       if (members == null) {
         StructureMembers orgMembers = sdata.getStructureMembers();
-        members = new StructureMembers(orgMembers.getName() + "RestrictToColumns");
+        StructureMembers.Builder smb = StructureMembers.builder().setName(orgMembers.getName() + "RestrictToColumns");
         for (String colName : cols.keySet()) {
           StructureMembers.Member m = orgMembers.findMember(colName);
           if (m == null)
             throw new IllegalStateException("Cant find " + colName);
-          members.addMember(m);
+          smb.addMember(m.toBuilder(true));
         }
+        members = smb.build();
       }
       return new StructureDataProxy(members, sdata);
     }
@@ -732,7 +733,7 @@ public abstract class Table {
       assert this.inner != null : config.innerName;
       assert this.outer != null : config.outerName;
 
-      sm = new StructureMembers(config.name);
+      StructureMembers.Builder builder = StructureMembers.builder().setName(config.name);
       if (config.vars != null) {
         for (String name : config.vars) {
           Variable v = ds.findVariable(name);
@@ -742,7 +743,7 @@ public abstract class Table {
           int rank = v.getRank();
           int[] shape = new int[rank - 2];
           System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
-          sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+          builder.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
           this.cols.put(v.getShortName(), v);
         }
 
@@ -755,12 +756,12 @@ public abstract class Table {
             int rank = v.getRank();
             int[] shape = new int[rank - 2];
             System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
-            sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+            builder.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
             this.cols.put(v.getShortName(), v);
           }
         }
       }
-
+      sm = builder.build();
       replaceDataVars(sm);
     }
 
@@ -814,7 +815,7 @@ public abstract class Table {
       this.inner = ds.findDimension(config.innerName);
       this.middle = ds.findDimension(config.outerName);
 
-      sm = new StructureMembers(config.name);
+      StructureMembers.Builder builder = StructureMembers.builder().setName(config.name);
       if (config.vars != null) {
         for (String name : config.vars) {
           Variable v = ds.findVariable(name);
@@ -824,7 +825,7 @@ public abstract class Table {
           int rank = v.getRank();
           int[] shape = new int[rank - 3];
           System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
-          sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+          builder.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
           this.cols.put(v.getShortName(), v);
         }
 
@@ -837,12 +838,13 @@ public abstract class Table {
             int rank = v.getRank();
             int[] shape = new int[rank - 3];
             System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
-            sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+            builder.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
             this.cols.put(v.getShortName(), v);
           }
         }
       }
 
+      sm = builder.build();
       replaceDataVars(sm);
     }
 
@@ -903,14 +905,15 @@ public abstract class Table {
       this.inner = ds.findDimension(config.innerName);
       this.outer = ds.findDimension(config.outerName);
 
-      sm = new StructureMembers(config.name);
+      StructureMembers.Builder builder = StructureMembers.builder().setName(config.name);
       for (Variable v : struct.getVariables()) {
         int rank = v.getRank();
         int[] shape = new int[rank - 1];
         System.arraycopy(v.getShape(), 1, shape, 0, rank - 1);
-        sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+        builder.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
       }
 
+      sm = builder.build();
       replaceDataVars(sm);
     }
 
@@ -953,14 +956,14 @@ public abstract class Table {
       this.middle = ds.findDimension(config.outerName);
       this.inner = ds.findDimension(config.innerName);
 
-      sm = new StructureMembers(config.name);
+      StructureMembers.Builder builder = StructureMembers.builder().setName(config.name);
       for (Variable v : struct.getVariables()) {
         int rank = v.getRank();
         int[] shape = new int[rank - 1];
         System.arraycopy(v.getShape(), 1, shape, 0, rank - 1);
-        sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+        builder.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
       }
-
+      sm = builder.build();
       replaceDataVars(sm);
     }
 
@@ -1214,7 +1217,6 @@ public abstract class Table {
       count = 0;
       return this;
     }
-
 
     @Override
     public int getCurrentRecno() {

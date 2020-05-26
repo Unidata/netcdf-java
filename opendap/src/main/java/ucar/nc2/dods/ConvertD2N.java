@@ -165,7 +165,6 @@ public class ConvertD2N {
 
     // scalars
     if (dataV.darray == null) {
-
       if (dataV.bt instanceof DStructure) {
         ArrayStructure structArray = makeArrayStructure(dataV);
         iconvertDataStructure((DStructure) dataV.bt, structArray.getStructureMembers());
@@ -189,59 +188,53 @@ public class ConvertD2N {
     }
 
     // arrays
-    if (dataV.darray != null) {
+    if (dataV.bt instanceof DStructure) {
+      ArrayStructure structArray = makeArrayStructure(dataV);
+      iconvertDataStructureArray(dataV.darray, structArray.getStructureMembers());
+      return structArray;
 
-      if (dataV.bt instanceof DStructure) {
-        ArrayStructure structArray = makeArrayStructure(dataV);
-        iconvertDataStructureArray(dataV.darray, structArray.getStructureMembers());
-        return structArray;
+    } else if (dataV.bt instanceof DString) {
+      return convertStringArray(dataV.darray);
 
-      } else if (dataV.bt instanceof DString) {
-        return convertStringArray(dataV.darray);
-
-      } else {
-        // the DGrid case comes here also
-        // create the array, using DODS internal array so there's no copying
-        opendap.dap.PrimitiveVector pv = dataV.darray.getPrimitiveVector();
-        Object storage = pv.getInternalStorage();
-        DataType dtype = dataV.getDataType();
-        return Array.factory(dtype, makeShape(dataV.darray), storage);
-      }
+    } else {
+      // the DGrid case comes here also
+      // create the array, using DODS internal array so there's no copying
+      PrimitiveVector pv = dataV.darray.getPrimitiveVector();
+      Object storage = pv.getInternalStorage();
+      DataType dtype = dataV.getDataType();
+      return Array.factory(dtype, makeShape(dataV.darray), storage);
     }
-
-    String mess = "Unknown baseType " + dataV.bt.getClass().getName() + " name=" + dataV.getEncodedName();
-    logger.error(mess);
-    throw new IllegalStateException(mess);
   }
 
   private ArrayStructure makeArrayStructure(DodsV dataV) {
-    StructureMembers members = new StructureMembers(dataV.getNetcdfShortName());
+    StructureMembers.Builder members = StructureMembers.builder().setName(dataV.getNetcdfShortName());
     for (DodsV dodsV : dataV.children) {
-      StructureMembers.Member m =
+      StructureMembers.MemberBuilder mb =
           members.addMember(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
       Array data;
       if ((dodsV.bt instanceof DStructure) || (dodsV.bt instanceof DGrid)) {
         data = makeArrayStructure(dodsV);
       } else if (dodsV.bt instanceof DSequence) {
         data = makeArrayNestedSequence(dodsV);
-        m.setShape(data.getShape()); // fix the shape based on the actual data LOOK
+        mb.setShape(data.getShape()); // fix the shape based on the actual data LOOK
       } else {
         data = Array.factory(dodsV.getDataType(), dodsV.getShapeAll());
       }
-      m.setDataArray(data);
-      m.setDataObject(data.getIndexIterator()); // for setting values
+      mb.setDataArray(data);
+      mb.setDataObject(data.getIndexIterator()); // for setting values
     }
 
-    return new ArrayStructureMA(members, dataV.getShapeAll());
+    return new ArrayStructureMA(members.build(), dataV.getShapeAll());
   }
 
   private ArrayStructure makeArrayNestedSequence(DodsV dataV) {
 
     // make the members
-    StructureMembers members = new StructureMembers(dataV.getClearName());
+    StructureMembers.Builder smb = StructureMembers.builder().setName(dataV.getClearName());
     for (DodsV dodsV : dataV.children) {
-      members.addMember(dodsV.getClearName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      smb.addMember(dodsV.getClearName(), null, null, dodsV.getDataType(), dodsV.getShape());
     }
+    StructureMembers members = smb.build();
 
     // make the ArraySequence
     // LOOK single nested
@@ -266,7 +259,7 @@ public class ConvertD2N {
 
     // ArraySequence makes the inner data arrays; now make iterators for them
     List<StructureMembers.Member> memberList = members.getMembers();
-    for (StructureMembers.Member m : memberList) {
+    for (StructureMembers.Member m : members.getMembers()) {
       Array data = m.getDataArray();
       m.setDataObject(data.getIndexIterator()); // for setting values
     }

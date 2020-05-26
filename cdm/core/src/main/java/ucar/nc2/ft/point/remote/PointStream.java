@@ -206,7 +206,7 @@ public class PointStream {
         dateUnit = CalendarDateUnit.unixDateUnit;
       }
 
-      sm = new StructureMembers(pfc.getName());
+      StructureMembers.Builder builder = StructureMembers.builder().setName(pfc.getName());
       for (PointStreamProto.PointFeatureMember m : pfc.getMembersList()) {
         String name = m.getName();
         String desc = !m.getDesc().isEmpty() ? m.getDesc() : null;
@@ -214,8 +214,9 @@ public class PointStream {
         DataType dtype = NcStream.convertDataType(m.getDataType());
         int[] shape = NcStream.decodeSection(m.getSection()).getShape();
 
-        sm.addMember(name, desc, units, dtype, shape);
+        builder.addMember(name, desc, units, dtype, shape);
       }
+      sm = builder.build();
       ArrayStructureBB.setOffsets(sm);
     }
 
