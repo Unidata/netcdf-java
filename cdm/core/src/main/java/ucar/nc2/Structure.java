@@ -315,16 +315,16 @@ public class Structure extends Variable {
    * @return a StructureMembers object that describes this Structure.
    */
   public StructureMembers makeStructureMembers() {
-    StructureMembers smembers = new StructureMembers(getShortName());
-    for (Variable v2 : getVariables()) {
-      StructureMembers.Member m = smembers.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(),
+    StructureMembers.Builder builder = StructureMembers.builder().setName(getShortName());
+    for (Variable v2 : this.getVariables()) {
+      StructureMembers.MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(),
           v2.getDataType(), v2.getShape());
-      if (v2 instanceof Structure)
+      if (v2 instanceof Structure) {
         m.setStructureMembers(((Structure) v2).makeStructureMembers());
+      }
     }
-    return smembers;
+    return builder.build();
   }
-  // protected StructureMembers smembers = null;
 
   /**
    * Get the size of one element of the Structure.

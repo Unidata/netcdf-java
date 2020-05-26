@@ -16,7 +16,6 @@ import java.util.Map;
  *
  * @author caron
  */
-
 public class StructureDataW extends StructureData {
   protected final Map<StructureMembers.Member, Array> memberData;
 
@@ -30,26 +29,12 @@ public class StructureDataW extends StructureData {
     memberData = new HashMap<>(2 * members.getMembers().size());
   }
 
+  /** @deprecated use StructureDataW(StructureMembers members) */
+  @Deprecated
   public StructureDataW(StructureMembers members, int size) {
     super(members);
     memberData = new HashMap<>(2 * size);
   }
-
-  /*
-   * Copy constructor.
-   * This makes a local copy of all the data in the from StrucureData.
-   * 
-   * @param from copy from here
-   *
-   * public StructureDataW (StructureData from) {
-   * this(from.getStructureMembers());
-   * List<StructureMembers.Member> members = getMembers();
-   * for (StructureMembers.Member m : members) {
-   * Array data = from.getArray(m);
-   * setMemberData(m, data.copy()); // LOOK wont work for StructureData
-   * }
-   * }
-   */
 
   public void setMemberData(StructureMembers.Member m, Array data) {
     if (data == null)

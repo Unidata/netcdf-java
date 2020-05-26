@@ -390,23 +390,6 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
       return m.getDataArray();
     DataType dataType = m.getDataType();
 
-    /*
-     * special handling for sequences
-     * if (dataType == DataType.SEQUENCE) {
-     * List<StructureData> sdataList = new ArrayList<StructureData>();
-     * for (int recno=0; recno<getSize(); recno++) {
-     * ArraySequence2 seq = getArraySequence(recno, m);
-     * StructureDataIterator iter = seq.getStructureDataIterator();
-     * while (iter.hasNext())
-     * sdataList.add( iter.next());
-     * }
-     * ArraySequence2 seq = getArraySequence(0, m);
-     * int size = sdataList.size();
-     * StructureData[] sdataArray = sdataList.toArray( new StructureData[size]);
-     * return new ArrayStructureW( seq.getStructureMembers(), new int[] {size}, sdataArray);
-     * }
-     */
-
     // combine the shapes
     int[] mshape = m.getShape();
     int rrank = rank + mshape.length;
@@ -417,7 +400,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
     // create an empty array to hold the result
     Array result;
     if (dataType == DataType.STRUCTURE) {
-      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+      StructureMembers membersw = m.getStructureMembers().toBuilder(false).build();
       result = new ArrayStructureW(membersw, rshape);
 
     } else if (dataType == DataType.OPAQUE) {
@@ -982,7 +965,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
       this_sdata[i] = array.getStructureData(recnum * count + i);
 
     // make a copy of the members, but remove the data arrays, since the structureData must be used instead
-    StructureMembers membersw = new StructureMembers(array.getStructureMembers());
+    StructureMembers membersw = array.getStructureMembers().toBuilder(false).build();
     return new ArrayStructureW(membersw, m.getShape(), this_sdata);
   }
 

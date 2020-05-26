@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft.point.writer;
 
+import com.google.common.collect.ImmutableList;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -57,7 +58,6 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   }
 
   private void writeHeader(TrajectoryFeature feature, PointFeature obs) throws IOException {
-
     // obs data
     List<VariableSimpleIF> coords = new ArrayList<>();
     coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
@@ -78,7 +78,6 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   }
 
   protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
-
     // LOOK why not unlimited here fro extended model ?
     Dimension profileDim = writer.addDimension(null, trajDimName, nfeatures);
 
@@ -108,15 +107,14 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
   private int trajRecno;
 
   public void writeTrajectoryData(TrajectoryFeature profile, int nobs) throws IOException {
+    StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
+    smb.addMemberString(trajIdName, null, null, profile.getName().trim(), id_strlen);
+    smb.addMemberScalar(numberOfObsName, null, null, DataType.INT, nobs);
+    StructureData profileCoords = new StructureDataFromMember(smb.build());
 
-    StructureDataScalar profileCoords = new StructureDataScalar("Coords");
-    profileCoords.addMemberString(trajIdName, null, null, profile.getName().trim(), id_strlen);
-    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, nobs);
-
-    StructureDataComposite sdall = new StructureDataComposite();
-    sdall.add(profileCoords);
-    sdall.add(profile.getFeatureData());
-
+    // coords first so it takes precedence
+    StructureDataComposite sdall =
+        StructureDataComposite.create(ImmutableList.of(profileCoords, profile.getFeatureData()));
     trajRecno = super.writeStructureData(trajRecno, featureStruct, sdall, featureVarMap);
   }
 
@@ -127,17 +125,16 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     EarthLocation loc = pf.getLocation();
     trackBB(loc.getLatLon(), timeUnit.makeCalendarDate(pf.getObservationTime()));
 
-    StructureDataScalar coords = new StructureDataScalar("Coords");
-    coords.addMember(timeName, null, null, DataType.DOUBLE, pf.getObservationTime());
-    coords.addMember(latName, null, null, DataType.DOUBLE, loc.getLatitude());
-    coords.addMember(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
+    StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
+    smb.addMemberScalar(timeName, null, null, DataType.DOUBLE, pf.getObservationTime());
+    smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
+    smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
     if (altUnits != null)
-      coords.addMember(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+    StructureData coords = new StructureDataFromMember(smb.build());
 
-    StructureDataComposite sdall = new StructureDataComposite();
-    sdall.add(coords); // coords first so it takes precedence
-    sdall.add(pf.getFeatureData());
-
+    // coords first so it takes precedence
+    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, pf.getFeatureData()));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
 

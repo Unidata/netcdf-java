@@ -1893,10 +1893,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   private StructureMembers createStructureMembers(UserType userType, String varname) {
     // Incorrect: StructureMembers sm = new StructureMembers(userType.name);
-    StructureMembers sm = new StructureMembers(varname);
+    StructureMembers.Builder sm = StructureMembers.builder().setName(varname);
     for (Field fld : userType.flds) {
-      StructureMembers.Member m = sm.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
-      m.setDataParam(fld.offset);
+      StructureMembers.MemberBuilder mb = sm.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
+      mb.setDataParam(fld.offset);
       /*
        * This should already have been taken care of
        * if(fld.ctype.isVlen) {m.setShape(new int[]{-1}); }
@@ -1907,11 +1907,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         String partfqn = EscapeStrings.backslashEscapeCDMString(varname, ".") + "."
             + EscapeStrings.backslashEscapeCDMString(fld.name, ".");
         StructureMembers nested_sm = createStructureMembers(nested_utype, partfqn);
-        m.setStructureMembers(nested_sm);
+        mb.setStructureMembers(nested_sm);
       }
     }
     sm.setStructureSize(userType.size);
-    return sm;
+    return sm.build();
   }
 
   // LOOK: handling nested ??

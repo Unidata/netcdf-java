@@ -580,8 +580,7 @@ public class IospHelper {
     if (as.getClass().equals(ArrayStructureBB.class)) // no subclasses
       return (ArrayStructureBB) as;
 
-    StructureMembers smo = as.getStructureMembers();
-    StructureMembers sm = new StructureMembers(smo);
+    StructureMembers sm = as.getStructureMembers().toBuilder(false).build();
     ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
     ArrayStructureBB.setOffsets(sm);
 
@@ -596,7 +595,7 @@ public class IospHelper {
    * @deprecated use StructureDataDeep.copyToArrayBB
    */
   public static ArrayStructureBB copyToArrayBB(StructureData sdata) {
-    StructureMembers sm = new StructureMembers(sdata.getStructureMembers());
+    StructureMembers sm = sdata.getStructureMembers();
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
     ArrayStructureBB abb = new ArrayStructureBB(sm, new int[] {1}, bb, 0);
@@ -874,10 +873,9 @@ public class IospHelper {
   }
 
   // LOOK could be used in createView ??
-
   private static ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData,
       StructureMembers.Member m) {
-    StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+    StructureMembers membersw = m.getStructureMembers().toBuilder(false).build(); // no data arrays get propagated
     ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());
 
     int count = 0;

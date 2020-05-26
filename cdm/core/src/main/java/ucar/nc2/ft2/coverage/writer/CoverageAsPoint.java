@@ -12,7 +12,8 @@ import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataScalar;
+import ucar.ma2.StructureDataFromMember;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.VariableSimpleBuilder;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
@@ -199,10 +200,11 @@ public class CoverageAsPoint {
       public PointFeature next() {
         double obsTime = timeAxis.getCoordMidpoint(curr);
 
-        StructureDataScalar coords = new StructureDataScalar("Coords");
+        StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
         for (VarIter vi : varIters) {
-          coords.addMember(vi.cov.getName(), null, null, vi.cov.getDataType(), (Number) vi.dataIter.getObjectNext());
+          smb.addMemberScalar(vi.cov.getName(), null, null, vi.cov.getDataType(), (Number) vi.dataIter.getObjectNext());
         }
+        StructureData coords = new StructureDataFromMember(smb.build());
         curr++;
         PointFeature pf = new MyPointFeature(MyStationFeature.this, obsTime, 0.0, timeUnit, coords);
         calcBounds(pf);

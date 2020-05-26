@@ -16,7 +16,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
-import ucar.ma2.StructureDataScalar;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataFromMember;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -29,13 +31,14 @@ public class SortingStationPointFeatureCacheTest {
 
   @Test
   public void test1() throws Exception {
-    StructureDataScalar stationData = new StructureDataScalar("StationFeature"); // leave it empty.
-    stationData.addMemberString("name", null, null, "Foo", 3);
-    stationData.addMemberString("desc", null, null, "Bar", 3);
-    stationData.addMemberString("wmoId", null, null, "123", 3);
-    stationData.addMember("lat", null, "degrees_north", DataType.DOUBLE, 30);
-    stationData.addMember("lon", null, "degrees_east", DataType.DOUBLE, 60);
-    stationData.addMember("alt", null, "meters", DataType.DOUBLE, 5000);
+    StructureMembers.Builder smb = StructureMembers.builder().setName("StationFeature");
+    smb.addMemberString("name", null, null, "Foo", 3);
+    smb.addMemberString("desc", null, null, "Bar", 3);
+    smb.addMemberString("wmoId", null, null, "123", 3);
+    smb.addMemberScalar("lat", null, "degrees_north", DataType.DOUBLE, 30);
+    smb.addMemberScalar("lon", null, "degrees_east", DataType.DOUBLE, 60);
+    smb.addMemberScalar("alt", null, "meters", DataType.DOUBLE, 5000);
+    StructureData stationData = new StructureDataFromMember(smb.build());
 
     StationFeature stationFeat = new StationFeatureImpl("Foo", "Bar", "123", 30, 60, 5000, 4, stationData);
 
@@ -48,12 +51,8 @@ public class SortingStationPointFeatureCacheTest {
     spfList.add(makeStationPointFeature(dummyDsg, stationFeat, timeUnit, 30, 30, 118));
     spfList.add(makeStationPointFeature(dummyDsg, stationFeat, timeUnit, 40, 40, 110));
 
-    Comparator<StationPointFeature> revObsTimeComp = new Comparator<StationPointFeature>() {
-      @Override
-      public int compare(StationPointFeature left, StationPointFeature right) {
-        return -Double.compare(left.getObservationTime(), right.getObservationTime());
-      }
-    };
+    Comparator<StationPointFeature> revObsTimeComp =
+        (left, right) -> -Double.compare(left.getObservationTime(), right.getObservationTime());
 
     SortingStationPointFeatureCache cache = new SortingStationPointFeatureCache(revObsTimeComp);
 
@@ -68,10 +67,11 @@ public class SortingStationPointFeatureCacheTest {
 
   private static StationPointFeature makeStationPointFeature(DsgFeatureCollection dsg, StationFeature stationFeat,
       CalendarDateUnit timeUnit, double obsTime, double nomTime, double tasmax) {
-    StructureDataScalar featureData = new StructureDataScalar("StationPointFeature");
-    featureData.addMember("obsTime", "Observation time", timeUnit.getUdUnit(), DataType.DOUBLE, obsTime);
-    featureData.addMember("nomTime", "Nominal time", timeUnit.getUdUnit(), DataType.DOUBLE, nomTime);
-    featureData.addMember("tasmax", "Max temperature", "Celsius", DataType.DOUBLE, tasmax);
+    StructureMembers.Builder smb = StructureMembers.builder().setName("StationPointFeature");
+    smb.addMemberScalar("obsTime", "Observation time", timeUnit.getUdUnit(), DataType.DOUBLE, obsTime);
+    smb.addMemberScalar("nomTime", "Nominal time", timeUnit.getUdUnit(), DataType.DOUBLE, nomTime);
+    smb.addMemberScalar("tasmax", "Max temperature", "Celsius", DataType.DOUBLE, tasmax);
+    StructureData featureData = new StructureDataFromMember(smb.build());
 
     return new SimpleStationPointFeature(dsg, stationFeat, obsTime, nomTime, timeUnit, featureData);
   }

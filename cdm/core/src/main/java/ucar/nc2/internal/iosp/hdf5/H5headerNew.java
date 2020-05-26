@@ -1022,7 +1022,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     if (dataType == DataType.STRUCTURE) {
       boolean hasStrings = false;
 
-      StructureMembers sm = new StructureMembers(matt.name);
+      StructureMembers.Builder builder = StructureMembers.builder().setName(matt.name);
       for (StructureMember h5sm : matt.mdt.members) {
 
         // from tkunicki@usgs.gov 2/19/2010 - fix for compound attributes
@@ -1045,19 +1045,20 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
             dim = new int[] {1};
             break;
         }
-        StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, dim);
+        StructureMembers.MemberBuilder mb = builder.addMember(h5sm.name, null, null, dt, dim);
 
         if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
-          m.setDataObject(
+          mb.setDataObject(
               h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-        m.setDataParam((h5sm.offset)); // offset since start of Structure
+        mb.setDataParam(h5sm.offset); // offset since start of Structure
         if (dt == DataType.STRING)
           hasStrings = true;
       }
 
       int recsize = matt.mdt.byteSize;
       Layout layout = new LayoutRegular(matt.dataPos, recsize, shape, new Section(shape));
-      sm.setStructureSize(recsize);
+      builder.setStructureSize(recsize);
+      StructureMembers sm = builder.build();
 
       // place data into an ArrayStructureBB for efficiency
       ArrayStructureBB asbb = new ArrayStructureBB(sm, shape);

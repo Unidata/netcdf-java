@@ -358,7 +358,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     // otherwise we create a new StructureData and convert to it. expensive
-    StructureMembers smResult = new StructureMembers(orgData.getStructureMembers());
+    StructureMembers smResult = orgData.getStructureMembers().toBuilder(false).build();
     StructureDataW result = new StructureDataW(smResult);
 
     for (StructureMembers.Member m : orgData.getMembers()) {
@@ -504,7 +504,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       this.nelems = orgSeq.getStructureDataCount();
 
       // copy and convert the members
-      members = new StructureMembers(orgSeq.getStructureMembers());
+      members = orgSeq.getStructureMembers().toBuilder(false).build();
       orgStruct.convertMemberInfo(members);
     }
 

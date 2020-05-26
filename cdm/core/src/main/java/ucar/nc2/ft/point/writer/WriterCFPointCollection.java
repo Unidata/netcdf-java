@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft.point.writer;
 
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
@@ -76,17 +77,16 @@ public class WriterCFPointCollection extends CFPointWriter {
       throws IOException {
     trackBB(loc.getLatLon(), obsDate);
 
-    StructureDataScalar coords = new StructureDataScalar("Coords");
-    coords.addMember(timeName, null, null, DataType.DOUBLE, timeCoordValue);
-    coords.addMember(latName, null, null, DataType.DOUBLE, loc.getLatitude());
-    coords.addMember(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
+    StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
+    smb.addMemberScalar(timeName, null, null, DataType.DOUBLE, timeCoordValue);
+    smb.addMemberScalar(latName, null, null, DataType.DOUBLE, loc.getLatitude());
+    smb.addMemberScalar(lonName, null, null, DataType.DOUBLE, loc.getLongitude());
     if (altUnits != null)
-      coords.addMember(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+      smb.addMemberScalar(altName, null, null, DataType.DOUBLE, loc.getAltitude());
+    StructureData coords = new StructureDataFromMember(smb.build());
 
-    StructureDataComposite sdall = new StructureDataComposite();
-    sdall.add(coords); // coords first so it takes precedence
-    sdall.add(sdata);
-
+    // coords first so it takes precedence
+    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(coords, sdata));
     obsRecno = super.writeStructureData(obsRecno, record, sdall, dataMap);
   }
 
