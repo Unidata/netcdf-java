@@ -169,7 +169,7 @@ public class IFPSConvention extends CoordSysBuilder {
     parseInfo.format(" added coordinate variable %s%n", dimName);
 
     // now make the original variable use the new dimension
-    List<Dimension> dimsList = ncVar.getDimensions();
+    List<Dimension> dimsList = new ArrayList(ncVar.getDimensions());
     dimsList.set(0, newDim);
     ncVar.setDimensions(dimsList);
 

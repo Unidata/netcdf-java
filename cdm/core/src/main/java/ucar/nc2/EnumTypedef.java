@@ -8,6 +8,7 @@ package ucar.nc2;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import javax.annotation.Nullable;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
@@ -29,7 +30,7 @@ public class EnumTypedef extends CDMNode {
   private static final int UBYTE_MAX = 255;
   private static final int USHORT_MAX = 65535;
 
-  private final ImmutableBiMap<Integer, String> bimap;
+  private final ImmutableMap<Integer, String> map;
   private final ImmutableList<String> enumStrings;
   private final DataType basetype;
 
@@ -42,7 +43,7 @@ public class EnumTypedef extends CDMNode {
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
     super(name);
     Preconditions.checkArgument(validateMap(map, basetype));
-    this.bimap = ImmutableBiMap.copyOf(map);
+    this.map = ImmutableMap.copyOf(map);
 
     enumStrings = ImmutableList.sortedCopyOf(map.values());
 
@@ -56,9 +57,8 @@ public class EnumTypedef extends CDMNode {
     return enumStrings;
   }
 
-  /** Get a BiMap between the enum integer and the String name. */
-  public ImmutableBiMap<Integer, String> getMap() {
-    return bimap;
+  public ImmutableMap<Integer, String> getMap() {
+    return map;
   }
 
   /** One of DataType.ENUM1, DataType.ENUM2, or DataType.ENUM4. */
@@ -92,13 +92,17 @@ public class EnumTypedef extends CDMNode {
   /** Get the name corresponding to the enum value. */
   @Nullable
   public String lookupEnumString(int e) {
-    return bimap.get(e);
+    return map.get(e);
   }
 
   /** Get the enum value corresponding to the name. */
   @Nullable
   public Integer lookupEnumInt(String name) {
-    return bimap.inverse().get(name);
+    for (Map.Entry<Integer, String> entry : map.entrySet()) {
+      if (entry.getValue().equalsIgnoreCase(name))
+        return entry.getKey();
+    }
+    return null;
   }
 
   /**
@@ -136,10 +140,10 @@ public class EnumTypedef extends CDMNode {
     out.format("%s%senum %s { ", indent, basetype, name);
     int count = 0;
     // List<Object> keyset = Arrays.asList(map.keySet().toArray());
-    List<Integer> keysetList = new ArrayList<>(bimap.keySet());
+    List<Integer> keysetList = new ArrayList<>(map.keySet());
     Collections.sort(keysetList);
     for (Integer key : keysetList) {
-      String s = bimap.get(key);
+      String s = map.get(key);
       if (0 < count++)
         out.format(", ");
       if (strict)
@@ -159,11 +163,11 @@ public class EnumTypedef extends CDMNode {
 
     EnumTypedef that = (EnumTypedef) o;
 
-    if (bimap == that.bimap)
+    if (map == that.map)
       return true;
-    if (bimap == null)
+    if (map == null)
       return false;
-    if (!bimap.equals(that.bimap))
+    if (!map.equals(that.map))
       return false;
     String name = getShortName();
     String thatname = that.getShortName();
@@ -175,7 +179,7 @@ public class EnumTypedef extends CDMNode {
   public int hashCode() {
     String name = getShortName();
     int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (bimap != null ? bimap.hashCode() : 0);
+    result = 31 * result + (map != null ? map.hashCode() : 0);
     return result;
   }
 
@@ -183,8 +187,8 @@ public class EnumTypedef extends CDMNode {
   public String toString() {
     Formatter f = new Formatter();
     f.format("EnumTypedef %s: ", getShortName());
-    for (int key : bimap.keySet()) {
-      f.format("%d=%s,", key, bimap.get(key));
+    for (int key : map.keySet()) {
+      f.format("%d=%s,", key, map.get(key));
     }
     return f.toString();
   }

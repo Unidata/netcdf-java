@@ -856,9 +856,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             lval = bb.getInt(i);
             break;
         }
-        String name = en.lookupEnumString((int) lval);
-        if (name == null)
-          throw new ForbiddenConversionException("Illegal enum const: " + lval);
+        int ival = (int) lval;
+        String name = en.lookupEnumString(ival);
+        if (name == null) {
+          name = "Unknown enum value=" + ival;
+        }
         econsts[i] = name;
       }
       data = Array.factory(DataType.STRING, new int[] {len}, econsts);

@@ -62,10 +62,11 @@ public class Group extends CDMNode implements AttributeContainer {
   /**
    * Get the Variables contained directly in this group.
    *
-   * @return ImmutableList of type Variable; may be empty, not null.
+   * @return List of type Variable; may be empty, not null.
+   *         TODO return ImmutableList
    */
-  public ImmutableList<Variable> getVariables() {
-    return ImmutableList.copyOf(variables);
+  public List<Variable> getVariables() {
+    return variables;
   }
 
   /** @deprecated use findVariableLocal() */
@@ -199,10 +200,11 @@ public class Group extends CDMNode implements AttributeContainer {
   /**
    * Get the shared Dimensions contained directly in this group.
    *
-   * @return ImmutableList of type Dimension; may be empty, not null.
+   * @return List of type Dimension; may be empty, not null.
+   *         TODO return ImmutableList
    */
-  public ImmutableList<Dimension> getDimensions() {
-    return ImmutableList.copyOf(dimensions);
+  public List<Dimension> getDimensions() {
+    return dimensions;
   }
 
   /**
