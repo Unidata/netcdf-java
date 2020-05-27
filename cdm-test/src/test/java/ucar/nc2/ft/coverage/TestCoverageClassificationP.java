@@ -12,7 +12,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
@@ -41,36 +40,32 @@ public class TestCoverageClassificationP {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID, 4, 4, 31}); // NUWG
-                                                                                                                   // -
-                                                                                                                   // has
-                                                                                                                   // CoordinateAlias
+    // NUWG - has CoordinateAlias
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID, 4, 4, 31});
+    // scalar runtime
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", FeatureType.GRID, 4,
-        5, 5}); // scalar runtime
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC, 6, 6, 1}); // ensemble,
-                                                                                                                       // time-offset
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC, 4, 5, 1}); // scalar vert
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, 3, 5, 4}); // both
-                                                                                                                  // x,y
-                                                                                                                  // and
-                                                                                                                  // lat,lon
-
+        5, 5});
+    /* ensemble, time-offset */
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC, 6, 6, 1});
+    // scalar vert
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC, 4, 5, 1});
+    // both x,y and lat,lon
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, 3, 5, 4});
+    // x,y axis but no projection
     result.add(
-        new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR, 4, 6, 20}); // x,y
-                                                                                                                        // axis
-                                                                                                                        // but
-                                                                                                                        // no
-                                                                                                                        // projection
+        new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR, 4, 6, 20});
+    // GRIB Curvilinear
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2",
-        FeatureType.CURVILINEAR, 4, 5, 7}); // GRIB Curvilinear
+        FeatureType.CURVILINEAR, 4, 5, 7});
+    /* netcdf Curvilinear */
     result.add(
-        new Object[] {TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc", FeatureType.CURVILINEAR, 4, 4, 24}); // netcdf
-                                                                                                                     // Curvilinear
+        new Object[] {TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc", FeatureType.CURVILINEAR, 4, 4, 24});
 
     result
         .add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
-            FeatureType.GRID, 4, 5, 65}); // SRC
+            FeatureType.GRID, 4, 5, 65});
 
+    // SRC
     result
         .add(new Object[] {TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.s.OIS", FeatureType.SWATH, 2, 3, 2});
     result.add(new Object[] {
@@ -119,7 +114,6 @@ public class TestCoverageClassificationP {
 
   @Test
   public void testFactory() throws IOException {
-
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
       Assert.assertEquals(1, cc.getCoverageCollections().size());

@@ -145,6 +145,7 @@ public class CodeFlagTables {
   }
 
   ////////////////////////////////////////////////
+  // TODO Make Immutable
   private short fxy;
   private String name;
   private Map<Integer, String> map; // needs to be integer for EnumTypedef

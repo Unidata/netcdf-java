@@ -5,6 +5,8 @@
 package ucar.nc2.iosp.hdf5;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -88,8 +90,7 @@ public class TestN4reading {
     String filename = testDir + "globalHeapOverrun.nc4";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       logger.debug("**** testGlobalHeapOverun done\n{}", ncfile);
-      List<Variable> vars = ncfile.getVariables();
-      Collections.sort(vars);
+      List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
       for (Variable v : vars)
         logger.debug("  {}", v.getFullName());
       logger.debug("nvars = {}", ncfile.getVariables().size());
@@ -102,8 +103,7 @@ public class TestN4reading {
     String filename = testDir + "tst/tst_enums.nc";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
-      List<Variable> vars = ncfile.getVariables();
-      Collections.sort(vars);
+      List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
       for (Variable v : vars)
         logger.debug("  {}", v.getFullName());
       logger.debug("nvars = {}", ncfile.getVariables().size());
