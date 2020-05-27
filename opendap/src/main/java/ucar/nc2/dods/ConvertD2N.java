@@ -207,6 +207,69 @@ public class ConvertD2N {
   }
 
   private ArrayStructure makeArrayStructure(DodsV dataV) {
+    StructureMembers members = new StructureMembers(dataV.getNetcdfShortName());
+    for (DodsV dodsV : dataV.children) {
+      StructureMembers.Member m =
+          members.addMember(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      Array data;
+      if ((dodsV.bt instanceof DStructure) || (dodsV.bt instanceof DGrid)) {
+        data = makeArrayStructure(dodsV);
+      } else if (dodsV.bt instanceof DSequence) {
+        data = makeArrayNestedSequence(dodsV);
+        m.setShape(data.getShape()); // fix the shape based on the actual data LOOK
+      } else {
+        data = Array.factory(dodsV.getDataType(), dodsV.getShapeAll());
+      }
+      m.setDataArray(data);
+      m.setDataObject(data.getIndexIterator()); // for setting values
+    }
+
+    return new ArrayStructureMA(members, dataV.getShapeAll());
+  }
+
+  private ArrayStructure makeArrayNestedSequence(DodsV dataV) {
+
+    // make the members
+    StructureMembers members = new StructureMembers(dataV.getClearName());
+    for (DodsV dodsV : dataV.children) {
+      members.addMember(dodsV.getClearName(), null, null, dodsV.getDataType(), dodsV.getShape());
+    }
+
+    // make the ArraySequence
+    // LOOK single nested
+    DSequence outerSeq = (DSequence) dataV.parent.bt;
+    int outerLength = outerSeq.getRowCount();
+    ArraySequenceNested aseq = new ArraySequenceNested(members, outerLength);
+
+    // tell it how long each one is
+    String name = dataV.getClearName();
+    for (int row = 0; row < outerLength; row++) {
+      Vector dv = outerSeq.getRow(row);
+      for (int j = 0; j < dv.size(); j++) {
+        BaseType bt = (BaseType) dv.elementAt(j);
+        if (bt.getClearName().equals(name)) {
+          DSequence innerSeq = (DSequence) bt;
+          int innerLength = innerSeq.getRowCount();
+          aseq.setSequenceLength(row, innerLength);
+        }
+      }
+    }
+    aseq.finish();
+
+    // ArraySequence makes the inner data arrays; now make iterators for them
+    List<StructureMembers.Member> memberList = members.getMembers();
+    for (StructureMembers.Member m : memberList) {
+      Array data = m.getDataArray();
+      m.setDataObject(data.getIndexIterator()); // for setting values
+    }
+
+    return aseq;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Port to StructureMember.Builder. Not ready yet because of partial construction.
+
+  private ArrayStructure makeArrayStructureNew(DodsV dataV) {
     StructureMembers.Builder members = StructureMembers.builder().setName(dataV.getNetcdfShortName());
     for (DodsV dodsV : dataV.children) {
       StructureMembers.MemberBuilder mb =
@@ -227,7 +290,7 @@ public class ConvertD2N {
     return new ArrayStructureMA(members.build(), dataV.getShapeAll());
   }
 
-  private ArrayStructure makeArrayNestedSequence(DodsV dataV) {
+  private ArrayStructure makeArrayNestedSequenceNew(DodsV dataV) {
 
     // make the members
     StructureMembers.Builder smb = StructureMembers.builder().setName(dataV.getClearName());
