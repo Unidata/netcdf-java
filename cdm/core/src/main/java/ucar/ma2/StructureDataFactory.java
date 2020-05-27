@@ -4,6 +4,8 @@
  */
 package ucar.ma2;
 
+import java.util.Arrays;
+
 /**
  * Convenience routines for constructing one-off StructureData objects
  *
@@ -12,34 +14,20 @@ package ucar.ma2;
  */
 public class StructureDataFactory {
 
-  /*
-   * static public StructureData make(String name, String value) {
-   * StructureMembers members = new StructureMembers("");
-   * StructureMembers.Member m = members.addMember(name, null, null, DataType.STRING, new int[]{1});
-   * StructureDataW sw = new StructureDataW(members);
-   * Array dataArray = Array.factory(DataType.STRING, new int[]{1});
-   * dataArray.setObject(dataArray.getIndex(), value);
-   * sw.setMemberData(m, dataArray);
-   * return sw;
-   * }
-   */
-
+  /** Make a StructureData with a single member of given name and value. */
   public static StructureData make(String name, Object value) {
-    StructureMembers members = new StructureMembers("");
+    StructureMembers.Builder builder = StructureMembers.builder();
     DataType dtype = DataType.getType(value.getClass(), false); // LOOK unsigned
-    StructureMembers.Member m = members.addMember(name, null, null, dtype, new int[] {1});
-    StructureDataW sw = new StructureDataW(members);
+    builder.addMember(name, null, null, dtype, new int[] {1});
+    StructureMembers sm = builder.build();
+    StructureDataW sw = new StructureDataW(sm);
     Array dataArray = Array.factory(dtype, new int[] {1});
     dataArray.setObject(dataArray.getIndex(), value);
-    sw.setMemberData(m, dataArray);
+    sw.setMemberData(sm.findMember(name), dataArray);
     return sw;
   }
 
-  public static StructureData make(StructureData s1, StructureData s2) {
-    return make(new StructureData[] {s1, s2});
-  }
-
-  public static StructureData make(StructureData[] sdatas) {
+  public static StructureData make(StructureData... sdatas) {
     if (sdatas.length == 1)
       return sdatas[0];
 
@@ -56,12 +44,7 @@ public class StructureDataFactory {
       return result;
 
     // combine
-    StructureDataComposite result2 = new StructureDataComposite();
-    for (StructureData sdata : sdatas) {
-      if (sdata != null)
-        result2.add(sdata);
-    }
-    return result2;
+    return StructureDataComposite.create(Arrays.asList(sdatas));
   }
 
   public static StructureData make(Iterable<StructureData> sdatas) {
@@ -78,12 +61,7 @@ public class StructureDataFactory {
       return result;
 
     // if multiple, combine into StructureDataComposite
-    StructureDataComposite result2 = new StructureDataComposite();
-    for (StructureData sdata : sdatas) {
-      if (sdata != null)
-        result2.add(sdata);
-    }
-    return result2;
+    return StructureDataComposite.create(sdatas);
   }
 
 

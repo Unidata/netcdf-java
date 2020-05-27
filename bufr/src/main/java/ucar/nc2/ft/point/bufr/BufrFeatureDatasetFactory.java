@@ -21,7 +21,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataComposite;
 import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureDataProxy;
 import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
@@ -58,7 +57,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
   private static CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
   private static String bufrAltUnits = "m"; // LOOK fake
-
 
   @Override
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
@@ -380,47 +378,10 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       return needed ? new StructureDataMunged2(org) : org;
     }
 
-    class StructureDataMunged extends StructureDataProxy {
-
-      StructureDataMunged(StructureData sdata) throws IOException {
-        super(sdata);
-
-        // munge the StructureMembers
-        StructureMembers sm = new StructureMembers(sdataName);
-
-        for (StructureMembers.Member m : sdata.getMembers()) {
-          Action act = actions.get(m.getName());
-          if (act == null) {
-            sm.addMember(m);
-
-          } else if (act.what == BufrCdmIndexProto.FldAction.asMissing) {
-            ArraySequence seq = sdata.getArraySequence(m);
-            StructureDataIterator iter = seq.getStructureDataIterator();
-            if (!iter.hasNext()) {
-              for (StructureMembers.Member childMember : seq.getMembers()) {
-                sm.addMember(childMember); // LOOK ??
-              }
-            } else {
-              StructureData childStruct = iter.next();
-              for (StructureMembers.Member childMember : childStruct.getMembers()) {
-                sm.addMember(childMember); // LOOK ??
-              }
-
-            }
-
-          } else {
-            sm.addMember(m);
-          }
-        }
-
-        this.members = sm;
-      }
-    } // StructureDataMunged
-
-    class StructureDataMunged2 extends StructureDataComposite {
+    // LOOK needs to be ported to immutable StructureDataComposite
+    private class StructureDataMunged2 extends StructureDataComposite {
 
       StructureDataMunged2(StructureData sdata) throws IOException {
-
         add(sdata);
         for (StructureMembers.Member m : sdata.getMembers()) {
           Action act = actions.get(m.getName());
@@ -445,13 +406,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       }
     }
 
-
     StructureData makeMissing(StructureMembers.Member seqm, ArraySequence seq) {
       StructureData result = missingData.get(seqm.getName());
       if (result != null)
         return result;
 
-      StructureMembers sm = new StructureMembers(seq.getStructureMembers());
+      StructureMembers sm = seq.getStructureMembers().toBuilder(false).build();
       StructureDataW resultW = new StructureDataW(sm);
       for (StructureMembers.Member m : sm.getMembers()) {
         VariableDS var = vars.get(m.getName());
@@ -463,8 +423,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
       return resultW;
     }
 
-
-
   } // Munge
+
 
 }

@@ -48,8 +48,7 @@ public class StructureDataDeep extends StructureDataA {
         return abb;
     }
 
-    StructureMembers smo = as.getStructureMembers();
-    StructureMembers sm = new StructureMembers(smo);
+    StructureMembers sm = as.getStructureMembers().toBuilder(false).build();
     ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
     ArrayStructureBB.setOffsets(sm); // this makes the packing canonical
     if (bo != null) {
@@ -97,7 +96,7 @@ public class StructureDataDeep extends StructureDataA {
    * @return ArrayStructureBB with all data self contained
    */
   public static ArrayStructureBB copyToArrayBB(StructureData sdata) {
-    return copyToArrayBB(sdata, new StructureMembers(sdata.getStructureMembers()), ByteOrder.BIG_ENDIAN);
+    return copyToArrayBB(sdata, sdata.getStructureMembers().toBuilder(false).build(), ByteOrder.BIG_ENDIAN);
   }
 
   /**

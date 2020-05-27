@@ -7,10 +7,10 @@ package ucar.ma2;
 
 /**
  * A StructureData with scalar data.
- *
- * @author caron
- * @since Jan 26, 2009
+ * 
+ * @deprecated use StructureDataFromMember
  */
+@Deprecated
 public class StructureDataScalar extends StructureDataW {
 
   public StructureDataScalar(String name) {
@@ -61,42 +61,4 @@ public class StructureDataScalar extends StructureDataW {
     Array data = ArrayChar.makeFromString(val, max_len);
     setMemberData(m, data);
   }
-
-
-  /*
-   * public void addMember(String name, String desc, String units, double val) {
-   * StructureMembers.Member m = members.addMember(name, desc, units, DataType.DOUBLE, new int[0]);
-   * ArrayDouble.D0 data = new ArrayDouble.D0();
-   * data.set(val);
-   * setMemberData(m, data);
-   * }
-   * 
-   * public void addMember(String name, String desc, String units, float val) {
-   * StructureMembers.Member m = members.addMember(name, desc, units, DataType.FLOAT, new int[0]);
-   * ArrayFloat.D0 data = new ArrayFloat.D0();
-   * data.set(val);
-   * setMemberData(m, data);
-   * }
-   * 
-   * public void addMember(String name, String desc, String units, short val) {
-   * StructureMembers.Member m = members.addMember(name, desc, units, DataType.SHORT, new int[0]);
-   * ArrayShort.D0 data = new ArrayShort.D0();
-   * data.set(val);
-   * setMemberData(m, data);
-   * }
-   * 
-   * public void addMember(String name, String desc, String units, int val) {
-   * StructureMembers.Member m = members.addMember(name, desc, units, DataType.INT, new int[0]);
-   * ArrayInt.D0 data = new ArrayInt.D0();
-   * data.set(val);
-   * setMemberData(m, data);
-   * }
-   * 
-   * /* public void addMember(String name, String desc, String units, long val) {
-   * StructureMembers.Member m = members.addMember(name, desc, units, DataType.LONG, new int[0]);
-   * ArrayLong.D0 data = new ArrayLong.D0();
-   * data.set(val);
-   * setMemberData(m, data);
-   * }
-   */
 }

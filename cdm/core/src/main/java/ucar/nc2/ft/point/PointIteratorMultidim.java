@@ -36,7 +36,6 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
   private int count, npts;
   private PointFeature feature;
 
-
   public PointIteratorMultidim(String name, List<Variable> vars, int outerIndex, Filter filter) {
     this.vars = vars;
     this.outerIndex = outerIndex;
@@ -45,13 +44,14 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     Variable v = vars.get(0);
     npts = v.getDimension(1).getLength();
 
-    members = new StructureMembers(name);
+    StructureMembers.Builder builder = StructureMembers.builder().setName(name);
     for (Variable var : vars) {
       int[] shape = var.getShape();
       int[] newShape = new int[shape.length - 2];
       System.arraycopy(shape, 2, newShape, 0, shape.length - 2);
-      members.addMember(var.getShortName(), var.getDescription(), var.getUnitsString(), var.getDataType(), newShape);
+      builder.addMember(var.getShortName(), var.getDescription(), var.getUnitsString(), var.getDataType(), newShape);
     }
+    members = builder.build();
   }
 
   @Override

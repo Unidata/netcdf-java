@@ -675,16 +675,16 @@ public class NcStreamDataCol {
     // accumulate parent sections
     parentSection = section.prepend(parentSection);
 
-    StructureMembers members = new StructureMembers(dproto.getName());
+    StructureMembers.Builder members = StructureMembers.builder().setName(dproto.getName());
     for (NcStreamProto.DataCol memberData : structData.getMemberDataList()) {
       decodeMemberData(members, memberData, parentSection);
     }
 
-    return new ArrayStructureMA(members, section.getShape());
+    return new ArrayStructureMA(members.build(), section.getShape());
   }
 
-  private void decodeMemberData(StructureMembers members, NcStreamProto.DataCol memberData, Section parentSection)
-      throws IOException {
+  private void decodeMemberData(StructureMembers.Builder members, NcStreamProto.DataCol memberData,
+      Section parentSection) throws IOException {
     String name = memberData.getName();
     DataType dataType = NcStream.convertDataType(memberData.getDataType());
     Section section = NcStream.decodeSection(memberData.getSection());
@@ -695,7 +695,7 @@ public class NcStreamDataCol {
     if (memberData.getIsVlen())
       msection = msection.appendRange(Range.VLEN);
 
-    StructureMembers.Member result = members.addMember(name, null, null, dataType, msection.getShape());
+    StructureMembers.MemberBuilder result = members.addMember(name, null, null, dataType, msection.getShape());
     Array data = decode(memberData, parentSection);
     result.setDataArray(data);
   }
