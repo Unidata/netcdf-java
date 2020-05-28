@@ -13,14 +13,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -46,11 +42,11 @@ public class TestGeoTiffWriter2 {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {topdir + "formats/dmsp/F14200307192230.n.OIS", "infraredImagery",
-        new LatLonRect(new LatLonPointImpl(-5, -52.0), new LatLonPointImpl(25, -20.0))});
+        new LatLonRect(LatLonPoint.create(-5, -52.0), LatLonPoint.create(25, -20.0))});
 
     // this fails
     // result.add(new Object[]{topdir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4",
-    // "surf_salt_flux", new LatLonRect(new LatLonPointImpl(43, 141), 5, 5)});
+    // "surf_salt_flux", new LatLonRect(LatLonPoint.create(43, 141), 5, 5)});
 
     return result;
   }

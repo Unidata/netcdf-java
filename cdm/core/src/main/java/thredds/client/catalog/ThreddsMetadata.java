@@ -40,7 +40,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
@@ -259,8 +259,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
         this.names = null;
 
       } else {
-        LatLonPointImpl llpt = bb.getLowerLeftPoint();
-        LatLonPointImpl urpt = bb.getUpperRightPoint();
+        LatLonPoint llpt = bb.getLowerLeftPoint();
+        LatLonPoint urpt = bb.getUpperRightPoint();
         double height = urpt.getLatitude() - llpt.getLatitude();
 
         this.eastwest = new GeospatialRange(llpt.getLongitude(), bb.getWidth(), dX, CDM.LON_UNITS);
@@ -437,7 +437,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
 
     public LatLonRect getBoundingBox() {
       return isGlobal ? new LatLonRect()
-          : new LatLonRect(new LatLonPointImpl(getLatStart(), getLonStart()), getLatExtent(), getLonExtent());
+          : new LatLonRect(LatLonPoint.create(getLatStart(), getLonStart()), getLatExtent(), getLonExtent());
     }
   }
 

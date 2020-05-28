@@ -19,7 +19,7 @@ import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -57,7 +57,7 @@ public class TestCoverageCrossSeamWriteFile {
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(10.0, 40.0), 50.0, 120.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(10.0, 40.0), 50.0, 120.0);
       writeTestFile(gcs, coverage, bbox, new int[] {1, 51, 121});
     }
   }
@@ -83,7 +83,7 @@ public class TestCoverageCrossSeamWriteFile {
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 120.0);
       writeTestFile(gcs, coverage, bbox, new int[] {1, 11, 121});
     }
   }
@@ -111,7 +111,7 @@ public class TestCoverageCrossSeamWriteFile {
       Assert.assertNotNull("HorizCoordSys", hcs);
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 120.0);
       writeTestFile(gcs, coverage, bbox, new int[] {1, 21, 241});
     }
   }

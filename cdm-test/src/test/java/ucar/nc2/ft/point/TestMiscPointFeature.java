@@ -54,7 +54,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -357,7 +357,7 @@ public class TestMiscPointFeature {
           // subset criteria not important, just want to get data
           // into flattened representation
           PointFeatureCollection pfc =
-              stsfc.flatten(new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
+              stsfc.flatten(new LatLonRect(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180)),
                   CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"),
                       CalendarDate.parseISOformat(null, "2100-01-01")));
 
@@ -404,7 +404,7 @@ public class TestMiscPointFeature {
       sample = time < 1;
       DsgFeatureCollection fc = collectionList.get(0);
       PointFeatureCollection collection = null;
-      LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
+      LatLonRect llr = new LatLonRect(LatLonPoint.create(33.4, -92.2), LatLonPoint.create(47.9, -75.89));
       System.out.println("llr = " + llr);
       if (fc instanceof PointFeatureCollection) {
         collection = (PointFeatureCollection) fc;

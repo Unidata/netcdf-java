@@ -563,7 +563,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
       // we have to project in order to find the origin
       LambertConformal lc = new LambertConformal(latin1, lov, latin1, latin2);
-      ProjectionPoint start = lc.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint start = lc.latLonToProj(LatLonPoint.create(la1, lo1));
       if (debug)
         System.out.println("start at proj coord " + start);
       startx = start.getX();
@@ -590,7 +590,7 @@ public class NUWGConvention extends CoordSysBuilder {
       Stereographic ps = new Stereographic(90.0, lov, .933);
 
       // we have to project in order to find the origin
-      ProjectionPoint start = ps.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint start = ps.latLonToProj(LatLonPoint.create(la1, lo1));
       if (debug)
         System.out.println("start at proj coord " + start);
       startx = start.getX();

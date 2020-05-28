@@ -62,7 +62,6 @@ public abstract class AbstractGisFeature implements GisFeature {
    * @return shape corresponding to this feature
    */
   public Shape getProjectedShape(ProjectionImpl displayProject) {
-    LatLonPointImpl workL = new LatLonPointImpl();
     ProjectionPointImpl lastW = new ProjectionPointImpl();
     GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, getNumPoints());
 
@@ -76,7 +75,7 @@ public abstract class AbstractGisFeature implements GisFeature {
       boolean skipPrev = false;
       int count = 0;
       for (int i = 0; i < gp.getNumPoints(); i++) {
-        workL.set(yy[i], xx[i]);
+        LatLonPoint workL = LatLonPoint.create(yy[i], xx[i]);
         ProjectionPoint pt = displayProject.latLonToProj(workL);
 
         if (showPts) {

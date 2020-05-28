@@ -22,7 +22,7 @@ import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -82,7 +82,7 @@ public class TestCoverageAsPointFileWriter {
 
       SubsetParams params = new SubsetParams();
       params.setVariables(covList);
-      params.setLatLonPoint(new LatLonPointImpl(35.0, -140.0));
+      params.setLatLonPoint(LatLonPoint.create(35.0, -140.0));
 
       CoverageAsPoint writer = new CoverageAsPoint(gds, covList, params);
       FeatureDatasetPoint fdp = writer.asFeatureDatasetPoint();

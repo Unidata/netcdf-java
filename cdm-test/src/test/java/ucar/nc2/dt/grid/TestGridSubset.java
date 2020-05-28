@@ -143,7 +143,7 @@ public class TestGridSubset {
       assert grid.getRank() == 3;
 
       // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(-16.79, -20.5), LatLonPoint.create(14.1, 20.9));
 
       ProjectionImpl p = gcs.getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
@@ -195,7 +195,7 @@ public class TestGridSubset {
 
       logger.debug(Ncdump.printArray(data, "grid_section", null));
 
-      LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
+      LatLonPoint p0 = LatLonPoint.create(29.0, -90.0);
       LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
       grid_section = grid.subset(null, null, bbox, 1, 1, 1);
       data = grid_section.readDataSlice(-1, -1, -1, -1);
@@ -209,7 +209,7 @@ public class TestGridSubset {
       ProjectionRect rect = gcs.getBoundingBox();
       logger.debug(" rect = {}", rect);
 
-      p0 = new LatLonPointImpl(30.0, -90.0);
+      p0 = LatLonPoint.create(30.0, -90.0);
       bbox = new LatLonRect(p0, 1.0, 2.0);
       grid_section = grid.subset(null, null, bbox, 1, 1, 1);
       data = grid_section.readDataSlice(-1, -1, -1, -1);
@@ -238,10 +238,10 @@ public class TestGridSubset {
 
       logger.debug("original bbox = {}", gcs.getBoundingBox());
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
       testLatLonSubset(grid, bbox, new int[] {141, 281});
 
-      bbox = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
+      bbox = new LatLonRect(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0);
       testLatLonSubset(grid, bbox, new int[] {800, 1300});
     }
   }
@@ -279,7 +279,7 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox().toString2());
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
       logger.debug("constrain bbox = {}", bbox.toString2());
 
       GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
@@ -321,7 +321,7 @@ public class TestGridSubset {
 
       logger.debug("original bbox = {}" + gcs.getBoundingBox());
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
 
       LatLonProjection llproj = new LatLonProjection();
       ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
@@ -392,7 +392,7 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
 
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(), 20.0, 40.0);
+      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(LatLonPoint.create(), 20.0, 40.0);
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
@@ -424,7 +424,7 @@ public class TestGridSubset {
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
 
       ucar.unidata.geoloc.LatLonRect llbb_subset =
-          new LatLonRect(new LatLonPointImpl(38, -110), new LatLonPointImpl(42, -90));
+          new LatLonRect(LatLonPoint.create(38, -110), LatLonPoint.create(42, -90));
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
@@ -467,7 +467,7 @@ public class TestGridSubset {
 
       logger.debug("original bbox = {}", gcs.getBoundingBox());
 
-      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
 
       LatLonProjection llproj = new LatLonProjection();
       ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
@@ -509,7 +509,7 @@ public class TestGridSubset {
       logger.debug("original bbox = {}", gcs.getBoundingBox());
       logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
 
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(), 20.0, 40.0);
+      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(LatLonPoint.create(), 20.0, 40.0);
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);

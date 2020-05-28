@@ -83,23 +83,23 @@ public class TestLatLonProjection extends TestCase {
   }
 
   public void testIntersection() {
-    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
-    LatLonRect bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
+    LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
+    LatLonRect bbox2 = new LatLonRect(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0);
     assert testIntersection(bbox, bbox2) != null;
 
-    bbox = new LatLonRect(new LatLonPointImpl(-90.0, -100.0), 90.0, 300.0);
-    bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
+    bbox = new LatLonRect(LatLonPoint.create(-90.0, -100.0), 90.0, 300.0);
+    bbox2 = new LatLonRect(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0);
     assert testIntersection(bbox, bbox2) != null;
 
-    bbox2 = new LatLonRect(new LatLonPointImpl(10, -180.0), 120.0, 300.0);
+    bbox2 = new LatLonRect(LatLonPoint.create(10, -180.0), 120.0, 300.0);
     assert testIntersection(bbox, bbox2) == null;
 
-    bbox = new LatLonRect(new LatLonPointImpl(-90.0, -100.0), 90.0, 200.0);
-    bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, 120.0), 120.0, 300.0);
+    bbox = new LatLonRect(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0);
+    bbox2 = new LatLonRect(LatLonPoint.create(-40.0, 120.0), 120.0, 300.0);
     assert testIntersection(bbox, bbox2) != null;
 
-    bbox = new LatLonRect(new LatLonPointImpl(-90.0, -100.0), 90.0, 200.0);
-    bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, -220.0), 120.0, 140.0);
+    bbox = new LatLonRect(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0);
+    bbox2 = new LatLonRect(LatLonPoint.create(-40.0, -220.0), 120.0, 140.0);
     assert testIntersection(bbox, bbox2) != null;
   }
 
@@ -113,50 +113,50 @@ public class TestLatLonProjection extends TestCase {
 
     // ---------
     // --------
-    bbox = testExtend(new LatLonRect(new LatLonPointImpl(-81.0, 30.0), new LatLonPointImpl(-60.0, 120.0)),
-        new LatLonRect(new LatLonPointImpl(-81.0, -10.0), new LatLonPointImpl(-60.0, 55.0)));
+    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, 30.0), LatLonPoint.create(-60.0, 120.0)),
+        new LatLonRect(LatLonPoint.create(-81.0, -10.0), LatLonPoint.create(-60.0, 55.0)));
     Assert.assertEquals(bbox.toString2(), 130.0, bbox.getWidth(), 0.01);
     Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     // ---------
     // ----
-    bbox = testExtend(new LatLonRect(new LatLonPointImpl(-81.0, -200.0), new LatLonPointImpl(-60.0, -100.0)),
-        new LatLonRect(new LatLonPointImpl(-81.0, 177.0), new LatLonPointImpl(-60.0, 200.0)));
+    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
+        new LatLonRect(LatLonPoint.create(-81.0, 177.0), LatLonPoint.create(-60.0, 200.0)));
     Assert.assertEquals(bbox.toString2(), 100.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     // ---------
     // --------------
-    bbox = testExtend(new LatLonRect(new LatLonPointImpl(-81.0, -200.0), new LatLonPointImpl(-60.0, -100.0)),
-        new LatLonRect(new LatLonPointImpl(-81.0, -150.0), new LatLonPointImpl(-60.0, 200.0)));
+    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
+        new LatLonRect(LatLonPoint.create(-81.0, -150.0), LatLonPoint.create(-60.0, 200.0)));
     Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
     Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     // -------
     // ---------
-    bbox = testExtend(new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 135.0)),
-        new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)));
+    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 135.0)),
+        new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)));
     Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
     Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     // ------
     // ------
-    bbox = testExtend(new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)),
-        new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 160.0)));
+    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
+        new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 160.0)));
     Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     // ---------
     // ------
-    bbox = testExtend(new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)),
-        new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)));
+    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
+        new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)));
     Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     // ---------
     // ------
-    bbox = testExtend(new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)),
-        new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)));
+    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)),
+        new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)));
     Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
   }

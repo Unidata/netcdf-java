@@ -20,7 +20,7 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DebugFlagsImpl;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -55,7 +55,7 @@ public class TestCFWriter2 {
       gridList.add(varName);
 
       NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut);
-      CFGridWriter2.writeFile(gds, gridList, new LatLonRect(new LatLonPointImpl(30, -109), 10, 50), null, 1, null, null,
+      CFGridWriter2.writeFile(gds, gridList, new LatLonRect(LatLonPoint.create(30, -109), 10, 50), null, 1, null, null,
           1, true, writer);
     }
 
@@ -71,7 +71,7 @@ public class TestCFWriter2 {
     System.out.printf("Open %s%n", fileIn);
 
     try (ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(fileIn)) {
-      LatLonRect llbb = new LatLonRect(new LatLonPointImpl(30, -109), 10, 50);
+      LatLonRect llbb = new LatLonRect(LatLonPoint.create(30, -109), 10, 50);
 
       long totalSize = CFGridWriter2.makeSizeEstimate(gds, null, null, null, 1, null, null, 1, true);
       long subsetSize = CFGridWriter2.makeSizeEstimate(gds, null, llbb, null, 1, null, null, 1, true);

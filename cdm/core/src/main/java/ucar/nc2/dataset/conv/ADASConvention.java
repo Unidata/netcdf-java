@@ -101,7 +101,7 @@ public class ADASConvention extends CoordSysBuilder {
       double lat_check = findAttributeDouble(ds, "CTRLAT", Double.NaN);
       double lon_check = findAttributeDouble(ds, "CTRLON", Double.NaN);
 
-      LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
+      LatLonPoint lpt0 = LatLonPoint.create(lat_check, lon_check);
       ProjectionPoint ppt0 = proj.latLonToProj(lpt0);
       System.out.println("CTR lpt0= " + lpt0 + " ppt0=" + ppt0);
 
@@ -113,11 +113,11 @@ public class ADASConvention extends CoordSysBuilder {
       float center_y = ystagData.get((int) ystag.getSize() - 1);
       System.out.println("CTR should be x,y= " + center_x / 2000 + ", " + center_y / 2000);
 
-      lpt0 = new LatLonPointImpl(lat_origin, lon_origin);
+      lpt0 = LatLonPoint.create(lat_origin, lon_origin);
       ppt0 = proj.latLonToProj(lpt0);
       System.out.println("ORIGIN lpt0= " + lpt0 + " ppt0=" + ppt0);
 
-      lpt0 = new LatLonPointImpl(lat_origin, lon_origin);
+      lpt0 = LatLonPoint.create(lat_origin, lon_origin);
       ppt0 = proj.latLonToProj(lpt0);
       System.out.println("TRUE ORIGIN lpt0= " + lpt0 + " ppt0=" + ppt0);
     }
@@ -147,7 +147,7 @@ public class ADASConvention extends CoordSysBuilder {
     double lat_check = findAttributeDouble(ds, "CTRLAT", Double.NaN);
     double lon_check = findAttributeDouble(ds, "CTRLON", Double.NaN);
 
-    LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
+    LatLonPoint lpt0 = LatLonPoint.create(lat_check, lon_check);
     ProjectionPoint ppt0 = proj.latLonToProj(lpt0);
 
     Variable xstag = ds.findVariable("x_stag");

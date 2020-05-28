@@ -416,7 +416,7 @@ public class GridRenderer {
     if ((wantx >= 0) && (wanty >= 0)) {
       LatLonPoint lpt;
       if (dataProjection.isLatLon())
-        lpt = new LatLonPointImpl(yaxis.getCoordValue(wanty), xaxis.getCoordValue(wantx));
+        lpt = LatLonPoint.create(yaxis.getCoordValue(wanty), xaxis.getCoordValue(wantx));
       else
         lpt = dataProjection.projToLatLon(xaxis.getCoordValue(wantx), yaxis.getCoordValue(wanty));
 

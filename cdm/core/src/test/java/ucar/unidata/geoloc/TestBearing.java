@@ -9,8 +9,8 @@ public class TestBearing {
   @Test
   public void testStuff() {
     // Bearing workBearing = new Bearing();
-    LatLonPointImpl pt1 = new LatLonPointImpl(40, -105);
-    LatLonPointImpl pt2 = new LatLonPointImpl(37.4, -118.4);
+    LatLonPoint pt1 = LatLonPoint.create(40, -105);
+    LatLonPoint pt2 = LatLonPoint.create(37.4, -118.4);
     Bearing b = calculateBearing(pt1, pt2, null);
     System.out.println("Bearing from " + pt1 + " to " + pt2 + " = \n\t" + b);
     LatLonPointImpl pt3 = new LatLonPointImpl();

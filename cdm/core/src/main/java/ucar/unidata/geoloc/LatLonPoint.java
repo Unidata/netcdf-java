@@ -47,4 +47,14 @@ public interface LatLonPoint {
    * @return {@code true} if this point is nearly equal to {@code that}.
    */
   boolean nearlyEquals(LatLonPoint that, double maxRelDiff);
+
+  /** Standard way to create a LatLonPoint. */
+  static LatLonPoint create(double lat, double lon) {
+    return new LatLonPointImpl(lat, lon);
+  }
+
+  /** Standard wat to create a "default" LatLonPoint. */
+  static LatLonPoint create() {
+    return new LatLonPointImpl();
+  }
 }

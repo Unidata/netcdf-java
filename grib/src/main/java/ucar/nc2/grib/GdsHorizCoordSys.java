@@ -111,8 +111,8 @@ public class GdsHorizCoordSys {
   }
 
   public String makeId() {
-    LatLonPointImpl center = (LatLonPointImpl) getCenterLatLon();
-    StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx + "-" + center.toString(2));
+    LatLonPoint center = getCenterLatLon();
+    StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx + "-" + LatLonPoints.toString(center, 2));
     StringUtil2.replace(result, ". ", "p-");
     return result.toString();
   }
@@ -124,7 +124,7 @@ public class GdsHorizCoordSys {
 
   public LatLonRect getLatLonBB() {
     if (isLatLon()) {
-      return new LatLonRect(new LatLonPointImpl(getStartY(), getStartX()), dy * (ny - 1), dx * (nx - 1));
+      return new LatLonRect(LatLonPoint.create(getStartY(), getStartX()), dy * (ny - 1), dx * (nx - 1));
     } else {
       return proj.projToLatLonBB(getProjectionBB());
     }

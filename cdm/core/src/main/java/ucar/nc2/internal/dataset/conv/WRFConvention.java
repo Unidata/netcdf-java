@@ -41,7 +41,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.FlatEarth;
@@ -296,7 +296,7 @@ public class WRFConvention extends CoordSystemBuilder {
       }
 
       if (proj != null) {
-        LatLonPointImpl lpt1 = new LatLonPointImpl(centralLat, centralLon); // center of the grid
+        LatLonPoint lpt1 = LatLonPoint.create(centralLat, centralLon); // center of the grid
         ProjectionPoint ppt1 = proj.latLonToProj(lpt1);
         centerX = ppt1.getX();
         centerY = ppt1.getY();

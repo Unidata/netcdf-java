@@ -269,80 +269,13 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
     return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
   }
 
-
-  /*
-   * MACROBODY
-   * latLonToProj {} {
-   * fromLat = Math.toRadians(fromLat);
-   * double lonDiff =
-   * Math.toRadians(LatLonPointImpl.lonNormal(fromLon-lon0Degrees));
-   * double g =
-   * sinLat0*Math.sin(fromLat) + cosLat0*Math.cos(fromLat)*Math.cos(lonDiff);
-   * 
-   * double kPrime = Math.sqrt(2/(1 + g));
-   * toX = R*kPrime*Math.cos(fromLat)*Math.sin(lonDiff) + falseEasting;
-   * toY = R*kPrime*(cosLat0*Math.sin(fromLat) - sinLat0*Math.cos(fromLat)*Math.cos(lonDiff)) + falseNorthing;
-   * }
-   * 
-   * projToLatLon {} {
-   * 
-   * fromX = fromX - falseEasting;
-   * fromY = fromY - falseNorthing;
-   * double rho = Math.sqrt(fromX*fromX + fromY*fromY);
-   * double c = 2*Math.asin(rho/(2*R));
-   * toLon = lon0;
-   * double temp = 0;
-   * if (Math.abs(rho) > TOLERANCE) {
-   * toLat = Math.asin(Math.cos(c)*sinLat0 + (fromY*Math.sin(c)*cosLat0/rho));
-   * if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
-   * temp = rho*cosLat0*Math.cos(c) - fromY*sinLat0*Math.sin(c);
-   * toLon = lon0 + Math.atan(fromX*Math.sin(c)/temp);
-   * } else if (lat0 == PI_OVER_4) {
-   * toLon = lon0 + Math.atan(fromX/-fromY);
-   * temp = -fromY;
-   * } else {
-   * toLon = lon0 + Math.atan(fromX/fromY);
-   * temp = fromY;
-   * }
-   * } else {
-   * toLat = lat0;
-   * }
-   * toLat= Math.toDegrees(toLat);
-   * toLon= Math.toDegrees(toLon);
-   * if (temp < 0) toLon += 180;
-   * toLon= LatLonPoints.lonNormal(toLon);
-   * }
-   * 
-   * 
-   * MACROBODY
-   */
-
-  /* BEGINGENERATED */
-
-  /*
-   * Note this section has been generated using the convert.tcl script.
-   * This script, run as:
-   * tcl convert.tcl LambertAzimuthalEqualArea.java
-   * takes the actual projection conversion code defined in the MACROBODY
-   * section above and generates the following 6 methods
-   */
-
-
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
 
-
     fromLat = Math.toRadians(fromLat);
-    double lonDiff = Math.toRadians(LatLonPointImpl.lonNormal(fromLon - lon0Degrees));
+    double lonDiff = Math.toRadians(LatLonPoints.lonNormal(fromLon - lon0Degrees));
     double g = sinLat0 * Math.sin(fromLat) + cosLat0 * Math.cos(fromLat) * Math.cos(lonDiff);
 
     double kPrime = Math.sqrt(2 / (1 + g));
@@ -353,19 +286,10 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double fromX = world.getX();
     double fromY = world.getY();
-
 
     fromX = fromX - falseEasting;
     fromY = fromY - falseNorthing;
@@ -524,7 +448,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
       double fromLon = fromLonA[i];
 
       fromLat = Math.toRadians(fromLat);
-      double lonDiff = Math.toRadians(LatLonPointImpl.lonNormal(fromLon - lon0Degrees));
+      double lonDiff = Math.toRadians(LatLonPoints.lonNormal(fromLon - lon0Degrees));
       double g = sinLat0 * Math.sin(fromLat) + cosLat0 * Math.cos(fromLat) * Math.cos(lonDiff);
 
       double kPrime = Math.sqrt(2 / (1 + g));

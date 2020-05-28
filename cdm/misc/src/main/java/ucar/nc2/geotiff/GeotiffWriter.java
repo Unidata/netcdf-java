@@ -23,7 +23,6 @@ import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.AlbersEqualArea;
 import ucar.unidata.geoloc.projection.LambertConformal;
@@ -510,13 +509,13 @@ public class GeotiffWriter implements Closeable {
     IndexIterator lonIter = lon.getIndexIterator();
     double xlon;
 
-    LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(ilon.set(0)));
-    LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
+    LatLonPoint p0 = LatLonPoint.create(0, lon.getFloat(ilon.set(0)));
+    LatLonPoint pN = LatLonPoint.create(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
 
     xlon = p0.getLongitude();
     while (lonIter.hasNext()) {
       float l = lonIter.getFloatNext();
-      LatLonPoint pn = new LatLonPointImpl(0, l);
+      LatLonPoint pn = LatLonPoint.create(0, l);
       if (pn.getLongitude() < xlon) {
         xlon = pn.getLongitude();
       }

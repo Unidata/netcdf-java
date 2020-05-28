@@ -170,4 +170,18 @@ public class LatLonPoints {
         || (pt.getY() == java.lang.Double.POSITIVE_INFINITY) || (pt.getY() == java.lang.Double.NEGATIVE_INFINITY);
   }
 
+  /**
+   * String representation in the form, eg 40.23N 105.1W
+   * 
+   * @param pt the LatLonPoint
+   * @param sigDigits significant digits
+   * @return String representation
+   */
+  public static String toString(LatLonPoint pt, int sigDigits) {
+    Formatter sbuff = new Formatter();
+    sbuff.format("%s %s", LatLonPoints.latToString(pt.getLatitude(), sigDigits),
+        LatLonPoints.lonToString(pt.getLongitude(), sigDigits));
+    return sbuff.toString();
+  }
+
 }

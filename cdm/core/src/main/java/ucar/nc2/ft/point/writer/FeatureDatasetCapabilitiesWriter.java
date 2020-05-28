@@ -27,7 +27,7 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.write.NcmlWriter;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import java.io.IOException;
@@ -199,8 +199,8 @@ public class FeatureDatasetCapabilitiesWriter {
     // This accounts for the implicit rounding errors that result from the use of
     // ucar.unidata.util.Format.dfrac when writing out the lat/lon box on the NCSS for Points dataset.html
     // page
-    LatLonPointImpl extendNorthEast = new LatLonPointImpl(bb.getLatMax() + bbExpand, bb.getLonMax() + bbExpand);
-    LatLonPointImpl extendSouthWest = new LatLonPointImpl(bb.getLatMin() - bbExpand, bb.getLonMin() - bbExpand);
+    LatLonPoint extendNorthEast = LatLonPoint.create(bb.getLatMax() + bbExpand, bb.getLonMax() + bbExpand);
+    LatLonPoint extendSouthWest = LatLonPoint.create(bb.getLatMin() - bbExpand, bb.getLonMin() - bbExpand);
     bb.extend(extendNorthEast);
     bb.extend(extendSouthWest);
 
@@ -256,7 +256,7 @@ public class FeatureDatasetCapabilitiesWriter {
       double east = Double.parseDouble(eastS);
       double south = Double.parseDouble(southS);
       double north = Double.parseDouble(northS);
-      return new LatLonRect(new LatLonPointImpl(south, east), new LatLonPointImpl(north, west));
+      return new LatLonRect(LatLonPoint.create(south, east), LatLonPoint.create(north, west));
 
     } catch (Exception e) {
       return null;

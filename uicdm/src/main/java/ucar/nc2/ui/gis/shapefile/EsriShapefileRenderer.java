@@ -95,7 +95,7 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
 
   public LatLonRect getPreferredArea() {
     Rectangle2D bb = esri.getBoundingBox();
-    return new LatLonRect(new LatLonPointImpl(bb.getMinY(), bb.getMinX()), bb.getHeight(), bb.getWidth());
+    return new LatLonRect(LatLonPoint.create(bb.getMinY(), bb.getMinX()), bb.getHeight(), bb.getWidth());
   }
 
   protected java.util.List getFeatures() {

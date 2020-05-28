@@ -15,7 +15,7 @@ public class TestTransverseMercatorProjection {
     double[] x = new double[lat.length];
     double[] y = new double[lat.length];
     for (int i = 0; i < lat.length; ++i) {
-      LatLonPoint lp = new LatLonPointImpl(lat[i], lon[i]);
+      LatLonPoint lp = LatLonPoint.create(lat[i], lon[i]);
       ProjectionPoint p = proj.latLonToProj(lp);
       System.out.println(lp.getLatitude() + ", " + lp.getLongitude() + ": " + p.getX() + ", " + p.getY());
       x[i] = p.getX();

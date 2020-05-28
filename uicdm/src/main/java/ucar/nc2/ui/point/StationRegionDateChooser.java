@@ -14,7 +14,7 @@ import ucar.ui.widget.IndependentDialog;
 import ucar.ui.widget.PopupManager;
 import ucar.nc2.ui.widget.RangeDateSelector;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -182,14 +182,14 @@ public class StationRegionDateChooser extends NPController {
     if (regionSelect) {
       double defArea = 1.0 / 8; // default area is 1/4 total
       LatLonRect llbb = np.getProjectionImpl().getDefaultMapAreaLL();
-      LatLonPointImpl left = llbb.getLowerLeftPoint();
-      LatLonPointImpl right = llbb.getUpperRightPoint();
+      LatLonPoint left = llbb.getLowerLeftPoint();
+      LatLonPoint right = llbb.getUpperRightPoint();
       double centerLon = llbb.getCenterLon();
       double width = llbb.getWidth();
       double centerLat = (right.getLatitude() + left.getLatitude()) / 2;
       double height = right.getLatitude() - left.getLatitude();
-      right = new LatLonPointImpl(centerLat + height * defArea, centerLon + width * defArea);
-      left = new LatLonPointImpl(centerLat - height * defArea, centerLon - width * defArea);
+      right = LatLonPoint.create(centerLat + height * defArea, centerLon + width * defArea);
+      left = LatLonPoint.create(centerLat - height * defArea, centerLon - width * defArea);
       LatLonRect selected = new LatLonRect(left, right);
       setGeoSelection(selected);
 
@@ -274,7 +274,7 @@ public class StationRegionDateChooser extends NPController {
         double minLat = minLatField.getDouble();
         double maxLon = maxLonField.getDouble();
         double maxLat = maxLatField.getDouble();
-        LatLonRect llbb = new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
+        LatLonRect llbb = new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
         setGeoSelection(llbb);
         redraw();
       });

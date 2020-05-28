@@ -878,7 +878,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   @Override
   public int[] findXYindexFromLatLon(double lat, double lon, int[] result) {
     Projection dataProjection = getProjection();
-    ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon));
+    ProjectionPoint pp = dataProjection.latLonToProj(LatLonPoint.create(lat, lon));
 
     return findXYindexFromCoord(pp.getX(), pp.getY(), result);
   }
@@ -895,7 +895,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   @Override
   public int[] findXYindexFromLatLonBounded(double lat, double lon, int[] result) {
     Projection dataProjection = getProjection();
-    ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon));
+    ProjectionPoint pp = dataProjection.latLonToProj(LatLonPoint.create(lat, lon));
 
     return findXYindexFromCoordBounded(pp.getX(), pp.getY(), result);
   }
@@ -1027,7 +1027,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       y = horiz2D.getCoordValue(yindex, xindex);
     }
 
-    return isLatLon() ? new LatLonPointImpl(y, x) : getLatLon(x, y);
+    return isLatLon() ? LatLonPoint.create(y, x) : getLatLon(x, y);
   }
 
   public LatLonPoint getLatLon(double xcoord, double ycoord) {
@@ -1054,7 +1054,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         double deltaLat = horizYaxis.getMaxValue() - startLat;
         double deltaLon = horizXaxis.getMaxValue() - startLon;
 
-        LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
+        LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
         llbb = new LatLonRect(llpt, deltaLat, deltaLon);
 
       } else {
@@ -1090,7 +1090,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
      * includesSouthPole = true;
      * 
      * if (includesNorthPole && !includesSouthPole) {
-     * llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+     * llbb = new LatLonRect(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
      * llbb.extend(lrpt);
      * llbb.extend(urpt);
      * llbb.extend(ulpt);
@@ -1100,7 +1100,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
      * //llbb.extend( new LatLonRect( urpt, ulpt ) );
      * //llbb.extend( new LatLonRect( ulpt, llpt ) );
      * } else if (includesSouthPole && !includesNorthPole) {
-     * llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+     * llbb = new LatLonRect(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
      * llbb.extend(lrpt);
      * llbb.extend(urpt);
      * llbb.extend(ulpt);
@@ -1160,10 +1160,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     if (isLatLon()) {
 
-      LatLonPointImpl llpt = rect.getLowerLeftPoint();
-      LatLonPointImpl urpt = rect.getUpperRightPoint();
-      LatLonPointImpl lrpt = rect.getLowerRightPoint();
-      LatLonPointImpl ulpt = rect.getUpperLeftPoint();
+      LatLonPoint llpt = rect.getLowerLeftPoint();
+      LatLonPoint urpt = rect.getUpperRightPoint();
+      LatLonPoint lrpt = rect.getLowerRightPoint();
+      LatLonPoint ulpt = rect.getUpperLeftPoint();
 
       minx = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
       miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
@@ -1715,7 +1715,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       double deltaLat = endy - starty;
       double deltaLon = endx - startx;
 
-      LatLonPoint llpt = new LatLonPointImpl(starty, startx);
+      LatLonPoint llpt = LatLonPoint.create(starty, startx);
       return new LatLonRect(llpt, deltaLat, deltaLon);
 
     }
@@ -1748,13 +1748,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     LatLonRect llbb;
 
     if (includesNorthPole && !includesSouthPole) {
-      llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+      llbb = new LatLonRect(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
       llbb.extend(lrpt);
       llbb.extend(urpt);
       llbb.extend(ulpt);
 
     } else if (includesSouthPole && !includesNorthPole) {
-      llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+      llbb = new LatLonRect(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
       llbb.extend(lrpt);
       llbb.extend(urpt);
       llbb.extend(ulpt);

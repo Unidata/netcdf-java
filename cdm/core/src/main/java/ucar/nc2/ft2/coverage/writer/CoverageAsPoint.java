@@ -36,7 +36,8 @@ import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.Misc;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -51,7 +52,7 @@ public class CoverageAsPoint {
   private CoverageCollection gcd;
   private List<VarData> varData;
   private SubsetParams subset;
-  private LatLonPointImpl latLonPoint;
+  private LatLonPoint latLonPoint;
   private CalendarDateUnit dateUnit;
 
   private class VarData {
@@ -74,7 +75,7 @@ public class CoverageAsPoint {
     this.gcd = gcd;
     this.subset = subset;
 
-    latLonPoint = (LatLonPointImpl) subset.get(SubsetParams.latlonPoint);
+    latLonPoint = (LatLonPoint) subset.get(SubsetParams.latlonPoint);
     if (latLonPoint == null)
       throw new IllegalArgumentException("No latlon point");
 
@@ -125,7 +126,7 @@ public class CoverageAsPoint {
     @Override
     protected StationHelper createStationHelper() {
       StationHelper helper = new StationHelper();
-      String name = String.format("GridPointAt[%s]", latLonPoint.toString(3));
+      String name = String.format("GridPointAt[%s]", LatLonPoints.toString(latLonPoint, 3));
       name = StringUtil2.replace(name.trim(), ' ', "_");
       helper.addStation(new MyStationFeature(name, name, null, latLonPoint.getLatitude(), latLonPoint.getLongitude(),
           0.0, dateUnit, null, -1));

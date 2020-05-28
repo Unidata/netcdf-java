@@ -271,7 +271,7 @@ public class WRFConvention extends CoordSysBuilder {
       }
 
       if (proj != null) {
-        LatLonPointImpl lpt1 = new LatLonPointImpl(centralLat, centralLon); // center of the grid
+        LatLonPoint lpt1 = LatLonPoint.create(centralLat, centralLon); // center of the grid
         ProjectionPoint ppt1 = proj.latLonToProj(lpt1);
         centerX = ppt1.getX();
         centerY = ppt1.getY();

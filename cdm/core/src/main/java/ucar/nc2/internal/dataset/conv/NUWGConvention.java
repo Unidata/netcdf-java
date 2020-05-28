@@ -30,7 +30,7 @@ import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
@@ -524,7 +524,7 @@ public class NUWGConvention extends CoordSystemBuilder {
 
       // we have to project in order to find the origin
       LambertConformal lc = new LambertConformal(latin1, lov, latin1, latin2);
-      ProjectionPoint start = lc.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint start = lc.latLonToProj(LatLonPoint.create(la1, lo1));
       if (debug)
         System.out.println("start at proj coord " + start);
       startx = start.getX();
@@ -551,7 +551,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       Stereographic ps = new Stereographic(90.0, lov, .933);
 
       // we have to project in order to find the origin
-      ProjectionPoint start = ps.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint start = ps.latLonToProj(LatLonPoint.create(la1, lo1));
       if (debug)
         System.out.println("start at proj coord " + start);
       startx = start.getX();

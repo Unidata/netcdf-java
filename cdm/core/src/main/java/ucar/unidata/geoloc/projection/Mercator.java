@@ -277,13 +277,6 @@ public class Mercator extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
@@ -304,14 +297,6 @@ public class Mercator extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double fromX = world.getX() - falseEasting;

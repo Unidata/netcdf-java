@@ -108,7 +108,7 @@ public class NavigatedPanel extends JPanel {
   // track reference point
   private boolean isReferenceMode, hasReference;
   private ProjectionPointImpl refWorld = new ProjectionPointImpl();
-  private LatLonPointImpl refLatLon = new LatLonPointImpl();
+  private LatLonPoint refLatLon = LatLonPoint.create();
   private Point2D refScreen = new Point2D.Double();
   private int referenceSize = 12;
   private Cursor referenceCursor;
@@ -129,7 +129,6 @@ public class NavigatedPanel extends JPanel {
   // some working objects to minimize excessive garbage collection
   private StringBuffer sbuff = new StringBuffer(100);
   private ProjectionPointImpl workW = new ProjectionPointImpl();
-  private LatLonPointImpl workL = new LatLonPointImpl();
   private Point2D workS = new Point2D.Double();
   private Rectangle myBounds = new Rectangle();
   private ProjectionRect boundingBox = new ProjectionRect();
@@ -706,7 +705,7 @@ public class NavigatedPanel extends JPanel {
 
     workS.setLocation(mousex, mousey);
     navigate.screenToWorld(workS, workW);
-    workL.set(project.projToLatLon(workW));
+    LatLonPoint workL = project.projToLatLon(workW);
     if (lmMove.hasListeners())
       lmMove.sendEvent(new CursorMoveEvent(this, workW));
 
@@ -719,7 +718,7 @@ public class NavigatedPanel extends JPanel {
       sbuff.append(workW).append(" -> ");
     }
 
-    sbuff.append(workL.toString(5));
+    sbuff.append(LatLonPoints.toString(workL, 5));
 
     if (hasReference) {
       Bearing bearing = Bearing.calculateBearing(refLatLon, workL);
@@ -786,7 +785,7 @@ public class NavigatedPanel extends JPanel {
         hasReference = true;
         refScreen.setLocation(e.getX(), e.getY());
         navigate.screenToWorld(refScreen, refWorld);
-        refLatLon.set(project.projToLatLon(refWorld));
+        refLatLon = project.projToLatLon(refWorld);
         setCursor(REFERENCE_CURSOR);
         drawG();
       } else {

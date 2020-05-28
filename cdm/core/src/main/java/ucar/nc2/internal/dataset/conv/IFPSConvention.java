@@ -28,7 +28,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.LambertConformal;
@@ -231,8 +231,6 @@ public class IFPSConvention extends CoordSystemBuilder {
     Array xData = Array.factory(DataType.FLOAT, new int[] {x_dim.getLength()});
     Array yData = Array.factory(DataType.FLOAT, new int[] {y_dim.getLength()});
 
-    LatLonPointImpl latlon = new LatLonPointImpl();
-
     Index latlonIndex = latData.getIndex();
     Index xIndex = xData.getIndex();
     Index yIndex = yData.getIndex();
@@ -241,7 +239,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     for (int i = 0; i < x_dim.getLength(); i++) {
       double lat = latData.getDouble(latlonIndex.set1(i));
       double lon = lonData.getDouble(latlonIndex);
-      latlon.set(lat, lon);
+      LatLonPoint latlon = LatLonPoint.create(lat, lon);
       ProjectionPoint pp = proj.latLonToProj(latlon);
       xData.setDouble(xIndex.set(i), pp.getX());
     }
@@ -250,7 +248,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     for (int i = 0; i < y_dim.getLength(); i++) {
       double lat = latData.getDouble(latlonIndex.set0(i));
       double lon = lonData.getDouble(latlonIndex);
-      latlon.set(lat, lon);
+      LatLonPoint latlon = LatLonPoint.create(lat, lon);
       ProjectionPoint pp = proj.latLonToProj(latlon);
       yData.setDouble(yIndex.set(i), pp.getY());
     }
