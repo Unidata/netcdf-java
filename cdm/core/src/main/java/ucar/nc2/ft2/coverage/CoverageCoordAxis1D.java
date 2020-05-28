@@ -290,6 +290,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     if (!isRegular())
       return Optional.empty("subsetByIntervals only for regular longitude");
 
+    // adjust the resolution of the subset based on stride
+    double subsetResolution = stride > 1 ? stride * resolution : resolution;
+
     CoordAxisHelper helper = new CoordAxisHelper(this);
 
     double start = Double.NaN;
@@ -307,11 +310,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     }
 
     RangeComposite compositeRange = new RangeComposite(AxisType.Lon.toString(), ranges);
+    // number of points in the subset
     int npts = compositeRange.length();
-    double end = start + npts * resolution;
+    // need to use the subset resolution to figure out the end
+    double end = start + npts * subsetResolution;
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(this); // copy
-    builder.subset(npts, start, end, resolution, null);
+    builder.subset(npts, start, end, subsetResolution, null);
     builder.setRange(null);
     builder.setCompositeRange(compositeRange);
 
