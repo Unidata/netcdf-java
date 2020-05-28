@@ -414,19 +414,27 @@ public abstract class Grib2Gds {
       // GFS_Puerto_Rico_0p5deg seems to have deltaLat, deltaLon incorrectly encoded
       float scale = getScale();
       deltaLon = getOctet4(64) * scale;
-      float calcDelta = (lo2 - lo1) / (getNx() - 1); // more accurate - deltaLon may have roundoff
-      if (!Misc.nearlyEquals(deltaLon, calcDelta)) {
-        log.debug("deltaLon {} != calcDeltaLon {}", deltaLon, calcDelta);
-        deltaLon = calcDelta;
+      // if more than one grid point, can compare deltaLon against a calculated delta,
+      // which appears to be more accurate in some cases.
+      if (getNx() > 1) {
+        float calcDelta = (lo2 - lo1) / (getNx() - 1); // more accurate - deltaLon may have roundoff
+        if (!Misc.nearlyEquals(deltaLon, calcDelta)) {
+          log.debug("deltaLon {} != calcDeltaLon {}", deltaLon, calcDelta);
+          deltaLon = calcDelta;
+        }
       }
 
       deltaLat = getOctet4(68) * scale;
       if (la2 < la1)
         deltaLat = -deltaLat;
-      calcDelta = (la2 - la1) / (getNy() - 1); // more accurate - deltaLat may have roundoff
-      if (!Misc.nearlyEquals(deltaLat, calcDelta)) {
-        log.debug("deltaLat {} != calcDeltaLat {}", deltaLat, calcDelta);
-        deltaLat = calcDelta;
+      // if more than one grid point, can compare deltaLat against a calculated delta,
+      // which appears to be more accurate in some cases.
+      if (getNy() > 1) {
+        float calcDelta = (la2 - la1) / (getNy() - 1); // more accurate - deltaLat may have roundoff
+        if (!Misc.nearlyEquals(deltaLat, calcDelta)) {
+          log.debug("deltaLat {} != calcDeltaLat {}", deltaLat, calcDelta);
+          deltaLat = calcDelta;
+        }
       }
     }
 
