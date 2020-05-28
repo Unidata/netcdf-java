@@ -7,10 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle textual substitution for dataroots.
- * 
- * @deprecated will move in ver 6
+ * This needs to be accessible to NcML, thredds catalogs, feature collecion config.
+ * Good candidate for dependency injection.
  */
-@Deprecated
 public class AliasTranslator {
 
   private static Map<String, String> alias = new ConcurrentHashMap<>();

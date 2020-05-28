@@ -12,9 +12,8 @@ import java.util.StringTokenizer;
 /**
  * An implementation of DebugFlags
  * 
- * @deprecated will move in ver 6
+ * TODO will move in ver 6
  */
-@Deprecated
 public class DebugFlagsImpl implements DebugFlags {
 
   private Map<String, Boolean> map = new HashMap<>();

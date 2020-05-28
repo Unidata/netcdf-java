@@ -28,9 +28,8 @@ import java.util.*;
  * <li>to the current working directory
  * </ol>
  * 
- * @deprecated will move in ver 6
+ * TODO will move in ver 6
  */
-@Deprecated
 public class DiskCache2 {
   private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private static Timer timer;

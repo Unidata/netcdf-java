@@ -31,7 +31,6 @@ public class Documentation {
    * @param title : Xlink title, may be null.
    * @param type : user-defined InvDocumentation type
    * @param inlineContent : optional inline contents.
-   * @deprecated use builder
    */
   public Documentation(String href, URI uri, String title, String type, String inlineContent) {
     this.href = href;

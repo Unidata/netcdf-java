@@ -135,7 +135,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final String name;
     public final String role;
 
-    /** @deprecated use builder */
     public Contributor(String name, String role) {
       this.name = name;
       this.role = role;
@@ -160,7 +159,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final Vocab name;
     public final String url, email;
 
-    /** @deprecated use builder */
     public Source(Vocab name, String url, String email) {
       this.name = name;
       this.url = url;
@@ -199,7 +197,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final String text;
     public final String vocabulary;
 
-    /** @deprecated use builder */
     public Vocab(String text, String vocabulary) {
       this.text = text;
       this.vocabulary = vocabulary;
@@ -234,7 +231,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final List<Vocab> names;
 
     // constructor from catalog
-    /** @deprecated use builder */
     public GeospatialCoverage(GeospatialRange eastwest, GeospatialRange northsouth, GeospatialRange updown,
         List<Vocab> names, String zpositive) {
       this.eastwest = eastwest; // : new Range(defaultEastwest);
@@ -255,7 +251,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     }
 
     // constructor from dataset
-    /** @deprecated use builder */
     public GeospatialCoverage(LatLonRect bb, CoordinateAxis1D vaxis, double dX, double dY) {
       if (bb == null) {
         this.eastwest = null;
@@ -461,7 +456,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
      * @param size ending = start + size
      * @param resolution data resolution, or NaN if unknown
      * @param units what units are start, size in?
-     * @deprecated use builder
      */
     public GeospatialRange(double start, double size, double resolution, String units) {
       this.start = start;
@@ -470,12 +464,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       this.units = units;
     }
 
-    /**
-     * Copy constructor
-     *
-     * @param from copy this
-     * @deprecated use builder
-     */
+    /** Copy constructor */
     public GeospatialRange(GeospatialRange from) {
       this.start = from.start;
       this.size = from.size;
@@ -514,8 +503,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   public static class Variable implements Comparable<Variable> {
     public final String name, desc, vocabulary_name, units, id;
 
-    /** @deprecated use builder */
-    @Deprecated
     public Variable(String name, String desc, String vocabulary_name, String units, String id) {
       this.name = name;
       this.desc = desc;
@@ -556,8 +543,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final String href;
     public final URI resolved;
 
-    /** @deprecated use builder */
-    @Deprecated
     public UriResolved(String href, URI resolved) {
       this.href = href;
       this.resolved = resolved;
@@ -572,8 +557,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final UriResolved variableMap;
     public final List<Variable> variables;
 
-    /** @deprecated use builder */
-    @Deprecated
     public VariableGroup(String vocab, UriResolved vocabUri, UriResolved variableMap, List<Variable> variables) {
       this.vocabulary = vocab;
       this.vocabUri = vocabUri;
@@ -631,8 +614,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final boolean isInherited;
     public final Object contentObject;
 
-    /** @deprecated use builder */
-    @Deprecated
     public MetadataOther(String xlinkHref, String title, String type, String namespaceURI, String prefix,
         boolean inherited) {
       this.xlinkHref = xlinkHref;
@@ -644,8 +625,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       this.contentObject = null;
     }
 
-    /** @deprecated use builder */
-    @Deprecated
     public MetadataOther(String mtype, String namespaceURI, String namespacePrefix, boolean inherited,
         Object contentObject) {
       this.xlinkHref = null;

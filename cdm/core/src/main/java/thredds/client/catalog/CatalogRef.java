@@ -21,7 +21,6 @@ public class CatalogRef extends Dataset {
   private final String xlink;
   private boolean isRead;
 
-  /** @deprecated use builder */
   public CatalogRef(DatasetNode parent, String name, String xlink, Map<String, Object> flds,
       List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, accessBuilders, datasetBuilders);
@@ -32,11 +31,14 @@ public class CatalogRef extends Dataset {
     return xlink;
   }
 
-  // LOOK not so sure about this, prevents immutable
+  /** @deprecated do not use */
+  @Deprecated
   public boolean isRead() {
     return isRead;
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public void setRead(boolean isRead) {
     this.isRead = isRead;
   }

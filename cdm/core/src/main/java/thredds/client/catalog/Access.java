@@ -24,7 +24,6 @@ public class Access { // (5)
   private final String dataFormatS;
   private final long dataSize;
 
-  /** @deprecated use builder */
   public Access(Dataset dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
     this.dataset = dataset;
     this.urlPath = urlPath; // urlPath.startsWith("/") ? urlPath.substring(1) : urlPath;

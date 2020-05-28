@@ -69,9 +69,8 @@ import java.util.*;
  * doSomething(wf);
  * </pre>
  * 
- * @deprecated will move in ver 6
+ * TODO will move in ver 6
  */
-@Deprecated
 public class DiskCache {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private static String root;
