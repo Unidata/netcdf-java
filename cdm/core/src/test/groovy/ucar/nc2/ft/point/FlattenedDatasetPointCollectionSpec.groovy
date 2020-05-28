@@ -9,6 +9,7 @@ import ucar.nc2.time.CalendarDateRange
 import ucar.nc2.time.CalendarDateUnit
 import ucar.unidata.geoloc.EarthLocationImpl
 import ucar.unidata.geoloc.LatLonRect
+import ucar.unidata.geoloc.LatLonPoint
 
 /**
  * @author cwardgar

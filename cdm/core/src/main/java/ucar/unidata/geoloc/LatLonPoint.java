@@ -12,8 +12,7 @@ import ucar.nc2.util.Misc;
  * Longitude is always between -180 and +180 deg.
  * Latitude is always between -90 and +90 deg.
  *
- * @author John Caron
- *         LOOK will be immutable AutoValue in ver6
+ * TODO will be an Immutable class in ver6
  */
 public interface LatLonPoint {
 
@@ -53,7 +52,7 @@ public interface LatLonPoint {
     return new LatLonPointImpl(lat, lon);
   }
 
-  /** Standard wat to create a "default" LatLonPoint. */
+  /** Standard way to create a "default" LatLonPoint. */
   static LatLonPoint create() {
     return new LatLonPointImpl();
   }

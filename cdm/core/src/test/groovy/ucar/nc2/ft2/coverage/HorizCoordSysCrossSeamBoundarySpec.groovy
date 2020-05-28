@@ -1,7 +1,7 @@
 package ucar.nc2.ft2.coverage
 
 import spock.lang.Specification
-import ucar.unidata.geoloc.LatLonPointImpl
+import ucar.unidata.geoloc.LatLonPoint
 import ucar.unidata.geoloc.LatLonPointNoNormalize
 import ucar.unidata.geoloc.LatLonRect
 import ucar.unidata.geoloc.ProjectionPoint
