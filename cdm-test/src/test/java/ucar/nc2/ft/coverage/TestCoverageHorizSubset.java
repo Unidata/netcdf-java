@@ -1,14 +1,21 @@
 /* Copyright Unidata */
 package ucar.nc2.ft.coverage;
 
+import static com.google.common.truth.Truth.assertThat;
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -197,6 +204,92 @@ public class TestCoverageHorizSubset {
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
       checkLatLonSubset(gcs, coverage, bbox, new int[] {1, 21, 241});
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testLongitudeSubsetWithHorizontalStride() throws IOException, InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
+    String gribId = "VAR_0-3-0_L1";
+
+    try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(filename)) {
+      CoverageCollection coverageCollection = featureDatasetCoverage.findCoverageDataset(FeatureType.GRID);
+      Coverage coverage = coverageCollection.findCoverageByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId);
+
+      final CalendarDate validTime = CalendarDate.parseISOformat(null, "2010-09-21T00:00:00Z");
+
+      HorizCoordSys origHcs = coverage.getCoordSys().getHorizCoordSys();
+
+      // Next, create the subset param and make the request
+      SubsetParams params = new SubsetParams();
+
+      // subset Time axis
+      params.setTime(validTime);
+
+      // subset across the seam
+      final LatLonRect subsetLatLonRequest = new LatLonRect(new LatLonPointImpl(-15, -10), 30, 20);
+      params.setLatLonBoundingBox(subsetLatLonRequest);
+
+      // set a horizontal stride
+      final int stride = 2;
+      params.setHorizStride(stride);
+
+      // make subset
+      GeoReferencedArray geo = coverage.readData(params);
+
+      // Check that TimeAxis is 1D, has one coordinate, and it's equal to the time we requested
+      CoverageCoordAxis timeAxis = geo.getCoordSysForData().getTimeAxis();
+      assertThat(timeAxis).isInstanceOf(CoverageCoordAxis1D.class);
+      CoverageCoordAxis1D timeAxis1d = (CoverageCoordAxis1D) timeAxis;
+      assertThat(timeAxis1d.getNcoords()).isEqualTo(1);
+      assertThat(timeAxis1d.makeDate((double) timeAxis1d.getCoordObject(0))).isEqualTo(validTime);
+
+      // make sure the bounding box requested by subset is contained within the
+      // horizontal coordinate system of the GeoReferencedArray produced by the
+      // subset
+      HorizCoordSys subsetHcs = geo.getCoordSysForData().getHorizCoordSys();
+      assertThat(subsetLatLonRequest.containedIn(subsetHcs.calcLatLonBoundingBox())).isTrue();
+
+      // make sure resolution of the lat and lon grids of the subset take into account the stride
+      // by comparing the resolution
+      CoverageCoordAxis1D origLonAxis = origHcs.getXAxis();
+      CoverageCoordAxis1D origLatAxis = origHcs.getYAxis();
+      CoverageCoordAxis1D subsetLonAxis = subsetHcs.getXAxis();
+      CoverageCoordAxis1D subsetLatAxis = subsetHcs.getYAxis();
+      final double tol = 0.001;
+      assertThat(origLonAxis.getResolution()).isNotWithin(tol).of(subsetLonAxis.getResolution());
+      assertThat(origLonAxis.getResolution()).isWithin(tol).of(subsetLonAxis.getResolution() / stride);
+      assertThat(origLatAxis.getResolution()).isNotWithin(tol).of(subsetLatAxis.getResolution());
+      assertThat(origLatAxis.getResolution()).isWithin(tol).of(subsetLatAxis.getResolution() / stride);
+
+      // check to make sure we get data from both sides of the seam by testing that
+      // half of the array isn't empty.
+      // slice along longitude in the middle of the array.
+      Array geoData = geo.getData();
+      int middle = geoData.getShape()[1] / 2;
+      Array data = geo.getData().slice(2, middle).reduce();
+      // flip the array
+      int numValsToSum = 3;
+      Array dataFlip = data.flip(0);
+      Section sec = Section.builder().appendRange(0, numValsToSum).build();
+      IndexIterator dii = data.getIndexIterator();
+      IndexIterator diiFlip = dataFlip.getIndexIterator();
+
+      final double initialSumVal = 0;
+      double sumData = initialSumVal;
+      double sumDataFlip = initialSumVal;
+      for (int i = 0; i < numValsToSum - 1; i++) {
+        double val = dii.getDoubleNext();
+        double valFlip = diiFlip.getDoubleNext();
+        // only sum if not missing
+        if (!geo.isMissing(val))
+          sumData += val;
+        if (!geo.isMissing(valFlip))
+          sumDataFlip += valFlip;
+      }
+      assertThat(sumData).isNotEqualTo(initialSumVal);
+      assertThat(sumDataFlip).isNotEqualTo(initialSumVal);
     }
   }
 
