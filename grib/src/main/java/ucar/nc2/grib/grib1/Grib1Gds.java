@@ -405,7 +405,10 @@ public abstract class Grib1Gds {
       } else {
         deltaLon = calcDelta;
       }
-      if (!Misc.nearlyEquals(deltaLon, calcDelta)) {
+      // If calcDelta is a finite number (isn't the case when we only have one lat/lon
+      // point in the GDS, which can lead to NaN or +/-Inf), can compare deltaLon
+      // against a calculated delta, which appears to be more accurate in some cases.
+      if (Float.isFinite(calcDelta) && !Misc.nearlyEquals(deltaLon, calcDelta)) {
         log.debug("deltaLon != calcDeltaLon");
         deltaLon = calcDelta;
       }
@@ -443,8 +446,10 @@ public abstract class Grib1Gds {
        * deltaLat = calcDelta;
        * }
        */
-
-      if (!Misc.nearlyEquals(deltaLat, calcDelta)) {
+      // If calcDelta is a finite number (isn't the case when we only have one lat/lon
+      // point in the GDS, which can lead to NaN or +/-Inf), can compare deltaLon
+      // against a calculated delta, which appears to be more accurate in some cases.
+      if (Float.isFinite(calcDelta) && !Misc.nearlyEquals(deltaLat, calcDelta)) {
         log.debug("deltaLat != calcDeltaLat");
         deltaLat = calcDelta;
       }
