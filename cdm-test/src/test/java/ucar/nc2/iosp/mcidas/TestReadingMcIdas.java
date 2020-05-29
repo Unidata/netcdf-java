@@ -15,7 +15,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -72,7 +71,7 @@ public class TestReadingMcIdas {
     System.out.printf("testAreaProjection %s%n", file);
     AreaFile af = new AreaFile(file);
     McIDASAreaProjection proj = new McIDASAreaProjection(af);
-    LatLonPoint llp = new LatLonPointImpl(45, -105);
+    LatLonPoint llp = LatLonPoint.create(45, -105);
     System.out.println("lat/lon = " + llp);
     ProjectionPoint pp = proj.latLonToProj(llp);
     System.out.println("proj point = " + pp);

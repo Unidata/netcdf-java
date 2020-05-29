@@ -28,8 +28,8 @@ public class TestBasic extends TestCase {
   /////////////////// testLatLonArea /////////////////
 
   LatLonRect makeLatLonBoundingBox2(double lon1, double lon2) {
-    LatLonPoint pt1 = new LatLonPointImpl(-10.0, lon1);
-    LatLonPoint pt2 = new LatLonPointImpl(10.0, lon2);
+    LatLonPoint pt1 = LatLonPoint.create(-10.0, lon1);
+    LatLonPoint pt2 = LatLonPoint.create(10.0, lon2);
     LatLonRect llbb = new LatLonRect(pt1, pt2);
     if (debug2)
       System.out.println(Format.formatDouble(lon1, 8, 5) + " " + Format.formatDouble(lon2, 8, 5) + " => " + llbb
@@ -38,7 +38,7 @@ public class TestBasic extends TestCase {
   }
 
   LatLonRect makeLatLonBoundingBox(double lon, double loninc) {
-    LatLonPoint pt = new LatLonPointImpl(-10.0, lon);
+    LatLonPoint pt = LatLonPoint.create(-10.0, lon);
     LatLonRect llbb = new LatLonRect(pt, 20.0, loninc);
     if (debug2)
       System.out.println(Format.formatDouble(lon, 8, 5) + " " + Format.formatDouble(loninc, 8, 5) + " => " + llbb
@@ -73,9 +73,9 @@ public class TestBasic extends TestCase {
     int count = 0;
     while (count++ < 1000) {
       double r = 360. * rand.nextFloat() - 180;
-      LatLonRect llbb = new LatLonRect(new LatLonPointImpl(20.0, r), 20.0, 360.0);
+      LatLonRect llbb = new LatLonRect(LatLonPoint.create(20.0, r), 20.0, 360.0);
       double r2 = 360. * rand.nextFloat() - 180;
-      LatLonPointImpl p = new LatLonPointImpl(30.0, r2);
+      LatLonPoint p = LatLonPoint.create(30.0, r2);
       assert llbb.contains(p);
     }
   }
@@ -100,7 +100,7 @@ public class TestBasic extends TestCase {
     assert (makeLatLonBoundingBox(-170.0, 370.0).crossDateline());
 
     // contains point
-    LatLonPoint pt = new LatLonPointImpl(0.0, 177.0);
+    LatLonPoint pt = LatLonPoint.create(0.0, 177.0);
     assert (makeLatLonBoundingBox(140.0, 50.0).contains(pt));
     assert (!makeLatLonBoundingBox(190.0, 310.0).contains(pt));
     assert (makeLatLonBoundingBox2(140.0, 190.0).contains(pt));
@@ -118,30 +118,30 @@ public class TestBasic extends TestCase {
 
     // extend
     LatLonRect b;
-    LatLonPoint p = new LatLonPointImpl(30.0, 30.0);
+    LatLonPoint p = LatLonPoint.create(30.0, 30.0);
     b = testExtend(makeLatLonBoundingBox(10.0, 10.0), p);
     assert (p.nearlyEquals(b.getUpperRightPoint()));
 
-    p = new LatLonPointImpl(-30.0, -30.0);
+    p = LatLonPoint.create(-30.0, -30.0);
     b = testExtend(makeLatLonBoundingBox(10.0, 10.0), p);
     assert (p.nearlyEquals(b.getLowerLeftPoint()));
 
-    p = new LatLonPointImpl(30.0, 190.0);
+    p = LatLonPoint.create(30.0, 190.0);
     b = testExtend(makeLatLonBoundingBox(50.0, 100.0), p);
     assert (p.nearlyEquals(b.getUpperRightPoint()));
     assert (b.crossDateline());
 
-    p = new LatLonPointImpl(-30.0, -50.0);
+    p = LatLonPoint.create(-30.0, -50.0);
     b = testExtend(makeLatLonBoundingBox(50.0, 100.0), p);
     assert (p.nearlyEquals(b.getLowerLeftPoint()));
     assert (!b.crossDateline());
 
-    p = new LatLonPointImpl(-30.0, 100.0);
+    p = LatLonPoint.create(-30.0, 100.0);
     b = testExtend(makeLatLonBoundingBox2(140.0, 50.0), p);
     assert (p.nearlyEquals(b.getLowerLeftPoint()));
     assert (b.crossDateline());
 
-    p = new LatLonPointImpl(30.0, 55.0);
+    p = LatLonPoint.create(30.0, 55.0);
     b = testExtend(makeLatLonBoundingBox2(140.0, 50.0), p);
     assert (p.nearlyEquals(b.getUpperRightPoint()));
     assert (b.crossDateline());

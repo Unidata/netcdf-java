@@ -4,8 +4,8 @@
  */
 package ucar.nc2.ft.point;
 
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
 import java.util.Iterator;
@@ -57,7 +57,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
     if ((bb != null) && bb.crossDateline() && (bb.getWidth() > 350.0)) { // call it global - less confusing
       double lat_min = bb.getLowerLeftPoint().getLatitude();
       double deltaLat = bb.getUpperLeftPoint().getLatitude() - lat_min;
-      bb = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
+      bb = new LatLonRect(LatLonPoint.create(lat_min, -180.0), deltaLat, 360.0);
     }
 
     info.bbox = bb;

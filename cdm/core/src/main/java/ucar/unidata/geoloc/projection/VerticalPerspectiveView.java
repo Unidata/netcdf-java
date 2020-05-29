@@ -262,79 +262,6 @@ public class VerticalPerspectiveView extends ProjectionImpl {
     return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
   }
 
-
-  /*
-   * MACROBODY
-   * latLonToProj {} {
-   * fromLat = Math.toRadians(fromLat);
-   * double lonDiff =
-   * Math.toRadians(LatLonPointImpl.lonNormal(fromLon-lon0Degrees));
-   * double cosc = sinLat0*Math.sin(fromLat) + cosLat0*Math.cos(fromLat)*Math.cos(lonDiff);
-   * double ksp = (P-1.0)/(P-cosc);
-   * if (cosc < 1.0/P) {
-   * toX = Double.POSITIVE_INFINITY;
-   * toY = Double.POSITIVE_INFINITY;
-   * } else {
-   * toX = false_east + R*ksp*Math.cos(fromLat)*Math.sin(lonDiff);
-   * toY = false_north + R*ksp*(cosLat0*Math.sin(fromLat) - sinLat0*Math.cos(fromLat)*Math.cos(lonDiff));
-   * }
-   * }
-   * 
-   * projToLatLon {} {
-   * 
-   * fromX = fromX - false_east;
-   * fromY = fromY - false_north;
-   * double rho = Math.sqrt(fromX*fromX + fromY*fromY);
-   * double r = rho /R;
-   * double con = P - 1.0;
-   * double com = P + 1.0;
-   * double c = Math.asin((P - Math.sqrt(1.0 - (r * r * com) / con)) / (con / r + r/con));
-   * 
-   * toLon = lon0;
-   * double temp = 0;
-   * if (Math.abs(rho) > TOLERANCE) {
-   * toLat = Math.asin(Math.cos(c)*sinLat0 + (fromY*Math.sin(c)*cosLat0/rho));
-   * if (Math.abs(lat0 - PI_OVER_4) > TOLERANCE) { // not 90 or -90
-   * temp = rho*cosLat0*Math.cos(c) - fromY*sinLat0*Math.sin(c);
-   * toLon = lon0 + Math.atan(fromX*Math.sin(c)/temp);
-   * } else if (lat0 == PI_OVER_4) {
-   * toLon = lon0 + Math.atan(fromX/-fromY);
-   * temp = -fromY;
-   * } else {
-   * toLon = lon0 + Math.atan(fromX/fromY);
-   * temp = fromY;
-   * }
-   * } else {
-   * toLat = lat0;
-   * }
-   * toLat= Math.toDegrees(toLat);
-   * toLon= Math.toDegrees(toLon);
-   * if (temp < 0) toLon += 180;
-   * toLon= LatLonPoints.lonNormal(toLon);
-   * }
-   * 
-   * 
-   * MACROBODY
-   */
-
-  /* BEGINGENERATED */
-
-  /*
-   * Note this section has been generated using the convert.tcl script.
-   * This script, run as:
-   * tcl convert.tcl VerticalPerspectiveView.java
-   * takes the actual projection conversion code defined in the MACROBODY
-   * section above and generates the following 6 methods
-   */
-
-
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
   public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
@@ -357,14 +284,6 @@ public class VerticalPerspectiveView extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;
     double fromX = world.getX();

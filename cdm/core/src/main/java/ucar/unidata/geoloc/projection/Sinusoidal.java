@@ -271,18 +271,18 @@ public class Sinusoidal extends ProjectionImpl {
   public LatLonRect projToLatLonBB(ProjectionRect projBB) {
     List<ProjectionPoint> pointsOfInterest = new LinkedList<>();
 
-    ProjectionPoint northPole = latLonToProj(new LatLonPointImpl(90, 0));
+    ProjectionPoint northPole = latLonToProj(LatLonPoint.create(90, 0));
     if (projBB.contains(northPole)) {
       pointsOfInterest.add(northPole);
     }
 
-    ProjectionPoint southPole = latLonToProj(new LatLonPointImpl(-90, 0));
+    ProjectionPoint southPole = latLonToProj(LatLonPoint.create(-90, 0));
     if (projBB.contains(southPole)) {
       pointsOfInterest.add(southPole);
     }
 
     if (pointsOfInterest.size() == 2) { // projBB contains both north and south poles, and thus, the entire map.
-      return new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180));
+      return new LatLonRect(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180));
     }
 
     List<ProjectionPoint> corners = Arrays.asList(projBB.getLowerLeftPoint(), projBB.getLowerRightPoint(),
@@ -435,6 +435,6 @@ public class Sinusoidal extends ProjectionImpl {
       maxLon = Math.max(maxLon, latLonPoint.getLongitude());
     }
 
-    return new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
+    return new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
   }
 }

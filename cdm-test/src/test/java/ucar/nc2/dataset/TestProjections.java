@@ -20,10 +20,9 @@ import java.util.Formatter;
 import java.util.List;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
@@ -44,7 +43,7 @@ public class TestProjections {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static String testDir = TestDir.cdmUnitTestDir + "transforms/";
-  private static LatLonPointImpl testPoint = new LatLonPointImpl(0, 145.0);
+  private static LatLonPoint testPoint = LatLonPoint.create(0, 145.0);
 
   @Parameterized.Parameters(name = "{0}-{1}")
   public static Collection<Object[]> data() {
@@ -86,17 +85,17 @@ public class TestProjections {
             CylindricalEqualAreaProjection.class, testPoint},
 
         {testDir + "melb-small_AZE.nc", "azimuthal_equidistant", "Band1", EquidistantAzimuthalProjection.class,
-            new LatLonPointImpl(-37, 145.0)},
+            LatLonPoint.create(-37, 145.0)},
 
         // :sweep_angle_axis = "x";
         // :longitude_of_projection_origin = -75.0; covers western hemisphere
         {testDir + "geostationary/IT_ABI-L2-CMIPF-M3C16_G16_s2005155201500_e2005155203700_c2014058132255.nc",
-            "goes_imager_projection", "CMI", Geostationary.class, new LatLonPointImpl(-37, -45.0)},
+            "goes_imager_projection", "CMI", Geostationary.class, LatLonPoint.create(-37, -45.0)},
 
         // check to make sure map coordinates in microradians handled
         // https://github.com/Unidata/thredds/issues/1008
         {testDir + "geostationary/GOES16_FullDisk_20180205_060047_0.47_6km_0.0S_75.0W.nc4", "fixedgrid_projection",
-            "Sectorized_CMI", Geostationary.class, new LatLonPointImpl(40, -105)},
+            "Sectorized_CMI", Geostationary.class, LatLonPoint.create(40, -105)},
 
         {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4",
             "LatLon_Projection", "Absolute_vorticity_isobaric", LatLonProjection.class, testPoint}};
@@ -109,9 +108,9 @@ public class TestProjections {
   String ctvName;
   String varName;
   Class projClass;
-  LatLonPointImpl testPt;
+  LatLonPoint testPt;
 
-  public TestProjections(String filename, String ctvName, String varName, Class projClass, LatLonPointImpl testPt) {
+  public TestProjections(String filename, String ctvName, String varName, Class projClass, LatLonPoint testPt) {
     this.filename = filename;
     this.ctvName = ctvName;
     this.varName = varName;

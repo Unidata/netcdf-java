@@ -638,7 +638,7 @@ public class GridHorizCoordSys {
     // we have to project in order to find the origin
     proj = new LambertConformal(gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LOV),
         gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LATIN2));
-    LatLonPointImpl startLL = new LatLonPointImpl(gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1));
+    LatLonPoint startLL = LatLonPoint.create(gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1));
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
     startx = start.getX();
     starty = start.getY();
@@ -652,7 +652,7 @@ public class GridHorizCoordSys {
 
       double Lo2 = gds.getDouble(GridDefRecord.LO2);
       double La2 = gds.getDouble(GridDefRecord.LA2);
-      LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+      LatLonPoint endLL = LatLonPoint.create(La2, Lo2);
       System.out.println("GridHorizCoordSys.makeLC end at latlon " + endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
@@ -699,7 +699,7 @@ public class GridHorizCoordSys {
 
     // we have to project in order to find the origin
     ProjectionPointImpl start = (ProjectionPointImpl) proj
-        .latLonToProj(new LatLonPointImpl(gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1)));
+        .latLonToProj(LatLonPoint.create(gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1)));
     startx = start.getX();
     starty = start.getY();
 
@@ -737,7 +737,7 @@ public class GridHorizCoordSys {
     proj = new Mercator(Lo1, Latin);
 
     // find out where
-    ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(La1, Lo1));
+    ProjectionPoint startP = proj.latLonToProj(LatLonPoint.create(La1, Lo1));
     startx = startP.getX();
     starty = startP.getY();
 
@@ -754,7 +754,7 @@ public class GridHorizCoordSys {
       if (Lo2 < Lo1)
         Lo2 += 360;
       double La2 = gds.getDouble(GridDefRecord.LA2);
-      LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+      LatLonPoint endLL = LatLonPoint.create(La2, Lo2);
       System.out.println("GridHorizCoordSys.makeMercator: end at latlon= " + endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
@@ -875,7 +875,7 @@ public class GridHorizCoordSys {
 
       double Lo2 = gds.getDouble(GridDefRecord.LO2) + 360.0;
       double La2 = gds.getDouble(GridDefRecord.LA2);
-      LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+      LatLonPoint endLL = LatLonPoint.create(La2, Lo2);
       System.out.println("GridHorizCoordSys.makeOrthographic end at latlon " + endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
@@ -1034,7 +1034,7 @@ public class GridHorizCoordSys {
 
       double Lo2 = gds.getDouble(GridDefRecord.LO2) + 360.0;
       double La2 = gds.getDouble(GridDefRecord.LA2);
-      LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+      LatLonPoint endLL = LatLonPoint.create(La2, Lo2);
       System.out.println("GridHorizCoordSys.makeMSGgeostationary end at latlon " + endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
@@ -1161,7 +1161,7 @@ public class GridHorizCoordSys {
     if (Double.isNaN(Lo2) || Double.isNaN(La2)) {
       return;
     }
-    LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+    LatLonPoint endLL = LatLonPoint.create(La2, Lo2);
     ProjectionPointImpl end = (ProjectionPointImpl) proj.latLonToProj(endLL);
     double dx = Math.abs(end.getX() - startx) / (gds.getInt(GridDefRecord.NX) - 1);
     double dy = Math.abs(end.getY() - starty) / (gds.getInt(GridDefRecord.NY) - 1);

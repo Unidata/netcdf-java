@@ -37,7 +37,7 @@ public class TestRotatedPole {
    */
   @Test
   public void testLatLonToProj() {
-    LatLonPointImpl latlon = new LatLonPointImpl(54, 254);
+    LatLonPoint latlon = LatLonPoint.create(54, 254);
     ProjectionPoint result = proj.latLonToProj(latlon);
     Assert.assertEquals("Unexpected rotated longitude", 0, result.getX(), TOLERANCE);
     Assert.assertEquals("Unexpected rotated latitude", 0, result.getY(), TOLERANCE);

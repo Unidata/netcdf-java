@@ -347,7 +347,7 @@ To get a time series at a particular station:
   }
 To get all PointFeatures in a specific area and time range:
 
-  LatLonRect bb = new LatLonRect( new LatLonPointImpl(40.0, -105.0), new LatLonPointImpl(42.0, -100.0));
+  LatLonRect bb = new LatLonRect( LatLonPoint.create(40.0, -105.0), LatLonPoint.create(42.0, -100.0));
   ucar.nc2.ft.PointFeatureCollection points = stationTimeSeriesCollection.flatten(bb, new DateRange(start, end))
   points.resetIteration();
   while(points.hasNext()) {

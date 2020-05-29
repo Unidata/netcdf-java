@@ -480,7 +480,7 @@ class Giniheader {
     // we have to project in order to find the origin
     ProjectionPoint start;
     if (projection != null)
-      start = projection.latLonToProj(new LatLonPointImpl(lat1, lon1));
+      start = projection.latLonToProj(LatLonPoint.create(lat1, lon1));
     else
       start = new ProjectionPointImpl();
     if (debug)
@@ -508,7 +508,7 @@ class Giniheader {
 
       for (int i = 0; i < data.length; i++) {
         double ln = lon1 + i * dx;
-        ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(lat1, ln));
+        ProjectionPoint pt = projection.latLonToProj(LatLonPoint.create(lat1, ln));
         data[i] = pt.getX(); // startx + i*dx;
       }
     } else {
@@ -533,7 +533,7 @@ class Giniheader {
       double dy = (lat2 - lat1) / (ny - 1);
       for (int i = 0; i < data.length; i++) {
         double la = lat2 - i * dy;
-        ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(la, lon1));
+        ProjectionPoint pt = projection.latLonToProj(LatLonPoint.create(la, lon1));
         data[i] = pt.getY(); // endyy - i*dy;
       }
     } else {

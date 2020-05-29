@@ -473,7 +473,7 @@ public class GempakStation implements Station {
    * @return lat/lon location
    */
   public LatLonPoint getLatLon() {
-    return new LatLonPointImpl(getLatitude(), getLongitude());
+    return LatLonPoint.create(getLatitude(), getLongitude());
   }
 
   /**

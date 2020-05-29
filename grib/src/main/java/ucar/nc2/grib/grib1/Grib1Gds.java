@@ -552,7 +552,7 @@ public abstract class Grib1Gds {
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
       LatLonProjection proj = new LatLonProjection(getEarth());
-      // ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      // ProjectionPoint startP = proj.latLonToProj(LatLonPoint.create(la1, lo1));
       double startx = lo1; // startP.getX();
       double starty = la1; // startP.getY();
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(),
@@ -565,8 +565,8 @@ public abstract class Grib1Gds {
       if (Lo2 < lo1) {
         Lo2 += 360;
       }
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
+      LatLonPoint endLL = LatLonPoint.create(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
@@ -874,7 +874,7 @@ public abstract class Grib1Gds {
             0.0, 0.0, earth);
       }
 
-      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(LatLonPoint.create(la1, lo1));
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(),
           getDy(), getNx(), getNy(), null);
     }
@@ -889,7 +889,7 @@ public abstract class Grib1Gds {
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
       LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
@@ -1055,7 +1055,7 @@ public abstract class Grib1Gds {
             0.0, earth);
       }
 
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(),
           getDy(), getNx(), getNy(), null);
@@ -1071,7 +1071,7 @@ public abstract class Grib1Gds {
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
       LatLonPoint endLL = cs.proj.projToLatLon(endPP);
 
       f.format("  start at latlon= %s%n", startLL);
@@ -1201,7 +1201,7 @@ public abstract class Grib1Gds {
           new ucar.unidata.geoloc.projection.Mercator(lo1, latin, 0, 0, earth.getEquatorRadius() * .001);
 
       // find out where things start
-      ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      ProjectionPoint startP = proj.latLonToProj(LatLonPoint.create(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();
 
@@ -1215,8 +1215,8 @@ public abstract class Grib1Gds {
       if (Lo2 < lo1) {
         Lo2 += 360;
       }
-      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
+      LatLonPoint startLL = LatLonPoint.create(la1, lo1);
+      LatLonPoint endLL = LatLonPoint.create(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);

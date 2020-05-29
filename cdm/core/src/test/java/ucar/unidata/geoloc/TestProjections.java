@@ -33,12 +33,12 @@ public class TestProjections {
       return LatLonPointImmutable.INVALID;
     if (Double.isInfinite(p.getX()) || Double.isInfinite(p.getY()))
       return LatLonPointImmutable.INVALID;
-    LatLonPointImpl endL = (LatLonPointImpl) proj.projToLatLon(p);
+    LatLonPoint endL = proj.projToLatLon(p);
 
     if (show) {
       System.out.println("start  = " + startL.toString(8));
       System.out.println("projection point  = " + p.toString());
-      System.out.println("end  = " + endL.toString(8));
+      System.out.println("end  = " + endL.toString());
     }
     return endL;
   }
@@ -205,8 +205,8 @@ public class TestProjections {
   public void testLCseam() {
     // test seam crossing
     LambertConformal lc = new LambertConformal(40.0, 180.0, 20.0, 60.0);
-    ProjectionPoint p1 = lc.latLonToProj(new LatLonPointImpl(0.0, -1.0));
-    ProjectionPoint p2 = lc.latLonToProj(new LatLonPointImpl(0.0, 1.0));
+    ProjectionPoint p1 = lc.latLonToProj(LatLonPoint.create(0.0, -1.0));
+    ProjectionPoint p2 = lc.latLonToProj(LatLonPoint.create(0.0, 1.0));
     if (show) {
       System.out.printf(" p1= x=%f y=%f%n", p1.getX(), p1.getY());
       System.out.printf(" p2= x=%f y=%f%n", p2.getX(), p2.getY());
@@ -302,7 +302,7 @@ public class TestProjections {
   }
 
   private void showProjVal(ProjectionImpl proj, double lat, double lon) {
-    LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
+    LatLonPoint startL = LatLonPoint.create(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
     if (show)
       System.out.printf("lat,lon= (%f, %f) x, y= (%f, %f) %n", lat, lon, p.getX(), p.getY());
@@ -367,10 +367,7 @@ public class TestProjections {
   }
 
   private void testProjectionUTM(double lat, double lon) {
-    LatLonPointImpl startL = new LatLonPointImpl();
-
-    startL.setLatitude(lat);
-    startL.setLongitude(lon);
+    LatLonPoint startL = LatLonPoint.create(lat, lon);
     int zone = (int) ((lon + 183) / 6);
     UtmProjection proj = new UtmProjection(zone, lat >= 0.0);
 
@@ -383,8 +380,8 @@ public class TestProjections {
       System.out.println("endL  = " + endL);
     }
 
-    Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.3e-4);
-    Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
+    Assert.assertEquals(startL.toString(), startL.getLatitude(), endL.getLatitude(), 1.3e-4);
+    Assert.assertEquals(startL.toString(), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
   }
 
   private void testProjectionUTM(int n) {

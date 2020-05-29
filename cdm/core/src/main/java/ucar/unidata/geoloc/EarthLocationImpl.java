@@ -26,7 +26,7 @@ public class EarthLocationImpl implements EarthLocation {
   }
 
   public LatLonPoint getLatLon() {
-    return new LatLonPointImpl(lat, lon);
+    return LatLonPoint.create(lat, lon);
   }
 
   public boolean isMissing() {

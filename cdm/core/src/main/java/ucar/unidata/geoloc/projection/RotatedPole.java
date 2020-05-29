@@ -198,15 +198,12 @@ public class RotatedPole extends ProjectionImpl {
     double lon = Math.atan2(p2[1], p2[0]) * DEG_PER_RAD;
     double lat = Math.asin(p2[2]) * DEG_PER_RAD;
 
-    if (destPoint == null) {
-      destPoint = new LatLonPointImpl(lat, lon);
-    } else {
+    if (destPoint == null)
+      return LatLonPoint.create(lat, lon);
+    else {
       destPoint.set(lat, lon);
+      return destPoint;
     }
-
-    log.debug("Proj= " + ppt + ", latlon= " + destPoint);
-
-    return destPoint;
   }
 
   /**

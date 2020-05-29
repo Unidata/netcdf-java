@@ -301,7 +301,7 @@ public class PointRenderer implements Renderer {
   public class ObservationUI {
     private PointFeature obs;
 
-    private LatLonPointImpl latlonPos = new LatLonPointImpl(); // latlon pos
+    private LatLonPoint latlonPos = LatLonPoint.create(); // latlon pos
     private ProjectionPointImpl worldPos = new ProjectionPointImpl();// world pos
     private Point2D.Double screenPos = new Point2D.Double(); // normalized screen pos
 
@@ -311,8 +311,7 @@ public class PointRenderer implements Renderer {
 
     ObservationUI(PointFeature obs) {
       this.obs = obs;
-      latlonPos.setLatitude(obs.getLocation().getLatitude());
-      latlonPos.setLongitude(obs.getLocation().getLongitude());
+      latlonPos = LatLonPoint.create(obs.getLocation().getLatitude(), obs.getLocation().getLongitude());
 
       // text bb
       Dimension t = textFont.getBoundingBox("O"); // LOOK temp

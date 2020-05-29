@@ -27,7 +27,7 @@ import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
@@ -127,7 +127,7 @@ public class ADASConvention extends CoordSystemBuilder {
     double lat_check = rootGroup.getAttributeContainer().findAttributeDouble("CTRLAT", Double.NaN);
     double lon_check = rootGroup.getAttributeContainer().findAttributeDouble("CTRLON", Double.NaN);
 
-    LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
+    LatLonPoint lpt0 = LatLonPoint.create(lat_check, lon_check);
     ProjectionPoint ppt0 = proj.latLonToProj(lpt0);
 
     VariableDS.Builder xstag = (VariableDS.Builder) rootGroup.findVariableLocal("x_stag")

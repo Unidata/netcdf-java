@@ -32,21 +32,11 @@ import ucar.unidata.geoloc.*;
 public class FlatEarth extends ProjectionImpl {
   public static final String ROTATIONANGLE = "rotationAngle";
 
-  /**
-   * constants from Snyder's equations
-   */
+  /** constants from Snyder's equations */
   private final double rotAngle, radius;
   private final double lat0, lon0; // center lat/lon in radians
 
-  /**
-   * some constants
-   */
   private double cosRot, sinRot;
-
-  /**
-   * origin
-   */
-  // private LatLonPointImpl origin; // why are we keeping this?
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -223,15 +213,6 @@ public class FlatEarth extends ProjectionImpl {
 
     return result;
   }
-
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
 
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     double toLat, toLon;

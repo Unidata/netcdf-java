@@ -12,7 +12,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -99,7 +98,7 @@ public class TestFindXYcoords {
       System.out.println(
           "\nSUBGRID (latmin=" + latMin + "  latmax=" + latMax + "  lonmin=" + lonMin + "  lonmax=" + lonMax + ")");
 
-      LatLonRect latLonRect = new LatLonRect(new LatLonPointImpl(latMin, lonMin), new LatLonPointImpl(latMax, lonMax));
+      LatLonRect latLonRect = new LatLonRect(LatLonPoint.create(latMin, lonMin), LatLonPoint.create(latMax, lonMax));
 
       GeoGrid gridSubset = firstGrid.subset(null, null, latLonRect, 0, 1, 1);
 

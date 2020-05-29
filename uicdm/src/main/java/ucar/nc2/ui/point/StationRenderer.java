@@ -251,7 +251,7 @@ class StationRenderer implements Renderer {
     private ucar.unidata.geoloc.Station ddStation;
     private String id;
 
-    private LatLonPointImpl latlonPos = new LatLonPointImpl(); // latlon pos
+    private LatLonPoint latlonPos = LatLonPoint.create(); // latlon pos
     private ProjectionPointImpl worldPos = new ProjectionPointImpl();// world pos
     private Point2D.Double screenPos = new Point2D.Double(); // normalized screen pos
 
@@ -261,8 +261,7 @@ class StationRenderer implements Renderer {
 
     StationUI(ucar.unidata.geoloc.Station stn) {
       ddStation = stn;
-      latlonPos.setLatitude(stn.getLatitude());
-      latlonPos.setLongitude(stn.getLongitude());
+      latlonPos = LatLonPoint.create(stn.getLatitude(), stn.getLongitude());
 
       id = stn.getName();
 

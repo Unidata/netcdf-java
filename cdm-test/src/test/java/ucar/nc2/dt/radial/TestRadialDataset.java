@@ -14,7 +14,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -109,7 +108,7 @@ public class TestRadialDataset {
 
     ucar.unidata.geoloc.EarthLocation eloc = rds.getCommonOrigin();
     assert eloc != null;
-    LatLonPoint llp = new LatLonPointImpl(eloc.getLatitude(), eloc.getLongitude());
+    LatLonPoint llp = LatLonPoint.create(eloc.getLatitude(), eloc.getLongitude());
 
     LatLonRect bb = rds.getBoundingBox();
     assert bb.contains(llp);

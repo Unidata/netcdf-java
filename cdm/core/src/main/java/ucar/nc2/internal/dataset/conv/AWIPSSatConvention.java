@@ -23,7 +23,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Mercator;
@@ -164,7 +164,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // we have to project in order to find the origin
     double lat0 = findAttributeDouble("lat00");
     double lon0 = findAttributeDouble("lon00");
-    ProjectionPoint start = proj.latLonToProj(new LatLonPointImpl(lat0, lon0));
+    ProjectionPoint start = proj.latLonToProj(LatLonPoint.create(lat0, lon0));
     if (debugProj)
       parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.getX();
@@ -173,7 +173,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // we will use the end to compute grid size LOOK may be wrong
     double latN = findAttributeDouble("latNxNy");
     double lonN = findAttributeDouble("lonNxNy");
-    ProjectionPoint end = proj.latLonToProj(new LatLonPointImpl(latN, lonN));
+    ProjectionPoint end = proj.latLonToProj(LatLonPoint.create(latN, lonN));
     dx = (end.getX() - startx) / nx;
     dy = (end.getY() - starty) / ny;
 
@@ -206,14 +206,14 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // we have to project in order to find the start LOOK may be wrong
     double lat0 = findAttributeDouble("lat00");
     double lon0 = findAttributeDouble("lon00");
-    ProjectionPoint start = proj.latLonToProj(new LatLonPointImpl(lat0, lon0));
+    ProjectionPoint start = proj.latLonToProj(LatLonPoint.create(lat0, lon0));
     startx = start.getX();
     starty = start.getY();
 
     // we will use the end to compute grid size
     double latN = findAttributeDouble("latNxNy");
     double lonN = findAttributeDouble("lonNxNy");
-    ProjectionPoint end = proj.latLonToProj(new LatLonPointImpl(latN, lonN));
+    ProjectionPoint end = proj.latLonToProj(LatLonPoint.create(latN, lonN));
     dx = (end.getX() - startx) / nx;
     dy = (end.getY() - starty) / ny;
 

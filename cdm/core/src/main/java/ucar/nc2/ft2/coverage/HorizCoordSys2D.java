@@ -7,7 +7,6 @@ package ucar.nc2.ft2.coverage;
 import ucar.ma2.*;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import java.util.ArrayList;
@@ -85,7 +84,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
   public LatLonPoint getLatLon(int yindex, int xindex) {
     double lat = latAxis2D.getCoord(yindex, xindex);
     double lon = lonAxis2D.getCoord(yindex, xindex);
-    return new LatLonPointImpl(lat, lon);
+    return LatLonPoint.create(lat, lon);
   }
 
   @Override
@@ -453,8 +452,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
     // return y, x ranges
     Optional<List<RangeIterator>> computeBoundsExhaustive(LatLonRect rect, int horizStride) {
-      LatLonPointImpl llpt = rect.getLowerLeftPoint();
-      LatLonPointImpl urpt = rect.getUpperRightPoint();
+      LatLonPoint llpt = rect.getLowerLeftPoint();
+      LatLonPoint urpt = rect.getUpperRightPoint();
 
       double miny = llpt.getLatitude();
       double maxy = urpt.getLatitude();

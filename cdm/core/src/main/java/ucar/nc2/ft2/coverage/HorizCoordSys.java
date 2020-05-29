@@ -316,7 +316,7 @@ public class HorizCoordSys {
     } else {
       double lat = latAxis.getCoordMidpoint(yindex);
       double lon = lonAxis.getCoordMidpoint(xindex);
-      return new LatLonPointImpl(lat, lon);
+      return LatLonPoint.create(lat, lon);
     }
   }
 
@@ -497,7 +497,7 @@ public class HorizCoordSys {
       maxLon = Math.max(maxLon, boundaryPoint.getLongitude());
     }
 
-    return new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
+    return new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
   }
 
   /**
@@ -631,22 +631,22 @@ public class HorizCoordSys {
 
     // Bottom boundary points
     for (int i = 0; i < numXtotal; i += strideX) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdgeFirst(), lonAxis.getCoordEdge1(i)));
+      points.add(LatLonPoint.create(latAxis.getCoordEdgeFirst(), lonAxis.getCoordEdge1(i)));
     }
 
     // Right boundary points
     for (int j = 0; j < numYtotal; j += strideY) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdge1(j), lonAxis.getCoordEdgeLast()));
+      points.add(LatLonPoint.create(latAxis.getCoordEdge1(j), lonAxis.getCoordEdgeLast()));
     }
 
     // Top boundary points
     for (int i = numXtotal - 1; i >= 0; i -= strideX) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdgeLast(), lonAxis.getCoordEdge2(i)));
+      points.add(LatLonPoint.create(latAxis.getCoordEdgeLast(), lonAxis.getCoordEdge2(i)));
     }
 
     // Left boundary points
     for (int j = numYtotal - 1; j >= 0; j -= strideY) {
-      points.add(new LatLonPointImpl(latAxis.getCoordEdge2(j), lonAxis.getCoordEdgeFirst()));
+      points.add(LatLonPoint.create(latAxis.getCoordEdge2(j), lonAxis.getCoordEdgeFirst()));
     }
 
     assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);
@@ -691,24 +691,24 @@ public class HorizCoordSys {
 
     // Bottom boundary points: y = 0
     for (int i = 0; i < numXtotal; i += strideX) {
-      points.add(new LatLonPointImpl(latEdges.get(0, i), lonEdges.get(0, i)));
+      points.add(LatLonPoint.create(latEdges.get(0, i), lonEdges.get(0, i)));
     }
 
     // Right boundary points: x = numXtotal
     // numXtotal is not OOB, because edgesShape is 1 bigger than midpointsShape in each dim, and numXtotal
     // is relative to midpointsShape.
     for (int j = 0; j < numYtotal; j += strideY) {
-      points.add(new LatLonPointImpl(latEdges.get(j, numXtotal), lonEdges.get(j, numXtotal)));
+      points.add(LatLonPoint.create(latEdges.get(j, numXtotal), lonEdges.get(j, numXtotal)));
     }
 
     // Top boundary points: y = numYtotal
     for (int i = numXtotal; i > 0; i -= strideX) {
-      points.add(new LatLonPointImpl(latEdges.get(numYtotal, i), lonEdges.get(numYtotal, i)));
+      points.add(LatLonPoint.create(latEdges.get(numYtotal, i), lonEdges.get(numYtotal, i)));
     }
 
     // Left boundary points: x = 0
     for (int j = numYtotal; j > 0; j -= strideY) {
-      points.add(new LatLonPointImpl(latEdges.get(j, 0), lonEdges.get(j, 0)));
+      points.add(LatLonPoint.create(latEdges.get(j, 0), lonEdges.get(j, 0)));
     }
 
     assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);

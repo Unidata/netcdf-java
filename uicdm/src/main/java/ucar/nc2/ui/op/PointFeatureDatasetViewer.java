@@ -945,7 +945,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     public LatLonPoint getLatLon() {
-      return new LatLonPointImpl(getLatitude(), getLongitude());
+      return LatLonPoint.create(getLatitude(), getLongitude());
     }
 
     public boolean isMissing() {

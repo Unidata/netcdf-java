@@ -214,6 +214,19 @@ public class Bearing {
     return findPoint(defaultEarth, lat1, lon1, az, dist, result);
   }
 
+  /** @deprecated use findPoint(Earth e, double lat1, double lon1, double az, double dist) */
+  @Deprecated
+  public static LatLonPointImpl findPoint(Earth e, double lat1, double lon1, double az, double dist,
+      LatLonPointImpl result) {
+    LatLonPoint pt = findPoint(e, lat1, lon1, az, dist);
+    if (result == null) {
+      result = new LatLonPointImpl();
+    }
+    result.setLatitude(pt.getLatitude());
+    result.setLongitude(pt.getLongitude());
+    return result;
+  }
+
   /**
    * Calculate a position given an azimuth and distance from
    * another point.
@@ -236,20 +249,12 @@ public class Bearing {
    * @param lon1 longitude of starting point
    * @param az forward azimuth (degrees)
    * @param dist distance from the point (km)
-   * @param result Object to use if non-null
    * @return the position as a LatLonPointImpl
    * @deprecated will return LatLonPoint in 6.
    */
-  public static LatLonPointImpl findPoint(Earth e, double lat1, double lon1, double az, double dist,
-      LatLonPointImpl result) {
-    if (result == null) {
-      result = new LatLonPointImpl();
-    }
-
-    if ((dist == 0)) {
-      result.setLatitude(lat1);
-      result.setLongitude(lon1);
-      return result;
+  public static LatLonPoint findPoint(Earth e, double lat1, double lon1, double az, double dist) {
+    if (dist == 0) {
+      return LatLonPoint.create(lat1, lon1);
     }
 
     double A = e.getMajor(); // Earth radius
@@ -325,9 +330,7 @@ public class Bearing {
     C = ((-3. * C2A + 4.) * F + 4.) * C2A * F / 16.;
     D = ((E * CY * C + CZ) * SY * C + Y) * SA;
     GLON2 = GLON1 + X - (1. - C) * D * F;
-    result.setLatitude(GLAT2 * RADIANS_TO_DEGREES);
-    result.setLongitude(GLON2 * RADIANS_TO_DEGREES);
-    return result;
+    return LatLonPoint.create(GLAT2 * RADIANS_TO_DEGREES, GLON2 * RADIANS_TO_DEGREES);
   }
 
   /**

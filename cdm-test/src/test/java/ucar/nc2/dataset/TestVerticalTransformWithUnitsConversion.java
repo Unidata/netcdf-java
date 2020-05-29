@@ -11,13 +11,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.client.catalog.ServiceType;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
@@ -64,12 +62,12 @@ public class TestVerticalTransformWithUnitsConversion {
   public static Collection<Object[]> data() {
     Object[][] data = new Object[][] {
         {TestDir.cdmUnitTestDir + "transforms/idv_sigma.ncml", "/share/testdata/cdmUnitTest/transforms/idv_sigma.nc",
-            new LatLonPointImpl(52.85, 27.56), "VNK201302"}, // AtmosSigma
+            LatLonPoint.create(52.85, 27.56), "VNK201302"}, // AtmosSigma
         {TestDir.cdmUnitTestDir + "transforms/HybridSigmaPressure.nc",
-            "/share/testdata/cdmUnitTest/transforms/HybridSigmaPressure.ncml", new LatLonPointImpl(40.019, -105.293),
+            "/share/testdata/cdmUnitTest/transforms/HybridSigmaPressure.ncml", LatLonPoint.create(40.019, -105.293),
             "T"}, // HybridSigma with P
         {TestDir.cdmUnitTestDir + "transforms/HIRLAMhybrid.ncml",
-            "/share/testdata/cdmUnitTest/transforms/HIRLAMhybrid_hPa.ncml", new LatLonPointImpl(42.86, -8.55),
+            "/share/testdata/cdmUnitTest/transforms/HIRLAMhybrid_hPa.ncml", LatLonPoint.create(42.86, -8.55),
             "Relative_humidity_hybrid"} // HybridSigma with AP
     };
 

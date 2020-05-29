@@ -44,13 +44,13 @@ public class TestMSGnavigation {
   }
 
   static private void doOne(ProjectionImpl proj, double lat, double lon) {
-    LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
+    LatLonPoint startL = LatLonPoint.create(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
-    LatLonPointImpl endL = (LatLonPointImpl) proj.projToLatLon(p);
+    LatLonPoint endL = proj.projToLatLon(p);
 
-    System.out.println("start  = " + startL.toString(8));
+    System.out.println("start  = " + startL.toString());
     System.out.println("xy   = " + p.toString());
-    System.out.println("end  = " + endL.toString(8));
+    System.out.println("end  = " + endL.toString());
 
   }
 

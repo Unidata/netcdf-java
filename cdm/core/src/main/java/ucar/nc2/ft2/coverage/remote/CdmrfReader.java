@@ -161,7 +161,7 @@ public class CdmrfReader {
    * }
    */
   LatLonRect decodeLatLonRectangle(CdmrFeatureProto.Rectangle proto) {
-    LatLonPointImpl start = new LatLonPointImpl(proto.getStarty(), proto.getStartx());
+    LatLonPoint start = LatLonPoint.create(proto.getStarty(), proto.getStartx());
     return new LatLonRect(start, proto.getIncy(), proto.getIncx());
   }
 

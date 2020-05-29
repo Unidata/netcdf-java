@@ -12,8 +12,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.ma2.DataType;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import java.util.List;
 
 /**
@@ -61,7 +61,7 @@ public class UnidataPointDatasetHelper {
     double lon_max = getAttAsDouble(ds, "geospatial_lon_max");
     double lon_min = getAttAsDouble(ds, "geospatial_lon_min");
 
-    return new LatLonRect(new LatLonPointImpl(lat_min, lon_min), lat_max - lat_min, lon_max - lon_min);
+    return new LatLonRect(LatLonPoint.create(lat_min, lon_min), lat_max - lat_min, lon_max - lon_min);
   }
 
   private static double getAttAsDouble(NetcdfDataset ds, String attname) {

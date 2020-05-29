@@ -135,32 +135,16 @@ public class LatLonProjection extends ProjectionImpl {
     return result;
   }
 
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latlon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result) {
     result.setLocation(LatLonPoints.lonNormal(latlon.getLongitude(), centerLon), latlon.getLatitude());
     return result;
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
   public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
     result.setLongitude(world.getX());
     result.setLatitude(world.getY());
     return result;
   }
-
 
   /**
    * Convert projection coordinates to lat/lon coordinate.
@@ -346,7 +330,7 @@ public class LatLonProjection extends ProjectionImpl {
     double deltaLat = world.getHeight();
     double deltaLon = world.getWidth();
 
-    LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
+    LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
     return new LatLonRect(llpt, deltaLat, deltaLon);
   }
 

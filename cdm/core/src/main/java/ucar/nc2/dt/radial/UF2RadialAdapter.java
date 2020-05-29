@@ -13,9 +13,9 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import java.io.IOException;
 import java.util.*;
 
@@ -81,7 +81,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
 
     double lat1 = origin.getLatitude() - dLat / 2;
     double lon1 = origin.getLongitude() - dLon / 2;
-    bb = new LatLonRect(new LatLonPointImpl(lat1, lon1), dLat, dLon);
+    bb = new LatLonRect(LatLonPoint.create(lat1, lon1), dLat, dLon);
 
     boundingBox = bb;
   }

@@ -192,14 +192,13 @@ public class RotatedLatLon extends ProjectionImpl {
     lonlat[1] = ppt.getY();
 
     double[] rlonlat = rotate(lonlat, -polerotate, -lonpole, -sinDlat);
-    if (destPoint == null)
-      destPoint = new LatLonPointImpl(rlonlat[1], rlonlat[0]);
-    else
-      destPoint.set(rlonlat[1], rlonlat[0]);
 
-    if (show)
-      System.out.println("Proj= " + ppt + " latlon= " + destPoint);
-    return destPoint;
+    if (destPoint == null)
+      return LatLonPoint.create(rlonlat[1], rlonlat[0]);
+    else {
+      destPoint.set(rlonlat[1], rlonlat[0]);
+      return destPoint;
+    }
   }
 
   // Tor's transform algorithm renamed to rotate for clarity

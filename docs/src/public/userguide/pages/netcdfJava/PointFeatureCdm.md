@@ -285,8 +285,8 @@ To get all PointFeatures in a specific area and time range, it can help performa
 One can still retrieve the associated station by calling `stationCollection.getStationFeature(pointFeature)`:
 
 ~~~java
-LatLonRect bb = new LatLonRect( new LatLonPointImpl(40.0, -105.0),
-                                new LatLonPointImpl(42.0, -100.0));
+LatLonRect bb = new LatLonRect( LatLonPoint.create(40.0, -105.0),
+                                LatLonPoint.create(42.0, -100.0));
 CalendarDateRange dateRange = CalendarDateRange.of(start, end);
 PointFeatureCollection points = stnCollection.flatten(bb,dateRange);
 

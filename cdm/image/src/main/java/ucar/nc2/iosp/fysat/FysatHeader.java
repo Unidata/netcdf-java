@@ -308,17 +308,17 @@ public final class FysatHeader {
         ncfile.addVariable(ncfile.getRootGroup(), var);
 
 
-        LatLonPointImpl startPnt =
-            new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfNorth, geoSatelliteSecondHeader.longitudeOfWest);
-        LatLonPointImpl endPnt =
-            new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfSouth, geoSatelliteSecondHeader.longitudeOfEast);
+        LatLonPoint startPnt =
+            LatLonPoint.create(geoSatelliteSecondHeader.latitudeOfNorth, geoSatelliteSecondHeader.longitudeOfWest);
+        LatLonPoint endPnt =
+            LatLonPoint.create(geoSatelliteSecondHeader.latitudeOfSouth, geoSatelliteSecondHeader.longitudeOfEast);
         if (debug)
           System.out.println("start at geo coord :" + startPnt);
 
         if (projection != null && proj != 4) {
           // we have to project in order to find the origin
           ProjectionPointImpl start = (ProjectionPointImpl) projection.latLonToProj(
-              new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfSouth, geoSatelliteSecondHeader.longitudeOfWest));
+              LatLonPoint.create(geoSatelliteSecondHeader.latitudeOfSouth, geoSatelliteSecondHeader.longitudeOfWest));
           double startx = start.getX();
           double starty = start.getY();
 
@@ -341,7 +341,7 @@ public final class FysatHeader {
             for (int i = 0; i < data.length; i++) {
               double ln = lon_2 + i * dx;
               ProjectionPointImpl pt = (ProjectionPointImpl) projection
-                  .latLonToProj(new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfSouth, ln));
+                  .latLonToProj(LatLonPoint.create(geoSatelliteSecondHeader.latitudeOfSouth, ln));
               data[i] = pt.getX(); // startx + i*dx;
             }
           } else {
@@ -369,7 +369,7 @@ public final class FysatHeader {
             for (int i = 0; i < data.length; i++) {
               double la = lat2 - i * dy;
               ProjectionPointImpl pt = (ProjectionPointImpl) projection
-                  .latLonToProj(new LatLonPointImpl(la, geoSatelliteSecondHeader.longitudeOfWest));
+                  .latLonToProj(LatLonPoint.create(la, geoSatelliteSecondHeader.longitudeOfWest));
               data[i] = pt.getY(); // endyy - i*dy;
             }
           } else {
@@ -620,10 +620,10 @@ public final class FysatHeader {
         ncfile.addVariable(ncfile.getRootGroup(), var);
 
         // we have to project in order to find the origin
-        LatLonPointImpl startPnt =
-            new LatLonPointImpl(gridprocuctSecondHeader.leftTopLat, gridprocuctSecondHeader.leftTopLon);
-        LatLonPointImpl endPnt =
-            new LatLonPointImpl(gridprocuctSecondHeader.rightBottomLat, gridprocuctSecondHeader.rightBottomLon);
+        LatLonPoint startPnt =
+            LatLonPoint.create(gridprocuctSecondHeader.leftTopLat, gridprocuctSecondHeader.leftTopLon);
+        LatLonPoint endPnt =
+            LatLonPoint.create(gridprocuctSecondHeader.rightBottomLat, gridprocuctSecondHeader.rightBottomLon);
         if (debug)
           System.out.println("start at geo coord :" + startPnt);
 

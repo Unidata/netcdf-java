@@ -121,7 +121,7 @@ public class LatLonRect {
     double deltaLat = Double.parseDouble(stoker.nextToken());
     double deltaLon = Double.parseDouble(stoker.nextToken());
 
-    init(new LatLonPointImpl(lat, lon), deltaLat, deltaLon);
+    init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
   }
 
 
@@ -139,7 +139,7 @@ public class LatLonRect {
    * Create a LatLonRect that covers the whole world.
    */
   public LatLonRect() {
-    this(new LatLonPointImpl(-90, -180), 180, 360);
+    this(LatLonPoint.create(-90, -180), 180, 360);
   }
 
   /**
@@ -523,7 +523,7 @@ public class LatLonRect {
     if (deltaLon < 0)
       return null;
 
-    return new LatLonRect(new LatLonPointImpl(latMin, lonMin), deltaLat, deltaLon);
+    return new LatLonRect(LatLonPoint.create(latMin, lonMin), deltaLat, deltaLon);
   }
 
   private boolean intersect(double min1, double max1, double min2, double max2) {

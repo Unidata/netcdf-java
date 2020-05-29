@@ -2,7 +2,6 @@ package ucar.unidata.geoloc.projection;
 
 import org.junit.Test;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -46,7 +45,7 @@ public class TestVerticalPerspectiveView {
      * }
      */
 
-    LatLonRect rect = new LatLonRect(new LatLonPointImpl(-45.0, -45.0), -45.0, -45.0);
+    LatLonRect rect = new LatLonRect(LatLonPoint.create(-45.0, -45.0), -45.0, -45.0);
     ProjectionRect r = a.latLonToProjBB(rect);
     System.out.println(" ProjectionRect result = " + r);
 
