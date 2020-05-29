@@ -61,12 +61,11 @@ public abstract class AbstractGisFeature implements GisFeature {
    * @param displayProject Projection to use to display
    * @return shape corresponding to this feature
    */
-  public Shape getProjectedShape(ProjectionImpl displayProject) {
-    ProjectionPointImpl lastW = new ProjectionPointImpl();
+  Shape getProjectedShape(ProjectionImpl displayProject) {
     GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, getNumPoints());
-
     boolean showPts = ucar.ui.prefs.Debug.isSet("projection/showPoints");
 
+    ProjectionPoint lastW = ProjectionPoint.create();
     java.util.Iterator pi = getGisParts();
     while (pi.hasNext()) {
       GisPart gp = (GisPart) pi.next();
@@ -99,7 +98,7 @@ public abstract class AbstractGisFeature implements GisFeature {
         count++;
         skipPrev = false;
 
-        lastW.setLocation(pt);
+        lastW = pt;
       }
     }
     return path;
@@ -116,8 +115,7 @@ public abstract class AbstractGisFeature implements GisFeature {
    * @return shape corresponding to this feature
    */
   public Shape getProjectedShape(ProjectionImpl dataProject, ProjectionImpl displayProject) {
-    ProjectionPointImpl pt1 = new ProjectionPointImpl();
-    ProjectionPointImpl lastW = new ProjectionPointImpl();
+    ProjectionPoint lastW = ProjectionPoint.create();
     GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, getNumPoints());
 
     boolean showPts = ucar.ui.prefs.Debug.isSet("projection/showPoints");
@@ -130,7 +128,7 @@ public abstract class AbstractGisFeature implements GisFeature {
       boolean skipPrev = false;
       int count = 0;
       for (int i = 0; i < gp.getNumPoints(); i++) {
-        pt1.setLocation(xx[i], yy[i]);
+        ProjectionPoint pt1 = ProjectionPoint.create(xx[i], yy[i]);
         LatLonPoint llpt = dataProject.projToLatLon(pt1);
         ProjectionPoint pt2 = displayProject.latLonToProj(llpt);
 
@@ -154,7 +152,7 @@ public abstract class AbstractGisFeature implements GisFeature {
         count++;
         skipPrev = false;
 
-        lastW.setLocation(pt2);
+        lastW = pt2;
       }
     }
     return path;

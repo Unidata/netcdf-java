@@ -35,7 +35,7 @@ public class RotatedPole extends ProjectionImpl {
   private static final double DEG_PER_RAD = 1. / RAD_PER_DEG;
 
   /* Coordinates of north pole for rotated pole. */
-  private final ProjectionPointImpl northPole;
+  private final ProjectionPoint northPole;
 
   /* Y-axis rotation matrix. */
   private final double[][] rotY = new double[3][3];
@@ -56,7 +56,7 @@ public class RotatedPole extends ProjectionImpl {
   public RotatedPole(double northPoleLat, double northPoleLon) {
     super("RotatedPole", false);
 
-    northPole = new ProjectionPointImpl(northPoleLon, northPoleLat);
+    northPole = ProjectionPoint.create(northPoleLon, northPoleLat);
     buildRotationMatrices();
 
     addParameter(CF.GRID_MAPPING_NAME, CF.ROTATED_LATITUDE_LONGITUDE);
@@ -104,8 +104,8 @@ public class RotatedPole extends ProjectionImpl {
     rotZ[2][2] = 1.;
   }
 
-  public ProjectionPointImpl getNorthPole() {
-    return new ProjectionPointImpl(northPole);
+  public ProjectionPoint getNorthPole() {
+    return northPole;
   }
 
   @Override
@@ -152,14 +152,12 @@ public class RotatedPole extends ProjectionImpl {
     double latR = Math.asin(p2[2]) * DEG_PER_RAD;
 
     if (destPoint == null) {
-      destPoint = new ProjectionPointImpl(lonR, latR);
+      return ProjectionPoint.create(lonR, latR);
     } else {
       destPoint.setLocation(lonR, latR);
+      return destPoint;
     }
 
-    log.debug("LatLon= " + latlon + ", proj= " + destPoint);
-
-    return destPoint;
   }
 
   /**

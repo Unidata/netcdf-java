@@ -390,8 +390,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     double maxD = -Double.MAX_VALUE;
 
     ProjectionImpl dataProject = getDataProjection();
-    ProjectionPointImpl thisW = new ProjectionPointImpl();
-    ProjectionPointImpl lastW = new ProjectionPointImpl();
+    ProjectionPoint lastW;
 
     while (featList.hasNext()) {
       AbstractGisFeature feature = (AbstractGisFeature) featList.next();
@@ -406,10 +405,10 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
         double[] yy = gp.getY();
         int np = gp.getNumPoints();
 
-        lastW.setLocation(xx[0], yy[0]);
+        lastW = ProjectionPoint.create(xx[0], yy[0]);
 
         for (int i = 1; i < np; i++) {
-          thisW.setLocation(xx[i], yy[i]);
+          ProjectionPoint thisW = ProjectionPoint.create(xx[i], yy[i]);
           if (!dataProject.crossSeam(thisW, lastW)) {
             double dx = (xx[i] - xx[i - 1]);
             double dy = (yy[i] - yy[i - 1]);
@@ -422,7 +421,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
           } else
             cross_pts++;
 
-          lastW.setLocation(xx[i], yy[i]);
+          lastW = ProjectionPoint.create(xx[i], yy[i]);
         }
       }
     }

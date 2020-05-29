@@ -78,9 +78,8 @@ public class TestProjections {
     }
 
     int countT2 = 0;
-    ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
-      startP.setLocation(10000.0 * (r.nextDouble() - .5), // random proj point
+      ProjectionPoint startP = ProjectionPoint.create(10000.0 * (r.nextDouble() - .5), // random proj point
           10000.0 * (r.nextDouble() - .5));
 
       LatLonPoint ll = proj.projToLatLon(startP);
@@ -138,11 +137,10 @@ public class TestProjections {
 
     startL.setLatitude(latMax / 2);
     startL.setLongitude(lonMax / 2);
-    ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
       double x = minx + rangex * r.nextDouble();
       double y = miny + rangey * r.nextDouble();
-      startP.setLocation(x, y);
+      ProjectionPoint startP = ProjectionPoint.create(x, y);
 
       try {
         LatLonPoint ll = proj.projToLatLon(startP);
@@ -168,11 +166,10 @@ public class TestProjections {
   // must have x within +/- xMax, y within +/- yMax
   private void testProjectionProjMax(ProjectionImpl proj, double xMax, double yMax) {
     java.util.Random r = new java.util.Random((long) this.hashCode());
-    ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
       double x = xMax * (2 * r.nextDouble() - 1);
       double y = yMax * (2 * r.nextDouble() - 1);
-      startP.setLocation(x, y);
+      ProjectionPoint startP = ProjectionPoint.create(x, y);
       try {
         LatLonPoint ll = proj.projToLatLon(startP);
         ProjectionPoint endP = proj.latLonToProj(ll);
@@ -411,7 +408,7 @@ public class TestProjections {
     }
 
     /*
-     * ProjectionPointImpl startP = new ProjectionPointImpl();
+     * ProjectionPointImpl startP = ProjectionPoint.create();
      * for (int i = 0; i < NTRIALS; i++) {
      * startP.setLocation(10000.0 * (r.nextDouble() - .5), // random proj point
      * 10000.0 * (r.nextDouble() - .5));

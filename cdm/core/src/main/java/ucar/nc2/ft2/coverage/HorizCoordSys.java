@@ -470,7 +470,7 @@ public class HorizCoordSys {
     double minY = Math.min(yAxis.getCoordEdgeFirst(), yAxis.getCoordEdgeLast());
     double width = Math.abs(xAxis.getCoordEdgeLast() - xAxis.getCoordEdgeFirst());
     double height = Math.abs(yAxis.getCoordEdgeLast() - yAxis.getCoordEdgeFirst());
-    return new ProjectionRect(new ProjectionPointImpl(minX, minY), width, height);
+    return new ProjectionRect(ProjectionPoint.create(minX, minY), width, height);
   }
 
   /**
@@ -594,22 +594,22 @@ public class HorizCoordSys {
 
     // Bottom boundary points
     for (int i = 0; i < numXtotal; i += strideX) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdge1(i), yAxis.getCoordEdgeFirst()));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdge1(i), yAxis.getCoordEdgeFirst()));
     }
 
     // Right boundary points
     for (int j = 0; j < numYtotal; j += strideY) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdgeLast(), yAxis.getCoordEdge1(j)));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdgeLast(), yAxis.getCoordEdge1(j)));
     }
 
     // Top boundary points
     for (int i = numXtotal - 1; i >= 0; i -= strideX) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdge2(i), yAxis.getCoordEdgeLast()));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdge2(i), yAxis.getCoordEdgeLast()));
     }
 
     // Left boundary points
     for (int j = numYtotal - 1; j >= 0; j -= strideY) {
-      points.add(new ProjectionPointImpl(xAxis.getCoordEdgeFirst(), yAxis.getCoordEdge2(j)));
+      points.add(ProjectionPoint.create(xAxis.getCoordEdgeFirst(), yAxis.getCoordEdge2(j)));
     }
 
     assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);

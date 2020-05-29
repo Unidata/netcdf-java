@@ -414,7 +414,6 @@ public class CFGridCoverageWriter2 {
     CoverageCoordAxis1D yAxis = horizCoordSys.getYAxis();
 
     Projection proj = horizCoordSys.getTransform().getProjection();
-    ProjectionPointImpl projPoint = new ProjectionPointImpl();
 
     double[] xData = (double[]) xAxis.getCoordsAsArray().get1DJavaArray(DataType.DOUBLE);
     double[] yData = (double[]) yAxis.getCoordsAsArray().get1DJavaArray(DataType.DOUBLE);
@@ -428,7 +427,7 @@ public class CFGridCoverageWriter2 {
     // create the data
     for (int i = 0; i < numY; i++) {
       for (int j = 0; j < numX; j++) {
-        projPoint.setLocation(xData[j], yData[i]);
+        ProjectionPoint projPoint = ProjectionPoint.create(xData[j], yData[i]);
         LatLonPoint latlonPoint = proj.projToLatLon(projPoint);
         latData[i * numX + j] = latlonPoint.getLatitude();
         lonData[i * numX + j] = latlonPoint.getLongitude();

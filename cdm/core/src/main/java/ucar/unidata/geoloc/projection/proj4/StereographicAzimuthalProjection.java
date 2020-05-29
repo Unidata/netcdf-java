@@ -155,7 +155,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     }
   }
 
-  public ProjectionPoint project(double lam, double phi, ProjectionPointImpl xy) {
+  private ProjectionPoint project(double lam, double phi, ProjectionPointImpl xy) {
     double coslam = Math.cos(lam);
     double sinlam = Math.sin(lam);
     double sinphi = Math.sin(phi);

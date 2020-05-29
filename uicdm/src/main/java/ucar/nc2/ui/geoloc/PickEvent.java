@@ -23,7 +23,7 @@ public class PickEvent extends java.util.EventObject {
 
   public PickEvent(Object source, Point2D location) {
     super(source);
-    this.where = new ProjectionPointImpl(location.getX(), location.getY());
+    this.where = ProjectionPoint.create(location.getX(), location.getY());
   }
 
   public Point2D getLocationPoint() {

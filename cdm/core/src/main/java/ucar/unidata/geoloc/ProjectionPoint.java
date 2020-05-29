@@ -9,10 +9,19 @@ import ucar.nc2.util.Misc;
 /**
  * Points on the Projective geometry plane.
  *
- * @author John Caron
- * @see ProjectionPointImpl
+ * TODO will be an Immutable class in ver6
  */
 public interface ProjectionPoint {
+
+  /** Standard way to create a ProjectionPoint. */
+  static ProjectionPoint create(double x, double y) {
+    return new ProjectionPointImpl(x, y);
+  }
+
+  /** Standard way to create a "default" ProjectionPoint. */
+  static ProjectionPoint create() {
+    return new ProjectionPointImpl();
+  }
 
   /**
    * Get the X coordinate

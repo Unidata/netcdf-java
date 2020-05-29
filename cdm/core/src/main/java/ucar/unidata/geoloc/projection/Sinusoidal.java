@@ -355,8 +355,8 @@ public class Sinusoidal extends ProjectionImpl {
     double minY = -earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
     double maxY = +earthRadius * Math.acos(x0natural / (earthRadius * deltaLon_r));
 
-    mapEdgeIntercepts.add(new ProjectionPointImpl(x0, minY + falseNorthing));
-    mapEdgeIntercepts.add(new ProjectionPointImpl(x0, maxY + falseNorthing));
+    mapEdgeIntercepts.add(ProjectionPoint.create(x0, minY + falseNorthing));
+    mapEdgeIntercepts.add(ProjectionPoint.create(x0, maxY + falseNorthing));
     return mapEdgeIntercepts;
   }
 
@@ -375,8 +375,8 @@ public class Sinusoidal extends ProjectionImpl {
     double minX = getXAt(y0, -PI);
     double maxX = getXAt(y0, +PI);
 
-    mapEdgeIntercepts.add(new ProjectionPointImpl(minX, y0));
-    mapEdgeIntercepts.add(new ProjectionPointImpl(maxX, y0));
+    mapEdgeIntercepts.add(ProjectionPoint.create(minX, y0));
+    mapEdgeIntercepts.add(ProjectionPoint.create(maxX, y0));
     return mapEdgeIntercepts;
   }
 

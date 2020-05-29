@@ -360,7 +360,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
    * @return LatLonPointImpl convert to these lat/lon coordinates
    */
   public LatLonPoint projToLatLon(double x, double y) {
-    return projToLatLon(new ProjectionPointImpl(x, y));
+    return projToLatLon(ProjectionPoint.create(x, y));
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -451,10 +451,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
       throw new IllegalArgumentException("ProjectionImpl.projToLatLon:" + "from array not same length as to array");
     }
 
-    ProjectionPointImpl ppi = new ProjectionPointImpl();
-
     for (int i = 0; i < from[0].length; i++) {
-      ppi.setLocation(from[0][i], from[1][i]);
+      ProjectionPoint ppi = ProjectionPoint.create(from[0][i], from[1][i]);
       LatLonPoint llpi = projToLatLon(ppi);
       to[0][i] = (float) llpi.getLatitude();
       to[1][i] = (float) llpi.getLongitude();
@@ -734,15 +732,13 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
      * }
      */
 
-    ProjectionPointImpl w1 = new ProjectionPointImpl();
-    ProjectionPointImpl w2 = new ProjectionPointImpl();
+    ProjectionPoint w1 = ProjectionPoint.create(min.getX(), max.getY());
+    ProjectionPoint w2 = ProjectionPoint.create(max.getX(), min.getY());
 
     // now extend if needed using the other two corners
-    w1.setLocation(min.getX(), max.getY());
     llmin = projToLatLon(w1);
     llbb.extend(llmin);
 
-    w2.setLocation(max.getX(), min.getY());
     llmax = projToLatLon(w2);
     llbb.extend(llmax);
 

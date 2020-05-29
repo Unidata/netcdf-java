@@ -51,7 +51,7 @@ public class Navigation {
     return pheight;
   }
 
-  public void setScreenSize(double pwidth, double pheight) {
+  void setScreenSize(double pwidth, double pheight) {
     if ((pwidth == 0) || (pheight == 0))
       return;
 
@@ -85,7 +85,7 @@ public class Navigation {
   }
 
   // calculate if we want to rotate based on aspect ratio
-  public boolean wantRotate(double displayWidth, double displayHeight) {
+  boolean wantRotate(double displayWidth, double displayHeight) {
     getMapArea(bb); // current world bounding box
     boolean aspectDisplay = displayHeight < displayWidth;
     boolean aspectWorldBB = bb.getHeight() < bb.getWidth();
@@ -103,7 +103,7 @@ public class Navigation {
    *
    *        see Navigation.calcTransform
    */
-  public AffineTransform calcTransform(boolean rotate, double displayX, double displayY, double displayWidth,
+  AffineTransform calcTransform(boolean rotate, double displayX, double displayY, double displayWidth,
       double displayHeight) {
     getMapArea(bb); // current world bounding box
     // scale to limiting dimension
@@ -161,7 +161,7 @@ public class Navigation {
     return rect;
   }
 
-  public void setMapArea(ProjectionRect ma) {
+  void setMapArea(ProjectionRect ma) {
     if (debugRecalc)
       System.out.println("navigation/setMapArea " + ma);
 
@@ -181,15 +181,14 @@ public class Navigation {
   }
 
   /** convert a world coordinate to a display point */
-  public Point2D worldToScreen(ProjectionPointImpl w, Point2D p) {
+  Point2D worldToScreen(ProjectionPoint w, Point2D p) {
     p.setLocation(pix_per_world * w.getX() + pix_x0, -pix_per_world * w.getY() + pix_y0);
     return p;
   }
 
   /** convert a display point to a world coordinate */
-  public ProjectionPointImpl screenToWorld(Point2D p, ProjectionPointImpl w) {
-    w.setLocation((p.getX() - pix_x0) / pix_per_world, (pix_y0 - p.getY()) / pix_per_world);
-    return w;
+  ProjectionPoint screenToWorld(Point2D p) {
+    return ProjectionPoint.create((p.getX() - pix_x0) / pix_per_world, (pix_y0 - p.getY()) / pix_per_world);
   }
 
   public double getPixPerWorld() {
@@ -197,23 +196,19 @@ public class Navigation {
   }
 
   /** convert screen Rectangle to a projection (world) rectangle */
-  public ProjectionRect screenToWorld(Point2D start, Point2D end) {
-    ProjectionPointImpl p1 = new ProjectionPointImpl();
-    ProjectionPointImpl p2 = new ProjectionPointImpl();
-
-    screenToWorld(start, p1);
-    screenToWorld(end, p2);
-
+  ProjectionRect screenToWorld(Point2D start, Point2D end) {
+    ProjectionPoint p1 = screenToWorld(start);
+    ProjectionPoint p2 = screenToWorld(end);
     return new ProjectionRect(p1.getX(), p1.getY(), p2.getX(), p2.getY());
   }
 
   /** convert a projection (world) rectangle to a screen Rectangle */
-  public java.awt.Rectangle worldToScreen(ProjectionRect projRect) {
+  java.awt.Rectangle worldToScreen(ProjectionRect projRect) {
     Point2D p1 = new Point2D.Double();
     Point2D p2 = new Point2D.Double();
 
-    worldToScreen((ProjectionPointImpl) projRect.getMaxPoint(), p1);
-    worldToScreen((ProjectionPointImpl) projRect.getMinPoint(), p2);
+    worldToScreen(projRect.getMaxPoint(), p1);
+    worldToScreen(projRect.getMinPoint(), p2);
     return new java.awt.Rectangle((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
   }
 
@@ -223,7 +218,7 @@ public class Navigation {
    * call this to change the center of the screen's world coordinates.
    * deltax, deltay in display coordinates
    */
-  public void pan(double deltax, double deltay) {
+  void pan(double deltax, double deltay) {
     zoom.push();
 
     pix_x0 -= deltax;
@@ -236,7 +231,7 @@ public class Navigation {
    * startx, starty are the upper left corner of the box in display coords
    * width, height the size of the box in display coords
    */
-  public void zoom(double startx, double starty, double width, double height) {
+  void zoom(double startx, double starty, double width, double height) {
     if (debugZoom)
       System.out.println("zoom " + startx + " " + starty + " " + width + " " + height + " ");
 
@@ -257,11 +252,11 @@ public class Navigation {
     zoomOut();
   }
 
-  public void zoomIn() {
+  void zoomIn() {
     zoom(2.0);
   }
 
-  public void zoomOut() {
+  void zoomOut() {
     zoom(.5);
   }
 
@@ -278,35 +273,35 @@ public class Navigation {
     fireMapAreaEvent();
   }
 
-  public void moveDown() {
+  void moveDown() {
     zoom.push();
 
     pix_y0 -= pheight / 2;
     fireMapAreaEvent();
   }
 
-  public void moveUp() {
+  void moveUp() {
     zoom.push();
 
     pix_y0 += pheight / 2;
     fireMapAreaEvent();
   }
 
-  public void moveRight() {
+  void moveRight() {
     zoom.push();
 
     pix_x0 -= pwidth / 2;
     fireMapAreaEvent();
   }
 
-  public void moveLeft() {
+  void moveLeft() {
     zoom.push();
 
     pix_x0 += pwidth / 2;
     fireMapAreaEvent();
   }
 
-  public void zoomPrevious() {
+  void zoomPrevious() {
     zoom.pop();
     fireMapAreaEvent();
   }

@@ -185,7 +185,7 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         
         and: "declare expected bounding box"
         ProjectionRect expectedBB = new ProjectionRect(
-                new ProjectionPointImpl(-4500, -2450), new ProjectionPointImpl(-500, 1150))
+                ProjectionPoint.create(-4500, -2450), ProjectionPoint.create(-500, 1150))
     
         expect: "expected equals actual"
         expectedBB == actualBB
@@ -263,7 +263,7 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
             if (coordsAreLatLons) {
                 points << new LatLonPointNoNormalize(coord.get(0), coord.get(1))
             } else {
-                points << new ProjectionPointImpl(coord.get(1), coord.get(0))
+                points << ProjectionPoint.create(coord.get(1), coord.get(0))
             }
         }
         return points

@@ -468,12 +468,11 @@ public class GridHorizCoordSys {
     int ny = yData.length;
 
     // create the data
-    ProjectionPointImpl projPoint = new ProjectionPointImpl();
     double[] latData = new double[nx * ny];
     double[] lonData = new double[nx * ny];
     for (int i = 0; i < ny; i++) {
       for (int j = 0; j < nx; j++) {
-        projPoint.setLocation(xData[j], yData[i]);
+        ProjectionPoint projPoint = ProjectionPoint.create(xData[j], yData[i]);
         LatLonPoint latlonPoint = proj.projToLatLon(projPoint);
         latData[i * nx + j] = latlonPoint.getLatitude();
         lonData[i * nx + j] = latlonPoint.getLongitude();
@@ -758,7 +757,7 @@ public class GridHorizCoordSys {
       System.out.println("GridHorizCoordSys.makeMercator: end at latlon= " + endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
-      System.out.println("   start at proj coord " + new ProjectionPointImpl(startx, starty));
+      System.out.println("   start at proj coord " + ProjectionPoint.create(startx, starty));
       System.out.println("   end at proj coord " + endPP);
 
       double endx = startx + (getNx() - 1) * getDxInKm();
@@ -777,7 +776,7 @@ public class GridHorizCoordSys {
     // Given projection coordinates, need LatLon coordinates
     proj = new RotatedLatLon(splat, splon, spangle);
     LatLonPoint startLL =
-        proj.projToLatLon(new ProjectionPointImpl(gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.LA1)));
+        proj.projToLatLon(ProjectionPoint.create(gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.LA1)));
     startx = startLL.getLongitude();
     starty = startLL.getLatitude();
     addCoordSystemVariable(ncfile, "latLonCoordSys", "time y x");
@@ -803,7 +802,7 @@ public class GridHorizCoordSys {
       System.out.println("Location of UR in rotated grid:");
       System.out.println("Lon=" + Lo2 + ", Lat=" + La2);
       System.out.println("Location of UR in non-rotated grid:");
-      LatLonPoint endUR = proj.projToLatLon(new ProjectionPointImpl(Lo2, La2));
+      LatLonPoint endUR = proj.projToLatLon(ProjectionPoint.create(Lo2, La2));
       System.out.println("Lon=" + endUR.getLongitude() + ", Lat=" + endUR.getLatitude());
 
       double dy =

@@ -27,8 +27,8 @@ public class TestSinusoidal {
     // Upper right: 2982 111 -> 10.0N 27.23E
     // Lower left: -2201 -4446 -> 40.0S 25.84W
     // Lower right: 2982 -4446 -> 40.0S 35.0E
-    ProjectionPoint upperLeft = new ProjectionPointImpl(-2201, 1111);
-    ProjectionPoint lowerRight = new ProjectionPointImpl(2982, -4446);
+    ProjectionPoint upperLeft = ProjectionPoint.create(-2201, 1111);
+    ProjectionPoint lowerRight = ProjectionPoint.create(2982, -4446);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
@@ -70,8 +70,8 @@ public class TestSinusoidal {
     // Upper right: -3603 -2780 -> 25.002S 35.761W
     // Lower right: -3603 -8854 -> 79.627S 179.99W
     // But let's use false_easting = 20015.8 and false_northing = 10007.9
-    ProjectionPoint upperLeft = new ProjectionPointImpl(false_easting + -9070, false_northing + -2780);
-    ProjectionPoint lowerRight = new ProjectionPointImpl(false_easting + -3603, false_northing + -10000);
+    ProjectionPoint upperLeft = ProjectionPoint.create(false_easting + -9070, false_northing + -2780);
+    ProjectionPoint lowerRight = ProjectionPoint.create(false_easting + -3603, false_northing + -10000);
 
     Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, ProjectionImpl.EARTH_RADIUS);
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
@@ -92,8 +92,8 @@ public class TestSinusoidal {
     // Lower left: 14480 -4361 -> 39.224S 168.10E
     // Upper right: 18803 -2228 -> 20.037S 179.99E
     // But let's use false_easting = 20015.8 and false_northing = 10007.9
-    ProjectionPoint upperLeft = new ProjectionPointImpl(false_easting + 14480, false_northing + -2228);
-    ProjectionPoint lowerRight = new ProjectionPointImpl(false_easting + 20000, false_northing + -4361);
+    ProjectionPoint upperLeft = ProjectionPoint.create(false_easting + 14480, false_northing + -2228);
+    ProjectionPoint lowerRight = ProjectionPoint.create(false_easting + 20000, false_northing + -4361);
 
     Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, ProjectionImpl.EARTH_RADIUS);
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
@@ -114,8 +114,8 @@ public class TestSinusoidal {
     // Upper right: -9370 6278 -> 56.465N 152.54W
     // Lower left: -15334 4446 -> 39.985N 179.99W
     // But let's use false_easting = 20015.8 and false_northing = 10007.9
-    ProjectionPoint lowerRight = new ProjectionPointImpl(false_easting + -9370, false_northing + 4446);
-    ProjectionPoint upperLeft = new ProjectionPointImpl(false_easting + -17500, false_northing + 6278);
+    ProjectionPoint lowerRight = ProjectionPoint.create(false_easting + -9370, false_northing + 4446);
+    ProjectionPoint upperLeft = ProjectionPoint.create(false_easting + -17500, false_northing + 6278);
 
     Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, ProjectionImpl.EARTH_RADIUS);
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
@@ -139,8 +139,8 @@ public class TestSinusoidal {
     // Upper 2nd-from-left: -1744 9451 -> 85.0N 180.0W
     // Upper 3rd-from-left: 1743 9451 -> 85.0N 180.0E
     // Upper 4th-from-left: 4021 8718 -> 78.404N 180.0E
-    ProjectionPoint lowerLeft = new ProjectionPointImpl(-4166, 8342);
-    ProjectionPoint upperRight = new ProjectionPointImpl(4021, 9451);
+    ProjectionPoint lowerLeft = ProjectionPoint.create(-4166, 8342);
+    ProjectionPoint upperRight = ProjectionPoint.create(4021, 9451);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
@@ -156,8 +156,8 @@ public class TestSinusoidal {
   public void projToLatLonBB_onlyintersects() {
     // Same bounding box as projToLatLonBB_partiallyValidTop(), but the left and right sides have been
     // extended completely off the map. None of its corners are on the map, but it intersects the edge at 4 places.
-    ProjectionPoint lowerLeft = new ProjectionPointImpl(-13000, 8342);
-    ProjectionPoint upperRight = new ProjectionPointImpl(15000, 9451);
+    ProjectionPoint lowerLeft = ProjectionPoint.create(-13000, 8342);
+    ProjectionPoint upperRight = ProjectionPoint.create(15000, 9451);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
@@ -173,8 +173,8 @@ public class TestSinusoidal {
   public void projToLatLonBB_includesNorthPole() {
     // Same bouding box as projToLatLonBB_partiallyValidTop(), but the top was extended past 90°N.
     // It intersects the map edge at 2 places and includes the north pole.
-    ProjectionPoint lowerLeft = new ProjectionPointImpl(-4166, 8342);
-    ProjectionPoint upperRight = new ProjectionPointImpl(4021, 11111);
+    ProjectionPoint lowerLeft = ProjectionPoint.create(-4166, 8342);
+    ProjectionPoint upperRight = ProjectionPoint.create(4021, 11111);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
@@ -191,8 +191,8 @@ public class TestSinusoidal {
     // Same bounding box as projToLatLonBB_partiallyValidTop(), but the left, right, and top sides have been
     // extended completely off the map. None of its corners are on the map, but it intersects the edge at 2 places
     // and includes the north pole.
-    ProjectionPoint lowerLeft = new ProjectionPointImpl(-13000, 8342);
-    ProjectionPoint upperRight = new ProjectionPointImpl(15000, 11111);
+    ProjectionPoint lowerLeft = ProjectionPoint.create(-13000, 8342);
+    ProjectionPoint upperRight = ProjectionPoint.create(15000, 11111);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
@@ -213,8 +213,8 @@ public class TestSinusoidal {
     // Upper left: -1388 -6673 -> 60.0S 25.0W
     // Upper right: 10003 -6673 -> 60.0S 180.0E
     // Lower left: -1388 -9565 -> 86.0S 180.0W
-    ProjectionPoint upperLeft = new ProjectionPointImpl(-1388, -6673);
-    ProjectionPoint lowerRight = new ProjectionPointImpl(12000, -12000);
+    ProjectionPoint upperLeft = ProjectionPoint.create(-1388, -6673);
+    ProjectionPoint lowerRight = ProjectionPoint.create(12000, -12000);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
@@ -229,8 +229,8 @@ public class TestSinusoidal {
   @Test
   public void projToLatLonBB_completelyOffTheMap() {
     // None of the corners are on the map and none of the sides intersect its edge.
-    ProjectionPoint upperLeft = new ProjectionPointImpl(10000, -7000);
-    ProjectionPoint lowerRight = new ProjectionPointImpl(13000, -10000);
+    ProjectionPoint upperLeft = ProjectionPoint.create(10000, -7000);
+    ProjectionPoint lowerRight = ProjectionPoint.create(13000, -10000);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
@@ -242,8 +242,8 @@ public class TestSinusoidal {
   @Test
   public void projToLatLonBB_everything() {
     // The bounding box includes the entire map.
-    ProjectionPoint lowerLeft = new ProjectionPointImpl(-30000, -30000);
-    ProjectionPoint upperRight = new ProjectionPointImpl(30000, 30000);
+    ProjectionPoint lowerLeft = ProjectionPoint.create(-30000, -30000);
+    ProjectionPoint upperRight = ProjectionPoint.create(30000, 30000);
 
     Sinusoidal proj = new Sinusoidal();
     ProjectionRect projBB = new ProjectionRect(lowerLeft, upperRight);
