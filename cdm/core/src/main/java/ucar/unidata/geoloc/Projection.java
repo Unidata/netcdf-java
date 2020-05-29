@@ -17,30 +17,26 @@ import ucar.unidata.util.Parameter;
 
 public interface Projection {
 
-  /**
-   * The name of this class of projections, eg "Transverse Mercator".
-   *
-   * @return the class name
-   */
+  /** The name of this class of projections, eg "Transverse Mercator". */
   String getClassName();
 
-  /**
-   * The name of this projection.
-   *
-   * @return the name of this projection
-   */
+  /** The name of this projection. */
   String getName();
 
-  /**
-   * String representation of the projection parameters.
-   *
-   * @return String representation of the projection parameters.
-   */
+  /** Is this the lat/lon Projection ? */
+  boolean isLatLon();
+
+  /** String representation of the projection parameters. */
   String paramsToString();
 
   /** @deprecated use latLonToProj(LatLonPoint latlon) */
   @Deprecated
   ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result);
+
+  /** Convert lat, lon to Projection point. */
+  default ProjectionPoint latLonToProj(double lat, double lon) {
+    return latLonToProj(LatLonPoint.create(lat, lon));
+  }
 
   /**
    * Convert a LatLonPoint to projection coordinates.
@@ -53,6 +49,11 @@ public interface Projection {
   /** @deprecated use projToLatLon(ProjectionPoint ppt) */
   @Deprecated
   LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl result);
+
+  /** Convert projection x, y to LatLonPoint point. */
+  default LatLonPoint projToLatLon(double x, double y) {
+    return projToLatLon(ProjectionPoint.create(x, y));
+  }
 
   /**
    * Convert projection coordinates to a LatLonPoint.
@@ -93,9 +94,8 @@ public interface Projection {
    * Get parameters as list of ucar.unidata.util.Parameter
    *
    * @return List of parameters
-   * @deprecated will return Iterable in ver6
+   *         TODO will return ImmutableList in ver6
    */
-  @Deprecated
   java.util.List<Parameter> getProjectionParameters();
 
   /**
@@ -108,6 +108,15 @@ public interface Projection {
    *         plane
    */
   ProjectionRect latLonToProjBB(LatLonRect latlonRect);
+
+  /**
+   * Compute lat/lon bounding box from projection bounding box.
+   *
+   * @param bb projection bounding box
+   * @return lat, lon bounding box.
+   * @deprecated use Projections.projToLatLonBB(Projection proj, ...)
+   */
+  LatLonRect projToLatLonBB(ProjectionRect bb);
 
 }
 

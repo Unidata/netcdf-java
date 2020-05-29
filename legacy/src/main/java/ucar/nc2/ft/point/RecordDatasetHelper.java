@@ -30,7 +30,6 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -411,7 +410,7 @@ public class RecordDatasetHelper {
       double lon = sdata.convertScalarDouble(members.findMember(lonVName));
       double alt =
           (zcoordVName == null) ? 0.0 : altScaleFactor * sdata.convertScalarDouble(members.findMember(zcoordVName));
-      location = new EarthLocationImpl(lat, lon, alt);
+      location = EarthLocation.create(lat, lon, alt);
     }
 
     public String getId() {

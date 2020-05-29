@@ -10,6 +10,7 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.*;
+import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.util.*;
@@ -187,8 +188,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl implements TypedDa
       float lon = sdata.convertScalarFloat("longitude");
       float alt = sdata.convertScalarFloat(altVName);
 
-      return recordHelper.new RecordPointObs(new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt), obsTime, nomTime,
-          recno);
+      return recordHelper.new RecordPointObs(EarthLocation.create(lat, lon, alt), obsTime, nomTime, recno);
 
     } catch (ucar.ma2.InvalidRangeException e) {
       e.printStackTrace();

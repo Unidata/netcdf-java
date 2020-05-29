@@ -16,6 +16,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
@@ -197,7 +198,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
       throw new RuntimeException(e);
     }
 
-    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
+    origin = EarthLocation.create(latv, lonv, elev);
   }
 
   @Override
