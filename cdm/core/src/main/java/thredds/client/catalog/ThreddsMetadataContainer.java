@@ -15,5 +15,6 @@ import java.util.List;
 public interface ThreddsMetadataContainer {
   Object getLocalField(String fldName);
 
+  // TODO make ImmutableList
   List getLocalFieldAsList(String fldName);
 }

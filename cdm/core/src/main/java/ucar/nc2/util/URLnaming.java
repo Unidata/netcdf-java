@@ -11,9 +11,8 @@ import java.net.URI;
 /**
  * Networking utilities.
  * 
- * @deprecated move to util.net
+ * TODO move to util.net
  */
-@Deprecated
 public class URLnaming {
 
   /// try to figure out if we need to add file: to the location when writing

@@ -15,8 +15,7 @@ import java.util.Iterator;
  * // do stuff
  * }
  *
- * @deprecated will move in ver6
+ * TODO will move to thredds.inventory in ver6
  */
-@Deprecated
 public interface CloseableIterator<T> extends Iterator<T>, Closeable {
 }

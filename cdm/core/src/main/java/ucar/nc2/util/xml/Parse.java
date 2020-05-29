@@ -14,11 +14,9 @@ import java.io.IOException;
  * created Jul 3, 2007
  *
  * @author caron
- * @deprecated will move in ver6
+ *         TODO will move to internal.ncml in ver6
  */
-@Deprecated
 public class Parse {
-
   /**
    * Read an XML Document from a URL and return the root element.
    *
