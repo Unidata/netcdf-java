@@ -11,6 +11,7 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
+import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -244,8 +245,7 @@ public class RecordDatasetHelper {
           stn.addObs(stnObs);
 
         } else {
-          records.add(
-              new RecordPointObs(new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt), obsTime, nomTime, recno));
+          records.add(new RecordPointObs(EarthLocation.create(lat, lon, alt), obsTime, nomTime, recno));
         }
 
         // track date range and bounding box
@@ -358,7 +358,7 @@ public class RecordDatasetHelper {
       double lat = sdata.convertScalarDouble(latVName);
       double lon = sdata.convertScalarDouble(lonVName);
       double alt = (altVName == null) ? Double.NaN : altScaleFactor * sdata.convertScalarDouble(altVName);
-      location = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt);
+      location = EarthLocation.create(lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {

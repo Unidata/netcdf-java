@@ -14,6 +14,7 @@ import ucar.nc2.Variable;
 import ucar.ma2.*;
 import java.io.IOException;
 import java.util.*;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Make a Nids NetcdfDataset into a RadialDataset.
@@ -130,7 +131,7 @@ public class NidsRadialAdapter extends AbstractRadialAdapter {
       System.err.println("CDM radial dataset failed to open this dataset " + e);
 
     }
-    origin = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, elev);
+    origin = EarthLocation.create(lat, lon, elev);
   }
 
   protected void setTimeUnits() throws Exception {

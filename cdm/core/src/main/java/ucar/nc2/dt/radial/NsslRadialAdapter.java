@@ -17,6 +17,7 @@ import ucar.nc2.Dimension;
 import ucar.ma2.*;
 import java.io.IOException;
 import java.util.*;
+import ucar.unidata.geoloc.EarthLocation;
 
 public class NsslRadialAdapter extends AbstractRadialAdapter {
   private NetcdfDataset ds;
@@ -181,7 +182,7 @@ public class NsslRadialAdapter extends AbstractRadialAdapter {
     else
       elev = 0.0;
 
-    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
+    origin = EarthLocation.create(latv, lonv, elev);
   }
 
   protected void setTimeUnits() throws Exception {

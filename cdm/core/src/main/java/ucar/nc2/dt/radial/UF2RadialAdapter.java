@@ -13,6 +13,7 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
+import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
@@ -121,7 +122,7 @@ public class UF2RadialAdapter extends AbstractRadialAdapter {
     else
       elev = 0.0;
 
-    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
+    origin = EarthLocation.create(latv, lonv, elev);
   }
 
   public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {

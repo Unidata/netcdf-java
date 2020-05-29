@@ -274,7 +274,7 @@ public class CoordTransBuilder {
    * 
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
-   * @deprecated wwill move in ver6
+   *         TODO return Projection in ver6
    */
   @Deprecated
   public static ProjectionImpl makeProjection(CoverageTransform gct, Formatter errInfo) {

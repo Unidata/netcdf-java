@@ -376,6 +376,7 @@ public class CoordinateSystem {
    * projection from any ProjectionCT CoordinateTransform.
    * 
    * @return ProjectionImpl or null if none.
+   *         TODO return Projection in ver6
    */
   public ProjectionImpl getProjection() {
     if (projection == null) {

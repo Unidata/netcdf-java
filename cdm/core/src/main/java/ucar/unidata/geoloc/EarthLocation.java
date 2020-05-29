@@ -9,9 +9,13 @@ package ucar.unidata.geoloc;
  *
  * @author caron
  * @since Feb 18, 2008
- *        LOOK may be immutable AutoValue in ver6
  */
 public interface EarthLocation {
+  /** Standard way to create an EarthLocation. */
+  static EarthLocation create(double lat, double lon, double alt) {
+    return new EarthLocationImpl(lat, lon, alt);
+  }
+
   /**
    * Returns the latitude in some unit. The unit is very likely decimal degrees north, but we don't enforce that
    * anywhere.

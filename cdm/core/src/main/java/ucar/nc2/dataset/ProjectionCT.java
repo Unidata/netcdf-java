@@ -17,7 +17,7 @@ public class ProjectionCT extends CoordinateTransform {
    * 
    * @param name name of transform, must be unique within the NcML.
    * @param authority naming authority.
-   * @param proj projection function.
+   * @param proj projection function. TODO will be Projection in ver6.
    */
   public ProjectionCT(String name, String authority, ProjectionImpl proj) {
     super(name, authority, TransformType.Projection, proj.getProjectionParameters());
