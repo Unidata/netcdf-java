@@ -417,12 +417,11 @@ public class CFGridWriter2 {
     int ny = yData.length;
 
     // create the data
-    ProjectionPointImpl projPoint = new ProjectionPointImpl();
     double[] latData = new double[nx * ny];
     double[] lonData = new double[nx * ny];
     for (int i = 0; i < ny; i++) {
       for (int j = 0; j < nx; j++) {
-        projPoint.setLocation(xData[j], yData[i]);
+        ProjectionPoint projPoint = ProjectionPoint.create(xData[j], yData[i]);
         LatLonPoint latlonPoint = proj.projToLatLon(projPoint);
         latData[i * nx + j] = latlonPoint.getLatitude();
         lonData[i * nx + j] = latlonPoint.getLongitude();

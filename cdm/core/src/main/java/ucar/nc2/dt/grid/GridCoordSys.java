@@ -1032,7 +1032,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   public LatLonPoint getLatLon(double xcoord, double ycoord) {
     Projection dataProjection = getProjection();
-    return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord));
+    return dataProjection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
   }
 
   private LatLonRect llbb;
@@ -1185,10 +1185,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       /*
        * see ProjectionImpl.latLonToProjBB2()
        * Projection dataProjection = getProjection();
-       * ProjectionPoint ll = dataProjection.latLonToProj(llpt, new ProjectionPointImpl());
-       * ProjectionPoint ur = dataProjection.latLonToProj(urpt, new ProjectionPointImpl());
-       * ProjectionPoint lr = dataProjection.latLonToProj(lrpt, new ProjectionPointImpl());
-       * ProjectionPoint ul = dataProjection.latLonToProj(ulpt, new ProjectionPointImpl());
+       * ProjectionPoint ll = dataProjection.latLonToProj(llpt, ProjectionPoint.create());
+       * ProjectionPoint ur = dataProjection.latLonToProj(urpt, ProjectionPoint.create());
+       * ProjectionPoint lr = dataProjection.latLonToProj(lrpt, ProjectionPoint.create());
+       * ProjectionPoint ul = dataProjection.latLonToProj(ulpt, ProjectionPoint.create());
        * 
        * minx = Math.min(ll.getX(), ul.getX());
        * miny = Math.min(ll.getY(), lr.getY());

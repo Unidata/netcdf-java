@@ -118,7 +118,7 @@ public class GdsHorizCoordSys {
   }
 
   public ProjectionRect getProjectionBB() {
-    return new ProjectionRect(new ProjectionPointImpl(getStartX(), getStartY()), getEndX() - getStartX(),
+    return new ProjectionRect(ProjectionPoint.create(getStartX(), getStartY()), getEndX() - getStartX(),
         getEndY() - getStartY());
   }
 

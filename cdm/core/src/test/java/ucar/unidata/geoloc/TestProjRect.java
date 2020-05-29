@@ -182,14 +182,14 @@ public class TestProjRect {
   @Test
   public void testContainsPoint() {
     // contains the center point? -> YES
-    assert (projectionRect.contains(new ProjectionPointImpl(projectionRect.getCenterX(), projectionRect.getCenterY())));
+    assert (projectionRect.contains(ProjectionPoint.create(projectionRect.getCenterX(), projectionRect.getCenterY())));
     // contains a point outside the rectangle? -> NO
-    assert (!projectionRect.contains(new ProjectionPointImpl((projectionRect.getMinX() - projectionRect.getWidth()),
+    assert (!projectionRect.contains(ProjectionPoint.create((projectionRect.getMinX() - projectionRect.getWidth()),
         (projectionRect.getMinY() - projectionRect.getHeight()))));
-    assert (!projectionRect.contains(new ProjectionPointImpl((projectionRect.getMaxX() + projectionRect.getWidth()),
+    assert (!projectionRect.contains(ProjectionPoint.create((projectionRect.getMaxX() + projectionRect.getWidth()),
         (projectionRect.getMaxY() + projectionRect.getHeight()))));
     // contains a point on the rectangle border -> YES
-    assert (projectionRect.contains(new ProjectionPointImpl(projectionRect.getMinPoint())));
+    assert (projectionRect.contains(projectionRect.getMinPoint()));
   }
 
   private ProjectionRect scaleShiftRect(double scaleFactor, double deltaX, double deltaY) {
@@ -202,7 +202,7 @@ public class TestProjRect {
     double testMinX = (centerX + deltaX) - scaleFactor * (width / 2);
     double testMinY = (centerY + deltaY) - scaleFactor * (height / 2);
 
-    return new ProjectionRect(new ProjectionPointImpl(testMinX, testMinY), scaleFactor * width, scaleFactor * height);
+    return new ProjectionRect(ProjectionPoint.create(testMinX, testMinY), scaleFactor * width, scaleFactor * height);
   }
 
   @Test

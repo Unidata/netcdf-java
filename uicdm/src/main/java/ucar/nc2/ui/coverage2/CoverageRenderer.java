@@ -790,9 +790,6 @@ public class CoverageRenderer {
       System.out.printf("** moveTo = x1=%d (%f, %f)%n", x1, pt.getX(), pt.getY());
     gpRun.moveTo((float) pt.getX(), (float) pt.getY());
 
-    ProjectionPointImpl ptP1 = new ProjectionPointImpl();
-    ptP1.setLocation(pt);
-
     for (int e = x1; e <= x2; e++) {
       llp = dataProjection.projToLatLon(xaxis.getCoordEdge2(e), y1);
       pt = drawProjection.latLonToProj(llp);
@@ -809,7 +806,6 @@ public class CoverageRenderer {
       if (debugPts)
         System.out.printf("%d x2=%d lineTo = (%f, %f)%n", count++, e, pt.getX(), pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
-      ptP1.setLocation(pt);
     }
 
     for (int e = x2; e >= x1; e--) {
@@ -828,7 +824,6 @@ public class CoverageRenderer {
       if (debugPts)
         System.out.printf("%d x2=%d lineTo = (%f, %f)%n", count++, e, pt.getX(), pt.getY());
       gpRun.lineTo((float) pt.getX(), (float) pt.getY());
-      ptP1.setLocation(pt);
     }
 
     // finish

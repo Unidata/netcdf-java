@@ -512,7 +512,7 @@ public abstract class Grib2Gds {
       f.format("    end at latlon= %s%n", endLL);
 
       ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
@@ -614,7 +614,7 @@ public abstract class Grib2Gds {
     public GdsHorizCoordSys makeHorizCoordSys() {
       RotatedPole proj = new RotatedPole(latNorthPole, lonNorthPole);
       // LOOK dont transform - works for grib1 Q:/cdmUnitTest/transforms/HIRLAMhybrid.grib
-      // LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
+      // LatLonPoint startLL = proj.projToLatLon(ProjectionPoint.create(lo1, la1));
       // double startx = startLL.getLongitude();
       // double starty = startLL.getLatitude();
       return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, lo1, deltaLon, la1, deltaLat,
@@ -623,15 +623,15 @@ public abstract class Grib2Gds {
 
     public void testHorizCoordSys(Formatter f) {
       GdsHorizCoordSys cs = makeHorizCoordSys();
-      LatLonPoint startLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
-      LatLonPoint endLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo2, la2));
+      LatLonPoint startLL = cs.proj.projToLatLon(ProjectionPoint.create(lo1, la1));
+      LatLonPoint endLL = cs.proj.projToLatLon(ProjectionPoint.create(lo2, la2));
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
       ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
@@ -848,7 +848,7 @@ public abstract class Grib2Gds {
       f.format("    end at latlon= %s%n", endLL);
 
       ProjectionPoint endPP = cs.proj.latLonToProj(endLL);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
@@ -1012,8 +1012,8 @@ public abstract class Grib2Gds {
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
       double endy = cs.starty + (getNy() - 1) * cs.dy;
-      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = ProjectionPoint.create(endx, endy);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPoint startLL = LatLonPoint.create(la1, lo1);
@@ -1187,8 +1187,8 @@ public abstract class Grib2Gds {
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
       double endy = cs.starty + (getNy() - 1) * cs.dy;
-      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = ProjectionPoint.create(endx, endy);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPoint startLL = LatLonPoint.create(la1, lo1);
@@ -1274,8 +1274,8 @@ public abstract class Grib2Gds {
 
       double endx = cs.startx + (getNx() - 1) * cs.dx;
       double endy = cs.starty + (getNy() - 1) * cs.dy;
-      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = ProjectionPoint.create(endx, endy);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPoint startLL = LatLonPoint.create(la1, lo1);
@@ -1682,8 +1682,8 @@ public abstract class Grib2Gds {
       GdsHorizCoordSys cs = makeHorizCoordSys();
       double endx = cs.startx + (getNx() - 1) * cs.dx;
       double endy = cs.starty + (getNy() - 1) * cs.dy;
-      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
-      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      ProjectionPoint endPP = ProjectionPoint.create(endx, endy);
+      f.format("   start at proj coord= %s%n", ProjectionPoint.create(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
       LatLonPoint startLL = LatLonPoint.create(LaP, LoP);

@@ -22,6 +22,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -178,7 +179,7 @@ public class TestCFWriter2 {
   @Test
   public void testWriteFileOnNarr3() throws Exception {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    ProjectionRect rect = new ProjectionRect(new ProjectionPointImpl(-5645, -4626), 11329, 8992);
+    ProjectionRect rect = new ProjectionRect(ProjectionPoint.create(-5645, -4626), 11329, 8992);
     testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4",
         "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average", "2014-10-01T21:00:00Z",
         "2014-10-02T21:00:00Z", rect, true);
@@ -189,7 +190,7 @@ public class TestCFWriter2 {
   @Test
   public void testWriteFileOnNarr4() throws Exception {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    ProjectionRect rect = new ProjectionRect(new ProjectionPointImpl(-5645, -4626), 11329, 8992);
+    ProjectionRect rect = new ProjectionRect(ProjectionPoint.create(-5645, -4626), 11329, 8992);
     testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4",
         "Convective_cloud_cover_entire_atmosphere_3_Hour_Average,Accum_snow_surface", "2014-10-01T21:00:00Z",
         "2014-10-02T21:00:00Z", rect, true);

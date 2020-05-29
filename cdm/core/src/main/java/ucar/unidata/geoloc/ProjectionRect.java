@@ -328,7 +328,7 @@ public class ProjectionRect implements java.io.Serializable {
    * @return the Lower Right Point
    */
   public ProjectionPoint getLowerRightPoint() {
-    return new ProjectionPointImpl(getMaxPoint().getX(), getMinPoint().getY());
+    return ProjectionPoint.create(getMaxPoint().getX(), getMinPoint().getY());
   }
 
   /**
@@ -355,7 +355,7 @@ public class ProjectionRect implements java.io.Serializable {
    * @return the Upper Left Point
    */
   public ProjectionPoint getUpperLeftPoint() {
-    return new ProjectionPointImpl(getMinPoint().getX(), getMaxPoint().getY());
+    return ProjectionPoint.create(getMinPoint().getX(), getMaxPoint().getY());
   }
 
   /**
@@ -364,7 +364,7 @@ public class ProjectionRect implements java.io.Serializable {
    * @return minimum corner of the bounding box
    */
   public ProjectionPoint getMinPoint() {
-    return new ProjectionPointImpl(getX(), getY());
+    return ProjectionPoint.create(getX(), getY());
   }
 
   /**
@@ -373,7 +373,7 @@ public class ProjectionRect implements java.io.Serializable {
    * @return maximum corner of the bounding box
    */
   public ProjectionPoint getMaxPoint() {
-    return new ProjectionPointImpl(getX() + getWidth(), getY() + getHeight());
+    return ProjectionPoint.create(getX() + getWidth(), getY() + getHeight());
   }
 
   /**

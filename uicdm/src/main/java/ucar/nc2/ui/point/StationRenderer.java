@@ -128,7 +128,7 @@ class StationRenderer implements Renderer {
       return;
     for (StationUI station : stations) {
       StationUI s = station;
-      s.worldPos.setLocation(project.latLonToProj(s.latlonPos));
+      s.worldPos = project.latLonToProj(s.latlonPos);
     }
     posWasCalc = true;
   }
@@ -178,7 +178,7 @@ class StationRenderer implements Renderer {
    * 
    * @return the selected station, or null if none selected
    */
-  public ucar.unidata.geoloc.Station getSelectedStation() {
+  ucar.unidata.geoloc.Station getSelectedStation() {
     return (selected != null) ? selected.ddStation : null;
   }
 
@@ -188,7 +188,7 @@ class StationRenderer implements Renderer {
    * @param p: normalized coords.
    * @return Station containing pt, or null.
    */
-  public StationUI isOnStation(Point p) {
+  StationUI isOnStation(Point p) {
     return (StationUI) stationGrid.findIntersection(p);
   }
 
@@ -252,7 +252,7 @@ class StationRenderer implements Renderer {
     private String id;
 
     private LatLonPoint latlonPos = LatLonPoint.create(); // latlon pos
-    private ProjectionPointImpl worldPos = new ProjectionPointImpl();// world pos
+    private ProjectionPoint worldPos = ProjectionPoint.create();// world pos
     private Point2D.Double screenPos = new Point2D.Double(); // normalized screen pos
 
     private Rectangle2D bb; // bounding box, in normalized screen coords, loc = 0, 0
@@ -285,7 +285,7 @@ class StationRenderer implements Renderer {
       return latlonPos;
     }
 
-    public ProjectionPointImpl getLocation() {
+    public ProjectionPoint getLocation() {
       return worldPos;
     }
 

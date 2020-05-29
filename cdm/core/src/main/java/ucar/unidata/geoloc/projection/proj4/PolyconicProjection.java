@@ -113,17 +113,17 @@ public class PolyconicProjection extends ProjectionImpl {
     addParameter(CF.INVERSE_FLATTENING, 1.0 / ellipsoid.getFlattening());
   }
 
-  private ProjectionPoint project(double lplam, double lpphi, ProjectionPointImpl out) {
+  private ProjectionPoint project(double lplam, double lpphi) {
     if (spherical) {
       double cot, E;
 
       if (Math.abs(lpphi) <= TOL) {
-        out.setLocation(lplam, ml0);
+        return ProjectionPoint.create(lplam, ml0);
       } else {
         cot = 1. / Math.tan(lpphi);
         double x = Math.sin(E = lplam * Math.sin(lpphi)) * cot;
         double y = lpphi - projectionLatitude + cot * (1. - Math.cos(E));
-        out.setLocation(x, y);
+        return ProjectionPoint.create(x, y);
       }
     } else {
 
@@ -145,17 +145,16 @@ public class PolyconicProjection extends ProjectionImpl {
       double ms, sp, cp;
 
       if (Math.abs(lpphi) <= TOL) {
-        out.setLocation(lplam, -ml0);
+        return ProjectionPoint.create(lplam, -ml0);
       } else {
         sp = Math.sin(lpphi);
         ms = Math.abs(cp = Math.cos(lpphi)) > TOL ? MapMath.msfn(sp, cp, es) / sp : 0.;
         lplam *= sp; // LOOK
         double x = ms * Math.sin(lplam);
         double y = (MapMath.mlfn(lpphi, sp, cp, en) - ml0) + ms * (1. - Math.cos(lplam));
-        out.setLocation(x, y);
+        return ProjectionPoint.create(x, y);
       }
     }
-    return out;
   }
 
   private ProjectionPoint projectInverse(double xyx, double xyy, ProjectionPointImpl out) {
@@ -434,8 +433,7 @@ public class PolyconicProjection extends ProjectionImpl {
       theta = MapMath.normalizeLongitude(theta - projectionLongitude);
     }
 
-    ProjectionPointImpl out = new ProjectionPointImpl();
-    project(theta, fromLat, out);
+    ProjectionPoint out = project(theta, fromLat);
     result.setLocation(totalScale * out.getX() + falseEasting, totalScale * out.getY() + falseNorthing);
     return result;
   }

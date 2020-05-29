@@ -51,16 +51,16 @@ public class BoundingBoxHelper {
     if (countBad == 2) {
 
       if (!LatLonPoints.isInfinite(llpt) && !LatLonPoints.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, maxR));
+        addGoodPts(goodPts, ProjectionPoint.create(0, maxR));
 
       } else if (!LatLonPoints.isInfinite(ulpt) && !LatLonPoints.isInfinite(llpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(maxR, 0));
+        addGoodPts(goodPts, ProjectionPoint.create(maxR, 0));
 
       } else if (!LatLonPoints.isInfinite(ulpt) && !LatLonPoints.isInfinite(urpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(0, -maxR));
+        addGoodPts(goodPts, ProjectionPoint.create(0, -maxR));
 
       } else if (!LatLonPoints.isInfinite(urpt) && !LatLonPoints.isInfinite(lrpt)) {
-        addGoodPts(goodPts, new ProjectionPointImpl(-maxR, 0));
+        addGoodPts(goodPts, ProjectionPoint.create(-maxR, 0));
 
       } else {
         throw new IllegalStateException();
@@ -70,28 +70,28 @@ public class BoundingBoxHelper {
 
       if (!LatLonPoints.isInfinite(llpt)) {
         double xcoord = llpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, getLimitCoord(xcoord)));
 
         double ycoord = llpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
+        addGoodPts(goodPts, ProjectionPoint.create(getLimitCoord(ycoord), ycoord));
       } else if (!LatLonPoints.isInfinite(urpt)) {
         double xcoord = urpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, -getLimitCoord(xcoord)));
 
         double ycoord = urpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
+        addGoodPts(goodPts, ProjectionPoint.create(-getLimitCoord(ycoord), ycoord));
       } else if (!LatLonPoints.isInfinite(ulpt)) {
         double xcoord = ulpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, -getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, -getLimitCoord(xcoord)));
 
         double ycoord = ulpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(getLimitCoord(ycoord), ycoord));
+        addGoodPts(goodPts, ProjectionPoint.create(getLimitCoord(ycoord), ycoord));
       } else if (!LatLonPoints.isInfinite(lrpt)) {
         double xcoord = lrpt.getX();
-        addGoodPts(goodPts, new ProjectionPointImpl(xcoord, getLimitCoord(xcoord)));
+        addGoodPts(goodPts, ProjectionPoint.create(xcoord, getLimitCoord(xcoord)));
 
         double ycoord = lrpt.getY();
-        addGoodPts(goodPts, new ProjectionPointImpl(-getLimitCoord(ycoord), ycoord));
+        addGoodPts(goodPts, ProjectionPoint.create(-getLimitCoord(ycoord), ycoord));
 
       } else {
         throw new IllegalStateException();

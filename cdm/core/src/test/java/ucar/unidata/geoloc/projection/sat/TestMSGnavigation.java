@@ -55,9 +55,9 @@ public class TestMSGnavigation {
   }
 
   static private void doTwo(ProjectionImpl proj, double x, double y) {
-    ProjectionPointImpl startL = new ProjectionPointImpl(x, y);
+    ProjectionPoint startL = ProjectionPoint.create(x, y);
     LatLonPoint p = proj.projToLatLon(startL);
-    ProjectionPointImpl endL = (ProjectionPointImpl) proj.latLonToProj(p);
+    ProjectionPoint endL = proj.latLonToProj(p);
 
     System.out.println("start  = " + startL.toString());
     System.out.println("lat,lon   = " + p.toString());

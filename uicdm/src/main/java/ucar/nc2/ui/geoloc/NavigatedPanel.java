@@ -107,7 +107,7 @@ public class NavigatedPanel extends JPanel {
 
   // track reference point
   private boolean isReferenceMode, hasReference;
-  private ProjectionPointImpl refWorld = new ProjectionPointImpl();
+  private ProjectionPoint refWorld = ProjectionPoint.create();
   private LatLonPoint refLatLon = LatLonPoint.create();
   private Point2D refScreen = new Point2D.Double();
   private int referenceSize = 12;
@@ -128,7 +128,7 @@ public class NavigatedPanel extends JPanel {
 
   // some working objects to minimize excessive garbage collection
   private StringBuffer sbuff = new StringBuffer(100);
-  private ProjectionPointImpl workW = new ProjectionPointImpl();
+  private ProjectionPoint workW = ProjectionPoint.create();
   private Point2D workS = new Point2D.Double();
   private Rectangle myBounds = new Rectangle();
   private ProjectionRect boundingBox = new ProjectionRect();
@@ -373,7 +373,7 @@ public class NavigatedPanel extends JPanel {
 
     // transfer reference point to new coord system
     if (hasReference) {
-      refWorld.setLocation(project.latLonToProj(refLatLon));
+      refWorld = project.latLonToProj(refLatLon);
     }
 
   }
@@ -672,7 +672,7 @@ public class NavigatedPanel extends JPanel {
     }
 
     if (hasReference && redrawReference) {
-      refWorld.setLocation(project.latLonToProj(refLatLon));
+      refWorld = project.latLonToProj(refLatLon);
       navigate.worldToScreen(refWorld, refScreen);
       int px = (int) refScreen.getX();
       int py = (int) refScreen.getY();
@@ -704,7 +704,7 @@ public class NavigatedPanel extends JPanel {
       return;
 
     workS.setLocation(mousex, mousey);
-    navigate.screenToWorld(workS, workW);
+    workW = navigate.screenToWorld(workS);
     LatLonPoint workL = project.projToLatLon(workW);
     if (lmMove.hasListeners())
       lmMove.sendEvent(new CursorMoveEvent(this, workW));
@@ -784,13 +784,13 @@ public class NavigatedPanel extends JPanel {
       if (isReferenceMode) {
         hasReference = true;
         refScreen.setLocation(e.getX(), e.getY());
-        navigate.screenToWorld(refScreen, refWorld);
+        refWorld = navigate.screenToWorld(refScreen);
         refLatLon = project.projToLatLon(refWorld);
         setCursor(REFERENCE_CURSOR);
         drawG();
       } else {
         workS.setLocation(e.getX(), e.getY());
-        navigate.screenToWorld(workS, workW);
+        workW = navigate.screenToWorld(workS);
         lmPick.sendEvent(new PickEvent(NavigatedPanel.this, workW));
       }
     }
@@ -808,8 +808,7 @@ public class NavigatedPanel extends JPanel {
       // geoSelectionMode
       if (geoSelectionMode && (geoSelection != null)) {
         if (e.getClickCount() == 2) {
-          ProjectionPointImpl pp = new ProjectionPointImpl();
-          navigate.screenToWorld(e.getPoint(), pp);
+          ProjectionPoint pp = navigate.screenToWorld(e.getPoint());
           // make geoSelection fit in screen
           geoSelection.setWidth(boundingBox.getWidth() / 4);
           geoSelection.setHeight(boundingBox.getHeight() / 4);

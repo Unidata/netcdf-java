@@ -10,10 +10,8 @@ import java.util.Formatter;
 
 /**
  * Implementation of ProjectionPoint
- *
- * @author John Caron
- * @see ProjectionPoint
- * @deprecated only use ProjectionPoint interface in 6; will not implement Serializable in ver6
+ * 
+ * @deprecated only use ProjectionPoint in 6.
  */
 @Deprecated
 public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializable {
@@ -21,16 +19,20 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
 
   /**
    * Default constructor, initialized to 0,0
+   * 
+   * @deprecated use ProjectionPoint.create
    */
+  @Deprecated
   public ProjectionPointImpl() {
     this(0.0, 0.0);
   }
 
   /**
    * Constructor that copies ProjectionPoint values into this.
-   *
-   * @param pt point to copy
+   * 
+   * @deprecated use ProjectionPoint.create
    */
+  @Deprecated
   public ProjectionPointImpl(ProjectionPoint pt) {
     this.x = pt.getX();
     this.y = pt.getY();
@@ -41,7 +43,9 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
    *
    * @param x x coordinate
    * @param y y coordinate
+   * @deprecated use ProjectionPoint.create
    */
+  @Deprecated
   public ProjectionPointImpl(double x, double y) {
     this.x = x;
     this.y = y;

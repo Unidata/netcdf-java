@@ -286,19 +286,19 @@ public class MapMath {
   }
 
   public static ProjectionPoint perpendicular(ProjectionPoint a) {
-    return new ProjectionPointImpl(-a.getY(), a.getX());
+    return ProjectionPoint.create(-a.getY(), a.getX());
   }
 
   public static ProjectionPoint add(ProjectionPoint a, ProjectionPoint b) {
-    return new ProjectionPointImpl(a.getX() + b.getX(), a.getY() + b.getY());
+    return ProjectionPoint.create(a.getX() + b.getX(), a.getY() + b.getY());
   }
 
   public static ProjectionPoint subtract(ProjectionPoint a, ProjectionPoint b) {
-    return new ProjectionPointImpl(a.getX() - b.getX(), a.getY() - b.getY());
+    return ProjectionPoint.create(a.getX() - b.getX(), a.getY() - b.getY());
   }
 
   public static ProjectionPoint multiply(ProjectionPoint a, ProjectionPoint b) {
-    return new ProjectionPointImpl(a.getX() * b.getX(), a.getY() * b.getY());
+    return ProjectionPoint.create(a.getX() * b.getX(), a.getY() * b.getY());
   }
 
   public static double cross(ProjectionPoint a, ProjectionPoint b) {
