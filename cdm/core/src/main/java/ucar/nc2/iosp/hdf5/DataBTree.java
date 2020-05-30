@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import java.util.Arrays;
 import ucar.ma2.Section;
 import ucar.nc2.iosp.LayoutTiled;
 import ucar.nc2.util.Misc;
@@ -239,7 +240,7 @@ public class DataBTree {
         for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
           if (debugChunkOrder)
             System.out.printf(" Entry=%3d offset [%-15s]: Tile order %d-%d%n", currentEntry,
-                Misc.showInts(offset[currentEntry]), tiling.order(offset[currentEntry]),
+                Arrays.toString(offset[currentEntry]), tiling.order(offset[currentEntry]),
                 tiling.order(offset[currentEntry + 1]));
           if ((wantOrigin == null) || tiling.compare(wantOrigin, offset[currentEntry + 1]) < 0) {
             currentNode = new Node(childPointer[currentEntry], this.address);

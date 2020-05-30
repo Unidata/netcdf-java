@@ -1,5 +1,6 @@
 package ucar.nc2.ft.coverage;
 
+import java.util.Arrays;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -137,7 +138,7 @@ public class TestGribCoverageSubsetP {
       Assert.assertNotNull(covName, cover);
       CoverageCoordSys csys = cover.getCoordSys();
       int[] csysShape = csys.getShape();
-      logger.debug("csys shape = {}", Misc.showInts(csysShape));
+      logger.debug("csys shape = {}", Arrays.toString(csysShape));
 
       SubsetParams params = new SubsetParams().setHorizStride(2).set(SubsetParams.runtimeAll, true);
       Optional<CoverageCoordSys> opt = csys.subset(params);
@@ -148,7 +149,7 @@ public class TestGribCoverageSubsetP {
 
       CoverageCoordSys subsetCoordSys = opt.get();
       int[] subsetShape = subsetCoordSys.getShape();
-      logger.debug("csysSubset shape = {}", Misc.showInts(subsetShape));
+      logger.debug("csysSubset shape = {}", Arrays.toString(subsetShape));
 
       int n = csysShape.length;
       csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
@@ -170,7 +171,7 @@ public class TestGribCoverageSubsetP {
       Assert.assertNotNull(covName, cover);
       CoverageCoordSys csys = cover.getCoordSys();
       int[] csysShape = csys.getShape();
-      logger.debug("csys shape = {}", Misc.showInts(csysShape));
+      logger.debug("csys shape = {}", Arrays.toString(csysShape));
 
       SubsetParams params = new SubsetParams().setHorizStride(2);
       Optional<CoverageCoordSys> opt = csys.subset(params);
@@ -181,7 +182,7 @@ public class TestGribCoverageSubsetP {
 
       CoverageCoordSys subsetCoordSys = opt.get();
       int[] subsetShape = subsetCoordSys.getShape();
-      logger.debug("csysSubset shape = {}", Misc.showInts(subsetShape));
+      logger.debug("csysSubset shape = {}", Arrays.toString(subsetShape));
 
       int n = csysShape.length;
       csysShape[n - 1] = (csysShape[n - 1] + 1) / 2;
@@ -209,7 +210,7 @@ public class TestGribCoverageSubsetP {
     GeoReferencedArray geoArray = cover.readData(subset);
     CoverageCoordSys geoCs = geoArray.getCoordSysForData();
     logger.debug("{}\n", geoArray);
-    logger.debug("geoArray shape={}", Misc.showInts(geoArray.getData().getShape()));
+    logger.debug("geoArray shape={}", Arrays.toString(geoArray.getData().getShape()));
 
     if (rt_val != null) {
       CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);

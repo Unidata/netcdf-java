@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -1957,9 +1958,7 @@ public class H5objects {
               attMessage.read(dh.getPos());
               f.format(" %-30s", trunc(attMessage.getName(), 30));
             }
-            f.format(" heapId=:");
-            Misc.showBytes(heapId, f);
-            f.format("%n");
+            f.format(" heapId=:%s%n", Arrays.toString(heapId));
           }
 
         } catch (IOException e) {

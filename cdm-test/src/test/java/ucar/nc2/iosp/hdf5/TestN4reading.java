@@ -6,6 +6,7 @@ package ucar.nc2.iosp.hdf5;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -260,8 +261,7 @@ public class TestN4reading {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("d");
       String attValue = v.findAttributeString("c", null);
-      String s = Misc.showBytes(attValue.getBytes(StandardCharsets.UTF_8));
-      logger.debug(" d:c = ({}) = {}", attValue, s);
+      logger.debug(" d:c = ({}) = {}", attValue, Arrays.toString(attValue.getBytes(StandardCharsets.UTF_8)));
     }
   }
 

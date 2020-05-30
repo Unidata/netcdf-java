@@ -178,7 +178,7 @@ public class RangeScatter implements RangeIterator {
 
   @Override
   public String toString() {
-    return "{" + Misc.showInts(vals) + "}";
+    return "{" + Arrays.toString(vals) + "}";
   }
 
   @Override

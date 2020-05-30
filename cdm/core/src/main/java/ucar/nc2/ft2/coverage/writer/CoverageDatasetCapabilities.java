@@ -6,6 +6,7 @@ package ucar.nc2.ft2.coverage.writer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import org.jdom2.Document;
@@ -124,7 +125,7 @@ public class CoverageDatasetCapabilities {
   private Element writeAxis(CoverageCoordAxis axis) {
     Element varElem = new Element("axis");
     varElem.setAttribute("name", axis.getName());
-    varElem.setAttribute("shape", Misc.showInts(axis.getShape()));
+    varElem.setAttribute("shape", Arrays.toString(axis.getShape()));
 
     DataType dt = axis.getDataType();
     varElem.setAttribute("type", dt.toString());

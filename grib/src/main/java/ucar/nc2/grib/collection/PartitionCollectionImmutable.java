@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -351,8 +352,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
       if (Grib.debugRead)
-        logger.debug("PartitionCollection.getDataRecord index wanted = ({}) on {} type={}", Misc.showInts(indexWanted),
-            indexFilename, group.ds.gctype);
+        logger.debug("PartitionCollection.getDataRecord index wanted = ({}) on {} type={}",
+            Arrays.toString(indexWanted), indexFilename, group.ds.gctype);
 
       // find the runtime index
       int firstIndex = indexWanted[0];
@@ -443,7 +444,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (group.getType() == Type.Best) {
         int[] indexWantedP = translateIndexBest(indexWanted, compVindex2Dp);
         if (Grib.debugRead)
-          logger.debug("  (Best) getDataRecordPofP= {}", Misc.showInts(indexWantedP));
+          logger.debug("  (Best) getDataRecordPofP= {}", Arrays.toString(indexWantedP));
         if (indexWantedP == null)
           return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
@@ -452,7 +453,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
         if (Grib.debugRead)
-          logger.debug("  (2D) getDataRecordPofP= {}", Misc.showInts(indexWantedP));
+          logger.debug("  (2D) getDataRecordPofP= {}", Arrays.toString(indexWantedP));
         if (indexWantedP == null)
           return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
@@ -764,13 +765,13 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int rp = usePartition.getName().compareTo(op.usePartition.getName());
       if (rp != 0)
         return rp;
-      int r = Misc.compare(partno, op.partno);
+      int r = Integer.compare(partno, op.partno);
       if (r != 0)
         return r;
-      r = Misc.compare(record.fileno, o.record.fileno);
+      r = Integer.compare(record.fileno, o.record.fileno);
       if (r != 0)
         return r;
-      return Misc.compare(record.pos, o.record.pos);
+      return Long.compare(record.pos, o.record.pos);
     }
 
     boolean usesSameFile(DataRecord o) {
@@ -779,10 +780,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int rp = usePartition.getName().compareTo(o.usePartition.getName());
       if (rp != 0)
         return false;
-      int r = Misc.compare(partno, o.partno);
+      int r = Integer.compare(partno, o.partno);
       if (r != 0)
         return false;
-      r = Misc.compare(record.fileno, o.record.fileno);
+      r = Integer.compare(record.fileno, o.record.fileno);
       return r == 0;
     }
 

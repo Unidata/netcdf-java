@@ -3,6 +3,7 @@ package ucar.nc2.ft.coverage;
 
 import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -196,7 +197,7 @@ public class TestCoverageHorizSubset {
 
       CoverageCoordSys cs = coverage.getCoordSys();
       Assert.assertNotNull("coordSys", cs);
-      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+      System.out.printf(" org coverage shape=%s%n", Arrays.toString(cs.getShape()));
 
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
@@ -303,8 +304,8 @@ public class TestCoverageHorizSubset {
     GeoReferencedArray geo = coverage.readData(params);
     CoverageCoordSys gcs2 = geo.getCoordSysForData();
     Assert.assertNotNull("CoordSysForData", gcs2);
-    System.out.printf(" data cs shape=%s%n", Misc.showInts(gcs2.getShape()));
-    System.out.printf(" data shape=%s%n", Misc.showInts(geo.getData().getShape()));
+    System.out.printf(" data cs shape=%s%n", Arrays.toString(gcs2.getShape()));
+    System.out.printf(" data shape=%s%n", Arrays.toString(geo.getData().getShape()));
 
     Assert.assertArrayEquals("CoordSys=Data shape", gcs2.getShape(), geo.getData().getShape());
     Assert.assertArrayEquals("expected data shape", expectedShape, geo.getData().getShape());

@@ -45,5 +45,5 @@ tasks.withType(JavaCompile).all {
     // This is usually fine, but see: http://www.draconianoverlord.com/2014/04/01/jdk-compatibility.html
     // To be safe, we should make sure that our production releases are built
     // on a machine running the same version of the JVM as our project language level.
-    options.compilerArgs = ['-Xlint:-options']
+    options.compilerArgs = ['-Xlint:-options', '-Xlint:deprecation']
 }

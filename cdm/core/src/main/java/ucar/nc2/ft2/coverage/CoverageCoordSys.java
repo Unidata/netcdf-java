@@ -207,7 +207,7 @@ public class CoverageCoordSys {
     f.format(" has coordVars:");
     for (String v : axisNames)
       f.format("%s, ", v);
-    f.format(" (shape=[%s])", Misc.showInts(getShape()));
+    f.format(" (shape=[%s])", Arrays.toString(getShape()));
     if (transformNames != null && !transformNames.isEmpty()) {
       f.format("; has transforms:");
       for (String t : transformNames)

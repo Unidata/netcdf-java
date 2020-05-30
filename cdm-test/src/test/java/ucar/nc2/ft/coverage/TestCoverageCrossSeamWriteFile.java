@@ -2,6 +2,7 @@
 package ucar.nc2.ft.coverage;
 
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class TestCoverageCrossSeamWriteFile {
 
       CoverageCoordSys cs = coverage.getCoordSys();
       Assert.assertNotNull("coordSys", cs);
-      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+      System.out.printf(" org coverage shape=%s%n", Arrays.toString(cs.getShape()));
 
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
@@ -78,7 +79,7 @@ public class TestCoverageCrossSeamWriteFile {
 
       CoverageCoordSys cs = coverage.getCoordSys();
       Assert.assertNotNull("coordSys", cs);
-      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+      System.out.printf(" org coverage shape=%s%n", Arrays.toString(cs.getShape()));
 
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
@@ -105,7 +106,7 @@ public class TestCoverageCrossSeamWriteFile {
 
       CoverageCoordSys cs = coverage.getCoordSys();
       Assert.assertNotNull("coordSys", cs);
-      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+      System.out.printf(" org coverage shape=%s%n", Arrays.toString(cs.getShape()));
 
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
@@ -146,8 +147,8 @@ public class TestCoverageCrossSeamWriteFile {
       Assert.assertNotNull(covName, coverage2);
 
       CoverageCoordSys gcs2 = coverage2.getCoordSys();
-      System.out.printf(" data cs shape=%s%n", Misc.showInts(gcs2.getShape()));
-      System.out.printf(" expected shape=%s%n", Misc.showInts(expectedShape));
+      System.out.printf(" data cs shape=%s%n", Arrays.toString(gcs2.getShape()));
+      System.out.printf(" expected shape=%s%n", Arrays.toString(expectedShape));
       Assert.assertArrayEquals("expected data shape", expectedShape, gcs2.getShape());
     }
 

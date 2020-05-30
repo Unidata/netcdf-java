@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import com.google.common.collect.ImmutableList;
 import com.google.re2j.Pattern;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -43,7 +44,6 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -69,7 +69,7 @@ public class TestDcm {
     CollectionManager dcm = MFileCollectionManager.open("testScan",
         TestDir.cdmUnitTestDir + "agg/narr/narr-a_221_#yyyyMMdd_HHmm#.*grb$", null, f);
     dcm.scan(true);
-    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
+    List<MFile> fileList = ImmutableList.copyOf(dcm.getFilesSorted());
     assert fileList.size() == 3 : dcm;
 
     // check date extractor
@@ -90,14 +90,14 @@ public class TestDcm {
     CollectionManager dcm =
         MFileCollectionManager.open("testScanOlderThan", TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
     dcm.scan(true);
-    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
+    List<MFile> fileList = ImmutableList.copyOf(dcm.getFilesSorted());
     assert fileList.size() == 3 : dcm;
 
     assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
 
     dcm = MFileCollectionManager.open("testScanOlderThan", TestDir.cdmUnitTestDir + "agg/updating/.*nc$", "10 sec", f);
     dcm.scan(true);
-    fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
+    fileList = ImmutableList.copyOf(dcm.getFilesSorted());
     assert fileList.size() == 2 : dcm;
   }
 
@@ -121,7 +121,7 @@ public class TestDcm {
     Formatter f = new Formatter(System.out);
     MFileCollectionManager dcm = new MFileCollectionManager(config, f, null);
     dcm.scan(true);
-    List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFilesSorted());
+    List<MFile> fileList = ImmutableList.copyOf(dcm.getFilesSorted());
     assert fileList.size() == 2 : dcm;
   }
 

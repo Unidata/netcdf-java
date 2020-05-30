@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui.grib;
 
+import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
@@ -512,7 +513,7 @@ public class Grib1CollectionPanel extends JPanel {
     MCollection dc = null;
     try {
       dc = CollectionAbstract.open(spec, spec, null, f);
-      fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
+      fileList = ImmutableList.copyOf(dc.getFilesSorted());
       return dc;
 
     } catch (Exception e) {

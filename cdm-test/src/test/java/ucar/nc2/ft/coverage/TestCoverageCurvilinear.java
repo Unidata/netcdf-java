@@ -6,6 +6,7 @@ package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -95,10 +96,10 @@ public class TestCoverageCurvilinear {
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.latlonBB, bbox);
       GeoReferencedArray geo = coverage.readData(params);
-      logger.debug("csys shape={}", Misc.showInts(geo.getCoordSysForData().getShape()));
+      logger.debug("csys shape={}", Arrays.toString(geo.getCoordSysForData().getShape()));
 
       Array data = geo.getData();
-      logger.debug("data shape={}", Misc.showInts(data.getShape()));
+      logger.debug("data shape={}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(geo.getCoordSysForData().getShape(), data.getShape());
 
       int[] expectedShape = new int[] {1, 165, 161};
@@ -188,7 +189,7 @@ public class TestCoverageCurvilinear {
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
       Assert.assertEquals("coordSys", 3, cs.getShape().length);
-      logger.debug("org shape={}", Misc.showInts(cs.getShape()));
+      logger.debug("org shape={}", Arrays.toString(cs.getShape()));
       int[] expectedOrgShape = new int[] {85, 151, 171};
       Assert.assertArrayEquals(expectedOrgShape, cs.getShape());
 
@@ -196,10 +197,10 @@ public class TestCoverageCurvilinear {
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setLatLonBoundingBox(bbox);
       GeoReferencedArray geo = coverage.readData(params);
-      logger.debug("geoCs shape={}", Misc.showInts(geo.getCoordSysForData().getShape()));
+      logger.debug("geoCs shape={}", Arrays.toString(geo.getCoordSysForData().getShape()));
 
       Array data = geo.getData();
-      logger.debug("data shape={}", Misc.showInts(data.getShape()));
+      logger.debug("data shape={}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(geo.getCoordSysForData().getShape(), data.getShape());
 
       int[] expectedShape = new int[] {1, 99, 105};
@@ -231,17 +232,17 @@ public class TestCoverageCurvilinear {
 
       int[] expectedOrgShape = new int[] {1, 20, 64, 128};
       Assert.assertArrayEquals(expectedOrgShape, cs.getShape());
-      logger.debug("org shape={}", Misc.showInts(cs.getShape()));
+      logger.debug("org shape={}", Arrays.toString(cs.getShape()));
 
       // just try to bisect ot along the width
       LatLonRect bbox = new LatLonRect(LatLonPoint.create(90, -180), LatLonPoint.create(-90, -90));
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.latlonBB, bbox);
       GeoReferencedArray geo = coverage.readData(params);
-      logger.debug("geoCs shape={}", Misc.showInts(geo.getCoordSysForData().getShape()));
+      logger.debug("geoCs shape={}", Arrays.toString(geo.getCoordSysForData().getShape()));
 
       Array data = geo.getData();
-      logger.debug("data shape={}", Misc.showInts(data.getShape()));
+      logger.debug("data shape={}", Arrays.toString(data.getShape()));
       Assert.assertArrayEquals(geo.getCoordSysForData().getShape(), data.getShape());
 
       int[] expectedShape = new int[] {1, 20, 64, 75};

@@ -8,7 +8,6 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
@@ -677,7 +676,7 @@ public class FileCache implements FileCacheIF {
 
     @Override
     public int compareTo(Tracker o) {
-      return Misc.compare(hit + miss, o.hit + o.miss);
+      return Integer.compare(hit + miss, o.hit + o.miss);
     }
   }
 

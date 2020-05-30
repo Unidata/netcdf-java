@@ -5,6 +5,7 @@
 package ucar.nc2.stream;
 
 import com.google.protobuf.ByteString;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -166,7 +167,7 @@ public class NcStreamDataCol {
     int nbytes = (int) data.getSizeBytes();
     if (nbytes < 0) {
       logger.error("copyArrayToByteString neg byte size {} dataType = {} data size {} shape = {}", nbytes,
-          data.getDataType().getSize(), data.getSize(), Misc.showInts(data.getShape()));
+          data.getDataType().getSize(), data.getSize(), Arrays.toString(data.getShape()));
     }
     ByteBuffer bb = ByteBuffer.allocate(nbytes);
     bb.order(ByteOrder.nativeOrder());

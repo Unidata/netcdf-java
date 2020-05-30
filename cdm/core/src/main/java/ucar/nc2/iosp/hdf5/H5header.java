@@ -4117,9 +4117,7 @@ public class H5header extends NCheader implements H5headerIF {
               attMessage.read(dh.getPos());
               f.format(" %-30s", trunc(attMessage.getName(), 30));
             }
-            f.format(" heapId=:");
-            Misc.showBytes(heapId, f);
-            f.format("%n");
+            f.format(" heapId=:%s%n", Arrays.toString(heapId));
           }
 
         } catch (IOException e) {
