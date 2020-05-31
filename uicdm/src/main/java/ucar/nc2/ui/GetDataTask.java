@@ -11,27 +11,18 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- *
- */
 public class GetDataTask extends ProgressMonitorTask implements CancelTask {
   private GetDataRunnable getData;
   private Object o;
   private String name;
   private String errMsg;
 
-  /**
-   *
-   */
   public GetDataTask(GetDataRunnable getData, String name, Object o) {
     this.getData = getData;
     this.name = name;
     this.o = o;
   }
 
-  /**
-   *
-   */
   public void run() {
     try {
       getData.run(o);
@@ -54,9 +45,6 @@ public class GetDataTask extends ProgressMonitorTask implements CancelTask {
     done = true;
   }
 
-  /**
-   *
-   */
   public String getErrorMessage() {
     return errMsg;
   }

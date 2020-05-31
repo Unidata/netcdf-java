@@ -18,7 +18,6 @@ import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
 import java.io.IOException;
@@ -1833,7 +1832,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       System.exit(0);
     }
 
-    CancelTaskImpl cancel = new CancelTaskImpl();
+    CancelTask cancel = CancelTask.create();
     NetcdfFile ncfileIn = openFile(datasetIn, cancel);
     System.out.printf("NetcdfDatataset read from %s write to %s ", datasetIn, datasetOut);
 

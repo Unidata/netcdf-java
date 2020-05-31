@@ -84,6 +84,7 @@ public class NCdumpW {
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
    * @throws IOException on write error
+   * @deprecated use Ncdump.ncdump(NetcdfFile nc, String command, Writer out, CancelTask ct)
    */
   public static boolean print(NetcdfFile nc, String command, Writer out, ucar.nc2.util.CancelTask ct)
       throws IOException {
@@ -310,7 +311,12 @@ public class NCdumpW {
     return writer.toString();
   }
 
-  /** Print named array to returned String. */
+  /**
+   * Print named array to returned String.
+   * 
+   * @deprecated use Ncdump.printArray(Array array, String name, CancelTask ct)
+   */
+  @Deprecated
   public static String toString(Array array, String name, CancelTask ct) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);

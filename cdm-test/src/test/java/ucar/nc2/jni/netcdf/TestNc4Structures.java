@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.util.CancelTaskImpl;
+import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -56,7 +56,7 @@ public class TestNc4Structures {
   }
 
   private void writeStructure(String datasetIn, String datasetOut) throws IOException {
-    CancelTaskImpl cancel = new CancelTaskImpl();
+    CancelTask cancel = CancelTask.create();
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
     System.out.printf("NetcdfDatataset read from %s write to %s %n", datasetIn, datasetOut);
 

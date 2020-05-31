@@ -10,7 +10,7 @@ import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import java.util.Optional;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.CancelTaskImpl;
+import ucar.nc2.util.CancelTask;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -167,7 +167,7 @@ public class Nccopy {
       DiskCache.setCachePolicy(true);
     }
 
-    CancelTaskImpl cancel = new CancelTaskImpl();
+    CancelTask cancel = CancelTask.create();
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
 
       NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setNewFile(true).setFormat(getFormat(cmdLine))

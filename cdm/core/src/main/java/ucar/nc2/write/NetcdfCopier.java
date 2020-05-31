@@ -23,7 +23,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.CancelTaskImpl;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
@@ -131,7 +130,7 @@ public class NetcdfCopier {
    */
   public NetcdfFile write(@Nullable CancelTask cancel) throws IOException {
     if (cancel == null) {
-      cancel = new CancelTaskImpl();
+      cancel = CancelTask.create();
     }
     try {
       Group.Builder root = copyGroup(fileIn.getRootGroup(), null);

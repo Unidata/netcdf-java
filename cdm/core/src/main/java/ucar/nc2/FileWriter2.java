@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.write.Nc4Chunking;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -599,7 +598,7 @@ public class FileWriter2 {
     }
 
     System.out.printf("FileWriter2 copy %s to %s ", datasetIn, datasetOut);
-    CancelTaskImpl cancel = new CancelTaskImpl();
+    CancelTask cancel = CancelTask.create();
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, cancel);
     if (cancel.isCancel())
       return;
