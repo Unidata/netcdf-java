@@ -28,13 +28,7 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.Nonnull;
 
-/**
- * DataFactory for THREDDS client catalogs
- *
- * @author caron
- * @deprecated will change in ver2
- */
-@Deprecated
+/** DataFactory for THREDDS client catalogs */
 public class DataFactory {
   public static final String PROTOCOL = "thredds";
   public static final String SCHEME = PROTOCOL + ":";
