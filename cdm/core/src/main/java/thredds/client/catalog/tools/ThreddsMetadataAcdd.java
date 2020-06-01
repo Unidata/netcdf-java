@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * This uses global attributes (presumably from an netcdf File) and extracts ACDD metadata to add to a dataset's
  * metadata.
- * Will not ovveride metaddata already in the dataset
+ * Will not ovveride metadata already in the dataset
  *
  * @author caron
  * @since 3/24/2015

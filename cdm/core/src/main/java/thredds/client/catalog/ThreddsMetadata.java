@@ -58,13 +58,11 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   private final Map<String, Object> flds;
   private boolean immutable;
 
-  /** @deprecated use builder */
   public ThreddsMetadata() {
     this.flds = new HashMap<>();
   }
 
   // make mutable copy
-  /** @deprecated use builder */
   public ThreddsMetadata(ThreddsMetadata from) {
     this.flds = new HashMap<>();
     for (Map.Entry<String, Object> entry : from.flds.entrySet()) // bypass immutable
@@ -82,7 +80,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     return flds.entrySet();
   }
 
-  /** @deprecated use builder */
   public void set(String fldName, Object fldValue) {
     if (immutable)
       throw new UnsupportedOperationException();
@@ -92,7 +89,6 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       flds.remove(fldName);
   }
 
-  /** @deprecated use builder */
   public void addToList(String fldName, Object fldValue) {
     if (immutable)
       throw new UnsupportedOperationException();
@@ -100,12 +96,10 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       DatasetBuilder.addToList(flds, fldName, fldValue);
   }
 
-  /** @deprecated use builder */
   public void finish() {
     immutable = true;
   }
 
-  /** @deprecated use builder */
   public boolean isImmutable() {
     return immutable;
   }
