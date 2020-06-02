@@ -546,7 +546,7 @@ public class DatasetUrl {
    * @param trueurl The actual URL
    */
   public static DatasetUrl create(@Nullable ServiceType serviceType, String trueurl) {
-    return DatasetUrl.create(serviceType, trueurl);
+    return new DatasetUrl(serviceType, trueurl);
   }
 
   /** @deprecated use create() */
