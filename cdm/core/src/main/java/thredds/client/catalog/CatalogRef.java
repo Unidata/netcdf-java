@@ -31,13 +31,11 @@ public class CatalogRef extends Dataset {
     return xlink;
   }
 
-  /** @deprecated do not use */
   @Deprecated
   public boolean isRead() {
     return isRead;
   }
 
-  /** @deprecated do not use */
   @Deprecated
   public void setRead(boolean isRead) {
     this.isRead = isRead;

@@ -7,20 +7,26 @@ package ucar.nc2.util;
 /**
  * Allows long tasks to be cancelled. Used in potentially long method calls which the user may want the option to
  * cancel.
- *
- * LOOK this will become an (abstract?) class in ver6, and API will be added to.
  */
 public interface CancelTask {
+  static CancelTask create() {
+    return new CancelTaskImpl();
+  }
+
   /**
-   * Calling routine may cancel, called routine checks this and return asap.
+   * Calling routine may cancel, called routine checks this method, and if true, return asap.
    *
    * @return true if task was cancelled
    */
   boolean isCancel();
 
-  /**
-   * Called routine sets whether operation successfully completed. LOOK not sure.
-   */
+  /** Application calls to see if task is done. */
+  boolean isDone();
+
+  /** Called routine sets operation was completed. */
+  void setDone(boolean done);
+
+  /** Called routine sets whether operation successfully completed. */
   default void setSuccess() {}
 
   /**
