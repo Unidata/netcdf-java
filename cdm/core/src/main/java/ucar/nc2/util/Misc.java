@@ -11,16 +11,12 @@ import java.util.Formatter;
 import java.util.List;
 import ucar.ma2.DataType;
 
-/**
- * Miscellaneous static routines.
- *
- * @author caron
- * @deprecated
- */
-@Deprecated
+/** Miscellaneous static routines. */
 public class Misc {
-  public static final int referenceSize = 4; // estimates pointer size, in principle JVM dependent
-  public static final int objectSize = 16; // estimates pointer size, in principle JVM dependent
+  /** Estimates pointer size in bytes */
+  public static final int referenceSize = 4;
+  /** Estimates object size in bytes */
+  public static final int objectSize = 16;
 
   /**
    * The default maximum {@link #relativeDifference(float, float) relative difference} that two floats can have in
@@ -34,13 +30,7 @@ public class Misc {
    */
   public static final double defaultMaxRelativeDiffDouble = 1.0e-8;
 
-  /**
-   * Returns the absolute difference between two numbers, i.e. {@code |a - b|}.
-   *
-   * @param a first number.
-   * @param b second number.
-   * @return the absolute difference.
-   */
+  /** The absolute difference between two floats, i.e. {@code |a - b|}. */
   public static float absoluteDifference(float a, float b) {
     if (Float.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
@@ -49,7 +39,7 @@ public class Misc {
     }
   }
 
-  /** Same as {@link #absoluteDifference(float, float)}, but for doubles. */
+  /** The absolute difference between two doubles, i.e. {@code |a - b|}. */
   public static double absoluteDifference(double a, double b) {
     if (Double.compare(a, b) == 0) { // Shortcut: handles infinities and NaNs.
       return 0;
@@ -99,63 +89,47 @@ public class Misc {
     }
   }
 
-  /** Returns the result of {@link #nearlyEquals(float, float, float)}, with {@link #defaultMaxRelativeDiffFloat}. */
+  /** RelativeDifference is less than {@link #defaultMaxRelativeDiffFloat}. */
   public static boolean nearlyEquals(float a, float b) {
     return nearlyEquals(a, b, defaultMaxRelativeDiffFloat);
   }
 
-  /**
-   * Returns {@code true} if {@code a} and {@code b} are nearly equal. Specifically, it checks whether the
-   * {@link #relativeDifference(float, float) relative difference} of the two numbers is less than {@code maxRelDiff}.
-   *
-   * @param a first number.
-   * @param b second number.
-   * @param maxRelDiff the maximum {@link #relativeDifference relative difference} the two numbers may have.
-   * @return {@code true} if {@code a} and {@code b} are nearly equal.
-   */
+  /** RelativeDifference is less than maxRelDiff. */
   public static boolean nearlyEquals(float a, float b, float maxRelDiff) {
     return relativeDifference(a, b) < maxRelDiff;
   }
 
-  /**
-   * Returns the result of {@link #nearlyEquals(double, double, double)}, with {@link #defaultMaxRelativeDiffDouble}.
-   */
+  /** RelativeDifference is less than {@link #defaultMaxRelativeDiffDouble}. */
   public static boolean nearlyEquals(double a, double b) {
     return nearlyEquals(a, b, defaultMaxRelativeDiffDouble);
   }
 
-  /** Same as {@link #nearlyEquals(float, float, float)}, but for doubles. */
+  /** RelativeDifference is less than maxRelDiff. */
   public static boolean nearlyEquals(double a, double b, double maxRelDiff) {
     return relativeDifference(a, b) < maxRelDiff;
   }
 
-  /**
-   * Check if two numbers are nearly equal with given absolute tolerance.
-   *
-   * @param a first number.
-   * @param b second number.
-   * @param maxAbsDiff the maximum {@link #absoluteDifference absolute difference} the two numbers may have.
-   * @return true if within tolerance.
-   */
+  /** AbsoluteDifference is less than maxAbsDiff. */
   public static boolean nearlyEqualsAbs(float a, float b, float maxAbsDiff) {
     return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
   }
 
-  /** Same as {@link #nearlyEqualsAbs(float, float, float)}, but with doubles. */
+  /** AbsoluteDifference is less than maxAbsDiff. */
   public static boolean nearlyEqualsAbs(double a, double b, double maxAbsDiff) {
     return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
   }
 
+  //////////////////////////////////////////////////////////////////////
 
+  /** @deprecated use Arrays.toString(arr) */
+  @Deprecated
   public static String showInts(int[] inta) {
-    if (inta == null)
-      return "null";
     Formatter f = new Formatter();
-    for (int i : inta)
-      f.format("%d,", i);
+    showInts(inta, f);
     return f.toString();
   }
 
+  /** @deprecated use List.toString() */
   public static String showInts(List<Integer> intList) {
     if (intList == null)
       return "null";
@@ -165,6 +139,7 @@ public class Misc {
     return f.toString();
   }
 
+  /** @deprecated use Arrays.toString(arr) */
   public static void showInts(int[] inta, Formatter f) {
     if (inta == null) {
       f.format("null");
@@ -174,6 +149,7 @@ public class Misc {
       f.format("%d, ", i);
   }
 
+  /** @deprecated use Arrays.toString(arr) */
   public static String showBytes(byte[] buff) {
     StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < buff.length; i++) {
@@ -186,29 +162,12 @@ public class Misc {
     return sbuff.toString();
   }
 
+  /** @deprecated use Arrays.toString(arr) */
   public static void showBytes(byte[] buff, Formatter f) {
     for (byte b : buff) {
       int ub = (b < 0) ? b + 256 : b;
       f.format("%3d ", ub);
     }
-  }
-
-  public static int getSize(Iterable ii) {
-    if (ii instanceof Collection)
-      return ((Collection) ii).size();
-    int count = 0;
-    for (Object i : ii)
-      count++;
-    return count;
-  }
-
-  public static List getList(Iterable ii) {
-    if (ii instanceof List)
-      return (List) ii;
-    List<Object> result = new ArrayList<>();
-    for (Object i : ii)
-      result.add(i);
-    return result;
   }
 
   public static String showBits(byte[] bytes) {
@@ -262,15 +221,20 @@ public class Misc {
     f.format("tested %d floats diff = %d %n", len, ndiff);
   }
 
-  // from Java7
+  /** @deprecated use Integer.compare(x, y) */
+  @Deprecated
   public static int compare(int x, int y) {
     return Integer.compare(x, y);
   }
 
+  /** @deprecated use Long.compare(x, y) */
+  @Deprecated
   public static int compare(long x, long y) {
     return Long.compare(x, y);
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public static String stackTraceToString(StackTraceElement[] stackTrace) {
     StringBuilder buf = new StringBuilder();
     for (StackTraceElement ste : stackTrace) {
@@ -279,5 +243,30 @@ public class Misc {
     }
     return buf.toString();
   }
+
+
+  /** @deprecated use Iterables.size(Iterable it) */
+  @Deprecated
+  public static int getSize(Iterable ii) {
+    if (ii instanceof Collection)
+      return ((Collection) ii).size();
+    int count = 0;
+    for (Object i : ii)
+      count++;
+    return count;
+  }
+
+  /** @deprecated use ImmutableList.copyOf(iterator) or Lists.newArrayList(iterator) */
+  @Deprecated
+  public static List getList(Iterable ii) {
+    if (ii instanceof List)
+      return (List) ii;
+    List<Object> result = new ArrayList<>();
+    for (Object i : ii)
+      result.add(i);
+    return result;
+  }
+
+
 
 }

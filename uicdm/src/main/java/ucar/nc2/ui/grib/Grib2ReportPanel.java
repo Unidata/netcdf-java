@@ -386,7 +386,7 @@ public class Grib2ReportPanel extends ReportPanel {
       if (lus == null || lus.getRawBytes() == null)
         f.format(" %10d == none%n", gr.getDataSection().getStartingPosition());
       else
-        f.format(" %10d == %s%n", gr.getDataSection().getStartingPosition(), Misc.showBytes(lus.getRawBytes()));
+        f.format(" %10d == %s%n", gr.getDataSection().getStartingPosition(), Arrays.toString(lus.getRawBytes()));
     }
   }
 

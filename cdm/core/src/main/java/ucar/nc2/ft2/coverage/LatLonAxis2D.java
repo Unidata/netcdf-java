@@ -4,11 +4,11 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  shape=[%s]%n", indent, Misc.showInts(shape));
+    f.format("%s  shape=[%s]%n", indent, Arrays.toString(shape));
   }
 
   public double getCoord(int yindex, int xindex) {

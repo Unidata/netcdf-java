@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.coord;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +139,7 @@ public class SparseArray<T> {
   }
 
   public void showInfo(Formatter info, GribRecordStats all) {
-    info.format("SparseArray shape=[%s] ", Misc.showInts(shape));
+    info.format("SparseArray shape=[%s] ", Arrays.toString(shape));
     info.format("ndups=%d, missing/total=%d/%d, density=%f%n", ndups, countMissing(), totalSize, getDensity());
 
     if (all != null) {
@@ -225,7 +226,7 @@ public class SparseArray<T> {
       content.add(thing); // add the thing at end of list, idx = size-1
       int where = calcIndex(index);
       if (where < 0 || where >= track.length) {
-        logger.error("BAD index add=" + Misc.showInts(index), new Throwable());
+        logger.error("BAD index add=" + Arrays.toString(index), new Throwable());
       }
       if (track[where] > 0) {
         ndups++;

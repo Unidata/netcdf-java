@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft.coverage;
 
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -49,7 +50,7 @@ public class TestCoverageSwath {
       Assert.assertNotNull(covName, cover);
 
       int[] shape = cover.getShape();
-      logger.debug("{}", Misc.showInts(shape));
+      logger.debug("{}", Arrays.toString(shape));
       Assert.assertArrayEquals(new int[] {1631, 1465}, shape);
 
       long size = cover.getSizeInBytes();
@@ -70,7 +71,7 @@ public class TestCoverageSwath {
 
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
-      logger.debug("{}", Misc.showInts(data.getShape()));
+      logger.debug("{}", Arrays.toString(data.getShape()));
     }
   }
 }

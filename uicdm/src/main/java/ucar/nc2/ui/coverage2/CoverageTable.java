@@ -447,7 +447,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getShape() {
-      return Misc.showInts(geogrid.getCoordSys().getShape());
+      return Arrays.toString(geogrid.getCoordSys().getShape());
     }
   }
 

@@ -393,7 +393,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     // Could use an Array composite here, if we had one
     Array result = Array.factory(coverage.getDataType(), subsetCoordSys.getShape());
     if (debug)
-      System.out.printf(" read %s result shape=%s%n", coverage.getName(), Misc.showInts(result.getShape()));
+      System.out.printf(" read %s result shape=%s%n", coverage.getName(), Arrays.toString(result.getShape()));
     int[] origin = new int[result.getRank()]; // all zeroes
 
     ranges.add(null); // make room for last

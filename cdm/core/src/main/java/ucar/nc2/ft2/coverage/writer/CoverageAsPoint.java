@@ -6,6 +6,7 @@ package ucar.nc2.ft2.coverage.writer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
 import ucar.ma2.Array;
@@ -64,7 +65,8 @@ public class CoverageAsPoint {
       try {
         this.array = cov.readData(subset);
         if (debug)
-          System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(array.getData().getShape()));
+          System.out.printf(" Coverage %s data shape = %s%n", cov.getName(),
+              Arrays.toString(array.getData().getShape()));
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
@@ -178,7 +180,7 @@ public class CoverageAsPoint {
         for (VarData vd : varData) {
           Array data = vd.array.getData();
           if (debug)
-            System.out.printf("%s shape=%s%n", vd.cov.getName(), Misc.showInts(data.getShape()));
+            System.out.printf("%s shape=%s%n", vd.cov.getName(), Arrays.toString(data.getShape()));
           varIters.add(new VarIter(vd.cov, vd.array, data.getIndexIterator()));
           nvalues = (int) data.getSize();
 

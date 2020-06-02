@@ -347,10 +347,10 @@ public abstract class GribDataReader {
 
     @Override
     public int compareTo(@Nonnull DataRecord o) {
-      int r = Misc.compare(record.fileno, o.record.fileno);
+      int r = Integer.compare(record.fileno, o.record.fileno);
       if (r != 0)
         return r;
-      return Misc.compare(record.pos, o.record.pos);
+      return Long.compare(record.pos, o.record.pos);
     }
 
     // debugging
@@ -381,7 +381,7 @@ public abstract class GribDataReader {
 
       long len = Section.computeSize(shape);
       if (len > 100 * 1000 * 1000 * 4) { // LOOK make configurable
-        logger.debug("Len greater that 100MB shape={}%n{}", Misc.showInts(shape),
+        logger.debug("Len greater that 100MB shape={}%n{}", Arrays.toString(shape),
             Throwables.getStackTraceAsString(new Throwable()));
         throw new IllegalArgumentException("RequestTooLarge: Len greater that 100M ");
       }

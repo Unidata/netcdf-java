@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.grib2;
 
+import java.util.Arrays;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
@@ -71,9 +72,7 @@ public class Grib2Show {
     if (gr.hasLocalUseSection()) {
       byte[] lus = gr.getLocalUseSection().getRawBytes();
       f.format("%nLocal Use Section (grib section 2)%n");
-      f.format("bytes (len=%d) =", lus.length);
-      Misc.showBytes(lus, f);
-      f.format("%n");
+      f.format("bytes (len=%d) =%s%n", lus.length, Arrays.toString(lus));
     }
 
     Grib2SectionGridDefinition gds = gr.getGDSsection();

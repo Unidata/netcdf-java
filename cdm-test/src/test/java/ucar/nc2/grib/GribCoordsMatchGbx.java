@@ -171,7 +171,7 @@ public class GribCoordsMatchGbx {
     }
 
     for (int i = 0; i < shape.length - 2; i++) {
-      Assert.assertEquals(Misc.showInts(shape), 1, shape[i]);
+      Assert.assertEquals(Arrays.toString(shape), 1, shape[i]);
     }
 
     if (isGrib1)

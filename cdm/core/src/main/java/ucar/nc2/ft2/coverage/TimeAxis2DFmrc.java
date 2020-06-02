@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.AttributeContainerHelper;
@@ -64,7 +65,7 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  %s%n", indent, Misc.showInts(shape));
+    f.format("%s  %s%n", indent, Arrays.toString(shape));
     Array data = getCoordsAsArray();
     f.format("%s%n", Ncdump.printArray(data, getName() + " values", null));
   }

@@ -528,7 +528,7 @@ public class CatalogCrawler {
     SubsetParams subset = new SubsetParams().setTimePresent();
     GeoReferencedArray geo = randomCov.readData(subset);
     Array data = geo.getData();
-    System.out.printf(" read data from %s shape = %s%n", randomCov.getName(), Misc.showInts(data.getShape()));
+    System.out.printf(" read data from %s shape = %s%n", randomCov.getName(), Arrays.toString(data.getShape()));
     return true;
   }
 
@@ -565,7 +565,7 @@ public class CatalogCrawler {
 
     Array data = randomVariable.read(origin, size);
     pw.format(" read data from %s origin = %s return = %s%n", randomVariable.getNameAndDimensions(),
-        Misc.showInts(origin), Ncdump.printArray(data));
+        Arrays.toString(origin), Ncdump.printArray(data));
     return true;
 
   }

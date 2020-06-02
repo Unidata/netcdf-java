@@ -73,8 +73,7 @@ public class SmartArrayInt {
     else if (isSequential)
       f.format("isSequential start=%d", start);
     else {
-      f.format("isSorted=%s ", isSorted);
-      Misc.showInts(raw, f);
+      f.format("isSorted=%s %s", isSorted, Arrays.toString(raw));
     }
   }
 

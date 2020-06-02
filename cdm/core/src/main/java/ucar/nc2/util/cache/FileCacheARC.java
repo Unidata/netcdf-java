@@ -687,7 +687,7 @@ public class FileCacheARC implements FileCacheIF {
 
     @Override
     public int compareTo(Tracker o) {
-      return Misc.compare(hit + miss, o.hit + o.miss);
+      return Integer.compare(hit + miss, o.hit + o.miss);
     }
   }
 }

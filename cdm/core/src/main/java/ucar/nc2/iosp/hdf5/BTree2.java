@@ -6,6 +6,7 @@
 package ucar.nc2.iosp.hdf5;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
@@ -291,7 +292,7 @@ public class BTree2 {
       raf.readFully(heapId);
 
       if (debugBtree2)
-        debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + Misc.showBytes(heapId));
+        debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + Arrays.toString(heapId));
     }
 
     public byte[] getHeapId() {
@@ -307,7 +308,7 @@ public class BTree2 {
       creationOrder = raf.readLong();
       raf.readFully(heapId);
       if (debugBtree2)
-        debugOut.println("  record6 creationOrder=" + creationOrder + " heapId=" + Misc.showBytes(heapId));
+        debugOut.println("  record6 creationOrder=" + creationOrder + " heapId=" + Arrays.toString(heapId));
     }
 
     public byte[] getHeapId() {
@@ -352,7 +353,7 @@ public class BTree2 {
       creationOrder = raf.readInt();
       nameHash = raf.readInt();
       if (debugBtree2)
-        debugOut.println("  record8 creationOrder=" + creationOrder + " heapId=" + Misc.showBytes(heapId));
+        debugOut.println("  record8 creationOrder=" + creationOrder + " heapId=" + Arrays.toString(heapId));
     }
 
     public byte[] getHeapId() {
