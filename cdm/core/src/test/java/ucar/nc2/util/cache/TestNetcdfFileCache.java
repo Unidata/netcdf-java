@@ -56,7 +56,7 @@ public class TestNetcdfFileCache {
         // System.out.println(" open "+f.getPath());
         try {
           String want = StringUtil2.replace(f.getPath(), '\\', "/");
-          DatasetUrl durl = new DatasetUrl(null, want);
+          DatasetUrl durl = DatasetUrl.create(null, want);
           cache.acquire(factory, durl);
           count++;
         } catch (IOException e) {
@@ -341,7 +341,7 @@ public class TestNetcdfFileCache {
     }
 
     public FileCacheable call() throws Exception {
-      DatasetUrl durl = new DatasetUrl(null, location);
+      DatasetUrl durl = DatasetUrl.create(null, location);
       return cache.acquire(factory, durl);
     }
   }

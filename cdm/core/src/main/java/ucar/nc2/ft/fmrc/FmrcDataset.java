@@ -1080,10 +1080,10 @@ class FmrcDataset {
     }
 
     if (config.innerNcml == null) {
-      ncd = NetcdfDataset.acquireDataset(new DatasetUrl(null, location), true, null); // default enhance
+      ncd = NetcdfDataset.acquireDataset(DatasetUrl.create(null, location), true, null); // default enhance
 
     } else {
-      NetcdfFile nc = NetcdfDataset.acquireFile(new DatasetUrl(null, location), null);
+      NetcdfFile nc = NetcdfDataset.acquireFile(DatasetUrl.create(null, location), null);
       ncd = NcMLReader.mergeNcML(nc, config.innerNcml); // create new dataset
       ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
     }

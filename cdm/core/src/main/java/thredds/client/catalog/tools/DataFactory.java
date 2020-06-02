@@ -462,7 +462,7 @@ public class DataFactory {
     }
 
     // ready to open it through netcdf API
-    DatasetUrl durl = new DatasetUrl(serviceType, datasetLocation);
+    DatasetUrl durl = DatasetUrl.create(serviceType, datasetLocation);
     NetcdfDataset ncd = acquire ? NetcdfDatasets.acquireDataset(durl, true, task)
         : NetcdfDatasets.openDataset(durl, null, -1, task, null);
 

@@ -105,7 +105,7 @@ public class TestWriteMiscProblems {
     String inName = TestDir.cdmLocalTestDataDir + "testWrite.nc";
     String outName = tempFolder.newFile().getAbsolutePath();
 
-    DatasetUrl durl = new DatasetUrl(null, inName);
+    DatasetUrl durl = DatasetUrl.create(null, inName);
     try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null)) {
       assert ncd.removeVariable(null, "temperature");
       ncd.finish();
@@ -117,7 +117,7 @@ public class TestWriteMiscProblems {
       }
     }
 
-    DatasetUrl durl2 = new DatasetUrl(null, outName);
+    DatasetUrl durl2 = DatasetUrl.create(null, outName);
     try (NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(durl2, true, null)) {
       assert ncdnew2.findVariable("temperature") == null;
     }

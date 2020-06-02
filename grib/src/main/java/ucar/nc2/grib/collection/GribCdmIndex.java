@@ -81,7 +81,7 @@ public class GribCdmIndex implements IndexReader {
   static GribCollectionImmutable acquireGribCollection(FileFactory factory, Object hashKey, String location,
       int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
     FileCacheable result;
-    DatasetUrl durl = new DatasetUrl(null, location);
+    DatasetUrl durl = DatasetUrl.create(null, location);
 
     if (gribCollectionCache != null) {
       // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject

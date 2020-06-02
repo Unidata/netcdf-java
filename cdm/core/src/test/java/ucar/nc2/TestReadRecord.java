@@ -212,7 +212,7 @@ public class TestReadRecord {
   @Test
   public void testDatasetAddRecord() throws InvalidRangeException, IOException {
     String location = TestDir.cdmLocalTestDataDir + "testWriteRecord.nc";
-    DatasetUrl durl = new DatasetUrl(null, location);
+    DatasetUrl durl = DatasetUrl.create(null, location);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(durl, NetcdfDataset.getDefaultEnhanceMode(), -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
 

@@ -117,7 +117,7 @@ public class TestFileCacheConcurrent {
 
     public void run() {
       try {
-        DatasetUrl durl = new DatasetUrl(null, location);
+        DatasetUrl durl = DatasetUrl.create(null, location);
         FileCacheable fc = cache.acquire(factory, durl);
         NetcdfFile ncfile = (NetcdfFile) fc;
         // assert ncfile.isLocked();

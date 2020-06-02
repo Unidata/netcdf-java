@@ -46,7 +46,7 @@ public class TestDatasetWrapP {
   DatasetUrl durl;
 
   public TestDatasetWrapP(String filename) {
-    durl = new DatasetUrl(null, filename);
+    durl = DatasetUrl.create(null, filename);
   }
 
   @Test

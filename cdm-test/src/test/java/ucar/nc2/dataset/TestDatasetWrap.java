@@ -34,15 +34,14 @@ public class TestDatasetWrap {
   }
 
   private void doOne(String filename) throws Exception {
-    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(new DatasetUrl(null, filename), null);
+    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(DatasetUrl.create(null, filename), null);
         NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
 
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(new DatasetUrl(null, filename), true, null);
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.create(null, filename), true, null);
       System.out.println(" dataset wraps= " + filename);
 
       ucar.unidata.util.test.CompareNetcdf.compareFiles(ncd, ncWrap);
       ncd.close();
-      ncWrap.close();
     }
   }
 

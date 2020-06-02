@@ -9,6 +9,7 @@ import static java.net.HttpURLConnection.HTTP_NOT_ACCEPTABLE;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.google.common.annotations.VisibleForTesting;
+import javax.annotation.Nullable;
 import thredds.client.catalog.ServiceType;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -180,7 +181,7 @@ public class DatasetUrl {
       }
       trueUrl = buf.toString();
     }
-    return new DatasetUrl(serviceType, trueUrl);
+    return DatasetUrl.create(serviceType, trueUrl);
   }
 
   /**
@@ -538,8 +539,14 @@ public class DatasetUrl {
   @Deprecated // use getTrueurl()
   public final String trueurl;
 
-  public static DatasetUrl create(ServiceType serviceType, String trueurl) {
-    return new DatasetUrl(serviceType, trueurl);
+  /**
+   * Create a DatasetUrl, which annotates a url with its service type.
+   * 
+   * @param serviceType The serviceType, may be null if not known.
+   * @param trueurl The actual URL
+   */
+  public static DatasetUrl create(@Nullable ServiceType serviceType, String trueurl) {
+    return DatasetUrl.create(serviceType, trueurl);
   }
 
   /** @deprecated use create() */
