@@ -656,10 +656,11 @@ public class GeoTiff implements Closeable {
     return sw.toString();
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public void compare(GeoTiff other, Formatter f) {
     CompareNetcdf2.compareLists(tags, other.getTags(), f);
   }
-
 
   //////////////////////////////////////////////////////////////////////////
 

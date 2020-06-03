@@ -22,6 +22,7 @@ import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -144,7 +145,7 @@ public class TestGeoTiffWriter {
         logger.debug("{}", geotiff2.showInfo());
 
         Formatter out = new Formatter();
-        geotiff.compare(geotiff2, out);
+        CompareNetcdf2.compareLists(geotiff.getTags(), geotiff2.getTags(), out);
         logger.debug("{}", out.toString());
       }
 

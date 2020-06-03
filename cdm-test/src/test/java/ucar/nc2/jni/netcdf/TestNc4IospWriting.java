@@ -162,7 +162,7 @@ public class TestNc4IospWriting {
       throws IOException {
     Formatter f = new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
-    boolean ok = tc.compare(nc1, nc2, new CompareNetcdf2.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
+    boolean ok = tc.compare(nc1, nc2, new CompareNetcdf2.Netcdf4ObjectFilter());
     System.out.printf(" %s compare %s to %s ok = %s%n", ok ? "" : "***", nc1.getLocation(), nc2.getLocation(), ok);
     if (!ok)
       System.out.printf(" %s%n", f);

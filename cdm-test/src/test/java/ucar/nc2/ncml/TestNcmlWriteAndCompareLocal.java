@@ -127,7 +127,7 @@ public class TestNcmlWriteAndCompareLocal {
     try {
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, compareData);
-      boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter(), false, false, compareData);
+      boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter());
       if (!ok) {
         fail++;
         System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", location,

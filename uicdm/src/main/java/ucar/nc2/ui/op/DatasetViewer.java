@@ -252,7 +252,7 @@ public class DatasetViewer extends JPanel {
       try (NetcdfFile withBuilder = NetcdfFiles.open(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(), false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter());
         infoTA.setText(f.toString());
         infoTA.gotoTop();
         infoWindow.setTitle("Compare Old (file1) with Builder (file 2)");
@@ -275,7 +275,7 @@ public class DatasetViewer extends JPanel {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter(), false, false, true);
+        compare.compare(org, withBuilder, new CoordsObjFilter());
         infoTA.setText(f.toString());
         infoTA.gotoTop();
         infoWindow.setTitle("Compare Old (file1) with Builder (file 2)");

@@ -166,7 +166,7 @@ public class TestNc4IospReading {
 
     Formatter f = new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
-    boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
+    boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter());
     System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
     if (!ok || (showCompare && showCompareResults))
       System.out.printf("%s%n=====================================%n", f);

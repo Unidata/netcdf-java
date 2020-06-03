@@ -7,6 +7,7 @@
 
 package ucar.nc2.util;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
@@ -20,16 +21,13 @@ import java.util.ArrayList;
 
 /**
  * Compare two NetcdfFile.
- * Dont use assert, place results in Formatter.
+ * Doesnt fail (eg doesnt use assert), places results in Formatter.
  * 
- * @deprecated will move in ver6
+ * TODO will move to test classes in ver6.
  */
-@Deprecated
 public class CompareNetcdf2 {
   public static final ObjFilter IDENTITY_FILTER = new ObjFilter() {};
 
-  /** @deprecated will move in ver6. */
-  @Deprecated
   public interface ObjFilter {
     // if true, compare attribute, else skip comparision
     default boolean attCheckOk(Variable v, Attribute att) {
@@ -57,9 +55,8 @@ public class CompareNetcdf2 {
     }
   }
 
-  /** @deprecated will move in ver6. */
   public static class Netcdf4ObjectFilter implements ObjFilter {
-    @Override
+
     public boolean attCheckOk(Variable v, Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getShortName();
@@ -159,18 +156,20 @@ public class CompareNetcdf2 {
     return compare(org, copy, showCompare, showEach, compareData);
   }
 
-  public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter) {
+  public boolean compare(NetcdfFile org, NetcdfFile copy, @Nullable ObjFilter filter) {
     return compare(org, copy, filter, showCompare, showEach, compareData);
   }
 
+  /** @deprecated use constructor to set options, then compare(NetcdfFile org, NetcdfFile copy) */
   @Deprecated
   public boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
     return compare(org, copy, null, showCompare, showEach, compareData);
   }
 
+  /** @deprecated use constructor to set options, then compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter) */
   @Deprecated
-  public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter objFilter, boolean showCompare, boolean showEach,
-      boolean compareData) {
+  public boolean compare(NetcdfFile org, NetcdfFile copy, @Nullable ObjFilter objFilter, boolean showCompare,
+      boolean showEach, boolean compareData) {
     if (objFilter == null)
       objFilter = IDENTITY_FILTER;
     this.compareData = compareData;
@@ -238,19 +237,6 @@ public class CompareNetcdf2 {
 
     return ok;
   }
-
-  /*
-   * private boolean compare(List<Dimension> dims1, List<Dimension> dims2) {
-   * if (dims1.size() != dims2.size()) return false;
-   * for (int i = 0; i < dims1.size(); i++) {
-   * Dimension dim1 = dims1.get(i);
-   * Dimension dim2 = dims2.get(i);
-   * //if (!dim1.getName().equals(dim2.getName())) return false;
-   * if (dim1.getLength() != dim2.getLength()) return false;
-   * }
-   * return true;
-   * }
-   */
 
   private boolean compareGroups(Group org, Group copy, ObjFilter objFilter) {
     if (showCompare)
@@ -884,8 +870,8 @@ public class CompareNetcdf2 {
         compareData = true;
     }
 
-    NetcdfFile ncfile1 = NetcdfDataset.open(file1);
-    NetcdfFile ncfile2 = NetcdfDataset.open(file2);
+    NetcdfFile ncfile1 = NetcdfDatasets.openFile(file1, null);
+    NetcdfFile ncfile2 = NetcdfDatasets.openFile(file2, null);
     compareFiles(ncfile1, ncfile2, new Formatter(System.out), true, compareData, showEach);
     ncfile1.close();
     ncfile2.close();
