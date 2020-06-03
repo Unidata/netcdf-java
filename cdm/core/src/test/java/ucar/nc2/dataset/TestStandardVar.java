@@ -352,7 +352,7 @@ public class TestStandardVar {
 
   @Test
   public void testEnhanceDefer() throws IOException {
-    DatasetUrl durl = new DatasetUrl(null, filename);
+    DatasetUrl durl = DatasetUrl.create(null, filename);
 
     try (NetcdfDataset ncd =
         NetcdfDatasets.openDataset(durl, EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset), -1, null, null)) {

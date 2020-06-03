@@ -84,7 +84,7 @@ public class GridDatasetInv {
           gds = GridDataset.open(mfile.getPath());
 
         } else {
-          NetcdfFile nc = NetcdfDataset.acquireFile(new DatasetUrl(null, mfile.getPath()), null);
+          NetcdfFile nc = NetcdfDataset.acquireFile(DatasetUrl.create(null, mfile.getPath()), null);
           NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
           ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
           gds = new GridDataset(ncd);

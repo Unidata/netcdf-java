@@ -177,14 +177,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     if (cache == null)
       return new RandomAccessFile(location, "r");
     else
-      return (RandomAccessFile) cache.acquire(factory, new DatasetUrl(null, location));
+      return (RandomAccessFile) cache.acquire(factory, DatasetUrl.create(null, location));
   }
 
   public static RandomAccessFile acquire(String location, int buffer_size) throws IOException {
     if (cache == null)
       return new RandomAccessFile(location, "r", buffer_size);
     else
-      return (RandomAccessFile) cache.acquire(factory, location, new DatasetUrl(null, location), buffer_size, null,
+      return (RandomAccessFile) cache.acquire(factory, location, DatasetUrl.create(null, location), buffer_size, null,
           null);
   }
 

@@ -232,7 +232,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
       // LOOK not cached
       return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory
-          .open(new DatasetUrl(null, path), -1, null, this);
+          .open(DatasetUrl.create(null, path), -1, null, this);
     }
 
     // the children must already exist
