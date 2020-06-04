@@ -25,12 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Write CF compliant gridded data
- * version 2
- *
- * @author caron
- * @since 6/18/2014
+ * Write CF compliant gridded data version 2.
+ * 
+ * @deprecated use CFCoverageWriter.
  */
+@Deprecated
 public class CFGridWriter2 {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridWriter2.class);
 

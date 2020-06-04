@@ -4,12 +4,14 @@
  */
 package ucar.nc2.write;
 
+import com.google.common.base.Preconditions;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.Set;
+import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -19,6 +21,8 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Structure;
@@ -151,6 +155,42 @@ public class NetcdfFormatWriter implements Closeable {
     }
   }
 
+  /** Value class is the result of calling create() */
+  public static class Result {
+    private final long sizeToBeWritten;
+    private final boolean wasWritten;
+    @Nullable
+    private final String errorMessage;
+
+    private Result(long sizeToBeWritten, boolean wasWritten, @Nullable String errorMessage) {
+      this.sizeToBeWritten = sizeToBeWritten;
+      this.wasWritten = wasWritten;
+      this.errorMessage = errorMessage;
+    }
+
+    /**
+     * Estimated number of bytes the file will take. This is NOT the same as the size of the the whole output file, but
+     * it's close.
+     */
+    public long sizeToBeWritten() {
+      return sizeToBeWritten;
+    }
+
+    /** Whether the file was created or not. */
+    public boolean wasWritten() {
+      return wasWritten;
+    }
+
+    @Nullable
+    public String getErrorMessage() {
+      return errorMessage;
+    }
+
+    public static Result create(long sizeToBeWritten, boolean wasWritten, @Nullable String errorMessage) {
+      return new Result(sizeToBeWritten, wasWritten, errorMessage);
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////
   private final String location;
   private final NetcdfFileFormat format;
@@ -161,7 +201,7 @@ public class NetcdfFormatWriter implements Closeable {
   private final Nc4Chunking chunker;
   private final boolean useJna;
 
-  private ucar.unidata.io.RandomAccessFile outputRaf;
+  private ucar.unidata.io.RandomAccessFile existingRaf;
   private IOServiceProviderWriter spiw;
   private NetcdfFile ncout;
 
@@ -176,10 +216,10 @@ public class NetcdfFormatWriter implements Closeable {
     this.useJna = builder.useJna;
 
     if (!isNewFile) {
-      outputRaf = new ucar.unidata.io.RandomAccessFile(location, "rw");
-      NetcdfFileFormat existingVersion = NetcdfFileFormat.findNetcdfFormatType(outputRaf);
+      existingRaf = new ucar.unidata.io.RandomAccessFile(location, "rw");
+      NetcdfFileFormat existingVersion = NetcdfFileFormat.findNetcdfFormatType(existingRaf);
       if (format != null && format != existingVersion) {
-        outputRaf.close();
+        existingRaf.close();
         throw new IllegalArgumentException("Existing file at location" + location + " (" + existingVersion
             + ") does not match requested version " + format);
       }
@@ -267,78 +307,56 @@ public class NetcdfFormatWriter implements Closeable {
    * After you have added all of the Dimensions, Variables, and Attributes,
    * call create() to actually create the file.
    *
-   * @throws IOException if I/O error
+   * @param netcdfOut Contains the metadata of the file to be written. Caller must write data with write().
+   * @param maxBytes if > 0, only create the file if sizeToBeWritten < maxBytes.
+   * @return return Result indicating sizeToBeWritten and if it was created.
    */
-  public void create(NetcdfFile netcdfOut) throws IOException {
-    if (!isNewFile)
-      throw new UnsupportedOperationException("can only call create on a new file");
+  public Result create(NetcdfFile netcdfOut, long maxBytes) throws IOException {
+    Preconditions.checkArgument(isNewFile, "can only call create on a new file");
 
+    long sizeToBeWritten = calcSize(netcdfOut.getRootGroup());
+    if (maxBytes > 0 && sizeToBeWritten > maxBytes) {
+      return Result.create(sizeToBeWritten, false, String.format("Too large, max size = %d", maxBytes));
+    }
     this.ncout = netcdfOut;
-    if (!isNewFile)
-      spiw.openForWriting(outputRaf, this.ncout, null);
+    spiw.setFill(fill);
 
-    this.ncout.finish(); // ??
-    spiw.setFill(fill); // ??
-    spiw.create(location, this.ncout, extraHeaderBytes, preallocateSize,
-        format == NetcdfFileFormat.NETCDF3_64BIT_OFFSET);
+    if (!isNewFile) {
+      spiw.openForWriting(existingRaf, this.ncout, null);
+    } else {
+      spiw.create(location, this.ncout, extraHeaderBytes, preallocateSize, testIfLargeFile());
+    }
+
+    return Result.create(sizeToBeWritten, true, null);
   }
 
-  /*
-   * rewrite entire file
-   * private void rewrite() throws IOException {
-   * // close existing file, rename and open as read-only
-   * spiw.flush();
-   * spiw.close();
-   * 
-   * File prevFile = new File(location);
-   * if (!prevFile.exists()) {
-   * return;
-   * }
-   * 
-   * File tmpFile = new File(location + ".tmp");
-   * if (tmpFile.exists()) {
-   * boolean ok = tmpFile.delete();
-   * if (!ok)
-   * log.warn("rewrite unable to delete {}", tmpFile.getPath());
-   * }
-   * if (!prevFile.renameTo(tmpFile)) {
-   * throw new RuntimeException("Cant rename " + prevFile.getAbsolutePath() + " to " + tmpFile.getAbsolutePath());
-   * }
-   * 
-   * NetcdfFile oldFile = NetcdfFiles.open(tmpFile.getPath());
-   * 
-   * // create new file with current set of objects
-   * spiw.create(location, ncfile, extraHeaderBytes, preallocateSize, isLargeFile);
-   * spiw.setFill(fill);
-   * // isClosed = false;
-   * 
-   * FileCopier fileWriter2 = FileCopier.create(null, this);
-   * for (Variable v : ncfile.getVariables()) {
-   * String oldVarName = v.getFullName();
-   * Variable oldVar = oldFile.findVariable(oldVarName);
-   * if (oldVar != null) {
-   * fileWriter2.copyAll(oldVar, v);
-   * } else if (varRenameMap.containsKey(oldVarName)) {
-   * // var name has changed in ncfile - use the varRenameMap to find
-   * // the correct variable name to request from oldFile
-   * String realOldVarName = varRenameMap.get(oldVarName);
-   * oldVar = oldFile.findVariable(realOldVarName);
-   * if (oldVar != null) {
-   * fileWriter2.copyAll(oldVar, v);
-   * }
-   * } else {
-   * String message = "Cannot find variable " + oldVarName + " to copy to new file.";
-   * log.warn(message);
-   * }
-   * }
-   * 
-   * // delete old
-   * oldFile.close();
-   * if (!tmpFile.delete()) {
-   * throw new RuntimeException("Cant delete " + tmpFile.getAbsolutePath());
-   * }
-   * }
-   */
+  private boolean testIfLargeFile() {
+    if (format == NetcdfFileFormat.NETCDF3_64BIT_OFFSET) {
+      return true;
+    }
+
+    if (format == NetcdfFileFormat.NETCDF3) {
+      long totalSizeOfVars = calcSize(ncout.getRootGroup());
+      long maxSize = Integer.MAX_VALUE;
+      if (totalSizeOfVars > maxSize) {
+        log.debug("Request size = {} Mbytes", totalSizeOfVars / 1000 / 1000);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Note that we have enough info to try to estimate effects of compression, if its a Netcdf4 file.
+  private long calcSize(Group group) {
+    long totalSizeOfVars = 0;
+    for (Variable var : group.getVariables()) {
+      totalSizeOfVars += Dimensions.getSize(var.getDimensions()) * var.getElementSize();
+    }
+    for (Group nested : group.getGroups()) {
+      totalSizeOfVars += calcSize(nested);
+    }
+    return totalSizeOfVars;
+  }
 
   ////////////////////////////////////////////
   //// use these calls to write data to the file
@@ -373,7 +391,6 @@ public class NetcdfFormatWriter implements Closeable {
    */
   public void write(Variable v, int[] origin, Array values) throws IOException, InvalidRangeException {
     spiw.writeData(v, new Section(origin, values.getShape()), values);
-    v.invalidateCache();
   }
 
   /**

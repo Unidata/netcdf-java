@@ -48,6 +48,16 @@ public class Dimensions {
     }
   }
 
+  /** Get the toyal number of elements the dimensions represent. */
+  public static long getSize(Iterable<Dimension> dimensions) {
+    long size = 1;
+    for (Dimension dim : dimensions) {
+      if (dim.getLength() >= 0)
+        size *= dim.getLength();
+    }
+    return size;
+  }
+
   /** Make an array of Dimension lengths. */
   public static int[] makeShape(Iterable<Dimension> dimensions) {
     return makeSectionFromDimensions(dimensions).build().getShape();
