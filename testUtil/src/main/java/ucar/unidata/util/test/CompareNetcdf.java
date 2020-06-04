@@ -22,9 +22,10 @@ import java.util.List;
 /**
  * Compare two NetcdfFile. Uses assert.
  * Test classes only.
- *
- * @author john
+ * 
+ * @deprecated use CompareNetcdf2
  */
+@Deprecated
 public class CompareNetcdf {
 
   public static boolean compareFiles(NetcdfFile org, NetcdfFile copy) {

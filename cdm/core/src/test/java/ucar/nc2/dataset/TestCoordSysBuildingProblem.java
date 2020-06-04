@@ -40,7 +40,7 @@ public class TestCoordSysBuildingProblem {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare.compare(org, withBuilder, new TestCoordSysCompare.CoordsObjFilter(), false, false, true);
+        boolean ok = compare.compare(org, withBuilder, new TestCoordSysCompare.CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
         assertThat(ok).isTrue();
       }
