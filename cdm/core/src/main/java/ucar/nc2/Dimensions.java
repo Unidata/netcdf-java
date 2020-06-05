@@ -48,7 +48,7 @@ public class Dimensions {
     }
   }
 
-  /** Get the toyal number of elements the dimensions represent. */
+  /** Get the total number of elements the dimensions represent. */
   public static long getSize(Iterable<Dimension> dimensions) {
     long size = 1;
     for (Dimension dim : dimensions) {
