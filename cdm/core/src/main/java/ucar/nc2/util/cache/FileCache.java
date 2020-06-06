@@ -467,8 +467,8 @@ public class FileCache implements FileCacheIF {
       }
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;
-      file.isLocked.set(false);
       file.ncfile.release();
+      file.isLocked.set(false);
 
       if (cacheLog.isDebugEnabled())
         cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation() + "; hash= " + ncfile.hashCode());
