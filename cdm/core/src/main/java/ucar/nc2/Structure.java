@@ -333,7 +333,7 @@ public class Structure extends Variable {
    */
   @Override
   public int getElementSize() {
-    if (elementSize == -1)
+    if (elementSize <= 0)
       calcElementSize();
     return elementSize;
   }
@@ -341,7 +341,10 @@ public class Structure extends Variable {
   /**
    * Force recalculation of size of one element of this structure - equals the sum of sizes of its members.
    * This is used only by low level classes like IOSPs.
+   * 
+   * @deprecated will be private in ver6, where Structure will be immutable.
    */
+  @Deprecated
   public void calcElementSize() {
     int total = 0;
     for (Variable v : members) {
@@ -654,6 +657,7 @@ public class Structure extends Variable {
     this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(Collectors.toList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
+    calcElementSize();
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */

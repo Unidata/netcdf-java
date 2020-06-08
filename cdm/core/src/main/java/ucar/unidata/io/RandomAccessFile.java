@@ -474,6 +474,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     // If the seek is into the buffer, just update the file pointer.
     if ((pos >= bufferStart) && (pos < dataEnd)) {
       filePosition = pos;
+      endOfFile = false;
       return;
     }
 

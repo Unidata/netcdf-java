@@ -1,26 +1,36 @@
-package ucar.nc2.ft.point.writer;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.ft.point.writer2;
 
 import com.google.common.collect.Lists;
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.TestCFPointDatasets;
-import ucar.nc2.ft.point.TestPointDatasets;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
-import ucar.nc2.util.CompareNetcdf2;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.point.TestCFPointDatasets;
+import ucar.nc2.ft.point.TestPointDatasets;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.NetcdfFileFormat;
 
 /**
  * Test CFPointWriter, write into nc, nc4 and nc4c (classic) files
@@ -49,10 +59,10 @@ public class TestCFPointWriter {
     return result;
   }
 
-  String location;
-  FeatureType ftype;
-  int countExpected;
-  boolean show = false;
+  private final String location;
+  private final FeatureType ftype;
+  private final int countExpected;
+  private final boolean show = false;
 
   public TestCFPointWriter(String location, FeatureType ftype, int countExpected) {
     this.location = location;
@@ -62,9 +72,7 @@ public class TestCFPointWriter {
 
   // @Test
   public void testWrite3col() throws IOException {
-    CFPointWriterConfig config = new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3);
-    config.recDimensionLength = countExpected;
-
+    CFPointWriterConfig config = CFPointWriterConfig.builder().build();
     int count = writeDataset(location, ftype, config, show, tempFolder.newFile()); // column oriented
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count =" + count + " expected " + countExpected;
@@ -72,8 +80,8 @@ public class TestCFPointWriter {
 
   @Test
   public void testWrite3() throws IOException {
-    int count = writeDataset(location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), show,
-        tempFolder.newFile());
+    CFPointWriterConfig config = CFPointWriterConfig.builder().build();
+    int count = writeDataset(location, ftype, config, show, tempFolder.newFile());
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count =" + count + " expected " + countExpected;
   }
@@ -85,8 +93,8 @@ public class TestCFPointWriter {
       return;
     }
 
-    int count = writeDataset(location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), show,
-        tempFolder.newFile());
+    CFPointWriterConfig config = CFPointWriterConfig.builder().setFormat(NetcdfFileFormat.NETCDF4).build();
+    int count = writeDataset(location, ftype, config, show, tempFolder.newFile());
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);
     assert count == countExpected : "count =" + count + " expected " + countExpected;
   }
@@ -99,8 +107,8 @@ public class TestCFPointWriter {
       return;
     }
 
-    int count = writeDataset(location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), show,
-        tempFolder.newFile());
+    CFPointWriterConfig config = CFPointWriterConfig.builder().setFormat(NetcdfFileFormat.NETCDF4).build();
+    int count = writeDataset(location, ftype, config, show, tempFolder.newFile());
     System.out.printf("%s netcdf4 count=%d%n", location, count);
     assert count == countExpected : "count =" + count + " expected " + countExpected;
   }

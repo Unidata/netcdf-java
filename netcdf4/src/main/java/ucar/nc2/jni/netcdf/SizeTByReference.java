@@ -27,16 +27,6 @@ public class SizeTByReference extends ByReference {
     setValue(value);
   }
 
-  /*
-   * public void setValue(NativeLong value) {
-   * getPointer().setNativeLong(0, value);
-   * }
-   * 
-   * public NativeLong getValue() {
-   * return getPointer().getNativeLong(0);
-   * }
-   */
-
   public void setValue(SizeT value) {
     Pointer p = getPointer();
     if (Native.SIZE_T_SIZE == 8) {

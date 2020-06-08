@@ -558,7 +558,7 @@ public abstract class CFPointWriter implements Closeable {
       }
 
       if (newVar == null) {
-        logger.warn("Variable already exists =" + oldVar.getShortName()); // LOOK barf
+        logger.warn("Variable already exists =" + oldVar.getShortName());
         continue;
       }
 
@@ -755,7 +755,7 @@ public abstract class CFPointWriter implements Closeable {
     for (StructureMembers.Member m : sdata.getMembers()) {
       Variable mv = varMap.get(m.getName());
       if (mv == null)
-        continue; // LOOK OK??
+        continue; // ok
 
       Array org = sdata.getArray(m);
       if (m.getDataType() == DataType.STRING) { // convert to ArrayChar
@@ -782,9 +782,9 @@ public abstract class CFPointWriter implements Closeable {
     if (loc != null) {
       if (llbb == null) {
         llbb = new LatLonRect(loc, .001, .001);
-        return;
+      } else {
+        llbb.extend(loc);
       }
-      llbb.extend(loc);
     }
 
     // date is handled specially

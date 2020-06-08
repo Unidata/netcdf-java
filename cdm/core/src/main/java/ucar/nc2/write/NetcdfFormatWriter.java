@@ -213,7 +213,7 @@ public class NetcdfFormatWriter implements Closeable {
     this.extraHeaderBytes = builder.extraHeaderBytes;
     this.preallocateSize = builder.preallocateSize;
     this.chunker = builder.chunker;
-    this.useJna = builder.useJna;
+    this.useJna = builder.useJna || format.isNetdf4format();
 
     if (!isNewFile) {
       existingRaf = new ucar.unidata.io.RandomAccessFile(location, "rw");
@@ -230,14 +230,14 @@ public class NetcdfFormatWriter implements Closeable {
       IOServiceProviderWriter spi;
       try {
         Class iospClass = this.getClass().getClassLoader().loadClass(className);
-        Constructor<IOServiceProviderWriter> ctor =
-            iospClass.getConstructor(convertToNetcdfFileWriterVersion(format).getClass());
-        spi = ctor.newInstance(format);
+        NetcdfFileWriter.Version version = convertToNetcdfFileWriterVersion(format);
+        Constructor<IOServiceProviderWriter> ctor = iospClass.getConstructor(version.getClass());
+        spi = ctor.newInstance(version);
 
         Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
         method.invoke(spi, chunker);
       } catch (Throwable e) {
-        throw new IllegalArgumentException(className + " is not loaded, cannot use JNI/C library");
+        throw new IllegalArgumentException(className + " cannot use JNI/C library err= " + e.getMessage());
       }
       spiw = spi;
     } else {
@@ -258,6 +258,21 @@ public class NetcdfFormatWriter implements Closeable {
         return NetcdfFileWriter.Version.netcdf3c64;
       default:
         throw new IllegalStateException("Unsupported format: " + format);
+    }
+  }
+
+  public static NetcdfFileFormat convertToNetcdfFileFormat(NetcdfFileWriter.Version version) {
+    switch (version) {
+      case netcdf3:
+        return NetcdfFileFormat.NETCDF3;
+      case netcdf4:
+        return NetcdfFileFormat.NETCDF4;
+      case netcdf4_classic:
+        return NetcdfFileFormat.NETCDF4_CLASSIC;
+      case netcdf3c64:
+        return NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
+      default:
+        throw new IllegalStateException("Unsupported version: " + version);
     }
   }
 
@@ -305,7 +320,7 @@ public class NetcdfFormatWriter implements Closeable {
 
   /**
    * After you have added all of the Dimensions, Variables, and Attributes,
-   * call create() to actually create the file.
+   * call create() to actually create the new file, or open the existing file.
    *
    * @param netcdfOut Contains the metadata of the file to be written. Caller must write data with write().
    * @param maxBytes if > 0, only create the file if sizeToBeWritten < maxBytes.
@@ -435,6 +450,22 @@ public class NetcdfFormatWriter implements Closeable {
 
   public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
     return spiw.appendStructureData(s, sdata);
+  }
+
+  /**
+   * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
+   * You cannot make an attribute longer, or change the number of values.
+   * For strings: truncate if longer, zero fill if shorter. Strings are padded to 4 byte boundaries, ok to use padding
+   * if it exists.
+   * For numerics: must have same number of values.
+   * This is really a netcdf-3 writing only. netcdf-4 attributes can be changed without rewriting.
+   *
+   * @param v2 variable, or null for global attribute
+   * @param att replace with this value
+   * @throws IOException if I/O error
+   */
+  public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
+    spiw.updateAttribute(v2, att);
   }
 
   /** Flush anything written to disk. */

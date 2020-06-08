@@ -1779,12 +1779,12 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
-  // TODO make private final in release 6.
+  // TODO make private final and Immutable in release 6.
   // Physical container for this Variable where the I/O happens. may be null if Variable is self contained.
   protected NetcdfFile ncfile;
   protected DataType dataType;
   private EnumTypedef enumTypedef;
-  protected List<Dimension> dimensions = new ArrayList<>(5);
+  protected List<Dimension> dimensions = new ArrayList<>(5); // TODO immutable in ver 6
   protected AttributeContainerMutable attributes; // TODO immutable in ver 6
   protected ProxyReader proxyReader = this;
   protected Object spiObject;
@@ -1796,6 +1796,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   protected int elementSize;
 
   // TODO do we need these? breaks immutability
+  // TODO maybe caching read data shoul be seperate from "this is the source of the data".
   protected Cache cache = new Cache(); // cache cannot be null
   protected int sizeToCache = -1; // bytes
 
@@ -1862,6 +1863,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     this.dimensions = dims;
     if (builder.autoGen != null) {
       this.cache.data = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
+      this.cache.isMetadata = true; // So it gets copied
     }
 
     // calculated fields
@@ -1937,7 +1939,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
     protected Group.Builder parentBuilder;
     protected Structure.Builder<?> parentStructureBuilder;
-    private List<Dimension> dimensions = new ArrayList<>(); // The group is ignored; replaced when build()
+    private ArrayList<Dimension> dimensions = new ArrayList<>(); // The dimension's group is ignored; replaced when
+                                                                 // build()
     public Object spiObject;
     public ProxyReader proxyReader;
     public Cache cache = new Cache(); // cache cannot be null
@@ -1993,7 +1996,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     public T setDimensions(List<Dimension> dims) {
-      this.dimensions = dims;
+      this.dimensions = new ArrayList<>(dims);
       return self();
     }
 
@@ -2014,7 +2017,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     /** Set dimensions by name. The parent group builder must be set. */
     public T setDimensionsByName(String dimString) {
       Preconditions.checkNotNull(this.parentBuilder);
-      this.dimensions = this.parentBuilder.makeDimensionsList(dimString);
+      this.dimensions = new ArrayList<>(this.parentBuilder.makeDimensionsList(dimString));
       return self();
     }
 
@@ -2050,7 +2053,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
      * @throws RuntimeException if any shape < 1 and not -1.
      */
     public T setDimensionsAnonymous(int[] shape) {
-      this.dimensions = Dimensions.makeDimensionsAnon(shape);
+      this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));
       return self();
     }
 

@@ -18,12 +18,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-/**
- * Describe
- *
- * @author caron
- * @since 3/28/2020.
- */
+/** Class to write a netcdf3 header. */
 class N3headerWriter extends N3headerNew {
   private static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 

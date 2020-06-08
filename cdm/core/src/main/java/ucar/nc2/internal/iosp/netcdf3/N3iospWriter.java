@@ -281,18 +281,19 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   }
 
   /**
-   * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
+   * Update the value of an existing attribute on disk, not in memory. Attribute is found by name, which must match
+   * exactly.
    * You cannot make an attribute longer, or change the number of values.
    * For strings: truncate if longer, zero fill if shorter. Strings are padded to 4 byte boundaries, ok to use padding
    * if it exists.
    * For numerics: must have same number of values.
    *
-   * @param v2 variable, or null for fglobal attribute
+   * @param v2 variable, or null for global attribute
    * @param att replace with this value
    */
   @Override
   public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
-    // header.updateAttribute(v2, att);
+    ((N3headerWriter) header).updateAttribute(v2, att);
   }
 
   @Override
