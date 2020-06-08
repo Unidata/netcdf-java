@@ -2090,6 +2090,10 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return this.enumTypeName;
     }
 
+    public int getElementSize() {
+      return elementSize > 0 ? elementSize : dataType.getSize();
+    }
+
     // In some case we need to override standard element size.
     public T setElementSize(int elementSize) {
       this.elementSize = elementSize;

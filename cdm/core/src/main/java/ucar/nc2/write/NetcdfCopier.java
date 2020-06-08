@@ -142,7 +142,9 @@ public class NetcdfCopier {
 
       // create the file
       NetcdfFile fileOut = netcdfBuilder.build();
-      ncwriter.create(fileOut);
+      fileOut.finish(); // ??
+
+      ncwriter.create(fileOut, 0);
       if (cancel.isCancel()) {
         return null;
       }
