@@ -318,7 +318,10 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         StationFeature s = stnCollection.findStationFeature(getName());
         if (s == null) {
-          log.warn("CompositeStationFeatureIterator dataset: {} missing station {}", td.getLocation(), getName());
+          log.debug("CompositeStationFeatureIterator dataset: {} missing station {}", td.getLocation(), getName());
+          // close (or just release if cache is enabled) current dataset and check for station in
+          // next dataset in collection
+          currentDataset.close();
           return getNextIterator();
         }
 
