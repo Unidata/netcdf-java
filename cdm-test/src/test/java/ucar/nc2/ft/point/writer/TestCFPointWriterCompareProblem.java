@@ -35,7 +35,7 @@ public class TestCFPointWriterCompareProblem {
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  // @Test
+  @Test
   public void testWrite() throws IOException {
     writeDataset(location, FeatureType.STATION, NetcdfFileWriter.Version.netcdf3, -1);
   }
@@ -49,6 +49,8 @@ public class TestCFPointWriterCompareProblem {
       throws IOException {
     File fileIn = new File(location);
     long start = System.currentTimeMillis();
+    outOrg = tempFolder.newFile().getPath();
+    outNew = tempFolder.newFile().getPath();
 
     System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n", fileIn.getAbsoluteFile(),
         fileIn.length(), outOrg);
