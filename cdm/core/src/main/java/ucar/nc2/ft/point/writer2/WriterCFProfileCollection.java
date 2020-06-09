@@ -128,7 +128,8 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(profileStructName).setDimensionsByName(profileDimName);
+      Structure.Builder structb = Structure.builder().setName(profileStructName).setParentGroupBuilder(rootGroup)
+          .setDimensionsByName(profileDimName);
       rootGroup.addVariable(structb);
       addCoordinatesExtended(structb, profileVars);
     } else {

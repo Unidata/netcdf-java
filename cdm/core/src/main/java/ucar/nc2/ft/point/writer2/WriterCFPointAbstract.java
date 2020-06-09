@@ -511,7 +511,8 @@ abstract class WriterCFPointAbstract implements Closeable {
 
       Array org = sdata.getArray(m);
       if (m.getDataType() == DataType.STRING) { // convert to ArrayChar
-        org = ArrayChar.makeFromStringArray((ArrayObject) org);
+        int strlen = mv.getDimension(mv.getDimensions().size() - 1).getLength();
+        org = ArrayChar.makeFromStringArray((ArrayObject) org, strlen);
       }
 
       Array orgPlus1 = Array.makeArrayRankPlusOne(org); // add dimension on the left (slow)

@@ -15,6 +15,7 @@ import org.junit.rules.TemporaryFolder;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
@@ -27,16 +28,21 @@ import ucar.nc2.write.NetcdfFormatWriter;
 
 public class TestCFPointWriterCompareProblem {
   String outDir = "C:/temp/";
-  String location = CFpointObs_topdir + "stationProfileSingle.ncml";
-  String outOrg = outDir + "stationProfileSingle.org.nc";
-  String outNew = outDir + "stationProfileSingle.new.nc";
+  String location = CFpointObs_topdir + "stationData2Levels.ncml";
+  String outOrg = outDir + "stationData2Levels.org.nc";
+  String outNew = outDir + "stationData2Levels.new.nc";
 
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  @Test
+  // @Test
   public void testWrite() throws IOException {
-    writeDataset(location, FeatureType.STATION_PROFILE, NetcdfFileWriter.Version.netcdf3, -1);
+    writeDataset(location, FeatureType.STATION, NetcdfFileWriter.Version.netcdf3, -1);
+  }
+
+  @Test
+  public void testWrite4() throws IOException {
+    writeDataset(location, FeatureType.STATION, Version.netcdf4_classic, -1);
   }
 
   private void writeDataset(String location, FeatureType ftype, NetcdfFileWriter.Version version, int countExpected)

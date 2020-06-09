@@ -756,10 +756,13 @@ public abstract class CFPointWriter implements Closeable {
       Variable mv = varMap.get(m.getName());
       if (mv == null)
         continue; // ok
+      if (m.getName().equals("stnInfo"))
+        System.out.printf("HEY%n");
 
       Array org = sdata.getArray(m);
       if (m.getDataType() == DataType.STRING) { // convert to ArrayChar
-        org = ArrayChar.makeFromStringArray((ArrayObject) org);
+        int strlen = mv.getDimension(mv.getDimensions().size() - 1).getLength();
+        org = ArrayChar.makeFromStringArray((ArrayObject) org, strlen);
       }
 
       Array orgPlus1 = Array.makeArrayRankPlusOne(org); // add dimension on the left (slow)

@@ -12,7 +12,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
@@ -23,7 +22,6 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Structure;
-import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleBuilder;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -124,15 +122,11 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     StructureData obsData = obs.getFeatureData();
 
     List<VariableSimpleIF> obsCoords = new ArrayList<>();
-    // obsCoords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(),
-    // DataType.DOUBLE)); // LOOK ??
     Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
-    // if (useAlt) {
     obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
         .addAttribute(CF.STANDARD_NAME, "altitude")
         .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
     coordNames.format(" %s", altitudeCoordinateName);
-    // }
 
     super.writeHeader(obsCoords, stnData, profileData, obsData, coordNames.toString());
 
@@ -179,7 +173,8 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(stationStructName).setDimensionsByName(stationDimName);
+      Structure.Builder structb = Structure.builder().setName(stationStructName).setParentGroupBuilder(rootGroup)
+          .setDimensionsByName(stationDimName);
       rootGroup.addVariable(structb);
       addCoordinatesExtended(structb, stnVars);
     } else {
@@ -238,7 +233,8 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(profileStructName).setDimensionsByName(profileDimName);
+      Structure.Builder structb = Structure.builder().setName(profileStructName).setParentGroupBuilder(rootGroup)
+          .setDimensionsByName(profileDimName);
       rootGroup.addVariable(structb);
       addCoordinatesExtended(structb, profileVars);
     } else {

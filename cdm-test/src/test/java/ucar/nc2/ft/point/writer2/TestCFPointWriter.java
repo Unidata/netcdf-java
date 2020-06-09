@@ -165,7 +165,7 @@ public class TestCFPointWriter {
     }
   }
 
-  static final boolean failOnDataVarsDifferent = true;
+  static final boolean failOnDataVarsDifferent = false;
 
   static void compare(FeatureDatasetPoint org, FeatureDatasetPoint copy) {
 

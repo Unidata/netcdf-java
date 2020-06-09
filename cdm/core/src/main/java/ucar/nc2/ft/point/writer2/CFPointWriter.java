@@ -232,7 +232,7 @@ public class CFPointWriter {
         if (spf.size() >= 0)
           countProfiles += spf.size();
         else {
-          countProfiles = Iterables.size(spf);
+          countProfiles += Iterables.size(spf);
         }
       }
       cfWriter.setFeatureAuxInfo(countProfiles, name_strlen);

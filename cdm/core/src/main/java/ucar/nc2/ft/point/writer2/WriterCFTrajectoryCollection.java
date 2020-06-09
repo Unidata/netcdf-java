@@ -108,7 +108,8 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(trajStructName).setDimensionsByName(trajDimName);
+      Structure.Builder structb =
+          Structure.builder().setName(trajStructName).setParentGroupBuilder(rootGroup).setDimensionsByName(trajDimName);
       rootGroup.addVariable(structb);
       addCoordinatesExtended(structb, featureVars);
     } else {

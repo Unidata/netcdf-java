@@ -121,7 +121,8 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(trajStructName).setDimensionsByName(trajDimName);
+      Structure.Builder structb =
+          Structure.builder().setName(trajStructName).setParentGroupBuilder(rootGroup).setDimensionsByName(trajDimName);
       rootGroup.addVariable(structb);
       addCoordinatesExtended(structb, trajVars);
     } else {
@@ -185,7 +186,8 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(profileStructName).setDimensionsByName(profileDimName);
+      Structure.Builder structb = Structure.builder().setName(profileStructName).setParentGroupBuilder(rootGroup)
+          .setDimensionsByName(profileDimName);
       rootGroup.addVariable(structb);
       addCoordinatesExtended(structb, profileVars);
     } else {
