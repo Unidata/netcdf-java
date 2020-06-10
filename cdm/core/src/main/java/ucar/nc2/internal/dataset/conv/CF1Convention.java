@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.dataset.conv;
 
 import static ucar.nc2.internal.dataset.CoordSystemFactory.breakupConventionNames;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
@@ -192,6 +196,15 @@ public class CF1Convention extends CSMConvention {
             gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
           }
 
+          // check for CF-ish GOES-16/17 grid mappings
+          Attribute productionLocation =
+              rootGroup.getAttributeContainer().findAttributeIgnoreCase("production_location");
+          Attribute icdVersion = rootGroup.getAttributeContainer().findAttributeIgnoreCase("ICD_version");
+          if (productionLocation != null && icdVersion != null) {
+            // the fact that those two global attributes are not null means we should check to see
+            // if the grid mapping variable has attributes that need corrected.
+            correctGoes16(productionLocation, icdVersion, gridMap);
+          }
           got_grid_mapping = true;
         }
       }
@@ -303,6 +316,31 @@ public class CF1Convention extends CSMConvention {
     }
   }
 
+  private void correctGoes16(Attribute productionLocation, Attribute icdVersion, Builder<?> gridMappingVar) {
+    String prodLoc = productionLocation.getStringValue();
+    String icdVer = icdVersion.getStringValue();
+    if (prodLoc != null && icdVer != null) {
+      prodLoc = prodLoc.toLowerCase().trim();
+      icdVer = icdVer.toLowerCase().trim();
+      boolean mightNeedCorrected = prodLoc.contains("wcdas");
+      mightNeedCorrected = mightNeedCorrected && icdVer.contains("ground segment");
+      mightNeedCorrected = mightNeedCorrected && icdVer.contains("awips");
+      if (mightNeedCorrected) {
+        Map<String, String> possibleCorrections =
+            ImmutableMap.of("semi_minor", CF.SEMI_MINOR_AXIS, "semi_major", CF.SEMI_MAJOR_AXIS);
+        possibleCorrections.forEach((incorrect, correct) -> {
+          Attribute attr = gridMappingVar.getAttributeContainer().findAttributeIgnoreCase(incorrect);
+          if (attr != null) {
+            Array vals = attr.getValues();
+            if (vals != null) {
+              gridMappingVar.getAttributeContainer().replace(attr, correct);
+              log.debug("Renamed {} attribute {} to {}", gridMappingVar, incorrect, correct);
+            }
+          }
+        });
+      }
+    }
+  }
 
   private boolean avhrr_oiv2;
 
