@@ -915,7 +915,7 @@ public class Group extends CDMNode implements AttributeContainer {
     private @Nullable Group.Builder parentGroup; // null for root group; ignored during build()
     public List<Group.Builder> gbuilders = new ArrayList<>();
     public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
-    public String shortName;
+    public String shortName = "";
     private NetcdfFile ncfile; // set by NetcdfFile.build()
     private AttributeContainerMutable attributes = new AttributeContainerMutable("");
     private List<Dimension> dimensions = new ArrayList<>();
@@ -1126,7 +1126,7 @@ public class Group extends CDMNode implements AttributeContainer {
       return this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
     }
 
-    /** Add a Variable, replacing one of same name if its exists. */
+    /** Add a Variable, throw error if one of the same name if it exists. */
     public Builder addVariable(Variable.Builder<?> variable) {
       Preconditions.checkNotNull(variable);
       findVariableLocal(variable.shortName).ifPresent(v -> {
@@ -1137,14 +1137,15 @@ public class Group extends CDMNode implements AttributeContainer {
       return this;
     }
 
+    /** Add Variables, throw error if one of the same name if it exists. */
     public Builder addVariables(Collection<Variable.Builder<?>> vars) {
-      vbuilders.addAll(vars);
+      vars.forEach(this::addVariable);
       return this;
     }
 
     /**
      * Replace variable of same name, if it exists, else just add it.
-     *
+     * 
      * @return true if there was an existing variable of that name
      */
     public boolean replaceVariable(Variable.Builder<?> vb) {

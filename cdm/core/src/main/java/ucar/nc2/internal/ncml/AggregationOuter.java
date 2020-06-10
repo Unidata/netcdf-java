@@ -255,8 +255,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         ii.setDoubleNext(val);
       }
     }
-
-    timeAxis.setCachedData(timeCoordVals, false);
+    // must set isMetadata rture so that data is transferred on a copy
+    timeAxis.setCachedData(timeCoordVals, true);
   }
 
   // Check if two calendars are equivalent, while allowing one or both to be null.

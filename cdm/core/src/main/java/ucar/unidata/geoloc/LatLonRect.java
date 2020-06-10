@@ -20,7 +20,6 @@ import java.util.StringTokenizer;
  *
  * @author Russ Rew
  * @author John Caron
- *         LOOK may be immutable AutoValue in ver6
  */
 // TODO make Immutable in ver6
 public class LatLonRect {
@@ -371,11 +370,27 @@ public class LatLonRect {
    * }
    */
 
+  // LOOK maybe want LatLonRectMutable for efficiency ??
+
+  /** Extend the bounding box to contain this point. Return new LatLonRect. */
+  public static LatLonRect extend(LatLonRect rect, LatLonPoint p) {
+    LatLonRect copy = new LatLonRect(rect);
+    copy.extend(p);
+    return copy;
+  }
+
+  /** Extend the bounding box to contain another bounding box. Return new LatLonRect. */
+  public static LatLonRect extend(LatLonRect rect, LatLonRect other) {
+    LatLonRect copy = new LatLonRect(rect);
+    copy.extend(other);
+    return copy;
+  }
+
   /**
    * Extend the bounding box to contain this point
    *
    * @param p point to include
-   * @deprecated use builder
+   * @deprecated use LatLonRect.extend()
    */
   @Deprecated
   public void extend(LatLonPoint p) {
@@ -444,7 +459,7 @@ public class LatLonRect {
    * Extend the bounding box to contain the given rectangle
    *
    * @param r rectangle to include
-   * @deprecated use builder
+   * @deprecated use LatLonRect.extend()
    */
   @Deprecated
   public void extend(LatLonRect r) {
