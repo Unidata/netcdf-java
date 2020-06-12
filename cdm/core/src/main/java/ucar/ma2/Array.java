@@ -5,6 +5,7 @@
 package ucar.ma2;
 
 import javax.annotation.Nonnull;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +49,7 @@ import java.nio.*;
  * @see Index
  * @see IndexIterator
  */
-public abstract class Array {
+public abstract class Array implements Serializable {
 
   /**
    * Generate new Array with given dataType and shape and zeroed storage.
@@ -255,7 +256,7 @@ public abstract class Array {
 
   private static void reflectArrayCopyIn(Object jArray, Array aa, IndexIterator aaIter) {
     Class cType = jArray.getClass().getComponentType();
-    if (cType.isPrimitive()) {
+    if (!cType.isArray()) {
       aa.copyFrom1DJavaArray(aaIter, jArray); // subclass does type-specific copy
     } else {
       for (int i = 0; i < java.lang.reflect.Array.getLength(jArray); i++) // recurse
