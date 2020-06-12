@@ -167,6 +167,7 @@ public class CF1Convention extends CSMConvention {
           Group g = v.getParentGroupOrRoot(); // might be group relative - CF does not specify
           gridMap = g.findVariableLocal(grid_mapping);
         }
+
         if (gridMap != null) {
           gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
 
@@ -178,7 +179,14 @@ public class CF1Convention extends CSMConvention {
           } else {
             gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
           }
-
+          // check for CF-ish GOES-16/17 grid mappings
+          Attribute productionLocation = ds.findGlobalAttributeIgnoreCase("production_location");
+          Attribute icdVersion = ds.findGlobalAttributeIgnoreCase("ICD_version");
+          if (productionLocation != null && icdVersion != null) {
+            // the fact that those two global attributes are not null means we should check to see
+            // if the grid mapping variable has attributes that need corrected.
+            correctGoes16(productionLocation, icdVersion, gridMap);
+          }
           got_grid_mapping = true;
         }
       }

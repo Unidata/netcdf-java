@@ -5,9 +5,11 @@
 
 package ucar.nc2.dataset.transform;
 
+import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
@@ -46,6 +48,12 @@ public abstract class AbstractTransformBuilder {
           Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
           units = (v == null) ? axis.getUnitsString() : v.getUnitsString();
           break;
+        }
+      }
+      if (units == null) {
+        Variable xvar = ds.findVariableByAttribute(null, _Coordinate.AxisType.toString(), AxisType.GeoX.toString());
+        if (xvar != null) {
+          units = xvar.getUnitsString();
         }
       }
     }

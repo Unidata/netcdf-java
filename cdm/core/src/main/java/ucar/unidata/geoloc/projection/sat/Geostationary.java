@@ -69,9 +69,12 @@ import ucar.unidata.geoloc.ProjectionRect;
  */
 
 public class Geostationary extends ProjectionImpl {
+
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
+
   private static final String NAME = CF.GEOSTATIONARY;
-  private boolean isGeoCoordinateScaled;
-  private double geoCoordinateScaleFactor;
+  private boolean scaleGeoCoordinate;
+  private double geoCoordinateScaleFactor = Double.MIN_VALUE;
 
   GEOSTransform navigation;
 
@@ -101,7 +104,7 @@ public class Geostationary extends ProjectionImpl {
     makePP();
 
     if (geoCoordinateScaleFactor > 0) {
-      isGeoCoordinateScaled = true;
+      scaleGeoCoordinate = true;
       this.geoCoordinateScaleFactor = geoCoordinateScaleFactor;
     }
   }
@@ -140,7 +143,7 @@ public class Geostationary extends ProjectionImpl {
     navigation = new GEOSTransform(subLonDegrees, scanGeometry);
 
     if (geoCoordinateScaleFactor > 0) {
-      isGeoCoordinateScaled = true;
+      scaleGeoCoordinate = true;
       this.geoCoordinateScaleFactor = geoCoordinateScaleFactor;
     }
 
@@ -155,6 +158,18 @@ public class Geostationary extends ProjectionImpl {
     addParameter(CF.SWEEP_ANGLE_AXIS, GEOSTransform.scanGeomToSweepAngleAxis(navigation.scan_geom));
     addParameter(CF.SEMI_MAJOR_AXIS, navigation.r_eq * 1000.0);
     addParameter(CF.SEMI_MINOR_AXIS, navigation.r_pol * 1000.0);
+  }
+
+  private boolean isGeoCoordinateScaled() {
+    return scaleGeoCoordinate && geoCoordinateScaleFactor > Double.MIN_VALUE;
+  }
+
+  private double getX(ProjectionPoint ppt) {
+    return isGeoCoordinateScaled() ? ppt.getX() * geoCoordinateScaleFactor : ppt.getX();
+  }
+
+  private double getY(ProjectionPoint ppt) {
+    return isGeoCoordinateScaled() ? ppt.getY() * geoCoordinateScaleFactor : ppt.getY();
   }
 
   /**
@@ -176,15 +191,18 @@ public class Geostationary extends ProjectionImpl {
     return "";
   }
 
+  /**
+   * Return a lat/lon point in projection coordinates (result in radians)
+   *
+   * @param latlon convert from these lat, lon coordinates
+   * @param destPoint the object to write to (values in radians)
+   * @return destPoint
+   */
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
     double[] satCoords = navigation.earthToSat(latlon.getLongitude(), latlon.getLatitude());
     double x = satCoords[0];
     double y = satCoords[1];
-
-    // scale back to required units of x, y (we need them in radians)
-    if (isGeoCoordinateScaled) {
-    }
 
     destPoint.setLocation(satCoords[0], satCoords[1]);
     return destPoint;
@@ -192,10 +210,9 @@ public class Geostationary extends ProjectionImpl {
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
-    double x = ppt.getX();
-    double y = ppt.getY();
-    if (isGeoCoordinateScaled)
-      x = x * geoCoordinateScaleFactor;
+    double x = getX(ppt);
+    double y = getY(ppt);
+
     double[] lonlat = navigation.satToEarth(x, y);
     destPoint.setLongitude(lonlat[0]);
     destPoint.setLatitude(lonlat[1]);
@@ -208,13 +225,8 @@ public class Geostationary extends ProjectionImpl {
     if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2))
       return true;
 
-    double x1 = pt1.getX();
-    double x2 = pt2.getX();
-
-    if (isGeoCoordinateScaled) {
-      x1 = x1 * geoCoordinateScaleFactor;
-      x2 = x2 * geoCoordinateScaleFactor;
-    }
+    double x1 = getX(pt1);
+    double x2 = getX(pt2);
 
     // opposite signed X values, larger then 100 km
     return (x1 * x2 < 0) && (Math.abs(x1 - x2) > 100);
