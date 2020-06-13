@@ -54,9 +54,9 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
   WriterCFProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
-    rootGroup.addAttribute(
+    writerb.addAttribute(
         new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of profiles, H.3.4"));
-    rootGroup.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
+    writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
   }
 
   @Override
@@ -100,8 +100,7 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
   protected void makeFeatureVariables(StructureData featureData, boolean isExtended) {
 
     // LOOK why not unlimited here ?
-    Dimension profileDim = new Dimension(profileDimName, nfeatures);
-    rootGroup.addDimension(profileDim);
+    Dimension profileDim = writerb.addDimension(profileDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
@@ -128,9 +127,7 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(profileStructName).setParentGroupBuilder(rootGroup)
-          .setDimensionsByName(profileDimName);
-      rootGroup.addVariable(structb);
+      Structure.Builder structb = writerb.addStructure(profileStructName, profileDimName);
       addCoordinatesExtended(structb, profileVars);
     } else {
       addCoordinatesClassic(profileDim, profileVars, featureVarMap);

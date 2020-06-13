@@ -66,8 +66,8 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
   WriterCFStationCollection(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, atts, dataVars, timeUnit, altUnits, config);
-    rootGroup.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
-    rootGroup.addAttribute(new Attribute(CF.DSG_REPRESENTATION,
+    writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
+    writerb.addAttribute(new Attribute(CF.DSG_REPRESENTATION,
         "Timeseries of station data in the indexed ragged array representation, H.2.5"));
   }
 
@@ -132,8 +132,7 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
     // add the dimensions : extendded model can use an unlimited dimension
     // Dimension stationDim = isExtended ? writer.addDimension(null, stationDimName, 0, true, true, false) :
     // writer.addDimension(null, stationDimName, nstns);
-    Dimension stationDim = new Dimension(stationDimName, stnList.size());
-    rootGroup.addDimension(stationDim);
+    Dimension stationDim = writerb.addDimension(stationDimName, stnList.size());
 
     List<VariableSimpleIF> stnVars = new ArrayList<>();
     stnVars.add(VariableSimpleBuilder.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
@@ -163,14 +162,11 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(stationStructName).setParentGroupBuilder(rootGroup)
-          .setDimensionsByName(stationDimName);
-      rootGroup.addVariable(structb);
+      Structure.Builder structb = writerb.addStructure(stationStructName, stationDimName);
       addCoordinatesExtended(structb, stnVars);
     } else {
       addCoordinatesClassic(stationDim, stnVars, featureVarMap);
     }
-
   }
 
   private int stnRecno;

@@ -187,7 +187,7 @@ public class DatasetViewer extends JPanel {
       NetcdfFormatWriter.Builder builder =
           NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format).setLocation(data.outputFilename)
               .setChunker(Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
-      NetcdfCopier copier = NetcdfCopier.create(ds, builder.build());
+      NetcdfCopier copier = NetcdfCopier.create(ds, builder);
 
       // write() return the open file that was just written, so we just need to close it.
       try (NetcdfFile result = copier.write(null)) {

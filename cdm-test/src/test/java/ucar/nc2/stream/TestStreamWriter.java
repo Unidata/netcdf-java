@@ -103,7 +103,7 @@ public class TestStreamWriter {
     String fileOut = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder builder =
         NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(fileOut);
-    NetcdfCopier copier = NetcdfCopier.create(fileIn, builder.build());
+    NetcdfCopier copier = NetcdfCopier.create(fileIn, builder);
     try (NetcdfFile ncout2 = copier.write(null)) {
     }
     long took = System.currentTimeMillis() - start;

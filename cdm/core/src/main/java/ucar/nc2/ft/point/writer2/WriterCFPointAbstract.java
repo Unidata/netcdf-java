@@ -28,7 +28,6 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
-import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -91,11 +90,11 @@ abstract class WriterCFPointAbstract implements Closeable {
   final CalendarDateUnit timeUnit;
   final @Nullable String altUnits;
   private final CFPointWriterConfig config;
-  private final NetcdfFormatWriter writer;
-  final Group.Builder rootGroup;
   private final boolean isExtendedModel;
   private final Map<String, Dimension> newDimensions = new HashMap<>(); // track dimensions by name
+  final NetcdfFormatWriter.Builder writerb;
 
+  private NetcdfFormatWriter writer;
   int nfeatures, id_strlen;
 
   boolean useAlt = true;
@@ -131,18 +130,19 @@ abstract class WriterCFPointAbstract implements Closeable {
     this.altUnits = altUnits;
     this.config = config;
     this.isExtendedModel = config.getVersion().isExtendedModel();
-    this.rootGroup = Group.builder();
+    this.writerb = NetcdfFormatWriter.builder().setNewFile(true).setFormat(config.getFormat()).setLocation(fileOut)
+        .setChunker(config.getChunking()).setFill(false);
 
     addGlobalAtts(atts);
     addNetcdf3UnknownAtts(config.isNoTimeCoverage());
   }
 
   private void addGlobalAtts(List<Attribute> atts) {
-    rootGroup.addAttribute(new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : "CF-1.6"));
-    rootGroup.addAttribute(new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
+    writerb.addAttribute(new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : "CF-1.6"));
+    writerb.addAttribute(new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
       if (!reservedGlobalAtts.contains(att.getShortName()))
-        rootGroup.addAttribute(att);
+        writerb.addAttribute(att);
     }
   }
 
@@ -152,13 +152,13 @@ abstract class WriterCFPointAbstract implements Closeable {
     // dummy values, update in finish()
     if (!noTimeCoverage) {
       CalendarDate now = CalendarDate.of(new Date());
-      rootGroup.addAttribute(new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(now)));
-      rootGroup.addAttribute(new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(now)));
+      writerb.addAttribute(new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(now)));
+      writerb.addAttribute(new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(now)));
     }
-    rootGroup.addAttribute(new Attribute(ACDD.LAT_MIN, 0.0));
-    rootGroup.addAttribute(new Attribute(ACDD.LAT_MAX, 0.0));
-    rootGroup.addAttribute(new Attribute(ACDD.LON_MIN, 0.0));
-    rootGroup.addAttribute(new Attribute(ACDD.LON_MAX, 0.0));
+    writerb.addAttribute(new Attribute(ACDD.LAT_MIN, 0.0));
+    writerb.addAttribute(new Attribute(ACDD.LAT_MAX, 0.0));
+    writerb.addAttribute(new Attribute(ACDD.LON_MIN, 0.0));
+    writerb.addAttribute(new Attribute(ACDD.LON_MAX, 0.0));
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -203,7 +203,7 @@ abstract class WriterCFPointAbstract implements Closeable {
   void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, @Nullable StructureData middleData,
       StructureData obsData, String coordNames) throws IOException {
     this.recordDim = Dimension.builder().setName(recordDimName).setIsUnlimited(true).build();
-    rootGroup.addDimension(recordDim);
+    writerb.addDimension(recordDim);
 
     addExtraVariables();
 
@@ -214,9 +214,7 @@ abstract class WriterCFPointAbstract implements Closeable {
       if (middleData != null) {
         makeMiddleVariables(middleData, true);
       }
-      Structure.Builder recordb =
-          Structure.builder().setName(recordName).setParentGroupBuilder(rootGroup).setDimensionsByName(recordDimName);
-      rootGroup.addVariable(recordb);
+      Structure.Builder recordb = writerb.addStructure(recordName, recordDimName);
       addCoordinatesExtended(recordb, obsCoords);
       addDataVariablesExtended(recordb, obsData, coordNames);
 
@@ -233,11 +231,13 @@ abstract class WriterCFPointAbstract implements Closeable {
     }
 
     // Create the NetcdfFile and write variable metadata to it.
-    NetcdfFile.Builder netcdfBuilder = NetcdfFile.builder().setRootGroup(rootGroup);
-    NetcdfFormatWriter.Result result = writer.create(netcdfBuilder.build(), 0);
-    if (!result.wasWritten()) {
-      throw new IOException(result.getErrorMessage());
-    }
+    this.writer = writerb.build();
+    /*
+     * NetcdfFormatWriter.Result result = writer.create(netcdfBuilder.build(), 0);
+     * if (!result.wasWritten()) {
+     * throw new IOException(result.getErrorMessage());
+     * }
+     */
 
     writeExtraVariables();
     finishBuilding();
@@ -251,10 +251,7 @@ abstract class WriterCFPointAbstract implements Closeable {
 
     for (VariableSimpleIF vs : extra) {
       List<Dimension> dims = makeDimensionList(vs.getDimensions());
-      Variable.Builder mv =
-          Variable.builder().setName(vs.getShortName()).setDataType(vs.getDataType()).setDimensions(dims);
-      rootGroup.addVariable(mv);
-      mv.addAttributes(vs.attributes());
+      writerb.addVariable(vs.getShortName(), vs.getDataType(), dims).addAttributes(vs.attributes());
     }
   }
 
@@ -265,10 +262,7 @@ abstract class WriterCFPointAbstract implements Closeable {
     for (VariableSimpleIF oldVar : coords) {
       List<Dimension> dims = makeDimensionList(oldVar.getDimensions());
       dims.add(0, recordDim);
-      Variable.Builder newVar =
-          Variable.builder().setName(oldVar.getShortName()).setDataType(oldVar.getDataType()).setDimensions(dims);
-      rootGroup.addVariable(newVar);
-      newVar.addAttributes(oldVar.attributes());
+      Variable.Builder newVar;
 
       if (oldVar.getDataType() == DataType.STRING && !this.isExtendedModel) {
         // What should the string length be ?? Should read variable to find out....see old
@@ -276,13 +270,13 @@ abstract class WriterCFPointAbstract implements Closeable {
         String name = oldVar.getShortName();
         Dimension strlen = new Dimension(name + "_strlen", defaultStringLength);
         newVar = Variable.builder().setName(name).setDataType(DataType.CHAR).setDimensions(dims).addDimension(strlen);
-        rootGroup.addDimensionIfNotExists(strlen);
+        writerb.getRootGroup().addDimensionIfNotExists(strlen);
       } else {
         newVar =
             Variable.builder().setName(oldVar.getShortName()).setDataType(oldVar.getDataType()).setDimensions(dims);
       }
 
-      if (rootGroup.replaceVariable(newVar)) {
+      if (writerb.getRootGroup().replaceVariable(newVar)) {
         logger.info("Variable was already added =" + oldVar.getShortName());
       }
 
@@ -297,7 +291,7 @@ abstract class WriterCFPointAbstract implements Closeable {
     for (VariableSimpleIF vs : coords) {
       String dims = Dimensions.makeDimensionsString(vs.getDimensions());
       Variable.Builder<?> member = Variable.builder().setName(vs.getShortName()).setDataType(vs.getDataType())
-          .setParentGroupBuilder(rootGroup).setDimensionsByName(dims);
+          .setParentGroupBuilder(writerb.getRootGroup()).setDimensionsByName(dims);
       if (parent.replaceMemberVariable(member)) {
         logger.warn("Variable already exists =" + vs.getShortName()); // LOOK barf
       }
@@ -324,13 +318,13 @@ abstract class WriterCFPointAbstract implements Closeable {
         String name = oldVar.getShortName();
         Dimension strlen = new Dimension(name + "_strlen", defaultStringLength);
         newVar = Variable.builder().setName(name).setDataType(DataType.CHAR).setDimensions(dims).addDimension(strlen);
-        rootGroup.addDimensionIfNotExists(strlen);
+        writerb.getRootGroup().addDimensionIfNotExists(strlen);
       } else {
         newVar =
             Variable.builder().setName(oldVar.getShortName()).setDataType(oldVar.getDataType()).setDimensions(dims);
       }
 
-      if (rootGroup.replaceVariable(newVar)) {
+      if (writerb.getRootGroup().replaceVariable(newVar)) {
         logger.warn("Variable was already added =" + oldVar.getShortName());
       }
 
@@ -362,7 +356,7 @@ abstract class WriterCFPointAbstract implements Closeable {
       }
 
       Variable.Builder newVar = Variable.builder().setName(oldVar.getShortName()).setDataType(oldVar.getDataType())
-          .setParentGroupBuilder(rootGroup).setDimensionsByName(dimNames.toString());
+          .setParentGroupBuilder(writerb.getRootGroup()).setDimensionsByName(dimNames.toString());
       recordb.addMemberVariable(newVar);
 
       // TODO
@@ -399,9 +393,9 @@ abstract class WriterCFPointAbstract implements Closeable {
     for (Dimension d : oldDims) {
       // The dimension we're creating below will be shared, so we need an appropriate name for it.
       String dimName = getSharedDimName(d);
-      if (!rootGroup.findDimension(dimName).isPresent()) {
+      if (!writerb.getRootGroup().findDimension(dimName).isPresent()) {
         Dimension newDim = Dimension.builder(dimName, d.getLength()).setIsVariableLength(d.isVariableLength()).build();
-        rootGroup.addDimension(newDim);
+        writerb.addDimension(newDim);
         newDimensions.put(dimName, newDim);
       }
     }

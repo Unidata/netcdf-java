@@ -44,8 +44,8 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
-    rootGroup.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectory.name()));
-    rootGroup.addAttribute(
+    writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectory.name()));
+    writerb.addAttribute(
         new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectories, H.4.3"));
   }
 
@@ -89,8 +89,7 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   @Override
   void makeFeatureVariables(StructureData featureData, boolean isExtended) {
     // LOOK why not unlimited here fro extended model ?
-    Dimension trajDim = new Dimension(trajDimName, nfeatures);
-    rootGroup.addDimension(trajDim);
+    Dimension trajDim = writerb.addDimension(trajDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> featureVars = new ArrayList<>();
@@ -108,9 +107,7 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb =
-          Structure.builder().setName(trajStructName).setParentGroupBuilder(rootGroup).setDimensionsByName(trajDimName);
-      rootGroup.addVariable(structb);
+      Structure.Builder structb = writerb.addStructure(trajStructName, trajDimName);
       addCoordinatesExtended(structb, featureVars);
     } else {
       addCoordinatesClassic(trajDim, featureVars, featureVarMap);

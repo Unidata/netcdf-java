@@ -65,8 +65,8 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
   WriterCFStationProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
-    rootGroup.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeriesProfile.name()));
-    rootGroup.addAttribute(
+    writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeriesProfile.name()));
+    writerb.addAttribute(
         new Attribute(CF.DSG_REPRESENTATION, "Ragged array representation of time series profiless, H.5.3"));
   }
 
@@ -143,8 +143,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
 
   void makeFeatureVariables(StructureData stnData, boolean isExtended) {
     // add the dimensions : extended model can use an unlimited dimension
-    Dimension stationDim = new Dimension(stationDimName, stnList.size());
-    rootGroup.addDimension(stationDim);
+    Dimension stationDim = writerb.addDimension(stationDimName, stnList.size());
 
     List<VariableSimpleIF> stnVars = new ArrayList<>();
     stnVars.add(VariableSimpleBuilder.makeScalar(latName, "station latitude", CDM.LAT_UNITS, DataType.DOUBLE).build());
@@ -173,9 +172,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(stationStructName).setParentGroupBuilder(rootGroup)
-          .setDimensionsByName(stationDimName);
-      rootGroup.addVariable(structb);
+      Structure.Builder structb = writerb.addStructure(stationStructName, stationDimName);
       addCoordinatesExtended(structb, stnVars);
     } else {
       addCoordinatesClassic(stationDim, stnVars, stationVarMap);
@@ -205,8 +202,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
 
   @Override
   void makeMiddleVariables(StructureData profileData, boolean isExtended) {
-    Dimension profileDim = new Dimension(profileDimName, nfeatures);
-    rootGroup.addDimension(profileDim);
+    Dimension profileDim = writerb.addDimension(profileDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
@@ -233,9 +229,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(profileStructName).setParentGroupBuilder(rootGroup)
-          .setDimensionsByName(profileDimName);
-      rootGroup.addVariable(structb);
+      Structure.Builder structb = writerb.addStructure(profileStructName, profileDimName);
       addCoordinatesExtended(structb, profileVars);
     } else {
       addCoordinatesClassic(profileDim, profileVars, profileVarMap);

@@ -245,15 +245,14 @@ public class DatasetWriter extends JPanel {
         BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
         NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format)
             .setLocation(data.outputFilename).setChunker(bc);
-        NetcdfCopier copier = NetcdfCopier.create(ds, builder.build());
+        NetcdfCopier copier = NetcdfCopier.create(ds, builder);
 
         double start = System.nanoTime();
-        // write() return the open file that was just written, so we just need to close it.
+        // write returns the open file that was just written, so we just need to close it.
         try (NetcdfFile result = copier.write(this)) {
         }
 
         double took = (System.nanoTime() - start) / 1000 / 1000 / 1000;
-
         File oldFile = new File(ds.getLocation());
         File newFile = new File(data.outputFilename);
 

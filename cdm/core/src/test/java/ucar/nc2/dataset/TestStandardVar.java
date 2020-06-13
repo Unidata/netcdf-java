@@ -12,6 +12,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -27,92 +28,81 @@ public class TestStandardVar {
 
   @Test
   public void testWriteStandardVar() throws Exception {
-    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false);
+    NetcdfFormatWriter.Builder writerb =
+        NetcdfFormatWriter.builder().setNewFile(true).setLocation(filename).setFill(false);
 
     // define dimensions
-    Dimension latDim = ncfile.addDimension("lat", 2);
-    Dimension lonDim = ncfile.addDimension("lon", 3);
-
-    ArrayList dims = new ArrayList();
+    Dimension latDim = writerb.addDimension("lat", 2);
+    Dimension lonDim = writerb.addDimension("lon", 3);
+    ArrayList<Dimension> dims = new ArrayList<>();
     dims.add(latDim);
     dims.add(lonDim);
 
     // case 1
-    ncfile.addVariable("t1", DataType.DOUBLE, dims);
-    ncfile.addVariableAttribute("t1", CDM.SCALE_FACTOR, new Double(2.0));
-    ncfile.addVariableAttribute("t1", CDM.ADD_OFFSET, new Double(77.0));
+    writerb.addVariable("t1", DataType.DOUBLE, dims).addAttribute(new Attribute(CDM.SCALE_FACTOR, 2.0))
+        .addAttribute(new Attribute(CDM.ADD_OFFSET, 77.0));
 
     // case 2
-    ncfile.addVariable("t2", DataType.BYTE, dims);
-    ncfile.addVariableAttribute("t2", CDM.SCALE_FACTOR, new Short((short) 2));
-    ncfile.addVariableAttribute("t2", CDM.ADD_OFFSET, new Short((short) 77));
+    writerb.addVariable("t2", DataType.BYTE, dims).addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) 2))
+        .addAttribute(new Attribute(CDM.ADD_OFFSET, (short) 77));
 
     // case 3
-    ncfile.addVariable("t3", DataType.BYTE, dims);
-    ncfile.addVariableAttribute("t3", "_FillValue", new Byte((byte) 255));
+    writerb.addVariable("t3", DataType.BYTE, dims).addAttribute(new Attribute(CDM.FILL_VALUE, (byte) 255));
 
     // case 4
-    ncfile.addVariable("t4", DataType.SHORT, dims);
-    ncfile.addVariableAttribute("t4", CDM.MISSING_VALUE, new Short((short) -9999));
+    writerb.addVariable("t4", DataType.SHORT, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999));
 
     // case 5
-    ncfile.addVariable("t5", DataType.SHORT, dims);
-    ncfile.addVariableAttribute("t5", CDM.MISSING_VALUE, new Short((short) -9999));
-    ncfile.addVariableAttribute("t5", CDM.SCALE_FACTOR, new Short((short) 2));
-    ncfile.addVariableAttribute("t5", CDM.ADD_OFFSET, new Short((short) 77));
+    writerb.addVariable("t5", DataType.SHORT, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999))
+        .addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) 2))
+        .addAttribute(new Attribute(CDM.ADD_OFFSET, (short) 77));
 
-    // case 1
-    ncfile.addVariable("m1", DataType.DOUBLE, dims);
-    ncfile.addVariableAttribute("m1", CDM.MISSING_VALUE, -999.99);
+    // case m1
+    writerb.addVariable("m1", DataType.DOUBLE, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99));
 
+    // create and write to the file
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      // write t1
+      ArrayDouble A = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
+      int i, j;
+      Index ima = A.getIndex();
+      // write
+      for (i = 0; i < latDim.getLength(); i++)
+        for (j = 0; j < lonDim.getLength(); j++)
+          A.setDouble(ima.set(i, j), (double) (i * 10.0 + j));
+      int[] origin = new int[2];
+      writer.write("t1", origin, A);
 
-    // create the file
-    ncfile.create();
+      // write t2
+      ArrayByte Ab = new ArrayByte.D2(latDim.getLength(), lonDim.getLength(), false);
+      ima = Ab.getIndex();
+      for (i = 0; i < latDim.getLength(); i++)
+        for (j = 0; j < lonDim.getLength(); j++)
+          Ab.setByte(ima.set(i, j), (byte) (i * 10 + j));
+      writer.write("t2", origin, Ab);
 
-    // write t1
-    ArrayDouble A = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
-    int i, j;
-    Index ima = A.getIndex();
-    // write
-    for (i = 0; i < latDim.getLength(); i++)
-      for (j = 0; j < lonDim.getLength(); j++)
-        A.setDouble(ima.set(i, j), (double) (i * 10.0 + j));
-    int[] origin = new int[2];
-    ncfile.write("t1", origin, A);
+      // write t3
+      writer.write("t3", origin, Ab);
 
-    // write t2
-    ArrayByte Ab = new ArrayByte.D2(latDim.getLength(), lonDim.getLength(), false);
-    ima = Ab.getIndex();
-    for (i = 0; i < latDim.getLength(); i++)
-      for (j = 0; j < lonDim.getLength(); j++)
-        Ab.setByte(ima.set(i, j), (byte) (i * 10 + j));
-    ncfile.write("t2", origin, Ab);
+      // write t4
+      Array As = new ArrayShort.D2(latDim.getLength(), lonDim.getLength(), false);
+      ima = As.getIndex();
+      for (i = 0; i < latDim.getLength(); i++)
+        for (j = 0; j < lonDim.getLength(); j++)
+          As.setShort(ima.set(i, j), (short) (i * 10 + j));
+      writer.write("t4", origin, As);
 
-    // write t3
-    ncfile.write("t3", origin, Ab);
+      As.setShort(ima.set(0, 0), (short) -9999);
+      writer.write("t5", origin, As);
 
-
-    // write t4
-    Array As = new ArrayShort.D2(latDim.getLength(), lonDim.getLength(), false);
-    ima = As.getIndex();
-    for (i = 0; i < latDim.getLength(); i++)
-      for (j = 0; j < lonDim.getLength(); j++)
-        As.setShort(ima.set(i, j), (short) (i * 10 + j));
-    ncfile.write("t4", origin, As);
-
-    As.setShort(ima.set(0, 0), (short) -9999);
-    ncfile.write("t5", origin, As);
-
-    // write m1
-    ArrayDouble.D2 Ad = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
-    for (i = 0; i < latDim.getLength(); i++)
-      for (j = 0; j < lonDim.getLength(); j++)
-        Ad.setDouble(ima.set(i, j), (double) (i * 10.0 + j));
-    Ad.set(1, 1, -999.99);
-    ncfile.write("m1", new int[2], Ad);
-
-    // all done
-    ncfile.close();
+      // write m1
+      ArrayDouble.D2 Ad = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
+      for (i = 0; i < latDim.getLength(); i++)
+        for (j = 0; j < lonDim.getLength(); j++)
+          Ad.setDouble(ima.set(i, j), (double) (i * 10.0 + j));
+      Ad.set(1, 1, -999.99);
+      writer.write("m1", new int[2], Ad);
+    }
   }
 
   private NetcdfFile ncfileRead;
@@ -135,9 +125,9 @@ public class TestStandardVar {
     dsRead.close();
   }
 
-  public void readDouble() throws Exception {
-    Variable t1 = null;
-    assert (null != (t1 = ncfileRead.findVariable("t1")));
+  private void readDouble() throws Exception {
+    Variable t1 = ncfileRead.findVariable("t1");
+    assert (null != t1);
     assert (t1.getDataType() == DataType.DOUBLE);
 
     Attribute att = t1.findAttribute(CDM.SCALE_FACTOR);
@@ -159,7 +149,8 @@ public class TestStandardVar {
       }
     }
 
-    assert (null != (t1 = dsRead.findVariable("t1")));
+    t1 = dsRead.findVariable("t1");
+    assert (null != t1);
     assert t1 instanceof VariableEnhanced;
     assert (t1.getDataType() == DataType.DOUBLE);
 
@@ -174,9 +165,9 @@ public class TestStandardVar {
     }
   }
 
-  public void readByte2Short() throws Exception {
-    Variable t2 = null;
-    assert (null != (t2 = ncfileRead.findVariable("t2")));
+  private void readByte2Short() throws Exception {
+    Variable t2 = ncfileRead.findVariable("t2");
+    assert (null != t2);
     assert (t2.getDataType() == DataType.BYTE);
 
     Attribute att = t2.findAttribute(CDM.SCALE_FACTOR);
@@ -186,7 +177,8 @@ public class TestStandardVar {
     assert (2 == att.getNumericValue().doubleValue());
     assert (DataType.SHORT == att.getDataType());
 
-    assert (null != (t2 = dsRead.findVariable("t2")));
+    t2 = dsRead.findVariable("t2");
+    assert (null != t2);
     assert t2 instanceof VariableEnhanced;
     VariableDS vs = (VariableDS) t2;
     assert (vs.getDataType() == DataType.SHORT) : vs.getDataType();
@@ -204,12 +196,13 @@ public class TestStandardVar {
     }
   }
 
-  public void readByte() throws Exception {
-    Variable v = null;
-    assert (null != (v = ncfileRead.findVariable("t3")));
+  private void readByte() throws Exception {
+    Variable v = ncfileRead.findVariable("t3");
+    assert (v != null);
     assert (v.getDataType() == DataType.BYTE);
 
-    assert (null != (v = dsRead.findVariable("t3")));
+    v = dsRead.findVariable("t3");
+    assert (v != null);
     assert v instanceof VariableEnhanced;
     assert v instanceof VariableDS;
     VariableDS vs = (VariableDS) v;
@@ -240,13 +233,14 @@ public class TestStandardVar {
     }
   }
 
-  public void readShortMissing() throws Exception {
-    Variable v = null;
-    assert (null != (v = ncfileRead.findVariable("t4")));
+  private void readShortMissing() throws Exception {
+    Variable v = ncfileRead.findVariable("t4");
+    assert (v != null);
     assert (v.getDataType() == DataType.SHORT);
 
     // default use of missing_value
-    assert (null != (v = dsRead.findVariable("t4")));
+    v = dsRead.findVariable("t4");
+    assert (v != null);
     assert v instanceof VariableEnhanced;
     assert v instanceof VariableDS;
     VariableDS vs = (VariableDS) v;
@@ -291,13 +285,14 @@ public class TestStandardVar {
   }
 
 
-  public void readShort2FloatMissing() throws Exception {
-    Variable v = null;
-    assert (null != (v = ncfileRead.findVariable("t5")));
+  private void readShort2FloatMissing() throws Exception {
+    Variable v = ncfileRead.findVariable("t5");
+    assert (v != null);
     assert (v.getDataType() == DataType.SHORT);
 
     // standard convert with missing data
-    assert (null != (v = dsRead.findVariable("t5")));
+    v = dsRead.findVariable("t5");
+    assert (v != null);
     assert v instanceof VariableEnhanced;
     assert v instanceof VariableDS;
     VariableDS vs = (VariableDS) v;
@@ -327,9 +322,9 @@ public class TestStandardVar {
     }
   }
 
-  public void readDoubleMissing() throws Exception {
-    VariableDS v = null;
-    assert (null != (v = (VariableDS) dsRead.findVariable("m1")));
+  private void readDoubleMissing() throws Exception {
+    VariableDS v = (VariableDS) dsRead.findVariable("m1");
+    assert (v != null);
     assert (v.getDataType() == DataType.DOUBLE);
 
     Array A = v.read();
@@ -359,7 +354,9 @@ public class TestStandardVar {
       try (NetcdfDataset ncdefer = NetcdfDatasets.openDataset(durl, null, -1, null, null)) {
 
         VariableDS enhancedVar = (VariableDS) ncd.findVariable("t1");
+        assert (enhancedVar != null);
         VariableDS deferVar = (VariableDS) ncdefer.findVariable("t1");
+        assert (deferVar != null);
 
         Array enhancedData = enhancedVar.read();
         Array deferredData = deferVar.read();

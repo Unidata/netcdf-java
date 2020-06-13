@@ -49,18 +49,18 @@ public class NetcdfCopier {
 
   //////////////////////////////////////////////////////////////////////////////////////
   private final NetcdfFile fileIn;
-  private final NetcdfFormatWriter ncwriter;
+  private final NetcdfFormatWriter.Builder writerb;
   private final boolean extended;
 
-  public static NetcdfCopier create(NetcdfFile fileIn, NetcdfFormatWriter ncwriter) {
+  public static NetcdfCopier create(NetcdfFile fileIn, NetcdfFormatWriter.Builder ncwriter) {
     Preconditions.checkNotNull(fileIn);
     Preconditions.checkNotNull(ncwriter);
     return new NetcdfCopier(fileIn, ncwriter);
   }
 
-  private NetcdfCopier(NetcdfFile fileIn, NetcdfFormatWriter ncwriter) {
+  private NetcdfCopier(NetcdfFile fileIn, NetcdfFormatWriter.Builder writerb) {
     this.fileIn = fileIn;
-    this.ncwriter = ncwriter;
+    this.writerb = writerb;
     this.extended = getOutputFormat().isExtendedModel();
 
     // Try to do some checking
@@ -70,7 +70,7 @@ public class NetcdfCopier {
   }
 
   private NetcdfFileFormat getOutputFormat() {
-    return ncwriter.getFormat();
+    return writerb.getFormat();
   }
 
   /*
@@ -126,31 +126,28 @@ public class NetcdfCopier {
    * Write the input file to the output file.
    *
    * @param cancel allow user to cancel; may be null.
-   * @return the open output file.
+   * @return the open output file. User must close it.
    */
   public NetcdfFile write(@Nullable CancelTask cancel) throws IOException {
     if (cancel == null) {
       cancel = CancelTask.create();
     }
-    try {
-      Group.Builder root = copyGroup(fileIn.getRootGroup(), null);
-      NetcdfFile.Builder netcdfBuilder = NetcdfFile.builder().setRootGroup(root);
 
-      if (cancel.isCancel()) {
-        return null;
-      }
+    Group.Builder root = copyGroup(fileIn.getRootGroup(), null);
+    writerb.setRootGroup(root);
 
-      // create the file
-      NetcdfFile fileOut = netcdfBuilder.build();
-      fileOut.finish(); // ??
+    if (cancel.isCancel()) {
+      return null;
+    }
 
-      ncwriter.create(fileOut, 0);
+    // create and write to the file
+    try (NetcdfFormatWriter ncwriter = writerb.build()) {
       if (cancel.isCancel()) {
         return null;
       }
 
       Count counter = new Count();
-      copyVariableData(fileIn.getRootGroup(), fileOut.getRootGroup(), counter, cancel);
+      copyVariableData(ncwriter, fileIn.getRootGroup(), ncwriter.getOutputFile().getRootGroup(), counter, cancel);
       if (cancel.isCancel()) {
         return null;
       }
@@ -159,14 +156,9 @@ public class NetcdfCopier {
       System.out.format("FileCopier done: total bytes written = %d, number of variables = %d%n", counter.bytes,
           counter.countVars);
 
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      ncwriter.abort(); // clean up
-      throw ioe;
+      cancel.setSuccess();
+      return ncwriter.getOutputFile();
     }
-
-    cancel.setSuccess();
-    return ncwriter.getOutputFile();
   }
 
   private Group.Builder copyGroup(Group oldGroup, Group.Builder parent) throws IOException {
@@ -284,7 +276,8 @@ public class NetcdfCopier {
     int countVars;
   }
 
-  private void copyVariableData(Group groupIn, Group groupOut, Count counter, CancelTask cancel) throws IOException {
+  private void copyVariableData(NetcdfFormatWriter ncwriter, Group groupIn, Group groupOut, Count counter,
+      CancelTask cancel) throws IOException {
     for (Variable oldVar : groupIn.getVariables()) {
       if (cancel.isCancel()) {
         break;
@@ -300,9 +293,9 @@ public class NetcdfCopier {
       counter.bytes += size;
 
       if (size <= maxSize) {
-        copyAll(oldVar, newVar);
+        copyAll(ncwriter, oldVar, newVar);
       } else {
-        copySome(oldVar, newVar, maxSize, cancel);
+        copySome(ncwriter, oldVar, newVar, maxSize, cancel);
       }
     }
 
@@ -311,12 +304,12 @@ public class NetcdfCopier {
         break;
       }
       Group nestedOut = groupOut.findGroupLocal(nestedIn.getShortName());
-      copyVariableData(nestedIn, nestedOut, counter, cancel);
+      copyVariableData(ncwriter, nestedIn, nestedOut, counter, cancel);
     }
   }
 
   // copy all the data in oldVar to the newVar
-  void copyAll(Variable oldVar, Variable newVar) throws IOException {
+  private void copyAll(NetcdfFormatWriter ncwriter, Variable oldVar, Variable newVar) throws IOException {
     Array data = oldVar.read();
     try {
       if (!extended && oldVar.getDataType() == DataType.STRING) {
@@ -344,7 +337,8 @@ public class NetcdfCopier {
    * @param cancel allow user to cancel, may be null.
    * @throws IOException if an I/O error occurs.
    */
-  private void copySome(Variable oldVar, Variable newVar, long maxChunkSize, CancelTask cancel) throws IOException {
+  private void copySome(NetcdfFormatWriter ncwriter, Variable oldVar, Variable newVar, long maxChunkSize,
+      CancelTask cancel) throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     long byteWriteTotal = 0;
 

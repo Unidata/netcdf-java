@@ -172,7 +172,7 @@ public class Nccopy {
 
       NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setNewFile(true).setFormat(getFormat(cmdLine))
           .setLocation(datasetOut).setChunker(cmdLine.getNc4Chunking()).setUseJna(cmdLine.useJna);
-      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder.build());
+      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
 
       try (NetcdfFile ncfileOut = copier.write(cancel)) {
 

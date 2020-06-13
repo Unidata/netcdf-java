@@ -13,8 +13,10 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.Assert2;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import java.io.File;
@@ -35,53 +37,47 @@ public class TestScaleOffsetMissingUnsigned {
     String filename = tempFolder.newFile().getAbsolutePath();
     ArrayDouble unpacked;
     MAMath.ScaleOffset so;
-    Array packed;
 
-    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true)) {
-      // define dimensions
-      Dimension latDim = ncfile.addDimension("lat", 200);
-      Dimension lonDim = ncfile.addDimension("lon", 300);
-      int n = lonDim.getLength();
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
 
-      // create an array
-      unpacked = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
-      Index ima = unpacked.getIndex();
+    // define dimensions
+    Dimension latDim = writerb.addDimension("lat", 200);
+    Dimension lonDim = writerb.addDimension("lon", 300);
+    int n = lonDim.getLength();
 
-      for (int i = 0; i < latDim.getLength(); i++) {
-        for (int j = 0; j < lonDim.getLength(); j++) {
-          unpacked.setDouble(ima.set(i, j), (i * n + j) + 30.0);
-        }
+    // create an array
+    unpacked = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
+    Index ima = unpacked.getIndex();
+
+    for (int i = 0; i < latDim.getLength(); i++) {
+      for (int j = 0; j < lonDim.getLength(); j++) {
+        unpacked.setDouble(ima.set(i, j), (i * n + j) + 30.0);
       }
+    }
+    double missingValue = -9999;
+    int nbits = 16;
 
-      double missingValue = -9999;
-      int nbits = 16;
+    // convert to packed form
+    so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
+    writerb.addVariable("unpacked", DataType.DOUBLE, "lat lon");
+    writerb.addVariable("packed", DataType.SHORT, "lat lon")
+        .addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999))
+        .addAttribute(new Attribute(CDM.SCALE_FACTOR, so.scale)).addAttribute(new Attribute(CDM.ADD_OFFSET, so.offset));
 
-      // convert to packed form
-      so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
-      ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
-
-      ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-      ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, (short) -9999);
-      ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
-      ncfile.addVariableAttribute("packed", "add_offset", so.offset);
-
-      // create the file
-      ncfile.create();
-
-      ncfile.write("unpacked", unpacked);
-
-      packed = MAMath.convert2packed(unpacked, missingValue, nbits, DataType.SHORT);
-      ncfile.write("packed", packed);
+    // create and write to the file
+    Array packed = MAMath.convert2packed(unpacked, missingValue, nbits, DataType.SHORT);
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      writer.write("unpacked", unpacked);
+      writer.write("packed", packed);
     }
 
-    Array readPacked;
-
     // read the packed form, compare to original
+    Array readPacked;
     try (NetcdfFile ncfileRead = NetcdfFiles.open(filename)) {
       Variable v = ncfileRead.findVariable("packed");
       assert v != null;
       readPacked = v.read();
-      ucar.unidata.util.test.CompareNetcdf.compareData(readPacked, packed);
+      new CompareNetcdf2().compareData("packed", packed, readPacked);
     }
 
     Array readEnhanced;

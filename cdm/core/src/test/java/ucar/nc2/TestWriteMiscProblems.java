@@ -109,9 +109,8 @@ public class TestWriteMiscProblems {
     try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null)) {
       assert ncd.removeVariable(null, "temperature");
       ncd.finish();
-      NetcdfFormatWriter.Builder builder =
-          NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(outName);
-      NetcdfCopier copier = NetcdfCopier.create(ncd, builder.build());
+      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(outName);
+      NetcdfCopier copier = NetcdfCopier.create(ncd, builder);
       try (NetcdfFile ncdnew = copier.write(null)) {
         // ok empty
       }
