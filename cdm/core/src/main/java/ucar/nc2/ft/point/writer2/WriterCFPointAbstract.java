@@ -122,9 +122,6 @@ abstract class WriterCFPointAbstract implements Closeable {
   WriterCFPointAbstract(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, @Nullable String altUnits, CFPointWriterConfig config) throws IOException {
 
-    this.writer = NetcdfFormatWriter.builder().setNewFile(true).setFormat(config.getFormat()).setLocation(fileOut)
-        .setChunker(config.getChunking()).setFill(false).build();
-
     this.dataVars = dataVars;
     this.timeUnit = timeUnit;
     this.altUnits = altUnits;
