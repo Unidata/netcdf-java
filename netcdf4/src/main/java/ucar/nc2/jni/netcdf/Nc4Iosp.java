@@ -2423,6 +2423,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // create new file
     log.debug("create {}", ncfile.getLocation());
+    int ret;
 
     /*
      * IntByReference oldFormat = new IntByReference();
