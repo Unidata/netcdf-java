@@ -31,7 +31,8 @@ import java.util.*;
  * @author jcaron
  */
 public class DiskCache2 {
-  private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  private static final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  private static final String lockExtension = ".reserve";
   private static Timer timer;
 
   /** Be sure to call this when your application exits, otherwise your process may not exit without being killed. */
@@ -67,7 +68,7 @@ public class DiskCache2 {
    * Default DiskCache2 strategy: use $user_home/.unidata/cache/, no scouring, alwaysUseCache = false
    * Mimics default DiskCache static class
    */
-  public static DiskCache2 getDefault() {
+  static public DiskCache2 getDefault() {
     String root = System.getProperty("nj22.cache");
 
     if (root == null) {
@@ -89,7 +90,7 @@ public class DiskCache2 {
   }
 
   // NOOP
-  public static DiskCache2 getNoop() {
+  static public DiskCache2 getNoop() {
     DiskCache2 noop = new DiskCache2();
     noop.neverUseCache = true;
     return noop;
@@ -152,8 +153,13 @@ public class DiskCache2 {
 
     File dir = new File(root);
     if (!dir.mkdirs()) {
-      // ok
+      if (!dir.exists()) {
+        cacheLog.warn("Failed to create DiskCache2 root at {}. Reason unknown.", dir);
+      }
+    } else {
+      cacheLog.debug("DiskCache2 root created at {}.", dir);
     }
+
     if (!dir.exists()) {
       fail = true;
       cacheLog.error("DiskCache2 failed to create directory " + root);
@@ -305,10 +311,25 @@ public class DiskCache2 {
     if (suffix == null)
       suffix = ".tmp";
     Random random = new Random(System.currentTimeMillis());
-    File result = new File(getRootDirectory(), prefix + random.nextInt() + suffix);
-    while (result.exists())
-      result = new File(getRootDirectory(), prefix + random.nextInt() + suffix);
-    return result;
+    String lockName = prefix + random.nextInt() + suffix + lockExtension;
+    File lock = new File(getRootDirectory(), lockName);
+    while (lock.exists()) {
+      lockName = prefix + random.nextInt() + suffix + lockExtension;
+      lock = new File(getRootDirectory(), lockName);
+    }
+
+    // create a lock file to reserve the name
+    try {
+      lock.createNewFile();
+      cacheLog.debug(String.format("Reserved filename %s for future use.", lockName.replace(lockExtension, "")));
+    } catch (IOException e) {
+      // should not happen, as DiskCache2 had to make the directory before we can even get here
+      // ...but just in case...
+      cacheLog.warn(String.format("Error creating lock file: %s. May result in cache file collisions.", lock));
+    }
+    // reserved name will be the lock file name, minus the lock extension
+
+    return new File(getRootDirectory(), lock.getName().replace(lockExtension, ""));
   }
 
   /**
@@ -456,15 +477,7 @@ public class DiskCache2 {
 
     // check for empty directory
     if (!isRoot && (files.length == 0)) {
-      long duration = now - dir.lastModified();
-      duration /= 1000 * 60; // minutes
-      if (duration > persistMinutes) {
-        boolean ok = dir.delete();
-        if (!ok)
-          cacheLog.error("Unable to delete file " + dir.getAbsolutePath());
-        if (sbuff != null)
-          sbuff.format(" deleted %s %s lastModified= %s%n", ok, dir.getPath(), CalendarDate.of(dir.lastModified()));
-      }
+      purgeExpired(dir, sbuff, now);
       return;
     }
 
@@ -473,16 +486,23 @@ public class DiskCache2 {
       if (file.isDirectory()) {
         cleanCache(file, sbuff, false);
       } else {
-        long duration = now - file.lastModified();
-        duration /= 1000 * 60; // minutes
-        if (duration > persistMinutes) {
-          boolean ok = file.delete();
-          if (!ok)
-            cacheLog.error("Unable to delete file " + file.getAbsolutePath());
-          if (sbuff != null)
-            sbuff.format(" deleted %s %s lastModified= %s%n", ok, file.getPath(), CalendarDate.of(file.lastModified()));
-        }
+        purgeExpired(file, sbuff, now);
       }
+    }
+  }
+
+  private void purgeExpired(File deletable, Formatter sbuff, long now) {
+    long duration = now - deletable.lastModified();
+    duration /= 1000 * 60; // minutes
+    if (duration > persistMinutes) {
+      boolean ok = deletable.delete();
+      if (!ok) {
+        String type = deletable.isDirectory() ? "directory" : "file";
+        cacheLog.error("Unable to delete {} {}", type, deletable.getAbsolutePath());
+      }
+      if (sbuff != null)
+        sbuff.format(" deleted %s %s lastModified= %s%n", ok, deletable.getPath(),
+            CalendarDate.of(deletable.lastModified()));
     }
   }
 

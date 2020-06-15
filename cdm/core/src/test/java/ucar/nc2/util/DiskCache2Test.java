@@ -91,6 +91,7 @@ public class DiskCache2Test {
   public void checkUniqueFileNames() throws IOException {
     final String prefix = "pre-";
     final String suffix = "-suf";
+    final String lockFileExtention = ".reserve";
 
     // loop a few times to make sure it triggers.
     for (int i = 0; i < 10; i++) {
@@ -113,6 +114,14 @@ public class DiskCache2Test {
       assertThat(first.exists());
       assertThat(second.exists());
 
+      // lock files should exist as well
+      File firstLockFile = Paths.get(first.getCanonicalFile().toString() + lockFileExtention).toFile();
+      File secondLockFile = Paths.get(second.getCanonicalFile().toString() + lockFileExtention).toFile();
+      Assert.assertTrue(firstLockFile.exists());
+      Assert.assertTrue(secondLockFile.exists());
+      filesToDelete.add(firstLockFile);
+      filesToDelete.add(secondLockFile);
+
       // make sure they start with prefix
       assertThat(first.getName()).startsWith(prefix);
       assertThat(second.getName()).startsWith(prefix);
@@ -133,7 +142,7 @@ public class DiskCache2Test {
     }
     Files.delete(dirForStaticTests);
 
-    diskCache.exit();
+    DiskCache2.exit();
     Files.deleteIfExists(Paths.get(diskCache.getRootDirectory()));
   }
 }
