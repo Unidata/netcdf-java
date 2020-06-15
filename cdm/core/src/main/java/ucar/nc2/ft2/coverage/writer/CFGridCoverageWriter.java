@@ -21,7 +21,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.ACDD;
 import ucar.nc2.constants.AxisType;
@@ -39,6 +38,7 @@ import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.write.NetcdfFormatWriter;
+import ucar.nc2.write.NetcdfFormatWriter.Result;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
@@ -70,14 +70,15 @@ public class CFGridCoverageWriter {
    * @return the Result containing the result of the write.
    */
   public static NetcdfFormatWriter.Result write(CoverageCollection gdsOrg, List<String> gridNames, SubsetParams subset,
-      boolean tryToAddLatLon2D, NetcdfFormatWriter writer, long maxBytes) throws IOException, InvalidRangeException {
+      boolean tryToAddLatLon2D, NetcdfFormatWriter.Builder writer, long maxBytes)
+      throws IOException, InvalidRangeException {
     Preconditions.checkNotNull(writer);
     CFGridCoverageWriter writer2 = new CFGridCoverageWriter();
     return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, writer, maxBytes);
   }
 
   private NetcdfFormatWriter.Result writeFile(CoverageCollection gdsOrg, List<String> gridNames,
-      SubsetParams subsetParams, boolean tryToAddLatLon2D, NetcdfFormatWriter writer, long maxBytes)
+      SubsetParams subsetParams, boolean tryToAddLatLon2D, NetcdfFormatWriter.Builder writer, long maxBytes)
       throws IOException, InvalidRangeException {
     if (gridNames == null) { // want all of them
       gridNames = new LinkedList<>();
@@ -117,21 +118,22 @@ public class CFGridCoverageWriter {
     addCFAnnotations(subsetDataset, rootGroup, shouldAddLatLon2D);
 
     // Actually create file and write variable data to it.
-    NetcdfFile.Builder netcdfBuilder = NetcdfFile.builder().setRootGroup(rootGroup);
-    NetcdfFormatWriter.Result result = writer.create(netcdfBuilder.build(), maxBytes);
-    if (!result.wasWritten()) {
-      return result;
+    try (NetcdfFormatWriter ncwriter = writer.build()) {
+      // test if its too large
+      long totalSizeOfVars = ncwriter.calcSize();
+      if (maxBytes > 0 && totalSizeOfVars > maxBytes) {
+        return Result.create(totalSizeOfVars, false, String.format("Too large, max size = %d", maxBytes));
+      }
+
+      writeCoordinateData(subsetDataset, ncwriter);
+      writeCoverageData(gdsOrg, subsetParams, subsetDataset, ncwriter);
+
+      if (shouldAddLatLon2D) {
+        writeLatLon2D(subsetDataset, ncwriter);
+      }
     }
 
-    writeCoordinateData(subsetDataset, writer);
-    writeCoverageData(gdsOrg, subsetParams, subsetDataset, writer);
-
-    if (shouldAddLatLon2D) {
-      writeLatLon2D(subsetDataset, writer);
-    }
-    writer.close();
-
-    return result;
+    return NetcdfFormatWriter.Result.create(0, true, null);
   }
 
   /**

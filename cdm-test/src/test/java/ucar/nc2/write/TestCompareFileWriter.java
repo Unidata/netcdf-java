@@ -62,9 +62,8 @@ public class TestCompareFileWriter {
         fout.getParentFile().exists());
 
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(fin.getPath(), null)) {
-      NetcdfFormatWriter.Builder builder =
-          NetcdfFormatWriter.builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(fout.getPath());
-      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder.build());
+      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(fout.getPath());
+      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
       try (NetcdfFile ncfileOut = copier.write(null)) {
         assert ucar.unidata.util.test.CompareNetcdf.compareFiles(ncfileIn, ncfileOut) == same;
       }

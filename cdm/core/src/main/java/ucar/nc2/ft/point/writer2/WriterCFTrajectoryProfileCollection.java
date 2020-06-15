@@ -52,8 +52,8 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
   WriterCFTrajectoryProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
-    rootGroup.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectoryProfile.name()));
-    rootGroup.addAttribute(
+    writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectoryProfile.name()));
+    writerb.addAttribute(
         new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectory profile, H.6.3"));
   }
 
@@ -107,8 +107,7 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
   @Override
   void makeFeatureVariables(StructureData trajData, boolean isExtended) {
     // add the dimensions : extended model can use an unlimited dimension
-    Dimension trajDim = new Dimension(trajDimName, ntraj);
-    rootGroup.addDimension(trajDim);
+    Dimension trajDim = writerb.addDimension(trajDimName, ntraj);
 
     List<VariableSimpleIF> trajVars = new ArrayList<>();
 
@@ -121,9 +120,7 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb =
-          Structure.builder().setName(trajStructName).setParentGroupBuilder(rootGroup).setDimensionsByName(trajDimName);
-      rootGroup.addVariable(structb);
+      Structure.Builder structb = writerb.addStructure(trajStructName, trajDimName);
       addCoordinatesExtended(structb, trajVars);
     } else {
       addCoordinatesClassic(trajDim, trajVars, trajVarMap);
@@ -154,8 +151,7 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
 
   @Override
   protected void makeMiddleVariables(StructureData profileData, boolean isExtended) {
-    Dimension profileDim = new Dimension(profileDimName, nfeatures);
-    rootGroup.addDimension(profileDim);
+    Dimension profileDim = writerb.addDimension(profileDimName, nfeatures);
 
     // add the profile Variables using the profile dimension
     List<VariableSimpleIF> profileVars = new ArrayList<>();
@@ -186,9 +182,7 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     }
 
     if (isExtended) {
-      Structure.Builder structb = Structure.builder().setName(profileStructName).setParentGroupBuilder(rootGroup)
-          .setDimensionsByName(profileDimName);
-      rootGroup.addVariable(structb);
+      Structure.Builder structb = writerb.addStructure(profileStructName, profileDimName);
       addCoordinatesExtended(structb, profileVars);
     } else {
       addCoordinatesClassic(profileDim, profileVars, profileVarMap);

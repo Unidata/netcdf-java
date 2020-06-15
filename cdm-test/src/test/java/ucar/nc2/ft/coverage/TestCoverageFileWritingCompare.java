@@ -133,12 +133,11 @@ public class TestCoverageFileWritingCompare {
 
       // write the file using CFGridCoverageWriter
       System.out.printf(" CFGridCoverageWriter write to %s%n", tempFile.getAbsolutePath());
-      try (NetcdfFormatWriter writer =
-          NetcdfFormatWriter.builder().setNewFile(true).setFormat(format).setLocation(tempFile.getPath()).build()) {
-        NetcdfFormatWriter.Result result = CFGridCoverageWriter.write(gcs, covList, params, false, writer, 0);
-        if (!result.wasWritten()) {
-          throw new InvalidRangeException("Error writing: " + result.getErrorMessage());
-        }
+      NetcdfFormatWriter.Builder writerb =
+          NetcdfFormatWriter.builder().setNewFile(true).setFormat(format).setLocation(tempFile.getPath());
+      NetcdfFormatWriter.Result result = CFGridCoverageWriter.write(gcs, covList, params, false, writerb, 0);
+      if (!result.wasWritten()) {
+        throw new InvalidRangeException("Error writing: " + result.getErrorMessage());
       }
     }
 
