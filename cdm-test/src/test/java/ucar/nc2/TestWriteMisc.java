@@ -182,8 +182,7 @@ public class TestWriteMisc {
 
   @Test
   public void testOpenExisting() throws IOException, InvalidRangeException {
-    // String filename = tempFolder.newFile().getAbsolutePath();
-    String filename = "C:/Temp/testOpenExisting.nc";
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
     writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());
