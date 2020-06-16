@@ -297,19 +297,24 @@ public class DiskCache2 {
   }
 
   /**
-   * Create a new, uniquely named file in the root directory.
-   * Mimics File.createTempFile()
+   * Reserve a new, uniquely named file in the root directory.
+   * Mimics File.createTempFile(), but does not actually create
+   * the file. Instead, a 0 byte file of the same name with the
+   * extension lock is created, thus "reserving" the name until
+   * it is used. The filename must be used before persistMinutes,
+   * or the lock will be scoured and the reservation will be lost.
    *
    * @param prefix The prefix string to be used in generating the file's
    *        name; must be at least three characters long
    * @param suffix The suffix string to be used in generating the file's
    *        name; may be <code>null</code>, in which case the
    *        suffix <code>".tmp"</code> will be used
-   * @return uniquely named file
+   * @return unique, reserved file name
    */
   public synchronized File createUniqueFile(String prefix, String suffix) {
     if (suffix == null)
       suffix = ".tmp";
+
     Random random = new Random(System.currentTimeMillis());
     String lockName = prefix + random.nextInt() + suffix + lockExtension;
     File lock = new File(getRootDirectory(), lockName);
@@ -325,10 +330,10 @@ public class DiskCache2 {
     } catch (IOException e) {
       // should not happen, as DiskCache2 had to make the directory before we can even get here
       // ...but just in case...
-      cacheLog.warn(String.format("Error creating lock file: %s. May result in cache file collisions.", lock));
+      cacheLog.error(String.format("Error creating lock file: %s. May result in cache file collisions.", lock));
     }
-    // reserved name will be the lock file name, minus the lock extension
 
+    // reserved name will be the lock file name, minus the lock extension
     return new File(getRootDirectory(), lock.getName().replace(lockExtension, ""));
   }
 
