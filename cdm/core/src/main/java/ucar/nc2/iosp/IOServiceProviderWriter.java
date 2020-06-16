@@ -12,7 +12,7 @@ import ucar.nc2.Structure;
 import java.io.IOException;
 
 /**
- * This is really just an interface to Netcdf-3 and Netcdf-4 file writing.
+ * This is an interface to Netcdf-3 and Netcdf-4 file writing.
  * 
  * @deprecated This will be internal in ver6.
  */
@@ -33,7 +33,9 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
       throws IOException;
 
   /**
-   * Open existing file and allow writing.
+   * Open existing file and allow writing. Netcdf-4 writing is general. Netcdf-3 writing is restricted to writing data
+   * into
+   * existing variables.
    *
    * @param raf the file to work on.
    * @param ncfile add objects to this empty NetcdfFile

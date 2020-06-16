@@ -569,13 +569,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       file.write(buffer, 0, dataSize);
       bufferModified = false;
     }
-
-    /*
-     * check min length
-     * if (!readonly && (minLength != 0) && (minLength != file.length())) {
-     * file.setLength(minLength);
-     * }
-     */
   }
 
   /**

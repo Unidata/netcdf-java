@@ -26,13 +26,16 @@ import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
+import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
+ * Note that there is no redefine mode. Once you call build(), you cannot add new metadata, you can only write data.
  */
 public class NetcdfFormatWriter implements Closeable {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatWriter.class);
@@ -44,12 +47,14 @@ public class NetcdfFormatWriter implements Closeable {
    * Cannot add new objects, you can only read/write data to existing Variables.
    *
    * @param location name of existing file to open.
-   * @param fill fill mode
    * @return existing file that can be written to
    * @throws IOException on I/O error
    */
-  public static NetcdfFormatWriter.Builder openExisting(String location, boolean fill) {
-    return builder().setLocation(location).setFill(fill);
+  public static NetcdfFormatWriter.Builder openExisting(String location) throws IOException {
+    try (NetcdfFile ncfile = NetcdfFiles.open(location)) {
+      Group.Builder root = ncfile.getRootGroup().toBuilder();
+      return builder().setRootGroup(root).setLocation(location).setIosp(ncfile.getIosp());
+    }
   }
 
   /**
@@ -57,7 +62,7 @@ public class NetcdfFormatWriter implements Closeable {
    *
    * @param location name of new file to open; if it exists, will overwrite it.
    * @return new NetcdfFormatWriter
-   * @throws IOException on I/O error
+   *         =
    */
   public static NetcdfFormatWriter.Builder createNewNetcdf3(String location) {
     return builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(location);
@@ -70,9 +75,8 @@ public class NetcdfFormatWriter implements Closeable {
    * @param location name of new file to open; if it exists, will overwrite it.
    * @param chunker used only for netcdf4, or null for default chunking algorithm
    * @return new NetcdfFormatWriter
-   * @throws IOException on I/O error
    */
-  public static NetcdfFormatWriter.Builder createNewVersion4(NetcdfFileFormat format, String location,
+  public static NetcdfFormatWriter.Builder createNewNetcdf4(NetcdfFileFormat format, String location,
       Nc4Chunking chunker) {
     return builder().setNewFile(true).setFormat(format).setLocation(location).setChunker(chunker);
   }
@@ -90,6 +94,7 @@ public class NetcdfFormatWriter implements Closeable {
     private long preallocateSize;
     private Nc4Chunking chunker;
     private boolean useJna;
+    private IOServiceProvider iosp;
 
     private Group.Builder rootGroup = Group.builder().setName("");
 
@@ -97,6 +102,15 @@ public class NetcdfFormatWriter implements Closeable {
     public Builder setLocation(String location) {
       this.location = location;
       return this;
+    }
+
+    public Builder setIosp(IOServiceProvider iosp) {
+      this.iosp = iosp;
+      return this;
+    }
+
+    public IOServiceProvider getIosp() {
+      return iosp;
     }
 
     /** Set the format version. Only needed when its a new file. Default is NetcdfFileFormat.CLASSIC */
@@ -157,17 +171,26 @@ public class NetcdfFormatWriter implements Closeable {
     }
 
     public Builder addAttribute(Attribute att) {
+      if (!isNewFile && !useJna) {
+        throw new UnsupportedOperationException("Cant add attribute to existing netcdf-3 files");
+      }
       rootGroup.addAttribute(att);
       return this;
     }
 
     public Dimension addDimension(String dimName, int length) {
+      if (!isNewFile && !useJna) {
+        throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
+      }
       Dimension dim = new Dimension(dimName, length);
       rootGroup.addDimension(dim);
       return dim;
     }
 
     public Dimension addDimension(Dimension dim) {
+      if (!isNewFile && !useJna) {
+        throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
+      }
       rootGroup.addDimension(dim);
       return dim;
     }
@@ -177,12 +200,16 @@ public class NetcdfFormatWriter implements Closeable {
     }
 
     /** Set the root group. This allows it to be built externally. */
-    public void setRootGroup(Group.Builder rootGroup) {
+    public Builder setRootGroup(Group.Builder rootGroup) {
       this.rootGroup = rootGroup;
+      return this;
     }
 
     /** Add a Variable to the root group. */
     public Variable.Builder addVariable(String shortName, DataType dataType, String dimString) {
+      if (!isNewFile && !useJna) {
+        throw new UnsupportedOperationException("Cant add variable to existing netcdf-3 files");
+      }
       Variable.Builder vb = Variable.builder().setName(shortName).setDataType(dataType).setParentGroupBuilder(rootGroup)
           .setDimensionsByName(dimString);
       rootGroup.addVariable(vb);
@@ -191,6 +218,9 @@ public class NetcdfFormatWriter implements Closeable {
 
     /** Add a Variable to the root group. */
     public Variable.Builder addVariable(String shortName, DataType dataType, List<Dimension> dims) {
+      if (!isNewFile && !useJna) {
+        throw new UnsupportedOperationException("Cant add variable to existing netcdf-3 files");
+      }
       Variable.Builder vb = Variable.builder().setName(shortName).setDataType(dataType).setParentGroupBuilder(rootGroup)
           .setDimensions(dims);
       rootGroup.addVariable(vb);
@@ -199,6 +229,9 @@ public class NetcdfFormatWriter implements Closeable {
 
     /** Add a Structure to the root group. */
     public Structure.Builder addStructure(String shortName, String dimString) {
+      if (!isNewFile && !useJna) {
+        throw new UnsupportedOperationException("Cant add structure to existing netcdf-3 files");
+      }
       Structure.Builder vb =
           Structure.builder().setName(shortName).setParentGroupBuilder(rootGroup).setDimensionsByName(dimString);
       rootGroup.addVariable(vb);
@@ -304,7 +337,7 @@ public class NetcdfFormatWriter implements Closeable {
       }
       spiw = spi;
     } else {
-      spiw = new N3iospWriter();
+      spiw = new N3iospWriter(builder.getIosp());
     }
 
     if (!isNewFile) {
@@ -355,14 +388,17 @@ public class NetcdfFormatWriter implements Closeable {
     return format;
   }
 
+  @Nullable
   public Variable findVariable(String fullNameEscaped) {
     return this.ncout.findVariable(fullNameEscaped);
   }
 
+  @Nullable
   public Dimension findDimension(String dimName) {
     return this.ncout.findDimension(dimName);
   }
 
+  @Nullable
   public Attribute findGlobalAttribute(String attName) {
     return this.ncout.getRootGroup().findAttribute(attName);
   }
@@ -471,6 +507,7 @@ public class NetcdfFormatWriter implements Closeable {
 
   /** Write data to the named variable, origin assumed to be 0. */
   public void write(String varName, Array values) throws IOException, InvalidRangeException {
+    Preconditions.checkNotNull(findVariable(varName));
     write(findVariable(varName), values);
   }
 
@@ -497,6 +534,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @throws InvalidRangeException if values Array has illegal shape
    */
   public void write(String varName, int[] origin, Array values) throws IOException, InvalidRangeException {
+    Preconditions.checkNotNull(findVariable(varName));
     write(findVariable(varName), origin, values);
   }
 

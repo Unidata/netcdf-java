@@ -17,6 +17,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.unidata.io.RandomAccessFile;
 
 /** Class to write a netcdf3 header. */
 class N3headerWriter extends N3headerNew {
@@ -26,25 +27,28 @@ class N3headerWriter extends N3headerNew {
   private ImmutableList<Variable> uvars; // vars that have the unlimited dimension
   private long globalAttsPos; // global attributes start here - used for update
 
-  N3headerWriter(N3iospNew n3iospNew) {
+  /**
+   * Constructor.
+   * 
+   * @param n3iospNew the iosp
+   * @param raf write to this file
+   * @param ncfile the header of this NetcdfFile
+   */
+  N3headerWriter(N3iospNew n3iospNew, RandomAccessFile raf, NetcdfFile ncfile) {
     super(n3iospNew);
+    this.raf = raf;
+    this.ncfile = ncfile;
   }
 
   /**
    * Write the header out, based on ncfile structures.
    *
-   * @param raf write to this file
-   * @param ncfile the header of this NetcdfFile
    * @param extra if > 0, pad header with extra bytes
    * @param largeFile if large file format
    * @param fout debugging output sent to here
    * @throws IOException on write error
    */
-  void create(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, int extra, boolean largeFile,
-      Formatter fout) throws IOException {
-    this.raf = raf;
-    this.ncfile = ncfile;
-
+  void create(int extra, boolean largeFile, Formatter fout) throws IOException {
     writeHeader(extra, largeFile, false, fout);
   }
 
@@ -244,7 +248,6 @@ class N3headerWriter extends N3headerNew {
       if (fout != null)
         fout.format("  %s%n", att);
     }
-    count++;
   }
 
   private int sizeAtts(Iterable<Attribute> atts) {
@@ -436,6 +439,17 @@ class N3headerWriter extends N3headerNew {
     // set number of records in the header
     raf.seek(4);
     raf.writeInt(numrecs);
+  }
+
+  void initFromExisting(N3iospNew existingIosp) {
+    N3headerNew existingHeader = existingIosp.header;
+    this.dataStart = existingHeader.dataStart;
+    this.nonRecordDataSize = existingHeader.nonRecordDataSize;
+    this.numrecs = existingHeader.numrecs;
+    this.recsize = existingHeader.recsize;
+    this.recStart = existingHeader.recStart;
+    this.useLongOffset = existingHeader.useLongOffset;
+    this.udim = existingHeader.udim;
   }
 
   void setNumrecs(int n) {

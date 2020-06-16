@@ -111,8 +111,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   @Deprecated
   @Override
-  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
     String location = raf.getLocation();
@@ -153,7 +152,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   }
 
   /** Create header for reading netcdf file. */
-  private N3headerNew createHeader() {
+  private N3headerNew createHeader() throws IOException {
     return new N3headerNew(this);
   }
 
