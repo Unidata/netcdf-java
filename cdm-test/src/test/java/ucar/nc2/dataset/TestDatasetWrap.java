@@ -95,12 +95,12 @@ public class TestDatasetWrap {
 
       boolean ok;
       CompareNetcdf2 compare = new CompareNetcdf2();
-      ok = compare.compareData(varName, data_org, data_wrap);
+      ok = CompareNetcdf2.compareData(varName, data_org, data_wrap);
 
       assert wrap instanceof CoordinateAxis1D;
       CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
 
-      ok &= compare.compareData(varName, data_org, axis.getCoordValues());
+      ok &= CompareNetcdf2.compareData(varName, data_org, axis.getCoordValues());
 
       assert ok;
     } finally {

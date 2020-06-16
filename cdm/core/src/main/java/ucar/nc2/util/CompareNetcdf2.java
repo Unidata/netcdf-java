@@ -100,6 +100,15 @@ public class CompareNetcdf2 {
     }
   }
 
+  public static boolean compareData(String name, Array data1, Array data2) {
+    return new CompareNetcdf2().compareData(name, data1, data2, false, true);
+  }
+
+  public static boolean compareData(String name, Array data1, double[] data2) {
+    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    return compareData(name, data1, data2a);
+  }
+
   public static boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f) {
     return compareFiles(org, copy, f, false, false, false);
   }
@@ -650,11 +659,6 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  public boolean compareData(String name, Array data1, double[] data2) {
-    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
-    return compareData(name, data1, data2a, false, false);
-  }
-
   public boolean compareData(String name, double[] data1, double[] data2) {
     Array data1a = Array.factory(DataType.DOUBLE, new int[] {data1.length}, data1);
     Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
@@ -663,10 +667,6 @@ public class CompareNetcdf2 {
 
   public boolean compareData(String name, Array data1, Array data2, boolean justOne) {
     return compareData(name, data1, data2, justOne, true);
-  }
-
-  public boolean compareData(String name, Array data1, Array data2) {
-    return compareData(name, data1, data2, false, true);
   }
 
   private boolean compareData(String name, Array data1, Array data2, boolean justOne, boolean testTypes) {

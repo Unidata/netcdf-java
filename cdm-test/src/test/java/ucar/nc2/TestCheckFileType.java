@@ -1,9 +1,12 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -11,7 +14,6 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.iosp.NCheader;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -39,14 +41,6 @@ public class TestCheckFileType extends UnitTestCommon {
     result.add(new Object[] {NCheader.NC_FORMAT_HDF5, "group.test2.nc"}); // aka netcdf4
     result.add(new Object[] {NCheader.NC_FORMAT_HDF4, "nc_test_hdf4.hdf4"});
     return result;
-  }
-
-  @Before
-  public void setLibrary() {
-    // Ignore this class's tests if NetCDF-4 isn't present.
-    // We're using @Before because it shows these tests as being ignored.
-    // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
   }
 
   @After

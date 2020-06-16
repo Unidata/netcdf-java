@@ -4,6 +4,7 @@
  */
 package ucar.nc2.internal.iosp.netcdf3;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.Array;
@@ -19,18 +20,19 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
+import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
-/**
- * IOServiceProviderWriter for Netcdf3 files.
- */
+/** IOServiceProviderWriter for Netcdf3 files. */
 public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   // Default fill values, used unless _FillValue variable attribute is set.
   private static final byte NC_FILL_BYTE = -127;
@@ -42,11 +44,30 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   private boolean fill = true;
+  private IOServiceProvider iosp = null;
+
+  public N3iospWriter(IOServiceProvider iosp) {
+    this.iosp = iosp;
+  }
 
   @Override
-  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    open(raf, ncfile, cancelTask);
+  public void openForWriting(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    // Cant call superclass open, do some duplicate code here
+    this.raf = raf;
+    this.location = (raf != null) ? raf.getLocation() : null;
+    this.ncfile = ncfile;
+
+    String location = raf.getLocation();
+    if (!location.startsWith("http:")) {
+      File file = new File(location);
+      if (file.exists())
+        lastModified = file.lastModified();
+    }
+
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    N3headerWriter headerw = new N3headerWriter(this, raf, ncfile);
+    headerw.initFromExisting((N3iospNew) this.iosp); // hack-a-whack
+    this.header = headerw;
   }
 
   @Override
@@ -70,13 +91,9 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       myRaf.setLength(preallocateSize);
     }
 
-    N3headerWriter headerw = new N3headerWriter(this);
-    headerw.create(raf, ncfile, extra, largeFile, null);
+    N3headerWriter headerw = new N3headerWriter(this, raf, ncfile);
+    headerw.create(extra, largeFile, null);
     this.header = headerw;
-
-    // recsize = header.recsize; // record size
-    // recStart = header.recStart; // record variables start here
-    // fileUsed = headerParser.getMinLength(); // track what is actually used
 
     if (fill)
       fillNonRecordVariables();
@@ -265,7 +282,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
         dim.setLength(n);
     }
 
-    // need to let all unlimited variables know of new shape
+    // need to let all unlimited variables know of new shape TODO immutable??
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) {
         v.resetShape();
