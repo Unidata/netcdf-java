@@ -466,8 +466,15 @@ public class FileCache implements FileCacheIF {
       }
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;
-      file.ncfile.release();
-      file.isLocked.set(false);
+
+      try {
+        file.ncfile.release();
+        file.isLocked.set(false);
+      } catch (IOException ioe) {
+        cacheLog.error("FileCache {} release failed on {} - will try to remove from cache. Failure due to:", name,
+            file.getCacheName(), ioe);
+        remove(file);
+      }
 
       if (cacheLog.isDebugEnabled())
         cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation() + "; hash= " + ncfile.hashCode());
