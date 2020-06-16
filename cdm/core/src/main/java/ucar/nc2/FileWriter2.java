@@ -24,7 +24,7 @@ import java.util.Map;
  * <p/>
  * Use NetcdfFileWriter object for a lower level API.
  *
- * @deprecated use ucar.nc2.write.NetcdfCopier (library) or ucar.nc2.write.Nccopy (command line)
+ * @deprecated use {@link ucar.nc2.write.NetcdfCopier} (library) or {@link ucar.nc2.write.Nccopy} (command line)
  */
 @Deprecated
 public class FileWriter2 {

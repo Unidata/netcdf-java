@@ -22,6 +22,7 @@ import ucar.nc2.ft.point.TestCFPointDatasets;
 import ucar.nc2.internal.ncml.NcMLReaderNew;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Compare old and new NcmlReaders on specific problem datasets. */
@@ -32,8 +33,12 @@ public class TestNcmlReaderProblems {
   @Test
   public void problem() throws IOException {
     // This has self contained data
-    compare("file:" + TestCFPointDatasets.CFpointObs_topdir + "stationData2Levels.ncml");
-    compareDS("file:" + TestCFPointDatasets.CFpointObs_topdir + "stationData2Levels.ncml");
+    // compare("file:" + TestCFPointDatasets.CFpointObs_topdir + "stationData2Levels.ncml");
+    // compareDS("file:" + TestCFPointDatasets.CFpointObs_topdir + "stationData2Levels.ncml");
+
+    // compare("file:" + TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.1.1.ncml");
+    compare("file:" + TestDir.cdmLocalFromTestDataDir + "point//stationData2Levels.ncml");
+    // compareVarData("file:" + TestDir.cdmLocalFromTestDataDir + "point//stationData2Levels.ncml", "trajectory");
   }
 
   private void compare(String ncmlLocation) throws IOException {
@@ -47,6 +52,22 @@ public class TestNcmlReaderProblems {
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter());
         System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
+        assertThat(ok).isTrue();
+      }
+    }
+  }
+
+  private void compareVarData(String ncmlLocation, String varName) throws IOException {
+    System.out.printf("Compare NcMLReader.readNcML %s%n", ncmlLocation);
+    logger.info("TestNcmlReaders on {}%n", ncmlLocation);
+    try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
+      Variable v = org.findVariable(varName);
+      assert v != null;
+      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
+        Variable vb = withBuilder.findVariable(varName);
+        assert vb != null;
+        boolean ok = CompareNetcdf2.compareData(varName, v.read(), vb.read());
+        System.out.printf("%s%n", ok ? "OK" : "NOT OK");
         assertThat(ok).isTrue();
       }
     }

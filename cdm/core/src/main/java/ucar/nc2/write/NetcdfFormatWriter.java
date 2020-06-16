@@ -88,7 +88,7 @@ public class NetcdfFormatWriter implements Closeable {
   public static class Builder {
     private String location;
     private NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
-    private boolean isNewFile;
+    private boolean isNewFile = true;
     private boolean fill = true;
     private int extraHeaderBytes;
     private long preallocateSize;
@@ -123,7 +123,7 @@ public class NetcdfFormatWriter implements Closeable {
       return this.format;
     }
 
-    /** True if its a new file, false if its an existing file. Default false. */
+    /** True if its a new file, false if its an existing file. Default true. */
     public Builder setNewFile(boolean newFile) {
       isNewFile = newFile;
       return this;

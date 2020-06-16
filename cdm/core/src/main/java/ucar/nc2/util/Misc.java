@@ -205,9 +205,11 @@ public class Misc {
     return ndiff == 0 && (raw1.length == raw2.length);
   }
 
-  public static void compare(float[] raw1, float[] raw2, Formatter f) {
+  public static boolean compare(float[] raw1, float[] raw2, Formatter f) {
+    boolean ok = true;
     if (raw1.length != raw2.length) {
       f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+      ok = false;
     }
     int len = Math.min(raw1.length, raw2.length);
 
@@ -216,9 +218,31 @@ public class Misc {
       if (!Misc.nearlyEquals(raw1[i], raw2[i]) && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i])) {
         f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
         ndiff++;
+        ok = false;
       }
     }
     f.format("tested %d floats diff = %d %n", len, ndiff);
+    return ok;
+  }
+
+  public static boolean compare(int[] raw1, int[] raw2, Formatter f) {
+    boolean ok = true;
+    if (raw1.length != raw2.length) {
+      f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+      ok = false;
+    }
+    int len = Math.min(raw1.length, raw2.length);
+
+    int ndiff = 0;
+    for (int i = 0; i < len; i++) {
+      if (raw1[i] != raw2[i]) {
+        f.format(" %5d : %3d != %3d%n", i, raw1[i], raw2[i]);
+        ndiff++;
+        ok = false;
+      }
+    }
+    f.format("tested %d floats diff = %d %n", len, ndiff);
+    return ok;
   }
 
   /** @deprecated use Integer.compare(x, y) */

@@ -7,6 +7,7 @@
 
 package ucar.nc2.util;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
@@ -686,8 +687,15 @@ public class CompareNetcdf2 {
       ok = false;
     }
 
-    if (!ok)
+    if (!Misc.compare(data1.getShape(), data2.getShape(), f)) {
+      f.format(" DIFF %s: data shape %s !== %s%n", name, Arrays.toString(data1.getShape()),
+          Arrays.toString(data2.getShape()));
+      ok = false;
+    }
+
+    if (!ok) {
       return false;
+    }
 
     DataType dt = data1.getDataType();
 

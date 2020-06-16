@@ -6,11 +6,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.write.NetcdfCopier;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -28,9 +28,9 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestCfDocDsgExamples {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  public static final String cfDocDsgExamplesDir = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/";
+  private static final String cfDocDsgExamplesDir = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/";
 
-  public static List<Object[]> getPointDatasets() {
+  private static List<Object[]> getPointDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {"H.1.1.ncml", FeatureType.POINT, 12});
@@ -38,7 +38,7 @@ public class TestCfDocDsgExamples {
     return result;
   }
 
-  public static List<Object[]> getStationDatasets() {
+  private static List<Object[]> getStationDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {"H.2.1.1.ncml", FeatureType.STATION, 50});
@@ -53,7 +53,7 @@ public class TestCfDocDsgExamples {
     return result;
   }
 
-  public static List<Object[]> getProfileDatasets() {
+  private static List<Object[]> getProfileDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {"H.3.1.1.ncml", FeatureType.PROFILE, 56});
@@ -64,7 +64,7 @@ public class TestCfDocDsgExamples {
     return result;
   }
 
-  public static List<Object[]> getTrajectoryDatasets() {
+  private static List<Object[]> getTrajectoryDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {"H.4.1.1.ncml", FeatureType.TRAJECTORY, 24});
@@ -75,7 +75,7 @@ public class TestCfDocDsgExamples {
     return result;
   }
 
-  public static List<Object[]> getStationProfileDatasets() {
+  private static List<Object[]> getStationProfileDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {"H.5.1.1.ncml", FeatureType.STATION_PROFILE, 120});
@@ -86,7 +86,7 @@ public class TestCfDocDsgExamples {
     return result;
   }
 
-  public static List<Object[]> getSectionDatasets() {
+  private static List<Object[]> getSectionDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {"H.6.1.1.ncml", FeatureType.TRAJECTORY_PROFILE, 120});
@@ -119,6 +119,7 @@ public class TestCfDocDsgExamples {
     this.location = cfDocDsgExamplesDir + location;
     this.ftype = ftype;
     this.countExpected = countExpected;
+    System.out.printf("Writing file %s%n", this.location);
   }
 
   @Test
@@ -126,13 +127,15 @@ public class TestCfDocDsgExamples {
     Assert.assertEquals("npoints", countExpected, TestPointDatasets.checkPointFeatureDataset(location, ftype, show));
   }
 
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Convert all NCML files in cfDocDsgExamplesDir to NetCDF-3 files.
   public static void main(String[] args) throws IOException {
-    File examplesDir = new File(cfDocDsgExamplesDir);
+    File examplesDir = new File("cdm/core/src/test/data/cfDocDsgExamples/");
     File convertedDir = new File(examplesDir, "converted");
     convertedDir.mkdirs();
+
+    System.out.printf("Writing to dir %s%n", examplesDir.getAbsolutePath());
+    File[] files = examplesDir.listFiles();
 
     for (File inputFile : examplesDir.listFiles(new NcmlFilenameFilter())) {
       String inputFilePath = inputFile.getCanonicalPath();
@@ -140,13 +143,11 @@ public class TestCfDocDsgExamples {
       String outputFilePath = new File(convertedDir, outputFileName).getCanonicalPath();
       System.out.printf("Writing %s to %s.%n", inputFilePath, outputFilePath);
 
-      try (NetcdfFile ncfileIn = NetcdfDataset.openFile(inputFilePath, null)) {
-        NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
-        FileWriter2 writer = new FileWriter2(ncfileIn, outputFilePath, version, null);
-
-        NetcdfFile ncfileOut = writer.write(null);
-        if (ncfileOut != null) {
-          ncfileOut.close();
+      try (NetcdfFile ncfileIn = NetcdfDatasets.openFile(inputFilePath, null)) {
+        NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(outputFilePath);
+        NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
+        try (NetcdfFile ncout2 = copier.write(null)) {
+          // empty
         }
       }
     }

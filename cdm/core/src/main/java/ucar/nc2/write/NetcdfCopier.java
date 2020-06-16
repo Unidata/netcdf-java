@@ -237,9 +237,10 @@ public class NetcdfCopier {
 
         // add last dimension
         String strlenDimName = oldVar.getShortName() + "_strlen";
-        Dimension anon = Dimension.builder(strlenDimName, max_len).setIsShared(false).build();
+        parent.addDimension(Dimension.builder(strlenDimName, max_len).setIsShared(false).build());
 
         newType = DataType.CHAR;
+        vb.setDataType(DataType.CHAR);
         dimNames += " " + strlenDimName;
       }
     }
@@ -315,8 +316,7 @@ public class NetcdfCopier {
       if (!extended && oldVar.getDataType() == DataType.STRING) {
         data = convertDataToChar(newVar, data);
       }
-      if (data.getSize() > 0) // zero when record dimension = 0
-      {
+      if (data.getSize() > 0) { // zero when record dimension = 0
         ncwriter.write(newVar, data);
       }
 
