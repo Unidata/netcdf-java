@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -391,13 +391,16 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           throw new IllegalStateException("No time coordinate = " + vindex);
         }
 
+        String timeDimName =
+            time instanceof CoordinateTime2D ? make2dValidTimeDimensionName(time.getName()) : time.getName();
+
         boolean isRunScaler = (run != null) && run.getSize() == 1;
 
         switch (gctype) {
           case SRC: // GC: Single Runtime Collection [ntimes] (run, 2D) scalar runtime
             assert isRunScaler;
-            dimNames.format("%s ", time.getName());
-            coordinateAtt.format("%s %s ", run.getName(), time.getName());
+            dimNames.format("%s ", timeDimName);
+            coordinateAtt.format("%s %s ", run.getName(), timeDimName);
             break;
 
           case MRUTP: // PC: Multiple Runtime Unique Time Partition [ntimes]
@@ -405,25 +408,25 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             // case MRSTC: // GC: Multiple Runtime Single Time Collection [nruns, 1]
             // case MRSTP: // PC: Multiple Runtime Single Time Partition [nruns, 1] (run, 2D) ignore the run, its
             // generated from the 2D in
-            dimNames.format("%s ", time.getName());
-            coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+            dimNames.format("%s ", timeDimName);
+            coordinateAtt.format("ref%s %s ", timeDimName, timeDimName);
             break;
 
           case MRC: // GC: Multiple Runtime Collection [nruns, ntimes] (run, 2D) use Both
           case TwoD: // PC: TwoD time partition [nruns, ntimes]
             assert run != null : "GRIB MRC or TWOD does not have run coordinate";
             if (isRunScaler) {
-              dimNames.format("%s ", time.getName());
+              dimNames.format("%s ", timeDimName);
             } else {
-              dimNames.format("%s %s ", run.getName(), time.getName());
+              dimNames.format("%s %s ", run.getName(), timeDimName);
             }
-            coordinateAtt.format("%s %s ", run.getName(), time.getName());
+            coordinateAtt.format("%s %s ", run.getName(), timeDimName);
             break;
 
           case Best: // PC: Best time partition [ntimes] (time) reftime is generated in makeTimeAuxReference()
           case BestComplete: // PC: Best complete time partition [ntimes]
-            dimNames.format("%s ", time.getName());
-            coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+            dimNames.format("%s ", timeDimName);
+            coordinateAtt.format("ref%s %s ", timeDimName, timeDimName);
             break;
 
           default:
@@ -568,9 +571,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
     int ntimes = countU;
     String tcName = time2D.getName();
+    String timeDimName = make2dValidTimeDimensionName(tcName);
 
-    ncfile.addDimension(g, new Dimension(tcName, ntimes));
-    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, tcName));
+    ncfile.addDimension(g, new Dimension(timeDimName, ntimes));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, timeDimName));
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
@@ -583,9 +587,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } else {
       v.setSPobject(new Time2Dinfo(Time2DinfoType.intvU, time2D, null));
       // bounds for intervals
-      String bounds_name = tcName + "_bounds";
+      String bounds_name = timeDimName + "_bounds";
       Variable bounds =
-          ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, tcName + " 2"));
+          ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, timeDimName + " 2"));
       v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
       bounds.addAttribute(new Attribute(CDM.UNITS, units));
       bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
@@ -596,7 +600,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       // for this case we have to generate a separate reftime, because have to use the same dimension
       String refName = "ref" + tcName;
       if (g.findVariable(refName) == null) {
-        Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, tcName));
+        Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, timeDimName));
         vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
         vref.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
         vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
@@ -604,6 +608,18 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         vref.setSPobject(new Time2Dinfo(Time2DinfoType.isUniqueRuntime, time2D, null));
       }
     }
+  }
+
+  /*
+   * For better compatibility with CF recommendations, the 2D time coordinates should not have the same name as
+   * a dimension (a recommendation, but not a strict requirement). 2D time coordinates are now called "validtime{n}",
+   * where n is empty or a number (starting with 1). In order to maintain shared dimensions with other time variables,
+   * we need to transform that name into a dimension name. It's all pretty simple, but we do it enough times that it
+   * gets its own method. Basically, the variable "validtime{n}" will use dimension "time{n}".
+   * See https://github.com/Unidata/netcdf-java/issues/152
+   */
+  private String make2dValidTimeDimensionName(String variableName) {
+    return variableName.replaceFirst("valid", "");
   }
 
   /*
@@ -616,16 +632,21 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();
-    String dims = runtime.getName() + " " + tcName;
+    String timeDimName = make2dValidTimeDimensionName(tcName);
+    String dims = runtime.getName() + " " + timeDimName;
     int dimLength = ntimes;
 
-    ncfile.addDimension(g, new Dimension(tcName, dimLength));
+    ncfile.addDimension(g, new Dimension(timeDimName, dimLength));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
+    if (!tcName.equalsIgnoreCase(timeDimName)) {
+      // explicitly set the axis type as Time
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    }
 
     // the data is not generated until asked for to save space
     if (!time2D.isTimeInterval()) {
@@ -633,7 +654,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } else {
       v.setSPobject(new Time2Dinfo(Time2DinfoType.intv, time2D, null));
       // bounds for intervals
-      String bounds_name = tcName + "_bounds";
+      String bounds_name = timeDimName + "_bounds";
       Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
       v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
       bounds.addAttribute(new Attribute(CDM.UNITS, units));
