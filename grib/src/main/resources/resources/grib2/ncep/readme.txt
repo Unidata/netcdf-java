@@ -834,3 +834,6 @@ Conflicts=0 extra=3 udunits=0
     of 5.0 branch.
     URL of NCEP GRIB2 docs changed (to https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/),
     so updated that as well
+
+06/16/2020 sarms
+  - updated ncep grib2 tables to v23.0.0 using grib/src/test/java/ucar/nc2/grib/grib2/table/NcepHtmlScraper.java
