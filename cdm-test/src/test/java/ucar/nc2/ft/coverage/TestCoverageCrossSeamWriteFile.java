@@ -11,15 +11,14 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.Misc;
-import ucar.nc2.util.Optional;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.TestDir;
@@ -28,12 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Test Coverage Cross-Seam subsetting by writing a file.
- *
- * @author caron
- * @since 9/12/2015.
- */
+/** Test Coverage Cross-Seam subsetting by writing a file. */
 public class TestCoverageCrossSeamWriteFile {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -120,8 +114,8 @@ public class TestCoverageCrossSeamWriteFile {
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  public void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape)
-      throws IOException, InvalidRangeException {
+  private void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox,
+      int[] expectedShape) throws IOException, InvalidRangeException {
     String covName = coverage.getName();
     File tempFile = tempFolder.newFile();
     System.out.printf(" write %s to %s%n", covName, tempFile.getAbsolutePath());
@@ -129,13 +123,11 @@ public class TestCoverageCrossSeamWriteFile {
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);
     System.out.printf("params=%s%n", params);
 
-    try (NetcdfFileWriter writer =
-        NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getPath(), null)) {
-      Optional<Long> estimatedSizeo =
-          CFGridCoverageWriter2.write(coverageDataset, Lists.newArrayList(covName), params, false, writer);
-      if (!estimatedSizeo.isPresent())
-        throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
-    }
+    NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.createNewNetcdf3(tempFile.getPath());
+    NetcdfFormatWriter.Result result =
+        CFGridCoverageWriter.write(coverageDataset, Lists.newArrayList(covName), params, false, writer, -1);
+    if (!result.wasWritten())
+      throw new InvalidRangeException("Request failed: " + result.getErrorMessage());
 
     // open the new file as a Coverage
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(tempFile.getPath())) {
@@ -159,7 +151,7 @@ public class TestCoverageCrossSeamWriteFile {
     }
 
     // open the file as old style Grid
-    try (NetcdfDataset nf = NetcdfDataset.openDataset(tempFile.getPath())) {
+    try (NetcdfDataset nf = NetcdfDatasets.openDataset(tempFile.getPath())) {
       ucar.nc2.dt.grid.GridDataset dtDataset = new ucar.nc2.dt.grid.GridDataset(nf);
       Assert.assertNotNull(covName, dtDataset.findGridByName(covName));
     }

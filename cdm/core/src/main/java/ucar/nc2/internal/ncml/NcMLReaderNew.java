@@ -29,6 +29,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -1297,13 +1298,15 @@ public class NcMLReaderNew {
         for (int i = 0; i < nhave; i++) {
           data[i] = values.charAt(i);
         }
-        Array dataArray = Array.factory(DataType.CHAR, new int[] {nhave}, data);
+        Array dataArray = Array.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
         v.setCachedData(dataArray, true);
 
       } else {
         List<String> valList = getTokens(values, sep);
-        Array data = Array.makeArray(dtype, valList); // TODO assumes 1D, can reshape later
-
+        Array data = Array.makeArray(dtype, valList);
+        if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
+          data = data.reshape(Dimensions.makeShape(v.getDimensions()));
+        }
         v.setCachedData(data, true);
       }
 

@@ -104,7 +104,7 @@ public class CFGridCoverageWriter {
 
     ////////////////////////////////////////////////////////////////////
 
-    Group.Builder rootGroup = Group.builder();
+    Group.Builder rootGroup = writer.getRootGroup();
     addGlobalAttributes(subsetDataset, rootGroup);
     addDimensions(subsetDataset, rootGroup);
     addCoordinateAxes(subsetDataset, rootGroup);
@@ -388,7 +388,7 @@ public class CFGridCoverageWriter {
           System.out.printf("CFGridCoverageWriter write axis %s%n", v.getNameAndDimensions());
         writer.write(v, axis.getCoordsAsArray());
       } else {
-        logger.error("CFGridCoverageWriter No variable for {}%n", axis.getName());
+        logger.error("CFGridCoverageWriter No variable for {}", axis.getName());
       }
 
       if (axis.isInterval()) {

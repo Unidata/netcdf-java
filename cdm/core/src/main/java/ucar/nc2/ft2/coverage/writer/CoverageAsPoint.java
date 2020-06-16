@@ -36,7 +36,6 @@ import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.util.StringUtil2;
@@ -60,7 +59,7 @@ public class CoverageAsPoint {
     Coverage cov;
     GeoReferencedArray array;
 
-    public VarData(Coverage cov) throws IOException {
+    VarData(Coverage cov) throws IOException {
       this.cov = cov;
       try {
         this.array = cov.readData(subset);
@@ -102,7 +101,7 @@ public class CoverageAsPoint {
   }
 
   private class CoverageAsFeatureDatasetPoint extends ucar.nc2.ft.point.PointDatasetImpl {
-    protected CoverageAsFeatureDatasetPoint(FeatureType featureType) {
+    CoverageAsFeatureDatasetPoint(FeatureType featureType) {
       super(featureType);
       CoverageAsStationFeatureCollection fc =
           new CoverageAsStationFeatureCollection(gcd.getName() + " AsStationFeatureCollection", dateUnit, null);
@@ -121,7 +120,7 @@ public class CoverageAsPoint {
 
   private class CoverageAsStationFeatureCollection extends StationTimeSeriesCollectionImpl {
 
-    public CoverageAsStationFeatureCollection(String name, CalendarDateUnit dateUnit, String altUnits) {
+    CoverageAsStationFeatureCollection(String name, CalendarDateUnit dateUnit, String altUnits) {
       super(name, dateUnit, altUnits);
     }
 
@@ -139,7 +138,7 @@ public class CoverageAsPoint {
 
   private class MyStationFeature extends StationTimeSeriesFeatureImpl {
 
-    public MyStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt,
+    MyStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt,
         CalendarDateUnit timeUnit, String altUnits, int npts) {
       // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits,
       // int npts
@@ -162,7 +161,7 @@ public class CoverageAsPoint {
       GeoReferencedArray geoA;
       IndexIterator dataIter;
 
-      public VarIter(Coverage cov, GeoReferencedArray array, IndexIterator dataIter) {
+      VarIter(Coverage cov, GeoReferencedArray array, IndexIterator dataIter) {
         this.cov = cov;
         this.geoA = array;
         this.dataIter = dataIter;
@@ -224,7 +223,7 @@ public class CoverageAsPoint {
       StationFeature stn;
       StructureData sdata;
 
-      public MyPointFeature(StationFeature stn, double obsTime, double nomTime, CalendarDateUnit timeUnit,
+      MyPointFeature(StationFeature stn, double obsTime, double nomTime, CalendarDateUnit timeUnit,
           StructureData sdata) {
         super(MyStationFeature.this, stn, obsTime, nomTime, timeUnit);
         this.stn = stn;

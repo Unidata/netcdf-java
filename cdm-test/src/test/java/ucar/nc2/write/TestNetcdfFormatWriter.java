@@ -1,6 +1,10 @@
-package ucar.nc2;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 
-import static junit.framework.TestCase.fail;
+package ucar.nc2.write;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,19 +14,18 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.write.NetcdfFormatWriter;
 
-/**
- * Misc netcdf3 NetcdfFileWriter tests
- *
- * @author caron
- * @since 4/26/12
- */
-public class TestWriteMisc {
+/** NetcdfFormatWriter tests */
+public class TestNetcdfFormatWriter {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*

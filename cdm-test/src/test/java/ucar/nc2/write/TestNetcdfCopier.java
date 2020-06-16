@@ -12,7 +12,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -21,10 +24,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-/** test FileWriting, then reading back and comparing to original. */
+/** Test NetcdfCopier, write copy, then read back and comparing to original. */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
-public class TestCompareFileWriter {
+public class TestNetcdfCopier {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
@@ -34,14 +37,17 @@ public class TestCompareFileWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[] {"formats/netcdf3/longOffset.nc", true}); // unlimited dimesnion = 0
-    // result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
-    result.add(new Object[] {"formats/gempak/grid/dgex_le.gem", true});
-    // result.add(new Object[] {"formats/gempak/surface/19580807_sao.gem", false}); // has Structure in it
-    result.add(new Object[] {"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", true});
-    result.add(new Object[] {"formats/grib1/radar_national.grib", true});
-    result.add(new Object[] {"formats/grib2/200508041200.ngrid_gfs", true});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/netcdf3/longOffset.nc", true}); // unlimited dimesnion =
+                                                                                               // 0
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/gempak/grid/dgex_le.gem", true});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", true});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib1/radar_national.grib", true});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib2/200508041200.ngrid_gfs", true});
+    result.add(new Object[] {"file:" + TestDir.cdmLocalFromTestDataDir + "point/stationData2Levels.ncml", true});
+
     // result.add(new Object[]{"formats/hdf4/17766010.hdf"});
+    // result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
+    // result.add(new Object[] {"formats/gempak/surface/19580807_sao.gem", false}); // has Structure in it
 
     return result;
   }
@@ -49,23 +55,30 @@ public class TestCompareFileWriter {
   String filename;
   boolean same;
 
-  public TestCompareFileWriter(String filename, boolean same) {
+  public TestNetcdfCopier(String filename, boolean same) {
     this.filename = filename;
     this.same = same;
   }
 
   @Test
   public void doOne() throws IOException {
-    File fin = new File(TestDir.cdmUnitTestDir + filename);
+    File fin = new File(filename);
     File fout = tempFolder.newFile();
     System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(),
         fout.getParentFile().exists());
 
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(fin.getPath(), null)) {
+      /*
+       * FileWriter2 fileWriter = new FileWriter2(ncfileIn, fout.getPath(), NetcdfFileWriter.Version.netcdf3, null);
+       * try (NetcdfFile ncfileOut = fileWriter.write()) {
+       * assert ucar.unidata.util.test.CompareNetcdf.compareFiles(ncfileIn, ncfileOut) == same;
+       * }
+       */
+
       NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(fout.getPath());
       NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
       try (NetcdfFile ncfileOut = copier.write(null)) {
-        assert ucar.unidata.util.test.CompareNetcdf.compareFiles(ncfileIn, ncfileOut) == same;
+        assert new CompareNetcdf2().compare(ncfileIn, ncfileOut) == same;
       }
     }
     System.out.printf("%n");
