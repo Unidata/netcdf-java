@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import org.junit.Rule;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.write.NetcdfFormatWriter;
 
 public class TestRedefine3 {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -24,9 +26,9 @@ public class TestRedefine3 {
   @Test
   public void testRedefine3() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
-    NetcdfFileWriter ncFile = NetcdfFileWriter.createNew(filename, false);
-    ncFile.setExtraHeaderBytes(64 * 1000);
-    Dimension dim = ncFile.addDimension("time", 100);
+    NetcdfFormatWriter.Builder writerb =
+        NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false).setExtraHeader(64 * 1000);
+    writerb.addDimension("time", 100);
 
     double[] jackData = new double[100];
     for (int i = 0; i < 100; i++)
@@ -35,30 +37,26 @@ public class TestRedefine3 {
     for (int i = 0; i < 100; i++)
       jillData[i] = 2 * i;
 
-    ncFile.addVariable("jack", DataType.DOUBLE, "time");
-    ncFile.addVariableAttribute("jack", "where", "up the hill");
-    ncFile.create();
+    writerb.addVariable("jack", DataType.DOUBLE, "time").addAttribute(new Attribute("where", "up the hill"));
 
-    int[] start = new int[] {0};
-    int[] count = new int[] {100};
-    ncFile.write("jack", start, Array.factory(DataType.DOUBLE, count, jackData));
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      int[] start = new int[] {0};
+      int[] count = new int[] {100};
+      writer.write("jack", start, Array.factory(DataType.DOUBLE, count, jackData));
 
-    ncFile.setRedefineMode(true);
-    ncFile.addVariable("jill", DataType.DOUBLE, "time");
-    ncFile.addVariableAttribute("jill", "where", "up the hill");
-    ncFile.setRedefineMode(false);
+      writerb.addVariable("jill", DataType.DOUBLE, "time");
+      Array jillArray = Array.factory(DataType.DOUBLE, count, jillData);
+      try {
+        writer.write("jill", start, jillArray);
+        fail();
+      } catch (Exception e) {
+        assert e instanceof NullPointerException;
+      }
+    }
 
-    Array jillArray = Array.factory(DataType.DOUBLE, count, jillData);
-    ncFile.write("jill", start, jillArray);
-
-    ncFile.flush();
-    ncFile.close();
-
-    NetcdfFile nc = NetcdfFiles.open(filename, null);
-    Variable v = nc.findVariable("jill");
-    Array jillRead = v.read();
-    ucar.unidata.util.test.CompareNetcdf.compareData(jillArray, jillRead);
-
-    nc.close();
+    try (NetcdfFile nc = NetcdfFiles.open(filename, null)) {
+      Variable v = nc.findVariable("jill");
+      assert v == null;
+    }
   }
 }
