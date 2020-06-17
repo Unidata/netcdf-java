@@ -1184,7 +1184,7 @@ public class Section {
   }
 
   public static class Builder {
-    ArrayList<Range> ranges = new ArrayList<Range>();
+    List<Range> ranges = new ArrayList<Range>();
 
     /** Append a Range to the Section meaning "all" */
     public Builder appendRangeAll() {
@@ -1337,7 +1337,7 @@ public class Section {
     /** Remove the first n Ranges, n <= number of ranges. */
     public Builder removeFirst(int n) {
       assert n <= ranges.size();
-      ranges = (ArrayList<Range>) ranges.subList(n, ranges.size());
+      ranges = ranges.subList(n, ranges.size());
       return this;
     }
 
