@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
@@ -272,7 +273,8 @@ public class TestCoverageHorizSubset {
       // flip the array
       int numValsToSum = 3;
       Array dataFlip = data.flip(0);
-      Section sec = Section.builder().appendRange(0, numValsToSum).build();
+      Range range = new Range(0, numValsToSum);
+      Section sec = new Section(range);
       IndexIterator dii = data.getIndexIterator();
       IndexIterator diiFlip = dataFlip.getIndexIterator();
 
