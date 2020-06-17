@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2;
@@ -16,8 +16,12 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.NetcdfFormatWriter;
+import ucar.nc2.write.NetcdfFormatWriter.Builder;
 import static org.junit.Assert.assertEquals;
 
+/** Test writing data and reading slices of it. */
 public class TestSlice {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -33,17 +37,18 @@ public class TestSlice {
   private String filePath;
 
   @Before
-  public void setUp() throws IOException {
+  public void setUp() throws IOException, InvalidRangeException {
     filePath = tempFolder.newFile().getAbsolutePath();
 
-    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filePath)) {
-      file.addDimension(null, "t", DIM_T);
-      file.addDimension(null, "alt", DIM_ALT);
-      file.addDimension(null, "lat", DIM_LAT);
-      file.addDimension(null, "lon", DIM_LON);
+    Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filePath);
+    writerb.addDimension("t", DIM_T);
+    writerb.addDimension("alt", DIM_ALT);
+    writerb.addDimension("lat", DIM_LAT);
+    writerb.addDimension("lon", DIM_LON);
+    writerb.addVariable(DATA_VARIABLE, DataType.FLOAT, "t alt lat lon");
 
-      file.addVariable(DATA_VARIABLE, DataType.FLOAT, "t alt lat lon");
-      file.create();
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      writer.write(DATA_VARIABLE, createData());
     }
   }
 
@@ -59,13 +64,6 @@ public class TestSlice {
       }
     }
     return values;
-  }
-
-  @Test
-  public void testFill() throws IOException, InvalidRangeException {
-    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filePath)) {
-      file.write(DATA_VARIABLE, createData());
-    }
   }
 
   @Test
@@ -118,7 +116,7 @@ public class TestSlice {
 
       Array org = var.read("3,3,:,:");
       Array data = sliced2.read();
-      ucar.unidata.util.test.CompareNetcdf.compareData(org, data);
+      CompareNetcdf2.compareData(DATA_VARIABLE, org, data);
     }
   }
 }

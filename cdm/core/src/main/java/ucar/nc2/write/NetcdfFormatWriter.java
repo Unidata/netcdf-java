@@ -195,6 +195,10 @@ public class NetcdfFormatWriter implements Closeable {
       return dim;
     }
 
+    public Dimension addUnlimitedDimension(String dimName) {
+      return addDimension(Dimension.builder().setName(dimName).setIsUnlimited(true).build());
+    }
+
     public Group.Builder getRootGroup() {
       return rootGroup;
     }
@@ -340,12 +344,18 @@ public class NetcdfFormatWriter implements Closeable {
       spiw = new N3iospWriter(builder.getIosp());
     }
 
-    if (!isNewFile) {
-      spiw.openForWriting(existingRaf, this.ncout, null);
-    } else {
-      spiw.create(location, this.ncout, extraHeaderBytes, preallocateSize, testIfLargeFile());
+    // If anything fails, make sure that resources are closed.
+    try {
+      if (!isNewFile) {
+        spiw.openForWriting(existingRaf, this.ncout, null);
+      } else {
+        spiw.create(location, this.ncout, extraHeaderBytes, preallocateSize, testIfLargeFile());
+      }
+      spiw.setFill(fill);
+    } catch (Throwable t) {
+      spiw.close();
+      throw t;
     }
-    spiw.setFill(fill);
   }
 
   // Temporary bridge to NetcdfFileWriter.Version
@@ -379,7 +389,7 @@ public class NetcdfFormatWriter implements Closeable {
     }
   }
 
-
+  // TODO should not be used to read data, close and reopen
   public NetcdfFile getOutputFile() {
     return this.ncout;
   }
@@ -414,10 +424,6 @@ public class NetcdfFormatWriter implements Closeable {
 
   private boolean isValidObjectName(String name) {
     return NetcdfFileFormat.isValidNetcdfObjectName(name);
-  }
-
-  private boolean isValidDataType(DataType dt) {
-    return format.isExtendedModel() || validN3types.contains(dt);
   }
 
   private String createValidObjectName(String name) {
@@ -499,16 +505,14 @@ public class NetcdfFormatWriter implements Closeable {
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
   public void write(Variable v, Array values) throws java.io.IOException, InvalidRangeException {
-    if (this.ncout != v.getNetcdfFile())
-      throw new IllegalArgumentException("Variable is not owned by this writer.");
-
     write(v, new int[values.getRank()], values);
   }
 
   /** Write data to the named variable, origin assumed to be 0. */
   public void write(String varName, Array values) throws IOException, InvalidRangeException {
-    Preconditions.checkNotNull(findVariable(varName));
-    write(findVariable(varName), values);
+    Variable v = findVariable(varName);
+    Preconditions.checkNotNull(v);
+    write(v, values);
   }
 
   /**
@@ -534,8 +538,9 @@ public class NetcdfFormatWriter implements Closeable {
    * @throws InvalidRangeException if values Array has illegal shape
    */
   public void write(String varName, int[] origin, Array values) throws IOException, InvalidRangeException {
-    Preconditions.checkNotNull(findVariable(varName));
-    write(findVariable(varName), origin, values);
+    Variable v = findVariable(varName);
+    Preconditions.checkNotNull(v);
+    write(v, origin, values);
   }
 
   /**
@@ -546,8 +551,8 @@ public class NetcdfFormatWriter implements Closeable {
    * @throws IOException if I/O error
    * @throws InvalidRangeException if values Array has illegal shape
    */
-  public void writeStringData(Variable v, Array values) throws IOException, InvalidRangeException {
-    writeStringData(v, new int[values.getRank()], values);
+  public void writeStringDataToChar(Variable v, Array values) throws IOException, InvalidRangeException {
+    writeStringDataToChar(v, new int[values.getRank()], values);
   }
 
   /**
@@ -559,13 +564,13 @@ public class NetcdfFormatWriter implements Closeable {
    * @throws IOException if I/O error
    * @throws InvalidRangeException if values Array has illegal shape
    */
-  public void writeStringData(Variable v, int[] origin, Array values) throws IOException, InvalidRangeException {
-
+  public void writeStringDataToChar(Variable v, int[] origin, Array values) throws IOException, InvalidRangeException {
     if (values.getElementType() != String.class)
-      throw new IllegalArgumentException("Must be ArrayObject of String ");
+      throw new IllegalArgumentException("values must be an ArrayObject of String ");
 
     if (v.getDataType() != DataType.CHAR)
       throw new IllegalArgumentException("variable " + v.getFullName() + " is not type CHAR");
+
     int rank = v.getRank();
     int strlen = v.getShape(rank - 1);
 

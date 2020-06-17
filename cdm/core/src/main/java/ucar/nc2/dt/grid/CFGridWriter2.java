@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Write CF compliant gridded data version 2.
  *
- * @deprecated Use {@link ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter}
+ * @deprecated Convert to CoverageCollection and use {@link ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter}
  */
 @Deprecated
 public class CFGridWriter2 {

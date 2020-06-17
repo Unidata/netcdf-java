@@ -19,12 +19,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
+import ucar.nc2.write.NetcdfFormatWriter;
 
-/**
- * @author caron
- * @since Aug 7, 2007
- */
+/** Test writing and reading some special characters. */
 public class TestSpecialChars {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -37,20 +34,21 @@ public class TestSpecialChars {
   public void testWriteAndRead() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
-    try (NetcdfFileWriter ncfilew = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
-      ncfilew.addGlobalAttribute("omy", trouble);
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
+    writerb.addAttribute(new Attribute("omy", trouble));
+    writerb.addDimension("t", 1);
+    writerb
+        .addDimension(Dimension.builder().setName("t_strlen").setLength(trouble.length()).setIsShared(false).build());
 
-      ncfilew.addDimension("t", 1);
+    // define Variables
+    writerb.addVariable("t", DataType.CHAR, "t_strlen").addAttribute(new Attribute("yow", trouble));
 
-      // define Variables
-      Variable tvar = ncfilew.addStringVariable(null, "t", new ArrayList<>(), trouble.length());
-      ncfilew.addVariableAttribute("t", "yow", trouble);
-
-      ncfilew.create();
-
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      Variable v = writer.findVariable("t");
+      assert v != null;
       Array data = Array.factory(DataType.STRING, new int[0]);
       data.setObject(data.getIndex(), trouble);
-      ncfilew.writeStringData(tvar, data);
+      writer.writeStringDataToChar(v, data);
     }
 
     String ncmlFilePath = tempFolder.newFile().getAbsolutePath();
@@ -60,7 +58,7 @@ public class TestSpecialChars {
       assert val.equals(trouble);
 
       Variable v = ncfile.findVariable("t");
-      v.setCachedData(v.read(), true);
+      v.setCachedData(v.read(), true); // why?
 
       val = v.findAttributeString("yow", null);
       assert val != null;

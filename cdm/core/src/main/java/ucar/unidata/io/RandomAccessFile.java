@@ -389,8 +389,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       if (cacheState > 0) {
         if (cacheState == 1) {
           cacheState = 2;
-          if (cache.release(this)) // return true if in the cache, otherwise was opened regular, so must be closed
-                                   // regular
+          // return true if in the cache, otherwise was opened regular, so must be closed regular
+          if (cache.release(this))
             return;
           cacheState = 0; // release failed, bail out
         } else {

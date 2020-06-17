@@ -1,24 +1,29 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2;
+package ucar.nc2.write;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.Assert2;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Simple example to create a new netCDF file corresponding to the following
- * CDL:
- * 
+ * Simple example to create a new netCDF file corresponding to the following CDL:
+ *
  * <pre>
  *  netcdf example {
  *  dimensions:
@@ -65,76 +70,61 @@ import java.lang.invoke.MethodHandles;
  * @author : John Caron
  */
 public class TestWriteRecord {
+
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  static boolean dumpAfterCreate = false;
-
   @Test
   public void testNC3WriteWithRecordVariables() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
-    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false)) {
-      // define dimensions, including unlimited
-      Dimension latDim = ncfile.addDimension("lat", 3);
-      Dimension lonDim = ncfile.addDimension("lon", 4);
-      Dimension timeDim = ncfile.addDimension("time", 0, true, false);
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
+    writerb.addUnlimitedDimension("time");
+    Dimension latDim = writerb.addDimension("lat", 3);
+    Dimension lonDim = writerb.addDimension("lon", 4);
 
-      // define Variables
+    // define Variables
 
-      // int rh(time, lat, lon) ;
-      // rh:long_name="relative humidity" ;
-      // rh:units = "percent" ;
-      ncfile.addVariable("rh", DataType.INT, "time lat lon");
-      ncfile.addVariableAttribute("rh", CDM.LONG_NAME, "relative humidity");
-      ncfile.addVariableAttribute("rh", "units", "percent");
+    // int rh(time, lat, lon) ;
+    // rh:long_name="relative humidity" ;
+    // rh:units = "percent" ;
+    // test attribute array
+    ArrayInt.D1 valid_range = new ArrayInt.D1(2, false);
+    valid_range.set(0, 0);
+    valid_range.set(1, 100);
 
-      // test attribute array
-      ArrayInt.D1 valid_range = new ArrayInt.D1(2, false);
-      valid_range.set(0, 0);
-      valid_range.set(1, 100);
-      ncfile.addVariableAttribute("rh", new Attribute("range", valid_range));
+    writerb.addVariable("rh", DataType.INT, "time lat lon")
+        .addAttribute(new Attribute(CDM.LONG_NAME, "relative humidity")).addAttribute(new Attribute("units", "percent"))
+        .addAttribute(new Attribute("range", valid_range))
+        .addAttribute(new Attribute(CDM.VALID_RANGE, Array.makeFromJavaArray(new double[] {0d, 100d}, false)));
 
-      ncfile.addVariableAttribute("rh",
-          new Attribute(CDM.VALID_RANGE, Array.makeFromJavaArray(new double[] {0d, 100d}, false)));
+    // double T(time, lat, lon) ;
+    // T:long_name="surface temperature" ;
+    // T:units = "degC" ;
+    writerb.addVariable("T", DataType.DOUBLE, "time lat lon")
+        .addAttribute(new Attribute(CDM.LONG_NAME, "surface temperature")).addAttribute(new Attribute("units", "degC"));
 
-      // double T(time, lat, lon) ;
-      // T:long_name="surface temperature" ;
-      // T:units = "degC" ;
-      ncfile.addVariable("T", DataType.DOUBLE, "time lat lon");
-      ncfile.addVariableAttribute("T", CDM.LONG_NAME, "surface temperature");
-      ncfile.addVariableAttribute("T", "units", "degC");
+    // float lat(lat) ;
+    // lat:units = "degrees_north" ;
+    writerb.addVariable("lat", DataType.FLOAT, "lat").addAttribute(new Attribute("units", "degrees_north"));
 
+    // float lon(lon) ;
+    // lon:units = "degrees_east" ;
+    writerb.addVariable("lon", DataType.FLOAT, "lon").addAttribute(new Attribute("units", "degrees_east"));
 
-      // float lat(lat) ;
-      // lat:units = "degrees_north" ;
-      ncfile.addVariable("lat", DataType.FLOAT, "lat");
-      ncfile.addVariableAttribute("lat", "units", "degrees_north");
+    // int time(time) ;
+    // time:units = "hours" ;
+    writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute("units", "hours"));
 
-      // float lon(lon) ;
-      // lon:units = "degrees_east" ;
-      ncfile.addVariable("lon", DataType.FLOAT, "lon");
-      ncfile.addVariableAttribute("lon", "units", "degrees_east");
+    writerb.addVariable("recordvarTest", DataType.INT, "time");
 
-      // int time(time) ;
-      // time:units = "hours" ;
-      ncfile.addVariable("time", DataType.INT, "time");
-      ncfile.addVariableAttribute("time", "units", "hours");
+    // :title = "Example Data" ;
+    writerb.addAttribute(new Attribute("title", "Example Data"));
 
-      ncfile.addVariable("recordvarTest", DataType.INT, "time");
-
-      // :title = "Example Data" ;
-      ncfile.addGlobalAttribute("title", "Example Data");
-
-      // create the file
-      ncfile.create();
-      if (dumpAfterCreate) {
-        logger.debug("ncfile = {}", ncfile);
-      }
-
-      Variable v = ncfile.findVariable("rh");
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      Variable v = writer.findVariable("rh");
       assert v != null;
       assert v.isUnlimited();
 
@@ -154,17 +144,17 @@ public class TestWriteRecord {
       }
 
       // write rhData out to disk
-      ncfile.write("rh", rhA);
+      writer.write("rh", rhA);
 
       // Here's an Array approach to set the values of T all at once.
       double[][][] tData =
           {{{1., 2, 3, 4}, {2., 4, 6, 8}, {3., 6, 9, 12}}, {{2.5, 5, 7.5, 10}, {5., 10, 15, 20}, {7.5, 15, 22.5, 30}}};
-      ncfile.write("T", Array.makeFromJavaArray(tData, false));
+      writer.write("T", Array.makeFromJavaArray(tData, false));
 
       // Store the rest of variable values
-      ncfile.write("lat", Array.makeFromJavaArray(new float[] {41, 40, 39}, false));
-      ncfile.write("lon", Array.makeFromJavaArray(new float[] {-109, -107, -105, -103}, false));
-      ncfile.write("time", Array.makeFromJavaArray(new int[] {6, 18}, false));
+      writer.write("lat", Array.makeFromJavaArray(new float[] {41, 40, 39}, false));
+      writer.write("lon", Array.makeFromJavaArray(new float[] {-109, -107, -105, -103}, false));
+      writer.write("time", Array.makeFromJavaArray(new int[] {6, 18}, false));
 
       /*
        * write using scalar arrays
@@ -177,8 +167,9 @@ public class TestWriteRecord {
        * ncfile.write("recordvarTest", origin, data);
        * }
        */
+    }
 
-      // test reading without closing and reopening
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       /* Get the value of the global attribute named "title" */
       Attribute title = ncfile.findGlobalAttribute("title");
       assert title != null;
@@ -190,12 +181,13 @@ public class TestWriteRecord {
        * type of the "lat" variable.
        */
       Variable lat = ncfile.findVariable("lat");
+      Assert.assertNotNull(lat);
       assert (lat.getRank() == 1); // make sure it's 1-dimensional
       int nlats = lat.getShape()[0]; // number of latitudes
       double[] lats = new double[nlats]; // where to put them
 
       Array values = lat.read(); // read all into memory
-      ima = values.getIndex(); // index array to specify which value
+      Index ima = values.getIndex(); // index array to specify which value
       for (int ilat = 0; ilat < nlats; ilat++) {
         lats[ilat] = values.getDouble(ima.set0(ilat));
       }
@@ -206,6 +198,7 @@ public class TestWriteRecord {
 
       /* Read the longitudes. */
       Variable lon = ncfile.findVariable("lon");
+      Assert.assertNotNull(lon);
       values = lon.read();
       assert (values instanceof ArrayFloat.D1);
       ArrayFloat.D1 fa = (ArrayFloat.D1) values;
@@ -222,12 +215,14 @@ public class TestWriteRecord {
        * the data are illustrated below.
        */
 
-      /* Whats the time dimensin length ? */
+      /* Whats the time dimension length ? */
       Dimension td = ncfile.findDimension("time");
+      Assert.assertNotNull(td);
       assert td.getLength() == 2;
 
       /* Read the times: unlimited dimension */
       Variable time = ncfile.findVariable("time");
+      Assert.assertNotNull(time);
       Array timeValues = time.read();
       assert (timeValues instanceof ArrayInt.D1);
       ArrayInt.D1 ta = (ArrayInt.D1) timeValues;
@@ -236,6 +231,7 @@ public class TestWriteRecord {
 
       /* Read the relative humidity data */
       Variable rh = ncfile.findVariable("rh");
+      Assert.assertNotNull(rh);
       Array rhValues = rh.read();
       assert (rhValues instanceof ArrayInt.D3);
       ArrayInt.D3 rha = (ArrayInt.D3) rhValues;
@@ -252,6 +248,7 @@ public class TestWriteRecord {
 
       /* Read the temperature data */
       Variable t = ncfile.findVariable("T");
+      Assert.assertNotNull(t);
       Array tValues = t.read();
       assert (tValues instanceof ArrayDouble.D3);
       ArrayDouble.D3 Ta = (ArrayDouble.D3) tValues;
@@ -272,45 +269,38 @@ public class TestWriteRecord {
   public void testNC3WriteWithRecord() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
-    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false)) {
-      // define dimensions, including unlimited
-      Dimension latDim = ncfile.addDimension("lat", 64);
-      Dimension lonDim = ncfile.addDimension("lon", 128);
-      Dimension timeDim = ncfile.addDimension("time", 0, true, false);
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
+    writerb.addUnlimitedDimension("time");
+    Dimension latDim = writerb.addDimension("lat", 64);
+    Dimension lonDim = writerb.addDimension("lon", 128);
 
-      // define Variables
+    // define Variables
 
-      // double T(time, lat, lon) ;
-      // T:long_name="surface temperature" ;
-      // T:units = "degC" ;
-      Variable tVar = ncfile.addVariable("T", DataType.DOUBLE, "time lat lon");
-      ncfile.addVariableAttribute("T", CDM.LONG_NAME, "surface temperature");
-      ncfile.addVariableAttribute("T", "units", "degC");
+    // double T(time, lat, lon) ;
+    // T:long_name="surface temperature" ;
+    // T:units = "degC" ;
+    writerb.addVariable("T", DataType.DOUBLE, "time lat lon")
+        .addAttribute(new Attribute(CDM.LONG_NAME, "surface temperature")).addAttribute(new Attribute("units", "degC"));
 
+    // float lat(lat) ;
+    // lat:units = "degrees_north" ;
+    writerb.addVariable("lat", DataType.FLOAT, "lat").addAttribute(new Attribute("units", "degrees_north"));
 
-      // float lat(lat) ;
-      // lat:units = "degrees_north" ;
-      ncfile.addVariable("lat", DataType.FLOAT, "lat");
-      ncfile.addVariableAttribute("lat", "units", "degrees_north");
+    // float lon(lon) ;
+    // lon:units = "degrees_east" ;
+    writerb.addVariable("lon", DataType.FLOAT, "lon").addAttribute(new Attribute("units", "degrees_east"));
 
-      // float lon(lon) ;
-      // lon:units = "degrees_east" ;
-      ncfile.addVariable("lon", DataType.FLOAT, "lon");
-      ncfile.addVariableAttribute("lon", "units", "degrees_east");
+    // int time(time) ;
+    // time:units = "hours" ;
+    writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute("units", "hours"));
 
-      // int time(time) ;
-      // time:units = "hours" ;
-      Variable timeVar = ncfile.addVariable("time", DataType.INT, "time");
-      ncfile.addVariableAttribute("time", "units", "hours");
+    // :title = "Example Data" ;
+    writerb.addAttribute(new Attribute("title", "Example Data"));
 
-      // :title = "Example Data" ;
-      ncfile.addGlobalAttribute("title", "Example Data");
-
-      // create the file
-      ncfile.create();
-
+    try (NetcdfFormatWriter writer = writerb.build()) {
       // now write one record at a time
-      Variable v = ncfile.findVariable("T");
+      Variable v = writer.findVariable("T");
+      Assert.assertNotNull(v);
       ArrayDouble data = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
       ArrayInt timeData = new ArrayInt.D1(1, false);
       int[] origin = new int[v.getRank()];
@@ -329,8 +319,8 @@ public class TestWriteRecord {
         // write to file
         origin[0] = time;
         timeOrigin[0] = time;
-        ncfile.write("T", origin, data);
-        ncfile.write("time", timeOrigin, timeData);
+        writer.write("T", origin, data);
+        writer.write("time", timeOrigin, timeData);
       }
     }
   }
