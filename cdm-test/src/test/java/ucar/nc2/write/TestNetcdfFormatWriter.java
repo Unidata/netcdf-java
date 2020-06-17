@@ -46,7 +46,7 @@ public class TestNetcdfFormatWriter {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
-    writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());
+    writerb.addUnlimitedDimension("time");
 
     writerb.addVariable("time", DataType.BYTE, "time").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
         .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10.0))
@@ -108,7 +108,7 @@ public class TestNetcdfFormatWriter {
     String fileName = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerb =
         NetcdfFormatWriter.createNewNetcdf3(fileName).setFill(false).setPreallocateSize(approxSize);
-    writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());
+    writerb.addUnlimitedDimension("time");
     // fileWriter.setLargeFile(true); TODO is this ok, not set, test succeeds?
 
     String timeUnits = "hours since 2008-06-06 12:00:0.0";
@@ -158,7 +158,7 @@ public class TestNetcdfFormatWriter {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
-    writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());
+    writerb.addUnlimitedDimension("time");
     writerb.addAttribute(new Attribute("name", "value"));
 
     // public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
@@ -188,7 +188,7 @@ public class TestNetcdfFormatWriter {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
-    writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());
+    writerb.addUnlimitedDimension("time");
     writerb.addAttribute(new Attribute("name", "value"));
 
     // public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
@@ -203,16 +203,7 @@ public class TestNetcdfFormatWriter {
     }
 
     // open existing, add data along unlimited dimension
-    NetcdfFormatWriter.Builder rewriter = NetcdfFormatWriter.openExisting(filename).setFill(false);
-    /*
-     * try {
-     * rewriter.addAttribute(new Attribute("name2", "value3"));
-     * fail();
-     * } catch (Exception e) {
-     * // ok
-     * }
-     */
-    try (NetcdfFormatWriter writer = rewriter.build()) {
+    try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(filename).setFill(false).build()) {
       Variable time = writer.findVariable("time");
       assert time.getSize() == 4 : time.getSize();
 
@@ -232,8 +223,7 @@ public class TestNetcdfFormatWriter {
     }
 
     // open existing, add more data along unlimited dimension
-    NetcdfFormatWriter.Builder rewriter2 = NetcdfFormatWriter.openExisting(filename).setFill(false);
-    try (NetcdfFormatWriter writer = rewriter2.build()) {
+    try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(filename).setFill(false).build()) {
       Variable time = writer.findVariable("time");
       assert time.getSize() == 7 : time.getSize();
 

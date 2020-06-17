@@ -250,8 +250,10 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   @Override
   public void close() throws java.io.IOException {
     if (raf != null) {
-      long size = header.calcFileSize();
-      raf.setMinLength(size);
+      if (header != null) {
+        long size = header.calcFileSize();
+        raf.setMinLength(size);
+      }
       raf.close();
     }
     raf = null;
