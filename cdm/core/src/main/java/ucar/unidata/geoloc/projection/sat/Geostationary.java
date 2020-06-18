@@ -228,10 +228,9 @@ public class Geostationary extends ProjectionImpl {
     double x = satCoords[0];
     double y = satCoords[1];
 
-    if (isGeoCoordinateScaled())
-    {
-        x /= geoCoordinateScaleFactor;
-        y /= geoCoordinateScaleFactor;
+    if (isGeoCoordinateScaled()) {
+      x /= geoCoordinateScaleFactor;
+      y /= geoCoordinateScaleFactor;
     }
 
     destPoint.setLocation(x, y);
@@ -246,10 +245,9 @@ public class Geostationary extends ProjectionImpl {
     double x = ppt.getX();
     double y = ppt.getY();
 
-    if (isGeoCoordinateScaled())
-    {
-        x *= geoCoordinateScaleFactor;
-        y *= geoCoordinateScaleFactor;
+    if (isGeoCoordinateScaled()) {
+      x *= geoCoordinateScaleFactor;
+      y *= geoCoordinateScaleFactor;
     }
 
     final double[] lonlat = navigation.satToEarth(x, y);
@@ -271,10 +269,9 @@ public class Geostationary extends ProjectionImpl {
     double x1 = pt1.getX();
     double x2 = pt2.getX();
 
-    if (isGeoCoordinateScaled())
-    {
-        x1 *= geoCoordinateScaleFactor;
-        x2 *= geoCoordinateScaleFactor;
+    if (isGeoCoordinateScaled()) {
+      x1 *= geoCoordinateScaleFactor;
+      x2 *= geoCoordinateScaleFactor;
     }
 
     // opposite signed X values, larger then 100 km
