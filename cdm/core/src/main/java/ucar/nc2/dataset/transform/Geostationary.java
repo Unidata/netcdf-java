@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -66,29 +66,45 @@ import ucar.unidata.geoloc.ProjectionImpl;
  * @since 12/5/13
  */
 public class Geostationary extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
 
   private static double defaultScaleFactor = -1.0;
 
+  /**
+   *
+   */
   public String getTransformName() {
     return CF.GEOSTATIONARY;
   }
 
+  /**
+   *
+   */
   public TransformType getTransformType() {
     return TransformType.Projection;
   }
 
+  /**
+   *
+   */
   private double getScaleFactor(String geoCoordinateUnits) {
     // default value of -1.0 interpreted as no scaling in the class
     // ucar.unidata.geoloc.projection.sat.Geostationary
     double scaleFactor = defaultScaleFactor;
     String neededMapCoordinateUnit = "radian";
+
     if (SimpleUnit.isCompatible(geoCoordinateUnits, neededMapCoordinateUnit)) {
       scaleFactor = SimpleUnit.getConversionFactor(geoCoordinateUnits, neededMapCoordinateUnit);
     }
 
+    logger.debug("geoCoordinateUnits {}, scaleFactor {}", geoCoordinateUnits, scaleFactor);
+
     return scaleFactor;
   }
 
+  /**
+   *
+   */
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
 
@@ -131,21 +147,23 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
     String sweep_angle = ctv.findAttributeString(CF.SWEEP_ANGLE_AXIS, null);
     String fixed_angle = ctv.findAttributeString(CF.FIXED_ANGLE_AXIS, null);
 
-    if (sweep_angle == null && fixed_angle == null)
+    if (sweep_angle == null && fixed_angle == null) {
       throw new IllegalArgumentException("Must specify " + CF.SWEEP_ANGLE_AXIS + " or " + CF.FIXED_ANGLE_AXIS);
+    }
     boolean isSweepX;
-    if (sweep_angle != null)
+    if (sweep_angle != null) {
       isSweepX = sweep_angle.equals("x");
-    else
+    } else {
       isSweepX = fixed_angle.equals("y");
+    }
 
     // scales less than zero indicate no scaling of axis (i.e. map coords have units of radians)
-    double geoCoordinateScaeFactor;
+    double geoCoordinateScaleFactor;
 
-    geoCoordinateScaeFactor = getScaleFactor(geoCoordinateUnits);
+    geoCoordinateScaleFactor = getScaleFactor(geoCoordinateUnits);
 
     ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, perspective_point_height,
-        semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, geoCoordinateScaeFactor);
+        semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, geoCoordinateScaleFactor);
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
