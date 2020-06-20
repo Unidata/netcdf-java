@@ -78,9 +78,6 @@ public class Geostationary extends ProjectionImpl {
 
   private GEOSTransform navigation;
 
-  /**
-   *
-   */
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
       double semi_major_axis, double inv_flattening, boolean isSweepX) {
 
@@ -88,9 +85,6 @@ public class Geostationary extends ProjectionImpl {
     this(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, -1.0);
   }
 
-  /**
-   *
-   */
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
       double semi_major_axis, double inv_flattening, boolean isSweepX, double geoCoordinateScaleFactor) {
     super(NAME, false);
@@ -117,27 +111,18 @@ public class Geostationary extends ProjectionImpl {
     logger.debug("scaleGeoCoordinate {}, geoCoordinateScaleFactor {}", scaleGeoCoordinate, geoCoordinateScaleFactor);
   }
 
-  /**
-   *
-   */
   public Geostationary() {
     super(NAME, false);
     navigation = new GEOSTransform();
     makePP();
   }
 
-  /**
-   *
-   */
   public Geostationary(double subLonDegrees) {
     super(NAME, false);
     navigation = new GEOSTransform(subLonDegrees, GEOSTransform.GOES);
     makePP();
   }
 
-  /**
-   *
-   */
   public Geostationary(double subLonDegrees, boolean isSweepX) {
     super(NAME, false);
 
@@ -152,9 +137,6 @@ public class Geostationary extends ProjectionImpl {
     makePP();
   }
 
-  /**
-   *
-   */
   public Geostationary(double subLonDegrees, String sweepAngleAxis, double geoCoordinateScaleFactor) {
     super(NAME, false);
 
@@ -172,9 +154,6 @@ public class Geostationary extends ProjectionImpl {
     makePP();
   }
 
-  /**
-   *
-   */
   private void makePP() {
     addParameter(CF.GRID_MAPPING_NAME, NAME);
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, navigation.sub_lon_degrees);
@@ -185,9 +164,6 @@ public class Geostationary extends ProjectionImpl {
     addParameter(CF.SEMI_MINOR_AXIS, navigation.r_pol * 1000.0);
   }
 
-  /**
-   *
-   */
   private boolean isGeoCoordinateScaled() {
     return scaleGeoCoordinate && geoCoordinateScaleFactor > Double.MIN_VALUE;
   }
@@ -206,19 +182,20 @@ public class Geostationary extends ProjectionImpl {
     return new Geostationary(navigation.sub_lon_degrees, sweepAxisAngle, geoCoordinateScaleFactor);
   }
 
-  /**
-   *
-   */
   @Override
   public String paramsToString() {
     return "";
   }
 
   /**
-   * Return a lat/lon point in projection coordinates (result in radians)
+   * Returns an x/y grid point in projection coordinate matching a lat/lon point.
+   * The units of the returned result will be in radians unless the {@code Geostationary} object
+   * was created using one of the constructors that takes a {@code geoCoordinateScaleFactor}
+   * parameter. If that parameter is provided, then the units of x and y are in radians
+   * divided by the scaling factor.
    *
    * @param latlon convert from these lat, lon coordinates
-   * @param destPoint the object to write to (values in radians)
+   * @param destPoint the object to write to
    * @return destPoint
    */
   @Override
@@ -237,9 +214,6 @@ public class Geostationary extends ProjectionImpl {
     return destPoint;
   }
 
-  /**
-   *
-   */
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
     double x = ppt.getX();
@@ -256,9 +230,6 @@ public class Geostationary extends ProjectionImpl {
     return destPoint;
   }
 
-  /**
-   *
-   */
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
@@ -279,9 +250,6 @@ public class Geostationary extends ProjectionImpl {
     return (x1 * x2 < 0) && (Math.abs(x1 - x2) > 100);
   }
 
-  /**
-   *
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -300,9 +268,6 @@ public class Geostationary extends ProjectionImpl {
     return geoCoordinateScaleFactor == that.geoCoordinateScaleFactor;
   }
 
-  /**
-   *
-   */
   @Override
   public int hashCode() {
     return navigation.hashCode();

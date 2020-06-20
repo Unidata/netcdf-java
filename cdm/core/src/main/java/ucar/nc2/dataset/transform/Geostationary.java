@@ -70,23 +70,14 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
 
   private static double defaultScaleFactor = -1.0;
 
-  /**
-   *
-   */
   public String getTransformName() {
     return CF.GEOSTATIONARY;
   }
 
-  /**
-   *
-   */
   public TransformType getTransformType() {
     return TransformType.Projection;
   }
 
-  /**
-   *
-   */
   private double getScaleFactor(String geoCoordinateUnits) {
     // default value of -1.0 interpreted as no scaling in the class
     // ucar.unidata.geoloc.projection.sat.Geostationary
@@ -102,9 +93,6 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
     return scaleFactor;
   }
 
-  /**
-   *
-   */
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
 
