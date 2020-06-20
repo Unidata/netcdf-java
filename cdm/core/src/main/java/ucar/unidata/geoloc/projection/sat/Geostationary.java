@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -70,13 +70,13 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 public class Geostationary extends ProjectionImpl {
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
 
   private static final String NAME = CF.GEOSTATIONARY;
   private boolean scaleGeoCoordinate;
   private double geoCoordinateScaleFactor = Double.MIN_VALUE;
 
-  GEOSTransform navigation;
+  private GEOSTransform navigation;
 
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
       double semi_major_axis, double inv_flattening, boolean isSweepX) {
@@ -107,6 +107,8 @@ public class Geostationary extends ProjectionImpl {
       scaleGeoCoordinate = true;
       this.geoCoordinateScaleFactor = geoCoordinateScaleFactor;
     }
+
+    logger.debug("scaleGeoCoordinate {}, geoCoordinateScaleFactor {}", scaleGeoCoordinate, geoCoordinateScaleFactor);
   }
 
   public Geostationary() {
@@ -147,6 +149,8 @@ public class Geostationary extends ProjectionImpl {
       this.geoCoordinateScaleFactor = geoCoordinateScaleFactor;
     }
 
+    logger.debug("scaleGeoCoordinate {}, geoCoordinateScaleFactor {}", scaleGeoCoordinate, geoCoordinateScaleFactor);
+
     makePP();
   }
 
@@ -162,14 +166,6 @@ public class Geostationary extends ProjectionImpl {
 
   private boolean isGeoCoordinateScaled() {
     return scaleGeoCoordinate && geoCoordinateScaleFactor > Double.MIN_VALUE;
-  }
-
-  private double getX(ProjectionPoint ppt) {
-    return isGeoCoordinateScaled() ? ppt.getX() * geoCoordinateScaleFactor : ppt.getX();
-  }
-
-  private double getY(ProjectionPoint ppt) {
-    return isGeoCoordinateScaled() ? ppt.getY() * geoCoordinateScaleFactor : ppt.getY();
   }
 
   /**
@@ -192,28 +188,43 @@ public class Geostationary extends ProjectionImpl {
   }
 
   /**
-   * Return a lat/lon point in projection coordinates (result in radians)
+   * Returns an x/y grid point in projection coordinate matching a lat/lon point.
+   * The units of the returned result will be in radians unless the {@code Geostationary} object
+   * was created using one of the constructors that takes a {@code geoCoordinateScaleFactor}
+   * parameter. If that parameter is provided, then the units of x and y are in radians
+   * divided by the scaling factor.
    *
    * @param latlon convert from these lat, lon coordinates
-   * @param destPoint the object to write to (values in radians)
+   * @param destPoint the object to write to
    * @return destPoint
    */
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
-    double[] satCoords = navigation.earthToSat(latlon.getLongitude(), latlon.getLatitude());
+    final double[] satCoords = navigation.earthToSat(latlon.getLongitude(), latlon.getLatitude());
+
     double x = satCoords[0];
     double y = satCoords[1];
 
-    destPoint.setLocation(satCoords[0], satCoords[1]);
+    if (isGeoCoordinateScaled()) {
+      x /= geoCoordinateScaleFactor;
+      y /= geoCoordinateScaleFactor;
+    }
+
+    destPoint.setLocation(x, y);
     return destPoint;
   }
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
-    double x = getX(ppt);
-    double y = getY(ppt);
+    double x = ppt.getX();
+    double y = ppt.getY();
 
-    double[] lonlat = navigation.satToEarth(x, y);
+    if (isGeoCoordinateScaled()) {
+      x *= geoCoordinateScaleFactor;
+      y *= geoCoordinateScaleFactor;
+    }
+
+    final double[] lonlat = navigation.satToEarth(x, y);
     destPoint.setLongitude(lonlat[0]);
     destPoint.setLatitude(lonlat[1]);
     return destPoint;
@@ -222,30 +233,39 @@ public class Geostationary extends ProjectionImpl {
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
-    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2))
+    if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
+    }
 
-    double x1 = getX(pt1);
-    double x2 = getX(pt2);
+    double x1 = pt1.getX();
+    double x2 = pt2.getX();
+
+    if (isGeoCoordinateScaled()) {
+      x1 *= geoCoordinateScaleFactor;
+      x2 *= geoCoordinateScaleFactor;
+    }
 
     // opposite signed X values, larger then 100 km
+    // LOOK! BUG? This proj works in units of radians rather than km.
     return (x1 * x2 < 0) && (Math.abs(x1 - x2) > 100);
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
+    if (this == o) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
+    }
 
     Geostationary that = (Geostationary) o;
 
-    if (!navigation.equals(that.navigation))
+    if (!navigation.equals(that.navigation)) {
       return false;
+    }
 
     return geoCoordinateScaleFactor == that.geoCoordinateScaleFactor;
-
   }
 
   @Override
