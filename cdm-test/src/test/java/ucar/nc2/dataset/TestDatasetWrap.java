@@ -9,13 +9,13 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.io.File;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -34,7 +34,7 @@ public class TestDatasetWrap {
   }
 
   private void doOne(String filename) throws Exception {
-    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(DatasetUrl.create(null, filename), null);
+    try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(DatasetUrl.create(null, filename), null);
         NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
 
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.create(null, filename), true, null);
@@ -49,29 +49,19 @@ public class TestDatasetWrap {
   public void testMissingDataReplaced() throws Exception {
     // this one has misssing longitude data, but not getting set to NaN
     String filename = TestDir.cdmUnitTestDir + "/ft/point/netcdf/Surface_Synoptic_20090921_0000.nc";
-    NetcdfFile ncfile = null;
-    NetcdfDataset ds = null;
+    System.out.println(" testMissingDataReplaced= " + filename);
 
-    try {
-      ncfile = NetcdfFiles.open(filename);
-      ds = NetcdfDatasets.openDataset(filename);
-
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       String varName = "Lon";
       Variable wrap = ds.findVariable(varName);
+      assert wrap != null;
       Array data_wrap = wrap.read();
-
-      CompareNetcdf2 compare = new CompareNetcdf2();
+      double[] data_wrap_double = (double[]) data_wrap.get1DJavaArray(DataType.DOUBLE);
 
       assert wrap instanceof CoordinateAxis1D;
       CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
 
-      assert compare.compareData(varName, data_wrap, axis.getCoordValues());
-    } finally {
-
-      if (ncfile != null)
-        ncfile.close();
-      if (ds != null)
-        ds.close();
+      assert new CompareNetcdf2().compareData(varName, data_wrap_double, axis.getCoordValues());
     }
   }
 
@@ -79,12 +69,9 @@ public class TestDatasetWrap {
   public void testLongitudeWrap() throws Exception {
     // this one was getting clobbered by longitude wrapping
     String filename = TestDir.cdmUnitTestDir + "/ft/profile/sonde/sgpsondewnpnC1.a1.20020507.112400.cdf";
-    NetcdfFile ncfile = null;
-    NetcdfDataset ds = null;
+    System.out.println(" testLongitudeWrap= " + filename);
 
-    try {
-      ncfile = NetcdfFiles.open(filename);
-      ds = NetcdfDatasets.openDataset(filename);
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
 
       String varName = "lon";
       Variable org = ncfile.findVariable(varName);
@@ -94,21 +81,15 @@ public class TestDatasetWrap {
       Array data_wrap = wrap.read();
 
       boolean ok;
-      CompareNetcdf2 compare = new CompareNetcdf2();
       ok = CompareNetcdf2.compareData(varName, data_org, data_wrap);
 
       assert wrap instanceof CoordinateAxis1D;
       CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
 
-      ok &= CompareNetcdf2.compareData(varName, data_org, axis.getCoordValues());
+      double[] data_org_double = (double[]) data_org.get1DJavaArray(DataType.DOUBLE);
+      ok &= new CompareNetcdf2().compareData(varName, data_org_double, axis.getCoordValues());
 
       assert ok;
-    } finally {
-
-      if (ncfile != null)
-        ncfile.close();
-      if (ds != null)
-        ds.close();
     }
   }
 }

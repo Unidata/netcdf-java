@@ -20,7 +20,7 @@ public class TestH5iospNewProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmLocalTestDataDir + "/hdf5/test_atomic_types.nc";
+    String filename = TestDir.cdmUnitTestDir + "formats/hdf5/complex/compound_complex.h5";
     showOrg(filename);
     showNew(filename);
     assert compareWithBuilder(filename);

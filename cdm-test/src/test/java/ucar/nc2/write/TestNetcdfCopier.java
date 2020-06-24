@@ -43,7 +43,7 @@ public class TestNetcdfCopier {
     result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", true});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib1/radar_national.grib", true});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib2/200508041200.ngrid_gfs", true});
-    result.add(new Object[] {"file:" + TestDir.cdmLocalFromTestDataDir + "point/stationData2Levels.ncml", true});
+    result.add(new Object[] {"file:" + TestDir.cdmLocalFromTestDataDir + "point/stationData2Levels.ncml", false});
 
     // result.add(new Object[]{"formats/hdf4/17766010.hdf"});
     // result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
