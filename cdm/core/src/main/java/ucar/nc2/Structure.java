@@ -657,7 +657,9 @@ public class Structure extends Variable {
     this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(Collectors.toList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
-    calcElementSize();
+    if (elementSize <= 0) {
+      calcElementSize();
+    }
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */

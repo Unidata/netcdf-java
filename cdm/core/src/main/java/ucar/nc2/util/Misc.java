@@ -201,7 +201,8 @@ public class Misc {
         ndiff++;
       }
     }
-    f.format("tested %d bytes  diff = %d %n", len, ndiff);
+    if (ndiff > 0)
+      f.format("Misc.compare %d bytes, %d are different %n", len, ndiff);
     return ndiff == 0 && (raw1.length == raw2.length);
   }
 
@@ -221,7 +222,8 @@ public class Misc {
         ok = false;
       }
     }
-    f.format("tested %d floats diff = %d %n", len, ndiff);
+    if (ndiff > 0)
+      f.format("Misc.compare %d floats, %d are different %n", len, ndiff);
     return ok;
   }
 
@@ -241,7 +243,8 @@ public class Misc {
         ok = false;
       }
     }
-    f.format("tested %d floats diff = %d %n", len, ndiff);
+    if (ndiff > 0)
+      f.format("Misc.compare %d ints, %d are different %n", len, ndiff);
     return ok;
   }
 
