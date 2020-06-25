@@ -10,28 +10,28 @@ import javax.annotation.concurrent.Immutable;
 
 /** A mutable collection of Attributes. */
 public class AttributeContainerMutable implements AttributeContainer {
-  private String name;
+
+  /** Create mutable from immutable container. */
+  public static AttributeContainerMutable copyFrom(@Nullable AttributeContainer from) {
+    return from == null ? new AttributeContainerMutable(null) : new AttributeContainerMutable(from.getName(), from);
+  }
+
+  private @Nullable String name;
   private List<Attribute> atts;
 
   /** Constructor with container name. */
-  public AttributeContainerMutable(String name) {
+  public AttributeContainerMutable(@Nullable String name) {
     this.name = name;
     this.atts = new ArrayList<>();
   }
 
   /** Constructor with container name and list of Attributes to copy in. */
-  public AttributeContainerMutable(String name, Iterable<Attribute> from) {
+  public AttributeContainerMutable(@Nullable String name, Iterable<Attribute> from) {
     this(name);
     addAll(from);
   }
 
-  /** Constructor with container name and list of Attributes to copy in. */
-  public AttributeContainerMutable(AttributeContainer from) {
-    this(from.getName());
-    addAll(from);
-  }
-
-  public void setName(String name) {
+  public void setName(@Nullable String name) {
     this.name = name;
   }
 

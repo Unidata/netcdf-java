@@ -71,7 +71,7 @@ public class CoverageCoordAxisBuilder {
     this.description = description;
     this.dataType = dataType;
     this.axisType = axisType;
-    this.attributes = new AttributeContainerMutable(atts);
+    this.attributes = AttributeContainerMutable.copyFrom(atts);
     this.dependenceType = dependenceType;
     this.setDependsOn(dependsOnS);
     this.spacing = spacing;
@@ -89,7 +89,7 @@ public class CoverageCoordAxisBuilder {
     this.description = from.description;
     this.dataType = from.dataType;
     this.axisType = from.axisType;
-    this.attributes = new AttributeContainerMutable(attributes);
+    this.attributes = AttributeContainerMutable.copyFrom(from.attributes);
     this.dependenceType = from.dependenceType;
     this.spacing = from.spacing;
     this.values = from.values;
@@ -306,9 +306,7 @@ public class CoverageCoordAxisBuilder {
   void setReferenceDate(CalendarDate refDate) {
     this.timeHelper = timeHelper.setReferenceDate(refDate);
     this.units = timeHelper.getUdUnit();
-    if (attributes != null) {
-      attributes.addAttribute(new Attribute(CDM.UNITS, this.units));
-    }
+    this.attributes.addAttribute(new Attribute(CDM.UNITS, this.units));
   }
 
 }

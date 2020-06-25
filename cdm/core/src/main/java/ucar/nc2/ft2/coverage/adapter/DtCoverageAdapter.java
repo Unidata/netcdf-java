@@ -245,7 +245,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       builder.description = description;
       builder.dataType = dataType;
       builder.axisType = axisType;
-      builder.attributes = new AttributeContainerMutable(atts);
+      builder.attributes = AttributeContainerMutable.copyFrom(atts);
       builder.dependenceType = dependenceType;
       builder.setDependsOn(dependsOn);
       builder.spacing = spacing;
@@ -310,7 +310,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     builder.description = description;
     builder.dataType = dataType;
     builder.axisType = axisType;
-    builder.attributes = new AttributeContainerMutable(dtCoordAxis.attributes());
+    builder.attributes = AttributeContainerMutable.copyFrom(dtCoordAxis.attributes());
     builder.dependenceType = dependenceType;
     builder.setDependsOn(dependsOn);
     builder.spacing = spacing;
