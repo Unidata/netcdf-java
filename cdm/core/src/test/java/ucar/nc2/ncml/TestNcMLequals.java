@@ -4,27 +4,27 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.*;
+import java.util.Formatter;
+import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.util.CompareNetcdf2;
 
 /** Test netcdf dataset in the JUnit framework. */
-
-public class TestNcMLequals extends TestCase {
+public class TestNcMLequals {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestNcMLequals(String name) {
-    super(name);
-  }
-
+  @Test
   public void testEquals() throws IOException {
     testEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
     testEnhanceEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
   }
 
+  @Test
   public void problem() throws IOException {
     // testEnhanceEquals("file:G:/zg500_MM5I_1979010103.ncml");
     testEquals(
@@ -35,29 +35,23 @@ public class TestNcMLequals extends TestCase {
 
   private void testEquals(String ncmlLocation) throws IOException {
     System.out.println("testEquals");
-    NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, null);
-
-    String locref = ncd.getReferencedFile().getLocation();
-    NetcdfDataset ncdref = NetcdfDataset.openDataset(locref, false, null);
-
-    ucar.unidata.util.test.CompareNetcdf.compareFiles(ncd, ncdref, false, false, false);
-
-    ncd.close();
-    ncdref.close();
+    try (NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, null);
+        NetcdfDataset ncdref = NetcdfDataset.openDataset(ncd.getReferencedFile().getLocation(), false, null)) {
+      Assert.assertTrue(CompareNetcdf2.compareFiles(ncd, ncdref, new Formatter(), false, false, false));
+    }
   }
 
   private void testEnhanceEquals(String ncmlLocation) throws IOException {
     System.out.println("testEnhanceEquals");
-    NetcdfDataset ncml = NcMLReader.readNcML(ncmlLocation, null);
-    NetcdfDataset ncmlEnhanced = new NetcdfDataset(ncml, true);
+    try (NetcdfDataset ncml = NcMLReader.readNcML(ncmlLocation, null);
+        NetcdfDataset ncmlEnhanced = new NetcdfDataset(ncml, true)) {
 
-    String locref = ncml.getReferencedFile().getLocation();
-    NetcdfDataset ncdrefEnhanced = NetcdfDataset.openDataset(locref, true, null);
+      String locref = ncml.getReferencedFile().getLocation();
+      NetcdfDataset ncdrefEnhanced = NetcdfDataset.openDataset(locref, true, null);
 
-    ucar.unidata.util.test.CompareNetcdf.compareFiles(ncmlEnhanced, ncdrefEnhanced, false, false, false);
-
-    ncml.close();
-    ncdrefEnhanced.close();
+      Assert
+          .assertTrue(CompareNetcdf2.compareFiles(ncmlEnhanced, ncdrefEnhanced, new Formatter(), false, false, false));
+    }
   }
 
 

@@ -23,7 +23,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -66,8 +65,8 @@ public class TestGeoTiffWriter {
     return result;
   }
 
-  String filename, field;
-  FeatureType type;
+  private String filename, field;
+  private FeatureType type;
 
   public TestGeoTiffWriter(String filename, FeatureType type, String field) {
     this.filename = filename;
@@ -77,7 +76,6 @@ public class TestGeoTiffWriter {
 
   @Test
   public void testWriteCoverage() throws IOException, InvalidRangeException {
-    File f = new File(filename);
     String gridOut = tempFolder.newFile().getAbsolutePath();
     logger.debug("geotiff read grid {} ({}) from {} write {}", field, type, filename, gridOut);
 
@@ -137,7 +135,7 @@ public class TestGeoTiffWriter {
         }
       }
 
-      CompareNetcdf.compareData(dtArray, covArray.getData());
+      CompareNetcdf2.compareData(field, dtArray, covArray.getData());
 
       // read it back in
       try (GeoTiff geotiff2 = new GeoTiff(gridOut2)) {

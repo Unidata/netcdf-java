@@ -12,8 +12,8 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Ncdump;
-import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -247,7 +247,7 @@ public class TestH5ReadStructure {
       assert a1.getInt(ii.set(3)) == 52203 : a1.getInt(ii.set(3));
 
       Array a2 = ncfile.readSection("/Chromosomes/Summary.StartIndex");
-      CompareNetcdf.compareData(a1, a2);
+      CompareNetcdf2.compareData(v.getShortName(), a1, a2);
       System.out.printf("size = %d%n", a2.getSize());
       System.out.printf("%s%n", a2);
 

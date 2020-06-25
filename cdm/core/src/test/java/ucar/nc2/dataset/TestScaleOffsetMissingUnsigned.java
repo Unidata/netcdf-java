@@ -77,7 +77,7 @@ public class TestScaleOffsetMissingUnsigned {
       Variable v = ncfileRead.findVariable("packed");
       assert v != null;
       readPacked = v.read();
-      new CompareNetcdf2().compareData("packed", packed, readPacked);
+      CompareNetcdf2.compareData("packed", packed, readPacked);
     }
 
     Array readEnhanced;
@@ -97,7 +97,7 @@ public class TestScaleOffsetMissingUnsigned {
     doSubset(filename);
   }
 
-  void nearlyEquals(Array packed, Array data1, Array data2, double close) {
+  private void nearlyEquals(Array packed, Array data1, Array data2, double close) {
     IndexIterator iterp = packed.getIndexIterator();
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();
@@ -126,7 +126,7 @@ public class TestScaleOffsetMissingUnsigned {
       Array readSection = sec.read();
       logger.debug(Ncdump.printArray(readSection));
 
-      ucar.unidata.util.test.CompareNetcdf.compareData(readEnhanced, readSection);
+      CompareNetcdf2.compareData(vs.getShortName(), readEnhanced, readSection);
     }
   }
 
