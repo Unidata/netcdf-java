@@ -7,6 +7,7 @@ package ucar.nc2.ft;
 
 import java.io.Closeable;
 import java.util.List;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
@@ -84,11 +85,16 @@ public interface FeatureDataset extends FileCacheable, Closeable {
    */
   ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
+  /** Get the global attributes. */
+  AttributeContainer attributes();
+
   /**
    * List of global attributes.
    *
    * @return List of type ucar.nc2.Attribute, may be empty but not null
+   * @deprecated use attributes()
    */
+  @Deprecated
   List<ucar.nc2.Attribute> getGlobalAttributes();
 
   /**
@@ -96,7 +102,9 @@ public interface FeatureDataset extends FileCacheable, Closeable {
    *
    * @param name attribute name
    * @return the global attribute, or null
+   * @deprecated use attributes()
    */
+  @Deprecated
   ucar.nc2.Attribute findGlobalAttributeIgnoreCase(String name);
 
   /**

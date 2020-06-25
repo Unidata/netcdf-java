@@ -141,6 +141,11 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   }
 
   @Override
+  public AttributeContainer attributes() {
+    return gatts;
+  }
+
+  @Override
   public List<Attribute> getGlobalAttributes() {
     return gatts.getAttributes();
   }

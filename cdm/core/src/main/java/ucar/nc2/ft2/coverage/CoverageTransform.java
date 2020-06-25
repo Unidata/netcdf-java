@@ -82,6 +82,11 @@ public class CoverageTransform implements AttributeContainer {
   }
 
   /** @deprecated Use attributes() */
+  public boolean isEmpty() {
+    return attributes.isEmpty();
+  }
+
+  /** @deprecated Use attributes() */
   @Deprecated
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);

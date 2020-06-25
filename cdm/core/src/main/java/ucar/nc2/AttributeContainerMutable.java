@@ -25,6 +25,12 @@ public class AttributeContainerMutable implements AttributeContainer {
     addAll(from);
   }
 
+  /** Constructor with container name and list of Attributes to copy in. */
+  public AttributeContainerMutable(AttributeContainer from) {
+    this(from.getName());
+    addAll(from);
+  }
+
   public void setName(String name) {
     this.name = name;
   }
@@ -185,6 +191,11 @@ public class AttributeContainerMutable implements AttributeContainer {
     return new AttributeContainerImmutable(name, atts);
   }
 
+  @Override
+  public boolean isEmpty() {
+    return atts.isEmpty();
+  }
+
   @Immutable
   private static class AttributeContainerImmutable implements AttributeContainer {
     private final String name;
@@ -243,6 +254,11 @@ public class AttributeContainerMutable implements AttributeContainer {
     @Override
     public String getName() {
       return name;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return atts.isEmpty();
     }
 
     @Deprecated

@@ -126,7 +126,7 @@ public class CompareNetcdf2 {
     return ok1 && ok2;
   }
 
-  private static boolean checkContains(String what, List container, List wantList, Formatter f) {
+  public static boolean checkContains(String what, List<Object> container, List<Object> wantList, Formatter f) {
     boolean ok = true;
 
     for (Object want1 : wantList) {

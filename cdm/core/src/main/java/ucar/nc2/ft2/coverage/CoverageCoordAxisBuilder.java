@@ -9,6 +9,7 @@ import ucar.ma2.Range;
 import ucar.ma2.RangeComposite;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
@@ -24,14 +25,12 @@ import java.util.List;
  *
  * @author caron
  */
-
 public class CoverageCoordAxisBuilder {
-
   public String name;
   public String description;
   public DataType dataType;
   public AxisType axisType; // ucar.nc2.constants.AxisType ordinal
-  public AttributeContainer attributes;
+  public AttributeContainerMutable attributes;
   public CoverageCoordAxis.DependenceType dependenceType;
   public List<String> dependsOn;
 
@@ -43,14 +42,14 @@ public class CoverageCoordAxisBuilder {
   public CoordAxisReader reader;
   public boolean isSubset;
 
-  public TimeHelper timeHelper; // AxisType = Time, RunTime only
+  TimeHelper timeHelper; // AxisType = Time, RunTime only
   public String units;
 
   public double[] values;
 
   // 1D only
   public Range range; // set when its a subset
-  public RangeComposite crange;
+  RangeComposite crange;
 
   // int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues =
   // max-min+1.
@@ -72,7 +71,7 @@ public class CoverageCoordAxisBuilder {
     this.description = description;
     this.dataType = dataType;
     this.axisType = axisType;
-    this.attributes = atts;
+    this.attributes = new AttributeContainerMutable(atts);
     this.dependenceType = dependenceType;
     this.setDependsOn(dependsOnS);
     this.spacing = spacing;
@@ -90,7 +89,7 @@ public class CoverageCoordAxisBuilder {
     this.description = from.description;
     this.dataType = from.dataType;
     this.axisType = from.axisType;
-    this.attributes = from.attributes;
+    this.attributes = new AttributeContainerMutable(attributes);
     this.dependenceType = from.dependenceType;
     this.spacing = from.spacing;
     this.values = from.values;

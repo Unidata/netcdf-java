@@ -97,8 +97,8 @@ public class GribCoordsMatchGbx {
     int countFailures = 0;
 
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
-      Attribute att = fdc.findGlobalAttributeIgnoreCase("file_format");
-      isGrib1 = att.getStringValue().equalsIgnoreCase("GRIB-1");
+      String gribVersion = fdc.attributes().findAttributeString("file_format", "GRIB-2");
+      isGrib1 = gribVersion.equalsIgnoreCase("GRIB-1");
 
       for (CoverageCollection cc : fdc.getCoverageCollections()) {
         for (Coverage cover : cc.getCoverages()) {

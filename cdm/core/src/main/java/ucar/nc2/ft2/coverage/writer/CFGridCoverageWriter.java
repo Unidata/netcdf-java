@@ -261,13 +261,8 @@ public class CFGridCoverageWriter {
   }
 
   private void addVariableAttributes(Variable.Builder vb, AttributeContainer atts) {
-    for (Attribute att : atts) {
-      if (att.getShortName().startsWith("_Coordinate"))
-        continue;
-      if (att.getShortName().startsWith("_Chunk"))
-        continue;
-      vb.addAttribute(att);
-    }
+    AttributeContainer modified = AttributeContainer.filter(atts, "_Coordinate", "_Chunk");
+    modified.forEach(vb::addAttribute);
   }
 
   private void addCoordTransforms(CoverageCollection subsetDataset, Group.Builder group) {

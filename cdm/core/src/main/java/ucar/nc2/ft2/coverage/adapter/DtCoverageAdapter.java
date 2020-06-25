@@ -13,7 +13,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.Misc;
 import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.*;
@@ -246,7 +245,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       builder.description = description;
       builder.dataType = dataType;
       builder.axisType = axisType;
-      builder.attributes = atts;
+      builder.attributes = new AttributeContainerMutable(atts);
       builder.dependenceType = dependenceType;
       builder.setDependsOn(dependsOn);
       builder.spacing = spacing;
@@ -311,7 +310,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     builder.description = description;
     builder.dataType = dataType;
     builder.axisType = axisType;
-    builder.attributes = dtCoordAxis.attributes();
+    builder.attributes = new AttributeContainerMutable(dtCoordAxis.attributes());
     builder.dependenceType = dependenceType;
     builder.setDependsOn(dependsOn);
     builder.spacing = spacing;

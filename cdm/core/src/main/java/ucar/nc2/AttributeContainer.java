@@ -5,7 +5,9 @@
 
 package ucar.nc2;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -13,6 +15,30 @@ import javax.annotation.Nullable;
  * Use AttributeContainerMutable if you want a mutable container.
  */
 public interface AttributeContainer extends Iterable<Attribute> {
+
+  /**
+   * Create a new AttributeContainer, removing any whose name starts with one in the given list.
+   *
+   * @param atts Start with this set of Attributes.
+   * @param remove Remove any whose name starts with one of these.
+   * @return new AttributeContainer with attributes removed.
+   */
+  static AttributeContainer filter(AttributeContainer atts, String... remove) {
+    List<Attribute> result = new ArrayList<>();
+    for (Attribute att : atts.getAttributes()) {
+      boolean ok = true;
+      for (String s : remove) {
+        if (att.getShortName().startsWith(s)) {
+          ok = false;
+          break;
+        }
+      }
+      if (ok) {
+        result.add(att);
+      }
+    }
+    return new AttributeContainerHelper(atts.getName(), result);
+  }
 
   /** Find an Attribute by exact match on name. */
   @Nullable
@@ -52,6 +78,9 @@ public interface AttributeContainer extends Iterable<Attribute> {
    * @return the attribute value, or defaultValue if not found
    */
   String findAttributeString(String attName, String defaultValue);
+
+  /** True is there are no attributes in the container. */
+  boolean isEmpty();
 
   /** Get the (optional) name of the AttributeContainer. */
   @Nullable
