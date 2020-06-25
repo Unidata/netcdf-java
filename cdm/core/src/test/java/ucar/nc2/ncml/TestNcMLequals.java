@@ -24,7 +24,6 @@ public class TestNcMLequals {
     testEnhanceEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
   }
 
-  @Test
   public void problem() throws IOException {
     // testEnhanceEquals("file:G:/zg500_MM5I_1979010103.ncml");
     testEquals(
