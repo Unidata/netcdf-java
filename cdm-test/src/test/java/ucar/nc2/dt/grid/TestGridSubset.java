@@ -670,7 +670,8 @@ public class TestGridSubset {
       logger.debug(Ncdump.printArray(data, "org", null));
       logger.debug(Ncdump.printArray(data2, "subset", null));
 
-      ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
+      Assert.assertTrue(CompareNetcdf2.compareData("slice", data, data2));
+
     }
   }
 }

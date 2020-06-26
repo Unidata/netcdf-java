@@ -76,7 +76,7 @@ public class TestSubsettingUtils {
     }
   }
 
-  public static void subsetVariable(Variable v, Section s, Array fullData) throws IOException, InvalidRangeException {
+  private static void subsetVariable(Variable v, Section s, Array fullData) throws IOException, InvalidRangeException {
     System.out.println("   section=" + s);
 
     // read just that
@@ -93,7 +93,7 @@ public class TestSubsettingUtils {
     for (int i = 0; i < ashape.length; i++)
       assert sshape[i] == ashape[i];
 
-    ucar.unidata.util.test.CompareNetcdf.compareData(sdata, Asection);
+    CompareNetcdf2.compareData(v.getShortName(), sdata, Asection);
   }
 
   private static Section randomSubset(Section all, int stride) throws InvalidRangeException {

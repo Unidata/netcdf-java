@@ -17,11 +17,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import software.amazon.awssdk.regions.Region;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.io.s3.S3RandomAccessFile;
-import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 public class TestNetcdfFilesRafs {
@@ -77,33 +77,30 @@ public class TestNetcdfFilesRafs {
     FileUtils.copyURLToFile(new URL(httpsLocation), tempFile);
 
     // open using three different RAFs
-    NetcdfFile local = NetcdfFiles.open(tempFile.getCanonicalPath());
-    NetcdfFile inMem = NetcdfFiles.open(inMemLocation);
-    NetcdfFile http = NetcdfFiles.open(httpsLocation);
-    NetcdfFile s3 = NetcdfFiles.open(s3uri);
+    try (NetcdfFile local = NetcdfFiles.open(tempFile.getCanonicalPath());
+        NetcdfFile inMem = NetcdfFiles.open(inMemLocation);
+        NetcdfFile http = NetcdfFiles.open(httpsLocation);
+        NetcdfFile s3 = NetcdfFiles.open(s3uri)) {
 
-    // check that expected RAFs are used
-    Object raf = local.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-    assertThat(raf).isInstanceOf(RandomAccessFile.class);
-    raf = inMem.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-    assertThat(raf).isInstanceOf(InMemoryRandomAccessFile.class);
-    raf = http.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-    assertThat(raf).isInstanceOf(HTTPRandomAccessFile.class);
-    raf = s3.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-    assertThat(raf).isInstanceOf(S3RandomAccessFile.class);
+      // check that expected RAFs are used
+      Object raf = local.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      assertThat(raf).isInstanceOf(RandomAccessFile.class);
+      raf = inMem.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      assertThat(raf).isInstanceOf(InMemoryRandomAccessFile.class);
+      raf = http.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      assertThat(raf).isInstanceOf(HTTPRandomAccessFile.class);
+      raf = s3.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      assertThat(raf).isInstanceOf(S3RandomAccessFile.class);
 
-    // compare at a NetcdfFile level
-    // CompareNetcdf(showCompare, showEach, compareData)
-    CompareNetcdf comparer = new CompareNetcdf(false, false, true);
+      // compare at a NetcdfFile level
+      // CompareNetcdf(showCompare, showEach, compareData)
+      Formatter f = new Formatter();
+      CompareNetcdf2 comparer = new CompareNetcdf2(f, false, false, true);
 
-    Assert.assertTrue(comparer.compare(local, inMem, new Formatter()));
-    Assert.assertTrue(comparer.compare(local, http, new Formatter()));
-    Assert.assertTrue(comparer.compare(local, s3, new Formatter()));
-
-    local.close();
-    inMem.close();
-    http.close();
-    s3.close();
+      Assert.assertTrue(comparer.compare(local, inMem));
+      Assert.assertTrue(comparer.compare(local, http));
+      Assert.assertTrue(comparer.compare(local, s3));
+    }
   }
 
   @Test

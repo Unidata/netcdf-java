@@ -31,7 +31,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.unidata.util.test.CompareNetcdf;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NeedsUcarNetwork;
 
@@ -361,10 +361,11 @@ public class TestS3Read {
     try (NetcdfFile osdc = NetcdfFiles.open(OSDC_G16_S3_URI);
         NetcdfFile gcs = NetcdfFiles.open(GCS_G16_S3_URI);
         NetcdfFile aws = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
-      CompareNetcdf comparer = new CompareNetcdf(false, false, true);
-      Assert.assertTrue(comparer.compare(aws, gcs, new Formatter()));
-      Assert.assertTrue(comparer.compare(aws, osdc, new Formatter()));
-      Assert.assertTrue(comparer.compare(osdc, gcs, new Formatter()));
+      Formatter f = new Formatter();
+      CompareNetcdf2 comparer = new CompareNetcdf2(f, false, false, true);
+      Assert.assertTrue(comparer.compare(aws, gcs));
+      Assert.assertTrue(comparer.compare(aws, osdc));
+      Assert.assertTrue(comparer.compare(osdc, gcs));
     } finally {
       System.clearProperty(AWS_REGION_PROP_NAME);
     }

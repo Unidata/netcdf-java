@@ -19,7 +19,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.util.test.CompareNetcdf;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -53,34 +53,30 @@ public class TestDtWithCoverageReadingP {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID}); // NUWG - has
-                                                                                                         // CoordinateAlias
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", FeatureType.GRID}); // scalar
-                                                                                                                        // runtime
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID}); // both x,y and
-                                                                                                         // lat,lon
+    // NUWG - has CoordinateAlias
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID});
+    // scalar runtime
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", FeatureType.GRID});
+    // both x,y and lat,lon
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID});
+    // SRC
     result
         .add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",
-            FeatureType.GRID}); // SRC
+            FeatureType.GRID});
 
     // not GRID
     result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC}); // ensemble,
-                                                                                                              // time-offset
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC}); // scalar vert LOOK
-    // change to TimeOffset ??
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR}); // x,y
-                                                                                                                     // axis
-                                                                                                                     // but
-                                                                                                                     // no
-                                                                                                                     // projection
-
+    // ensemble, time-offset
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC});
+    // scalar vert LOOK change to TimeOffset ??
+    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC});
+    // x,y axis but no projection
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR});
     return result;
   }
 
-  String endpoint;
-  FeatureType expectType;
-  // int domain, range, ncoverages;
+  private String endpoint;
+  private FeatureType expectType;
 
   public TestDtWithCoverageReadingP(String endpoint, FeatureType expectType) {
     this.endpoint = endpoint;
@@ -123,7 +119,7 @@ public class TestDtWithCoverageReadingP {
     }
   }
 
-  static void readAllRuntimes(Coverage cover, GridDatatype dt, CoordinateAxis1DTime runtimeAxis,
+  private static void readAllRuntimes(Coverage cover, GridDatatype dt, CoordinateAxis1DTime runtimeAxis,
       CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
     GridCoordSystem csys = dt.getCoordinateSystem();
     CoordinateAxis1DTime timeAxis1D = csys.getTimeAxis1D();
@@ -153,7 +149,7 @@ public class TestDtWithCoverageReadingP {
     }
   }
 
-  static void readAllTimes1D(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx,
+  private static void readAllTimes1D(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx,
       CoordinateAxis1DTime timeAxis, CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
     if (timeAxis == null)
       readAllEnsembles(cover, dt, rt_val, rt_idx, null, -1, ensAxis, vertAxis);
@@ -166,8 +162,8 @@ public class TestDtWithCoverageReadingP {
     }
   }
 
-  static void readAllTimes2D(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, TimeHelper helper,
-      Array timeVals, CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
+  private static void readAllTimes2D(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx,
+      TimeHelper helper, Array timeVals, CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
 
     int[] shape = timeVals.getShape();
     if (timeVals.getRank() == 1) {
@@ -187,8 +183,8 @@ public class TestDtWithCoverageReadingP {
     }
   }
 
-  static void readAllEnsembles(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, CalendarDate time_val,
-      int time_idx, CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
+  private static void readAllEnsembles(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx,
+      CalendarDate time_val, int time_idx, CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
     if (ensAxis == null)
       readAllVertLevels(cover, dt, rt_val, rt_idx, time_val, time_idx, 0, -1, vertAxis);
     else {
@@ -197,8 +193,8 @@ public class TestDtWithCoverageReadingP {
     }
   }
 
-  static void readAllVertLevels(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, CalendarDate time_val,
-      int time_idx, double ens_val, int ens_idx, CoordinateAxis1D vertAxis) {
+  private static void readAllVertLevels(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx,
+      CalendarDate time_val, int time_idx, double ens_val, int ens_idx, CoordinateAxis1D vertAxis) {
     if (vertAxis == null)
       readOneSlice(cover, dt, rt_val, rt_idx, time_val, time_idx, ens_val, ens_idx, 0, -1);
     else {
@@ -241,7 +237,7 @@ public class TestDtWithCoverageReadingP {
     }
 
     try {
-      CompareNetcdf.compareData(dt_array, gc_array.getData());
+      CompareNetcdf2.compareData("slice", dt_array, gc_array.getData());
     } catch (Throwable t) {
       try {
         dt.readDataSlice(rt_idx, ens_idx, time_idx, vert_idx, -1, -1);
