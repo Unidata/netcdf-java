@@ -279,6 +279,12 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs.getDataType();
   }
 
+  public AttributeContainer attributes() {
+    return vs.attributes();
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getAttributes() {
     return vs.getAttributes();
   }

@@ -139,18 +139,31 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
     return name;
   }
 
+  /** Get the global attributes. */
+  public AttributeContainer attributes() {
+    return atts;
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     return atts.getAttributes();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return atts.findAttributeString(attName, defaultValue);
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findAttribute(String attName) {
     return atts.findAttribute(attName);
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findAttributeIgnoreCase(String attName) {
     return atts.findAttributeIgnoreCase(attName);
   }

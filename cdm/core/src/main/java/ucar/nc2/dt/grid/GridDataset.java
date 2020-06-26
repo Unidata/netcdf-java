@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
@@ -261,14 +262,22 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     // not needed
   }
 
+  @Override
+  public AttributeContainer attributes() {
+    return ncd.getRootGroup().attributes();
+  }
+
+  @Override
   public List<Attribute> getGlobalAttributes() {
     return ncd.getGlobalAttributes();
   }
 
+  @Override
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     return ncd.findGlobalAttributeIgnoreCase(name);
   }
 
+  @Override
   public List<VariableSimpleIF> getDataVariables() {
     List<VariableSimpleIF> result = new ArrayList<>(grids.size());
     for (GridDatatype grid : getGrids()) {
@@ -278,10 +287,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     return result;
   }
 
+  @Override
   public VariableSimpleIF getDataVariable(String shortName) {
     return ncd.getRootGroup().findVariableLocal(shortName);
   }
 
+  @Override
   public NetcdfFile getNetcdfFile() {
     return ncd;
   }

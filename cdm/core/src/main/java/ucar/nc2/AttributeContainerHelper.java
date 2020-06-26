@@ -25,7 +25,7 @@ public class AttributeContainerHelper implements AttributeContainer {
    * @param atts Start with this set of Attributes.
    * @param remove Remove any whose name starts with one of these.
    * @return new AttributeContainer with attributes removed.
-   * @deprecated Do not use.
+   * @deprecated use AttributeContainer.filter().
    */
   @Deprecated
   public static AttributeContainer filter(AttributeContainer atts, String... remove) {
@@ -73,6 +73,11 @@ public class AttributeContainerHelper implements AttributeContainer {
   @Deprecated
   public void setImmutable() {
     this.atts = Collections.unmodifiableList(atts);
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return atts.isEmpty();
   }
 
   @Override
@@ -277,6 +282,11 @@ public class AttributeContainerHelper implements AttributeContainer {
     @Override
     public String getName() {
       return name;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return atts.isEmpty();
     }
 
     @Deprecated

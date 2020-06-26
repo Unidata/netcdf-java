@@ -160,7 +160,7 @@ public class Grib1ReportPanel extends ReportPanel {
     int total = 0;
 
     try (GridDataset ncfile = GridDataset.open(ff.getPath())) {
-      Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("GRIB table");
+      Attribute gatt = ncfile.attributes().findAttribute("GRIB table");
       if (gatt != null) {
         String[] s = gatt.getStringValue().split("-");
         Grib1ParamTableReader gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]),
@@ -632,7 +632,7 @@ public class Grib1ReportPanel extends ReportPanel {
       } else { // OLD
         Attribute att = grid.findAttributeIgnoreCase("GRIB_center_id");
         param[0] = att.getNumericValue().intValue();
-        att = gds.findGlobalAttributeIgnoreCase("Originating_subcenter_id");
+        att = gds.attributes().findAttribute("Originating_subcenter_id");
         param[1] = att.getNumericValue().intValue();
         att = grid.findAttributeIgnoreCase("GRIB_param_number");
         param[2] = att.getNumericValue().intValue();

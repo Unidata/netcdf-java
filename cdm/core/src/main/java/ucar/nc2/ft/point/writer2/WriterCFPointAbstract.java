@@ -26,6 +26,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.NetcdfFile;
@@ -119,7 +120,7 @@ abstract class WriterCFPointAbstract implements Closeable {
    * @param altUnits the unit of the altitude coordinate, may be nullable
    * @param config configuration
    */
-  WriterCFPointAbstract(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
+  WriterCFPointAbstract(String fileOut, AttributeContainer atts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, @Nullable String altUnits, CFPointWriterConfig config) throws IOException {
 
     this.dataVars = dataVars;
@@ -134,7 +135,7 @@ abstract class WriterCFPointAbstract implements Closeable {
     addNetcdf3UnknownAtts(config.isNoTimeCoverage());
   }
 
-  private void addGlobalAtts(List<Attribute> atts) {
+  private void addGlobalAtts(AttributeContainer atts) {
     writerb.addAttribute(new Attribute(CDM.CONVENTIONS, isExtendedModel ? CDM.CF_EXTENDED : "CF-1.6"));
     writerb.addAttribute(new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {

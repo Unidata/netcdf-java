@@ -85,7 +85,7 @@ public class CFPointWriter {
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc,
       String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(),
+    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.attributes(),
         fdpoint.getDataVariables(), pfc.getTimeUnit(), pfc.getAltUnits(), config)) {
 
       pointWriter.setExtraVariables(pfc.getExtraVariables());
@@ -111,7 +111,7 @@ public class CFPointWriter {
   private static int writeStationFeatureCollection(FeatureDatasetPoint dataset, StationTimeSeriesFeatureCollection fc,
       String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(),
+    try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.attributes(),
         dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
@@ -141,7 +141,7 @@ public class CFPointWriter {
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection fc,
       String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(),
+    try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.attributes(),
         fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
@@ -184,8 +184,8 @@ public class CFPointWriter {
   private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection fc,
       String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut,
-        fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
+    try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.attributes(),
+        fdpoint.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
 
@@ -219,8 +219,8 @@ public class CFPointWriter {
   private static int writeStationProfileFeatureCollection(FeatureDatasetPoint dataset,
       StationProfileFeatureCollection fc, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut,
-        dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
+    try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.attributes(),
+        dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
       cfWriter.setStations(fc.getStationFeatures());
@@ -261,7 +261,7 @@ public class CFPointWriter {
       TrajectoryProfileFeatureCollection fc, String fileOut, CFPointWriterConfig config) throws IOException {
 
     try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut,
-        dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
+        dataset.attributes(), dataset.getDataVariables(), fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       cfWriter.setExtraVariables(fc.getExtraVariables());
 

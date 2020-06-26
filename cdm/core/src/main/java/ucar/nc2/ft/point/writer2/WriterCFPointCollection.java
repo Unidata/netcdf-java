@@ -16,6 +16,7 @@ import ucar.ma2.StructureDataComposite;
 import ucar.ma2.StructureDataFromMember;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.VariableSimpleBuilder;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -39,7 +40,7 @@ import ucar.unidata.geoloc.EarthLocation;
  */
 class WriterCFPointCollection extends WriterCFPointAbstract {
 
-  WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
+  WriterCFPointCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
     writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));

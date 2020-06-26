@@ -41,7 +41,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       ProjectionImpl proj = grid.getProjection();
 
       if (!gcs.isRegularSpatial()) {
-        Attribute att = dataset.findGlobalAttributeIgnoreCase("datasetId");
+        Attribute att = dataset.attributes().findAttribute("datasetId");
         if (att != null && att.getStringValue().contains("DMSP")) { // LOOK!!
           writeSwathGrid(gridDataset_filename, gridName, time, level, greyScale, pt);
           return;

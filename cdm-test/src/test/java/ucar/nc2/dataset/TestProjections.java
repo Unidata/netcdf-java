@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -20,6 +21,7 @@ import java.util.Formatter;
 import java.util.List;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
@@ -180,7 +182,8 @@ public class TestProjections {
 
       if (ctv != null) {
         Formatter f = new Formatter();
-        ucar.unidata.util.test.CompareNetcdf.checkContains(ctv.getAttributes(), ctvSyn.getAttributes(), f);
+        CompareNetcdf2.checkContains("CoordTransBuilder", ImmutableList.copyOf(ctv.attributes()),
+            ImmutableList.copyOf(ctvSyn.attributes()), f);
         logger.debug(f.toString());
       }
 

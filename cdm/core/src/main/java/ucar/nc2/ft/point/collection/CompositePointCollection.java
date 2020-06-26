@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.DsgFeatureCollection;
@@ -34,7 +36,7 @@ import ucar.unidata.geoloc.LatLonRect;
 public class CompositePointCollection extends PointCollectionImpl implements UpdateableCollection {
   private TimedCollection pointCollections;
   protected List<VariableSimpleIF> dataVariables;
-  protected List<Attribute> globalAttributes;
+  protected AttributeContainer globalAttributes;
 
   protected CompositePointCollection(String name, CalendarDateUnit timeUnit, String altUnits,
       TimedCollection pointCollections) {
@@ -53,7 +55,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
         (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog)) {
       if (openDataset != null) {
         dataVariables = openDataset.getDataVariables();
-        globalAttributes = openDataset.getGlobalAttributes();
+        globalAttributes = openDataset.attributes();
       }
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -66,10 +68,16 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     return dataVariables;
   }
 
+  public AttributeContainer attributes() {
+    return globalAttributes;
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     if (globalAttributes == null)
       readMetadata();
-    return globalAttributes;
+    return ImmutableList.copyOf(globalAttributes);
   }
 
   @Override

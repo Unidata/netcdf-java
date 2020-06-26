@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import thredds.inventory.TimedCollection;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.DsgFeatureCollection;
@@ -48,10 +50,9 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
   private TimedCollection dataCollection;
   protected List<VariableSimpleIF> dataVariables;
-  protected List<Attribute> globalAttributes;
+  private AttributeContainer globalAttributes;
 
-  protected CompositeStationCollection(String name, CalendarDateUnit timeUnit, String altUnits,
-      TimedCollection dataCollection) {
+  CompositeStationCollection(String name, CalendarDateUnit timeUnit, String altUnits, TimedCollection dataCollection) {
     super(name, timeUnit, altUnits);
     this.dataCollection = dataCollection;
     TimedCollection.Dataset td = dataCollection.getPrototype();
@@ -83,7 +84,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       }
 
       dataVariables = openDataset.getDataVariables();
-      globalAttributes = openDataset.getGlobalAttributes();
+      globalAttributes = openDataset.attributes();
 
       return stationHelper;
     }
@@ -94,9 +95,15 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     return dataVariables;
   }
 
+  public AttributeContainer attributes() {
+    return globalAttributes;
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     getStationHelper(); // globalAttributes gets initialized when stationHelper does. Bit of a kludge.
-    return globalAttributes;
+    return ImmutableList.copyOf(globalAttributes);
   }
 
   @Override

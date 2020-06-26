@@ -1303,6 +1303,11 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   }
 
   /** @deprecated Use attributes() */
+  public boolean isEmpty() {
+    return attributes.isEmpty();
+  }
+
+  /** @deprecated Use attributes() */
   @Deprecated
   public java.util.List<Attribute> getAttributes() {
     return attributes.getAttributes();

@@ -6,6 +6,7 @@ package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -272,6 +273,11 @@ public class DtCoverage implements IsMissingEvaluator {
     return vs.getDataType();
   }
 
+  public AttributeContainer attributes() {
+    return vs.attributes();
+  }
+
+  /** @deprecated use attributes() */
   @Deprecated
   public List<Attribute> getAttributes() {
     return vs.getAttributes();

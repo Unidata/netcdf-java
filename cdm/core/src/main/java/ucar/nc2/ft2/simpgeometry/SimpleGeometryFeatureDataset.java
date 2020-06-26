@@ -1,6 +1,7 @@
 package ucar.nc2.ft2.simpgeometry;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -106,10 +107,19 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
     return null;
   }
 
+  @Override
+  public AttributeContainer attributes() {
+    return ncd.getRootGroup().attributes();
+  }
+
+  /** @deprecated use attributes() */
+  @Deprecated
   public List<Attribute> getGlobalAttributes() {
     return ncd.getGlobalAttributes();
   }
 
+  /** @deprecated use attributes() */
+  @Deprecated
   public Attribute findGlobalAttributeIgnoreCase(String name) {
     return ncd.findGlobalAttributeIgnoreCase(name);
   }

@@ -31,7 +31,7 @@ public class TestTimeCoordinates {
     // String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
     String filename = "G:/work/lmoxey/PF5_SST_Climatology_Monthly_1982_2008.ncml";
     GridDataset ncd = GridDataset.open(filename);
-    Attribute convAtt = ncd.findGlobalAttributeIgnoreCase("Conventions");
+    Attribute convAtt = ncd.attributes().findAttribute("Conventions");
     assert convAtt != null;
     System.out.printf("%s%n", convAtt);
 

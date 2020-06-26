@@ -17,6 +17,7 @@ import ucar.ma2.StructureDataComposite;
 import ucar.ma2.StructureDataFromMember;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Structure;
 import ucar.nc2.VariableSimpleBuilder;
@@ -41,7 +42,7 @@ class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   private HashSet<String> featureVarMap = new HashSet<>();
   private boolean headerDone;
 
-  WriterCFTrajectoryCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
+  WriterCFTrajectoryCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
     writerb.addAttribute(new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectory.name()));
