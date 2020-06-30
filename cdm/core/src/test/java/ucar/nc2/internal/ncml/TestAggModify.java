@@ -30,7 +30,7 @@ public class TestAggModify {
   public void testWithDateFormatMark() throws Exception {
     System.out.printf("ncml=%s%n", ncml);
     String filename = "file:" + TestNcMLRead.topDir + "testAggModify.ncml";
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(new StringReader(ncml), filename, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(ncml), filename, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     Variable v = ncfile.findVariable("T");

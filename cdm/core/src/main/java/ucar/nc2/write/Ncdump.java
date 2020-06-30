@@ -236,7 +236,7 @@ public class Ncdump {
 
     try {
       if (ncml) {
-        return writeNcML(ncfile, wantValues, locationName); // output schema in NcML
+        return writeNcml(ncfile, wantValues, locationName); // output schema in NcML
       } else if (headerOnly) {
         CDLWriter.writeCDL(ncfile, out, strict, locationName);
       } else {
@@ -658,7 +658,7 @@ public class Ncdump {
    * @param showValues do you want the variable values printed?
    * @param url use this for the url attribute; if null use getLocation(). // ??
    */
-  private static String writeNcML(NetcdfFile ncfile, WantValues showValues, @Nullable String url) {
+  private static String writeNcml(NetcdfFile ncfile, WantValues showValues, @Nullable String url) {
     Preconditions.checkNotNull(ncfile);
     Preconditions.checkNotNull(showValues);
 

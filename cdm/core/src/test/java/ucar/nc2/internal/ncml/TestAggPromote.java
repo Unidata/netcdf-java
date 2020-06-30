@@ -32,7 +32,7 @@ public class TestAggPromote {
 
     String filename = "file:./" + TestNcMLRead.topDir + "aggExisting1.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(new StringReader(xml), null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(xml), null, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename);
 
     Variable times = ncfile.findVariable("times");

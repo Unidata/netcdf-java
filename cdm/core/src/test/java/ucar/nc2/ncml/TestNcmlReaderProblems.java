@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CompareNetcdf2;
 
 /** Compare old and new NcmlReaders on specific problem datasets. */
@@ -32,7 +32,7 @@ public class TestNcmlReaderProblems {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
       System.out.printf("NcMLReader == %s%n", org);
-      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
+      try (NetcdfDataset withBuilder = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
         System.out.printf("NcMLReaderNew == %s%n", withBuilder);
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, true, true, true);

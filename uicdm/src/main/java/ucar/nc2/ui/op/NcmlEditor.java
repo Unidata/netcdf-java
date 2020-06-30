@@ -325,7 +325,7 @@ public class NcmlEditor extends JPanel {
     try (StringReader reader = new StringReader(text);
         NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
         StringWriter sw = new StringWriter(10000)) {
-      ncd.writeNcML(sw, null);
+      ncd.writeNcml(sw, null);
       editor.setText(sw.toString());
       editor.setCaretPosition(0);
       JOptionPane.showMessageDialog(this, "File successfully transformed");

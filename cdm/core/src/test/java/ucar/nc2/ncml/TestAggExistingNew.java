@@ -23,7 +23,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Builder;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -39,7 +39,7 @@ public class TestAggExistingNew {
   public void testNcmlDirect() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "aggExisting.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -217,7 +217,7 @@ public class TestAggExistingNew {
   public void testNcmlAggInequivalentCals() throws IOException {
     // Tests that an aggregation with inequivalent calendars across the individual datasets will fail
     String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingInequivalentCals.xml";
-    NcMLReaderNew.readNcML(filename, null, null).build();
+    NcmlReader.readNcML(filename, null, null).build();
   }
 
   @Test
@@ -225,7 +225,7 @@ public class TestAggExistingNew {
     // no calendar attribute in the aggregation, which should default to using proleptic_gregorian
     String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingNoCal.xml";
 
-    Builder netcdfFileBuilder = NcMLReaderNew.readNcML(filename, null, null);
+    Builder netcdfFileBuilder = NcmlReader.readNcML(filename, null, null);
     NetcdfFile ncfile = netcdfFileBuilder.build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
@@ -260,7 +260,7 @@ public class TestAggExistingNew {
     // with calendar = noleap, each year should have 365 days, even in a leap years
     String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingNoLeapCal.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -288,7 +288,7 @@ public class TestAggExistingNew {
     // with calendar = all_leap, each year should have 366 days, even in non-leap years
     String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingAllLeapCal.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -328,7 +328,7 @@ public class TestAggExistingNew {
   }
 
   private void testNcmlAggExisting30DayCals(String filename) throws IOException {
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -357,7 +357,7 @@ public class TestAggExistingNew {
     // was followed by 15 October).
     String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingJulienCal.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -416,7 +416,7 @@ public class TestAggExistingNew {
     // with calendar = gregorian, 4 October 1582 was followed by 15 October 1582
     String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingGregorianCal.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -482,7 +482,7 @@ public class TestAggExistingNew {
     // (for a gregorian calendar, 1852 would only have 355
     String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingProlepticGregorianCal.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;

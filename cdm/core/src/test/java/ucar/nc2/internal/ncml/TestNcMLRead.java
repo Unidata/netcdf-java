@@ -44,7 +44,7 @@ public class TestNcMLRead {
   public TestNcMLRead(String filename) {
     this.ncmlLocation = "file:" + topDir + filename;
     try {
-      ncfile = NcMLReaderNew.readNcML(ncmlLocation, null, null).build();
+      ncfile = NcmlReader.readNcML(ncmlLocation, null, null).build();
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
     } catch (IOException e) {

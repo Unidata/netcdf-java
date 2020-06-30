@@ -37,7 +37,7 @@ public class TestValuesFromAttribute {
   public void testValuesFromAttribute() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcMLRead.topDir + "TestValuesFromAttribute.xml";
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(new StringReader(ncml), filename, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(ncml), filename, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     Variable newVar = ncfile.findVariable("titleAsVariable");

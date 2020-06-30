@@ -21,7 +21,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.conv.CF1Convention;
 import ucar.nc2.internal.dataset.conv.DefaultConventions;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
 
@@ -66,9 +66,8 @@ public class CoordSystemFactory {
    *
    * @param conventionName name of Convention, must be in the "Conventions" global attribute.
    * @param ncmlLocation location of NcML file, may be local file or URL.
-   * @see ucar.nc2.ncml.NcMLReader#wrapNcML
    */
-  public static void registerNcML(String conventionName, String ncmlLocation) {
+  public static void registerNcml(String conventionName, String ncmlLocation) {
     ncmlHash.put(conventionName, ncmlLocation);
   }
 
@@ -215,7 +214,7 @@ public class CoordSystemFactory {
       String convNcML = ncmlHash.get(convName);
       if (convNcML != null) {
         CoordSystemBuilder csb = new CoordSystemBuilder(ds);
-        NcMLReaderNew.wrapNcML(ds, convNcML, cancelTask);
+        NcmlReader.wrapNcML(ds, convNcML, cancelTask);
         return Optional.of(csb);
       }
     }

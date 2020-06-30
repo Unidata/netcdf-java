@@ -59,8 +59,8 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  * @see <a href=
  *      "https://www.unidata.ucar.edu/software/netcdf/ncml/">https://www.unidata.ucar.edu/software/netcdf/ncml/</a>
  */
-public class NcMLReaderNew {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReaderNew.class);
+public class NcmlReader {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlReader.class);
 
   private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
   private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
@@ -209,7 +209,7 @@ public class NcMLReaderNew {
 
     Element netcdfElem = doc.getRootElement();
 
-    NcMLReaderNew reader = new NcMLReaderNew();
+    NcmlReader reader = new NcmlReader();
     reader.readNetcdf(ncmlLocation, ncDataset, netcdfElem, cancelTask);
     if (debugOpen) {
       System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
@@ -262,7 +262,7 @@ public class NcMLReaderNew {
 
       Element netcdfElem = doc.getRootElement();
 
-      NcMLReaderNew reader = new NcMLReaderNew();
+      NcmlReader reader = new NcmlReader();
       reader.readNetcdf(ncDataset.location, ncDataset, netcdfElem, cancelTask);
       if (debugOpen) {
         System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
@@ -283,7 +283,7 @@ public class NcMLReaderNew {
     NetcdfDataset.Builder targetDS = new NetcdfDataset(ref.toBuilder()).toBuilder(); // no enhance
 
     if (ncmlElem != null) {
-      NcMLReaderNew reader = new NcMLReaderNew();
+      NcmlReader reader = new NcmlReader();
       reader.readGroup(targetDS, null, null, ncmlElem);
     }
 
@@ -330,7 +330,7 @@ public class NcMLReaderNew {
     if (referencedDatasetUri != null)
       referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
 
-    NcMLReaderNew reader = new NcMLReaderNew();
+    NcmlReader reader = new NcmlReader();
     return reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
   }
 
@@ -390,7 +390,7 @@ public class NcMLReaderNew {
       referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
     }
 
-    NcMLReaderNew reader = new NcMLReaderNew();
+    NcmlReader reader = new NcmlReader();
     return reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
   }
 

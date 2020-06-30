@@ -18,7 +18,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
 
 /** Zebra ATD files. */
@@ -32,7 +32,7 @@ public class ZebraConvention extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    NcMLReaderNew.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "Zebra.ncml", cancelTask);
+    NcmlReader.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "Zebra.ncml", cancelTask);
 
     // special time handling
     // the time coord var is created in the NcML

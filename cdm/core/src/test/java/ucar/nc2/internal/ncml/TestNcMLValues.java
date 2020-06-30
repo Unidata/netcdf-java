@@ -79,7 +79,7 @@ public class TestNcMLValues {
     }
 
     try {
-      ncfile = NcMLReaderNew.readNcML(new StringReader(ncml), null, null).build();
+      ncfile = NcmlReader.readNcML(new StringReader(ncml), null, null).build();
     } catch (IOException e) {
       System.out.println("IO error = " + e);
       e.printStackTrace();
