@@ -61,7 +61,8 @@ public class TestStreamWriter {
   public void testN3outputStreamWriter() throws IOException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
     long start = System.currentTimeMillis();
-    NetcdfFile fileIn = NetcdfFiles.open(endpoint);
+    // LOOK fails if NetcdfFiles.open
+    NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     String fileOut = tempFolder.newFile().getAbsolutePath();
     N3outputStreamWriter.writeFromFile(fileIn, fileOut);
