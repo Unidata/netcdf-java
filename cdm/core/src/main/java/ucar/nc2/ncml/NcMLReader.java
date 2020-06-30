@@ -53,8 +53,9 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  * @author caron
  * @see <a href=
  *      "https://www.unidata.ucar.edu/software/netcdf/ncml/">https://www.unidata.ucar.edu/software/netcdf/ncml/</a>
+ * @deprecated read NcML using NetcdfDatasets.open()
  */
-
+@Deprecated
 public class NcMLReader {
   private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
   private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;

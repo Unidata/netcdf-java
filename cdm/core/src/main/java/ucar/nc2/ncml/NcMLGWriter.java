@@ -26,8 +26,9 @@ import ucar.unidata.util.Parameter;
  * @see <a href=
  *      "http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/">http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/</a>
  * @author caron
+ * @deprecated do not use
  */
-
+@Deprecated
 public class NcMLGWriter {
   private static Logger logger = LoggerFactory.getLogger(NcMLGWriter.class);
   protected static final String schemaLocation = "http://www.unidata.ucar.edu/schemas/netcdf-cs.xsd";

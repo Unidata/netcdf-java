@@ -381,14 +381,7 @@ public abstract class HTTPUtil {
     return buf.toString();
   }
 
-  /**
-   * Join two string together to form proper path
-   * WITHOUT trailing slash
-   *
-   * @param prefix
-   * @param suffix
-   * @return
-   */
+  /** Join two string together to form proper path WITHOUT trailing slash */
   public static String canonjoin(String prefix, String suffix) {
     if (prefix == null)
       prefix = "";

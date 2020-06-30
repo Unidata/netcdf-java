@@ -58,7 +58,7 @@ import javax.swing.JSplitPane;
 
 /**
  * <p>
- * A Swing widget to view the contents of a {@link }PointFeatureDataset}.
+ * A Swing widget to view the contents of a PointFeatureDataset.
  * </p>
  *
  * <p>

@@ -57,7 +57,7 @@ public class CFPoint implements Point {
   /**
    * Return the y coordinate for the point
    * 
-   * @ return y of the point
+   * @return y of the point
    */
   public double getY() {
     return y;

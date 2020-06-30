@@ -19,9 +19,9 @@ import java.util.EnumSet;
 /**
  * Tiled Aggregation.
  *
- * @author caron
- * @since Aug 16, 2007
+ * @deprecated do not use
  */
+@Deprecated
 public class AggregationTiled extends Aggregation implements ProxyReader {
   private List<String> dimNames = new ArrayList<>();
   private List<Dimension> dims = new ArrayList<>();

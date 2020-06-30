@@ -15,8 +15,9 @@ import java.util.List;
  *
  * The variables are transferred from the component files to the ncml dataset
  *
- * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 public class AggregationUnion extends Aggregation {
   public AggregationUnion(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.union, recheckS);

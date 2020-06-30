@@ -24,8 +24,9 @@ import java.util.Set;
  * Implement NcML Forecast Model Run Collection Aggregation
  * with files that are complete runs (have all forecast times in the same file)
  *
- * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 public class AggregationFmrc extends AggregationOuterDimension {
   protected static Set<NetcdfDataset.Enhance> fmrcEnhanceMode = NetcdfDataset.getDefaultEnhanceMode();
 
