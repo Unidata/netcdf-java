@@ -883,14 +883,16 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   /**
    * release any resources like file handles.
-   * @deprecated, do not use.
+   * 
+   * @deprecated do not use.
    */
   @Deprecated
   public void release() {}
 
   /**
    * reacquire any resources like file handles.
-   * @deprecated, do not use.
+   * 
+   * @deprecated do not use.
    */
   @Deprecated
   public void reacquire() {}

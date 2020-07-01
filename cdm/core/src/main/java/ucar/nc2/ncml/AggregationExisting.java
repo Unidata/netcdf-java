@@ -39,8 +39,9 @@ import ucar.nc2.util.CancelTask;
 /**
  * JoinExisting Aggregation.
  *
- * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 public class AggregationExisting extends AggregationOuterDimension {
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {

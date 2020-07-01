@@ -47,8 +47,9 @@ import ucar.nc2.util.CancelTask;
  *
  * @author caron
  * @since Aug 10, 2007
+ * @deprecated do not use
  */
-
+@Deprecated
 public abstract class AggregationOuterDimension extends Aggregation implements ProxyReader {
   protected static boolean debugCache, debugInvocation, debugStride;
   public static int invocation; // debugging

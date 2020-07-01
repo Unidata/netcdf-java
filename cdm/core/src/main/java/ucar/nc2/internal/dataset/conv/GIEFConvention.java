@@ -15,7 +15,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
 
 /**
@@ -32,7 +32,7 @@ public class GIEFConvention extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    NcMLReaderNew.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "GIEF.ncml", cancelTask);
+    NcmlReader.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "GIEF.ncml", cancelTask);
 
     Dimension timeDim = rootGroup.findDimension("time").orElse(null);
     VariableDS.Builder base_time = (VariableDS.Builder) rootGroup.findVariableLocal("base_time").orElse(null);

@@ -79,8 +79,10 @@ import java.util.concurrent.Executor;
  * <li> If not, the coordinate value(s) is cached when the dataset is opened.
  * <li> agg.read() uses those if they exist, else reads and caches.
  * </ol>
- * 
+ *
+ * @deprecated do not use
  */
+@Deprecated
 public abstract class Aggregation implements AggregationIF {
 
   protected enum Type {

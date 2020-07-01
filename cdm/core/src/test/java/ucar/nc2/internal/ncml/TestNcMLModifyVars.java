@@ -32,7 +32,7 @@ public class TestNcMLModifyVars {
     String filename = "file:" + TestNcMLRead.topDir + "modifyVars.xml";
 
     try {
-      ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+      ncfile = NcmlReader.readNcML(filename, null, null).build();
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
     } catch (IOException e) {

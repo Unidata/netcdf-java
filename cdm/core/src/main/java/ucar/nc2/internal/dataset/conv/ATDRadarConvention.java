@@ -10,7 +10,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
 
 /** ATD Radar file (ad hoc guesses). */
@@ -24,7 +24,7 @@ public class ATDRadarConvention extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    NcMLReaderNew.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "ATDRadar.ncml", cancelTask);
+    NcmlReader.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "ATDRadar.ncml", cancelTask);
   }
 
   public static class Factory implements CoordSystemBuilderFactory {

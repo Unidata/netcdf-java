@@ -1353,7 +1353,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /** NcML representation of Netcdf header info, non strict */
-  public String toNcML(String url) {
+  public String toNcml(String url) {
     NcmlWriter ncmlWriter = new NcmlWriter(null, null, NcmlWriter.writeNoVariablesPredicate);
     Element netcdfElement = ncmlWriter.makeNetcdfElement(this, url);
     return ncmlWriter.writeToString(netcdfElement);
@@ -1366,7 +1366,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @param uri use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException if error
    */
-  public void writeNcML(OutputStream os, String uri) throws IOException {
+  public void writeNcml(OutputStream os, String uri) throws IOException {
     NcmlWriter ncmlWriter = new NcmlWriter();
     Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
     ncmlWriter.writeToStream(netcdfElem, os);
@@ -1380,7 +1380,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @param uri use this for the url attribute; if null use getLocation().
    * @throws IOException if error
    */
-  public void writeNcML(Writer writer, String uri) throws IOException {
+  public void writeNcml(Writer writer, String uri) throws IOException {
     NcmlWriter ncmlWriter = new NcmlWriter();
     Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
     ncmlWriter.writeToWriter(netcdfElem, writer);

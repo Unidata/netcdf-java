@@ -112,7 +112,7 @@ class AggDataset implements Comparable<AggDataset> {
     if (ncmlElem == null && (enhance.isEmpty()))
       return ncfile;
 
-    NetcdfDataset.Builder builder = NcMLReaderNew.mergeNcML(ncfile, ncmlElem); // create new dataset
+    NetcdfDataset.Builder builder = NcmlReader.mergeNcML(ncfile, ncmlElem); // create new dataset
     builder.setEnhanceMode(enhance);
 
     if (debugOpenFile)

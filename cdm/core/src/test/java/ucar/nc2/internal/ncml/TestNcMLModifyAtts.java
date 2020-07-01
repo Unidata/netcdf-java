@@ -31,7 +31,7 @@ public class TestNcMLModifyAtts {
   @BeforeClass
   public static void setUp() throws IOException {
     String filename = "file:" + TestNcMLRead.topDir + "modifyAtts.xml";
-    ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    ncfile = NcmlReader.readNcML(filename, null, null).build();
   }
 
   @AfterClass

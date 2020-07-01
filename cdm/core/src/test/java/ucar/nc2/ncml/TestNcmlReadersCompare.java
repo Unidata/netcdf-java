@@ -22,7 +22,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.internal.ncml.NcMLReaderNew;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
@@ -54,7 +54,7 @@ public class TestNcmlReadersCompare {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     System.out.printf("Compare %s%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
-      try (NetcdfDataset withBuilder = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
+      try (NetcdfDataset withBuilder = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         if (!compare.compare(org, withBuilder, new CoordsObjFilter())) {

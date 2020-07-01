@@ -29,7 +29,7 @@ public interface Point extends SimpleGeometry {
   /**
    * Return the y coordinate for the point
    * 
-   * @ return y of the point
+   * @return y of the point
    */
   double getY();
 

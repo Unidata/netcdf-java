@@ -36,7 +36,7 @@ public class TestAggExistingPromote {
         + "  </aggregation>\n" // leavit
         + "</netcdf>"; // leavit
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(new StringReader(aggExistingPromote), filename, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(aggExistingPromote), filename, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     // the promoted var
@@ -164,7 +164,7 @@ public class TestAggExistingPromote {
         + "</netcdf>"; // leavit
 
 
-    NetcdfFile ncfile = NcMLReaderNew.readNcML(new StringReader(aggExistingPromote2), filename, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(aggExistingPromote2), filename, null).build();
     Dimension dim = ncfile.findDimension("time");
 
     // the promoted var

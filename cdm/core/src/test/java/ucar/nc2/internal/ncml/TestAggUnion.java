@@ -129,7 +129,7 @@ public class TestAggUnion {
     if (ncfile != null)
       return;
     String filename = "file:./" + TestNcMLRead.topDir + "aggUnion.xml";
-    ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+    ncfile = NcmlReader.readNcML(filename, null, null).build();
   }
 
   @AfterClass

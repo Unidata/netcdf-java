@@ -8,7 +8,9 @@ import java.util.Formatter;
  *
  * @author caron
  * @since 10/4/2019.
+ * @deprecated do not use
  */
+@Deprecated
 public interface AggregationIF {
 
   void close() throws IOException;

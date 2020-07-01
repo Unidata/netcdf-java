@@ -31,7 +31,7 @@ public class TestNcMLRenameVar {
   @BeforeClass
   public static void setUp() {
     try {
-      ncfile = NcMLReaderNew.readNcML(filename, null, null).build();
+      ncfile = NcmlReader.readNcML(filename, null, null).build();
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
     } catch (IOException e) {

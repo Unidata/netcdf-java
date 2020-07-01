@@ -19,8 +19,9 @@ import java.util.List;
 /**
  * JoinNew Aggregation.
  *
- * @author caron
+ * @deprecated do not use
  */
+@Deprecated
 public class AggregationNew extends AggregationOuterDimension {
 
   public AggregationNew(NetcdfDataset ncd, String dimName, String recheckS) {

@@ -46,7 +46,7 @@ public class TestAggMisc {
 
     String location = "testNestedValues.ncml";
 
-    try (NetcdfFile ncfile = NcMLReaderNew.readNcML(new StringReader(ncml), location, null).build()) {
+    try (NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(ncml), location, null).build()) {
       TestDir.readAllData(ncfile);
 
       Variable v = ncfile.findVariable("time");

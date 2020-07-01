@@ -36,7 +36,7 @@ public class TestNcMLequals {
   }
 
   private void testEquals(String ncmlLocation) throws IOException {
-    try (NetcdfDataset ncd = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
+    try (NetcdfDataset ncd = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
       String locref = ncd.getReferencedFile().getLocation();
       try (NetcdfDataset ncdref = NetcdfDatasets.openDataset(locref, false, null)) {
         Formatter f = new Formatter();
@@ -49,7 +49,7 @@ public class TestNcMLequals {
   }
 
   private void testEnhanceEquals(String ncmlLocation) throws IOException {
-    try (NetcdfDataset ncd = NcMLReaderNew.readNcML(ncmlLocation, null, null).build()) {
+    try (NetcdfDataset ncd = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
       String locref = ncd.getReferencedFile().getLocation();
       try (NetcdfDataset ncdref = NetcdfDatasets.openDataset(locref, true, null)) {
         Formatter f = new Formatter();
