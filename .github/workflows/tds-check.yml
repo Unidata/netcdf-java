@@ -18,7 +18,7 @@ jobs:
       - name: Print java version
         run: java -version
       - name: Install netCDF-C and sed
-        run: sudo apt-get install libnetcdf-dev sed
+        run: sudo apt update && sudo apt-get install libnetcdf-dev sed
       - name: Build netCDF-java and publish to local maven repository
         run: ./gradlew assemble publishToMavenLocal
       - name: Checkout TDS Master
@@ -72,7 +72,7 @@ jobs:
       - name: Print java version
         run: java -version
       - name: Install netCDF-C and sed
-        run: sudo apt-get install libnetcdf-dev sed
+        run: sudo apt update && sudo apt-get install libnetcdf-dev sed
       - name: Build netCDF-java and publish to local maven repository
         run: ./gradlew assemble publishToMavenLocal
       - name: Checkout TDS Master
