@@ -12,14 +12,11 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -99,64 +96,4 @@ public class TestMiscIosp {
       assert Arrays.equals(data.getShape(), new int[] {1, 3000, 4736});
     }
   }
-
-
-  @Test
-  public void testGrads() throws IOException, InvalidRangeException {
-    String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
-      logger.debug("open {}", ncf.getLocation());
-
-      ucar.nc2.Variable v = ncf.findVariable("mask");
-      assert v != null;
-      assert v.getDataType() == DataType.FLOAT;
-      Attribute att = v.findAttribute(CDM.MISSING_VALUE);
-      assert att != null;
-      assert att.getDataType() == DataType.FLOAT;
-      Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
-
-      Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[] {1, 1, 180, 360});
-    }
-  }
-
-  @Test
-  public void testGradsWithRAFCache() throws IOException, InvalidRangeException {
-    String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
-      logger.debug("open {}", ncf.getLocation());
-
-      ucar.nc2.Variable v = ncf.findVariable("mask");
-      assert v != null;
-      assert v.getDataType() == DataType.FLOAT;
-      Attribute att = v.findAttribute(CDM.MISSING_VALUE);
-      assert att != null;
-      assert att.getDataType() == DataType.FLOAT;
-      Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
-
-      Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[] {1, 1, 180, 360});
-    }
-  }
-
-  // @Test
-  // dunno what kind of grads file this is.
-  public void testGrads2() throws IOException, InvalidRangeException {
-    String fileIn = TestDir.cdmUnitTestDir + "formats/grads/pdef.ctl";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
-      logger.debug("open {}", ncf.getLocation());
-
-      ucar.nc2.Variable v = ncf.findVariable("pdef");
-      assert v != null;
-      assert v.getDataType() == DataType.FLOAT;
-      Attribute att = v.findAttribute(CDM.MISSING_VALUE);
-      assert att != null;
-      assert att.getDataType() == DataType.FLOAT;
-      Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
-
-      Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[] {1, 1, 180, 360});
-    }
-  }
-
 }
