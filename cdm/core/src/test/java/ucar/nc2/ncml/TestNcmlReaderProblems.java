@@ -24,7 +24,7 @@ public class TestNcmlReaderProblems {
     // This used to fail in NcmlReader. Succeeds in NcmlReaderNew, but doesnt get the time coordinates right.
     // compare("file:" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml");
 
-    compare("file:" + TestNcMLRead.topDir + "aggUbyte.ncml");
+    compare("file:" + TestNcmlRead.topDir + "aggUbyte.ncml");
   }
 
   private void compare(String ncmlLocation) throws IOException {
@@ -32,8 +32,8 @@ public class TestNcmlReaderProblems {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
       System.out.printf("NcMLReader == %s%n", org);
-      try (NetcdfDataset withBuilder = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
-        System.out.printf("NcMLReaderNew == %s%n", withBuilder);
+      try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
+        System.out.printf("NcmlReaderNew == %s%n", withBuilder);
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, true, true, true);
         boolean ok = compare.compare(org, withBuilder, new TestNcmlReadersCompare.CoordsObjFilter());

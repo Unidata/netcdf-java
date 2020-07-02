@@ -4,81 +4,81 @@
  */
 package ucar.nc2.internal.ncml;
 
+import static ucar.nc2.util.Misc.nearlyEquals;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import java.util.ArrayList;
+import java.util.Collection;
+import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.ncml.TestNcMLRead;
-import ucar.unidata.util.test.Assert2;
+import ucar.unidata.util.test.TestDir;
 
-public class TestNcMLModifyAtts {
+@RunWith(Parameterized.class)
+public class TestNcmlRead {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  public static String topDir = TestDir.cdmLocalTestDataDir + "ncml/";
 
-  private static NetcdfFile ncfile = null;
-
-  @BeforeClass
-  public static void setUp() throws IOException {
-    String filename = "file:" + TestNcMLRead.topDir + "modifyAtts.xml";
-    ncfile = NcmlReader.readNcML(filename, null, null).build();
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> getTestParameters() {
+    Collection<Object[]> filenames = new ArrayList<>();
+    filenames.add(new Object[] {"testRead.xml"});
+    filenames.add(new Object[] {"readMetadata.xml"});
+    filenames.add(new Object[] {"testReadHttps.xml"});
+    return filenames;
   }
 
-  @AfterClass
-  public static void tearDown() throws IOException {
+  private String ncmlLocation;
+  private NetcdfFile ncfile;
+
+  public TestNcmlRead(String filename) {
+    this.ncmlLocation = "file:" + topDir + filename;
+    try {
+      ncfile = NcmlReader.readNcml(ncmlLocation, null, null).build();
+    } catch (java.net.MalformedURLException e) {
+      System.out.println("bad URL error = " + e);
+    } catch (IOException e) {
+      System.out.println("IO error = " + e);
+      e.printStackTrace();
+    }
+  }
+
+  @After
+  public void tearDown() throws IOException {
     ncfile.close();
   }
 
   @Test
-  public void testGlobalAtt() {
-    Attribute att = ncfile.findGlobalAttribute("Conventions");
+  public void testStructure() {
+    System.out.println("ncfile opened = " + ncmlLocation + "\n" + ncfile);
+
+    Attribute att = ncfile.findGlobalAttribute("title");
     assert null != att;
     assert !att.isArray();
     assert att.isString();
     assert att.getDataType() == DataType.STRING;
-    assert att.getStringValue().equals("Metapps");
+    assert att.getStringValue().equals("Example Data");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-  }
 
-  @Test
-  public void testVarAtt() {
-    Variable v = ncfile.findVariable("rh");
-    assert null != v;
-
-    Attribute att = v.findAttribute(CDM.LONG_NAME);
-    assert null == att;
-
-    att = v.findAttribute("units");
+    att = ncfile.findGlobalAttribute("testFloat");
     assert null != att;
-    assert att.getStringValue().equals("percent");
-
-    att = v.findAttribute("UNITS");
-    assert null != att;
-    assert att.getStringValue().equals("percent");
-
-    att = v.findAttribute("longer_name");
-    assert null != att;
-    assert !att.isArray();
-    assert att.isString();
-    assert att.getDataType() == DataType.STRING;
-    assert att.getStringValue().equals("Abe said what?");
-  }
-
-  @Test
-  public void testStructure() {
-    Attribute att = ncfile.findGlobalAttribute("title");
-    assert null == att;
+    assert att.isArray();
+    assert !att.isString();
+    assert att.getDataType() == DataType.FLOAT;
+    assert att.getStringValue() == null;
+    assert att.getNumericValue().equals(1.0f);
+    assert att.getNumericValue(3).equals(4.0f);
 
     Dimension latDim = ncfile.findDimension("lat");
     assert null != latDim;
@@ -94,7 +94,7 @@ public class TestNcMLModifyAtts {
   }
 
   @Test
-  public void testReadCoordvar() throws IOException {
+  public void testReadCoordvar() {
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
     assert lat.getShortName().equals("lat");
@@ -116,20 +116,24 @@ public class TestNcMLModifyAtts {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    Array data = lat.read();
-    assert data.getRank() == 1;
-    assert data.getSize() == 3;
-    assert data.getShape()[0] == 3;
-    assert data.getElementType() == float.class;
+    try {
+      Array data = lat.read();
+      assert data.getRank() == 1;
+      assert data.getSize() == 3;
+      assert data.getShape()[0] == 3;
+      assert data.getElementType() == float.class;
 
-    IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
+      IndexIterator dataI = data.getIndexIterator();
+      assert nearlyEquals(dataI.getDoubleNext(), 41.0);
+      assert nearlyEquals(dataI.getDoubleNext(), 40.0);
+      assert nearlyEquals(dataI.getDoubleNext(), 39.0);
+    } catch (IOException io) {
+    }
+
   }
 
   @Test
-  public void testReadData() throws IOException {
+  public void testReadData() throws Exception {
     Variable v = ncfile.findVariable("rh");
     assert null != v;
     assert v.getShortName().equals("rh");
@@ -146,6 +150,15 @@ public class TestNcMLModifyAtts {
     assert v.getDimension(0) == ncfile.findDimension("time");
     assert v.getDimension(1) == ncfile.findDimension("lat");
     assert v.getDimension(2) == ncfile.findDimension("lon");
+
+    Attribute att = v.findAttribute("units");
+    assert null != att;
+    assert !att.isArray();
+    assert att.isString();
+    assert att.getDataType() == DataType.STRING;
+    assert att.getStringValue().equals("percent");
+    assert att.getNumericValue() == null;
+    assert att.getNumericValue(3) == null;
 
     Array data = v.read();
     assert data.getRank() == 3;
@@ -164,7 +177,7 @@ public class TestNcMLModifyAtts {
   }
 
   @Test
-  public void testReadSlice() throws IOException, InvalidRangeException {
+  public void testReadSlice() throws Exception {
     Variable v = ncfile.findVariable("rh");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
@@ -187,7 +200,7 @@ public class TestNcMLModifyAtts {
   }
 
   @Test
-  public void testReadSlice2() throws IOException, InvalidRangeException {
+  public void testReadSlice2() throws Exception {
     Variable v = ncfile.findVariable("rh");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
@@ -206,14 +219,12 @@ public class TestNcMLModifyAtts {
     assert dataI.getIntNext() == 21;
     assert dataI.getIntNext() == 22;
     assert dataI.getIntNext() == 23;
+
   }
 
   @Test
-  public void testReadData2() throws IOException {
-    Variable v = ncfile.findVariable("Temperature");
-    assert null == v;
-
-    v = ncfile.findVariable("T");
+  public void testReadDataAlias() throws Exception {
+    Variable v = ncfile.findVariable("T");
     assert null != v;
     assert v.getShortName().equals("T");
     assert v.getRank() == 3;
@@ -234,7 +245,7 @@ public class TestNcMLModifyAtts {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getDataType() == DataType.STRING : att.getDataType();
     assert att.getStringValue().equals("degC");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -248,10 +259,11 @@ public class TestNcMLModifyAtts {
     assert data.getElementType() == double.class;
 
     IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 1.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 3.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 4.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
+    assert nearlyEquals(dataI.getDoubleNext(), 1.0);
+    assert nearlyEquals(dataI.getDoubleNext(), 2.0);
+    assert nearlyEquals(dataI.getDoubleNext(), 3.0);
+    assert nearlyEquals(dataI.getDoubleNext(), 4.0);
+    assert nearlyEquals(dataI.getDoubleNext(), 2.0);
   }
+
 }

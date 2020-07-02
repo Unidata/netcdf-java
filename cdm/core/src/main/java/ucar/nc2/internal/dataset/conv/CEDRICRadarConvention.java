@@ -47,7 +47,7 @@ public class CEDRICRadarConvention extends CF1Convention {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    NcmlReader.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "CEDRICRadar.ncml", cancelTask);
+    NcmlReader.wrapNcmlResource(datasetBuilder, CoordSystemFactory.resourcesDir + "CEDRICRadar.ncml", cancelTask);
 
     VariableDS.Builder lat = (VariableDS.Builder) rootGroup.findVariableLocal("radar_latitude")
         .orElseThrow(() -> new IllegalStateException("Must have radar_latitude variable"));

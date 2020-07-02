@@ -41,7 +41,7 @@ class CacheAggregationsSpec extends Specification {
     // Demonstrates eSupport ticket OPV-470285.
     def "union"() {
         setup:
-        String filename = "file:./" + TestNcMLRead.topDir + "aggUnion.xml"
+        String filename = "file:./" + TestNcmlRead.topDir + "aggUnion.xml"
         def expecteds = [5.0, 10.0, 15.0, 20.0]
         def actuals
 
@@ -60,7 +60,7 @@ class CacheAggregationsSpec extends Specification {
 
     def "joinExisting"() {
         setup:
-        String filename = "file:./"+TestNcMLRead.topDir + "aggExisting.xml";
+        String filename = "file:./"+TestNcmlRead.topDir + "aggExisting.xml";
         def expecteds = [8420.0, 8422.0, 8424.0, 8426.0]
         def actuals
 
@@ -79,7 +79,7 @@ class CacheAggregationsSpec extends Specification {
 
     def "joinNew"() {
         setup:
-        String filename = "file:./"+TestNcMLRead.topDir + "aggSynthetic.xml";
+        String filename = "file:./"+TestNcmlRead.topDir + "aggSynthetic.xml";
         def expecteds = [110.0, 111.0, 112.0, 113.0]
         def actuals
 
@@ -118,7 +118,7 @@ class CacheAggregationsSpec extends Specification {
 
     def "fmrc"() {
         setup:
-        String filename = "file:./"+TestNcMLRead.topDir + "fmrc/testAggFmrcScan.ncml";
+        String filename = "file:./"+TestNcmlRead.topDir + "fmrc/testAggFmrcScan.ncml";
         def expecteds = [232.0, 232.4, 232.5]
         def actuals
 

@@ -15,11 +15,11 @@ import ucar.unidata.util.test.TestDir;
 
 /** Test netcdf dataset in the JUnit framework. */
 
-public class TestNcMLRead extends TestCase {
+public class TestNcmlRead extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   public static String topDir = TestDir.cdmLocalTestDataDir + "ncml/";
 
-  public TestNcMLRead(String name) {
+  public TestNcmlRead(String name) {
     super(name);
   }
 
@@ -254,7 +254,7 @@ public class TestNcMLRead extends TestCase {
     return Math.abs((d1 - d2) / d1) < 1.0e-5;
   }
 
-  static public class TestRead2 extends TestNcMLRead {
+  static public class TestRead2 extends TestNcmlRead {
 
     // equivalent dataset using "readMetadata"
     public TestRead2(String name) {
@@ -264,7 +264,7 @@ public class TestNcMLRead extends TestCase {
     }
   }
 
-  static public class TestReadHttps extends TestNcMLRead {
+  static public class TestReadHttps extends TestNcmlRead {
 
     // equivalent dataset using "readMetadata"
     public TestReadHttps(String name) {

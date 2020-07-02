@@ -23,7 +23,7 @@ public class TestAggSynGrid {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static GridDataset gds = null;
-  static final String filename = "file:./" + TestNcMLRead.topDir + "aggSynGrid.xml";
+  static final String filename = "file:./" + TestNcmlRead.topDir + "aggSynGrid.xml";
 
   @BeforeClass
   public static void setUp() throws IOException {

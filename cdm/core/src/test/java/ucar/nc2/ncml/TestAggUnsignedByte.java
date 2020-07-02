@@ -32,7 +32,7 @@ public class TestAggUnsignedByte {
    */
   @Before
   public void prepAggDataset() {
-    String filename = "file:./" + TestNcMLRead.topDir + AGG_FILENAME;
+    String filename = "file:./" + TestNcmlRead.topDir + AGG_FILENAME;
     try {
       ncfile = NcMLReader.readNcML(filename, null);
       v = ncfile.findVariable(UBYTE_VAR_NAME);

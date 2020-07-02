@@ -36,7 +36,7 @@ public class TestAggPromote extends TestCase {
         + "    <scan dateFormatMark='CG#yyyyDDD_HHmmss' location='src/test/data/ncml/nc/cg/' suffix='.nc' subdirs='false' />\n"
         + "  </aggregation>\n" + "</netcdf>";
 
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting1.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting1.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), null);
     System.out.println(" TestNcmlAggExisting.open " + filename);

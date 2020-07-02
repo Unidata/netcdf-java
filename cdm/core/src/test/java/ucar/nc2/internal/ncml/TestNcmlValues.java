@@ -22,7 +22,7 @@ import ucar.nc2.Variable;
 
 /** Test ncml value element in the JUnit framework. */
 
-public class TestNcMLValues {
+public class TestNcmlValues {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   NetcdfFile ncfile = null;
@@ -79,7 +79,7 @@ public class TestNcMLValues {
     }
 
     try {
-      ncfile = NcmlReader.readNcML(new StringReader(ncml), null, null).build();
+      ncfile = NcmlReader.readNcml(new StringReader(ncml), null, null).build();
     } catch (IOException e) {
       System.out.println("IO error = " + e);
       e.printStackTrace();

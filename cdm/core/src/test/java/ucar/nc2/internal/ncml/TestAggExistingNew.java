@@ -23,7 +23,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Builder;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -37,9 +37,9 @@ public class TestAggExistingNew {
 
   @Test
   public void testNcmlDirect() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -53,7 +53,7 @@ public class TestAggExistingNew {
 
   @Test
   public void testNcmlDataset() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -68,7 +68,7 @@ public class TestAggExistingNew {
 
   @Test
   public void testNcmlDatasetNoProtocolInFilename() throws IOException, InvalidRangeException {
-    String filename = "./" + TestNcMLRead.topDir + "aggExisting.xml";
+    String filename = "./" + TestNcmlRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -86,7 +86,7 @@ public class TestAggExistingNew {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
-    String filename = "file:./" + TestNcMLRead.topDir + "exclude/aggExisting6.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -104,7 +104,7 @@ public class TestAggExistingNew {
     // if using an absolute path in the NcML file location attr of the element netcdf, then
     // you must prepend file:
     // this should fail with an IOException
-    String filename = "./" + TestNcMLRead.topDir + "exclude/aggExisting6.xml";
+    String filename = "./" + TestNcmlRead.topDir + "exclude/aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -119,7 +119,7 @@ public class TestAggExistingNew {
 
   @Test
   public void testNcmlDatasetNoProtocolInNcmlRelPath() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting7.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -134,7 +134,7 @@ public class TestAggExistingNew {
 
   @Test
   public void testNcmlDatasetNoProtocolInFilenameOrNcmlRelPath() throws IOException, InvalidRangeException {
-    String filename = "./" + TestNcMLRead.topDir + "aggExisting7.xml";
+    String filename = "./" + TestNcmlRead.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -149,7 +149,7 @@ public class TestAggExistingNew {
 
   @Test
   public void testNcmlDatasetWcoords() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExistingWcoords.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExistingWcoords.xml";
 
     NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" testNcmlDatasetWcoords.open {}", filename);
@@ -166,7 +166,7 @@ public class TestAggExistingNew {
   // remove test - now we get a coordinate initialized to missing data, but at least testCoordsAdded works!
   // @Test
   public void testNoCoords() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "exclude/aggExistingNoCoords.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggExistingNoCoords.xml";
     logger.debug("{}", filename);
     NetcdfDataset ncd = null;
 
@@ -187,7 +187,7 @@ public class TestAggExistingNew {
   // LOOK this test expects an Exception, but it seems to work. Why isnt this test failing in travis?
   // @Test
   public void testNoCoordsDir() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "exclude/aggExistingNoCoordsDir.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggExistingNoCoordsDir.xml";
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename, true, null)) {
       System.out.printf("testNoCoordsDir supposed to fail = %s", ncd);
@@ -200,7 +200,7 @@ public class TestAggExistingNew {
 
   @Test
   public void testCoordsAdded() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExistingAddCoord.ncml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExistingAddCoord.ncml";
     logger.debug("{}", filename);
     NetcdfDataset ncd = null;
 
@@ -216,16 +216,16 @@ public class TestAggExistingNew {
   @Test(expected = UnsupportedOperationException.class)
   public void testNcmlAggInequivalentCals() throws IOException {
     // Tests that an aggregation with inequivalent calendars across the individual datasets will fail
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingInequivalentCals.xml";
-    NcmlReader.readNcML(filename, null, null).build();
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingInequivalentCals.xml";
+    NcmlReader.readNcml(filename, null, null).build();
   }
 
   @Test
   public void testNcmlAggExistingNoCal() throws IOException {
     // no calendar attribute in the aggregation, which should default to using proleptic_gregorian
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingNoCal.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingNoCal.xml";
 
-    Builder netcdfFileBuilder = NcmlReader.readNcML(filename, null, null);
+    Builder netcdfFileBuilder = NcmlReader.readNcml(filename, null, null);
     NetcdfFile ncfile = netcdfFileBuilder.build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
@@ -258,9 +258,9 @@ public class TestAggExistingNew {
   @Test
   public void testNcmlAggExistingNoLeapCal() throws IOException {
     // with calendar = noleap, each year should have 365 days, even in a leap years
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingNoLeapCal.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingNoLeapCal.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -286,9 +286,9 @@ public class TestAggExistingNew {
   @Test
   public void testNcmlAggExistingAllLeapCal() throws IOException {
     // with calendar = all_leap, each year should have 366 days, even in non-leap years
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingAllLeapCal.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingAllLeapCal.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -314,7 +314,7 @@ public class TestAggExistingNew {
   @Test
   public void testNcmlAggExistingUniform30DayCal() throws IOException {
     // with calendar = uniform30day, each year should have 360 days (12 months, each with 30 days)
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingUniform30DayCal.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingUniform30DayCal.xml";
     testNcmlAggExisting30DayCals(filename);
   }
 
@@ -323,12 +323,12 @@ public class TestAggExistingNew {
     // in this NcML agg, one file uses uniform30day calendar, the other uses 360_day calendar, but
     // those are equivalent, so we let it slide. Otherwise, identical to the ncml agg used in
     // testNcmlAggExistingUniform30DayCal()
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingEquivalentUniform30DayCals.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingEquivalentUniform30DayCals.xml";
     testNcmlAggExisting30DayCals(filename);
   }
 
   private void testNcmlAggExisting30DayCals(String filename) throws IOException {
-    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -355,9 +355,9 @@ public class TestAggExistingNew {
   public void testNcmlAggExistingJulienCal() throws IOException {
     // with calendar = Julian, 4 October 1582 was followed by 5 October 1582 (unlike gregorian, where 4 October
     // was followed by 15 October).
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingJulienCal.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingJulienCal.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -414,9 +414,9 @@ public class TestAggExistingNew {
   @Test
   public void testNcmlAggExistingGregorianCal() throws IOException {
     // with calendar = gregorian, 4 October 1582 was followed by 15 October 1582
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingGregorianCal.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingGregorianCal.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -480,9 +480,9 @@ public class TestAggExistingNew {
   public void testNcmlAggExistingProlepticGregorianCal() throws IOException {
     // with calendar = proleptic_gregorian, 1582 and 1583 should each have 365 days
     // (for a gregorian calendar, 1852 would only have 355
-    String filename = "file:./" + TestNcMLRead.topDir + "agg_with_calendar/aggExistingProlepticGregorianCal.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingProlepticGregorianCal.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(filename, null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;

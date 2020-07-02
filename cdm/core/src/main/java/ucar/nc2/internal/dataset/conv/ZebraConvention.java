@@ -32,7 +32,7 @@ public class ZebraConvention extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    NcmlReader.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "Zebra.ncml", cancelTask);
+    NcmlReader.wrapNcmlResource(datasetBuilder, CoordSystemFactory.resourcesDir + "Zebra.ncml", cancelTask);
 
     // special time handling
     // the time coord var is created in the NcML

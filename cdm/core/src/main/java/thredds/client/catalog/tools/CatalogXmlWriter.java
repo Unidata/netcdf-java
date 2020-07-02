@@ -188,7 +188,7 @@ public class CatalogXmlWriter {
     return dsElem;
   }
 
-  private void writeDatasetInfo(Dataset ds, Element dsElem, boolean doNestedDatasets, boolean showNcML) {
+  private void writeDatasetInfo(Dataset ds, Element dsElem, boolean doNestedDatasets, boolean showNcml) {
     String name = ds.getName();
     if (name == null)
       name = ""; // eg catrefs

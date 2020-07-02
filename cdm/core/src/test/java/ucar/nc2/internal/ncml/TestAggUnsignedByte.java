@@ -20,7 +20,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 
 /** Test AggExisting with Unsigned Byte */
 
@@ -35,9 +35,9 @@ public class TestAggUnsignedByte {
 
   @Before
   public void prepAggDataset() {
-    String filename = "file:./" + TestNcMLRead.topDir + AGG_FILENAME;
+    String filename = "file:./" + TestNcmlRead.topDir + AGG_FILENAME;
     try {
-      ncfile = NcmlReader.readNcML(filename, null, null).build();
+      ncfile = NcmlReader.readNcml(filename, null, null).build();
       v = ncfile.findVariable(UBYTE_VAR_NAME);
     } catch (IOException e) {
       e.printStackTrace();

@@ -7,7 +7,6 @@ package ucar.nc2.ncml;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -51,11 +50,11 @@ public class TestAggFmrc {
    */
   @Before
   public void prepAggDataset() {
-    String filenameScan = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_SCAN;
-    String filenameExplicit = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_EXPLICIT;
-    String filenameA = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_A;
-    String filenameB = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_B;
-    String filenameC = "file:./" + TestNcMLRead.topDir + "fmrc/" + FILENAME_C;
+    String filenameScan = "file:./" + TestNcmlRead.topDir + "fmrc/" + FILENAME_SCAN;
+    String filenameExplicit = "file:./" + TestNcmlRead.topDir + "fmrc/" + FILENAME_EXPLICIT;
+    String filenameA = "file:./" + TestNcmlRead.topDir + "fmrc/" + FILENAME_A;
+    String filenameB = "file:./" + TestNcmlRead.topDir + "fmrc/" + FILENAME_B;
+    String filenameC = "file:./" + TestNcmlRead.topDir + "fmrc/" + FILENAME_C;
     try {
 
       fmrcScan = Fmrc.open(filenameScan, null);

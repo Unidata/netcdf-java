@@ -21,7 +21,7 @@ public class NcmlNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-    return NcmlReader.readNcML(location, (String) null, cancelTask).build();
+    return NcmlReader.readNcml(location, (String) null, cancelTask).build();
   }
 
   @Override

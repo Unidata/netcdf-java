@@ -17,7 +17,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 import ucar.nc2.write.Ncdump;
 
 /** Test promoting an attribute to a variable. */
@@ -26,7 +26,7 @@ public class TestAggExistingPromote {
 
   @Test
   public void testWithDateFormatMark() throws Exception {
-    String filename = "file:" + TestNcMLRead.topDir + "aggExistingPromote.ncml";
+    String filename = "file:" + TestNcmlRead.topDir + "aggExistingPromote.ncml";
 
     String aggExistingPromote = "<?xml version='1.0' encoding='UTF-8'?>\n" // leavit
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" // leavit
@@ -36,7 +36,7 @@ public class TestAggExistingPromote {
         + "  </aggregation>\n" // leavit
         + "</netcdf>"; // leavit
 
-    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(aggExistingPromote), filename, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(aggExistingPromote), filename, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     // the promoted var
@@ -144,7 +144,7 @@ public class TestAggExistingPromote {
    */
   @Test
   public void testNotOne() throws IOException, InvalidRangeException {
-    String filename = "file:" + TestNcMLRead.topDir + "aggExistingPromote2.ncml";
+    String filename = "file:" + TestNcmlRead.topDir + "aggExistingPromote2.ncml";
 
     String aggExistingPromote2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" // leavit
@@ -164,7 +164,7 @@ public class TestAggExistingPromote {
         + "</netcdf>"; // leavit
 
 
-    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(aggExistingPromote2), filename, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(aggExistingPromote2), filename, null).build();
     Dimension dim = ncfile.findDimension("time");
 
     // the promoted var

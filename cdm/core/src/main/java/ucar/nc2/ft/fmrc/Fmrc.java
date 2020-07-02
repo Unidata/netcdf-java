@@ -74,7 +74,7 @@ public class Fmrc implements Closeable {
   }
 
   public static Fmrc readNcML(String ncmlString, Formatter errlog) throws IOException {
-    NcmlCollectionReader ncmlCollection = NcmlCollectionReader.readNcML(ncmlString, errlog);
+    NcmlCollectionReader ncmlCollection = NcmlCollectionReader.readNcml(ncmlString, errlog);
     if (ncmlCollection == null)
       return null;
     Fmrc fmrc = new Fmrc(ncmlCollection.getCollectionManager(), new FeatureCollectionConfig());

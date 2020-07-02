@@ -29,7 +29,7 @@ public class TestAggTiled extends TestCase {
   }
 
   public void testTiled4() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "tiled/testAggTiled.ncml";
+    String filename = "file:./" + TestNcmlRead.topDir + "tiled/testAggTiled.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     logger.debug(" TestNcmlAggExisting.open {}", ncfile);
@@ -68,7 +68,7 @@ public class TestAggTiled extends TestCase {
   }
 
   public void testStride() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "tiled/testAggTiled.ncml";
+    String filename = "file:./" + TestNcmlRead.topDir + "tiled/testAggTiled.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     logger.debug(" TestNcmlAggExisting.open {}", ncfile);

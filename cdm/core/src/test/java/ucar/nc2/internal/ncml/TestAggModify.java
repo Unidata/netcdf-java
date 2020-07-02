@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 
 /** Test TestNcml - modifications aggregation features. */
 public class TestAggModify {
@@ -29,8 +29,8 @@ public class TestAggModify {
   @Test
   public void testWithDateFormatMark() throws Exception {
     System.out.printf("ncml=%s%n", ncml);
-    String filename = "file:" + TestNcMLRead.topDir + "testAggModify.ncml";
-    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(ncml), filename, null).build();
+    String filename = "file:" + TestNcmlRead.topDir + "testAggModify.ncml";
+    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(ncml), filename, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     Variable v = ncfile.findVariable("T");

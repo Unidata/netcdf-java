@@ -186,7 +186,7 @@ public class NcmlReader {
    * @param cancelTask allow user to cancel task; may be null
    * @throws IOException on read error
    */
-  public static void wrapNcML(NetcdfDataset.Builder ncDataset, String ncmlLocation, CancelTask cancelTask)
+  public static void wrapNcml(NetcdfDataset.Builder ncDataset, String ncmlLocation, CancelTask cancelTask)
       throws IOException {
     org.jdom2.Document doc;
     try {
@@ -212,7 +212,7 @@ public class NcmlReader {
     NcmlReader reader = new NcmlReader();
     reader.readNetcdf(ncmlLocation, ncDataset, netcdfElem, cancelTask);
     if (debugOpen) {
-      System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
+      System.out.println("***NcmlReader.wrapNcml result= \n" + ncDataset);
     }
   }
 
@@ -226,7 +226,7 @@ public class NcmlReader {
    * @param cancelTask allow user to cancel task; may be null
    * @throws IOException on read error
    */
-  public static void wrapNcMLresource(NetcdfDataset.Builder ncDataset, String ncmlResourceLocation,
+  public static void wrapNcmlResource(NetcdfDataset.Builder ncDataset, String ncmlResourceLocation,
       CancelTask cancelTask) throws IOException {
     ClassLoader cl = ncDataset.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(ncmlResourceLocation)) {
@@ -265,7 +265,7 @@ public class NcmlReader {
       NcmlReader reader = new NcmlReader();
       reader.readNetcdf(ncDataset.location, ncDataset, netcdfElem, cancelTask);
       if (debugOpen) {
-        System.out.println("***NcMLReader.wrapNcML result= \n" + ncDataset);
+        System.out.println("***NcmlReader.wrapNcml result= \n" + ncDataset);
       }
     }
   }
@@ -279,7 +279,7 @@ public class NcmlReader {
    * @return new dataset with the merged info
    * @throws IOException on read error
    */
-  public static NetcdfDataset.Builder mergeNcML(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
+  public static NetcdfDataset.Builder mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) throws IOException {
     NetcdfDataset.Builder targetDS = new NetcdfDataset(ref.toBuilder()).toBuilder(); // no enhance
 
     if (ncmlElem != null) {
@@ -294,7 +294,7 @@ public class NcmlReader {
 
   /**
    * Read NcML doc from a Reader, and construct a NetcdfDataset.
-   * eg: NcMLReader.readNcML(new StringReader(ncml), location, null);
+   * eg: NcmlReader.readNcML(new StringReader(ncml), location, null);
    *
    * @param r the Reader containing the NcML document
    * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
@@ -304,7 +304,7 @@ public class NcmlReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static NetcdfDataset.Builder readNcML(Reader r, String ncmlLocation, CancelTask cancelTask)
+  public static NetcdfDataset.Builder readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
       throws IOException {
 
     org.jdom2.Document doc;
@@ -331,7 +331,7 @@ public class NcmlReader {
       referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
 
     NcmlReader reader = new NcmlReader();
-    return reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
+    return reader.readNcml(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
   }
 
   /**
@@ -344,12 +344,12 @@ public class NcmlReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static NetcdfDataset.Builder readNcML(String ncmlLocation, String referencedDatasetUri, CancelTask cancelTask)
+  public static NetcdfDataset.Builder readNcml(String ncmlLocation, String referencedDatasetUri, CancelTask cancelTask)
       throws IOException {
     URL url = new URL(ncmlLocation);
 
     if (debugURL) {
-      System.out.println(" NcMLReader open " + ncmlLocation);
+      System.out.println(" NcmlReader open " + ncmlLocation);
       System.out.println("   URL = " + url);
       System.out.println("   external form = " + url.toExternalForm());
       System.out.println("   protocol = " + url.getProtocol());
@@ -391,7 +391,7 @@ public class NcmlReader {
     }
 
     NcmlReader reader = new NcmlReader();
-    return reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
+    return reader.readNcml(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -414,7 +414,7 @@ public class NcmlReader {
    * @return NetcdfDataset the constructed dataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  private NetcdfDataset.Builder readNcML(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
+  private NetcdfDataset.Builder readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
       @Nullable CancelTask cancelTask) throws IOException {
 
     // get ncml namespace and set namespace variable
@@ -1567,105 +1567,12 @@ public class NcmlReader {
       if (debugAggDetail) {
         System.out.println(" NcmlElementReader open nested dataset " + cacheName);
       }
-      NetcdfFile.Builder result = readNcML(ncmlLocation, location, netcdfElem, cancelTask);
+      NetcdfFile.Builder result = readNcml(ncmlLocation, location, netcdfElem, cancelTask);
       result.setLocation(ncmlLocation + "#" + location);
       return result.build();
     }
   }
 
-  //////////////////////////////////////////////////////
-
-  /*
-   * LOOK
-   * private void processLogicalViews(Variable.Builder v, @Nullable Group refGroup, Element varElem) {
-   *
-   * Element viewElem = varElem.getChild("logicalSection", ncNS);
-   * if (null != viewElem) {
-   * String sectionSpec = viewElem.getAttributeValue("section");
-   * if (sectionSpec != null) {
-   * try {
-   * Section s = new Section(sectionSpec); // parse spec
-   * Section viewSection = Section.fill(s, v.getShape());
-   * // check that its a subset
-   * if (!v.getShapeAsSection().contains(viewSection)) {
-   * errlog.format("Invalid logicalSection on variable=%s section =(%s) original=(%s) %n", v.getFullName(),
-   * sectionSpec, v.getShapeAsSection());
-   * return;
-   * }
-   * Variable view = v.section(viewSection);
-   * g.removeVariable(v.getShortName());
-   * g.addVariable(view);
-   *
-   * } catch (InvalidRangeException e) {
-   * errlog.format("Invalid logicalSection on variable=%s section=(%s) error=%s %n", v.getFullName(), sectionSpec,
-   * e.getMessage());
-   * return;
-   * }
-   * }
-   * }
-   *
-   * viewElem = varElem.getChild("logicalSlice", ncNS);
-   * if (null != viewElem) {
-   * String dimName = viewElem.getAttributeValue("dimName");
-   * if (null == dimName) {
-   * errlog.format("NcML logicalSlice: dimName is required, variable=%s %n", v.getFullName());
-   * return;
-   * }
-   * int dim = v.findDimensionIndex(dimName);
-   * if (dim < 0) {
-   * errlog.format("NcML logicalSlice: cant find dimension %s in variable=%s %n", dimName, v.getFullName());
-   * return;
-   * }
-   *
-   * String indexS = viewElem.getAttributeValue("index");
-   * int index;
-   * if (null == indexS) {
-   * errlog.format("NcML logicalSlice: index is required, variable=%s %n", v.getFullName());
-   * return;
-   * }
-   * try {
-   * index = Integer.parseInt(indexS);
-   * } catch (NumberFormatException e) {
-   * errlog.format("NcML logicalSlice: index=%s must be integer, variable=%s %n", indexS, v.getFullName());
-   * return;
-   * }
-   *
-   * try {
-   * Variable view = v.slice(dim, index);
-   * g.removeVariable(v.getShortName());
-   * g.addVariable(view);
-   *
-   * } catch (InvalidRangeException e) {
-   * errlog.format("Invalid logicalSlice (%d,%d) on variable=%s error=%s %n", dim, index, v.getFullName(),
-   * e.getMessage());
-   * }
-   * }
-   *
-   * viewElem = varElem.getChild("logicalReduce", ncNS);
-   * if (null != viewElem) {
-   * String dimName = viewElem.getAttributeValue("dimNames");
-   * if (null == dimName) {
-   * errlog.format("NcML logicalReduce: dimNames is required, variable=%s %n", v.getFullName());
-   * return;
-   * }
-   * String[] dims = StringUtil2.splitString(dimName);
-   * List<Dimension> dimList = new ArrayList<>();
-   * for (String s : dims) {
-   * int idx = v.findDimensionIndex(s);
-   * if (idx < 0) {
-   * errlog.format("NcML logicalReduce: cant find dimension %s in variable=%s %n", dimName, v.getFullName());
-   * return;
-   * }
-   * dimList.add(v.getDimension(idx));
-   * }
-   *
-   * Variable view = v.reduce(dimList);
-   * g.removeVariable(v.getShortName());
-   * g.addVariable(view);
-   * }
-   *
-   * }
-   */
   /////////////////////////////////////////////
   // command procesing
 
@@ -1717,67 +1624,4 @@ public class NcmlReader {
       log.info(f.toString());
     }
   }
-
-  ///////////////////////////////////////////////////////////////////////////////////
-
-  /*
-   * Read an NcML file and write an equivalent NetcdfFile to a physical file, using Netcdf-3 file format.
-   *
-   * @param ncmlLocation read this NcML file
-   *
-   * @param fileOutName write to this local file
-   *
-   * @throws IOException on write error
-   *
-   * @see ucar.nc2.FileWriter2
-   *
-   * public static void writeNcMLToFile(String ncmlLocation, String fileOutName) throws IOException {
-   * NetcdfFile ncd = NetcdfDataset.acquireFile(ncmlLocation, null);
-   *
-   * FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
-   * NetcdfFile result = writer.write();
-   * result.close();
-   * ncd.close();
-   * }
-   */
-
-  /*
-   * Read an NcML and write an equivalent NetcdfFile to a physical file, using Netcdf-3 file format.
-   * The NcML may have a referenced dataset in the location URL, in which case the underlying data
-   * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
-   * then the new file is filled with fill values, like ncgen.
-   *
-   * @param ncml read NcML from this input stream
-   *
-   * @param fileOutName write to this local file
-   *
-   * @see ucar.nc2.FileWriter2
-   *
-   * public static void writeNcMLToFile(InputStream ncml, String fileOutName) throws IOException {
-   * writeNcMLToFile(ncml, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
-   * }
-   */
-
-  /*
-   * Read an NcML and write an equivilent NetcdfFile to a physical file, using Netcdf-3 file format.
-   * The NcML may have a referenced dataset in the location URL, in which case the underlying data
-   * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
-   * then the new file is filled with fill values, like ncgen.
-   *
-   * @param ncml read NcML from this input stream
-   *
-   * @param fileOutName write to this local file
-   *
-   * @param version kind of netcdf file
-   *
-   * @param chunker optional chunking (netcdf4 only)
-   * public static void writeNcMLToFile(InputStream ncml, String fileOutName, NetcdfFileWriter.Version version,
-   * Nc4Chunking chunker) throws IOException {
-   * NetcdfDataset ncd = NcMLReaderNew.readNcML(ncml, null);
-   * FileWriter2 writer = new FileWriter2(ncd, fileOutName, version, chunker);
-   * NetcdfFile result = writer.write();
-   * result.close();
-   * ncd.close();
-   * }
-   */
 }

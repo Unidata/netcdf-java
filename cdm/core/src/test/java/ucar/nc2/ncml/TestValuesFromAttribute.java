@@ -60,7 +60,7 @@ public class TestValuesFromAttribute extends TestCase {
       + "     <values fromAttribute='time@actual_range'/>\n" + "   </variable>\n" + "</netcdf>";
 
   public void testValuesFromAttribute() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "TestValuesFromAttribute.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "TestValuesFromAttribute.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);

@@ -20,8 +20,8 @@ public class TestNcMLequals {
 
   @Test
   public void testEquals() throws IOException {
-    testEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
-    testEnhanceEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
+    testEquals("file:" + TestNcmlRead.topDir + "testEquals.xml");
+    testEnhanceEquals("file:" + TestNcmlRead.topDir + "testEquals.xml");
   }
 
   public void problem() throws IOException {

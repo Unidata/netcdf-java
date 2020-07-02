@@ -45,8 +45,36 @@ public class NcmlCollectionReader {
    * @param errlog put error messages here
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
+   * @deprecated see {@link #readNcml(String, Formatter)}
    */
+  @Deprecated
   public static NcmlCollectionReader readNcML(String ncmlString, Formatter errlog) throws IOException {
+    StringReader reader = new StringReader(ncmlString);
+
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      if (debugURL)
+        System.out.println(" NetcdfDataset NcML String = <" + ncmlString + ">");
+      doc = builder.build(new StringReader(ncmlString));
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+    if (debugXML)
+      System.out.println(" SAXBuilder done");
+
+    return readXML(doc, errlog, null);
+  }
+
+  /**
+   * Read an NcML file from a String, and construct a NcmlCollectionReader from its scan or scanFmrc element.
+   *
+   * @param ncmlString the NcML to construct the reader from
+   * @param errlog put error messages here
+   * @return the resulting NetcdfDataset
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  public static NcmlCollectionReader readNcml(String ncmlString, Formatter errlog) throws IOException {
     StringReader reader = new StringReader(ncmlString);
 
     org.jdom2.Document doc;

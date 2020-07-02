@@ -211,10 +211,10 @@ public class CoordSystemFactory {
 
     // look for ncml first
     if (convName != null) {
-      String convNcML = ncmlHash.get(convName);
-      if (convNcML != null) {
+      String convNcml = ncmlHash.get(convName);
+      if (convNcml != null) {
         CoordSystemBuilder csb = new CoordSystemBuilder(ds);
-        NcmlReader.wrapNcML(ds, convNcML, cancelTask);
+        NcmlReader.wrapNcml(ds, convNcml, cancelTask);
         return Optional.of(csb);
       }
     }

@@ -15,7 +15,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 
 /** Test reading and processing NcML attributes */
 public class TestValuesFromAttribute {
@@ -35,9 +35,9 @@ public class TestValuesFromAttribute {
 
   @Test
   public void testValuesFromAttribute() throws IOException, InvalidRangeException {
-    String filename = "file:./" + TestNcMLRead.topDir + "TestValuesFromAttribute.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "TestValuesFromAttribute.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(ncml), filename, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(ncml), filename, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     Variable newVar = ncfile.findVariable("titleAsVariable");

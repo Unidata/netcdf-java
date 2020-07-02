@@ -32,7 +32,7 @@ public class GIEFConvention extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    NcmlReader.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "GIEF.ncml", cancelTask);
+    NcmlReader.wrapNcmlResource(datasetBuilder, CoordSystemFactory.resourcesDir + "GIEF.ncml", cancelTask);
 
     Dimension timeDim = rootGroup.findDimension("time").orElse(null);
     VariableDS.Builder base_time = (VariableDS.Builder) rootGroup.findVariableLocal("base_time").orElse(null);
