@@ -20,19 +20,19 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 
-public class TestNcMLModifyVars {
+public class TestNcmlModifyVars {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static NetcdfFile ncfile = null;
 
   @BeforeClass
   public static void setUp() {
-    String filename = "file:" + TestNcMLRead.topDir + "modifyVars.xml";
+    String filename = "file:" + TestNcmlRead.topDir + "modifyVars.xml";
 
     try {
-      ncfile = NcmlReader.readNcML(filename, null, null).build();
+      ncfile = NcmlReader.readNcml(filename, null, null).build();
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
     } catch (IOException e) {

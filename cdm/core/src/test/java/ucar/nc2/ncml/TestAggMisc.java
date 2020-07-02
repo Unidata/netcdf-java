@@ -95,7 +95,7 @@ public class TestAggMisc {
 
   @Test
   public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
-    String filename = "file:./" + TestNcMLRead.topDir + "nested/TestNestedDirs.ncml";
+    String filename = "file:./" + TestNcmlRead.topDir + "nested/TestNestedDirs.ncml";
 
     try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
       TestDir.readAllData(ncfile);

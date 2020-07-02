@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 
 /** Test promoteGlobalAttribute */
 public class TestAggPromote {
@@ -30,9 +30,9 @@ public class TestAggPromote {
         + "  </aggregation>\n" // leavit
         + "</netcdf>"; // leavit
 
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting1.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting1.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcML(new StringReader(xml), null, null).build();
+    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(xml), null, null).build();
     System.out.println(" TestNcmlAggExisting.open " + filename);
 
     Variable times = ncfile.findVariable("times");

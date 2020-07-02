@@ -36,7 +36,7 @@ public class TestNcmlReadersCompare {
   public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
     try {
-      TestDir.actOnAllParameterized(TestNcMLRead.topDir, new NcmlFilter(), filenames, true);
+      TestDir.actOnAllParameterized(TestNcmlRead.topDir, new NcmlFilter(), filenames, true);
     } catch (IOException e) {
       filenames.add(new Object[] {e.getMessage()});
     }
@@ -54,7 +54,7 @@ public class TestNcmlReadersCompare {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     System.out.printf("Compare %s%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
-      try (NetcdfDataset withBuilder = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
+      try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         if (!compare.compare(org, withBuilder, new CoordsObjFilter())) {

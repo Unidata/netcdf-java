@@ -20,18 +20,18 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 
-public class TestNcMLRenameVar {
+public class TestNcmlRenameVar {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static NetcdfFile ncfile = null;
-  static String filename = "file:./" + TestNcMLRead.topDir + "renameVar.xml";
+  static String filename = "file:./" + TestNcmlRead.topDir + "renameVar.xml";
 
   @BeforeClass
   public static void setUp() {
     try {
-      ncfile = NcmlReader.readNcML(filename, null, null).build();
+      ncfile = NcmlReader.readNcml(filename, null, null).build();
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
     } catch (IOException e) {

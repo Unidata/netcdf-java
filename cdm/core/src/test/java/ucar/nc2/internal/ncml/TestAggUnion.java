@@ -20,7 +20,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 import ucar.unidata.util.test.Assert2;
 
 /**
@@ -128,8 +128,8 @@ public class TestAggUnion {
   public static void setUp() throws IOException {
     if (ncfile != null)
       return;
-    String filename = "file:./" + TestNcMLRead.topDir + "aggUnion.xml";
-    ncfile = NcmlReader.readNcML(filename, null, null).build();
+    String filename = "file:./" + TestNcmlRead.topDir + "aggUnion.xml";
+    ncfile = NcmlReader.readNcml(filename, null, null).build();
   }
 
   @AfterClass

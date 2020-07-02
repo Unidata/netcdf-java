@@ -25,7 +25,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.Assert2;
 
@@ -132,7 +132,7 @@ public class TestAggUnionSimple {
   public static void setUp() throws IOException {
     if (ncfile != null)
       return;
-    String filename = "file:./" + TestNcMLRead.topDir + "aggUnionSimple.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggUnionSimple.xml";
     ncfile = NetcdfDatasets.openDataset(filename, false, null);
   }
 
@@ -300,7 +300,7 @@ public class TestAggUnionSimple {
    */
   @Test
   public void testScan() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggUnionScan.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggUnionScan.xml";
     try (NetcdfDataset scanFile = NetcdfDatasets.openDataset(filename, false, null)) {
       Assert.assertTrue(CompareNetcdf2.compareFiles(ncfile, scanFile, new Formatter(), true, false, false));
     }
@@ -308,7 +308,7 @@ public class TestAggUnionSimple {
 
   @Test
   public void testRename() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggUnionRename.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggUnionRename.xml";
     try (NetcdfDataset scanFile = NetcdfDatasets.openDataset(filename, false, null)) {
       Variable v = scanFile.findVariable("LavaFlow");
       assert v != null;

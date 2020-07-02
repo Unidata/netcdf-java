@@ -24,7 +24,7 @@ public class ATDRadarConvention extends CoordSystemBuilder {
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    NcmlReader.wrapNcMLresource(datasetBuilder, CoordSystemFactory.resourcesDir + "ATDRadar.ncml", cancelTask);
+    NcmlReader.wrapNcmlResource(datasetBuilder, CoordSystemFactory.resourcesDir + "ATDRadar.ncml", cancelTask);
   }
 
   public static class Factory implements CoordSystemBuilderFactory {

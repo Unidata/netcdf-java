@@ -45,7 +45,7 @@ public class TestNcmlReaderProblems {
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
       System.out.printf("NcMLReader == %s%n", org);
-      try (NetcdfDataset withBuilder = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
+      try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
         System.out.printf("NcMLReaderNew == %s%n", withBuilder);
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
@@ -62,7 +62,7 @@ public class TestNcmlReaderProblems {
     try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
       Variable v = org.findVariable(varName);
       assert v != null;
-      try (NetcdfDataset withBuilder = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
+      try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
         Variable vb = withBuilder.findVariable(varName);
         assert vb != null;
         boolean ok = CompareNetcdf2.compareData(varName, v.read(), vb.read());

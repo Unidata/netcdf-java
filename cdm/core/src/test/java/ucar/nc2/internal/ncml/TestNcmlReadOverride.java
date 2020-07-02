@@ -18,9 +18,9 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 
-public class TestNcMLReadOverride {
+public class TestNcmlReadOverride {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static NetcdfFile ncfile = null;
@@ -29,10 +29,10 @@ public class TestNcMLReadOverride {
   public static void setUp() {
     if (ncfile != null)
       return;
-    String filename = "file:./" + TestNcMLRead.topDir + "testReadOverride.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "testReadOverride.xml";
 
     try {
-      ncfile = NcmlReader.readNcML(filename, null, null).build();
+      ncfile = NcmlReader.readNcml(filename, null, null).build();
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
     } catch (IOException e) {

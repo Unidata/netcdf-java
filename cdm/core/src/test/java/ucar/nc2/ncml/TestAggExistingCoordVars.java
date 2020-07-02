@@ -35,7 +35,7 @@ public class TestAggExistingCoordVars extends TestCase {
   }
 
   public void testType1() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting1.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting1.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
@@ -79,7 +79,7 @@ public class TestAggExistingCoordVars extends TestCase {
       + "</netcdf>";
 
   public void testType2() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting2.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting2.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExisting2), filename, null);
     logger.debug(" TestNcmlAggExisting.open {}\n{}", filename, ncfile);
@@ -115,7 +115,7 @@ public class TestAggExistingCoordVars extends TestCase {
   }
 
   public void testType3() throws IOException {
-    String filename = "file:./" + TestNcMLRead.topDir + "aggExisting.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     logger.debug(" TestNcmlAggExisting.open {}\n{}", filename, ncfile);
@@ -150,7 +150,7 @@ public class TestAggExistingCoordVars extends TestCase {
   }
 
   public void testType4() throws IOException {
-    String filename = "file:" + TestNcMLRead.topDir + "aggExisting4.ncml";
+    String filename = "file:" + TestNcmlRead.topDir + "aggExisting4.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
@@ -184,7 +184,7 @@ public class TestAggExistingCoordVars extends TestCase {
   }
 
   public void testWithDateFormatMark() throws Exception {
-    String filename = "file:" + TestNcMLRead.topDir + "aggExistingOne.xml";
+    String filename = "file:" + TestNcmlRead.topDir + "aggExistingOne.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
@@ -221,7 +221,7 @@ public class TestAggExistingCoordVars extends TestCase {
   }
 
   public void oldTestWithDateFormatMark() throws Exception {
-    String filename = "file:" + TestNcMLRead.topDir + "aggExistingOne.xml";
+    String filename = "file:" + TestNcmlRead.topDir + "aggExistingOne.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
@@ -264,7 +264,7 @@ public class TestAggExistingCoordVars extends TestCase {
   }
 
   public void testClimatologicalDate() throws IOException {
-    String filename = "file:" + TestNcMLRead.topDir + "aggExisting5.ncml";
+    String filename = "file:" + TestNcmlRead.topDir + "aggExisting5.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 

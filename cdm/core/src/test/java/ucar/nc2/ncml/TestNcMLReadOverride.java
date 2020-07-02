@@ -26,7 +26,7 @@ public class TestNcMLReadOverride extends TestCase {
   public void setUp() {
     if (ncfile != null)
       return;
-    String filename = "file:./" + TestNcMLRead.topDir + "testReadOverride.xml";
+    String filename = "file:./" + TestNcmlRead.topDir + "testReadOverride.xml";
 
     try {
       ncfile = NcMLReader.readNcML(filename, null);

@@ -13,18 +13,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ncml.TestNcMLRead;
+import ucar.nc2.ncml.TestNcmlRead;
 import ucar.nc2.ncml.TestNcmlReadersCompare;
 import ucar.nc2.util.CompareNetcdf2;
 
 /** Test netcdf dataset in the JUnit framework. */
-public class TestNcMLequals {
+public class TestNcmlEquals {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testEquals() throws IOException {
-    testEquals("file:" + TestNcMLRead.topDir + "testEquals.xml");
-    testEnhanceEquals("file:" + TestNcMLRead.topDir + "testEqualsEnhance.xml");
+    testEquals("file:" + TestNcmlRead.topDir + "testEquals.xml");
+    testEnhanceEquals("file:" + TestNcmlRead.topDir + "testEqualsEnhance.xml");
   }
 
   public void problem() throws IOException {
@@ -36,7 +36,7 @@ public class TestNcMLequals {
   }
 
   private void testEquals(String ncmlLocation) throws IOException {
-    try (NetcdfDataset ncd = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
+    try (NetcdfDataset ncd = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
       String locref = ncd.getReferencedFile().getLocation();
       try (NetcdfDataset ncdref = NetcdfDatasets.openDataset(locref, false, null)) {
         Formatter f = new Formatter();
@@ -49,7 +49,7 @@ public class TestNcMLequals {
   }
 
   private void testEnhanceEquals(String ncmlLocation) throws IOException {
-    try (NetcdfDataset ncd = NcmlReader.readNcML(ncmlLocation, null, null).build()) {
+    try (NetcdfDataset ncd = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
       String locref = ncd.getReferencedFile().getLocation();
       try (NetcdfDataset ncdref = NetcdfDatasets.openDataset(locref, true, null)) {
         Formatter f = new Formatter();
