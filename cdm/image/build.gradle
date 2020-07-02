@@ -3,7 +3,7 @@ ext.title = "Client-side CDM image library"
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
-// cdm-image has no tests
+apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 
