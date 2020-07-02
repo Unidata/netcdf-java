@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -12,23 +12,21 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 
-/**
- * Misc tests on iosp, mostly just sanity (opens ok)
- *
- * @author caron
- * @since 7/29/2014
- */
+/** Misc tests on iosp, mostly just sanity (opens ok) */
 @Category(NeedsCdmUnitTest.class)
 public class TestMiscIosp {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -50,26 +48,6 @@ public class TestMiscIosp {
   }
 
   @Test
-  public void testFyiosp() throws IOException {
-    String fileIn = TestDir.cdmUnitTestDir + "formats/fysat/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
-      logger.debug("open {}", ncf.getLocation());
-
-      String val = ncf.getRootGroup().findAttributeString("version", null);
-      assert val != null;
-      assert val.equals("SAT2004");
-
-      Variable v = ncf.findVariable("snow");
-      assert v != null;
-      assert v.getDataType() == DataType.USHORT;
-
-      Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[] {1, 91, 181});
-    }
-
-  }
-
-  @Test
   public void testUamiv() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/uamiv/uamiv.grid", null)) {
       logger.debug("open {}", ncfile.getLocation());
@@ -79,21 +57,6 @@ public class TestMiscIosp {
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[] {12, 5, 7, 6});
-    }
-  }
-
-  @Test
-  public void testGini() throws IOException, InvalidRangeException {
-    String fileIn = TestDir.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-compress";
-    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFiles.open(fileIn)) {
-      logger.debug("open {}", ncf.getLocation());
-
-      ucar.nc2.Variable v = ncf.findVariable("Reflectivity");
-      assert v != null;
-      assert v.getDataType() == DataType.FLOAT;
-
-      Array data = v.read();
-      assert Arrays.equals(data.getShape(), new int[] {1, 3000, 4736});
     }
   }
 }
