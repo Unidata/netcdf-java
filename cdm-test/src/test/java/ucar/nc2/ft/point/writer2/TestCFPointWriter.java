@@ -31,6 +31,7 @@ import ucar.nc2.ft.point.TestPointDatasets;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.NetcdfFileFormat;
+import ucar.unidata.util.test.CheckPointFeatureDataset;
 
 /**
  * Test CFPointWriter, write into nc, nc4 and nc4c (classic) files
@@ -158,7 +159,8 @@ public class TestCFPointWriter {
 
         // sanity checks
         compare(fdpoint, (FeatureDatasetPoint) result);
-        Assert.assertTrue("npoints", 0 < TestPointDatasets.checkPointFeatureDataset(result, show));
+        CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, ftype, show);
+        Assert.assertTrue("npoints", 0 < checker.check());
 
       }
       return count;

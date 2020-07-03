@@ -18,7 +18,8 @@ dependencies {
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
 
-    // These are for Spock.
+    testCompile project(":grib")
+
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]
 

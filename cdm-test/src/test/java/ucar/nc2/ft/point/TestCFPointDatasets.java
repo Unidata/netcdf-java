@@ -16,6 +16,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.NetcdfFormatWriter;
+import ucar.unidata.util.test.CheckPointFeatureDataset;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -166,7 +167,8 @@ public class TestCFPointDatasets {
 
   @Test
   public void checkPointDataset() throws IOException {
-    Assert.assertEquals("npoints", countExpected, TestPointDatasets.checkPointFeatureDataset(location, ftype, show));
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, ftype, show);
+    Assert.assertEquals("npoints", countExpected, checker.check());
   }
 
   // Convert all NCML files in CFpointObs_topdir to NetCDF-3 files.

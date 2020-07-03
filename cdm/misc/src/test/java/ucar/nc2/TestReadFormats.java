@@ -24,10 +24,13 @@ public class TestReadFormats {
 
   @Test
   public void testReadFormats() throws IOException {
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/netcdf3", null, this::doRead);
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/netcdf4", null, this::doRead);
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/hdf5", TestDir.FileFilterSkipSuffix("xml"), this::doRead);
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/hdf4", null, this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/dmsp", null, this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/grads", TestDir.FileFilterSkipSuffix("dat"), this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/geotiff", TestDir.FileFilterSkipSuffix("tif tiff TIF"),
+        this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/gtopo", TestDir.FileFilterSkipSuffix("HDR"), this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/lightning", null, this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/nmcOn29", null, this::doRead);
     System.out.printf("Good=%d Fail=%d%n", countGood, countFail);
     if (countFail > 0) {
       System.out.printf("Failed Files%n");
@@ -36,12 +39,6 @@ public class TestReadFormats {
       }
     }
     assert countFail == 0 : "Failed = " + countFail;
-  }
-
-  // these are fairly complete hdf4 files from nsidc
-  public void utestHdf4() throws IOException {
-    TestDir.actOnAll("F:/data/formats/hdf4", null, this::doRead);
-    System.out.printf("Good=%d Fail=%d%n", countGood, countFail);
   }
 
   private int doRead(String name) {

@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.ft.coverage;
+package ucar.nc2;
 
 import java.util.Arrays;
 import org.junit.Assert;
@@ -15,7 +15,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -23,14 +22,9 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Test swath data as coverage
- *
- * @author caron
- * @since 3/17/2016.
- */
+/** Test DMSP swath data as coverage */
 @Category(NeedsCdmUnitTest.class)
-public class TestCoverageSwath {
+public class TestDmspCoverageSwath {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
