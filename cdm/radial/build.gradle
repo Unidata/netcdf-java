@@ -18,7 +18,9 @@ dependencies {
     compile libraries["jsr305"]
     compile libraries["re2j"]
     compile libraries["slf4j-api"]
-    
+
+    testCompile project(":netcdf4")
+
     // These are for Spock.
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]
