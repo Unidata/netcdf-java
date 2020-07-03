@@ -36,10 +36,6 @@ import ucar.nc2.write.NetcdfFormatWriter;
 
 /**
  * Test CFPointWriter, write into nc, nc4 and nc4c (classic) files
- * C:/dev/github/thredds/cdm/target/test/tmp/stationRaggedContig.ncml.nc4
- *
- * @author caron
- * @since 4/11/12
  */
 @RunWith(Parameterized.class)
 public class TestCFPointWriterCompare {

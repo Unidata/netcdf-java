@@ -176,11 +176,11 @@ public class TestDir {
 
   ////////////////////////////////////////////////
 
+  // Calling routine passes in an action.
   public interface Act {
     /**
      * @param filename file to act on
      * @return count
-     * @throws IOException on IO error
      */
     int doAct(String filename) throws IOException;
   }
@@ -201,52 +201,36 @@ public class TestDir {
     }
   }
 
-  public static class FileFilterNoWant implements FileFilter {
+  public static FileFilter FileFilterSkipSuffix(String suffixes) {
+    return new FileFilterNoWant(suffixes);
+  }
+
+  private static class FileFilterNoWant implements FileFilter {
     String[] suffixes;
 
-    public FileFilterNoWant(String suffixes) {
+    FileFilterNoWant(String suffixes) {
       this.suffixes = suffixes.split(" ");
     }
 
     @Override
     public boolean accept(File file) {
-      for (String s : suffixes)
-        if (file.getPath().endsWith(s))
+      for (String s : suffixes) {
+        if (file.getPath().endsWith(s)) {
           return false;
+        }
+      }
       return true;
     }
   }
 
-  /** Call act.doAct() of each file in dirName passing */
+  /** Call act.doAct() on each file in dirName that passes the file filter, recurse into subdirs. */
   public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
     return actOnAll(dirName, ff, act, true);
   }
 
-  public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames)
-      throws IOException {
-    return actOnAll(dirName, ff, new ListAction(filenames), true);
-  }
-
-  public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames,
-      boolean recurse) throws IOException {
-    return actOnAll(dirName, ff, new ListAction(filenames), recurse);
-  }
-
-  static class ListAction implements Act {
-    Collection<Object[]> filenames;
-
-    ListAction(Collection<Object[]> filenames) {
-      this.filenames = filenames;
-    }
-
-    @Override
-    public int doAct(String filename) {
-      filenames.add(new Object[] {filename});
-      return 0;
-    }
-  }
-
   /**
+   * Call act.doAct() on each file in dirName passing the file filter
+   *
    * @param dirName recurse into this directory
    * @param ff for files that pass this filter, may be null
    * @param act perform this acction
@@ -270,8 +254,9 @@ public class TestDir {
 
     for (File f : flist) {
       String name = f.getAbsolutePath();
-      if (f.isDirectory())
+      if (f.isDirectory()) {
         continue;
+      }
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude")) {
         name = StringUtil2.substitute(name, "\\", "/");
         logger.debug("----acting on file {}", name);
@@ -279,15 +264,45 @@ public class TestDir {
       }
     }
 
-    if (!recurse)
+    if (!recurse) {
       return count;
+    }
 
     for (File f : allFiles) {
-      if (f.isDirectory() && !f.getName().equals("exclude") && !f.getName().equals("problem"))
+      if (f.isDirectory() && !f.getName().equals("exclude") && !f.getName().equals("problem")) {
         count += actOnAll(f.getAbsolutePath(), ff, act);
+      }
     }
 
     return count;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  /** Make list of filenames that pass the file filter, recurse true. */
+  public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames)
+      throws IOException {
+    return actOnAll(dirName, ff, new ListAction(filenames), true);
+  }
+
+  /** Make list of filenames that pass the file filter, recurse set by user. */
+  public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames,
+      boolean recurse) throws IOException {
+    return actOnAll(dirName, ff, new ListAction(filenames), recurse);
+  }
+
+  private static class ListAction implements Act {
+    Collection<Object[]> filenames;
+
+    ListAction(Collection<Object[]> filenames) {
+      this.filenames = filenames;
+    }
+
+    @Override
+    public int doAct(String filename) {
+      filenames.add(new Object[] {filename});
+      return 0;
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////

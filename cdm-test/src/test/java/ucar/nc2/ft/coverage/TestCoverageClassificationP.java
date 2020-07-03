@@ -66,8 +66,6 @@ public class TestCoverageClassificationP {
             FeatureType.GRID, 4, 5, 65});
 
     // SRC
-    result
-        .add(new Object[] {TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.s.OIS", FeatureType.SWATH, 2, 3, 2});
     result.add(new Object[] {
         TestDir.cdmUnitTestDir + "formats/hdf4/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf",
         FeatureType.SWATH, 2, 3, 93});
