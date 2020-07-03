@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * See LICENSE for license information.
  */
 package ucar.nc2;
 
@@ -21,7 +21,7 @@ public class TestReadStrides {
   @Test
   public void testReadStridesCached() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = TestDir.open(TestDir.cdmLocalTestDataDir + "ncml/nc/time0.nc")) {
-      Variable temp =  ncfile.findVariable("T");
+      Variable temp = ncfile.findVariable("T");
       assert (null != temp);
 
       // read entire array
