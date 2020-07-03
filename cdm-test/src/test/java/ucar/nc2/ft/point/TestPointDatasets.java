@@ -30,7 +30,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestPointDatasets {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {
+  static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {
     List<Object[]> result = new ArrayList<>();
 
     File topDir = new File(topdir);
@@ -81,12 +81,7 @@ public class TestPointDatasets {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////
-
-  static boolean showStructureData = false;
-  static boolean showAll = false;
-
-  public static List<Object[]> getCFDatasets() {
+  private static List<Object[]> getCFDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {TestDir.cdmUnitTestDir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc",
@@ -110,7 +105,7 @@ public class TestPointDatasets {
     return result;
   }
 
-  public static List<Object[]> getPlugDatasets() {
+  private static List<Object[]> getPlugDatasets() {
     List<Object[]> result = new ArrayList<>();
 
     // cosmic
@@ -164,41 +159,7 @@ public class TestPointDatasets {
     return result;
   }
 
-  // lots of trouble - remove for now
-  public static List<Object[]> getGempakDatasets() {
-    List<Object[]> result = new ArrayList<>();
-
-    // gempack sounding
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml",
-        FeatureType.STATION_PROFILE, 8769});
-
-    // gempak surface
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/gempak/2009103008_sb.gem", FeatureType.POINT, 3337});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/gempak/2009110100_ship.gem", FeatureType.POINT, 938});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/gempak/20091030_syn.gem", FeatureType.POINT, 55856});
-    result
-        .add(new Object[] {TestDir.cdmUnitTestDir + "ft/station/gempak/20091030_syn.gem", FeatureType.STATION, 28328});
-
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml",
-        FeatureType.STATION_PROFILE, 8769});
-
-    // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
-    // checkPointDataset(TestDir.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
-
-    // stationAsPoint (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
-    // testPointDataset(TestDir.cdmUnitTestDir + "formats/gempak/surface/20090521_sao.gem", FeatureType.POINT, true);
-
-    // testGempakAll(TestDir.cdmUnitTestDir + "formats/gempak/surface/20090524_sao.gem");
-    // testGempakAll(TestDir.cdmUnitTestDir+"C:/data/ft/station/09052812.sf");
-
-    // testPointDataset("collection:C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
-    // checkPointDataset("collection:D:/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
-
-    return result;
-  }
-
-
-  public static List<Object[]> getMiscDatasets() {
+  private static List<Object[]> getMiscDatasets() {
     List<Object[]> result = new ArrayList<>();
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc",
@@ -220,10 +181,10 @@ public class TestPointDatasets {
     return result;
   }
 
-  String location;
-  FeatureType ftype;
-  int countExpected;
-  boolean show = false;
+  private final String location;
+  private final FeatureType ftype;
+  private final int countExpected;
+  private final boolean show = false;
 
   public TestPointDatasets(String location, FeatureType ftype, int countExpected) {
     this.location = location;

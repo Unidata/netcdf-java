@@ -34,7 +34,6 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
@@ -93,14 +92,6 @@ public class TestMiscPointFeature {
     String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
     Assert.assertEquals("npoints", 100, checker.check());
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testGempakStationProfile() throws IOException {
-    String location = TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml";
-    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION_PROFILE, true);
-    Assert.assertEquals("npoints", 8769, checker.check());
   }
 
   @Test
@@ -381,64 +372,6 @@ public class TestMiscPointFeature {
         }
       }
     }
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testGempak() throws Exception {
-    String file = TestDir.cdmUnitTestDir + "formats/gempak/surface/09052812.sf"; // Q:/cdmUnitTest/formats/gempak/surface/09052812.sf
-    Formatter buf = new Formatter();
-    FeatureDatasetPoint pods =
-        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf);
-    if (pods == null) { // try as ANY_POINT
-      pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.ANY_POINT, file,
-          null, buf);
-    }
-    if (pods == null) {
-      System.out.printf("can't open file=%s%n error=%s%n", file, buf);
-      throw new Exception("can't open file " + file);
-    }
-    List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
-    if (collectionList.size() > 1) {
-      throw new IllegalArgumentException("Can't handle point data with multiple collections");
-    }
-    boolean sample;
-    for (int time = 0; time < 2; time++) {
-      sample = time < 1;
-      DsgFeatureCollection fc = collectionList.get(0);
-      PointFeatureCollection collection = null;
-      LatLonRect llr = new LatLonRect(LatLonPoint.create(33.4, -92.2), LatLonPoint.create(47.9, -75.89));
-      System.out.println("llr = " + llr);
-      if (fc instanceof PointFeatureCollection) {
-        collection = (PointFeatureCollection) fc;
-        collection = collection.subset(llr, null);
-
-      } else if (fc instanceof StationTimeSeriesFeatureCollection) {
-        StationTimeSeriesFeatureCollection npfc = (StationTimeSeriesFeatureCollection) fc;
-        npfc = npfc.subset(llr);
-        collection = npfc.flatten(llr, null);
-
-      } else {
-        throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
-      }
-
-      List<PointFeature> pos = new ArrayList<>(100000);
-      List<CalendarDate> times = new ArrayList<>(100000);
-      for (PointFeature po : collection) {
-        pos.add(po);
-        times.add(po.getNominalTimeAsCalendarDate());
-        if (sample) {
-          break;
-        }
-      }
-      int size = pos.size();
-
-      for (PointFeature po : pos) {
-        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
-        System.out.println("el = " + el);
-      }
-    }
-    pods.close();
   }
 
 }
