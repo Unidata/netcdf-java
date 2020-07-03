@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * See LICENSE for license information.
  */
 
 package ucar.nc2;
@@ -58,7 +58,8 @@ public class TestNc4Structures {
 
     CancelTask cancel = CancelTask.create();
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
-      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, datasetOut, null);
+      NetcdfFormatWriter.Builder builder =
+          NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, datasetOut, null);
       NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
 
       try (NetcdfFile ncfileOut = copier.write(cancel)) {
