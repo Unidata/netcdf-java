@@ -55,7 +55,8 @@ public class TestNc4Structures {
 
     CancelTask cancel = CancelTask.create();
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
-      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, datasetOut, null);
+      NetcdfFormatWriter.Builder builder =
+          NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, datasetOut, null);
       NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
 
       try (NetcdfFile ncfileOut = copier.write(cancel)) {
