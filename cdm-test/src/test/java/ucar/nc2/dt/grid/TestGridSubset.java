@@ -11,8 +11,6 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
 import ucar.ma2.Range;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -23,14 +21,11 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class TestGridSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -302,53 +297,6 @@ public class TestGridSubset {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testGiniSubsetStride() throws Exception {
-    try (GridDataset dataset =
-        GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/WEST-CONUS_4km_IR_20070216_1500.gini")) {
-      GeoGrid grid = dataset.findGridByName("IR");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 3;
-      int[] org_shape = grid.getShape();
-
-      Array data_org = grid.readDataSlice(0, 0, -1, -1);
-      assert data_org != null;
-      assert data_org.getRank() == 2;
-      int[] data_shape = data_org.getShape();
-      assert org_shape[1] == data_shape[0];
-      assert org_shape[2] == data_shape[1];
-
-      logger.debug("original bbox = {}" + gcs.getBoundingBox());
-
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
-
-      LatLonProjection llproj = new LatLonProjection();
-      ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
-      logger.debug("constrain bbox = {}", prect[0]);
-
-      GeoGrid grid_section = grid.subset(null, null, bbox, 1, 2, 3);
-      GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
-      assert null != gcs2;
-      assert grid_section.getRank() == 3;
-
-      ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
-      logger.debug("resulting bbox = {}", subset_prect);
-
-      // test stride
-      grid_section = grid.subset(null, null, null, 1, 2, 3);
-      Array data = grid_section.readDataSlice(0, 0, -1, -1);
-      assert data != null;
-      assert data.getRank() == 2;
-
-      int[] shape = data.getShape();
-      assert Math.abs(org_shape[1] - 2 * shape[0]) < 2 : org_shape[2] + " != " + (2 * shape[0]);
-      assert Math.abs(org_shape[2] - 3 * shape[1]) < 3 : org_shape[2] + " != " + (3 * shape[1]);
-    }
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
   public void testVerticalAxis() throws Exception {
     String uri = TestDir.cdmUnitTestDir + "ncml/nc/cg/CG2006158_120000h_usfc.nc";
     String varName = "CGusfc";
@@ -441,57 +389,6 @@ public class TestGridSubset {
       CoordinateAxis xaxis = gcs.getXHorizAxis();
       CoordinateAxis yaxis = gcs.getYHorizAxis();
       logger.debug("(nx,ny)= {}, {}", xaxis.getSize(), yaxis.getSize());
-    }
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testAggByteGiniSubsetStride() throws Exception {
-    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/giniAggByte.ncml")) {
-      logger.debug("Test {}", dataset.getLocation());
-      GeoGrid grid = dataset.findGridByName("IR");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 3;
-      int[] org_shape = grid.getShape();
-      assert grid.getDataType() == DataType.UINT;
-
-      Array data_org = grid.readDataSlice(0, 0, -1, -1);
-      assert data_org != null;
-      assert data_org.getRank() == 2;
-      int[] data_shape = data_org.getShape();
-      assert org_shape[1] == data_shape[0];
-      assert org_shape[2] == data_shape[1];
-      assert data_org.getElementType() == int.class : data_org.getElementType();
-
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
-
-      LatLonProjection llproj = new LatLonProjection();
-      ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
-      logger.debug("constrain bbox = {}", prect[0]);
-
-      GeoGrid grid_section = grid.subset(null, null, bbox, 1, 2, 3);
-      GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
-      assert null != gcs2;
-      assert grid_section.getRank() == 3;
-      assert grid_section.getDataType() == DataType.UINT;
-
-      ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
-      logger.debug("resulting bbox = {}", subset_prect);
-
-      // test stride
-      grid_section = grid.subset(null, null, null, 2, 2, 3);
-      Array data = grid_section.readVolumeData(1);
-      assert data != null;
-      assert data.getRank() == 2;
-      assert data.getElementType() == int.class;
-
-      int[] shape = data.getShape();
-      assert Math.abs(org_shape[1] - 2 * shape[0]) < 2 : org_shape[2] + " != " + (2 * shape[0]);
-      assert Math.abs(org_shape[2] - 3 * shape[1]) < 3 : org_shape[2] + " != " + (3 * shape[1]);
     }
   }
 
@@ -606,30 +503,6 @@ public class TestGridSubset {
           new double[] {36.0, 108.0, 216.0});
 
       assert ok : "not ok";
-    }
-  }
-
-  @Test
-  @Ignore("Does this file exist in a shared location?")
-  public void testAaron() throws Exception {
-    // different scale/offset in aggregation
-    try (GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml")) {
-      GridDatatype grid = null;
-      for (GridDatatype thisGrid : dataset.getGrids()) {
-        if (thisGrid.getName().equals("cref")) {
-          grid = thisGrid;
-        }
-      }
-      List<Range> ranges = new ArrayList<Range>();
-      ranges.add(new Range(0, 0));
-      ranges.add(new Range(0, 0));
-      ranges.add(new Range(638, 638));
-      ranges.add(new Range(3750, 4622));
-
-      Array arr = grid.getVariable().read(ranges);
-      Index index = arr.getIndex();
-      index.set(new int[] {0, 0, 0, 834});
-      logger.debug("index {} value {}", index.currentElement(), arr.getDouble(index));
     }
   }
 

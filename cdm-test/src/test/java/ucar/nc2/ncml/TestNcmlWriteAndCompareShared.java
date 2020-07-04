@@ -58,9 +58,6 @@ public class TestNcmlWriteAndCompareShared {
     result.add(new Object[] {datadir + "formats/grib2/eta2.wmo", false}); //
     result.add(new Object[] {datadir + "formats/grib2/ndfd.wmo", false}); //
 
-    result.add(new Object[] {datadir + "formats/gini/n0r_20041013_1852-compress", false}); //
-    result.add(new Object[] {datadir + "formats/gini/ntp_20041206_2154", true}); //
-
     result.add(new Object[] {datadir + "formats/nexrad/level2/6500KHGX20000610_000110", false});
     result.add(new Object[] {datadir + "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v", true});
 

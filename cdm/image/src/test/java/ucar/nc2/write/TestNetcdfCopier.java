@@ -4,6 +4,11 @@
  */
 package ucar.nc2.write;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -14,13 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.io.File;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Test NetcdfCopier, write copy, then read back and comparing to original. */
 @Category(NeedsCdmUnitTest.class)
@@ -34,18 +34,7 @@ public class TestNetcdfCopier {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-
-    // unlimited dimesnion = 0
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/netcdf3/longOffset.nc", true});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/gempak/grid/dgex_le.gem", true});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib1/radar_national.grib", true});
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib2/200508041200.ngrid_gfs", true});
-    result.add(new Object[] {"file:" + TestDir.cdmLocalFromTestDataDir + "point/stationData2Levels.ncml", false});
-
-    // result.add(new Object[]{"formats/hdf4/17766010.hdf"});
-    // result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
-    // result.add(new Object[] {"formats/gempak/surface/19580807_sao.gem", false}); // has Structure in it
-
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", true});
     return result;
   }
 
