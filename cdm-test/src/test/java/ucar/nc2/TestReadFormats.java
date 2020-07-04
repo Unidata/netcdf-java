@@ -1,5 +1,7 @@
 package ucar.nc2;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -35,7 +37,7 @@ public class TestReadFormats {
         System.out.printf("  %s%n", f);
       }
     }
-    assert countFail == 0 : "Failed = " + countFail;
+    assertThat(countFail).isEqualTo(0);
   }
 
   // these are fairly complete hdf4 files from nsidc
