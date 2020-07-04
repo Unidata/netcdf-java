@@ -1,17 +1,21 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2;
 
-import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Just open all the files in the selected directory. */
 @Category(NeedsCdmUnitTest.class)
@@ -25,10 +29,8 @@ public class TestReadFormats {
 
   @Test
   public void testReadFormats() throws IOException {
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/netcdf3", null, this::doRead);
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/netcdf4", null, this::doRead);
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/hdf5", TestDir.FileFilterSkipSuffix("xml"), this::doRead);
-    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/hdf4", null, this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/gempak", null, this::doRead);
+    TestDir.actOnAll(TestDir.cdmUnitTestDir + "/formats/mcidas", null, this::doRead);
     System.out.printf("Good=%d Fail=%d%n", countGood, countFail);
     if (countFail > 0) {
       System.out.printf("Failed Files%n");
@@ -36,13 +38,7 @@ public class TestReadFormats {
         System.out.printf("  %s%n", f);
       }
     }
-    assertThat(countFail).isEqualTo(0);
-  }
-
-  // these are fairly complete hdf4 files from nsidc
-  public void utestHdf4() throws IOException {
-    TestDir.actOnAll("F:/data/formats/hdf4", null, this::doRead);
-    System.out.printf("Good=%d Fail=%d%n", countGood, countFail);
+    assert countFail == 0 : "Failed = " + countFail;
   }
 
   private int doRead(String name) {

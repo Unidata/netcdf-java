@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.iosp;
 
 import org.junit.Assert;
@@ -16,9 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- * Tests for the UF radar format
- */
+/** Tests for the UF radar format */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestRadarUF {

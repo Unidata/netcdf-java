@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.NetcdfCopier;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -41,14 +44,6 @@ public class TestNc4Structures {
   }
 
   @Test
-  public void writeStructureFromNids() throws IOException, InvalidRangeException {
-    // String datasetIn = TestDir.cdmUnitTestDir + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
-    String datasetIn = TestDir.cdmUnitTestDir + "formats/nexrad/level3/NVW_20041117_1657";
-    String datasetOut = tempFolder.newFile().getAbsolutePath();
-    writeStructure(datasetIn, datasetOut);
-  }
-
-  @Test
   public void writeStructure() throws IOException, InvalidRangeException {
     String datasetIn = TestDir.cdmUnitTestDir + "formats/netcdf4/compound/tst_compounds.nc4";
     String datasetOut = tempFolder.newFile().getAbsolutePath();
@@ -56,19 +51,28 @@ public class TestNc4Structures {
   }
 
   private void writeStructure(String datasetIn, String datasetOut) throws IOException {
-    CancelTask cancel = CancelTask.create();
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, cancel);
     System.out.printf("NetcdfDatataset read from %s write to %s %n", datasetIn, datasetOut);
 
-    FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, NetcdfFileWriter.Version.netcdf4, null);
-    NetcdfFile ncfileOut = writer.write(cancel);
-    if (ncfileOut != null)
-      ncfileOut.close();
-    ncfileIn.close();
+    CancelTask cancel = CancelTask.create();
+    try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
+      NetcdfFormatWriter.Builder builder =
+          NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, datasetOut, null);
+      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
+
+      try (NetcdfFile ncfileOut = copier.write(cancel)) {
+        // empty
+      } finally {
+        cancel.setDone(true);
+        System.out.printf("%s%n", cancel);
+      }
+
+    } catch (Exception ex) {
+      System.out.printf("%s = %s %n", ex.getClass().getName(), ex.getMessage());
+    }
+
     cancel.setDone(true);
     System.out.printf("%s%n", cancel);
   }
-
 
   // Demonstrates GitHub issue #296.
   @Ignore("Resolve issue before we enable this.")

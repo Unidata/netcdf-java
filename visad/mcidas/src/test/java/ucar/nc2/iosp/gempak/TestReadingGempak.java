@@ -2,12 +2,6 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-/**
- * User: rkambic
- * Date: Oct 22, 2009
- * Time: 3:12:19 PM
- */
-
 package ucar.nc2.iosp.gempak;
 
 import org.junit.Test;
@@ -15,7 +9,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -40,7 +34,7 @@ public class TestReadingGempak {
       System.out.printf("  Open File %s ", child.getPath());
       long start = System.currentTimeMillis();
 
-      try (NetcdfFile ncfile = NetcdfDataset.openFile(child.getPath(), null)) {
+      try (NetcdfFile ncfile = NetcdfDatasets.openFile(child.getPath(), null)) {
         String ft = ncfile.getRootGroup().findAttributeString("featureType", "none");
         String iosp = ncfile.getIosp().getFileTypeId();
         System.out.printf(" iosp=%s ft=%s took =%d ms%n", iosp, ft, (System.currentTimeMillis() - start));

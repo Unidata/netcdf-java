@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ft.point.collection;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -11,7 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -34,9 +39,11 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
  * although it wasn't clear exactly how and it's done in a roundabout way.
  *
  */
-
 @Category(NeedsCdmUnitTest.class)
 public class TestCompositeStationCollectionsWithCaches {
+
+  private final static String COLLECTION = ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME
+      + TestDir.cdmUnitTestDir + "ft/station/gempak/collection_with_missing_station_features/#yyMMdd#.sf$";
 
   private static boolean checkNetcdfFileCache;
   private static boolean checkRafCache;
@@ -44,7 +51,7 @@ public class TestCompositeStationCollectionsWithCaches {
   @BeforeClass
   public static void setupCaches() {
     RandomAccessFile.enableDefaultGlobalFileCache();
-    NetcdfDataset.initNetcdfFileCache(1, 10, 15, 200);
+    NetcdfDatasets.initNetcdfFileCache(1, 10, 15, 200);
   }
 
   @Test
@@ -81,7 +88,7 @@ public class TestCompositeStationCollectionsWithCaches {
   }
 
   private static void testNetcdfFileCache() {
-    List<String> cacheEntries = NetcdfDataset.getNetcdfFileCache().showCache();
+    List<String> cacheEntries = NetcdfDatasets.getNetcdfFileCache().showCache();
     testFileCache(cacheEntries);
   }
 
@@ -96,7 +103,7 @@ public class TestCompositeStationCollectionsWithCaches {
     assertThat(uniqueFileNames).hasSize(cacheEntries.size());
   }
 
-  public void testOpenFileHandles() throws IOException {
+  private void testOpenFileHandles() throws IOException {
 
     if (checkRafCache) {
       if (RandomAccessFile.getGlobalFileCache() != null) {
@@ -113,16 +120,14 @@ public class TestCompositeStationCollectionsWithCaches {
 
     if (checkNetcdfFileCache) {
       // FeatureCollections still use NetcdfDataset, so work with that cache.
-      NetcdfDataset.getNetcdfFileCache().enable();
+      NetcdfDatasets.getNetcdfFileCache().enable();
     } else {
-      NetcdfDataset.getNetcdfFileCache().clearCache(true);
-      NetcdfDataset.getNetcdfFileCache().disable();
+      NetcdfDatasets.getNetcdfFileCache().clearCache(true);
+      NetcdfDatasets.getNetcdfFileCache().disable();
     }
 
     // open the collection
-    String collection = ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME + TestDir.cdmUnitTestDir
-        + "/ft/station/gempak/collection_with_missing_station_features/#yyMMdd#.sf$";
-    FeatureDataset fds = FeatureDatasetFactoryManager.open(FeatureType.STATION, collection, null, null);
+    FeatureDataset fds = FeatureDatasetFactoryManager.open(FeatureType.STATION, COLLECTION, null, null);
     assertThat(fds instanceof FeatureDatasetPoint);
     FeatureDatasetPoint fdp = (FeatureDatasetPoint) fds;
 
@@ -172,13 +177,13 @@ public class TestCompositeStationCollectionsWithCaches {
 
   @After
   public void cleanupAfterEach() {
-    NetcdfDataset.getNetcdfFileCache().clearCache(true);
+    NetcdfDatasets.getNetcdfFileCache().clearCache(true);
     RandomAccessFile.getGlobalFileCache().clearCache(true);
   }
 
   @AfterClass
   public static void cleanup() {
-    NetcdfDataset.shutdown();
+    NetcdfDatasets.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
   }
 }

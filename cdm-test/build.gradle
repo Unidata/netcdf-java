@@ -11,14 +11,14 @@ apply from: "$rootDir/gradle/any/coverage.gradle"
 dependencies {
     testCompile project(":cdm:cdm-core")
     // testCompile project(":cdm:cdm-image")
-    testCompile project(":cdm:cdm-radial")
     // testCompile project(":cdm:cdm-misc")
+    // testCompile project(":cdm:cdm-radial")
     testCompile project(":cdm:cdm-s3")
     testCompile project(":bufr")
     testCompile project(":grib")
     testCompile project(":netcdf4")
     testRuntime project(":opendap")
-    testCompile project(":visad:cdm-mcidas")
+    // testCompile project(":visad:cdm-mcidas")
 
     testCompile libraries["commons-io"]
     testCompile libraries["commons-compress"]

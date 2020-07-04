@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -47,7 +47,7 @@ public class TestReadingMcIdas {
 
     @Override
     public int doAct(String filename) throws IOException {
-      try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+      try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
         System.out.printf("  Open McIdas File %s ", filename);
         String ft = ncfile.getRootGroup().findAttributeString("featureType", "none");
         String iosp = ncfile.getIosp().getFileTypeId();
