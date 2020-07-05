@@ -58,9 +58,6 @@ public class TestNcmlWriteAndCompareShared {
     result.add(new Object[] {datadir + "formats/grib2/eta2.wmo", false}); //
     result.add(new Object[] {datadir + "formats/grib2/ndfd.wmo", false}); //
 
-    result.add(new Object[] {datadir + "formats/gini/n0r_20041013_1852-compress", false}); //
-    result.add(new Object[] {datadir + "formats/gini/ntp_20041206_2154", true}); //
-
     result.add(new Object[] {datadir + "conventions/nuwg/ocean.nc", true});
 
     // try everything from these directories
