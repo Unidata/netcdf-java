@@ -60,8 +60,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public static final String UCARTAGVLEN = "_edu.ucar.isvlen";
   public static final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
 
-  private static int log_level;
-
   // TODO: These flags currently control debug messages that are printed to STDOUT. They ought to be logged to SLF4J.
   // We could use SLF4J markers to filter which debug-level messages are printed.
   // See http://stackoverflow.com/questions/12201112/can-i-add-custom-levels-to-slf4j
@@ -102,7 +100,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   /** @deprecated use NetcdfClibrary.getCLibrary */
   @Deprecated
   public static synchronized Nc4prototypes getCLibrary() {
-    return NetcdfClibrary.getCLibrary();
+    return NetcdfClibrary.getClibrary();
   }
 
   /**
@@ -235,7 +233,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
-    this.nc4 = NetcdfClibrary.getCLibrary();
+    this.nc4 = NetcdfClibrary.getClibrary();
 
     if (raf != null)
       raf.close(); // not used
@@ -2324,7 +2322,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
-    this.nc4 = NetcdfClibrary.getCLibrary();
+    this.nc4 = NetcdfClibrary.getClibrary();
 
     this.ncfile = ncfile;
 

@@ -5,9 +5,11 @@
 
 package ucar.nc2.jni;
 
+import com.google.common.base.Strings;
 import com.sun.jna.Native;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.nc2.jni.netcdf.Nc4wrapper;
 
@@ -21,35 +23,38 @@ public class NetcdfClibrary {
   private static final String JNA_LOG_LEVEL = "jna.library.loglevel";
 
   private static String DEFAULT_NETCDF4_LIBNAME = "netcdf";
-  private static final boolean DEBUG = false;
 
   private static String jnaPath;
   private static String libName = DEFAULT_NETCDF4_LIBNAME;
-
   private static Nc4prototypes nc4;
   private static int log_level;
+
+  // Track if already tested for library presence.
+  private static Boolean isClibraryPresent;
 
   /**
    * Set the path and name of the netcdf c library.
    * Must be called before load() is called.
    *
-   * @param jna_path path to shared libraries
-   * @param lib_name library name
+   * @param jna_path path to shared libraries, may be null. If null, will look for system property
+   *                 "jna.library.path", then environment variable "JNA_PATH". If set, will set
+   *                 the environment variable "JNA_PATH".
+   * @param lib_name library name, may be null. If null, will use "netcdf".
    */
-  public static void setLibraryAndPath(String jna_path, String lib_name) {
-    lib_name = nullify(lib_name);
+  public static void setLibraryAndPath(@Nullable String jna_path, @Nullable String lib_name) {
+    lib_name = Strings.emptyToNull(lib_name);
 
     if (lib_name == null) {
       lib_name = DEFAULT_NETCDF4_LIBNAME;
     }
 
-    jna_path = nullify(jna_path);
+    jna_path = Strings.emptyToNull(jna_path);
 
     if (jna_path == null) {
-      jna_path = nullify(System.getProperty(JNA_PATH)); // First, try system property (-D flag).
+      jna_path = Strings.emptyToNull(System.getProperty(JNA_PATH)); // First, try system property (-D flag).
     }
     if (jna_path == null) {
-      jna_path = nullify(System.getenv(JNA_PATH_ENV)); // Next, try environment variable.
+      jna_path = Strings.emptyToNull(System.getenv(JNA_PATH_ENV)); // Next, try environment variable.
     }
 
     if (jna_path != null) {
@@ -58,6 +63,42 @@ public class NetcdfClibrary {
 
     libName = lib_name;
     jnaPath = jna_path;
+  }
+
+  /**
+   * Test if the netcdf C library is present and loaded
+   * @return true if present
+   */
+  public static synchronized boolean isClibraryPresent() {
+    if (isClibraryPresent == null) {
+      isClibraryPresent = load() != null;
+    }
+    return isClibraryPresent;
+  }
+
+  /** Get the interface to the Nectdf C library. */
+  public static synchronized Nc4prototypes getClibrary() {
+    return isClibraryPresent() ? nc4 : null;
+  }
+
+  /**
+   * Set the log level for Netcdf C library.
+   * This calls the Netcdf C library nc_set_log_level() method.
+   * If the system property "jna.library.loglevel" is set, that is the default, this method overrides it.
+   * @return the previous level, as returned from nc_set_log_level().
+   */
+  public static synchronized int setLogLevel(int level) {
+    int oldlevel = -1;
+    log_level = level;
+    if (nc4 != null) {
+      try {
+        oldlevel = nc4.nc_set_log_level(log_level);
+        startupLog.info(String.format("NetcdfLoader: set log level: old=%d new=%d", oldlevel, log_level));
+      } catch (UnsatisfiedLinkError e) {
+        // ignore
+      }
+    }
+    return oldlevel;
   }
 
   private static Nc4prototypes load() {
@@ -88,7 +129,7 @@ public class NetcdfClibrary {
             String.format("Nc4Iosp: NetCDF-4 C library not present (jna_path='%s', libname='%s').", jnaPath, libName);
         startupLog.warn(message, t);
       }
-      String slevel = nullify(System.getProperty(JNA_LOG_LEVEL));
+      String slevel = Strings.emptyToNull(System.getProperty(JNA_LOG_LEVEL));
       if (slevel != null) {
         try {
           log_level = Integer.parseInt(slevel);
@@ -107,56 +148,6 @@ public class NetcdfClibrary {
       }
     }
     return nc4;
-  }
-
-  // Shared mutable state. Only read/written in isClibraryPresent().
-  private static Boolean isClibraryPresent;
-
-  /**
-   * Test if the netcdf C library is present and loaded
-   *
-   * @return true if present
-   */
-  public static synchronized boolean isClibraryPresent() {
-    if (isClibraryPresent == null) {
-      isClibraryPresent = load() != null;
-    }
-    return isClibraryPresent;
-  }
-
-  public static synchronized Nc4prototypes getCLibrary() {
-    return isClibraryPresent() ? nc4 : null;
-  }
-
-  /**
-   * Set the log level for loaded library.
-   * Do nothing if set_log_level is not available.
-   */
-  public static synchronized int setLogLevel(int level) {
-    int oldlevel = -1;
-    log_level = level;
-    if (nc4 != null) {
-      try {
-        oldlevel = nc4.nc_set_log_level(log_level);
-        startupLog.info(String.format("NetcdfLoader: set log level: old=%d new=%d", oldlevel, log_level));
-      } catch (UnsatisfiedLinkError e) {
-        // ignore
-      }
-    }
-    return oldlevel;
-  }
-
-
-  /**
-   * Convert a zero-length string to null
-   *
-   * @param s the string to check for length
-   * @return null if s.length() == 0, s otherwise
-   */
-  private static String nullify(String s) {
-    if (s != null && s.isEmpty())
-      s = null;
-    return s;
   }
 
   //////////////////////////////////////////////////

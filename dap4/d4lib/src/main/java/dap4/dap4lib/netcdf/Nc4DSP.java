@@ -292,7 +292,7 @@ public class Nc4DSP extends AbstractDSP {
   public Nc4DSP() throws DapException {
     super();
     if (this.nc4 == null) {
-      this.nc4 = NetcdfClibrary.getCLibrary();
+      this.nc4 = NetcdfClibrary.getClibrary();
       if (this.nc4 == null)
         throw new DapException("Could not load libnetcdf");
     }
