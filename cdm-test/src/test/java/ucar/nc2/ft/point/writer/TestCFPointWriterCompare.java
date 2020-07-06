@@ -29,7 +29,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.TestCFPointDatasets;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.jni.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.nc2.write.NetcdfFormatWriter;
@@ -76,7 +76,7 @@ public class TestCFPointWriterCompare {
   @Test
   public void testWrite4Classic() throws IOException {
     // Ignore this test if NetCDF-4 isn't present.
-    if (!Nc4Iosp.isClibraryPresent()) {
+    if (!NetcdfClibrary.isClibraryPresent()) {
       return;
     }
     writeDataset(location, ftype, Version.netcdf4_classic, countExpected);

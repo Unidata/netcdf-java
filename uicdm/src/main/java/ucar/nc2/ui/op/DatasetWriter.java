@@ -13,7 +13,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.jni.NetcdfClibrary;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
@@ -218,7 +218,7 @@ public class DatasetWriter extends JPanel {
     }
 
     if (data.format.isNetdf4format()) {
-      if (!Nc4Iosp.isClibraryPresent()) {
+      if (!NetcdfClibrary.isClibraryPresent()) {
         JOptionPane.showMessageDialog(this, "NetCDF-4 C library is not loaded");
         return;
       }

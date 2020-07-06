@@ -34,7 +34,7 @@ import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.jni.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.nc2.util.Optional;
@@ -105,7 +105,7 @@ public class TestCoverageFileWritingCompare {
   public void writeTestFile() throws IOException, InvalidRangeException {
     // skip test requiring netcdf4 if not present.
     NetcdfFileWriter.Version version = NetcdfFormatWriter.convertToNetcdfFileWriterVersion(format);
-    if (version.useJniIosp() && !Nc4Iosp.isClibraryPresent()) {
+    if (version.useJniIosp() && !NetcdfClibrary.isClibraryPresent()) {
       return;
     }
     System.out.printf("Test Dataset %s type %s%n", endpoint, type);

@@ -5,7 +5,6 @@
 
 package ucar.nc2.jni.netcdf;
 
-import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -21,6 +20,7 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.jni.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.EscapeStrings;
@@ -50,11 +50,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   public static int NC_TURN_OFF_LOGGING = -1;
 
-  private static Nc4prototypes nc4;
-  public static final String JNA_PATH = "jna.library.path";
-  public static final String JNA_PATH_ENV = "JNA_PATH"; // environment var
-  public static final String JNA_LOG_LEVEL = "jna.library.loglevel";
-
   public static final String TRANSLATECONTROL = "ucar.translate";
   public static final String TRANSLATE_NONE = "none";
   public static final String TRANSLATE_NC4 = "nc4";
@@ -64,11 +59,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // Not yet implemented
   public static final String UCARTAGVLEN = "_edu.ucar.isvlen";
   public static final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
-
-  protected static String DEFAULTNETCDF4LIBNAME = "netcdf";
-
-  private static String jnaPath;
-  private static String libName = DEFAULTNETCDF4LIBNAME;
 
   private static int log_level;
 
@@ -89,130 +79,41 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * set the path and name of the netcdf c library.
    * must be called before load() is called.
    *
-   * @param jna_path path to shared libraries
-   * @param lib_name library name
+   * @param jnaPath path to shared libraries
+   * @param libName library name
+   * @deprecated use NetcdfClibrary.setLibraryAndPath
    */
-  public static void setLibraryAndPath(String jna_path, String lib_name) {
-    lib_name = nullify(lib_name);
-
-    if (lib_name == null) {
-      lib_name = DEFAULTNETCDF4LIBNAME;
-    }
-
-    jna_path = nullify(jna_path);
-
-    if (jna_path == null) {
-      jna_path = nullify(System.getProperty(JNA_PATH)); // First, try system property (-D flag).
-    }
-    if (jna_path == null) {
-      jna_path = nullify(System.getenv(JNA_PATH_ENV)); // Next, try environment variable.
-    }
-
-    if (jna_path != null) {
-      System.setProperty(JNA_PATH, jna_path);
-    }
-
-    libName = lib_name;
-    jnaPath = jna_path;
+  @Deprecated
+  public static void setLibraryAndPath(String jnaPath, String libName) {
+    NetcdfClibrary.setLibraryAndPath(jnaPath, libName);
   }
-
-  private static Nc4prototypes load() {
-    if (nc4 == null) {
-      if (jnaPath == null) {
-        // netCDF-C will return strings encoded as UTF-8 (not default C behavior).
-        // JNA assumes c code is returning using the system encoding by default
-        // So, if the system encoding isn't UTF_8 (hello, windows!), set the jna
-        // encoding to utf_8. LOOK: This might hose other application use JNA and
-        // not expect their c code to return UTF-8
-        if (!Charset.defaultCharset().equals(StandardCharsets.UTF_8)) {
-          log.info("Setting System Property jna.encoding to UTF8");
-          // System.setProperty("jna.encoding", StandardCharsets.UTF_8.name());
-        }
-        setLibraryAndPath(null, null);
-      }
-      try {
-        // jna_path may still be null, but try to load anyway;
-        // the necessary libs may be on the system PATH or on LD_LIBRARY_PATH
-        nc4 = Native.load(libName, Nc4prototypes.class);
-        // Make the library synchronized
-        // nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
-        nc4 = new Nc4wrapper(nc4);
-        startupLog.info("Nc4Iosp: NetCDF-4 C library loaded (jna_path='{}', libname='{}').", jnaPath, libName);
-        startupLog.debug("Netcdf nc_inq_libvers='{}' isProtected={}", nc4.nc_inq_libvers(), Native.isProtected());
-      } catch (Throwable t) {
-        String message =
-            String.format("Nc4Iosp: NetCDF-4 C library not present (jna_path='%s', libname='%s').", jnaPath, libName);
-        startupLog.warn(message, t);
-      }
-      String slevel = nullify(System.getProperty(JNA_LOG_LEVEL));
-      if (slevel != null) {
-        try {
-          log_level = Integer.parseInt(slevel);
-        } catch (NumberFormatException nfe) {
-          // no change
-        }
-      }
-      try {
-        int oldlevel = setLogLevel(log_level);
-        startupLog.info(String.format("Nc4Iosp: set log level: old=%d new=%d", oldlevel, log_level));
-      } catch (Throwable t) {
-        String message = String.format("Nc4Iosp: could not set log level (level=%d jna_path='%s', libname='%s').",
-            log_level, jnaPath, libName);
-        startupLog.warn("Nc4Iosp: " + t.getMessage());
-        startupLog.warn(message);
-      }
-    }
-    return nc4;
-  }
-
-  // Shared mutable state. Only read/written in isClibraryPresent().
-  private static Boolean isClibraryPresent;
 
   /**
-   * Test if the netcdf C library is present and loaded
-   *
+   * Test if the netcdf C library is present and loaded.
+   * 
    * @return true if present
+   * @deprecated use NetcdfClibrary.isClibraryPresent
    */
+  @Deprecated
   public static synchronized boolean isClibraryPresent() {
-    if (isClibraryPresent == null) {
-      isClibraryPresent = load() != null;
-    }
-    return isClibraryPresent;
+    return NetcdfClibrary.isClibraryPresent();
   }
 
+  /** @deprecated use NetcdfClibrary.getCLibrary */
+  @Deprecated
   public static synchronized Nc4prototypes getCLibrary() {
-    return isClibraryPresent() ? nc4 : null;
+    return NetcdfClibrary.getCLibrary();
   }
 
   /**
    * Set the log level for loaded library.
    * Do nothing if set_log_level is not available.
+   * 
+   * @deprecated use NetcdfClibrary.setLogLevel
    */
+  @Deprecated
   public static synchronized int setLogLevel(int level) {
-    int oldlevel = -1;
-    log_level = level;
-    if (nc4 != null) {
-      try {
-        oldlevel = nc4.nc_set_log_level(log_level);
-        startupLog.info(String.format("NetcdfLoader: set log level: old=%d new=%d", oldlevel, log_level));
-      } catch (java.lang.UnsatisfiedLinkError e) {
-        // ignore
-      }
-    }
-    return oldlevel;
-  }
-
-
-  /**
-   * Convert a zero-length string to null
-   *
-   * @param s the string to check for length
-   * @return null if s.length() == 0, s otherwise
-   */
-  protected static String nullify(String s) {
-    if (s != null && s.isEmpty())
-      s = null;
-    return s;
+    return NetcdfClibrary.setLogLevel(level);
   }
 
   private static boolean useHdfEos;
@@ -226,6 +127,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   //////////////////////////////////////////////////
   // Instance Variables
 
+  private Nc4prototypes nc4;
   private NetcdfFileWriter.Version version; // can use c library to create these different version files
   private boolean fill = true;
   private int ncid = -1; // file id
@@ -265,6 +167,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @return {@code true} if {@code raf} is a valid HDF-5 file and the NetCDF C library is available.
    * @throws IOException if an I/O error occurs.
    */
+  @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     int format = NCheader.checkFileType(raf);
     boolean valid = false;
@@ -291,16 +194,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // getFileTypeDescription(), getFileTypeId(), and getFileTypeVersion() (inherited from superclass).
   // See https://goo.gl/pSP1Bq
 
+  @Override
   public String getFileTypeDescription() {
     return "Netcdf/JNI: " + version;
   }
 
+  @Override
   public String getFileTypeId() {
     if (isEos)
       return "HDF5-EOS";
     return version.isNetdf4format() ? DataFormatType.NETCDF4.getDescription() : DataFormatType.HDF5.getDescription();
   }
 
+  @Override
   public void close() throws IOException {
     if (isClosed)
       return;
@@ -312,11 +218,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     isClosed = true;
   }
 
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
     _open(raf, ncfile, true);
   }
 
+  @Override
   public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
     this.ncfile = ncfile;
@@ -327,13 +235,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
+    this.nc4 = NetcdfClibrary.getCLibrary();
 
     if (raf != null)
       raf.close(); // not used
 
     // open
     // netcdf-c can't handle "file:" prefix. Must remove it.
-    String location = NetcdfFile.canonicalizeUriString(ncfile.getLocation());
+    String location = NetcdfFiles.canonicalizeUriString(ncfile.getLocation());
     log.debug("open {}", location);
 
     IntByReference ncidp = new IntByReference();
@@ -2415,6 +2324,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
+    this.nc4 = NetcdfClibrary.getCLibrary();
 
     this.ncfile = ncfile;
 
@@ -3402,110 +3312,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  /*
-   * private void writeDataAll(Variable v, int grpid, int varid, int typeid, Array values) throws IOException,
-   * InvalidRangeException {
-   * 
-   * Object data = values.getStorage();
-   * boolean isUnsigned = isUnsigned(typeid);
-   * 
-   * switch (typeid) {
-   * 
-   * case Nc4prototypes.NC_BYTE:
-   * case Nc4prototypes.NC_UBYTE:
-   * byte[] valb = (byte[]) data;
-   * int ret = isUnsigned ? nc4.nc_put_var_uchar(grpid, varid, valb) :
-   * nc4.nc_put_var_schar(grpid, varid, valb);
-   * if (ret != 0)
-   * throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-   * break;
-   * 
-   * case Nc4prototypes.NC_CHAR:
-   * char[] valc = (char[]) data; // chars are lame
-   * valb = IospHelper.convertCharToByte(valc);
-   * ret = nc4.nc_put_var_text(grpid, varid, valb);
-   * if (ret != 0) {
-   * log.error("{} on var {}", nc4.nc_strerror(ret), v);
-   * return;
-   * //throw new IOException(nc4.nc_strerror(ret));
-   * }
-   * break;
-   * 
-   * case Nc4prototypes.NC_DOUBLE:
-   * double[] vald = (double[]) data;
-   * ret = nc4.nc_put_var_double(grpid, varid, vald);
-   * if (ret != 0)
-   * throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-   * break;
-   * 
-   * case Nc4prototypes.NC_FLOAT:
-   * float[] valf = (float[]) data;
-   * ret = nc4.nc_put_var_float(grpid, varid, valf);
-   * if (ret != 0) {
-   * log.error("{} on var {}", nc4.nc_strerror(ret), v);
-   * return;
-   * //throw new IOException(nc4.nc_strerror(ret));
-   * }
-   * break;
-   * 
-   * case Nc4prototypes.NC_INT:
-   * int[] vali = (int[]) data;
-   * ret = isUnsigned ? nc4.nc_put_var_uint(grpid, varid, vali) :
-   * nc4.nc_put_var_int(grpid, varid, vali);
-   * if (ret != 0) {
-   * log.error("{} on var {}", nc4.nc_strerror(ret), v);
-   * return;
-   * //throw new IOException(nc4.nc_strerror(ret));
-   * }
-   * break;
-   * 
-   * case Nc4prototypes.NC_INT64:
-   * long[] vall = (long[]) data;
-   * ret = isUnsigned ? nc4.nc_put_var_ulonglong(grpid, varid, vall) :
-   * nc4.nc_put_var_longlong(grpid, varid, vall);
-   * if (ret != 0)
-   * throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-   * break;
-   * 
-   * case Nc4prototypes.NC_SHORT:
-   * short[] vals = (short[]) data;
-   * ret = isUnsigned ? nc4.nc_put_var_ushort(grpid, varid, vals) :
-   * nc4.nc_put_var_short(grpid, varid, vals);
-   * if (ret != 0)
-   * throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-   * break;
-   * 
-   * case Nc4prototypes.NC_STRING:
-   * String[] valss = convertStringData(data);
-   * ret = nc4.nc_put_var_string(grpid, varid, valss);
-   * if (ret != 0)
-   * throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-   * break;
-   * 
-   * default:
-   * UserType userType = userTypes.get(typeid);
-   * if (userType == null) {
-   * throw new IOException("Unknown userType == " + typeid);
-   * 
-   * } else if (userType.typeClass == Nc4prototypes.NC_ENUM) {
-   * //return readDataSection(grpid, varid, userType.baseTypeid, section);
-   * 
-   * } else if (userType.typeClass == Nc4prototypes.NC_VLEN) { // cannot subset
-   * //return readVlen(grpid, varid, len, userType);
-   * 
-   * } else if (userType.typeClass == Nc4prototypes.NC_OPAQUE) {
-   * //return readOpaque(grpid, varid, section, userType.size);
-   * 
-   * } else if (userType.typeClass == Nc4prototypes.NC_COMPOUND) {
-   * //return readCompound(grpid, varid, section, userType);
-   * }
-   * 
-   * throw new IOException("Unsupported userType = " + typeid + " userType= " + userType);
-   * }
-   *
-   * }
-   */
-
   private String[] convertStringData(Object org) throws IOException {
     if (org instanceof String[])
       return (String[]) org;
@@ -3521,7 +3327,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   /////////////////////////////////////////////////////////////////////////
-
 
   @Override
   public void flush() throws IOException {
