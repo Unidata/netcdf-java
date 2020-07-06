@@ -15,12 +15,10 @@ import java.util.List;
 
 /** Just open all the files in the selected directory. */
 @Category(NeedsCdmUnitTest.class)
-public class TestReadFormats {
+public class TestJustReadFormats {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   private static int countGood = 0;
   private static int countFail = 0;
-
   private List<String> failFiles = new ArrayList<>();
 
   @Test
