@@ -37,8 +37,8 @@ public class NetcdfClibrary {
    * Must be called before load() is called.
    *
    * @param jna_path path to shared libraries, may be null. If null, will look for system property
-   *                 "jna.library.path", then environment variable "JNA_PATH". If set, will set
-   *                 the environment variable "JNA_PATH".
+   *        "jna.library.path", then environment variable "JNA_PATH". If set, will set
+   *        the environment variable "JNA_PATH".
    * @param lib_name library name, may be null. If null, will use "netcdf".
    */
   public static void setLibraryAndPath(@Nullable String jna_path, @Nullable String lib_name) {
@@ -67,6 +67,7 @@ public class NetcdfClibrary {
 
   /**
    * Test if the netcdf C library is present and loaded
+   * 
    * @return true if present
    */
   public static synchronized boolean isClibraryPresent() {
@@ -85,6 +86,7 @@ public class NetcdfClibrary {
    * Set the log level for Netcdf C library.
    * This calls the Netcdf C library nc_set_log_level() method.
    * If the system property "jna.library.loglevel" is set, that is the default, this method overrides it.
+   * 
    * @return the previous level, as returned from nc_set_log_level().
    */
   public static synchronized int setLogLevel(int level) {
