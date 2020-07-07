@@ -1,0 +1,97 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.jni.netcdf;
+
+import static org.junit.Assert.fail;
+import com.google.common.io.Resources;
+import com.google.common.truth.Truth;
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Variable;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+import ucar.nc2.write.Nc4ChunkingStrategyNone;
+import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
+import ucar.unidata.util.test.UnitTestCommon;
+
+/** Test copying files with enums to netcdf4. */
+public class TestNc4EnumWriting {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
+
+  @Before
+  public void setLibrary() {
+    // Ignore this class's tests if NetCDF-4 isn't present.
+    // We're using @Before because it shows these tests as being ignored.
+    // @BeforeClass shows them as *non-existent*, which is not what we want.
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
+  }
+
+  @Test
+  public void writeEnumType() throws IOException {
+    File outFile = File.createTempFile("writeEnumType", ".nc");
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4,
+        outFile.getAbsolutePath(), new Nc4ChunkingStrategyNone());
+
+    // Create shared, unlimited Dimension
+    Dimension timeDim = new Dimension("time", 3, true, true, false);
+    writerb.addDimension(timeDim);
+
+    // Create a map from integers to strings.
+    Map<Integer, String> enumMap = new HashMap<>();
+    enumMap.put(18, "pie");
+    enumMap.put(268, "donut");
+    enumMap.put(3284, "cake");
+
+    // Create EnumTypedef and add it to root group.
+    EnumTypedef dessertType = new EnumTypedef("dessertType", enumMap, DataType.ENUM2);
+    writerb.getRootGroup().addEnumTypedef(dessertType);
+
+    // Create Variable of type dessertType.
+    Variable.Builder dessert = writerb.addVariable("dessert", DataType.ENUM2, "time");
+    dessert.setEnumTypeName(dessertType.getShortName());
+
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      short[] dessertStorage = new short[] {18, 268, 3284};
+      Array data = Array.factory(DataType.SHORT, new int[] {3}, dessertStorage);
+      writer.write("dessert", data);
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      fail();
+    }
+
+    try (NetcdfFile result = NetcdfFiles.open(outFile.getAbsolutePath())) {
+      String copy = Ncdump.builder(result).setShowAllValues().setLocationName("writeEnumType").build().print();
+      System.out.printf("copy = %s%n", copy);
+      URL url = Resources.getResource("ucar/nc2/jni/netcdf/writeEnumType.cdl");
+      String org = Resources.toString(url, StandardCharsets.UTF_8);
+      String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", org, copy);
+      Truth.assertThat(diffs).isNull();
+    }
+  }
+}

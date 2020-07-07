@@ -28,6 +28,7 @@ public class NetcdfClibrary {
   private static String libName = DEFAULT_NETCDF4_LIBNAME;
   private static Nc4prototypes nc4;
   private static int log_level;
+  private static String version;
 
   // Track if already tested for library presence.
   private static Boolean isClibraryPresent;
@@ -82,6 +83,19 @@ public class NetcdfClibrary {
     return isLibraryPresent() ? nc4 : null;
   }
 
+  /** Get the version of the loaded Nectdf C library. Call isClibraryPresent() first. */
+  @Nullable
+  public static String getVersion() {
+    if (nc4 != null && version == null) {
+      try {
+        version = nc4.nc_inq_libvers();
+      } catch (UnsatisfiedLinkError e) {
+        // ignore
+      }
+    }
+    return version;
+  }
+
   /**
    * Set the log level for Netcdf C library.
    * This calls the Netcdf C library nc_set_log_level() method.
@@ -124,7 +138,8 @@ public class NetcdfClibrary {
         // Make the library synchronized
         // nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
         nc4 = new Nc4wrapper(nc4);
-        startupLog.info("Nc4Iosp: NetCDF-4 C library loaded (jna_path='{}', libname='{}').", jnaPath, libName);
+        startupLog.info("Nc4Iosp: NetCDF-4 C library loaded (jna_path='{}', libname='{}' version='{}').", jnaPath,
+            libName, getVersion());
         startupLog.debug("Netcdf nc_inq_libvers='{}' isProtected={}", nc4.nc_inq_libvers(), Native.isProtected());
       } catch (Throwable t) {
         String message =

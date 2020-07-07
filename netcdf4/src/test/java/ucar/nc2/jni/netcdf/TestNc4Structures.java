@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.NetcdfFileFormat;
@@ -40,7 +41,7 @@ public class TestNc4Structures {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   @Test

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.jni.netcdf;
 
 import org.junit.*;
@@ -10,6 +15,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.nc2.write.Nc4ChunkingStrategy;
@@ -39,7 +45,7 @@ public class TestNc4Misc {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   @Test

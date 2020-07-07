@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.jni.netcdf;
 
 import java.io.IOException;
@@ -18,7 +23,7 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.hdf5.TestH5;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -35,6 +40,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestNc4IospReading {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
   private boolean showCompareResults = true;
 
   @Before
@@ -42,13 +48,13 @@ public class TestNc4IospReading {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   // i dont trust our code, compare with jni reading
   @Test
   public void sectionStringsWithFilter() throws IOException, InvalidRangeException {
-    String filename = TestH5.testDir + "StringsWFilter.h5";
+    String filename = testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfFile jni = openJni(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");
       assert v != null;
@@ -111,8 +117,8 @@ public class TestNc4IospReading {
 
   // @Test
   public void timeRead() throws IOException {
-    String location = TestDir.cdmUnitTestDir + "/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4"; // file not
-                                                                                                          // found
+    // file not found
+    String location = TestDir.cdmUnitTestDir + "/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
 
     try (NetcdfFile jni = openJni(location)) {
       Variable v = jni.findVariable("time");

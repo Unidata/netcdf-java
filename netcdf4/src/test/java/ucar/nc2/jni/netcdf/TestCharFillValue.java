@@ -11,7 +11,6 @@
 
 package ucar.nc2.jni.netcdf;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -28,6 +27,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.write.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
@@ -51,7 +51,7 @@ public class TestCharFillValue extends UnitTestCommon {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   @Test
@@ -61,7 +61,7 @@ public class TestCharFillValue extends UnitTestCommon {
     String filename = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filename, null);
     Dimension charDim = writerb.addDimension("charDim", 3);
-    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getFullName());
+    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getName());
     // this works
     Array charArray = ArrayChar.makeFromString(charFillValue, 1);
     charVar.addAttribute(new Attribute("charAttrName", charArray));
@@ -77,6 +77,7 @@ public class TestCharFillValue extends UnitTestCommon {
     charVar.addAttribute(charAttrFillValue);
 
     try (NetcdfFormatWriter writer = writerb.build()) {
+      // empty
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(filename)) {
@@ -105,13 +106,14 @@ public class TestCharFillValue extends UnitTestCommon {
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filename, null);
 
     Dimension charDim = writerb.addDimension("charDim", 3);
-    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getFullName());
+    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getName());
     Array charArrayFillValue = ArrayChar.makeFromString(charNullFillValue, 1);
     Attribute charAttrFillValue;
     charAttrFillValue = new Attribute("_FillValue", charArrayFillValue);
     charVar.addAttribute(charAttrFillValue);
 
     try (NetcdfFormatWriter writer = writerb.build()) {
+      // empty
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(filename)) {

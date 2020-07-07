@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.jni.netcdf;
 
 import org.junit.*;
@@ -8,26 +13,18 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
 import ucar.nc2.*;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.write.Nc4ChunkingStrategyNone;
-import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Test copying files to netcdf4 with FileWriter2.
  * Compare original.
- *
- * @author caron
- * @since 7/27/12
  */
 public class TestNc4IospWriting {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -35,14 +32,14 @@ public class TestNc4IospWriting {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  int countNotOK = 0;
+  private int countNotOK = 0;
 
   @Before
   public void setLibrary() {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   @Test
@@ -98,7 +95,6 @@ public class TestNc4IospWriting {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void writeNetcdf4Zender() throws IOException {
@@ -116,7 +112,7 @@ public class TestNc4IospWriting {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
+  // @Test
   @Category(NeedsCdmUnitTest.class)
   public void writeAllNetcdf3() throws IOException {
     int count = 0;
@@ -141,25 +137,25 @@ public class TestNc4IospWriting {
         return false;
       if (pathname.getName().equals("tst_opaques.nc4"))
         return false;
+      if (pathname.getName().endsWith(".ncml"))
+        return false;
       return true;
     }
   }
 
   private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileWriter.Version version) throws IOException {
-
     System.out.printf("TestNc4IospWriting copy %s to %s%n", datasetIn, datasetOut);
-    NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
-    FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
-    NetcdfFile ncfileOut = writer2.write();
-    compare(ncfileIn, ncfileOut, false, false, true);
-    ncfileIn.close();
-    ncfileOut.close();
+    try (NetcdfFile ncfileIn = ucar.nc2.NetcdfFiles.open(datasetIn, null)) {
+      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
+      try (NetcdfFile ncfileOut = writer2.write()) {
+        compare(ncfileIn, ncfileOut, false, false, true);
+      }
+    }
     // System.out.println("NetcdfFile written = " + ncfileOut);
     return true;
   }
 
-  private boolean compare(NetcdfFile nc1, NetcdfFile nc2, boolean showCompare, boolean showEach, boolean compareData)
-      throws IOException {
+  private boolean compare(NetcdfFile nc1, NetcdfFile nc2, boolean showCompare, boolean showEach, boolean compareData) {
     Formatter f = new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
     boolean ok = tc.compare(nc1, nc2, new CompareNetcdf2.Netcdf4ObjectFilter());
@@ -171,55 +167,6 @@ public class TestNc4IospWriting {
 
 
   /////////////////////////////////////////////////
-
-  @Test
-  public void writeEnumType() throws IOException {
-    // NetcdfFile's 0-arg constructor is protected, so must use NetcdfFileSubclass
-    NetcdfFile ncFile = new NetcdfFileSubclass();
-
-    // Create shared, unlimited Dimension
-    Dimension timeDim = new Dimension("time", 3, true, true, false);
-    ncFile.addDimension(null, timeDim);
-
-    // Create a map from integers to strings.
-    Map<Integer, String> enumMap = new HashMap<>();
-    enumMap.put(18, "pie");
-    enumMap.put(268, "donut");
-    enumMap.put(3284, "cake");
-
-    // Create EnumTypedef and add it to root group.
-    EnumTypedef dessertType = new EnumTypedef("dessertType", enumMap, DataType.ENUM2);
-    ncFile.getRootGroup().addEnumeration(dessertType);
-
-    // Create Variable of type dessertType.
-    Variable dessert = new Variable(ncFile, null, null, "dessert", DataType.ENUM2, "time");
-    dessert.setEnumTypedef(dessertType);
-
-    // Add data to dessert variable.
-    short[] dessertStorage = new short[] {18, 268, 3284};
-    dessert.setCachedData(Array.factory(DataType.SHORT, new int[] {3}, dessertStorage), true);
-
-    // Add the variable to the root group and finish ncFile
-    ncFile.addVariable(null, dessert);
-    ncFile.finish();
-    File outFile = File.createTempFile("writeEnumType", ".nc");
-    try {
-      FileWriter2 writer = new FileWriter2(ncFile, outFile.getAbsolutePath(), NetcdfFileWriter.Version.netcdf4,
-          new Nc4ChunkingStrategyNone());
-      try (NetcdfFile ncFileOut = writer.write()) {
-        // override name so that CDL will compare equal
-        String org = Ncdump.builder(ncFile).setShowAllValues().setLocationName("writeEnumType").build().print();
-        String copy = Ncdump.builder(ncFileOut).setShowAllValues().setLocationName("writeEnumType").build().print();
-        String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", org, copy);
-        Assert.assertTrue(diffs, diffs == null);
-      }
-
-    } finally {
-      ncFile.close();
-      outFile.delete();
-    }
-  }
-
 
   // Demonstrates GitHub issue #301--badly writing subsetted arrays
   @Test
@@ -255,96 +202,4 @@ public class TestNc4IospWriting {
     }
   }
 
-  @Test
-  public void expandUnlimitedDimensions() throws IOException, InvalidRangeException {
-    File outFile = tempFolder.newFile();
-
-    try (NetcdfFileWriter writer =
-        NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
-      Dimension rowDim = writer.addDimension(null, "row", 0, true, false);
-      Dimension colDim = writer.addDimension(null, "col", 0, true, false);
-      Variable tableVar = writer.addVariable(null, "table", DataType.INT, "row col");
-      writer.create();
-
-      // Start with a 1x1 block. Table will look like:
-      // 1
-      int[] origin = new int[] {0, 0};
-      int[] shape = new int[] {1, 1};
-      int[] data = new int[] {1};
-      writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
-
-      // Add a row. Table will look like:
-      // 1 _
-      // 2 2
-      origin = new int[] {1, 0};
-      shape = new int[] {1, 2};
-      data = new int[] {2, 2};
-      writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
-
-      // Add a column. Table will look like:
-      // 1 _ 3
-      // 2 2 3
-      // _ _ 3
-      origin = new int[] {0, 2};
-      shape = new int[] {3, 1};
-      data = new int[] {3, 3, 3};
-      writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
-
-      // Add a row. Table will look like:
-      // 1 _ 3 _
-      // 2 2 3 _
-      // _ _ 3 _
-      // 4 4 4 4
-      origin = new int[] {3, 0};
-      shape = new int[] {1, 4};
-      data = new int[] {4, 4, 4, 4};
-      writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
-
-      // Add a column. Table will look like:
-      // 1 _ 3 _ 5
-      // 2 2 3 _ 5
-      // _ _ 3 _ 5
-      // 4 4 4 4 5
-      // _ _ _ _ 5
-      origin = new int[] {0, 4};
-      shape = new int[] {5, 1};
-      data = new int[] {5, 5, 5, 5, 5};
-      writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
-    } catch (IOException e) {
-      if ("NetCDF: Start+count exceeds dimension bound".equals(e.getMessage())) {
-        throw new IOException("This test requires netcdf-c 4.4.0+.", e);
-      }
-    }
-
-    /*
-     * File should look like:
-     * netcdf expandUnlimitedDimensions {
-     * dimensions:
-     * row = UNLIMITED ; // (5 currently)
-     * col = UNLIMITED ; // (5 currently)
-     * variables:
-     * int table(row, col) ;
-     * data:
-     * 
-     * table =
-     * {1, _, 3, _, 5},
-     * {2, 2, 3, _, 5},
-     * {_, _, 3, _, 5},
-     * {4, 4, 4, 4, 5},
-     * {_, _, _, _, 5} ;
-     * }
-     */
-
-    try (NetcdfFile ncFile = NetcdfFile.open(outFile.getAbsolutePath())) {
-      Variable tableVar = ncFile.getRootGroup().findVariableLocal("table");
-      Array actualVals = tableVar.read();
-
-      int fill = -2147483647; // See EnhanceScaleMissingImpl.NC_FILL_INT
-      int[] expectedData = new int[] {1, fill, 3, fill, 5, 2, 2, 3, fill, 5, fill, fill, 3, fill, 5, 4, 4, 4, 4, 5,
-          fill, fill, fill, fill, 5};
-      Array expectedVals = Array.factory(DataType.INT, new int[] {5, 5}, expectedData);
-
-      Assert.assertTrue(MAMath.equals(expectedVals, actualVals));
-    }
-  }
 }

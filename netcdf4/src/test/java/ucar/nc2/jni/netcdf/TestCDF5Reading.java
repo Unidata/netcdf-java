@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.jni.netcdf;
 
 import org.junit.Assert;
@@ -15,6 +20,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
@@ -44,7 +50,7 @@ public class TestCDF5Reading extends UnitTestCommon {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   @Test
@@ -64,7 +70,7 @@ public class TestCDF5Reading extends UnitTestCommon {
         String testresult = dump.replace('r', ' ').replace('\n', ' ').trim();
         visual("CDF Read", testresult);
       }
-      Assert.assertTrue(String.format("***Fail: data mismatch"), MAMath.nearlyEquals(data, BASELINE));
+      Assert.assertTrue("***Fail: data mismatch", MAMath.nearlyEquals(data, BASELINE));
       System.err.println("***Pass");
     }
   }
