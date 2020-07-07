@@ -14,6 +14,7 @@ import com.sun.jna.ptr.ByReference;
  *
  * @see "https://github.com/twall/jna/issues/191"
  *      TODO: This will move packages in version 6.
+ *      TODO: This may not be needed in version 6.
  */
 public class SizeTByReference extends ByReference {
   public SizeTByReference() {

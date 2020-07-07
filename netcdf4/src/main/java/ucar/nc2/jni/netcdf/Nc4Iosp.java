@@ -5,6 +5,7 @@
 
 package ucar.nc2.jni.netcdf;
 
+import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -20,7 +21,7 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
-import ucar.nc2.jni.NetcdfClibrary;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.EscapeStrings;
@@ -31,10 +32,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
-import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
 /**
- * IOSP for reading netcdf files through jni interface to netcdf4 library
+ * IOSP for reading netcdf files through JNA interface to netcdf C library
  *
  * @author caron
  * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
@@ -81,28 +81,28 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    *
    * @param jnaPath path to shared libraries
    * @param libName library name
-   * @deprecated use NetcdfClibrary.setLibraryAndPath
+   * @deprecated use NetcdfClibrary.setLibraryNameAndPath
    */
   @Deprecated
   public static void setLibraryAndPath(String jnaPath, String libName) {
-    NetcdfClibrary.setLibraryAndPath(jnaPath, libName);
+    NetcdfClibrary.setLibraryNameAndPath(jnaPath, libName);
   }
 
   /**
    * Test if the netcdf C library is present and loaded.
    * 
    * @return true if present
-   * @deprecated use NetcdfClibrary.isClibraryPresent
+   * @deprecated use NetcdfClibrary.isLibraryPresent
    */
   @Deprecated
   public static synchronized boolean isClibraryPresent() {
-    return NetcdfClibrary.isClibraryPresent();
+    return NetcdfClibrary.isLibraryPresent();
   }
 
-  /** @deprecated use NetcdfClibrary.getCLibrary */
+  /** @deprecated use NetcdfClibrary.getNativeInterface */
   @Deprecated
   public static synchronized Nc4prototypes getCLibrary() {
-    return NetcdfClibrary.getClibrary();
+    return NetcdfClibrary.getForeignFunctionInterface();
   }
 
   /**
@@ -235,7 +235,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
-    this.nc4 = NetcdfClibrary.getClibrary();
+    this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
     if (raf != null)
       raf.close(); // not used
@@ -2324,7 +2324,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
-    this.nc4 = NetcdfClibrary.getClibrary();
+    this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
     this.ncfile = ncfile;
 

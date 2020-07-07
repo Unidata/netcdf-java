@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.jni;
+package ucar.nc2.ffi.netcdf;
 
 import com.google.common.base.Strings;
 import com.sun.jna.Native;
@@ -41,7 +41,7 @@ public class NetcdfClibrary {
    *        the environment variable "JNA_PATH".
    * @param lib_name library name, may be null. If null, will use "netcdf".
    */
-  public static void setLibraryAndPath(@Nullable String jna_path, @Nullable String lib_name) {
+  public static void setLibraryNameAndPath(@Nullable String jna_path, @Nullable String lib_name) {
     lib_name = Strings.emptyToNull(lib_name);
 
     if (lib_name == null) {
@@ -70,7 +70,7 @@ public class NetcdfClibrary {
    * 
    * @return true if present
    */
-  public static synchronized boolean isClibraryPresent() {
+  public static synchronized boolean isLibraryPresent() {
     if (isClibraryPresent == null) {
       isClibraryPresent = load() != null;
     }
@@ -78,8 +78,8 @@ public class NetcdfClibrary {
   }
 
   /** Get the interface to the Nectdf C library. */
-  public static synchronized Nc4prototypes getClibrary() {
-    return isClibraryPresent() ? nc4 : null;
+  public static synchronized Nc4prototypes getForeignFunctionInterface() {
+    return isLibraryPresent() ? nc4 : null;
   }
 
   /**
@@ -115,7 +115,7 @@ public class NetcdfClibrary {
           log.info("Setting System Property jna.encoding to UTF8");
           // System.setProperty("jna.encoding", StandardCharsets.UTF_8.name());
         }
-        setLibraryAndPath(null, null);
+        setLibraryNameAndPath(null, null);
       }
       try {
         // jna_path may still be null, but try to load anyway;

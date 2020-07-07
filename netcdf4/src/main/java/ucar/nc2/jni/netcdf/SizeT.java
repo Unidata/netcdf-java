@@ -13,6 +13,7 @@ import com.sun.jna.Native;
  *
  * @see "https://github.com/twall/jna/issues/191"
  *      TODO: This will move packages in version 6.
+ *      TODO: This may not be needed in version 6.
  */
 public class SizeT extends IntegerType {
   public SizeT() {
