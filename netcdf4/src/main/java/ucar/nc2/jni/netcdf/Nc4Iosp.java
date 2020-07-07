@@ -2144,7 +2144,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return f.toString();
   }
 
-  // Cannot be static because it references non-stati parent class members
+  // Cannot be static because it references non-static parent class members
   // Coverity[FB.SIC_INNER_SHOULD_BE_STATIC]
   private static class ConvertedType {
     DataType dt;
@@ -2244,7 +2244,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         switch (userType.typeClass) {
           case Nc4prototypes.NC_ENUM:
-            return new ConvertedType(DataType.ENUM1);
+            switch (userType.size) {
+              case 1:
+                return new ConvertedType(DataType.ENUM1);
+              case 2:
+                return new ConvertedType(DataType.ENUM2);
+              case 4:
+                return new ConvertedType(DataType.ENUM4);
+              default:
+                throw new IllegalArgumentException("enum unknown size == " + userType);
+            }
 
           case Nc4prototypes.NC_COMPOUND:
             return new ConvertedType(DataType.STRUCTURE);
@@ -2539,9 +2548,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       createCompoundMemberAtts(g4.grpid, varid, (Structure) v);
     }
 
-    for (Attribute att : v.attributes())
+    for (Attribute att : v.attributes()) {
       writeAttribute(g4.grpid, varid, att, v);
-
+    }
   }
 
 
@@ -2584,8 +2593,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         System.out.printf(" added enum type member %s: %d%n", entry.getValue(), entry.getKey());
     }
     // keep track of the User Defined types
-    UserType ut =
-        new UserType(g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, (long) emap.size(), NC_ENUM);
+    UserType ut = new UserType(g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
     userTypes.put(typeid, ut);
     en.annotate(UserType.class, ut); // dont know the varid yet
   }

@@ -1561,6 +1561,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     // set the enumTypedef
     if (dt.isEnum()) {
+      // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
       EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName).orElse(null);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
@@ -1997,8 +1998,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       return null; // dunno
 
     } else if (warnings) {
-      log.debug("WARNING not handling hdf type = " + hdfType + " size= " + size);
       log.warn("HDF5 file " + raf.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
+    } else {
+      log.debug("HDF5 file " + raf.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
     }
     return null;
   }

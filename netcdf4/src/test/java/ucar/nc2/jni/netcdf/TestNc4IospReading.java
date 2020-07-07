@@ -160,24 +160,23 @@ public class TestNc4IospReading {
     doCompare(filename, false, false, false);
   }
 
-  private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData)
+  static boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData)
       throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(location); NetcdfFile jni = openJni(location)) {
       jni.setLocation(location + " (jni)");
-      // System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(),
-      // jni.getIosp().getClass().getName());
 
       Formatter f = new Formatter();
       CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
       boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter());
       System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
-      if (!ok || (showCompare && showCompareResults))
+      if (!ok || showCompare) {
         System.out.printf("%s%n=====================================%n", f);
+      }
       return ok;
     }
   }
 
-  private NetcdfFile openJni(String location) throws IOException {
+  static NetcdfFile openJni(String location) throws IOException {
     Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");

@@ -7,16 +7,11 @@ package ucar.nc2.write;
 
 import ucar.nc2.Variable;
 
-/**
- * Describe
- *
- * @author caron
- * @since 6/10/14
- */
+/** No chunking is done, except for unlimited variables. */
 public class Nc4ChunkingStrategyNone extends Nc4ChunkingDefault {
   @Override
   public boolean isChunked(Variable v) {
-    return v.isUnlimited(); // must chunk
+    return v.isUnlimited();
   }
 
   @Override

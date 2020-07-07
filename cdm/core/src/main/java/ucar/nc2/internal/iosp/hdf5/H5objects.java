@@ -1346,9 +1346,9 @@ public class H5objects {
 
         enumTypeName = objectName;
         map = new TreeMap<>();
-        for (int i = 0; i < nmembers; i++)
+        for (int i = 0; i < nmembers; i++) {
           map.put(enumValue[i], enumName[i]);
-
+        }
         if (debugEnum) {
           for (int i = 0; i < nmembers; i++) {
             log.debug("   " + enumValue[i] + "=" + enumName[i]);
