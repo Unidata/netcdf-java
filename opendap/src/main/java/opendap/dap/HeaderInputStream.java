@@ -49,7 +49,6 @@ import java.io.*;
  *
  * @author jehamby
  * @version $Revision: 15901 $
- * @see DConnect
  */
 public class HeaderInputStream extends FilterInputStream {
   /**

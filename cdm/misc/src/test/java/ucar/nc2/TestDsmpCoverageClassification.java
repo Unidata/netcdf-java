@@ -12,6 +12,7 @@ import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
@@ -24,7 +25,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 /** Test Dsmp Coverage Classification */
 @Category(NeedsCdmUnitTest.class)
 public class TestDsmpCoverageClassification {
-
   String endpoint = TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.s.OIS";
   FeatureType expectType = FeatureType.SWATH;
   int domain = 2;
@@ -42,7 +42,7 @@ public class TestDsmpCoverageClassification {
     }
 
     // check DtCoverageCS
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(endpoint)) {
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(endpoint)) {
       Formatter errlog = new Formatter();
       DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, errlog); // uses cs with largest # axes
       Assert.assertNotNull(errlog.toString(), builder);

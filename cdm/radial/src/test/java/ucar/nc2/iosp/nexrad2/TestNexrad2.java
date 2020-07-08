@@ -15,6 +15,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -52,7 +53,7 @@ public class TestNexrad2 {
         return 0;
       }
 
-      try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+      try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
         return testRead(ncfile);
       }
     }
@@ -129,10 +130,8 @@ public class TestNexrad2 {
 
   @Test
   public void testCoordSys() throws IOException {
-    // NetcdfDataset ncd = NetcdfDataset.openDataset(
-    // "dods://localhost:8080/thredds/dodsC/testAll/Level2_KSOX_20051010_2322.ar2v", false, null);
     String filename = TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v";
-    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
       testCoordSystem(ncfile);
     }
   }
@@ -142,7 +141,7 @@ public class TestNexrad2 {
     // file where there was an error unzipping the file
     String filename =
         TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials";
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
 
       VariableDS azi = (VariableDS) ncd.findVariable("azimuthR");
       assert azi != null;
