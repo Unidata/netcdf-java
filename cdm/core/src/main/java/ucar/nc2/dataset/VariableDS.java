@@ -218,7 +218,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
     // enhance() may have been called previously, with a different enhancement set.
     // So, we need to reset to default before we process this new set.
-    setDataType(orgDataType);
+    // LOOK this seems bogus
+    if (orgDataType != null) {
+      setDataType(orgDataType);
+    }
 
     // Initialize EnhanceScaleMissingUnsignedImpl. We can't do this in the constructors because this object may not
     // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is

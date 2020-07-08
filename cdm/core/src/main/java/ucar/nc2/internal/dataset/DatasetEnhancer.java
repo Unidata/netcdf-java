@@ -187,9 +187,9 @@ public class DatasetEnhancer {
 
     // enhance() may have been called previously, with a different enhancement set.
     // So, we need to reset to default before we process this new set.
-    if (vb.orgDataType != null) {
-      vb.setDataType(vb.orgDataType);
-    }
+    // if (vb.orgDataType != null) {
+    // vb.setDataType(vb.orgDataType);
+    // }
 
     if (varEnhance.contains(Enhance.ConvertEnums) && vb.dataType.isEnum()) {
       vb.setDataType(DataType.STRING);

@@ -36,6 +36,15 @@ import ucar.nc2.iosp.IOServiceProviderWriter;
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
  * Note that there is no redefine mode. Once you call build(), you cannot add new metadata, you can only write data.
+ *
+ * <pre>
+ * NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
+ * writerb.addDimension(Dimension.builder().setName("vdim").setIsUnlimited(true).build());
+ * writerb.addVariable("v", DataType.BYTE, "vdim");
+ * try (NetcdfFormatWriter writer = writerb.build()) {
+ *   writer.write("v", dataArray);
+ * }
+ * </pre>
  */
 public class NetcdfFormatWriter implements Closeable {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatWriter.class);
@@ -58,18 +67,17 @@ public class NetcdfFormatWriter implements Closeable {
   }
 
   /**
-   * Create a new Netcdf file, using the default fill mode.
+   * Create a new Netcdf3 file.
    *
    * @param location name of new file to open; if it exists, will overwrite it.
    * @return new NetcdfFormatWriter
-   *         =
    */
   public static NetcdfFormatWriter.Builder createNewNetcdf3(String location) {
     return builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(location);
   }
 
   /**
-   * Create a new Netcdf file.
+   * Create a new Netcdf4 file.
    *
    * @param format One of the netcdf-4 NetcdfFileFormat.
    * @param location name of new file to open; if it exists, will overwrite it.
@@ -81,6 +89,7 @@ public class NetcdfFormatWriter implements Closeable {
     return builder().setNewFile(true).setFormat(format).setLocation(location).setChunker(chunker);
   }
 
+  /** Obtain a Builder to set custom options */
   public static Builder builder() {
     return new Builder();
   }
@@ -113,7 +122,7 @@ public class NetcdfFormatWriter implements Closeable {
       return iosp;
     }
 
-    /** Set the format version. Only needed when its a new file. Default is NetcdfFileFormat.CLASSIC */
+    /** Set the format version. Only needed when its a new file. Default is NetcdfFileFormat.NETCDF3 */
     public Builder setFormat(NetcdfFileFormat format) {
       this.format = format;
       return this;
@@ -133,8 +142,8 @@ public class NetcdfFormatWriter implements Closeable {
      * Set the fill flag. Only used by netcdf-3.
      * If true, the data is first written with fill values.
      * Default is fill = true, to follow the C library.
-     * Leave false if you expect to write all data values, set to true if you want to be
-     * sure that unwritten data values have the fill value in it.
+     * Set false if you expect to write all data values, which makes writing faster.
+     * Set true if you want to be sure that unwritten data values are set to the fill value.
      */
     public Builder setFill(boolean fill) {
       this.fill = fill;
@@ -170,6 +179,7 @@ public class NetcdfFormatWriter implements Closeable {
       return this;
     }
 
+    /** Add a global attribute */
     public Builder addAttribute(Attribute att) {
       if (!isNewFile && !useJna) {
         throw new UnsupportedOperationException("Cant add attribute to existing netcdf-3 files");
@@ -178,6 +188,7 @@ public class NetcdfFormatWriter implements Closeable {
       return this;
     }
 
+    /** Add a dimension to the root group. */
     public Dimension addDimension(String dimName, int length) {
       if (!isNewFile && !useJna) {
         throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
@@ -187,6 +198,7 @@ public class NetcdfFormatWriter implements Closeable {
       return dim;
     }
 
+    /** Add a dimension to the root group. */
     public Dimension addDimension(Dimension dim) {
       if (!isNewFile && !useJna) {
         throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
@@ -195,15 +207,17 @@ public class NetcdfFormatWriter implements Closeable {
       return dim;
     }
 
+    /** Add an unlimited dimension to the root group. */
     public Dimension addUnlimitedDimension(String dimName) {
       return addDimension(Dimension.builder().setName(dimName).setIsUnlimited(true).build());
     }
 
+    /** Get the root group */
     public Group.Builder getRootGroup() {
       return rootGroup;
     }
 
-    /** Set the root group. This allows it to be built externally. */
+    /** Set the root group. This allows all metadata to be built externally. */
     public Builder setRootGroup(Group.Builder rootGroup) {
       this.rootGroup = rootGroup;
       return this;
@@ -242,44 +256,9 @@ public class NetcdfFormatWriter implements Closeable {
       return vb;
     }
 
+    /** Once this is called, do not use the Builder again. */
     public NetcdfFormatWriter build() throws IOException {
       return new NetcdfFormatWriter(this);
-    }
-  }
-
-  /** Value class is the result of calling create() */
-  public static class Result {
-    private final long sizeToBeWritten;
-    private final boolean wasWritten;
-    @Nullable
-    private final String errorMessage;
-
-    private Result(long sizeToBeWritten, boolean wasWritten, @Nullable String errorMessage) {
-      this.sizeToBeWritten = sizeToBeWritten;
-      this.wasWritten = wasWritten;
-      this.errorMessage = errorMessage;
-    }
-
-    /**
-     * Estimated number of bytes the file will take. This is NOT the same as the size of the the whole output file, but
-     * it's close.
-     */
-    public long sizeToBeWritten() {
-      return sizeToBeWritten;
-    }
-
-    /** Whether the file was created or not. */
-    public boolean wasWritten() {
-      return wasWritten;
-    }
-
-    @Nullable
-    public String getErrorMessage() {
-      return errorMessage;
-    }
-
-    public static Result create(long sizeToBeWritten, boolean wasWritten, @Nullable String errorMessage) {
-      return new Result(sizeToBeWritten, wasWritten, errorMessage);
     }
   }
 

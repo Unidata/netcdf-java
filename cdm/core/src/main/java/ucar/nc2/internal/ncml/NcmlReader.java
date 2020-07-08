@@ -53,11 +53,11 @@ import ucar.nc2.util.URLnaming;
 import static ucar.unidata.util.StringUtil2.getTokens;
 
 /**
- * Read NcML and create NetcdfDataset, using builders and immutable objects.
+ * Read NcML and create NetcdfDataset.Builder, using builders and immutable objects.
+ * <p>
+ * This is an internal class, users should usually call {@link NetcdfDatasets#openDataset(String)}
+ * </p>
  *
- * @author caron
- * @see <a href=
- *      "https://www.unidata.ucar.edu/software/netcdf/ncml/">https://www.unidata.ucar.edu/software/netcdf/ncml/</a>
  */
 public class NcmlReader {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlReader.class);
@@ -293,20 +293,19 @@ public class NcmlReader {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Read NcML doc from a Reader, and construct a NetcdfDataset.
-   * eg: NcmlReader.readNcML(new StringReader(ncml), location, null);
+   * Read NcML doc from a Reader, and construct a NetcdfDataset.Builder.
+   * This is an internal method, users should use {@link NetcdfDatasets#openNcmlDataset(Reader, String, CancelTask)}
    *
    * @param r the Reader containing the NcML document
    * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
    *        dataset,
    *        or may be just a unique name for caching purposes.
    * @param cancelTask allow user to cancel the task; may be null
-   * @return the resulting NetcdfDataset
+   * @return the resulting NetcdfDataset.Builder
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
   public static NetcdfDataset.Builder readNcml(Reader r, String ncmlLocation, CancelTask cancelTask)
       throws IOException {
-
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -721,7 +720,7 @@ public class NcmlReader {
    * @return Array with parsed values
    * @throws IllegalArgumentException if string values not parsable to specified data type
    */
-  private static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
+  public static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
     String valString = s.getAttributeValue("value");
 
     // can also be element text

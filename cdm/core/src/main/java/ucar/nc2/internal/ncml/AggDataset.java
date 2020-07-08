@@ -105,9 +105,11 @@ class AggDataset implements Comparable<AggDataset> {
       System.out.println(" try to acquire " + cacheLocation);
     long start = System.currentTimeMillis();
 
-    if (durl == null)
-      durl = DatasetUrl.findDatasetUrl(cacheLocation); // cache the ServiceType so we dont have to keep figuring it
-    // out
+    if (durl == null) {
+      // cache the ServiceType so we dont have to keep figuring it out
+      durl = DatasetUrl.findDatasetUrl(cacheLocation);
+    }
+
     NetcdfFile ncfile = NetcdfDatasets.acquireFile(reader, null, durl, -1, cancelTask, spiObject);
     if (ncmlElem == null && (enhance.isEmpty()))
       return ncfile;

@@ -30,7 +30,7 @@ import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
@@ -320,7 +320,7 @@ public class FeatureDatasetCapabilitiesWriter {
       List<Element> attElems = velem.getChildren("attribute");
       for (Element attElem : attElems) {
         String attName = attElem.getAttributeValue("name");
-        ucar.ma2.Array values = NcMLReader.readAttributeValues(attElem);
+        ucar.ma2.Array values = NcmlReader.readAttributeValues(attElem);
         atts.add(new Attribute(attName, values));
       }
 

@@ -4,31 +4,22 @@
  */
 package ucar.nc2.dataset;
 
-import junit.framework.TestCase;
 import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.ncml.NcMLReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 
-/**
- * test CoordinateAxis1D.findCoord()
- *
- * @author caron
- * @since Jul 8, 2010
- */
-public class TestFindCoord extends TestCase {
+/** Test CoordinateAxis1D.findCoord() */
+public class TestFindCoord {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestFindCoord(String name) {
-    super(name);
-  }
-
+  @Test
   public void testRegular() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
         + "    <dimension name='lat'  length='2' />\n" + "    <dimension name='lon'  length='2' />\n"
         + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
         + "    <variable name='lat' shape='lat' type='double'>\n"
@@ -55,9 +46,10 @@ public class TestFindCoord extends TestCase {
         new int[] {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1});
   }
 
+  @Test
   public void testRegularDescending() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
         + "    <dimension name='lat'  length='2' />\n" + "    <dimension name='lon'  length='2' />\n"
         + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
         + "    <variable name='lat' shape='lat' type='double'>\n"
@@ -84,9 +76,10 @@ public class TestFindCoord extends TestCase {
         new int[] {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0});
   }
 
+  @Test
   public void testIrregular() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
         + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
         + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
         + "    <variable name='lat' shape='lat' type='double'>\n"
@@ -115,9 +108,10 @@ public class TestFindCoord extends TestCase {
         new int[] {0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2});
   }
 
+  @Test
   public void testIrregularDescending() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
         + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
         + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
         + "    <variable name='lat' shape='lat' type='double'>\n"
@@ -140,9 +134,10 @@ public class TestFindCoord extends TestCase {
     doTest(ncml, "lon", true, new double[] {-91, -90, -12, -2, 0, 2, 22, 90}, new int[] {2, 2, 2, 1, 1, 0, 0, 0,});
   }
 
+  @Test
   public void testNonContig() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
         + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
         + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
         + "    <variable name='lat' shape='lat' type='double'>\n"
@@ -169,10 +164,10 @@ public class TestFindCoord extends TestCase {
         new int[] {2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,});
   }
 
-
+  @Test
   public void testNonContigDescending() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true'>\n"
         + "    <dimension name='lat'  length='3' />\n" + "    <dimension name='lon'  length='3' />\n"
         + "    <dimension name='bnds' length='2' />\n" + "    <attribute name='Conventions' value='CF-1.0' />\n"
         + "    <variable name='lat' shape='lat' type='double'>\n"
@@ -199,11 +194,8 @@ public class TestFindCoord extends TestCase {
         new int[] {0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,});
   }
 
-
-  public void doTest(String ncml, String varName, boolean bounded, double[] vals, int[] expect) throws IOException {
-    NetcdfDataset nc = NcMLReader.readNcML(new StringReader(ncml), null);
-
-    try (NetcdfDataset dataset = new NetcdfDataset(nc, true)) {
+  private void doTest(String ncml, String varName, boolean bounded, double[] vals, int[] expect) throws IOException {
+    try (NetcdfDataset dataset = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       CoordinateAxis1D axis1D = (CoordinateAxis1D) dataset.findVariable(varName);
       if (axis1D.isContiguous()) {
         double[] edge = axis1D.getCoordEdges();
@@ -234,8 +226,7 @@ public class TestFindCoord extends TestCase {
       }
 
       System.out.printf("{");
-      for (int i = 0; i < vals.length; i++) {
-        double v = vals[i];
+      for (double v : vals) {
         int index = bounded ? axis1D.findCoordElementBounded(v) : axis1D.findCoordElement(v);
         System.out.printf("%2d, ", index);
       }

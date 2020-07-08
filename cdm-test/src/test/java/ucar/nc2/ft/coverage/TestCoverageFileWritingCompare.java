@@ -49,7 +49,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestCoverageFileWritingCompare {
-
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name = "{0}")
@@ -135,7 +134,7 @@ public class TestCoverageFileWritingCompare {
       System.out.printf(" CFGridCoverageWriter write to %s%n", tempFile.getAbsolutePath());
       NetcdfFormatWriter.Builder writerb =
           NetcdfFormatWriter.builder().setNewFile(true).setFormat(format).setLocation(tempFile.getPath());
-      NetcdfFormatWriter.Result result = CFGridCoverageWriter.write(gcs, covList, params, false, writerb, 0);
+      CFGridCoverageWriter.Result result = CFGridCoverageWriter.write(gcs, covList, params, false, writerb, 0);
       if (!result.wasWritten()) {
         throw new InvalidRangeException("Error writing: " + result.getErrorMessage());
       }

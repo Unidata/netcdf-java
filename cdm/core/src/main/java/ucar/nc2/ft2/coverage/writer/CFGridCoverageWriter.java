@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -38,7 +39,6 @@ import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.write.NetcdfFormatWriter;
-import ucar.nc2.write.NetcdfFormatWriter.Result;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
@@ -58,6 +58,42 @@ public class CFGridCoverageWriter {
   private static final String BOUNDS = "_bounds";
   private static final String BOUNDS_DIM = "bounds_dim"; // dimension of length 2, can be used by any bounds coordinate
 
+  /** A value class holding information about the write() */
+  public static class Result {
+    private final long sizeToBeWritten;
+    private final boolean wasWritten;
+    @Nullable
+    private final String errorMessage;
+
+    private Result(long sizeToBeWritten, boolean wasWritten, @Nullable String errorMessage) {
+      this.sizeToBeWritten = sizeToBeWritten;
+      this.wasWritten = wasWritten;
+      this.errorMessage = errorMessage;
+    }
+
+    /**
+     * Estimated number of bytes the file will take. This is NOT exactly the size of the the whole output file, but
+     * it's close.
+     */
+    public long sizeToBeWritten() {
+      return sizeToBeWritten;
+    }
+
+    /** Whether the file was created or not. */
+    public boolean wasWritten() {
+      return wasWritten;
+    }
+
+    @Nullable
+    public String getErrorMessage() {
+      return errorMessage;
+    }
+
+    public static Result create(long sizeToBeWritten, boolean wasWritten, @Nullable String errorMessage) {
+      return new Result(sizeToBeWritten, wasWritten, errorMessage);
+    }
+  }
+
   /**
    * Write a netcdf/CF file from a CoverageDataset
    *
@@ -67,9 +103,9 @@ public class CFGridCoverageWriter {
    * @param tryToAddLatLon2D add 2D lat/lon coordinates, if possible
    * @param writer this does the actual writing, must not be null
    * @param maxBytes if > 0, only create the file if sizeToBeWritten < maxBytes.
-   * @return the Result containing the result of the write.
+   * @return the result of the write.
    */
-  public static NetcdfFormatWriter.Result write(CoverageCollection gdsOrg, List<String> gridNames, SubsetParams subset,
+  public static Result write(CoverageCollection gdsOrg, List<String> gridNames, SubsetParams subset,
       boolean tryToAddLatLon2D, NetcdfFormatWriter.Builder writer, long maxBytes)
       throws IOException, InvalidRangeException {
     Preconditions.checkNotNull(writer);
@@ -77,8 +113,8 @@ public class CFGridCoverageWriter {
     return writer2.writeFile(gdsOrg, gridNames, subset, tryToAddLatLon2D, writer, maxBytes);
   }
 
-  private NetcdfFormatWriter.Result writeFile(CoverageCollection gdsOrg, List<String> gridNames,
-      SubsetParams subsetParams, boolean tryToAddLatLon2D, NetcdfFormatWriter.Builder writer, long maxBytes)
+  private Result writeFile(CoverageCollection gdsOrg, List<String> gridNames, SubsetParams subsetParams,
+      boolean tryToAddLatLon2D, NetcdfFormatWriter.Builder writer, long maxBytes)
       throws IOException, InvalidRangeException {
     if (gridNames == null) { // want all of them
       gridNames = new LinkedList<>();
@@ -97,7 +133,7 @@ public class CFGridCoverageWriter {
     ucar.nc2.util.Optional<CoverageCollection> opt =
         CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
     if (!opt.isPresent()) {
-      return NetcdfFormatWriter.Result.create(0, false, opt.getErrorMessage());
+      return Result.create(0, false, opt.getErrorMessage());
     }
 
     CoverageCollection subsetDataset = opt.get();
@@ -133,7 +169,7 @@ public class CFGridCoverageWriter {
       }
     }
 
-    return NetcdfFormatWriter.Result.create(0, true, null);
+    return Result.create(0, true, null);
   }
 
   /**
