@@ -662,7 +662,6 @@ public class DConnect2 implements Closeable {
    * @throws ParseException if the DDS parser returned an error
    * @throws DDSException on an error constructing the DDS
    * @throws DAP2Exception if an error returned by the remote server
-   * @opendap.ddx.experimental
    */
   public DDS getDDX() throws IOException, ParseException, DAP2Exception {
     return (getDDX(""));
@@ -685,7 +684,6 @@ public class DConnect2 implements Closeable {
    * @throws ParseException if the DDS parser returned an error
    * @throws DDSException on an error constructing the DDS
    * @throws DAP2Exception if an error returned by the remote server
-   * @opendap.ddx.experimental
    */
   public DDS getDDX(String CE) throws IOException, ParseException, DDSException, DAP2Exception {
     DDXCommand command = new DDXCommand();
@@ -715,7 +713,6 @@ public class DConnect2 implements Closeable {
    * @throws ParseException if the DDS parser returned an error
    * @throws DDSException on an error constructing the DDS
    * @throws DAP2Exception if an error returned by the remote server
-   * @opendap.ddx.experimental
    */
   public DataDDS getDataDDX() throws MalformedURLException, IOException, ParseException, DDSException, DAP2Exception {
 
@@ -738,7 +735,6 @@ public class DConnect2 implements Closeable {
    * @throws ParseException if the DDS parser returned an error
    * @throws DDSException on an error constructing the DDS
    * @throws DAP2Exception if an error returned by the remote server
-   * @opendap.ddx.experimental
    */
   public DataDDS getDataDDX(String CE)
       throws MalformedURLException, IOException, ParseException, DDSException, DAP2Exception {
@@ -763,7 +759,6 @@ public class DConnect2 implements Closeable {
    * @throws ParseException if the DDS parser returned an error
    * @throws DDSException on an error constructing the DDS
    * @throws DAP2Exception if an error returned by the remote server
-   * @opendap.ddx.experimental
    * @see BaseTypeFactory
    */
   public DataDDS getDataDDX(String CE, BaseTypeFactory btf)

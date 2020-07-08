@@ -26,7 +26,7 @@ import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
 import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.XURI;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.nc2.jni.netcdf.SizeTByReference;
 import java.net.URISyntaxException;
@@ -292,7 +292,7 @@ public class Nc4DSP extends AbstractDSP {
   public Nc4DSP() throws DapException {
     super();
     if (this.nc4 == null) {
-      this.nc4 = Nc4Iosp.getCLibrary();
+      this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
       if (this.nc4 == null)
         throw new DapException("Could not load libnetcdf");
     }

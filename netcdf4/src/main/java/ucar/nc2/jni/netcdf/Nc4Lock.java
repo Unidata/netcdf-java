@@ -11,7 +11,8 @@ package ucar.nc2.jni.netcdf;
  * corresponding class in dap4.
  *
  * @author dmh
+ * @deprecated do not use.
  */
-
+@Deprecated
 public abstract class Nc4Lock {
 }

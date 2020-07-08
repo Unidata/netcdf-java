@@ -16,7 +16,8 @@ dependencies {
     compile libraries["jna"]
     compile libraries["slf4j-api"]
     testRuntime libraries["logback-classic"]
-    
+
+    testCompile libraries["truth"]
     // These are for Spock.
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]

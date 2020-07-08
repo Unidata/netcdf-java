@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.jni.netcdf;
 
 import java.io.IOException;
@@ -18,7 +23,7 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.hdf5.TestH5;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -35,6 +40,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestNc4IospReading {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
   private boolean showCompareResults = true;
 
   @Before
@@ -42,13 +48,13 @@ public class TestNc4IospReading {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   // i dont trust our code, compare with jni reading
   @Test
   public void sectionStringsWithFilter() throws IOException, InvalidRangeException {
-    String filename = TestH5.testDir + "StringsWFilter.h5";
+    String filename = testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfFile jni = openJni(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");
       assert v != null;
@@ -111,8 +117,8 @@ public class TestNc4IospReading {
 
   // @Test
   public void timeRead() throws IOException {
-    String location = TestDir.cdmUnitTestDir + "/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4"; // file not
-                                                                                                          // found
+    // file not found
+    String location = TestDir.cdmUnitTestDir + "/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";
 
     try (NetcdfFile jni = openJni(location)) {
       Variable v = jni.findVariable("time");
@@ -154,24 +160,23 @@ public class TestNc4IospReading {
     doCompare(filename, false, false, false);
   }
 
-  private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData)
+  static boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData)
       throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(location); NetcdfFile jni = openJni(location)) {
       jni.setLocation(location + " (jni)");
-      // System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(),
-      // jni.getIosp().getClass().getName());
 
       Formatter f = new Formatter();
       CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
       boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter());
       System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
-      if (!ok || (showCompare && showCompareResults))
+      if (!ok || showCompare) {
         System.out.printf("%s%n=====================================%n", f);
+      }
       return ok;
     }
   }
 
-  private NetcdfFile openJni(String location) throws IOException {
+  static NetcdfFile openJni(String location) throws IOException {
     Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");

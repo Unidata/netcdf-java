@@ -12,11 +12,10 @@ import com.sun.jna.ptr.ByReference;
 /**
  * Reference to SizeT, for return values
  *
- * @author caron
  * @see "https://github.com/twall/jna/issues/191"
- * @since 5/31/14
+ *      TODO: This will move packages in version 6.
+ *      TODO: This may not be needed in version 6.
  */
-
 public class SizeTByReference extends ByReference {
   public SizeTByReference() {
     this(new SizeT());

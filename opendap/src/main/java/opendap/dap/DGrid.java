@@ -461,18 +461,7 @@ public class DGrid extends DConstructor implements ClientIO {
     }
   }
 
-
-  /**
-   *
-   * @param pw
-   * @param pad
-   * @param constrained
-   * @opendap.ddx.experimental
-   */
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
-
-
-    pw.print(pad + "<Grid");
     if (getEncodedName() != null) {
       pw.print(" name=\"" + DDSXMLParser.normalizeToXML(getClearName()) + "\"");
     }

@@ -1,7 +1,10 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.jni.netcdf;
 
-import org.apache.commons.io.filefilter.NotFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -12,11 +15,11 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -33,6 +36,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestNc4JniReadCompare {
+
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Before
@@ -40,13 +44,12 @@ public class TestNc4JniReadCompare {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
-
-    FileFilter ff = new NotFileFilter(new SuffixFileFilter(".cdl"));
+    FileFilter ff = TestDir.FileFilterSkipSuffix("cdl ncml");
     List<Object[]> result = new ArrayList<Object[]>(500);
     try {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);
@@ -58,35 +61,13 @@ public class TestNc4JniReadCompare {
     return result;
   }
 
-  private static class Hdf5FileFilter implements java.io.FileFilter {
-    public boolean accept(File pathname) {
-      /*
-       * java.io.IOException: -101: NetCDF: HDF error
-       * at ucar.nc2.jni.netcdf.Nc4Iosp._open(Nc4Iosp.java:243)
-       * at ucar.nc2.jni.netcdf.Nc4Iosp.open(Nc4Iosp.java:227)
-       */
-      if (pathname.getPath().endsWith("wrf_bdy_par.h5"))
-        return false; // temporary
-      if (pathname.getPath().endsWith("wrf_input_par.h5"))
-        return false; // temporary
-      if (pathname.getPath().endsWith("wrf_out_par.h5"))
-        return false; // temporary
-      if (pathname.getPath().endsWith("time.h5"))
-        return false; // temporary
-      if (pathname.getPath().contains("npoess"))
-        return false; // temporary
-      // if (pathname.getName().endsWith(".xml")) return false;
-      return true;
-    }
-  }
-
   /////////////////////////////////////////////////////////////
 
   public TestNc4JniReadCompare(String filename) {
     this.filename = filename;
   }
 
-  String filename;
+  private final String filename;
 
   int fail = 0;
   int success = 0;
@@ -94,10 +75,7 @@ public class TestNc4JniReadCompare {
   @Test
   public void compareDatasets() throws IOException {
 
-    NetcdfFile ncfile = null, jni = null;
-    try {
-      ncfile = NetcdfFile.open(filename);
-      jni = openJni(filename);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename); NetcdfFile jni = openJni(filename)) {
       jni.setLocation(filename + " (jni)");
       System.err.println("Test input: " + ncfile.getLocation());
       System.err.println("Baseline: " + jni.getLocation());
@@ -115,11 +93,6 @@ public class TestNc4JniReadCompare {
         success++;
       }
       Assert.assertTrue(filename, ok);
-    } finally {
-      if (ncfile != null)
-        ncfile.close();
-      if (jni != null)
-        jni.close();
     }
   }
 
@@ -130,8 +103,6 @@ public class TestNc4JniReadCompare {
     iosp.open(raf, ncfile, null);
     return ncfile;
   }
-
-
 
 }
 

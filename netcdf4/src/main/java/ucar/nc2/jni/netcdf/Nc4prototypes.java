@@ -23,8 +23,8 @@ import java.util.ArrayList;
  *        This is a transliteration of the netcdf-c library file include/netcdf.h.
  *        Refer to that for documentation of the constants and functions.
  *
+ *        TODO: This will move packages in version 6.
  */
-
 public interface Nc4prototypes extends Library {
 
   int NC_MAX_DIMS = 1024; /* max dimensions per file */

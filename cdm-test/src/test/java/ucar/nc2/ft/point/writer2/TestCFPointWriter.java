@@ -27,8 +27,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.TestCFPointDatasets;
-import ucar.nc2.ft.point.TestPointDatasets;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.util.test.CheckPointFeatureDataset;
@@ -90,7 +89,7 @@ public class TestCFPointWriter {
   @Test
   public void testWrite4classic() throws IOException {
     // Ignore this test if NetCDF-4 isn't present.
-    if (!Nc4Iosp.isClibraryPresent()) {
+    if (!NetcdfClibrary.isLibraryPresent()) {
       return;
     }
 
@@ -104,7 +103,7 @@ public class TestCFPointWriter {
   @Ignore("doesnt work: coordinate axes that are members of nc4 structures")
   public void testWrite4() throws IOException {
     // Ignore this test if NetCDF-4 isn't present.
-    if (!Nc4Iosp.isClibraryPresent()) {
+    if (!NetcdfClibrary.isLibraryPresent()) {
       return;
     }
 

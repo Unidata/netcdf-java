@@ -66,7 +66,7 @@ public abstract class HTTPAuthUtil {
    * Create an AuthScope from a URI; remove any principal
    *
    * @param uri to convert
-   * @returns an AuthScope instance
+   * @return an AuthScope instance
    */
 
   static AuthScope uriToAuthScope(URI uri) {

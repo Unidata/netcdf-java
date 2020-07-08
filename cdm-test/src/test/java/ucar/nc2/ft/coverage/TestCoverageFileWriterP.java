@@ -18,7 +18,7 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.write.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -57,10 +57,10 @@ public class TestCoverageFileWriterP {
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID,
         Lists.newArrayList("PS", "Temperature"), null, NetcdfFileFormat.NETCDF3}); // both x,y and lat,lon
 
+    // TwoD Best
     result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
-        Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileFormat.NETCDF4}); // TwoD
-                                                                                                            // Best
-    // */
+        Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileFormat.NETCDF4});
+
     return result;
   }
 
@@ -85,7 +85,7 @@ public class TestCoverageFileWriterP {
   @Test
   public void writeTestFile() throws IOException, InvalidRangeException {
     // skip test requiring netcdf4 if not present.
-    if (version.isNetdf4format() && !Nc4Iosp.isClibraryPresent()) {
+    if (version.isNetdf4format() && !NetcdfClibrary.isLibraryPresent()) {
       return;
     }
     System.out.printf("Test Dataset %s type %s%n", endpoint, type);
