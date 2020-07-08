@@ -285,8 +285,6 @@ import org.jdom2.Document;
  *
  * @author ndp
  * @version $Revision: 22951 $
- * @opendap.ddx.experimental Many parts of this class have been modified to support
- *                           the DDX functionality. This API is going to change!
  * @see BaseType
  * @see BaseTypeFactory
  * @see DAS
@@ -374,7 +372,6 @@ public class DDS extends DStructure {
    * @param factory the server <code>BaseTypeFactory</code> object.
    * @param schema the URL where the parser can find an instance of the
    *        OPeNDAP namespace schema.
-   * @opendap.ddx.experimental
    */
   public DDS(String clearname, BaseTypeFactory factory, String schema) {
     super(clearname);
@@ -436,7 +433,6 @@ public class DDS extends DStructure {
    *
    * @param contentID A <code>String</code> containing the Content-ID of the MIME part that contains
    *        the binary encoded data represented by this DDS.
-   * @opendap.ddx.experimental
    */
   public void setBlobContentID(String contentID) {
     _dataBlobID = contentID;
@@ -450,7 +446,6 @@ public class DDS extends DStructure {
    *
    * @return A <code>String</code> containing the URL of the servers BLOB response for
    *         this DDS.
-   * @opendap.ddx.experimental
    */
   public String getBlobContentID() {
     return (_dataBlobID);
@@ -1075,7 +1070,6 @@ public class DDS extends DStructure {
    *        document from a server that has already done so.)
    * @throws DDSException thrown on an error constructing the
    *         <code>DDS</code>.
-   * @opendap.ddx.experimental
    * @see opendap.dap.parsers.DDSXMLParser
    * @see #checkForAttributeNameConflict
    * @see #resolveAliases
@@ -1138,7 +1132,6 @@ public class DDS extends DStructure {
    *        document from a server that has already done so.)
    * @throws DDSException thrown on an error constructing the
    *         <code>DDS</code>.
-   * @opendap.ddx.experimental
    * @see opendap.dap.parsers.DDSXMLParser
    * @see #checkForAttributeNameConflict
    * @see #resolveAliases
@@ -1495,7 +1488,6 @@ public class DDS extends DStructure {
    *
    * @param at The <code>AttributeTable</code> to search
    * @param aNames The <code>Vector</code> of names to match to the nodes of <b>at</b>
-   * @opendap.ddx.experimental
    */
 
   private opendap.dap.Attribute getAttribute(AttributeTable at, Vector aNames)
@@ -1857,7 +1849,6 @@ public class DDS extends DStructure {
    * <code>DDSXMLParser</code>
    *
    * @param pw The <code>PrintWriter</code> to print to.
-   * @opendap.ddx.experimental
    */
   public void printXML(PrintWriter pw) {
     printXML(pw, "", false);
@@ -1874,7 +1865,6 @@ public class DDS extends DStructure {
    * @param constrained A <code>boolean</code> that indcates if the this call should
    *        print the constrained version of the DDS. A value of <i>true</i> will cause the
    *        only the projected variables of the DDX to be printed .
-   * @opendap.ddx.experimental
    */
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
 
@@ -1929,7 +1919,6 @@ public class DDS extends DStructure {
    * a toplevel attribute in the dataset)
    *
    * @param das The <code>DAS</code> to ingest.
-   * @opendap.ddx.experimental
    */
   public void ingestDAS(DAS das) {
     try {
@@ -2153,7 +2142,6 @@ public class DDS extends DStructure {
    *
    * @return The output of <code>DDS.printXML()</code> as
    *         <code>String</code>
-   * @opendap.ddx.experimental
    * @see #printXML(PrintWriter)
    */
   public String getDDXText() {

@@ -136,7 +136,6 @@ public abstract class DConstructor extends BaseType {
    *
    * @param bt The BasType object to search.
    * @return true if some child of the passed BaseType has attributes
-   * @opendap.ddx.experimental
    */
   protected boolean someChildHasAttributes(BaseType bt) {
 
@@ -166,7 +165,6 @@ public abstract class DConstructor extends BaseType {
    *        to read).
    * @param constrained If true then only projected variables (and their
    *        Attributes) will be printed.
-   * @opendap.ddx.experimental
    */
   // Coverity[CALL_SUPER]
   public void printXML(PrintWriter pw, String pad, boolean constrained) {

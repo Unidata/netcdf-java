@@ -127,33 +127,6 @@ public class TestCoverageHorizSubset {
 
   @Test
   @Category(NeedsExternalResource.class)
-  public void testDodsSubset() throws Exception {
-    String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best";
-    System.out.printf("open %s%n", filename);
-
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
-      Assert.assertNotNull(filename, cc);
-      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
-      Assert.assertNotNull("gcs", gcs);
-      String gribId = "Pressure_surface";
-      Coverage coverage = gcs.findCoverage(gribId);
-      Assert.assertNotNull(gribId, coverage);
-
-      CoverageCoordSys cs = coverage.getCoordSys();
-      Assert.assertNotNull("coordSys", cs);
-      HorizCoordSys hcs = cs.getHorizCoordSys();
-      Assert.assertNotNull("HorizCoordSys", hcs);
-      // Assert.assertArrayEquals(new int[]{65, 361, 720}, cs.getShape());
-
-      LatLonRect llbb = gcs.getLatlonBoundingBox();
-      LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
-
-      checkLatLonSubset(gcs, coverage, llbb_subset, new int[] {1, 35, 46});
-    }
-  }
-
-  @Test
-  @Category(NeedsExternalResource.class)
   public void testCdmRemoteSubset() throws Exception {
     String filename =
         "cdmremote:https://thredds-dev.unidata.ucar.edu/thredds/cdmremote/grib/NCEP/NAM/CONUS_40km/conduit/best";

@@ -57,9 +57,6 @@ import opendap.util.Debug;
  *
  * @author ndp
  * @version $Revision: 15901 $
- * @opendap.ddx.experimental WARNING! This class supports a pre-released version of the DDX.
- *                           The XML schema that this class is designed to work with WILL BE CHANGED prior
- *                           to software release.
  */
 public class DDSXMLParser {
 

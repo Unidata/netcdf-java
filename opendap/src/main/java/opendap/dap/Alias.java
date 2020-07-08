@@ -122,7 +122,6 @@ import opendap.util.Debug;
  * @see DDS#parseXML
  * @see DDS#getDAS
  * @see DAS
- * @see DAS#resolveAliases
  */
 public class Alias extends Attribute {
   /**

@@ -488,58 +488,24 @@ public abstract class BaseType extends DAPNode {
     _attrTbl.print(pw, pad);
   }
 
-
-  /**
-   *
-   * @param os
-   * @opendap.ddx.experimental
-   */
   public void printXML(OutputStream os) {
     printXML(os, "");
   }
 
-
-  /**
-   *
-   * @param os
-   * @param pad
-   * @opendap.ddx.experimental
-   */
   public void printXML(OutputStream os, String pad) {
     PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)));
     printXML(pw, pad, false);
     pw.flush();
   }
 
-
-  /**
-   *
-   * @param pw
-   * @opendap.ddx.experimental
-   */
   public void printXML(PrintWriter pw) {
     printXML(pw, "");
   }
 
-
-  /**
-   *
-   * @param pw
-   * @param pad
-   * @opendap.ddx.experimental
-   */
   public void printXML(PrintWriter pw, String pad) {
     printXML(pw, pad, false);
-
   }
 
-  /**
-   *
-   * @param pw
-   * @param pad
-   * @param constrained
-   * @opendap.ddx.experimental
-   */
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
 
     pw.print(pad + "<" + getTypeName());

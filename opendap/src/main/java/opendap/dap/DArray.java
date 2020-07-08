@@ -354,63 +354,28 @@ public class DArray extends DVector {
     return dimVector.get(0);
   }
 
-
-  /**
-   *
-   * @param pw
-   * @param pad
-   * @param constrained
-   * @opendap.ddx.experimental
-   */
   // Coverity[CALL_SUPER]
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
-
     pw.print(pad + "<Array");
     if (getEncodedName() != null) {
       pw.print(" name=\"" + DDSXMLParser.normalizeToXML(getClearName()) + "\"");
     }
     pw.println(">");
-
-
     printXMLcore(pw, pad, constrained);
-
     pw.println(pad + "</Array>");
-
-
   }
 
-
-  /**
-   *
-   * @param pw
-   * @param pad
-   * @param constrained
-   * @opendap.ddx.experimental
-   */
   public void printAsMapXML(PrintWriter pw, String pad, boolean constrained) {
-
     pw.print(pad + "<Map");
     if (getEncodedName() != null) {
       pw.print(" name=\"" + DDSXMLParser.normalizeToXML(getClearName()) + "\"");
     }
     pw.println(">");
-
     printXMLcore(pw, pad, constrained);
-
     pw.println(pad + "</Map>");
-
   }
 
-
-  /**
-   *
-   * @param pw
-   * @param pad
-   * @param constrained
-   * @opendap.ddx.experimental
-   */
   private void printXMLcore(PrintWriter pw, String pad, boolean constrained) {
-
     Enumeration e = getAttributeNames();
     while (e.hasMoreElements()) {
       String aName = (String) e.nextElement();
@@ -418,9 +383,7 @@ public class DArray extends DVector {
       Attribute a = getAttribute(aName);
       if (a != null)
         a.printXML(pw, pad + "\t", constrained);
-
     }
-
 
     BaseType bt = null;
 

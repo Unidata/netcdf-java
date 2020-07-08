@@ -121,7 +121,6 @@ public class DAPNode implements Cloneable, Serializable {
    *
    * @return <code>true</code> if the variable is part of the current
    *         projections, <code>false</code> otherwise.
-   * @see opendap.servers.CEEvaluator
    */
   public boolean isProject() {
     return (projected);
@@ -137,7 +136,6 @@ public class DAPNode implements Cloneable, Serializable {
    *        projection, <code>false</code> otherwise.
    * @param all If <code>true</code>, set the Project property of all the
    *        members (and their children, and so on).
-   * @see opendap.servers.CEEvaluator
    */
   public void setProject(boolean state, boolean all) {
     setProjected(state);
@@ -154,7 +152,6 @@ public class DAPNode implements Cloneable, Serializable {
    *
    * @param state <code>true</code> if the variable is part of the current
    *        projection, <code>false</code> otherwise.
-   * @see opendap.servers.CEEvaluator
    */
   public void setProject(boolean state) {
     setProject(state, true);
