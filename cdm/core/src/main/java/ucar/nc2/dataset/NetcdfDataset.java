@@ -488,7 +488,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return ds;
   }
 
-  /*
+  /**
    * Enhancement use cases
    * 1. open NetcdfDataset(enhance).
    * 2. NcML - must create the NetcdfDataset, and enhance when its done.
@@ -499,7 +499,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * Possible remove all direct access to Variable.enhance
    * 
-   * @deprecated use NetcdfDatasets.enhance
+   * @deprecated use {@link NetcdfDatasets#enhance}
    */
   @Deprecated
   private static CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask)
@@ -1600,6 +1600,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.agg = builder.agg;
 
     // LOOK the need to reference the NetcdfDataset means we cant build the axes or system until now.
+    // LOOK this assumes the dataset has already been enhanced. Where does that happen?
     CoordinatesHelper coords = builder.coords.build(this);
     this.coordAxes = coords.getCoordAxes();
     this.coordSys = coords.getCoordSystems();
@@ -1701,6 +1702,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     public T setEnhanceMode(Set<Enhance> enhanceMode) {
       this.enhanceMode = enhanceMode;
+      return self();
+    }
+
+    public T setDefaultEnhanceMode() {
+      this.enhanceMode = NetcdfDataset.getDefaultEnhanceMode();
       return self();
     }
 

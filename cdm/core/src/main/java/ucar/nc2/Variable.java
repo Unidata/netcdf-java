@@ -2245,6 +2245,11 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       return self();
     }
 
+    @Override
+    public String toString() {
+      return dataType + " " + shortName;
+    }
+
     /** Normally this is called by Group.build() */
     public Variable build(Group parentGroup) {
       if (built)

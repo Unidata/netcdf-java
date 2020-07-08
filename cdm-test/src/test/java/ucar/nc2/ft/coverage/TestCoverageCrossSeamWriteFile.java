@@ -124,7 +124,7 @@ public class TestCoverageCrossSeamWriteFile {
     System.out.printf("params=%s%n", params);
 
     NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.createNewNetcdf3(tempFile.getPath());
-    NetcdfFormatWriter.Result result =
+    CFGridCoverageWriter.Result result =
         CFGridCoverageWriter.write(coverageDataset, Lists.newArrayList(covName), params, false, writer, -1);
     if (!result.wasWritten())
       throw new InvalidRangeException("Request failed: " + result.getErrorMessage());

@@ -102,7 +102,7 @@ public class TestCoverageFileWriterP {
 
       NetcdfFormatWriter.Builder writer =
           NetcdfFormatWriter.builder().setNewFile(true).setLocation(tempFile.getPath()).setFormat(version);
-      NetcdfFormatWriter.Result result = CFGridCoverageWriter.write(gcs, covList, params, false, writer, -1);
+      CFGridCoverageWriter.Result result = CFGridCoverageWriter.write(gcs, covList, params, false, writer, -1);
       if (!result.wasWritten())
         throw new InvalidRangeException("Request failed: " + result.getErrorMessage());
     }

@@ -891,6 +891,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     Array data;
     try {
+      // LOOK this seems bogus
       boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
       data = boundsVar.read();
     } catch (IOException e) {

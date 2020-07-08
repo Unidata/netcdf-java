@@ -2,6 +2,7 @@
 package ucar.nc2.dataset;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.util.EnumSet;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -10,6 +11,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -89,7 +91,7 @@ public class NetcdfDatasets {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
-  // enhancing
+  // enhanced datasets
 
   /**
    * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
@@ -149,6 +151,29 @@ public class NetcdfDatasets {
       CancelTask cancelTask, Object spiObject) throws IOException {
     NetcdfFile ncfile = openProtocolOrFile(location, buffer_size, cancelTask, spiObject);
     return enhance(ncfile, enhanceMode, cancelTask);
+  }
+
+  /**
+   * Read NcML doc from a Reader, and construct a NetcdfDataset.Builder.
+   * eg: NcmlReader.readNcml(new StringReader(ncml), location, null);
+   *
+   * @param reader the Reader containing the NcML document
+   * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
+   *        dataset,
+   *        or may be just a unique name for caching purposes.
+   * @param cancelTask allow user to cancel the task; may be null
+   * @return the resulting NetcdfDataset.Builder
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  public static NetcdfDataset openNcmlDataset(Reader reader, String ncmlLocation, CancelTask cancelTask)
+      throws IOException {
+    NetcdfDataset.Builder<?> builder = NcmlReader.readNcml(reader, ncmlLocation, cancelTask);
+    if (!builder.getEnhanceMode().isEmpty()) {
+      DatasetEnhancer enhancer = new DatasetEnhancer(builder, builder.getEnhanceMode(), cancelTask);
+      return enhancer.enhance().build();
+    } else {
+      return builder.build();
+    }
   }
 
   /**
