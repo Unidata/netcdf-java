@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Formatter;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -14,10 +15,12 @@ public class TestTableAnalyzer {
   static void doit(String filename) throws IOException {
     filename = TestDir.cdmUnitTestDir + filename;
     System.out.println(filename);
-    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    TableAnalyzer csa = TableAnalyzer.factory(null, null, ncd);
-    csa.getDetailInfo(new Formatter(System.out));
-    System.out.println("%n-----------------");
+    try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename, true, -1, null,
+        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+      TableAnalyzer csa = TableAnalyzer.factory(null, null, ncd);
+      csa.getDetailInfo(new Formatter(System.out));
+      System.out.println("%n-----------------");
+    }
   }
 
   @Test

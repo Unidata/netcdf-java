@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
@@ -99,7 +100,7 @@ public class TestCoverageClassificationP {
     }
 
     // check DtCoverageCS
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(endpoint)) {
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(endpoint)) {
       Formatter errlog = new Formatter();
       DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, errlog); // uses cs with largest # axes
       Assert.assertNotNull(errlog.toString(), builder);

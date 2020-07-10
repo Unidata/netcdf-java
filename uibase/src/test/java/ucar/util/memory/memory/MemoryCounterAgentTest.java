@@ -5,7 +5,6 @@
 
 package ucar.util.memory.memory;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
@@ -16,6 +15,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import ucar.nc2.dataset.NetcdfDatasets;
 
 public class MemoryCounterAgentTest {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -140,33 +140,31 @@ public class MemoryCounterAgentTest {
 
   static void testNcd() throws IOException {
     String filename = "C:/data/test2.nc";
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(filename);
-    measureSize("C:/data/test2.nc", ncfile, null, true);
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename)) {
+      measureSize("C:/data/test2.nc", ncfile, null, true);
 
-    NetcdfDatasetInfo info = new NetcdfDatasetInfo(filename);
-    measureSize("info", info, null, true);
-    String pifo = info.getParseInfo();
-    System.out.println("info= " + pifo);
-    ncfile.close();
+      NetcdfDatasetInfo info = new NetcdfDatasetInfo(filename);
+      measureSize("info", info, null, true);
+      String pifo = info.getParseInfo();
+      System.out.println("info= " + pifo);
+    }
   }
 
   static void testN3() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openFile("C:/data/test2.nc", null);
-    measureSize("beforeRead", ncfile, null, true);
-
-    for (Variable v : ncfile.getVariables()) {
-      v.read();
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile("C:/data/test2.nc", null)) {
+      measureSize("beforeRead", ncfile, null, true);
+      for (Variable v : ncfile.getVariables()) {
+        v.read();
+      }
+      measureSize("afterRead", ncfile, null, true);
     }
-    measureSize("afterRead", ncfile, null, true);
-
-    ncfile.close();
   }
 
   static void testNcml() throws IOException {
     String filename = "C:/dev/tds/thredds/cdm/src/test/data/ncml/aggUnionSimple.xml";
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(filename, false, null);
-    measureSize("aggUnionSimple", ncfile, null, true);
-    ncfile.close();
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null)) {
+      measureSize("aggUnionSimple", ncfile, null, true);
+    }
   }
 
 }

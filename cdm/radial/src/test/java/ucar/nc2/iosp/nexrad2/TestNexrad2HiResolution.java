@@ -14,6 +14,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -51,14 +52,13 @@ public class TestNexrad2HiResolution {
         return 0;
       }
 
-      try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+      try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
         testRead(ncfile);
         testCoordSystem(ncfile);
         return 1;
       }
     }
   }
-
 
   private void testRead(NetcdfFile nexrad2) throws IOException {
     Dimension scanR = nexrad2.findDimension("scanR");
