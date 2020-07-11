@@ -9,6 +9,8 @@ import java.io.Closeable;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The goal of this class is to allow
@@ -32,7 +34,7 @@ import java.io.InputStream;
 
 public class HTTPMethodStream extends FilterInputStream implements Closeable {
   //////////////////////////////////////////////////////////////////////////
-  public static org.slf4j.Logger log = HTTPSession.log;
+  private static final Logger logger = LoggerFactory.getLogger(HTTPMethodStream.class);
 
   //////////////////////////////////////////////////////////////////////////
   HTTPMethod method = null;
@@ -82,7 +84,7 @@ public class HTTPMethodStream extends FilterInputStream implements Closeable {
         consumed += skip(available);
       }
       if (consumed > 0) {
-        log.debug("HTTPMethodStream: unconsumed data");
+        logger.debug("HTTPMethodStream: unconsumed data");
       }
     } catch (IOException ioe) {
       /* ignore */}

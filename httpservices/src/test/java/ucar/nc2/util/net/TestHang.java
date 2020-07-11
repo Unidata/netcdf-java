@@ -81,7 +81,7 @@ public class TestHang {
   public void testSession() throws Exception {
     String fullUrl = String.format(url, this.datasetno);
     try (HTTPMethod m = HTTPFactory.Get(session, fullUrl)) {
-      System.out.printf("Connecting to %s%n", fullUrl);
+      logger.debug("Connecting to {}", fullUrl);
       int status = 0;
       try {
         status = m.execute();
@@ -89,7 +89,7 @@ public class TestHang {
         e.printStackTrace();
         status = 500;
       }
-      System.out.printf("    return from %s status= %d%n", fullUrl, status);
+      logger.debug("    return from {} status= {}", fullUrl, status);
       if (isxfail(this.datasetno))
         Assert.assertTrue("Expected 404: return status: " + status, status == 404);
       else

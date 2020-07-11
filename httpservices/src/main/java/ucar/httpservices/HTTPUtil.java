@@ -34,11 +34,14 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class HTTPUtil {
 
   //////////////////////////////////////////////////
   // Constants
+  private static final Logger logger = LoggerFactory.getLogger(HTTPUtil.class);
 
   public static final Charset UTF8 = StandardCharsets.UTF_8;
   public static final Charset ASCII = StandardCharsets.US_ASCII;
@@ -56,6 +59,8 @@ public abstract class HTTPUtil {
   // Interceptors
 
   abstract static class InterceptCommon {
+    private static final Logger logger = LoggerFactory.getLogger(InterceptCommon.class);
+
     protected HttpContext context = null;
     protected List<Header> headers = new ArrayList<Header>();
     protected HttpRequest request = null;
@@ -118,21 +123,20 @@ public abstract class HTTPUtil {
         Header[] hdrs = this.request.getAllHeaders();
         if (hdrs == null)
           hdrs = new Header[0];
-        System.err.println("Request Headers:");
+        logger.debug("Request Headers:");
         for (Header h : hdrs) {
-          System.err.println(h.toString());
+          logger.debug(h.toString());
         }
       }
       if (this.response != null) {
         Header[] hdrs = this.response.getAllHeaders();
         if (hdrs == null)
           hdrs = new Header[0];
-        System.err.println("Response Headers:");
+        logger.debug("Response Headers:");
         for (Header h : hdrs) {
-          System.err.println(h.toString());
+          logger.debug(h.toString());
         }
       }
-      System.err.flush();
     }
   }
 

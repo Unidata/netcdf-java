@@ -83,9 +83,10 @@ public class TestHTTPSession extends UnitTestCommon {
 
   @Test
   public void testAgent() throws Exception {
-    System.out.println("*** Testing: User Agent");
-    System.out.println("*** URL: " + TESTURL1);
-    System.out.println("Test: HTTPSession.setGlobalUserAgent(" + GLOBALAGENT + ")");
+
+    logger.debug("*** Testing: User Agent");
+    logger.debug("*** URL: {}", TESTURL1);
+    logger.debug("Test: HTTPSession.setGlobalUserAgent({})", GLOBALAGENT);
 
     HTTPSession.setInterceptors(false);
     HTTPSession.setGlobalUserAgent(GLOBALAGENT);
@@ -108,10 +109,10 @@ public class TestHTTPSession extends UnitTestCommon {
       }
       Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s", GLOBALAGENT, agentvalue),
           GLOBALAGENT.equals(agentvalue));
-      System.out.println("*** Pass: set global agent");
+      logger.debug("*** Pass: set global agent");
       // method.close();
 
-      System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
+      logger.debug("Test: HTTPSession.setUserAgent({})", SESSIONAGENT);
       HTTPSession.resetInterceptors();
       session.setUserAgent(SESSIONAGENT);
       method = HTTPFactory.Get(session, TESTURL1);
@@ -129,7 +130,7 @@ public class TestHTTPSession extends UnitTestCommon {
       }
       Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s", SESSIONAGENT, agentvalue),
           SESSIONAGENT.equals(agentvalue));
-      System.out.println("*** Pass: set session agent");
+      logger.debug("*** Pass: set session agent");
       method.close();
     }
   }
@@ -138,7 +139,7 @@ public class TestHTTPSession extends UnitTestCommon {
   @Test
   public void testConfigure() throws Exception {
     try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
-      System.out.println("Test: HTTPSession: Configuration");
+      logger.debug("Test: HTTPSession: Configuration");
       session.setSoTimeout(17777);
       session.setConnectionTimeout(37777);
       session.setMaxRedirects(111);
@@ -155,24 +156,24 @@ public class TestHTTPSession extends UnitTestCommon {
       RequestConfig dbgcfg = method.getDebugConfig();
 
       boolean b = dbgcfg.isCircularRedirectsAllowed();
-      System.out.println("Test: Circular Redirects");
+      logger.debug("Test: Circular Redirects");
       Assert.assertTrue("*** Fail: Circular Redirects", b);
-      System.out.println("*** Pass: Circular Redirects");
+      logger.debug("*** Pass: Circular Redirects");
 
-      System.out.println("Test: Max Redirects");
+      logger.debug("Test: Max Redirects");
       int n = dbgcfg.getMaxRedirects();
       Assert.assertTrue("*** Fail: Max Redirects", n == 111);
-      System.out.println("*** Pass: Max Redirects");
+      logger.debug("*** Pass: Max Redirects");
 
-      System.out.println("Test: SO Timeout");
+      logger.debug("Test: SO Timeout");
       n = dbgcfg.getSocketTimeout();
       Assert.assertTrue("*** Fail: SO Timeout", n == 17777);
-      System.out.println("*** Pass: SO Timeout");
+      logger.debug("*** Pass: SO Timeout");
 
-      System.out.println("Test: Connection Timeout");
+      logger.debug("Test: Connection Timeout");
       n = dbgcfg.getConnectTimeout();
       Assert.assertTrue("*** Fail: Connection Timeout", n == 37777);
-      System.out.println("*** Pass: SO Timeout");
+      logger.debug("*** Pass: SO Timeout");
       method.close();
     }
   }

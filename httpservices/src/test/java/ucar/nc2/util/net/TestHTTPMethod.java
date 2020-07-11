@@ -85,10 +85,10 @@ public class TestHTTPMethod extends UnitTestCommon {
     String url = baseurl + "/" + testcase;
     String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
-    System.out.println("*** Testing: HTTPMethod");
-    System.out.println("*** URL: " + url);
+    logger.debug("*** Testing: HTTPMethod");
+    logger.debug("*** URL: {}", url);
 
-    System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream");
+    logger.debug("*** Testing: HTTPMethod.getResponseBodyAsStream");
     try (HTTPMethod method = HTTPFactory.Get(url)) {
       method.execute();
       InputStream stream = method.getResponseBodyAsStream();
@@ -105,10 +105,10 @@ public class TestHTTPMethod extends UnitTestCommon {
     String url = baseurl + "/" + testcase;
     String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
-    System.out.println("*** Testing: HTTPMethod");
-    System.out.println("*** URL: " + url);
+    logger.debug("*** Testing: HTTPMethod");
+    logger.debug("*** URL: {}", url);
 
-    System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream partial read");
+    logger.debug("*** Testing: HTTPMethod.getResponseBodyAsStream partial read");
     try (HTTPMethod method = HTTPFactory.Get(url)) {
       method.execute();
       InputStream stream = method.getResponseBodyAsStream();

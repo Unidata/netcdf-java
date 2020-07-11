@@ -69,6 +69,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A session is encapsulated in an instance of the class HTTPSession.
@@ -274,6 +276,7 @@ public class HTTPSession implements Closeable {
    */
   public enum Methods {
     Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
+
     private final String name;
 
     Methods(String name) {
@@ -340,7 +343,7 @@ public class HTTPSession implements Closeable {
   ////////////////////////////////////////////////////////////////////////
   // Static variables
 
-  public static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
+  private static final Logger logger = LoggerFactory.getLogger(HTTPSession.class);
 
   // Define a settings object to hold all the
   // settable values; there will be one
@@ -540,7 +543,7 @@ public class HTTPSession implements Closeable {
         sslbuilder.loadKeyMaterial(keystore, keypassword.toCharArray());
       globalsslfactory = new SSLConnectionSocketFactory(sslbuilder.build(), new NoopHostnameVerifier());
     } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableEntryException e) {
-      log.error("Failed to set key/trust store(s): " + e.getMessage());
+      logger.error("Failed to set key/trust store(s): " + e.getMessage());
       globalsslfactory = null;
     }
     if (globalsslfactory != null)
@@ -1036,7 +1039,7 @@ public class HTTPSession implements Closeable {
         sessionprovider.setCredentials(scope, new UsernamePasswordCredentials(userinfo));
       }
     } else {
-      log.warn(
+      logger.warn(
           "Cannot store credentials as no CredientialsProvier can be found for session. Connection will fail if authentication / authorization required");
     }
   }
