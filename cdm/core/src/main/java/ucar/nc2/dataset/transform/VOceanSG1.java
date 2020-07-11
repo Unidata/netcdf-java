@@ -8,6 +8,7 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.OceanSG1;
 import ucar.unidata.util.Parameter;
 
@@ -63,7 +64,7 @@ public class VOceanSG1 extends AbstractTransformBuilder implements VertTransform
     return "OceanSG1:" + " s:" + s + " c:" + c + " eta:" + eta + " depth:" + depth + " depth_c:" + depth_c;
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
       VerticalCT vCT) {
     return new OceanSG1(ds, timeDim, vCT.getParameters());
   }

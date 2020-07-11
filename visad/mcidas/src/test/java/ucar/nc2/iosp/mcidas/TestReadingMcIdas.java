@@ -16,6 +16,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.Projections;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -79,9 +80,9 @@ public class TestReadingMcIdas {
     System.out.println("reverse llp = " + llp);
 
     double[][] latlons = new double[][] {{45}, {-105}};
-    double[][] linele = proj.latLonToProj(latlons);
+    double[][] linele = Projections.latLonToProj(proj, latlons);
     assert linele != null;
-    double[][] outll = proj.projToLatLon(linele);
+    double[][] outll = Projections.projToLatLon(proj, linele);
     assert outll != null;
 
     System.out.println("proj point = " + linele[0][0] + "," + linele[1][0]);

@@ -23,7 +23,7 @@ import java.util.List;
  */
 public abstract class GisFeatureRenderer implements Renderer {
   private Color color = Color.blue; // default color of polylines
-  protected ProjectionImpl displayProject; // the current display Projection
+  protected Projection displayProject; // the current display Projection
   protected ArrayList shapeList;
 
   ////// this is what the subclasses have to implement (besides the constructor)
@@ -38,7 +38,7 @@ public abstract class GisFeatureRenderer implements Renderer {
 
   // what projection is the data in? set to null if no Projection (no conversion)
   // assumes data projection doesnt change
-  protected abstract ProjectionImpl getDataProjection();
+  protected abstract Projection getDataProjection();
 
   ///////////
   public java.awt.Color getColor() {
@@ -49,7 +49,7 @@ public abstract class GisFeatureRenderer implements Renderer {
     this.color = color;
   }
 
-  public void setProjection(ProjectionImpl project) {
+  public void setProjection(Projection project) {
     displayProject = project;
     shapeList = null;
     // System.out.println("GisFeatureRenderer setProjection "+displayProject);
@@ -88,7 +88,7 @@ public abstract class GisFeatureRenderer implements Renderer {
     if (Debug.isSet("projection/LatLonShift"))
       System.out.println("projection/LatLonShift GisFeatureRenderer.getShapes called");
 
-    ProjectionImpl dataProject = getDataProjection();
+    Projection dataProject = getDataProjection();
 
     // a list of GisFeatureAdapter-s
     List featList = getFeatures();

@@ -15,6 +15,7 @@
 package ucar.unidata.geoloc.projection;
 
 import java.lang.invoke.MethodHandles;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
@@ -27,10 +28,8 @@ import ucar.unidata.geoloc.*;
  * @author Robert Schmunk
  * @author jcaron
  */
-public class RotatedPole extends ProjectionImpl {
-
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
+@Immutable
+public class RotatedPole extends AbstractProjection {
   private static final double RAD_PER_DEG = Math.PI / 180.;
   private static final double DEG_PER_RAD = 1. / RAD_PER_DEG;
 
@@ -50,9 +49,6 @@ public class RotatedPole extends ProjectionImpl {
     this(0.0, 0.0);
   }
 
-  /**
-   * Constructor.
-   */
   public RotatedPole(double northPoleLat, double northPoleLon) {
     super("RotatedPole", false);
 
@@ -65,7 +61,6 @@ public class RotatedPole extends ProjectionImpl {
   }
 
   private void buildRotationMatrices() {
-
     double betaRad;
     double gammaRad;
 
@@ -109,13 +104,11 @@ public class RotatedPole extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new RotatedPole(northPole.getY(), northPole.getX());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new RotatedPole(northPole.getY(), northPole.getX());
   }
 
+  @Override
   public String paramsToString() {
     return " northPole= " + northPole;
   }
@@ -124,7 +117,8 @@ public class RotatedPole extends ProjectionImpl {
    * Transform a "real" longitude and latitude to the rotated longitude (X) and
    * rotated latitude (Y).
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latlon) {
     double lon = latlon.getLongitude();
     double lat = latlon.getLatitude();
 
@@ -150,21 +144,15 @@ public class RotatedPole extends ProjectionImpl {
 
     double lonR = LatLonPoints.range180(Math.atan2(p2[1], p2[0]) * DEG_PER_RAD);
     double latR = Math.asin(p2[2]) * DEG_PER_RAD;
-
-    if (destPoint == null) {
-      return ProjectionPoint.create(lonR, latR);
-    } else {
-      destPoint.setLocation(lonR, latR);
-      return destPoint;
-    }
-
+    return ProjectionPoint.create(lonR, latR);
   }
 
   /**
    * Transform a rotated longitude (X) and rotated latitude (Y) to a "real"
    * longitude-latitude pair.
    */
-  public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint ppt) {
     // "x" and "y" input for rotated pole coords are actually a lon-lat pair
     double lonR = LatLonPoints.range180(ppt.getX()); // LOOK guessing -- shouldn't matter
     double latR = ppt.getY();
@@ -195,25 +183,13 @@ public class RotatedPole extends ProjectionImpl {
 
     double lon = Math.atan2(p2[1], p2[0]) * DEG_PER_RAD;
     double lat = Math.asin(p2[2]) * DEG_PER_RAD;
-
-    if (destPoint == null)
-      return LatLonPoint.create(lat, lon);
-    else {
-      destPoint.set(lat, lon);
-      return destPoint;
-    }
+    return LatLonPoint.create(lat, lon);
   }
 
-  /**
-   *
-   */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return Math.abs(pt1.getX() - pt2.getX()) > 270.0;
   }
 
-  /**
-   *
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -228,9 +204,6 @@ public class RotatedPole extends ProjectionImpl {
     return northPole.equals(that.northPole);
   }
 
-  /**
-   *
-   */
   @Override
   public int hashCode() {
     return northPole.hashCode();

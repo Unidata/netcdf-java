@@ -86,7 +86,7 @@ public class ADASConvention extends CoordSysBuilder {
       false_northing *= scalef;
     }
 
-    ProjectionImpl proj;
+    Projection proj;
     if ("lambert_conformal_conic".equalsIgnoreCase(projName)) {
       proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing);
       projCT = new ProjectionCT("Projection", "FGDC", proj);

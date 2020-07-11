@@ -25,7 +25,6 @@ import ucar.ui.widget.PopupMenu;
 import ucar.unidata.geoloc.Projection;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
-import ucar.unidata.geoloc.ProjectionImpl;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;

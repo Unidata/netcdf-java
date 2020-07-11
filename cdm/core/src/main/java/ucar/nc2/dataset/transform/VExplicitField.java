@@ -8,6 +8,7 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.VTfromExistingData;
 import ucar.unidata.util.Parameter;
 
@@ -33,7 +34,7 @@ public class VExplicitField extends AbstractTransformBuilder implements VertTran
     return ct;
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
       VerticalCT vCT) {
     return new VTfromExistingData(ds, timeDim, vCT.getParameters());
   }

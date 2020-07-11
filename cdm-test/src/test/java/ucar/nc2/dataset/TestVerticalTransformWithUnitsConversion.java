@@ -16,9 +16,9 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class TestVerticalTransformWithUnitsConversion {
     GridDataset gdsGood = new GridDataset(dsGood);
 
     GeoGrid gridGood = gdsGood.findGridByName(var);
-    ProjectionImpl proj = gridGood.getProjection();
+    Projection proj = gridGood.getProjection();
     ProjectionPoint pp = proj.latLonToProj(point);
 
     double[] dataGood = getVertTransformationForPoint(pp, 0, gridGood);

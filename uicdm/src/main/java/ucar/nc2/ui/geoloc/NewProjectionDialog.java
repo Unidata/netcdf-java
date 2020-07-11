@@ -74,7 +74,7 @@ public class NewProjectionDialog extends JDialog {
 
       ProjectionRect mapArea = getMapAreaFromDialog();
       if (mapArea != null) {
-        pc.projInstance.setDefaultMapArea(mapArea);
+        //pc.projInstance.setDefaultMapArea(mapArea);
         System.out.printf("mapArea = %s%n", mapArea.toString2(4));
       }
 

@@ -26,7 +26,7 @@ public class GdsHorizCoordSys {
 
   private final String name;
   public final int template, gdsNumberPoints, scanMode;
-  public final ucar.unidata.geoloc.ProjectionImpl proj;
+  public final ucar.unidata.geoloc.Projection proj;
   public final double startx, dx; // km
   public final double starty, dy; // km
   public final int nx, ny; // regridded
@@ -37,7 +37,7 @@ public class GdsHorizCoordSys {
   private Array gaussLats;
   private Array gaussw;
 
-  public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, ProjectionImpl proj,
+  public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, Projection proj,
       double startx, double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
 
     this.name = name;

@@ -24,7 +24,7 @@ import java.beans.PropertyChangeListener;
 public class NPController extends JPanel {
   protected NavigatedPanel np;
   protected ArrayList renderers = new ArrayList(); // thredds.viewer.ui.Renderer
-  protected ProjectionImpl project;
+  protected Projection project;
   protected AffineTransform atI = new AffineTransform(); // identity transform
   protected boolean eventOk = true;
 
@@ -44,7 +44,7 @@ public class NPController extends JPanel {
     // get Projection Events from the navigated panel
     np.addNewProjectionListener(new NewProjectionListener() {
       public void actionPerformed(NewProjectionEvent e) {
-        ProjectionImpl p = e.getProjection();
+        Projection p = e.getProjection();
         for (Object renderer : renderers) {
           Renderer r = (Renderer) renderer;
           r.setProjection(p);
@@ -103,7 +103,7 @@ public class NPController extends JPanel {
     r.setProjection(project);
   }
 
-  public void setProjection(ProjectionImpl p) {
+  public void setProjection(Projection p) {
     project = p;
     for (Object renderer : renderers) {
       Renderer r = (Renderer) renderer;

@@ -17,7 +17,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
 import ucar.nc2.ft2.coverage.CoverageTransform;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.util.Parameter;
 
 /**
@@ -274,10 +274,8 @@ public class CoordTransBuilder {
    * 
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
-   *         TODO return Projection in ver6
    */
-  @Deprecated
-  public static ProjectionImpl makeProjection(CoverageTransform gct, Formatter errInfo) {
+  public static Projection makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
     String transform_name = gct.findAttributeString(CF.GRID_MAPPING_NAME, null);
 

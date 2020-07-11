@@ -8,6 +8,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.*;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.List;

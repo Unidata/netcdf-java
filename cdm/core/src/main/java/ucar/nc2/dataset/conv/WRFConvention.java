@@ -217,7 +217,7 @@ public class WRFConvention extends CoordSysBuilder {
       double standardLon = findAttributeDouble(ds, "STAND_LON"); // true longitude
       double standardLat = findAttributeDouble(ds, "MOAD_CEN_LAT");
 
-      ProjectionImpl proj = null;
+      Projection proj = null;
       switch (projType) {
         case 0: // for diagnostic runs with no georeferencing
           proj = new FlatEarth();

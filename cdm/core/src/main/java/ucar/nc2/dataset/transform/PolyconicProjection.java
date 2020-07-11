@@ -29,7 +29,7 @@ public class PolyconicProjection extends AbstractTransformBuilder implements Hor
     double semi_minor_axis = readAttributeDouble(ctv, "semi_minor_axis", Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, "inverse_flattening", 0.0);
 
-    ucar.unidata.geoloc.ProjectionImpl proj;
+    ucar.unidata.geoloc.Projection proj;
 
     // check for ellipsoidal earth
     if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {

@@ -6,49 +6,36 @@
 
 package ucar.unidata.geoloc.projection;
 
-
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
-
 /**
  * FlatEarth Projection
- * This projection surface is tangent at some point (lat0, lon0) and
- * has a y axis rotated from true North by some angle.
+ * This projection surface is tangent at some point (lat0, lon0) and has a y axis rotated from true North by some angle.
  * <p/>
- * We call it "flat" because it should only be used where the spherical
- * geometry of the earth is not significant. In actuallity, we use the simple
- * "arclen" routine which computes dy along a meridian, and dx along a
+ * We call it "flat" because it should only be used where the spherical geometry of the earth is not significant.
+ * In actuallity, we use the simple "arclen" routine which computes dy along a meridian, and dx along a
  * latitude circle. We rotate the coordinate system to/from a true north system.
  * <p/>
- * See John Snyder, Map Projections used by the USGS, Bulletin 1532,
- * 2nd edition (1983), p 145
- *
- * @author Unidata Development Team
- * @see Projection
- * @see ProjectionImpl
+ * See John Snyder, Map Projections used by the USGS, Bulletin 1532, 2nd edition (1983), p 145
  */
-
-public class FlatEarth extends ProjectionImpl {
+@Immutable
+public class FlatEarth extends AbstractProjection {
   public static final String ROTATIONANGLE = "rotationAngle";
 
   /** constants from Snyder's equations */
   private final double rotAngle, radius;
   private final double lat0, lon0; // center lat/lon in radians
 
-  private double cosRot, sinRot;
+  private final double cosRot, sinRot;
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new FlatEarth(getOriginLat(), getOriginLon(), getRotationAngle());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new FlatEarth(getOriginLat(), getOriginLon(), getRotationAngle());
   }
 
-  /**
-   * Constructor with default parameters
-   */
+  /** Constructor with default parameters */
   public FlatEarth() {
     this(0.0, 0.0, 0.0, EARTH_RADIUS);
   }
@@ -79,21 +66,14 @@ public class FlatEarth extends ProjectionImpl {
     this.rotAngle = Math.toRadians(rotAngle);
     this.radius = radius;
 
-    precalculate();
+    this.sinRot = Math.sin(this.rotAngle);
+    this.cosRot = Math.cos(this.rotAngle);
 
     addParameter(CF.GRID_MAPPING_NAME, "flat_earth");
     addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, lon0);
     addParameter(ROTATIONANGLE, rotAngle);
     addParameter(CF.EARTH_RADIUS, radius * 1000);
-  }
-
-  /**
-   * Precalculate some stuff
-   */
-  private void precalculate() {
-    sinRot = Math.sin(rotAngle);
-    cosRot = Math.cos(rotAngle);
   }
 
   @Override
@@ -113,10 +93,7 @@ public class FlatEarth extends ProjectionImpl {
       return false;
     if (Double.compare(flatEarth.rotAngle, rotAngle) != 0)
       return false;
-    if ((defaultMapArea == null) != (flatEarth.defaultMapArea == null))
-      return false; // common case is that these are null
-    return defaultMapArea == null || flatEarth.defaultMapArea.equals(defaultMapArea);
-
+    return true;
   }
 
   @Override
@@ -163,20 +140,12 @@ public class FlatEarth extends ProjectionImpl {
     return rotAngle;
   }
 
-  /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
+  @Override
   public String getProjectionTypeLabel() {
     return "FlatEarth";
   }
 
-  /**
-   * Create a String of the parameters.
-   *
-   * @return a String of the parameters
-   */
+  @Override
   public String paramsToString() {
     return toString();
   }
@@ -186,14 +155,8 @@ public class FlatEarth extends ProjectionImpl {
     return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", lat0=" + lat0 + ", lon0=" + lon0 + '}';
   }
 
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -203,23 +166,18 @@ public class FlatEarth extends ProjectionImpl {
 
     dy = radius * (fromLat - lat0);
     dx = radius * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
-
-
     toX = cosRot * dx - sinRot * dy;
     toY = sinRot * dx + cosRot * dy;
 
-
-    result.setLocation(toX, toY);
-
-    return result;
+    return ProjectionPoint.create(toX, toY);
   }
 
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double toLat, toLon;
     double x = world.getX();
     double y = world.getY();
     double cosl;
-    int TOLERENCE = 1;
     double xp, yp;
 
     xp = cosRot * x + sinRot * y;
@@ -234,197 +192,17 @@ public class FlatEarth extends ProjectionImpl {
     } else {
       toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
     }
-
     toLon = LatLonPoints.lonNormal(toLon);
 
-    result.setLatitude(toLat);
-    result.setLongitude(toLon);
-    return result;
-  }
-
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n],
-   *        where from[0][i], from[1][i] is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates,
-   *        where to[0][i], to[1][i] is the (x,y) coordinate
-   *        of the ith point
-   * @param latIndex index of latitude in "from"
-   * @param lonIndex index of longitude in "from"
-   * @return the "to" array.
-   */
-
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    float[] fromLatA = from[latIndex];
-    float[] fromLonA = from[lonIndex];
-    float[] resultXA = to[INDEX_X];
-    float[] resultYA = to[INDEX_Y];
-    double toX, toY;
-
-    for (int i = 0; i < cnt; i++) {
-      double fromLat = fromLatA[i];
-      double fromLon = fromLonA[i];
-
-      fromLat = Math.toRadians(fromLat);
-      double dy = radius * (fromLat - lat0);
-      double dx = radius * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
-
-
-      toX = cosRot * dx - sinRot * dy;
-      toY = sinRot * dx + cosRot * dy;
-
-      resultXA[i] = (float) toX;
-      resultYA[i] = (float) toY;
-    }
-    return to;
+    return LatLonPoint.create(toLat, toLon);
   }
 
   /**
    * This returns true when the line between pt1 and pt2 crosses the seam.
    * When the cone is flattened, the "seam" is lon0 +- 180.
-   *
-   * @param pt1 point 1
-   * @param pt2 point 2
-   * @return true when the line between pt1 and pt2 crosses the seam.
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-
     return (pt1.getX() * pt2.getX() < 0);
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *        of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *        of the ith point
-   * @return the "to" array
-   */
-
-  public float[][] projToLatLon(float[][] from, float[][] to) {
-    int cnt = from[0].length;
-    float[] fromXA = from[INDEX_X];
-    float[] fromYA = from[INDEX_Y];
-    float[] toLatA = to[INDEX_LAT];
-    float[] toLonA = to[INDEX_LON];
-
-    double toLat, toLon;
-    for (int i = 0; i < cnt; i++) {
-      double fromX = fromXA[i];
-      double fromY = fromYA[i];
-
-      double xp = cosRot * fromX + sinRot * fromY;
-      double yp = -sinRot * fromX + cosRot * fromY;
-
-
-      toLat = Math.toDegrees(lat0) + Math.toDegrees(yp / radius);
-      double cosl = Math.cos(Math.toRadians(toLat));
-
-      if (Math.abs(cosl) < TOLERANCE) {
-        toLon = Math.toDegrees(lon0);
-      } else {
-        toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
-      }
-
-      toLon = LatLonPoints.lonNormal(toLon);
-
-      toLatA[i] = (float) toLat;
-      toLonA[i] = (float) toLon;
-    }
-    return to;
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n],
-   *        where from[0][i], from[1][i] is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates,
-   *        where to[0][i], to[1][i] is the (x,y) coordinate
-   *        of the ith point
-   * @param latIndex index of latitude in "from"
-   * @param lonIndex index of longitude in "from"
-   * @return the "to" array.
-   */
-
-  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    double[] fromLatA = from[latIndex];
-    double[] fromLonA = from[lonIndex];
-    double[] resultXA = to[INDEX_X];
-    double[] resultYA = to[INDEX_Y];
-    double toX, toY;
-
-    for (int i = 0; i < cnt; i++) {
-      double fromLat = fromLatA[i];
-      double fromLon = fromLonA[i];
-
-      fromLat = Math.toRadians(fromLat);
-      double dy = radius * (fromLat - lat0);
-      double dx = radius * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
-
-      toX = cosRot * dx - sinRot * dy;
-      toY = sinRot * dx + cosRot * dy;
-
-
-      resultXA[i] = toX;
-      resultYA[i] = toY;
-    }
-    return to;
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *        of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *        of the ith point
-   * @return the "to" array
-   */
-
-  public double[][] projToLatLon(double[][] from, double[][] to) {
-    int cnt = from[0].length;
-    double[] fromXA = from[INDEX_X];
-    double[] fromYA = from[INDEX_Y];
-    double[] toLatA = to[INDEX_LAT];
-    double[] toLonA = to[INDEX_LON];
-
-    double toLat, toLon;
-    for (int i = 0; i < cnt; i++) {
-      double fromX = fromXA[i];
-      double fromY = fromYA[i];
-
-      double xp = cosRot * fromX + sinRot * fromY;
-      double yp = -sinRot * fromX + cosRot * fromY;
-
-      // toLat = lat0 + Math.toDegrees(yp);
-      toLat = Math.toDegrees(lat0) + Math.toDegrees(yp / radius);
-      double cosl = Math.cos(Math.toRadians(toLat));
-
-      if (Math.abs(cosl) < TOLERANCE) {
-        toLon = Math.toDegrees(lon0);
-      } else {
-        toLon = Math.toDegrees(lon0) + Math.toDegrees(xp / cosl / radius);
-      }
-
-      toLon = LatLonPoints.lonNormal(toLon);
-
-      toLatA[i] = toLat;
-      toLonA[i] = toLon;
-
-    }
-    return to;
   }
 
 }

@@ -13,7 +13,7 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.WRFEta;
 import ucar.unidata.util.Parameter;
 

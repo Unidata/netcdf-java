@@ -9,7 +9,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.*;
 import ucar.nc2.util.Optional;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -346,7 +346,7 @@ public class CoverageCoordSys {
     return yaxis instanceof CoverageCoordAxis1D && yaxis.isRegular();
   }
 
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     for (String ctName : getTransformNames()) {
       CoverageTransform ct = dataset.findCoordTransform(ctName);
       if (ct != null && ct.isHoriz())

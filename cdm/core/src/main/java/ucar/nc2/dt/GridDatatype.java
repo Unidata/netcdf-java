@@ -8,7 +8,7 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.VariableDS;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.util.List;
@@ -215,7 +215,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * 
    * @return the Projection, or null
    */
-  ProjectionImpl getProjection();
+  Projection getProjection();
 
   /**
    * true if there may be missing data

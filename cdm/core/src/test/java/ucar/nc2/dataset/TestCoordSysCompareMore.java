@@ -78,7 +78,7 @@ public class TestCoordSysCompareMore {
         return false;
       }
     }
-    return !file.getName().endsWith(".xml");
+    return !file.getName().endsWith(".xml") && !file.getName().endsWith(".txt");
   }
 
   private String fileLocation;

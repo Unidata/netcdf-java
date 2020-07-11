@@ -20,22 +20,42 @@
 package ucar.unidata.geoloc.projection.proj4;
 
 import java.util.Formatter;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoints;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.projection.AbstractProjection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 
 /**
  * Transverse Mercator Projection algorithm is taken from the USGS PROJ package.
  *
  * @author Heiko.Klein@met.no
  */
-public class TransverseMercatorProjection extends ProjectionImpl {
+@Immutable
+public class TransverseMercatorProjection extends AbstractProjection {
+
+  public static int getRowFromNearestParallel(double latitude) {
+    int degrees = (int) MapMath.radToDeg(MapMath.normalizeLatitude(latitude));
+    if (degrees < -80 || degrees > 84)
+      return 0;
+    if (degrees > 80)
+      return 24;
+    return (degrees + 80) / 8 + 3;
+  }
+
+  public static int getZoneFromNearestMeridian(double longitude) {
+    int zone = (int) Math.floor((MapMath.normalizeLongitude(longitude) + Math.PI) * 30.0 / Math.PI) + 1;
+    if (zone < 1)
+      zone = 1;
+    else if (zone > 60)
+      zone = 60;
+    return zone;
+  }
 
   private static final double FC1 = 1.0;
   private static final double FC2 = 0.5;
@@ -46,35 +66,32 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   private static final double FC7 = 0.02380952380952380952;
   private static final double FC8 = 0.01785714285714285714;
 
-  private double esp;
-  private double ml0;
-  private double[] en;
+  private final double esp;
+  private final double ml0;
+  private final double[] en;
 
-  private double projectionLatitude, projectionLongitude;
-  private double scaleFactor;
-  private double falseEasting, falseNorthing;
+  private final double projectionLatitude, projectionLongitude;
+  private final double scaleFactor;
+  private final double falseEasting, falseNorthing;
 
-  Earth ellipsoid;
-  private double e; // earth.getEccentricitySquared
-  private double es; // earth.getEccentricitySquared
-  private double one_es; // 1-es
-  private double totalScale; // scale to convert cartesian coords in km
-  private boolean spherical;
+  private final Earth ellipsoid;
+  private final double es; // earth.getEccentricitySquared
+  private final double totalScale; // scale to convert cartesian coords in km
+  private final boolean spherical;
 
   public TransverseMercatorProjection() {
-    super("TransverseMercatorProjection", false);
-    ellipsoid = new Earth();
-    projectionLatitude = Math.toRadians(0);
-    projectionLongitude = Math.toRadians(0);
-    initialize();
+    this(EarthEllipsoid.WGS84, 0, 0, 0.9996, 0, 0);
+  }
+
+  public TransverseMercatorProjection(int zone) {
+    this(EarthEllipsoid.WGS84, Math.toDegrees(((zone -1) + .5) * Math.PI / 30. - Math.PI), 0, 0.9996, 500000, 0);
   }
 
   /**
    * Set up a projection suitable for State Plane Coordinates.
    * Best used with earth ellipsoid and false-easting/northing in km
    */
-  public TransverseMercatorProjection(Earth ellipsoid, double lon_0_deg, double lat_0_deg, double k, double falseEast,
-      double falseNorth) {
+  public TransverseMercatorProjection(Earth ellipsoid, double lon_0_deg, double lat_0_deg, double k, double falseEast, double falseNorth) {
     super("TransverseMercatorProjection", false);
     this.ellipsoid = ellipsoid;
     projectionLongitude = Math.toRadians(lon_0_deg);
@@ -82,7 +99,20 @@ public class TransverseMercatorProjection extends ProjectionImpl {
     scaleFactor = k;
     falseEasting = falseEast;
     falseNorthing = falseNorth;
-    initialize();
+
+    this.es = ellipsoid.getEccentricitySquared();
+    this.spherical = ellipsoid.isSpherical();
+    this.totalScale = ellipsoid.getMajor() * .001; // scale factor for cartesion coords in km.
+
+    if (spherical) {
+      en = null;
+      esp = scaleFactor;
+      ml0 = .5 * esp;
+    } else {
+      en = MapMath.enfn(es);
+      ml0 = MapMath.mlfn(projectionLatitude, Math.sin(projectionLatitude), Math.cos(projectionLatitude), en);
+      esp = es / (1. - es);
+    }
 
     // parameters
     addParameter(CF.GRID_MAPPING_NAME, CF.TRANSVERSE_MERCATOR);
@@ -96,59 +126,9 @@ public class TransverseMercatorProjection extends ProjectionImpl {
     }
     addParameter(CF.SEMI_MAJOR_AXIS, ellipsoid.getMajor());
     addParameter(CF.INVERSE_FLATTENING, 1.0 / ellipsoid.getFlattening());
-
-    // System.err.println(paramsToString());
   }
 
-  public boolean isRectilinear() {
-    return false;
-  }
-
-  public void initialize() {
-    this.e = ellipsoid.getEccentricity();
-    this.es = ellipsoid.getEccentricitySquared();
-    this.spherical = (e == 0.0);
-    this.one_es = 1.0 - es;
-    this.totalScale = ellipsoid.getMajor() * .001; // scale factor for cartesion coords in km.
-
-    if (spherical) {
-      esp = scaleFactor;
-      ml0 = .5 * esp;
-    } else {
-      en = MapMath.enfn(es);
-      ml0 = MapMath.mlfn(projectionLatitude, Math.sin(projectionLatitude), Math.cos(projectionLatitude), en);
-      esp = es / (1. - es);
-    }
-  }
-
-  public int getRowFromNearestParallel(double latitude) {
-    int degrees = (int) MapMath.radToDeg(MapMath.normalizeLatitude(latitude));
-    if (degrees < -80 || degrees > 84)
-      return 0;
-    if (degrees > 80)
-      return 24;
-    return (degrees + 80) / 8 + 3;
-  }
-
-  public int getZoneFromNearestMeridian(double longitude) {
-    int zone = (int) Math.floor((MapMath.normalizeLongitude(longitude) + Math.PI) * 30.0 / Math.PI) + 1;
-    if (zone < 1)
-      zone = 1;
-    else if (zone > 60)
-      zone = 60;
-    return zone;
-  }
-
-  public void setUTMZone(int zone) {
-    zone--;
-    projectionLongitude = (zone + .5) * Math.PI / 30. - Math.PI;
-    projectionLatitude = 0.0;
-    scaleFactor = 0.9996;
-    falseEasting = 500000;
-    initialize();
-  }
-
-  public ProjectionPoint project(double lplam, double lpphi, ProjectionPointImpl xy) {
+  private ProjectionPoint project(double lplam, double lpphi) {
     if (spherical) {
       double cosphi = Math.cos(lpphi);
       double b = cosphi * Math.sin(lplam);
@@ -159,7 +139,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
       if (lpphi < 0.0)
         ty = -ty;
       double y = esp * (ty - projectionLatitude);
-      xy.setLocation(x, y);
+      return ProjectionPoint.create(x, y);
 
     } else {
       double al, als, n, t;
@@ -176,12 +156,11 @@ public class TransverseMercatorProjection extends ProjectionImpl {
       double y = scaleFactor * (MapMath.mlfn(lpphi, sinphi, cosphi, en) - ml0
           + sinphi * al * lplam * FC2 * (1. + FC4 * als * (5. - t + n * (9. + 4. * n) + FC6 * als
               * (61. + t * (t - 58.) + n * (270. - 330 * t) + FC8 * als * (1385. + t * (t * (543. - t) - 3111.))))));
-      xy.setLocation(x, y);
+      return ProjectionPoint.create(x, y);
     }
-    return xy;
   }
 
-  public ProjectionPoint projectInverse(double x, double y, ProjectionPointImpl out) {
+  private ProjectionPoint projectInverse(double x, double y) {
     if (spherical) {
       double h = Math.exp(x / scaleFactor);
       double g = .5 * (h - 1. / h);
@@ -190,7 +169,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
       if (y < 0)
         outy = -outy;
       double outx = Math.atan2(g, h);
-      out.setLocation(outx, outy);
+      return ProjectionPoint.create(outx, outy);
 
     } else {
       double n, con, cosphi, d, ds, sinphi, t;
@@ -199,7 +178,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
       double outy = MapMath.inv_mlfn(ml0 + y / scaleFactor, es, en);
       if (Math.abs(y) >= MapMath.HALFPI) {
         outy = y < 0. ? -MapMath.HALFPI : MapMath.HALFPI;
-        out.setLocation(outx, outy);
+        return ProjectionPoint.create(outx, outy);
 
       } else {
         sinphi = Math.sin(outy);
@@ -217,12 +196,14 @@ public class TransverseMercatorProjection extends ProjectionImpl {
         outx = d * (FC1 - ds * FC3 * (1. + 2. * t + n - ds * FC5
             * (5. + t * (28. + 24. * t + 8. * n) + 6. * n - ds * FC7 * (61. + t * (662. + t * (1320. + 720. * t))))))
             / cosphi;
-        out.setLocation(outx, outy);
+        return ProjectionPoint.create(outx, outy);
       }
     }
-    return out;
   }
 
+  public boolean isRectilinear() {
+    return false;
+  }
   public boolean hasInverse() {
     return true;
   }
@@ -233,12 +214,9 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new TransverseMercatorProjection(ellipsoid, Math.toDegrees(projectionLongitude),
+  public Projection constructCopy() {
+    return new TransverseMercatorProjection(ellipsoid, Math.toDegrees(projectionLongitude),
         Math.toDegrees(projectionLatitude), scaleFactor, falseEasting, falseNorthing);
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
   }
 
   @Override
@@ -250,37 +228,33 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl destPoint) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double fromLat = Math.toRadians(latLon.getLatitude());
     double theta = Math.toRadians(latLon.getLongitude());
     if (projectionLongitude != 0) {
       theta = MapMath.normalizeLongitude(theta - projectionLongitude);
     }
 
-    ProjectionPoint res = project(theta, fromLat, new ProjectionPointImpl());
-
-    destPoint.setLocation(totalScale * res.getX() + falseEasting, totalScale * res.getY() + falseNorthing);
-    return destPoint;
+    ProjectionPoint res = project(theta, fromLat);
+    return ProjectionPoint.create(totalScale * res.getX() + falseEasting, totalScale * res.getY() + falseNorthing);
   }
 
-
   @Override
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double fromX = (world.getX() - falseEasting) / totalScale; // assumes cartesian coords in km
     double fromY = (world.getY() - falseNorthing) / totalScale;
 
-    ProjectionPointImpl dst = new ProjectionPointImpl();
-    projectInverse(fromX, fromY, dst);
-    if (dst.getX() < -Math.PI)
-      dst.setX(-Math.PI);
-    else if (dst.getX() > Math.PI)
-      dst.setX(Math.PI);
+    ProjectionPoint dst = projectInverse(fromX, fromY);
+    double toLon = dst.getX();
+    double toLat = dst.getY();
+    if (toLon < -Math.PI)
+      toLon = -Math.PI;
+    else if (toLon > Math.PI)
+      toLon = Math.PI;
     if (projectionLongitude != 0)
-      dst.setX(MapMath.normalizeLongitude(dst.getX()) + projectionLongitude);
+      toLon = MapMath.normalizeLongitude(toLon) + projectionLongitude;
 
-    result.setLongitude(Math.toDegrees(dst.getX()));
-    result.setLatitude(Math.toDegrees(dst.getY()));
-    return result;
+    return LatLonPoint.create(Math.toDegrees(toLat), Math.toDegrees(toLon));
   }
 
   @Override

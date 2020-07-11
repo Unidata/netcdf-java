@@ -12,7 +12,7 @@ import ucar.ma2.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.lang.invoke.MethodHandles;

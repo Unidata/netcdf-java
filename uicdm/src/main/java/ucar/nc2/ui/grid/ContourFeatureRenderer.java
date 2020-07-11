@@ -27,14 +27,14 @@ import java.awt.geom.Rectangle2D;
  */
 public class ContourFeatureRenderer extends GisFeatureRenderer {
 
-  private ProjectionImpl dataProjection;
+  private Projection dataProjection;
   private List<ContourFeature> contourList; // list of ContourFeatures
   private boolean ShowLabels;
 
   /**
    * cstr
    */
-  public ContourFeatureRenderer(ContourGrid conGrid, ProjectionImpl dataProjection) {
+  public ContourFeatureRenderer(ContourGrid conGrid, Projection dataProjection) {
     this.dataProjection = dataProjection;
     ShowLabels = true;
     contourList = conGrid.getContourLines();
@@ -58,7 +58,7 @@ public class ContourFeatureRenderer extends GisFeatureRenderer {
     return contourList;
   }
 
-  protected ProjectionImpl getDataProjection() {
+  protected Projection getDataProjection() {
     return dataProjection;
   }
 

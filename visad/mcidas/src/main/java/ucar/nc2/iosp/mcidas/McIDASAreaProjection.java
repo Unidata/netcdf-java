@@ -12,6 +12,8 @@ import ucar.mcidas.AreaFile;
 import ucar.mcidas.McIDASException;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.projection.AbstractProjection;
 import ucar.unidata.util.Parameter;
 
 /**
@@ -20,7 +22,7 @@ import ucar.unidata.util.Parameter;
  *
  * @author dmurray
  */
-public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
+public class McIDASAreaProjection extends AbstractProjection {
 
   /**
    * Attribute for the Area Directory
@@ -77,7 +79,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    *
    * @return construct a copy of this
    */
-  public ProjectionImpl constructCopy() {
+  public Projection constructCopy() {
     return new McIDASAreaProjection(dirBlock, navBlock, auxBlock);
   }
 
@@ -194,14 +196,8 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    */
 
 
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -213,19 +209,11 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     toX = xy[0][0];
     toY = xy[1][0];
 
-    result.setLocation(toX, toY);
-    return result;
+    return ProjectionPoint.create(toX, toY);
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double toLat, toLon;
     double fromX = world.getX();
     double fromY = world.getY();
@@ -235,9 +223,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     toLat = latlon[0][0];
     toLon = latlon[1][0];
 
-    result.setLatitude(toLat);
-    result.setLongitude(toLon);
-    return result;
+    return LatLonPoint.create(toLat, toLon);
   }
 
   /**

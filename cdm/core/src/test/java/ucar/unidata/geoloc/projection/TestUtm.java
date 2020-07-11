@@ -11,14 +11,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import java.lang.invoke.MethodHandles;
 
-/*
- * import geotransform.transforms.Gdc_To_Utm_Converter;
- * import geotransform.transforms.Utm_To_Gdc_Converter;
- * import geotransform.ellipsoids.WE_Ellipsoid;
- * import geotransform.coords.Utm_Coord_3d;
- * import geotransform.coords.Gdc_Coord_3d;
- */
-
 /** Test basic projection methods */
 
 public class TestUtm {
@@ -39,7 +31,7 @@ public class TestUtm {
   java.util.Random r = new java.util.Random(System.currentTimeMillis());
 
   void doOne(double x, double y, int zone, boolean isNorth) {
-    ProjectionImpl proj = new UtmProjection(zone, isNorth);
+    Projection proj = new UtmProjection(zone, isNorth);
 
     System.out.println("*** x=" + x + " y=" + y);
     LatLonPoint latlon = proj.projToLatLon(x, y);
@@ -47,33 +39,6 @@ public class TestUtm {
     ProjectionPoint endP = proj.latLonToProj(latlon);
     System.out.println("   x=" + endP.getX() + " y=" + endP.getY());
   }
-
-  /*
-   * void doOneG (double x, double y, int zone, boolean isNorth) {
-   * Gdc_Coord_3d latlon[] = new Gdc_Coord_3d[1];
-   * Utm_Coord_3d xy[] = new Utm_Coord_3d[1];
-   * Utm_Coord_3d xy2[] = new Utm_Coord_3d[1];
-   * 
-   * x *= 1000.0;
-   * y *= 1000.0;
-   * 
-   * for (int i = 0; i < 1; i++) {
-   * latlon[i] = new Gdc_Coord_3d(0.0, 0.0, 0.0);
-   * xy[i] = new Utm_Coord_3d(x, y, 0., (byte) zone, isNorth);
-   * xy2[i] = new Utm_Coord_3d(0., 0., 0., (byte) 0, true);
-   * }
-   * 
-   * Gdc_To_Utm_Converter.Init(new WE_Ellipsoid());
-   * Utm_To_Gdc_Converter.Init(new WE_Ellipsoid());
-   * 
-   * System.out.println("***G** x="+x+" y="+y);
-   * Utm_To_Gdc_Converter.Convert(xy, latlon);
-   * System.out.println("   lat="+latlon[0].latitude+" lon="+latlon[0].longitude);
-   * Gdc_To_Utm_Converter.Convert(latlon, xy2, (byte) zone);
-   * System.out.println("   x="+xy2[0].x+" y="+xy2[0].y);
-   * }
-   */
-
 
   void run(int zone, boolean isNorth) {
     System.out.println("--------- zone= " + zone + " " + isNorth);
@@ -86,7 +51,7 @@ public class TestUtm {
 
     int n = REPEAT * NPTS;
 
-    ProjectionImpl proj = new UtmProjection(zone, isNorth);
+    Projection proj = new UtmProjection(zone, isNorth);
     double sumx = 0.0, sumy = 0.0, maxx = 0.0;
     long t1 = System.currentTimeMillis();
     for (int k = 0; k < REPEAT; k++) {
@@ -120,8 +85,8 @@ public class TestUtm {
     double[][] result2 = new double[2][NPTS];
     long start = System.currentTimeMillis();
     for (int k = 0; k < REPEAT; k++) {
-      proj.projToLatLon(from, to);
-      proj.latLonToProj(to, result2);
+      Projections.projToLatLon(proj, from, to);
+      Projections.latLonToProj(proj, to, result2);
 
       if (checkit) {
         for (int i = 0; i < NPTS; i++) {

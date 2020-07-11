@@ -7,10 +7,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -74,8 +72,8 @@ public class TestRotatedLatLon {
 
     private double[] test(float lon, float lat) {
       double[] p = {lon, lat};
-      double[] p2 = rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      double[] p3 = rll.rotate(p2, -rll.getPolerotate(), -rll.getLonpole(), -rll.getSinDlat());
+      double[] p2 = rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      double[] p3 = rll.rotate(p2, -rll.getPoleRotate(), -rll.getLonPole(), -rll.getSinDlat());
       assert Math.abs(p[0] - p3[0]) < err;
       assert Math.abs(p[1] - p3[1]) < err;
       pr(p, p2, p3);
@@ -84,8 +82,8 @@ public class TestRotatedLatLon {
 
     double[] proj(double lon, double lat, boolean fwd) {
       double[] pos = {lon, lat};
-      double[] pos2 = fwd ? rll.rotate(pos, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat())
-          : rll.rotate(pos, -rll.getPolerotate(), -rll.getLonpole(), -rll.getSinDlat());
+      double[] pos2 = fwd ? rll.rotate(pos, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat())
+          : rll.rotate(pos, -rll.getPoleRotate(), -rll.getLonPole(), -rll.getSinDlat());
       ps.println((fwd ? " fwd" : " inv") + " [" + lon + ", " + lat + "] -> " + Arrays.toString(pos2));
       return pos2;
     }
@@ -114,16 +112,16 @@ public class TestRotatedLatLon {
     double[] p = {12., 60.};
     int i = 0;
     while (dt < 1000) {
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
-      rll.rotate(p, rll.getLonpole(), rll.getPolerotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
+      rll.rotate(p, rll.getLonPole(), rll.getPoleRotate(), rll.getSinDlat());
       i++;
       dt = System.currentTimeMillis() - t0;
     }

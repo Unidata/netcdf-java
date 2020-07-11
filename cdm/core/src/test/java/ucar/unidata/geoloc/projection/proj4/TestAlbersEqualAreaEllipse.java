@@ -3,13 +3,10 @@ package ucar.unidata.geoloc.projection.proj4;
 import org.junit.Test;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 
 public class TestAlbersEqualAreaEllipse {
-
-
-
   /*
    * proj +inv +proj=aea +lat_0=23.0 +lat_1=29.5 +lat_2=45.5 +a=6378137.0 +rf=298.257222101 +b=6356752.31414
    * +lon_0=-96.0
@@ -22,7 +19,7 @@ public class TestAlbersEqualAreaEllipse {
    *
    */
 
-  private static void toProj(ProjectionImpl p, double lat, double lon) {
+  private static void toProj(Projection p, double lat, double lon) {
     System.out.printf("lon,lat = %f %f%n", lon, lat);
     ProjectionPoint pt = p.latLonToProj(lat, lon);
     System.out.printf("x,y     = %f %f%n", pt.getX(), pt.getY());
@@ -30,7 +27,7 @@ public class TestAlbersEqualAreaEllipse {
     System.out.printf("lon,lat = %f %f%n%n", ll.getLongitude(), ll.getLatitude());
   }
 
-  private static void fromProj(ProjectionImpl p, double x, double y) {
+  private static void fromProj(Projection p, double x, double y) {
     System.out.printf("x,y     = %f %f%n", x, y);
     LatLonPoint ll = p.projToLatLon(x, y);
     System.out.printf("lon,lat = %f %f%n", ll.getLongitude(), ll.getLatitude());

@@ -69,20 +69,20 @@ import ucar.unidata.geoloc.*;
  * 
  */
 
-public class RotatedLatLon extends ProjectionImpl {
+public class RotatedLatLon extends AbstractProjection {
   public static final String GRID_MAPPING_NAME = "rotated_latlon_grib";
   public static final String GRID_SOUTH_POLE_LONGITUDE = "grid_south_pole_longitude";
   public static final String GRID_SOUTH_POLE_LATITUDE = "grid_south_pole_latitude";
   public static final String GRID_SOUTH_POLE_ANGLE = "grid_south_pole_angle";
 
-  private static boolean show;
+  private static boolean show = false;
 
   private final double lonpole; // Longitude of south pole
   private final double latpole; // Latitude of south pole
   private final double polerotate; // Angle of south pole rotation
 
-  private double cosDlat;
-  private double sinDlat;
+  private final double cosDlat;
+  private final double sinDlat;
 
   /**
    * Default Constructor, needed for beans.
@@ -113,8 +113,8 @@ public class RotatedLatLon extends ProjectionImpl {
     this.lonpole = southPoleLon;
     this.polerotate = southPoleAngle;
     double dlat_rad = Math.toRadians(latpole - (-90));
-    sinDlat = Math.sin(dlat_rad);
-    cosDlat = Math.cos(dlat_rad);
+    this.sinDlat = Math.sin(dlat_rad);
+    this.cosDlat = Math.cos(dlat_rad);
 
     addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
     addParameter(GRID_SOUTH_POLE_LATITUDE, southPoleLat);
@@ -122,11 +122,11 @@ public class RotatedLatLon extends ProjectionImpl {
     addParameter(GRID_SOUTH_POLE_ANGLE, southPoleAngle);
   }
 
-  public double getLonpole() {
+  public double getLonPole() {
     return lonpole;
   }
 
-  public double getPolerotate() {
+  public double getPoleRotate() {
     return polerotate;
   }
 
@@ -135,18 +135,11 @@ public class RotatedLatLon extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new RotatedLatLon(latpole, lonpole, polerotate);
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new RotatedLatLon(latpole, lonpole, polerotate);
   }
 
-  /**
-   * returns constructor params as a String
-   *
-   * @return String
-   */
+  @Override
   public String paramsToString() {
     return " southPoleLat =" + latpole + " southPoleLon =" + lonpole + " southPoleAngle =" + polerotate;
   }
@@ -155,7 +148,7 @@ public class RotatedLatLon extends ProjectionImpl {
    * Transform a "real" longitude and latitude into the rotated longitude (X) and
    * rotated latitude (Y).
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
+  public ProjectionPoint latLonToProj(LatLonPoint latlon) {
     /*
      * Tor's algorithm
      * public double[] fwd(double[] lonlat)
@@ -166,22 +159,14 @@ public class RotatedLatLon extends ProjectionImpl {
     lonlat[1] = latlon.getLatitude();
 
     double[] rlonlat = rotate(lonlat, lonpole, polerotate, sinDlat);
-    if (destPoint == null)
-      destPoint = new ProjectionPointImpl(rlonlat[0], rlonlat[1]);
-    else
-      destPoint.setLocation(rlonlat[0], rlonlat[1]);
-
-    if (show)
-      System.out.println("LatLon= " + latlon + " proj= " + destPoint);
-
-    return destPoint;
+    return ProjectionPoint.create(rlonlat[0], rlonlat[1]);
   }
 
   /**
    * Transform a rotated longitude (X) and rotated latitude (Y) into a "real"
    * longitude-latitude pair.
    */
-  public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
+  public LatLonPoint projToLatLon(ProjectionPoint ppt) {
     /*
      * Tor's algorithm
      * public double[] inv(double[] lonlat)
@@ -192,13 +177,7 @@ public class RotatedLatLon extends ProjectionImpl {
     lonlat[1] = ppt.getY();
 
     double[] rlonlat = rotate(lonlat, -polerotate, -lonpole, -sinDlat);
-
-    if (destPoint == null)
-      return LatLonPoint.create(rlonlat[1], rlonlat[0]);
-    else {
-      destPoint.set(rlonlat[1], rlonlat[0]);
-      return destPoint;
-    }
+    return LatLonPoint.create(rlonlat[1], rlonlat[0]);
   }
 
   // Tor's transform algorithm renamed to rotate for clarity
@@ -258,10 +237,7 @@ public class RotatedLatLon extends ProjectionImpl {
       return false;
     if (Double.compare(that.polerotate, polerotate) != 0)
       return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null))
-      return false; // common case is that these are null
-    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
-
+    return true;
   }
 
   @Override

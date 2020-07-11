@@ -4,9 +4,9 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
-import java.io.Serializable;
 
 /**
  * Universal Transverse Mercator.
@@ -19,9 +19,9 @@ import java.io.Serializable;
  * Increasing values always go north and east.
  * <p/>
  * The central meridian = (zone * 6 - 183) degrees, where zone in [1,60].
- *
  */
-public class UtmProjection extends ProjectionImpl {
+@Immutable
+public class UtmProjection extends AbstractProjection {
   public static final String GRID_MAPPING_NAME = "universal_transverse_mercator";
   public static final String UTM_ZONE1 = "utm_zone_number";
   public static final String UTM_ZONE2 = "UTM_zone";
@@ -29,59 +29,14 @@ public class UtmProjection extends ProjectionImpl {
   private final Utm_To_Gdc_Converter convert2latlon;
   private final Gdc_To_Utm_Converter convert2xy;
 
-  // TODO will noty implement Serializable in ver 6.
-  private static class SaveParams implements Serializable {
-    final double a;
-    final double f;
-    final int zone;
-    final boolean isNorth;
-
-    private SaveParams(double a, double f, int zone, boolean isNorth) {
-      this.a = a;
-      this.f = f;
-      this.zone = zone;
-      this.isNorth = isNorth;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-      SaveParams that = (SaveParams) o;
-      if (Double.compare(that.a, a) != 0)
-        return false;
-      if (Double.compare(that.f, f) != 0)
-        return false;
-      if (isNorth != that.isNorth)
-        return false;
-      return zone == that.zone;
-    }
-
-    @Override
-    public int hashCode() {
-      int result;
-      long temp;
-      temp = Double.doubleToLongBits(a);
-      result = (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(f);
-      result = 31 * result + (int) (temp ^ (temp >>> 32));
-      result = 31 * result + zone;
-      result = 31 * result + (isNorth ? 1 : 0);
-      return result;
-    }
-  }
-
-  private final SaveParams saveParams; // needed for constructCopy
+  private final double a;
+  private final double f;
+  private final int zone;
+  private final boolean isNorth;
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = (saveParams == null) ? new UtmProjection(getZone(), isNorth())
-        : new UtmProjection(saveParams.a, saveParams.f, getZone(), isNorth());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new UtmProjection(a, f, getZone(), isNorth());
   }
 
   /**
@@ -101,7 +56,11 @@ public class UtmProjection extends ProjectionImpl {
     super("UtmProjection", false);
     convert2latlon = new Utm_To_Gdc_Converter(zone, isNorth);
     convert2xy = new Gdc_To_Utm_Converter(zone, isNorth);
-    saveParams = new SaveParams(convert2latlon.getA(), 1 / convert2latlon.getF(), zone, isNorth);
+
+    this.a = convert2latlon.getA();
+    this.f = 1.0 / convert2latlon.getF();
+    this.zone = zone;
+    this.isNorth = isNorth;
 
     addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
     addParameter(CF.SEMI_MAJOR_AXIS, convert2latlon.getA());
@@ -119,7 +78,10 @@ public class UtmProjection extends ProjectionImpl {
    */
   public UtmProjection(double a, double f, int zone, boolean isNorth) {
     super("UtmProjection", false);
-    saveParams = new SaveParams(a, f, zone, isNorth);
+    this.a = a;
+    this.f = f;
+    this.zone = zone;
+    this.isNorth = isNorth;
 
     convert2latlon = new Utm_To_Gdc_Converter(a, f, zone, isNorth);
     convert2xy = new Gdc_To_Utm_Converter(a, f, zone, isNorth);
@@ -188,136 +150,51 @@ public class UtmProjection extends ProjectionImpl {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
+    if (this == o) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
+    }
+
     UtmProjection that = (UtmProjection) o;
-    return saveParams.equals(that.saveParams);
+
+    if (Double.compare(that.a, a) != 0) {
+      return false;
+    }
+    if (Double.compare(that.f, f) != 0) {
+      return false;
+    }
+    if (zone != that.zone) {
+      return false;
+    }
+    return isNorth == that.isNorth;
   }
 
   @Override
   public int hashCode() {
-    return saveParams.hashCode();
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(a);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(f);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + zone;
+    result = 31 * result + (isNorth ? 1 : 0);
+    return result;
   }
 
-  /*
-   * Returns true if this represents the same Projection as proj.
-   *
-   * @param proj projection in question
-   * 
-   * @return true if this represents the same Projection as proj.
-   *
-   * public boolean equals(Object proj) {
-   * if (!(proj instanceof UtmProjection)) {
-   * return false;
-   * }
-   * 
-   * UtmProjection op = (UtmProjection) proj;
-   * if ((this.getDefaultMapArea() == null) != (op.defaultMapArea == null)) return false; // common case is that these
-   * are null
-   * if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(op.defaultMapArea)) return false;
-   * 
-   * return op.getZone() == getZone();
-   * }
-   */
-
-
-
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
 
-    return convert2xy.latLonToProj(fromLat, fromLon, result);
+    return convert2xy.latLonToProj(fromLat, fromLon);
   }
 
-  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
-    if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (from)");
-    }
-    if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (to)");
-    }
-    if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:from array not same length as to array");
-    }
-
-    return convert2xy.latLonToProj(from, to, latIndex, lonIndex);
-  }
-
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
-    if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (from)");
-    }
-    if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (to)");
-    }
-    if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:from array not same length as to array");
-    }
-
-    return convert2xy.latLonToProj(from, to, latIndex, lonIndex);
-  }
-
-
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
-    return convert2latlon.projToLatLon(world.getX(), world.getY(), result);
-  }
-
-  /**
-   * Convert projection coordinates to lat/lon coordinate.
-   *
-   * @param from array of projection coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (x, y) coordinate
-   *        of the ith point
-   * @param to resulting array of lat/lon coordinates: to[2][n] where
-   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *        the ith point
-   * @return the "to" array
-   */
-  public float[][] projToLatLon(float[][] from, float[][] to) {
-    if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (from)");
-    }
-    if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (to)");
-    }
-
-    if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:from array not same length as to array");
-    }
-
-    return convert2latlon.projToLatLon(from, to);
-  }
-
-  public double[][] projToLatLon(double[][] from, double[][] to) {
-    if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (from)");
-    }
-    if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (to)");
-    }
-
-    if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:from array not same length as to array");
-    }
-
-    return convert2latlon.projToLatLon(from, to);
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
+    return convert2latlon.projToLatLon(world.getX(), world.getY());
   }
 
 }

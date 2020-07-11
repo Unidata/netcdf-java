@@ -6,6 +6,7 @@
 package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.WRFEta;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
@@ -54,7 +55,7 @@ public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements 
     return VerticalCT.Type.WRFEta.name();
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
       VerticalCT vCT) {
     return new WRFEta(ds, timeDim, vCT.getParameters());
   }

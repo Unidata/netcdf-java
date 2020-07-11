@@ -161,7 +161,7 @@ public class HorizCoordSys {
           CoordAxisHelper yhelper = new CoordAxisHelper(yAxis);
 
           // we have to transform latlon to projection coordinates
-          ProjectionImpl proj = transform.getProjection();
+          Projection proj = transform.getProjection();
           ProjectionPoint pp = proj.latLonToProj(latlon);
           optb = xhelper.subsetContaining(pp.getX());
           if (optb.isPresent())
@@ -229,7 +229,7 @@ public class HorizCoordSys {
 
           if (isProjection) {
             // we have to transform latlon to projection coordinates
-            ProjectionImpl proj = transform.getProjection();
+            Projection proj = transform.getProjection();
             ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
             opt = xAxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
             if (opt.isPresent())
@@ -311,7 +311,7 @@ public class HorizCoordSys {
     if (isProjection) {
       double x = xAxis.getCoordMidpoint(xindex);
       double y = yAxis.getCoordMidpoint(xindex);
-      ProjectionImpl proj = transform.getProjection();
+      Projection proj = transform.getProjection();
       return proj.projToLatLon(x, y);
     } else {
       double lat = latAxis.getCoordMidpoint(yindex);

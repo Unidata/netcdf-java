@@ -36,10 +36,10 @@ package ucar.unidata.geoloc.projection;
 import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import java.lang.*;
 
 /**
+ * Helper class for UtmProjection.
  * Converts GDC coordinate(s) to UTM.
  * <p/>
  * This class provides the capability to convert from
@@ -158,7 +158,7 @@ class Gdc_To_Utm_Converter {
     return this.axlon0_deg;
   }
 
-  public ProjectionPoint latLonToProj(double latitude, double longitude, ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(double latitude, double longitude) {
     double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
 
     longitude = LatLonPoints.lonNormal(longitude, axlon0_deg); // normalize to the central meridian
@@ -196,101 +196,8 @@ class Gdc_To_Utm_Converter {
       y += 1.0E7;
     }
 
-    result.setLocation(x * .001, y * .001); // wants km
-    return result;
+    return ProjectionPoint.create(x * .001, y * .001); // wants km
   }
-
-
-  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
-    double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
-
-    for (int i = 0; i < from[0].length; i++) {
-      double longitude = LatLonPoints.lonNormal(from[lonIndex][i], axlon0_deg); // normalize to the central meridian
-      source_lat = from[latIndex][i] * RADIANS_PER_DEGREE;
-      source_lon = longitude * RADIANS_PER_DEGREE;
-
-      s1 = Math.sin(source_lat);
-      c1 = Math.cos(source_lat);
-      tx = s1 / c1;
-      s12 = s1 * s1;
-
-      rn = A
-          / ((.25 - Eps25 * s12 + .9999944354799 / 4) + (.25 - Eps25 * s12) / (.25 - Eps25 * s12 + .9999944354799 / 4));
-
-      al = (source_lon - axlon0) * c1;
-      sm = s1 * c1 * (poly2b + s12 * (poly3b + s12 * (poly4b + s12 * poly5b)));
-      sm = A * (poly1b * source_lat + sm);
-
-      tn2 = tx * tx;
-      cee = Epps2 * c1 * c1;
-      al2 = al * al;
-      poly1 = 1.0 - tn2 + cee;
-      poly2 = 5.0 + tn2 * (tn2 - 18.0) + cee * (14.0 - tn2 * 58.0);
-
-      double x = CScale * rn * al * (1.0 + al2 * (.166666666666667 * poly1 + .00833333333333333 * al2 * poly2));
-      x += 5.0E5;
-
-      poly1 = 5.0 - tn2 + cee * (cee * 4.0 + 9.0);
-      poly2 = 61.0 + tn2 * (tn2 - 58.0) + cee * (270.0 - tn2 * 330.0);
-      double y =
-          CScale * (sm + rn * tx * al2 * (0.5 + al2 * (.0416666666666667 * poly1 + .00138888888888888 * al2 * poly2)));
-
-      if (source_lat < 0.0) {
-        y += 1.0E7;
-      }
-
-      to[0][i] = x * .001;
-      to[1][i] = y * .001;
-    }
-
-    return to;
-  }
-
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
-    double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
-
-    for (int i = 0; i < from[0].length; i++) {
-      double longitude = LatLonPoints.lonNormal(from[lonIndex][i], axlon0_deg); // normalize to the central meridian
-      source_lat = from[latIndex][i] * RADIANS_PER_DEGREE;
-      source_lon = longitude * RADIANS_PER_DEGREE;
-
-      s1 = Math.sin(source_lat);
-      c1 = Math.cos(source_lat);
-      tx = s1 / c1;
-      s12 = s1 * s1;
-
-      rn = A
-          / ((.25 - Eps25 * s12 + .9999944354799 / 4) + (.25 - Eps25 * s12) / (.25 - Eps25 * s12 + .9999944354799 / 4));
-
-      al = (source_lon - axlon0) * c1;
-      sm = s1 * c1 * (poly2b + s12 * (poly3b + s12 * (poly4b + s12 * poly5b)));
-      sm = A * (poly1b * source_lat + sm);
-
-      tn2 = tx * tx;
-      cee = Epps2 * c1 * c1;
-      al2 = al * al;
-      poly1 = 1.0 - tn2 + cee;
-      poly2 = 5.0 + tn2 * (tn2 - 18.0) + cee * (14.0 - tn2 * 58.0);
-
-      double x = CScale * rn * al * (1.0 + al2 * (.166666666666667 * poly1 + .00833333333333333 * al2 * poly2));
-      x += 5.0E5;
-
-      poly1 = 5.0 - tn2 + cee * (cee * 4.0 + 9.0);
-      poly2 = 61.0 + tn2 * (tn2 - 58.0) + cee * (270.0 - tn2 * 330.0);
-      double y =
-          CScale * (sm + rn * tx * al2 * (0.5 + al2 * (.0416666666666667 * poly1 + .00138888888888888 * al2 * poly2)));
-
-      if (source_lat < 0.0) {
-        y += 1.0E7;
-      }
-
-      to[0][i] = (float) (x * .001);
-      to[1][i] = (float) (y * .001);
-    }
-
-    return to;
-  }
-
 
 }
 

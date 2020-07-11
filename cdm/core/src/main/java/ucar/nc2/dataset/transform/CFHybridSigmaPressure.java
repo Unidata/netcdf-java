@@ -8,6 +8,7 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
 import ucar.unidata.util.Parameter;
 
@@ -89,7 +90,7 @@ public class CFHybridSigmaPressure extends AbstractTransformBuilder implements V
         + (useAp ? "ps:" + ps + " p0:" + p0 + " a:" + a + " b:" + b : "ps:" + ps + " ap:" + ap + " b:" + b);
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
       VerticalCT vCT) {
     return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
   }

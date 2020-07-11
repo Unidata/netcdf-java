@@ -23,7 +23,7 @@ class StationRenderer implements Renderer {
   private List<StationUI> stations = new ArrayList<>(); // StationUI objects
   private HashMap<String, StationUI> stationHash = new HashMap<>();
   private SpatialGrid stationGrid; // for "decluttering" and closest point
-  private ProjectionImpl project; // display projection
+  private Projection project; // display projection
   private AffineTransform world2Normal;
 
   // drawing parameters
@@ -118,7 +118,7 @@ class StationRenderer implements Renderer {
     return declutter;
   }
 
-  public void setProjection(ProjectionImpl project) {
+  public void setProjection(Projection project) {
     this.project = project;
     calcWorldPos();
   }

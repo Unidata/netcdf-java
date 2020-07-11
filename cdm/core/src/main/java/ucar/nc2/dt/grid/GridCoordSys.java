@@ -15,7 +15,7 @@ import ucar.nc2.units.*;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
-import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
+import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.RotatedLatLon;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
@@ -23,7 +23,7 @@ import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 
 /**
  * A georeferencing "gridded" CoordinateSystem. This describes a "grid" of coordinates, which
@@ -101,7 +101,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       yaxis = cs.getYaxis();
 
       // change to warning
-      ProjectionImpl p = cs.getProjection();
+      Projection p = cs.getProjection();
       if (!(p instanceof RotatedPole)) {
         if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
           if (sbuff != null) {
@@ -244,7 +244,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
 
   /////////////////////////////////////////////////////////////////////////////
-  private ProjectionImpl proj;
+  private Projection proj;
   private GridCoordinate2D g2d;
   private CoordinateAxis horizXaxis, horizYaxis;
   private CoordinateAxis1D vertZaxis, ensembleAxis;
@@ -252,6 +252,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   private VerticalCT vCT;
   private VerticalTransform vt;
   private Dimension timeDim;
+  private ProjectionRect mapArea;
 
   private boolean isLatLon;
 
@@ -270,7 +271,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       horizXaxis = xAxis = cs.getXaxis();
       horizYaxis = yAxis = cs.getYaxis();
 
-      ProjectionImpl p = cs.getProjection();
+      Projection p = cs.getProjection();
       if (!(p instanceof RotatedPole) && !(p instanceof RotatedLatLon)) {
         // make a copy of the axes if they need to change
         horizXaxis = convertUnits(horizXaxis);
@@ -292,11 +293,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     coordAxes.add(horizYaxis);
 
     // set canonical area
-    ProjectionImpl projOrig = cs.getProjection();
-    if (projOrig != null) {
-      proj = projOrig.constructCopy();
-      proj.setDefaultMapArea(getBoundingBox()); // LOOK too expensive for 2D
-    }
+    this.proj = cs.getProjection();
+    this.mapArea = getBoundingBox();
 
     // LOOK: require 1D vertical - need to generalize to nD vertical.
     CoordinateAxis z_oneD = hAxis = cs.getHeightAxis();
@@ -477,11 +475,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     coordAxes.add(horizYaxis);
 
     // set canonical area
-    ProjectionImpl projOrig = from.getProjection();
-    if (projOrig != null) {
-      proj = projOrig.constructCopy();
-      proj.setDefaultMapArea(getBoundingBox()); // LOOK expensive for 2D
-    }
+    this.proj = from.getProjection();
+    this.mapArea = getBoundingBox();
 
     CoordinateAxis1D zaxis = from.getVerticalAxis();
     if (zaxis != null) {
@@ -711,16 +706,14 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * get the projection
    */
   @Override
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     return proj;
   }
 
   @Override
   public void setProjectionBoundingBox() {
-    // set canonical area
-    if (proj != null) {
-      proj.setDefaultMapArea(getBoundingBox()); // LOOK too expensive for 2D
-    }
+    // set canonical area LOOK too expensive for 2D
+    getBoundingBox();
   }
 
   /**
@@ -950,8 +943,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return null;
   }
 
-  private ProjectionRect mapArea;
-
   /**
    * Get the x,y bounding box in projection coordinates.
    */
@@ -1058,7 +1049,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         llbb = new LatLonRect(llpt, deltaLat, deltaLon);
 
       } else {
-        ProjectionImpl dataProjection = getProjection();
+        Projection dataProjection = getProjection();
         ProjectionRect bb = getBoundingBox();
         llbb = dataProjection.projToLatLonBB(bb);
       }
@@ -1144,7 +1135,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   public List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
 
-    ProjectionImpl proj = getProjection();
+    Projection proj = getProjection();
     if (proj != null && !(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation)
         && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid

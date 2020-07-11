@@ -73,7 +73,7 @@ public class TestSinusoidal {
     ProjectionPoint upperLeft = ProjectionPoint.create(false_easting + -9070, false_northing + -2780);
     ProjectionPoint lowerRight = ProjectionPoint.create(false_easting + -3603, false_northing + -10000);
 
-    Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, ProjectionImpl.EARTH_RADIUS);
+    Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, Earth.WGS84_EARTH_RADIUS_KM);
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
@@ -95,7 +95,7 @@ public class TestSinusoidal {
     ProjectionPoint upperLeft = ProjectionPoint.create(false_easting + 14480, false_northing + -2228);
     ProjectionPoint lowerRight = ProjectionPoint.create(false_easting + 20000, false_northing + -4361);
 
-    Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, ProjectionImpl.EARTH_RADIUS);
+    Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, Earth.WGS84_EARTH_RADIUS_KM);
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 
@@ -117,7 +117,7 @@ public class TestSinusoidal {
     ProjectionPoint lowerRight = ProjectionPoint.create(false_easting + -9370, false_northing + 4446);
     ProjectionPoint upperLeft = ProjectionPoint.create(false_easting + -17500, false_northing + 6278);
 
-    Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, ProjectionImpl.EARTH_RADIUS);
+    Sinusoidal proj = new Sinusoidal(0, false_easting, false_northing, Earth.WGS84_EARTH_RADIUS_KM);
     ProjectionRect projBB = new ProjectionRect(upperLeft, lowerRight);
     LatLonRect latLonBB = proj.projToLatLonBB(projBB);
 

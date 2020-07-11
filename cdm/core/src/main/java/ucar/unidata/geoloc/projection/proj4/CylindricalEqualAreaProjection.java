@@ -26,39 +26,43 @@
 
 package ucar.unidata.geoloc.projection.proj4;
 
+import com.google.common.base.Preconditions;
 import java.util.Objects;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.AbstractProjection;
 
 /**
  * CylindricalEqualArea Projection.
  * Port from proj4.
  */
-public class CylindricalEqualAreaProjection extends ProjectionImpl {
+@Immutable
+public class CylindricalEqualAreaProjection extends AbstractProjection {
+  private final double trueScaleLatitude, lon0; // degrees
+  private final double scaleFactor;
+  private final double projectionLongitude; // radians
+  private final double falseEasting;
+  private final double falseNorthing;
+  private final Earth earth;
+  private final double e;
+  private final double one_es;
+  private final double totalScale;
 
-  private double trueScaleLatitude, lon0; // degrees
-  private double scaleFactor;
-  private double projectionLongitude; // radians
-  private double falseEasting;
-  private double falseNorthing;
-  private Earth earth;
-  private double e;
-  private double one_es;
-  private double totalScale;
+  private final double qp;
+  private final double[] apa;
 
-  private double qp;
-  private double[] apa;
-
+  // default WSG ellipsoid
   public CylindricalEqualAreaProjection() {
-    this(0.0, 0.0, 0.0, 0.0, new Earth());
+    this(0.0, 1.0, 0.0, 0.0, EarthEllipsoid.WGS84);
   }
 
   public CylindricalEqualAreaProjection(double lon0, double trueScaleLatitude, double falseEasting,
       double falseNorthing, Earth earth) {
     super("CylindricalEqualAreaProjection", false);
 
-    Objects.requireNonNull(earth, "CEA constructor requires non-null Earth");
+    Preconditions.checkNotNull(earth, "CylindricalEqualAreaProjection constructor requires non-null Earth");
 
     this.lon0 = lon0;
 
@@ -75,13 +79,17 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
     this.totalScale = earth.getMajor() * .001; // scale factor for cartesion coords in km.
 
     double t = Math.toRadians(trueScaleLatitude);
-    scaleFactor = Math.cos(t);
+    double cost = Math.cos(t);
 
-    if (es != 0) {
+    if (!earth.isSpherical()) {
       t = Math.sin(t);
-      scaleFactor /= Math.sqrt(1. - es * t * t);
+      scaleFactor = cost/Math.sqrt(1. - es * t * t);
       apa = MapMath.authset(es);
       qp = MapMath.qsfn(1., e, one_es);
+    } else {
+      scaleFactor = cost;
+      apa = null; // not used
+      qp = Double.NaN;
     }
 
     addParameter(CF.GRID_MAPPING_NAME, CF.ALBERS_CONICAL_EQUAL_AREA);
@@ -99,12 +107,8 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result =
-        new CylindricalEqualAreaProjection(lon0, trueScaleLatitude, falseEasting, falseNorthing, earth);
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new CylindricalEqualAreaProjection(lon0, trueScaleLatitude, falseEasting, falseNorthing, earth);
   }
 
   @Override
@@ -112,22 +116,27 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
     return null;
   }
 
-  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl xy) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latlon) {
     double lam = Math.toRadians(latlon.getLongitude() - lon0);
     double phi = Math.toRadians(latlon.getLatitude());
+    double toX, toY;
     if (earth.isSpherical()) {
-      xy.setLocation(scaleFactor * lam, Math.sin(phi) / scaleFactor);
+      toX = scaleFactor * lam;
+      toY = Math.sin(phi) / scaleFactor;
     } else {
-      xy.setLocation(scaleFactor * lam, .5 * MapMath.qsfn(Math.sin(phi), e, one_es) / scaleFactor);
+      toX = scaleFactor * lam;
+      toY = .5 * MapMath.qsfn(Math.sin(phi), e, one_es) / scaleFactor;
     }
 
-    xy.setLocation(totalScale * xy.getX() + falseEasting, totalScale * xy.getY() + falseNorthing);
-    return xy;
+    return ProjectionPoint.create(totalScale * toX + falseEasting, totalScale * toY + falseNorthing);
   }
 
-  public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl lp) {
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint ppt) {
     double x = (ppt.getX() - falseEasting) / totalScale; // assumes cartesion coords in km
     double y = (ppt.getY() - falseNorthing) / totalScale;
+    double toLat, toLon;
 
     if (earth.isSpherical()) {
       y *= scaleFactor;
@@ -135,19 +144,19 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
 
       if (t - MapMath.EPS10 <= 1.) {
         if (t >= 1.) {
-          lp.setLatitude(Math.toDegrees(y < 0. ? -MapMath.HALFPI : MapMath.HALFPI));
+          toLat = Math.toDegrees(y < 0. ? -MapMath.HALFPI : MapMath.HALFPI);
         } else {
-          lp.setLatitude(Math.toDegrees(Math.asin(y)));
+          toLat = Math.toDegrees(Math.asin(y));
         }
-        lp.setLongitude(Math.toDegrees(x / scaleFactor));
+        toLon = Math.toDegrees(x / scaleFactor);
       } else {
         throw new IllegalStateException();
       }
     } else {
-      lp.setLatitude(Math.toDegrees(MapMath.authlat(Math.asin(2. * y * scaleFactor / qp), apa)));
-      lp.setLongitude(lon0 + Math.toDegrees(x / scaleFactor));
+      toLat = Math.toDegrees(MapMath.authlat(Math.asin(2. * y * scaleFactor / qp), apa));
+      toLon = lon0 + Math.toDegrees(x / scaleFactor);
     }
-    return lp;
+    return LatLonPoint.create(toLat, toLon);
   }
 
   @Override
@@ -174,10 +183,7 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
       return false;
     if (!Objects.equals(earth, that.earth))
       return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null))
-      return false; // common case is that these are null
-    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
-
+    return true;
   }
 
   @Override

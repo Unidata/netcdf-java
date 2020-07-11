@@ -42,7 +42,7 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.unidata.geoloc.projection.LambertConformal;
@@ -241,7 +241,7 @@ public class WRFConvention extends CoordSystemBuilder {
       double standardLon = findAttributeDouble("STAND_LON"); // true longitude
       double standardLat = findAttributeDouble("MOAD_CEN_LAT");
 
-      ProjectionImpl proj = null;
+      Projection proj = null;
       switch (projType) {
         case 0: // for diagnostic runs with no georeferencing
           proj = new FlatEarth();

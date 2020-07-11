@@ -26,7 +26,6 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.AlbersEqualArea;
 import ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea;
 import ucar.unidata.geoloc.projection.LambertConformal;
@@ -253,11 +252,9 @@ public class M3IOConvention extends CoordSystemBuilder {
   private ProjectionCT makeLatLongProjection() {
     // Get lower left and upper right corners of domain in lat/lon
     double x1 = findAttributeDouble("XORIG");
-    double y1 = findAttributeDouble("YORIG");
     double x2 = x1 + findAttributeDouble("XCELL") * findAttributeDouble("NCOLS");
-    double y2 = y1 + findAttributeDouble("YCELL") * findAttributeDouble("NROWS");
 
-    LatLonProjection ll = new LatLonProjection("LatitudeLongitudeProjection", new ProjectionRect(x1, y1, x2, y2));
+    LatLonProjection ll = new LatLonProjection("LatitudeLongitudeProjection", null, (x1 + x2) / 2);
     return new ProjectionCT("LatitudeLongitudeProjection", "FGDC", ll);
   }
 

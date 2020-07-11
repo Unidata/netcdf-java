@@ -37,14 +37,14 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
 
   protected abstract java.util.List getFeatures(); // collection of AbstractGisFeature
 
-  protected abstract ProjectionImpl getDataProjection(); // what projection is the data in?
+  protected abstract Projection getDataProjection(); // what projection is the data in?
 
   /**
    * Sets new projection for subsequent drawing.
    *
    * @param project the new projection
    */
-  public void setProjection(ProjectionImpl project) {
+  public void setProjection(Projection project) {
     displayProject = project;
 
     if (featSetList == null)
@@ -136,7 +136,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   private ArrayList makeShapes(Iterator featList) {
     Shape shape;
     ArrayList shapeList = new ArrayList();
-    ProjectionImpl dataProject = getDataProjection();
+    Projection dataProject = getDataProjection();
 
     if (Debug.isSet("GisFeature/MapDraw")) {
       System.out.println("GisFeature/MapDraw: makeShapes with " + displayProject);
@@ -197,7 +197,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   private class FeatureSet {
     List featureList;
     double minDist;
-    ProjectionImpl project;
+    Projection project;
     ArrayList shapeList;
     boolean newProjection = true;
 
@@ -206,7 +206,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
       this.minDist = minDist;
     }
 
-    void setProjection(ProjectionImpl project) {
+    void setProjection(Projection project) {
       this.project = project;
       shapeList = makeShapes(featureList.iterator());
 
@@ -389,7 +389,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     double minD = Double.MAX_VALUE;
     double maxD = -Double.MAX_VALUE;
 
-    ProjectionImpl dataProject = getDataProjection();
+    Projection dataProject = getDataProjection();
     ProjectionPoint lastW;
 
     while (featList.hasNext()) {

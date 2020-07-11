@@ -4,11 +4,7 @@
  */
 package ucar.unidata.geoloc;
 
-import ucar.unidata.geoloc.projection.LatLonProjection;
-
-/**
- * Static utilities for Projection.
- */
+/** Static utilities for Projection. */
 public class Projections {
   private static final int INDEX_LAT = 0;
   private static final int INDEX_LON = 1;

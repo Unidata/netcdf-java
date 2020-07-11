@@ -10,7 +10,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 
 /**
  * Describe:
@@ -150,7 +150,7 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
 
     geoCoordinateScaleFactor = getScaleFactor(geoCoordinateUnits);
 
-    ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, perspective_point_height,
+    Projection proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, perspective_point_height,
         semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, geoCoordinateScaleFactor);
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);

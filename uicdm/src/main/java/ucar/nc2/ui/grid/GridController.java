@@ -45,7 +45,7 @@ import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.ScaledPanel;
 import ucar.nc2.util.NamedObject;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.util.prefs.PreferencesExt;
@@ -72,7 +72,7 @@ public class GridController {
   private ColorScale cs;
   private NavigatedPanel np;
   private VertPanel vertPanel;
-  private ProjectionImpl project;
+  private Projection project;
 
   // state
   private String datasetUrlString;
@@ -168,7 +168,7 @@ public class GridController {
     posLabel = ui.positionLabel;
 
     // get last saved Projection
-    project = (ProjectionImpl) store.getBean(LastProjectionName, null);
+    project = (Projection) store.getBean(LastProjectionName, null);
     if (project != null)
       setProjection(project);
 
@@ -200,7 +200,7 @@ public class GridController {
 
     dataProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ProjectionImpl dataProjection = renderGrid.getDataProjection();
+        Projection dataProjection = renderGrid.getDataProjection();
         if (null != dataProjection)
           setProjection(dataProjection);
       }
@@ -704,7 +704,7 @@ public class GridController {
 
     // if possible, change the projection and the map area to one that fits this
     // dataset
-    ProjectionImpl dataProjection = currentField.getProjection();
+    Projection dataProjection = currentField.getProjection();
     if (dataProjection != null)
       setProjection(dataProjection);
 
@@ -928,7 +928,7 @@ public class GridController {
     redrawLater();
   }
 
-  public void setProjection(ProjectionImpl p) {
+  public void setProjection(Projection p) {
     project = p;
     if (renderMap != null)
       renderMap.setProjection(p);

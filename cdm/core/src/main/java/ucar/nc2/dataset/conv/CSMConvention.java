@@ -13,6 +13,7 @@ import ucar.nc2.dataset.transform.AbstractTransformBuilder;
 import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.util.Parameter;
@@ -107,7 +108,7 @@ public class CSMConvention extends COARDSConvention {
       return rs;
     }
 
-    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+    public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
         VerticalCT vCT) {
       return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
     }
@@ -132,7 +133,7 @@ public class CSMConvention extends COARDSConvention {
       return rs;
     }
 
-    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
+    public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
         VerticalCT vCT) {
       return new AtmosSigma(ds, timeDim, vCT.getParameters());
     }

@@ -21,7 +21,7 @@ import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.ProgressMonitor;
 import ucar.nc2.util.NamedObject;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -371,8 +371,8 @@ public class GridUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         getProjectionManager();
         // set the bounding box
-        ProjectionImpl proj = panz.getProjectionImpl().constructCopy();
-        proj.setDefaultMapArea(panz.getMapArea());
+        //Projection proj = panz.getProjectionImpl().constructCopy();
+       // proj.setDefaultMapArea(panz.getMapArea());
         // if (debug) System.out.println(" GV save projection "+ proj);
 
         // projManage.setMap(renderAll.get("Map")); LOOK!
@@ -625,8 +625,8 @@ public class GridUI extends JPanel {
     projManager.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("ProjectionImpl")) {
-          ProjectionImpl p = (ProjectionImpl) e.getNewValue();
-          p = p.constructCopy();
+          Projection p = (Projection) e.getNewValue();
+          // p = p.constructCopy();
           // System.out.println("UI: new Projection "+p);
           controller.setProjection(p);
         }

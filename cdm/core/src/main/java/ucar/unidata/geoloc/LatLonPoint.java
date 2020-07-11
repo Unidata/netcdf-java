@@ -15,6 +15,7 @@ import ucar.nc2.util.Misc;
  * TODO will be an Immutable class in ver6
  */
 public interface LatLonPoint {
+  LatLonPoint INVALID = LatLonPoint.create(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
   /**
    * Returns the longitude, between +/-180 degrees

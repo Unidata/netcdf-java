@@ -79,15 +79,16 @@ class CFGridCoverageWriter2Spec extends Specification {
         CoverageCollection covColl = featDsetCov.getCoverageCollections().get(0)
         
         and: "setup NetcdfFileWriter"
-        File outputFile = tempFolder.newFile()
-        NetcdfFileWriter writer = NetcdfFileWriter.createNew(outputFile.absolutePath, false)
+        // File outputFile = tempFolder.newFile()
+        String pathout = "C:/temp/failure.nc"
+        NetcdfFileWriter writer = NetcdfFileWriter.createNew(pathout, false)
         
         and: "write output file"
         // No subset; do addLatLon; write to outputFile.
         CFGridCoverageWriter2.write(covColl, null, null, true, writer)
 
         and: "open output file"
-        NetcdfFile ncFile = NetcdfFiles.open(outputFile.absolutePath)
+        NetcdfFile ncFile = NetcdfFiles.open(pathout)
         
         and: "declare expected lats"
         def expectedShape = [4, 4] as int[]

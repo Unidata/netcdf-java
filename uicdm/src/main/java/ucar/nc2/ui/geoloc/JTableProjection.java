@@ -11,7 +11,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import ucar.nc2.util.ListenerManager;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.util.prefs.PreferencesExt;
 
@@ -73,19 +73,19 @@ public class JTableProjection extends JTable {
         "actionPerformed");
   }
 
-  public void addProjection(ProjectionImpl proj) {
+  public void addProjection(Projection proj) {
     int rowno = model.addProjection(proj);
     setRowSelectionInterval(rowno, rowno);
     selectedRow = rowno;
   }
 
-  public void replaceProjection(ProjectionImpl proj) {
+  public void replaceProjection(Projection proj) {
     int rowno = model.replaceProjection(proj);
     setRowSelectionInterval(rowno, rowno);
     selectedRow = rowno;
   }
 
-  public boolean contains(ProjectionImpl proj) {
+  public boolean contains(Projection proj) {
     return (model.search(proj) >= 0);
   }
 
@@ -93,12 +93,12 @@ public class JTableProjection extends JTable {
     return (model.search(id) >= 0);
   }
 
-  public ProjectionImpl getSelected() {
+  public Projection getSelected() {
     int len = list.size();
     if ((0 > selectedRow) || (len <= selectedRow))
       return null;
     else
-      return (ProjectionImpl) list.get(selectedRow);
+      return (Projection) list.get(selectedRow);
   }
 
   public void deleteSelected() {
@@ -145,7 +145,7 @@ public class JTableProjection extends JTable {
   }
 
   // set current projection if found, else deselect
-  public void setCurrentProjection(ProjectionImpl proj) {
+  public void setCurrentProjection(Projection proj) {
     int row;
     if (0 <= (row = model.search(proj))) {
       if (debug)
@@ -189,7 +189,7 @@ public class JTableProjection extends JTable {
     }
 
     public Object getValueAt(int row, int col) {
-      ProjectionImpl proj = (ProjectionImpl) list.get(row);
+      Projection proj = (Projection) list.get(row);
       switch (col) {
         case 0:
           return proj.getName();
@@ -197,8 +197,8 @@ public class JTableProjection extends JTable {
           return proj.getClassName();
         case 2:
           return proj.paramsToString();
-        case 3:
-          return proj.getDefaultMapArea();
+        //case 3:
+        //  return proj.getDefaultMapArea();
       }
       return "error";
     }
@@ -208,8 +208,8 @@ public class JTableProjection extends JTable {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-      ProjectionImpl proj = (ProjectionImpl) list.get(rowIndex);
-      proj.setName((String) aValue);
+      Projection proj = (Projection) list.get(rowIndex);
+      //proj.setName((String) aValue);
     }
 
     // do our own listener management to get around serialization bug
@@ -243,14 +243,14 @@ public class JTableProjection extends JTable {
     }
 
     // added methods
-    int addProjection(ProjectionImpl proj) {
+    int addProjection(Projection proj) {
       list.add(proj);
       int count = list.size() - 1;
       fireTableRowsInserted(count, count);
       return count;
     }
 
-    int replaceProjection(ProjectionImpl proj) {
+    int replaceProjection(Projection proj) {
       int rowno = search(proj);
       if (rowno < 0)
         return -1;
@@ -278,9 +278,9 @@ public class JTableProjection extends JTable {
       fireTableRowsDeleted(row, row);
     }
 
-    int search(ProjectionImpl proj) {
+    int search(Projection proj) {
       for (int row = 0; row < list.size(); row++) {
-        ProjectionImpl test = (ProjectionImpl) list.get(row);
+        Projection test = (Projection) list.get(row);
         if (proj.getName().equals(test.getName()))
           return row;
       }
@@ -289,7 +289,7 @@ public class JTableProjection extends JTable {
 
     int search(String projName) {
       for (int row = 0; row < list.size(); row++) {
-        ProjectionImpl test = (ProjectionImpl) list.get(row);
+        Projection test = (Projection) list.get(row);
         if (projName.equals(test.getName()))
           return row;
       }
@@ -301,8 +301,8 @@ public class JTableProjection extends JTable {
       int len = list.size();
       if (row >= len)
         return;
-      ProjectionImpl proj = (ProjectionImpl) list.get(row);
-      proj.getDefaultMapArea().setRect(bb);
+      Projection proj = (Projection) list.get(row);
+      // proj.getDefaultMapArea().setRect(bb);
       fireTableRowsUpdated(row, row);
     }
   }

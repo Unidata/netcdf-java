@@ -10,7 +10,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import java.util.*;
 
@@ -65,7 +65,7 @@ public class DtCoverageCSBuilder {
   List<CoordinateAxis> otherAxes;
   List<CoordinateAxis> allAxes;
   List<CoordinateTransform> coordTransforms;
-  ProjectionImpl orgProj;
+  Projection orgProj;
 
   DtCoverageCSBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
 
@@ -98,7 +98,7 @@ public class DtCoverageCSBuilder {
       xaxis = cs.getXaxis();
       yaxis = cs.getYaxis();
 
-      ProjectionImpl p = cs.getProjection();
+      Projection p = cs.getProjection();
       if (!(p instanceof RotatedPole)) {
         if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
           if (errlog != null)

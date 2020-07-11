@@ -33,7 +33,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import java.io.IOException;
@@ -250,7 +250,7 @@ public class AreaReader {
 
 
     // projection variable
-    ProjectionImpl projection = new McIDASAreaProjection(af);
+    Projection projection = new McIDASAreaProjection(af);
     Variable proj = new Variable(ncfile, null, null, "AREAnav");
     proj.setDataType(DataType.CHAR);
     proj.setDimensions("");

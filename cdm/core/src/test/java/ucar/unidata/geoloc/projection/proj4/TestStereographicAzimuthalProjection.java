@@ -3,15 +3,13 @@ package ucar.unidata.geoloc.projection.proj4;
 import org.junit.Test;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 
 public class TestStereographicAzimuthalProjection {
 
 
-  static private void test(ProjectionImpl proj, double[] lat, double[] lon) {
+  static private void test(Projection proj, double[] lat, double[] lon) {
     double[] x = new double[lat.length];
     double[] y = new double[lat.length];
     for (int i = 0; i < lat.length; ++i) {

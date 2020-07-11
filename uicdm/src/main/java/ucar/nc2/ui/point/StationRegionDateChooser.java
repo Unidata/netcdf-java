@@ -180,6 +180,7 @@ public class StationRegionDateChooser extends NPController {
     }
 
     if (regionSelect) {
+      /* LOOK
       double defArea = 1.0 / 8; // default area is 1/4 total
       LatLonRect llbb = np.getProjectionImpl().getDefaultMapAreaLL();
       LatLonPoint left = llbb.getLowerLeftPoint();
@@ -202,7 +203,7 @@ public class StationRegionDateChooser extends NPController {
           firePropertyChangeEvent(geoSelection, "GeoRegion");
           redraw();
         }
-      });
+      }); */
     }
 
     if (dateSelect) {
@@ -346,7 +347,7 @@ public class StationRegionDateChooser extends NPController {
   }
 
   public void setMapArea(ProjectionRect ma) {
-    np.getProjectionImpl().setDefaultMapArea(ma);
+    //np.getProjectionImpl().setDefaultMapArea(ma);
     // np.setMapArea(ma);
   }
 
@@ -476,14 +477,14 @@ public class StationRegionDateChooser extends NPController {
   public void setGeoBounds(LatLonRect llbb) {
     np.setMapArea(llbb);
     geoBounds = np.getProjectionImpl().latLonToProjBB(llbb);
-    np.getProjectionImpl().setDefaultMapArea(geoBounds);
+    //np.getProjectionImpl().setDefaultMapArea(geoBounds);
     setGeoSelection(geoBounds);
   }
 
   public void setGeoBounds(ProjectionRect bb) {
     geoBounds = new ProjectionRect(bb);
     np.setMapArea(bb);
-    np.getProjectionImpl().setDefaultMapArea(geoBounds);
+    //np.getProjectionImpl().setDefaultMapArea(geoBounds);
   }
 
   public void setGeoSelection(LatLonRect llbb) {

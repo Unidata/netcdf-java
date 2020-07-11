@@ -15,6 +15,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import ucar.unidata.geoloc.VerticalTransform;
 
 /**
  * A Coordinate System for gridded data. Assume:
@@ -138,9 +139,8 @@ public interface GridCoordSystem {
    * Same as getProjectionCT().getProjection().
    * 
    * @return ProjectionImpl or null.
-   * @deprecated this will return Projection, not ProjectionImpl in 6.
    */
-  ucar.unidata.geoloc.ProjectionImpl getProjection();
+  ucar.unidata.geoloc.Projection getProjection();
 
   /**
    * Use the bounding box to set the defaule map are of the projection.
@@ -161,7 +161,7 @@ public interface GridCoordSystem {
    * 
    * @return VerticalTransform or null.
    */
-  ucar.unidata.geoloc.vertical.VerticalTransform getVerticalTransform();
+  VerticalTransform getVerticalTransform();
 
   // horiz
 

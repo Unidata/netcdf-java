@@ -16,7 +16,6 @@ import ucar.nc2.ft2.simpgeometry.Point;
 import ucar.nc2.ft2.simpgeometry.Polygon;
 import ucar.nc2.ft2.simpgeometry.SimpleGeometryReader;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.ProjectionImpl;
 import java.util.*;
 
 /**
@@ -73,7 +72,7 @@ public class SimpleGeometryCSBuilder {
   private List<String> geometryContainerNames;
   private SimpleGeometryReader geometryReader;
   private Map<String, List<String>> geometryContainersAssoc;
-  private ProjectionImpl orgProj;
+  private Projection orgProj;
 
   public SimpleGeometryCSBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
 
