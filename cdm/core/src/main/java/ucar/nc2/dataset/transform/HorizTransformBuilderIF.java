@@ -5,17 +5,12 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
 import java.util.Formatter;
 
-/**
- * Describe
- *
- * @author caron
- * @since 5/5/2015
- */
+/** A Builder of Projection CoordinateTransform. */
 public interface HorizTransformBuilderIF {
 
   /**
    * Make a ProjectionCT from a Coordinate Transform Variable.
-   * A ProjectionCT is just a container for the metadata, the real work is in the ProjectionImpl
+   * A ProjectionCT is just a container for the metadata, the real work is in the Projection function.
    *
    * @param ctv the coordinate transform variable.
    * @param geoCoordinateUnits the geo X/Y coordinate units, or null.

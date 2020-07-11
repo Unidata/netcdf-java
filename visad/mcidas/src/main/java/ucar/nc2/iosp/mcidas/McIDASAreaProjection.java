@@ -17,8 +17,7 @@ import ucar.unidata.geoloc.projection.AbstractProjection;
 import ucar.unidata.util.Parameter;
 
 /**
- * McIDASAreaProjection is the ProjectionImpl for McIDAS Area navigation
- * modules.
+ * McIDASAreaProjection is the Projection for McIDAS Area navigation modules.
  *
  * @author dmurray
  */

@@ -1172,20 +1172,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       miny = prect.getMinPoint().getY();
       maxx = prect.getMaxPoint().getX();
       maxy = prect.getMaxPoint().getY();
-
-      /*
-       * see ProjectionImpl.latLonToProjBB2()
-       * Projection dataProjection = getProjection();
-       * ProjectionPoint ll = dataProjection.latLonToProj(llpt, ProjectionPoint.create());
-       * ProjectionPoint ur = dataProjection.latLonToProj(urpt, ProjectionPoint.create());
-       * ProjectionPoint lr = dataProjection.latLonToProj(lrpt, ProjectionPoint.create());
-       * ProjectionPoint ul = dataProjection.latLonToProj(ulpt, ProjectionPoint.create());
-       * 
-       * minx = Math.min(ll.getX(), ul.getX());
-       * miny = Math.min(ll.getY(), lr.getY());
-       * maxx = Math.max(ur.getX(), lr.getX());
-       * maxy = Math.max(ul.getY(), ur.getY());
-       */
     }
 
 

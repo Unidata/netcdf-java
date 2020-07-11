@@ -366,8 +366,6 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return getUnitsString();
   }
 
-  // public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
-
   /**
    * true if there may be missing data, see VariableDS.hasMissing()
    */

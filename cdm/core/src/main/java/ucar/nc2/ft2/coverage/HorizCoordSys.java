@@ -209,7 +209,7 @@ public class HorizCoordSys {
 
         } /*
            * else { // WTF projbb on non Projection ?
-           * ProjectionImpl proj = transform.getProjection();
+           * Projection proj = transform.getProjection();
            * LatLonRect llrect = proj.projToLatLonBB(projbb);
            * opt = lonaxis.subset(llrect.getLonMin(), llrect.getLonMax(), horizStride);
            * if (opt.isPresent()) lonaxisSubset = opt.get();

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dt;
 
+import javax.annotation.Nullable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.time.CalendarDate;
@@ -132,14 +133,16 @@ public interface GridCoordSystem {
    * 
    * @return ProjectionCT or null.
    */
+  @Nullable
   ProjectionCT getProjectionCT();
 
   /**
    * Get the Projection that performs the transform math.
    * Same as getProjectionCT().getProjection().
    * 
-   * @return ProjectionImpl or null.
+   * @return Projection or null.
    */
+  @Nullable
   ucar.unidata.geoloc.Projection getProjection();
 
   /**
@@ -153,6 +156,7 @@ public interface GridCoordSystem {
    * 
    * @return VerticalCT or null.
    */
+  @Nullable
   VerticalCT getVerticalCT();
 
   /**
@@ -161,6 +165,7 @@ public interface GridCoordSystem {
    * 
    * @return VerticalTransform or null.
    */
+  @Nullable
   VerticalTransform getVerticalTransform();
 
   // horiz

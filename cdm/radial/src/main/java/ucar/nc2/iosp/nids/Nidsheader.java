@@ -1354,7 +1354,6 @@ class Nidsheader {
       ncfile.addVariable(null, yaxis);
 
       Projection projection = new FlatEarth(lat_min, lon_max);
-      // ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
       // coordinate transform variable
       Variable ct = new Variable(ncfile, null, null, projection.getClassName());
       ct.setDataType(DataType.CHAR);
@@ -1508,7 +1507,6 @@ class Nidsheader {
     ncfile.addVariable(null, yaxis);
 
     Projection projection = new FlatEarth(lat_min, lon_max);
-    // ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
     // coordinate transform variable
     Variable ct = new Variable(ncfile, null, null, projection.getClassName());
     ct.setDataType(DataType.CHAR);

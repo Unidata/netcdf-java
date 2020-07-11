@@ -329,8 +329,6 @@ public class DtCoverage implements IsMissingEvaluator {
   }
 
 
-  // public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
-
   /**
    * true if there may be missing data, see VariableDS.hasMissing()
    */

@@ -513,11 +513,11 @@ public class WKTParser {
 
 
   /**
-   * Convert OGC spatial reference WKT to a ProjectionImpl.
+   * Convert OGC spatial reference WKT to a Projection.
    * An IllegalArgumentException may be thrown if a parameter is missing.
    *
    * @param srp The parsed OGC WKT spatial reference text.
-   * @return The ProjectionImpl class.
+   * @return the Projection.
    */
   public static Projection convertWKTToProjection(WKTParser srp) {
     if (!srp.isPlanarProjection()) {
