@@ -1,13 +1,17 @@
-description = "A collection of utilities needed client-side, including IOSP's requiring java.awt."
-ext.title = "Client-side CDM image library"
+description = 'A collection of utilities needed client-side, including IOSP\'s requiring java.awt.'
+ext.title = 'Client-side CDM image library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-    compile project(':cdm:cdm-core')
-    compile libraries["slf4j-api"]
+  api platform(project(':netcdf-java-platform'))
+
+  api project(':cdm:cdm-core')
+
+  compile 'org.slf4j:slf4j-api'
+
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'junit:junit'
 }

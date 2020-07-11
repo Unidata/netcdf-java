@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
@@ -48,7 +49,7 @@ class PublishToRawRepoTask extends DefaultTask {
      *     <li>{@code $host/$repoName/$destPath/build/publishing/PublishToRawRepoTask.groovy}</li>
      * </ul>
      */
-    @Input
+    @InputFile
     File srcFile
     
     /**
@@ -74,7 +75,7 @@ class PublishToRawRepoTask extends DefaultTask {
      * stop adding additional files to the request. Submit it and start building the next one.
      */
     @Input @Optional
-    int endRequestThreshold = 5 * 1024 * 1024  // 5 MB
+    Integer endRequestThreshold = 5 * 1024 * 1024  // 5 MB
     
     // No @Output. The task will never be considered up-to-date.
     

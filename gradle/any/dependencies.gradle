@@ -1,291 +1,59 @@
 // Gradle dependency management.
 // This technique was inspired by: http://stackoverflow.com/questions/9547170
+//
+// Usage:
+//   All gradle build scripts will apply this script using:
+//     apply from: "$rootDir/gradle/any/dependencies.gradle"
+//
 
 //================================================ Repositories ================================================//
 
 repositories {
-    // Prefer JCenter to Maven Central. See
-    // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
-    jcenter()
-    mavenCentral()  // JCenter isn't quite a superset of Maven Central.
-    
-    // All of the hosted repositories below could be replaced with:
-    //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
-    // which is a group repository that contains all other repositories. However, I prefer to list all source
-    // repos explicitly so that we know where all artifacts ultimately come from.
-    
-    // Hosted release repositories.
-    maven {
-        // "visad" and "jj2000".
-        url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
+  // Prefer JCenter to Maven Central. See
+  // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
+  jcenter()
+  mavenCentral()  // JCenter isn't quite a superset of Maven Central.
+
+  // All of the hosted repositories below could be replaced with:
+  //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
+  // which is a group repository that contains all other repositories. However, I prefer to list all source
+  // repos explicitly so that we know where all artifacts ultimately come from.
+
+  // Hosted release repositories.
+  maven {
+    // "visad" and "jj2000".
+    url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
+  }
+  maven {
+    // For snapshots of "dtswar", "d4ts" (used by tests)
+    url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
+  }
+
+  maven {
+    url 'https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/'
+    content {
+      // this repository *only* contains artifacts with group "org.bounce"
+      includeGroup 'org.bounce'
     }
-    maven {
-        // For snapshots of "dtswar", "d4ts" (used by tests)
-        url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
-    }
-    maven {
-        // For "bounce", which is used in :ui. As of 5.0.0, it is the ONLY dependency from this repo that we
-        // still use. We should really try to eliminate our use of it.
-        url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
-    }
+  }
 }
-
-//================================================ Dependencies ================================================//
-
-ext {
-    // Extra properties must be declared in the "ext" namespace. After declaration, they can be used without prefix.
-    // These will be inherited by subprojects.
-    versions = [:]
-    libraries = [:]
-}
-
-////////////////////////////////////////// Plugins //////////////////////////////////////////
-
-libraries["gretty"] = "org.gretty:gretty:3.0.1"
-
-libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
-
-libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3"
-
-libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1"
-
-libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
-
-libraries["jruby-gradle-plugin"] = "com.github.jruby-gradle:jruby-gradle-plugin:1.7.0"
-
-libraries["spotless"] = "com.diffplug.spotless:spotless-plugin-gradle:3.22.0"
-
-//////////////////////////////////////////// Spring //////////////////////////////////////////
-
-versions["spring"] = "4.3.20.RELEASE"
-
-// d4test and ui(?)
-libraries["spring-context"] = "org.springframework:spring-context:${versions["spring"]}"
-
-// d4test
-libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
-libraries["spring-beans"] = "org.springframework:spring-beans:${versions["spring"]}"
-libraries["spring-web"] = "org.springframework:spring-web:${versions["spring"]}"
-libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spring"]}"
-
-//////////////////////////////////////////// XML Beans - WaterML //////////////////////////////////////
-
-libraries["xmlbeans"] = "org.apache.xmlbeans:xmlbeans:2.6.0"
-
-versions["52n-common-xml"] = "2.2.0"
-
-libraries["52n-xml-waterML-v20"] = "org.n52.sensorweb:52n-xml-waterML-v20:${versions["52n-common-xml"]}"
-
-libraries["52n-xml-gml-v321"] = "org.n52.sensorweb:52n-xml-gml-v321:${versions["52n-common-xml"]}"
-
-libraries["52n-xml-sweCommon-v20"] = "org.n52.sensorweb:52n-xml-sweCommon-v20:${versions["52n-common-xml"]}"
-
-libraries["52n-xml-om-v20"] = "org.n52.sensorweb:52n-xml-om-v20:${versions["52n-common-xml"]}"
-
-libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${versions["52n-common-xml"]}"
-
-//////////////////////////////////////////// Logging //////////////////////////////////////////
-
-versions["slf4j"] = "1.7.28"
-
-libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
-
-libraries["jcl-over-slf4j"] = "org.slf4j:jcl-over-slf4j:${versions["slf4j"]}"
-
-versions["log4j"] = "2.11.0"
-
-libraries["log4j-web"] = "org.apache.logging.log4j:log4j-web:${versions["log4j"]}"
-
-libraries["log4j-slf4j-impl"] = "org.apache.logging.log4j:log4j-slf4j-impl:${versions["log4j"]}"
-
-libraries["logback-classic"] = "ch.qos.logback:logback-classic:1.2.3"
-
-//////////////////////////////////////////// Testing //////////////////////////////////////////
-
-// d4tests
-libraries["spring-test"] = "org.springframework:spring-test:${versions["spring"]}"
-
-libraries["junit"] = "junit:junit:4.12"
-
-libraries["JUnitParams"] = "pl.pragmatists:JUnitParams:1.0.5"
-
-libraries["commons-io"] = "commons-io:commons-io:2.5"
-
-libraries["commons-compress"] = "org.apache.commons:commons-compress:1.12"
-
-libraries["xmlunit-core"] = "org.xmlunit:xmlunit-core:2.3.0"
-
-// These four are all for Spock.
-libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
-
-libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.7"
-
-// In Spock, allows mocking of classes (in addition to interfaces).
-libraries["cglib-nodep"] = "cglib:cglib-nodep:3.2.4"
-
-// In Spock, allows mocking of classes without default constructor (together with CGLIB).
-libraries["objenesis"] = "org.objenesis:objenesis:2.4"
-
-//mockito
-libraries["mockito"] = "org.mockito:mockito-core:2.+"
-
-// Fluent assertions for Java
-libraries["truth"] = "com.google.truth:truth:1.0"
-
-//////////////////////////////////////////// Other //////////////////////////////////////////
-
-// See https://github.com/coverity/coverity-security-library
-libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
-
-libraries["guava"] = "com.google.guava:guava:28.0-jre"
-
-libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.9"
-
-libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.11"
-
-libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.9"
-
-// s3 RandomAccessFile
-libraries["aws-s3"] = dependencies.create("software.amazon.awssdk:s3:2.10.76") {
-    // exclude netty nio client due to open CVEs. See
-    // https://github.com/aws/aws-sdk-java-v2/issues/1632
-    // we don't use the nio http client in our S3 related code,
-    // so we should be ok here (others may need to add it specifically to
-    // their code if they are using our S3 stuff, but then it's their
-    // explicit decision to run it).
-    exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
-}
-
-//// command line parser
-libraries["jcommander"] = "com.beust:jcommander:1.78"
-
-libraries["jdom2"] = "org.jdom:jdom2:2.0.6"
-
-libraries["jna"] = "net.java.dev.jna:jna:5.4.0"
-
-// replace by javax.time
-libraries["joda-time"] = "joda-time:joda-time:2.10.3"
-
-// HTML scraper used in GRIB
-libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
-
-//// Annotations: Nullable
-libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.2"
-
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.9.1"
-
-libraries["re2j"] = "com.google.re2j:re2j:1.3"
-
-libraries["visad-mcidas-slim-ucar-ns"] = "edu.wisc.ssec:visad-mcidas-slim-ucar-ns:20200507-2"
-
-libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
-
-//// GRIB
-libraries["jj2000"] = "edu.ucar:jj2000:5.4"
-
-// The easy HTTP client for Groovy (and Java). Used in buildSrc.
-libraries["http-builder-ng-okhttp"] = "io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3"
-
-////////////////////////////// legacy gradle module /////////////////////////////////////////
-
-libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s3:1.11.236") {
-    // exclude jackson deps so that they can be overridden
-    // with 2.7.x deps to address security issue. See
-    // https://github.com/aws/aws-sdk-java/issues/1159
-    // as of the time these were added, the versions of these were:
-    // jackson-core: 2.6.7
-    // jackson-annotations: 2.6.0
-    // jackson-databind: 2.6.7.1
-    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
-    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'
-    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
-}
-
-// replace the jackson.core libs that were excluded from aws-java-sdk-s3
-libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.10.0"
-libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.10.0"
-
-////////////////////////////// end /////////////////////////////////////////
-
-libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
-
-versions["taglibs"] = "1.2.5"
-
-libraries["taglibs-standard-spec"] = "org.apache.taglibs:taglibs-standard-spec:${versions["taglibs"]}"
-
-libraries["taglibs-standard-impl"] = "org.apache.taglibs:taglibs-standard-impl:${versions["taglibs"]}"
-
-//////////////////////////////////////////// ToolsUI //////////////////////////////////////////
-//
-// Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
-// https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/
-libraries["bounce"] = "org.bounce:bounce:0.18"
-
-// http://www.jfree.org/
-libraries["jcommon"] = "org.jfree:jcommon:1.0.23"
-libraries["jfreechart"] = "org.jfree:jfreechart:1.0.19"
-
-// http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
-libraries["jgoodies-forms"] = "com.jgoodies:jgoodies-forms:1.6.0"
-
-// LGoodDatePicker - swing calendar widget used in TdsMonitor
-libraries["lgooddatepicker"] = "com.github.lgooddatepicker:LGoodDatePicker:10.3.1"
-
-/////////////////////////////// Servlets to run tests against ////////////////////////////////
-
-versions["dapwars"] = "5.0.0-SNAPSHOT"
-// used by :dap4 test
-libraries["d4ts"] = "edu.ucar:d4ts:${versions["dapwars"]}"
-
-// :opendap and :httpservices test.
-libraries["dts"] = "edu.ucar:dtswar:${versions["dapwars"]}"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
-
 // Executes the given closure against all objects in this collection, and any objects subsequently added to this
 // collection. See org.gradle.api.DomainObjectCollection.all(Closure)
-configurations.all {
-    resolutionStrategy {
-        // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j". This effectively
-        // converts every JCL call to an slf4j call. We can see the first-level dependencies that drag in
-        // "commons-logging" by commenting-out the rule below and running:
-        /*
-            ./gradlew -q tds:dependencyInsight --configuration runtime --dependency commons-logging
-            commons-logging:commons-logging:1.2
-            +--- org.apache.httpcomponents:httpclient:4.5.2
-            |    ...
-            \--- org.springframework:spring-core:4.3.8.RELEASE
-                 ...
-         */
-        eachDependency { DependencyResolveDetails dep ->
-            if (dep.requested.name == 'commons-logging') {
-                dep.useTarget libraries["jcl-over-slf4j"]
-            }
-        }
-    }
-    
-    // STAX is already included in Java 1.6+; no need for a third-party depenency.
-    /*
-        ./gradlew -q tds:dependencyInsight --configuration runtime --dependency stax-api
-        stax:stax-api:1.0.1
-        +--- org.apache.xmlbeans:xmlbeans:2.6.0
-        |    ...
-        \--- org.codehaus.jettison:jettison:1.3.7
-             \--- net.openhft:chronicle-map:2.4.15
-                  ...
-     */
-    exclude group: 'stax', module: 'stax-api'
-    
-    // Another SLF4J binding that we don't want.
-    /*
-        ./gradlew -q tds:dependencyInsight --configuration runtime --dependency slf4j-log4j12
-        org.slf4j:slf4j-log4j12:1.7.2
-        +--- uk.ac.rdg.resc:edal-common:1.2.7
-        |    ...
-        \--- uk.ac.rdg.resc:edal-godiva:1.2.7
-             ...
-     */
-    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 
+configurations.all {
+  resolutionStrategy.dependencySubstitution {
+    // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j". This effectively
+    // converts every JCL call to an slf4j call. We can see the first-level dependencies that drag in
+    // "commons-logging" by commenting-out the rule below and running:
+    /*
+         ./gradlew -q :cdm:cdm-core:dependencyInsight --configuration compileClasspath --dependency commons-logging
+
+        commons-logging:commons-logging:1.2
+        +--- org.apache.httpcomponents:httpclient:4.5.12
+        |    ...
+     */
+    substitute module('commons-logging:commons-logging') because 'we want to control JCL logging with slf4j' with module("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+  }
 }
