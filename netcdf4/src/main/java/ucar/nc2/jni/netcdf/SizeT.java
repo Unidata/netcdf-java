@@ -11,9 +11,10 @@ import com.sun.jna.Native;
 /**
  * Map a native size_t with JNA.
  *
- * @see "https://github.com/twall/jna/issues/191"
- *      TODO: This will move packages in version 6.
- *      TODO: This may not be needed in version 6.
+ * TODO: This will move packages in version 6.
+ * TODO: This may not be needed in version 6.
+ *
+ * @see <a href="https://github.com/twall/jna/issues/191" />
  */
 public class SizeT extends IntegerType {
   public SizeT() {

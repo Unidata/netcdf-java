@@ -40,8 +40,10 @@
 
 package opendap.dap;
 
+import com.google.common.escape.Escaper;
+import com.google.common.html.HtmlEscapers;
 import java.net.URLConnection;
-import com.coverity.security.Escape;
+
 import java.util.Optional;
 import ucar.httpservices.HTTPMethod;
 
@@ -114,6 +116,7 @@ public class ServerVersion implements java.io.Serializable {
    */
   private String versionString;
 
+  private Escaper htmlEscaper = HtmlEscapers.htmlEscaper();
 
   /**
    * Determines Server (Protocol) Version based on the headers associated
@@ -255,7 +258,7 @@ public class ServerVersion implements java.io.Serializable {
   }
 
   private void processXDODSServerVersion(String ver) throws DAP2Exception {
-    String badVersionMsg = "Invalid XDODS-Server header: " + Escape.html(ver)
+    String badVersionMsg = "Invalid XDODS-Server header: " + htmlEscaper.escape(ver)
         + "  Version must contain an identifying word (ex: opendap or "
         + "DODS followed by a \"/\" and then MV.mv (Where MV = " + "MajorVersionNumber and mv = MinorVersionNumber)";
     // search for the String, e.g. DODS/2.15, and set major and minor

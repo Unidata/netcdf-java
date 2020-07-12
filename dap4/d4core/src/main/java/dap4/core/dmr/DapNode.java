@@ -254,8 +254,8 @@ public abstract class DapNode {
   /**
    * Closest containing group
    *
-   * @returns closest group not equal to this
-   *          or null if this is a DapDataset
+   * @return closest group not equal to this
+   *         or null if this is a DapDataset
    */
 
   public DapGroup getGroup() {
@@ -279,7 +279,7 @@ public abstract class DapNode {
   /**
    * Closest containing group, structure, sequence
    *
-   * @returns closest container
+   * @return closest container
    */
 
   public DapNode getContainer() {

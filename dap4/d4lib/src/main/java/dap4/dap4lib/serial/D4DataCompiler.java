@@ -69,7 +69,6 @@ public class D4DataCompiler {
    * in the serialized databuffer. Access to non-top-level
    * variables is accomplished on the fly.
    *
-   * @return
    * @throws DapException
    */
   public void compile() throws DapException {
@@ -104,7 +103,7 @@ public class D4DataCompiler {
   /**
    * @param var
    * @param container
-   * @return
+   * @return data
    * @throws DapException
    */
 
@@ -205,7 +204,7 @@ public class D4DataCompiler {
    *
    * @param dapseq
    * @param container
-   * @return
+   * @return sequence
    * @throws DapException
    */
   public D4Cursor compileSequence(DapVariable var, DapSequence dapseq, D4Cursor container) throws DapException {

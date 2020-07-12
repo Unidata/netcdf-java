@@ -116,8 +116,8 @@ public class CDMDSP extends AbstractDSP {
   /**
    * Provide an extra API for use in testing
    *
-   * @param ncd
-   * @return
+   * @param ncd netcdf dataset
+   * @return the cdmdsp
    * @throws DapException
    */
   public CDMDSP open(NetcdfDataset ncd) throws DapException {

@@ -175,14 +175,14 @@ public class StructureDataDeep extends StructureDataA {
             break;
           default:
             throw new IllegalStateException("scalar " + dtype);
-            /*
-             * case BOOLEAN:
-             * break;
-             * case SEQUENCE:
-             * break;
-             * case OPAQUE:
-             * break;
-             */
+          /*
+           * case BOOLEAN:
+           * break;
+           * case SEQUENCE:
+           * break;
+           * case OPAQUE:
+           * break;
+           */
         }
       } else {
         int n = m.getSize();
@@ -230,14 +230,14 @@ public class StructureDataDeep extends StructureDataA {
             break;
           default:
             throw new IllegalStateException("array " + dtype);
-            /*
-             * case BOOLEAN:
-             * break;
-             * case OPAQUE:
-             * break;
-             * case STRUCTURE:
-             * break; //
-             */
+          /*
+           * case BOOLEAN:
+           * break;
+           * case OPAQUE:
+           * break;
+           * case STRUCTURE:
+           * break; //
+           */
           case SEQUENCE:
             break; // skip
         }

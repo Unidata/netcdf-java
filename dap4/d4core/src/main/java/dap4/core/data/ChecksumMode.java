@@ -20,7 +20,7 @@ public enum ChecksumMode {
    * Return true if the ckm mode is allowed with this, false otherwise
    * 
    * @param ckm
-   * @return
+   * @return true, if enabled
    */
   public boolean enabled(ChecksumMode ckm) {
     if (ckm == null || this == NONE)

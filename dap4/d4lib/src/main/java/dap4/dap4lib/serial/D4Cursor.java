@@ -160,7 +160,7 @@ public class D4Cursor extends AbstractCursor {
    * @param atomvar
    * @param basetype
    * @param slices
-   * @return
+   * @return Object of basetype
    * @throws DapException
    */
   protected Object readAs(DapVariable atomvar, DapType basetype, List<Slice> slices) throws DapException {
