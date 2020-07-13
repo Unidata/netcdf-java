@@ -103,7 +103,7 @@ jobs:
           SYSTEM_PROPS="$CONTENT_ROOT $DOWNLOAD_DIR $UPLOAD_DIR $BUILDERS"
           # run tds tests
           echo "Run the TDS tests"
-          ./gradlew $SYSTEM_PROPS --info --stacktrace testAll
+          ./gradlew $SYSTEM_PROPS --info --stacktrace testAll --refresh-dependencies
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
