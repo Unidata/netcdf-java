@@ -15,19 +15,14 @@
 # users just like we do for commit author emails.
 # docs/*  docs@example.com
 
+* @lesserwhirls
+
 #####################
 # top level modules #
 #####################
 
 httpservices/** @DennisHeimbigner
 netcdf4/** @DennisHeimbigner
-
-waterml/** @lesserwhirls
-gradle/** @lesserwhirls
-travis/* @lesserwhirls
-
-grib/** @lesserwhirls
-idv/** @lesserwhirls
 
 ###########################################
 # classpath / not module specific matches #
@@ -42,9 +37,6 @@ idv/** @lesserwhirls
 # general file types #
 ######################
 
-*.gradle @lesserwhirls
-gradle* @lesserwhirls
-
 *.py @lesserwhirls @dopplershift
 
 ####################
@@ -52,7 +44,3 @@ gradle* @lesserwhirls
 ####################
 
 gradle/any/dependencies.gradle @DennisHeimbigner @lesserwhirls
-
-docs/internal/release.md @lesserwhirls
-
-idv/build.gradle @lesserwhirls
