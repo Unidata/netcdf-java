@@ -39,6 +39,11 @@ For bug reports, feel free to open an issue on this repository, or contact us at
 Please identify the version of the package as well as the version/vendor of Java you are using.
 For potential security issues, please contact security@unidata.ucar.edu directly.
 
+## Contributors
+
+Are you looking to contribute to the netCDF-Java efforts?
+That's great!
+Please see our [contributors guide](https://github.com/Unidata/netcdf-java/blob/develop/.github/CONTRIBUTING.md) for more information!
 
 ## NetCDF Markup Language (NcML)
 
@@ -65,7 +70,7 @@ THREDDS Catalog documentation (including the specification) is available at
 
 ## Licensing
 
-netCDF-Java is released under the BSD-3 licence, which can be found [here](https://github.com/Unidata/netcdf-java/blob/master/LICENSE).
+netCDF-Java is released under the BSD-3 licence, which can be found [here](https://github.com/Unidata/netcdf-java/blob/develop/LICENSE).
 
 Furthermore, this project includes code from third-party open-source software components:
 * [Gretty](https://github.com/akhikhl/gretty): for details, see `buildSrc/README.md`

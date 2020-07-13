@@ -9,6 +9,10 @@ The other projects held under the THREDDS umbrella are:
   * [Rosetta](https://github.com/unidata/rosetta)
   * [Siphon](https://github.com/unidata/siphon) (a python data access library, which includes an interface to the TDS).
 
+Please review the [UCAR code of conduct](https://github.com/Unidata/.github/blob/develop/CODE_OF_CONDUCT.md) before submitting a pull request.
+Once your have submitted a pull requests, you will be asked to digitally sign the Unidata Contributor License Agreement.
+For more information about the CLA, please visit https://www.unidata.ucar.edu/blogs/developer/entry/contributor-license-agreement-for-unidata.
+
 ## Process Overview
 
 * [GitHub Setup](#gh-setup)
@@ -296,7 +300,7 @@ For example, visit [Unidata/netcdf-java#355](https://github.com/Unidata/netcdf-j
 GitHub Actions check the following:
 * build and test netCDF-Java using AdoptOpenJDK 8, Zulu JDK 8 (*required*)
 * build the documentation, if any documentation changes were made in the PR. (*required*)
-* code syle check using `spotlessCheck`
+* code style check using `spotlessCheck`
 * build and testing the THREDDS Data Server against the PR
 
 Pull requests whose changes cause one or more of the first three checks to fail are generally not merged.
@@ -305,6 +309,6 @@ Any changes to your pull request will trigger the GitHub Actions to re-run.
 
 If your pull request addresses a bug, we kindly ask that you include a test in your pull request.
 Learn more about testing within netCDF-Java on our [wiki](https://github.com/Unidata/netcdf-java/wiki/Testing)
-If you have test data that are larger than a few hundered kB, please let us know.
+If you have test data that are larger than a few hundred kB, please let us know.
 If you cannot reduce the size of the test file, we can add it to our [integration test datasets](https://github.com/unidata/thredds-test-data), as long as we have permission to redistribute the file.
 If you do not know how to write tests in Java, we will be more than happy to work with you!
