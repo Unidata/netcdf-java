@@ -88,16 +88,16 @@ public class TestURIParse extends UnitTestCommon {
       try {
         uri = HTTPUtil.parseToURI(httptests[i]);
       } catch (URISyntaxException use) {
-        System.err.println("Parse error: " + use.getMessage());
+        logger.error("Parse error: " + use.getMessage());
         if (DEBUG)
-          use.printStackTrace(System.err);
+          logger.debug("Error {}", use);
         uri = null;
         passthis = false;
       }
       String raw = dumpraw(uri);
       if (DEBUG)
-        System.err.printf("raw=     |%s|%n", raw);
-      System.err.printf("Test A: " + "input :: actual%n" + "\t   |%s|%n" + "\t:: |%s|%n", httptests[i], dump(uri));
+        logger.debug("raw=     |{}|", raw);
+      logger.debug("Test A: input :: actual \n\t   |{}| \n\t:: |{}|", httptests[i], dump(uri));
       if (!httptests[i].equals(dump(uri))) {
         passthis = false;
       }
@@ -105,37 +105,20 @@ public class TestURIParse extends UnitTestCommon {
       try {
         uri = HTTPUtil.parseToURI(raw);
       } catch (URISyntaxException use) {
-        System.err.println("Parse error: " + use.getMessage());
-        if (DEBUG)
-          use.printStackTrace(System.err);
+        logger.error("Parse error: {}" + use);
         uri = null;
         passthis = false;
       }
-      System.err.printf("Test B: " + "input :: actual%n" + "\t   |%s|%n" + "\t:: |%s|%n", raw, dumpraw(uri));
+      logger.debug("Test B: input :: actual \n\t   |{}|\n\t:: |{}|\n", raw, dumpraw(uri));
       if (!raw.equals(dumpraw(uri))) {
         passthis = false;
       }
-      System.err.println(passthis ? "Pass" : "Fail");
+      logger.debug(passthis ? "Pass" : "Fail");
       if (!passthis)
         pass = false;
     }
     Assert.assertTrue("TestMisc.testURX", pass);
   }
-
-  @Test
-  @Ignore("Temporary to test Caron's case specifically")
-  public void testCaron() {
-    try {
-      try (HTTPMethod m = HTTPFactory.Get(CARON)) {
-        int code = m.execute();
-        Assert.assertTrue("Unexpected return code: " + code, code == 200);
-      }
-    } catch (Exception use) {
-      use.printStackTrace();
-      Assert.assertTrue("URISyntaxException", false);
-    }
-  }
-
 
   static protected boolean uriCompare(URI uri1, URI uri2) {
     boolean ok = true;

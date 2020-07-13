@@ -1,19 +1,20 @@
 // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
+
 apply plugin: "jacoco"
 
-// Will apply to any task of type Test or type org.akhikhl.gretty.StartBaseTask,
-// including org.akhikhl.gretty.AppBeforeIntegrationTestTask.
-Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
+// Will apply to any task of type Test
+Closure isExtendedByJacoco = {Task task -> task.extensions.findByType(JacocoTaskExtension)
+}
 Collection<Task> tasksExtendedByJacoco = tasks.matching(isExtendedByJacoco)
 
 tasksExtendedByJacoco.all {
-    // Add the execution data that Jacoco generates as a task output.
-    // The data is a record of all the classes visited during test execution. It is self-contained; we don't need to
-    // provide any source or class directories for it to "work". Those are only necessary for the report.
-    outputs.file jacoco.destinationFile
-    
-    // Whether or not data should be appended if the execution data already exists.
-    jacoco.append = false
+  // Add the execution data that Jacoco generates as a task output.
+  // The data is a record of all the classes visited during test execution. It is self-contained; we don't need to
+  // provide any source or class directories for it to "work". Those are only necessary for the report.
+  outputs.file jacoco.destinationFile
+
+  // Whether or not data should be appended if the execution data already exists.
+  //jacoco.append = false
 }
 
 /*
@@ -42,26 +43,33 @@ tasksExtendedByJacoco.all {
  * 'integTest' SourceSet to :tds. So in the future, we won't be generating empty Jacoco reports.
  */
 tasks.withType(JacocoReport).all {  // Will apply to ":<subproject>:jacocoTestReport" and ":rootJacocoReport".
-    group = "Reports"
-    dependsOn tasks.withType(Test)
-    
-    reports {
-        xml.enabled = false
-        html.enabled = true
-        csv.enabled = false
+  group = "Reports"
+  dependsOn tasks.withType(Test)
+
+  //executionData tasks.withType(Test).findAll { it.state.executed }
+  //executionData { tasks.withType(Test).findAll { it.jacoco.destinationFile.exists() }*.jacoco.destinationFile }
+
+  reports {
+    xml.enabled = false
+    html.enabled = true
+    csv.enabled = false
+  }
+
+  // By default, JacocoReport runs onlyIf ALL of the executionData exist. We want it to run if ANY exists.
+  setOnlyIf {
+    executionData.any {
+      it.exists()
     }
-    
-    // By default, JacocoReport runs onlyIf ALL of the executionData exist. We want it to run if ANY exists.
-    setOnlyIf {
-        executionData.any { it.exists() }
-    }
-    
-    // JacocoReport's @TaskAction expects everything in executionData to exist. However, by modifying onlyIf{} above,
-    // we've allowed some potentially non-existent files to creep in. We must filter them out before the task runs.
-    // Unlike most changes to an @Input property during execution, this does not break the task's UP-TO-DATE checking.
-    // Apparently, a snapshot of a FileCollection containing non-existent files is equal to a snapshot of that same
-    // FileCollection with those elements removed.
-    doFirst {
-        executionData = executionData.filter { it.exists() }
-    }
+  }
+
+  // JacocoReport's @TaskAction expects everything in executionData to exist. However, by modifying onlyIf{} above,
+  // we've allowed some potentially non-existent files to creep in. We must filter them out before the task runs.
+  // Unlike most changes to an @Input property during execution, this does not break the task's UP-TO-DATE checking.
+  // Apparently, a snapshot of a FileCollection containing non-existent files is equal to a snapshot of that same
+  // FileCollection with those elements removed.
+  doFirst {
+    executionData(executionData.filter {
+      it.exists()
+    })
+  }
 }

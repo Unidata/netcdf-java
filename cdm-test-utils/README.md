@@ -1,6 +1,7 @@
-# testUtil
+# cdm-test-utils
 
-Contains miscellaneous utility methods for use in our test suite.
+Contains miscellaneous utility methods for use in the CDM test suite.
+Published for internal use by other THREDDS projects.
 
 ## Inclusion of third-party software
 

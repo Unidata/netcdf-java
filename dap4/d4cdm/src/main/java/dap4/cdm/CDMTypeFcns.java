@@ -1177,7 +1177,7 @@ public abstract class CDMTypeFcns {
    * @param cdmtype
    * @param en
    * @param o
-   * @return
+   * @return parsed attribute
    */
   public static Object attributeParse(DataType cdmtype, EnumTypedef en, Object o) {
     String so = o.toString();

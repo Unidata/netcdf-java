@@ -1,0 +1,62 @@
+plugins {
+  id 'base'
+  id 'com.github.jruby-gradle.base'
+}
+
+// Jekyll build/serve tasks
+
+import com.github.jrubygradle.JRubyExec
+
+repositories {
+  jcenter()
+  ruby.gems()
+}
+
+dependencies {
+  // jekyll 4.x moved to using sassc (relies on c extension code) over sass (pure ruby version)
+  // We will stay on jekyll 3.x until sassc works with jruby
+  // see https://github.com/sass/sassc-ruby/issues/182
+  gems 'rubygems:jekyll:3.8.7'
+}
+
+ext {
+  jekyllSourceDir = file('src/public/userguide/')
+  jekyllDestinationDir = file("$buildDir/userguide/")
+
+  sourceFlag = '--source=' + jekyllSourceDir.absolutePath
+  outputFlag = '--destination=' + jekyllDestinationDir.absolutePath
+}
+
+task buildJekyllSite(type: JRubyExec) {
+  group = 'Documentation'
+  description = 'Build jekyll site.'
+
+  inputs.files jekyllSourceDir
+  outputs.dir jekyllDestinationDir
+
+  script 'jekyll'
+  scriptArgs 'build'
+  scriptArgs "$sourceFlag"
+  scriptArgs "$outputFlag"
+
+  // Consider enabling this to help us determine when pages need to be pushed to Nexus.
+  // A copy of .jekyll-metadata could be stored in the repo and then compared to the local file.
+  // See https://jekyllrb.com/docs/configuration/#incremental-regeneration
+  // scriptArgs "--incremental"
+}
+
+task serveJekyllSite(type: JRubyExec) {
+  group = 'Documentation'
+  description = 'Serve jekyll site locally.'
+
+  // This task starts a server; it is never considered UP-TO-DATE.
+  outputs.upToDateWhen {
+    false
+  }
+
+  script 'jekyll'
+
+  scriptArgs 'serve'
+  scriptArgs "$sourceFlag"
+  scriptArgs "$outputFlag"
+}

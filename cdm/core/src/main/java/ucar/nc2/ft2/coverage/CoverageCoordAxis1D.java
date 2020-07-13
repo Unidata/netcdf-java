@@ -373,7 +373,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
       case Lat:
       case Lon:
         throw new IllegalArgumentException();
-        // return null; // LOOK heres a case where null is "correct"
+      // return null; // LOOK heres a case where null is "correct"
 
       case Time:
         if (params.isTrue(SubsetParams.timePresent))

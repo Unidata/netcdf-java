@@ -204,7 +204,7 @@ public class Nc4Cursor extends AbstractCursor {
    *
    * @param vi
    * @param ti
-   * @return
+   * @return Object scalar
    * @throws DapException
    */
   protected Object readAtomicScalar(VarNotes vi, TypeNotes ti) throws DapException {

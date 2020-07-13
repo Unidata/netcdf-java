@@ -37,10 +37,11 @@ import java.util.*;
  * IOSP for reading netcdf files through JNA interface to netcdf C library
  *
  * @author caron
- * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
- * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
- * @see "https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#How-can-I-convert-HDF5-files-into-netCDF-4-files"
- *      hdf5 features not supported
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html" />
+ * @see <a href="http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf" />
+ * @see <a href=
+ *      "https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#How-can-I-convert-HDF5-files-into-netCDF-4-files" />
+ *
  * @deprecated do not use, will be removed in ver 6.
  */
 @Deprecated
@@ -3253,16 +3254,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           break;
         default:
           throw new IllegalStateException("scalar " + dtype);
-          /*
-           * case BOOLEAN:
-           * break;
-           * case SEQUENCE:
-           * break;
-           * case STRUCTURE:
-           * break;
-           * case OPAQUE:
-           * break;
-           */
+        /*
+         * case BOOLEAN:
+         * break;
+         * case SEQUENCE:
+         * break;
+         * case STRUCTURE:
+         * break;
+         * case OPAQUE:
+         * break;
+         */
       }
     } else {
       int n = m.getSize();
@@ -3306,14 +3307,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           break;
         default:
           throw new IllegalStateException("array " + dtype);
-          /*
-           * case BOOLEAN:
-           * break;
-           * case OPAQUE:
-           * break;
-           * case STRUCTURE:
-           * break; //
-           */
+        /*
+         * case BOOLEAN:
+         * break;
+         * case OPAQUE:
+         * break;
+         * case STRUCTURE:
+         * break; //
+         */
         case SEQUENCE:
           break; // skip
       }

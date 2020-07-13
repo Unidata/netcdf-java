@@ -457,30 +457,30 @@ public class CFpointObs extends TableConfigurerImpl {
       case raggedContiguous: // NOT USED
         throw new UnsupportedOperationException("CFpointObs: timeSeriesProfile raggedContiguous encoding not allowed");
 
-        /*
-         * case flat:
-         * //profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
-         * Variable parentId = identifyParent(ds, CF.FeatureType.timeSeriesProfile);
-         * 
-         * TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
-         * profileTable.parentIndex = parentId.getName();
-         * profileTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, info.childDim, errlog);
-         * profileTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, info.childDim,
-         * errlog);
-         * profileTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, info.childDim,
-         * errlog);
-         * profileTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, info.childDim,
-         * errlog);
-         * stationTable.addChild(profileTable);
-         * 
-         * //zDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
-         * TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, errlog);
-         * if (z.getRank() == 1) // z(z)
-         * zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
-         * profileTable.addChild(zTable);
-         * 
-         * break;
-         */
+      /*
+       * case flat:
+       * //profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
+       * Variable parentId = identifyParent(ds, CF.FeatureType.timeSeriesProfile);
+       * 
+       * TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, info, errlog);
+       * profileTable.parentIndex = parentId.getName();
+       * profileTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, info.childDim, errlog);
+       * profileTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, info.childDim,
+       * errlog);
+       * profileTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, info.childDim,
+       * errlog);
+       * profileTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, info.childDim,
+       * errlog);
+       * stationTable.addChild(profileTable);
+       * 
+       * //zDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
+       * TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, errlog);
+       * if (z.getRank() == 1) // z(z)
+       * zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+       * profileTable.addChild(zTable);
+       * 
+       * break;
+       */
     }
 
     return stationTable;

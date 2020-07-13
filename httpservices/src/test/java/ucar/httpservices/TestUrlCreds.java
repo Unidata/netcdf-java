@@ -42,7 +42,7 @@ public class TestUrlCreds {
   @Test
   public void testUrlCred() throws HTTPException {
     String url = "https://" + username + ":" + password + "@" + host + "/something/garbage.grb?query";
-    logger.info("Testing {}", url);
+    logger.debug("Testing {}", url);
     try (HTTPMethod method = HTTPFactory.Get(url)) {
       HTTPSession session = method.getSession();
       method.close();
@@ -63,7 +63,7 @@ public class TestUrlCreds {
   @Test
   public void testUrlCredDefaultProvider() throws HTTPException {
     String url = "https://" + username + ":" + password + "@" + host + "/something/garbage.grb?query";
-    logger.info("Testing {}", url);
+    logger.debug("Testing {}", url);
     try (HTTPMethod method = HTTPFactory.Get(url)) {
       // we should have a default BasicCredentialProvider available, even though
       // we didn't call the factory with a specific provider

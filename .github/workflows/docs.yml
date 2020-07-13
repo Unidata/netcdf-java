@@ -23,4 +23,4 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Build docs using Gradle
-        run: ./gradlew buildUserGuide
+        run: ./gradlew buildJekyllSite

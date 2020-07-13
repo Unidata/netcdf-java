@@ -108,8 +108,8 @@ public class DapEnumeration extends DapType {
    * to a set of longs only
    * 
    * @param vec vector of int strings mixed with econst names
-   * @param tolong return a vector of longs else vector of econst names
-   * @return
+   * 
+   * @return converted vector
    * @throws ConversionException
    */
   public String[] convert(String[] vec) throws ConversionException {

@@ -1,37 +1,47 @@
-description = "UI elements that are independent of the CDM."
-ext.title = "UI base library"
+description = 'UI elements that are independent of the CDM.'
+ext.title = 'UI base library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
-
+apply from: "$rootDir/gradle/any/java-library.gradle"
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
-    compile libraries["jdom2"]
-    compile libraries["jsr305"]
-    compile libraries["protobuf-java"]
-    compile libraries["guava"]
-    compile libraries["jgoodies-forms"]
-    compile libraries["jsr305"]  // Nonnull
+  compile platform(project(':netcdf-java-platform'))
 
-    compile libraries["slf4j-api"]
-    testRuntime libraries["logback-classic"]
+  compile 'org.jdom:jdom2'
+  compile 'com.google.protobuf:protobuf-java'
+  compile 'com.google.guava:guava'
+  compile 'com.google.code.findbugs:jsr305'
+  compile 'org.slf4j:slf4j-api'
 
-    // These are for Spock.
-    testCompile libraries["groovy-all"]
-    testCompile libraries["spock-core"]
+  // Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
+  // https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/
+  compile 'org.bounce:bounce:0.18'
 
-    testCompile libraries["commons-io"]
-    testCompile libraries["mockito"]
-    testCompile libraries["truth"]
+  // http://www.jfree.org/
+  compile 'org.jfree:jcommon:1.0.23'
+  compile 'org.jfree:jfreechart:1.0.19'
+
+  // http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
+  compile 'com.jgoodies:jgoodies-forms:1.6.0'
+
+  // LGoodDatePicker - swing calendar widget used in TdsMonitor
+  compile 'com.github.lgooddatepicker:LGoodDatePicker:10.3.1'
+
+  testImplementation project(':cdm:cdm-core')
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'org.codehaus.groovy:groovy-all' // for spock
+  testImplementation 'org.spockframework:spock-core'
+  testImplementation 'commons-io:commons-io'
+  testImplementation 'org.mockito:mockito-core'
+  testImplementation 'com.google.truth:truth'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
 test {
-    // Tell java to use ucar.util.prefs.PreferencesExtFactory to generate preference objects
-    // Important for ucar.util.prefs.TestJavaUtilPreferences
-    systemProperty "java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory"
+  // Tell java to use ucar.util.prefs.PreferencesExtFactory to generate preference objects
+  // Important for ucar.util.prefs.TestJavaUtilPreferences
+  systemProperty 'java.util.prefs.PreferencesFactory', 'ucar.util.prefs.PreferencesExtFactory'
 }

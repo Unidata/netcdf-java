@@ -10,6 +10,7 @@ import spock.lang.Specification
  * @author cwardgar
  * @since 2017-09-30
  */
+//@Ignore
 class PublishToRawRepoTaskSpec extends Specification {
     private static final Logger logger = LoggerFactory.getLogger(PublishToRawRepoTaskSpec)
     

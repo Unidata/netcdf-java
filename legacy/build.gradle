@@ -1,35 +1,32 @@
-description = "Package that generates a jar file of legacy classes for backwards compatibility"
-ext.title = "legacyJar Module"
-ext.url = "https://www.unidata.ucar.edu/software/tds/v4.6/TDS.html"
+description = 'Package that generates a jar file of legacy classes for backwards compatibility'
+ext.title = 'legacyJar Module'
+ext.url = 'https://www.unidata.ucar.edu/software/tds/v4.6/TDS.html'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
-    compile project(":cdm:cdm-core")
-    compile project(":grib")
-    compile project(":opendap")
-    
-    compile libraries["guava"]
-    compile libraries["jdom2"]
-    compile libraries["jsr305"]
-    compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
-    compile libraries["jackson-core"]  // Replace what was in aws-java-sdk-s3
-    compile libraries["jackson-annotations"]  // Replace what was in aws-java-sdk-s3
-    compile libraries["jackson-databind"]  // Replace what was in aws-java-sdk-s3
-    
-    compile libraries["slf4j-api"]
-    testRuntime libraries["logback-classic"]
+  api platform(project(':netcdf-java-platform'))
 
-    // These are all for Spock.
-    testCompile libraries["spock-core"]
-    testCompile libraries["groovy-all"]
-    testRuntime libraries["cglib-nodep"]
-    testRuntime libraries["objenesis"]
+  api project(':cdm:cdm-core')
+
+  compile project(':grib')
+  compile project(':opendap')
+
+  compile 'com.google.guava:guava'
+  compile 'org.jdom:jdom2'
+  compile 'com.google.code.findbugs:jsr305'
+  compile 'org.slf4j:slf4j-api'
+
+  compile 'com.amazonaws:aws-java-sdk-s3'  // For CrawlableDatasetAmazonS3.
+
+  testImplementation project(':cdm-test-utils')
+  // These are all for Spock.
+  testImplementation 'org.spockframework:spock-core'
+  testImplementation 'org.codehaus.groovy:groovy-all'
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+  testRuntimeOnly 'cglib:cglib-nodep'
+  testRuntimeOnly 'org.objenesis:objenesis'
 }
