@@ -26,8 +26,8 @@ public class TransverseMercator extends AbstractProjection {
 
   @Override
   public AbstractProjection constructCopy() {
-    return new TransverseMercator(getOriginLat(), getTangentLon(), getScale(), getFalseEasting(),
-        getFalseNorthing(), getEarthRadius());
+    return new TransverseMercator(getOriginLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(),
+        getEarthRadius());
   }
 
   /**

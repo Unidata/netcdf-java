@@ -74,8 +74,8 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new AlbersEqualAreaEllipse(getOriginLat(), getOriginLon(), getParallelOne(),
-        getParallelTwo(), getFalseEasting(), getFalseNorthing(), getEarth());
+    return new AlbersEqualAreaEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+        getFalseEasting(), getFalseNorthing(), getEarth());
   }
 
   /**

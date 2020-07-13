@@ -116,7 +116,7 @@ public class Geostationary extends AbstractProjection {
     if (geoCoordinateScaleFactor > 0) {
       this.scaleGeoCoordinate = true;
       this.geoCoordinateScaleFactor = geoCoordinateScaleFactor;
-    }  else {
+    } else {
       this.scaleGeoCoordinate = false;
       this.geoCoordinateScaleFactor = Double.MIN_VALUE;
     }

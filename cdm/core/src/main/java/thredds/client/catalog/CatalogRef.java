@@ -4,6 +4,8 @@
  */
 package thredds.client.catalog;
 
+import java.util.Formatter;
+import java.util.Optional;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
@@ -100,25 +102,29 @@ public class CatalogRef extends Dataset {
 
   @Override
   public List<Dataset> getDatasetsLogical() {
-    ucar.nc2.util.Optional<DatasetNode> opt = readCatref();
-    if (!opt.isPresent())
-      throw new RuntimeException(opt.getErrorMessage());
+    Formatter errlog = new Formatter();
+    java.util.Optional<DatasetNode> opt = readCatref(errlog);
+    if (!opt.isPresent()) {
+      throw new RuntimeException(errlog.toString());
+    }
 
     DatasetNode proxy = opt.get();
     return proxy.getDatasets();
   }
 
-  public synchronized ucar.nc2.util.Optional<DatasetNode> readCatref() {
-    if (proxy != null)
-      return ucar.nc2.util.Optional.of(proxy);
+  public synchronized Optional<DatasetNode> readCatref(Formatter errlog) {
+    if (proxy != null) {
+      return Optional.of(proxy);
+    }
 
     CatalogBuilder builder = new CatalogBuilder();
     Catalog cat = builder.buildFromCatref(this);
     if (builder.hasFatalError() || cat == null) {
-      return ucar.nc2.util.Optional.empty("Error reading catref " + getURI() + " err=" + builder.getErrorMessage());
+      errlog.format("Error reading catref " + getURI() + " err=" + builder.getErrorMessage());
+      return Optional.empty();
     }
     this.proxy = cat;
-    return ucar.nc2.util.Optional.of(proxy);
+    return Optional.of(proxy);
   }
 
 

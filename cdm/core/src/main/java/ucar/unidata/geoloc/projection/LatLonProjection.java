@@ -44,11 +44,11 @@ public class LatLonProjection extends AbstractProjection {
     this.centerLon = centerLon;
 
     addParameter(CF.GRID_MAPPING_NAME, CF.LATITUDE_LONGITUDE);
-    if (earth.isSpherical())
-      addParameter(CF.EARTH_RADIUS, earth.getEquatorRadius());
-    else {
-      addParameter(CF.SEMI_MAJOR_AXIS, earth.getEquatorRadius());
-      addParameter(CF.SEMI_MINOR_AXIS, earth.getPoleRadius());
+    if (this.earth.isSpherical()) {
+      addParameter(CF.EARTH_RADIUS, this.earth.getEquatorRadius());
+    } else {
+      addParameter(CF.SEMI_MAJOR_AXIS, this.earth.getEquatorRadius());
+      addParameter(CF.SEMI_MINOR_AXIS, this.earth.getPoleRadius());
     }
   }
 

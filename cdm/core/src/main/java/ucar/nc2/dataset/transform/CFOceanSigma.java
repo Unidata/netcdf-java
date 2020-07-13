@@ -58,8 +58,7 @@ public class CFOceanSigma extends AbstractTransformBuilder implements VertTransf
     return "OceanS:" + " sigma:" + sigma + " eta:" + eta + " depth:" + depth;
   }
 
-  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new OceanSigma(ds, timeDim, vCT.getParameters());
   }
 }

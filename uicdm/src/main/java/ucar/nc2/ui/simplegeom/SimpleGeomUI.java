@@ -399,8 +399,8 @@ public class SimpleGeomUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         getProjectionManager();
         // set the bounding box
-        //Projection proj = panz.getProjectionImpl().constructCopy();
-        //proj.setDefaultMapArea(panz.getMapArea());
+        // Projection proj = panz.getProjectionImpl().constructCopy();
+        // proj.setDefaultMapArea(panz.getMapArea());
         // if (debug) System.out.println(" GV save projection "+ proj);
 
         // projManage.setMap(renderAll.get("Map")); LOOK!

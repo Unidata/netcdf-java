@@ -55,8 +55,7 @@ public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements 
     return VerticalCT.Type.WRFEta.name();
   }
 
-  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new WRFEta(ds, timeDim, vCT.getParameters());
   }
 

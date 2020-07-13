@@ -9,7 +9,7 @@ import ucar.ma2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -92,18 +92,20 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(SubsetParams params) { // Handled in HorzCoordSys2D
+  public Optional<CoverageCoordAxis> subset(SubsetParams params, Formatter errlog) { // Handled in HorzCoordSys2D
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // Handled in HorzCoordSys2D
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride, Formatter errlog) { // Handled
+                                                                                                              // in
+                                                                                                              // HorzCoordSys2D
     throw new UnsupportedOperationException();
   }
 
   @Override
-  @Nonnull
-  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from, Formatter errlog) { // LOOK not
+                                                                                                   // implemented
     throw new UnsupportedOperationException();
   }
 

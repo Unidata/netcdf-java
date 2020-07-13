@@ -71,8 +71,8 @@ public class LambertConformalConicEllipse extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new LambertConformalConicEllipse(getOriginLat(), getOriginLon(), getParallelOne(),
-        getParallelTwo(), getFalseEasting(), getFalseNorthing(), getEarth());
+    return new LambertConformalConicEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+        getFalseEasting(), getFalseNorthing(), getEarth());
   }
 
   /**

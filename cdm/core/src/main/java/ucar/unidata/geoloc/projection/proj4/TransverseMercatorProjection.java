@@ -84,14 +84,15 @@ public class TransverseMercatorProjection extends AbstractProjection {
   }
 
   public TransverseMercatorProjection(int zone) {
-    this(EarthEllipsoid.WGS84, Math.toDegrees(((zone -1) + .5) * Math.PI / 30. - Math.PI), 0, 0.9996, 500000, 0);
+    this(EarthEllipsoid.WGS84, Math.toDegrees(((zone - 1) + .5) * Math.PI / 30. - Math.PI), 0, 0.9996, 500000, 0);
   }
 
   /**
    * Set up a projection suitable for State Plane Coordinates.
    * Best used with earth ellipsoid and false-easting/northing in km
    */
-  public TransverseMercatorProjection(Earth ellipsoid, double lon_0_deg, double lat_0_deg, double k, double falseEast, double falseNorth) {
+  public TransverseMercatorProjection(Earth ellipsoid, double lon_0_deg, double lat_0_deg, double k, double falseEast,
+      double falseNorth) {
     super("TransverseMercatorProjection", false);
     this.ellipsoid = ellipsoid;
     projectionLongitude = Math.toRadians(lon_0_deg);
@@ -204,6 +205,7 @@ public class TransverseMercatorProjection extends AbstractProjection {
   public boolean isRectilinear() {
     return false;
   }
+
   public boolean hasInverse() {
     return true;
   }

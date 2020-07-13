@@ -38,7 +38,7 @@ public class TestGribCoverageRead {
   @Test
   public void TestTwoDRead() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
-    logger.debug("open {}", endpoint);
+    System.out.printf("TestGribCoverageRead %s%n", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;

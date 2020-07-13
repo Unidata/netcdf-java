@@ -75,8 +75,7 @@ public class CFOceanS extends AbstractTransformBuilder implements VertTransformB
 
   }
 
-  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new OceanS(ds, timeDim, vCT.getParameters());
   }
 }

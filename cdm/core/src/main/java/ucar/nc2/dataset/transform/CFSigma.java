@@ -64,8 +64,7 @@ public class CFSigma extends AbstractTransformBuilder implements VertTransformBu
     return "Sigma:" + "sigma:" + sigma + " ps:" + ps + " ptop:" + ptop;
   }
 
-  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new AtmosSigma(ds, timeDim, vCT.getParameters());
   }
 }

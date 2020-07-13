@@ -37,8 +37,8 @@ public class GdsHorizCoordSys {
   private Array gaussLats;
   private Array gaussw;
 
-  public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, Projection proj,
-      double startx, double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
+  public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, Projection proj, double startx,
+      double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
 
     this.name = name;
     this.template = template;

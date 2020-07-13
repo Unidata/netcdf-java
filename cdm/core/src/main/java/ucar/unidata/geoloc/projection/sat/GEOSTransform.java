@@ -79,8 +79,8 @@ class GEOSTransform {
     init(subLonDegrees, scan_geom, geoid);
   }
 
-  GEOSTransform(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
-      double semi_major_axis, double inverse_flattening, String sweep_angle_axis) {
+  GEOSTransform(double subLonDegrees, double perspective_point_height, double semi_minor_axis, double semi_major_axis,
+      double inverse_flattening, String sweep_angle_axis) {
 
     Geoid geoid;
     if (Double.isNaN(inverse_flattening)) {

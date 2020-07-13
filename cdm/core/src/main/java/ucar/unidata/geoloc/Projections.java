@@ -38,16 +38,14 @@ public class Projections {
    */
   public static double[][] projToLatLon(Projection proj, double[][] from, double[][] to) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.projToLatLon:" + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("Projections.projToLatLon: null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.projToLatLon:" + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("Projections.projToLatLon: null array argument or wrong dimension (to)");
     }
 
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("Projections.projToLatLon:" + "from array not same length as to array");
+      throw new IllegalArgumentException("Projections.projToLatLon: from array not same length as to array");
     }
 
     for (int i = 0; i < from[0].length; i++) {
@@ -85,16 +83,14 @@ public class Projections {
    */
   public static float[][] projToLatLon(Projection proj, float[][] from, float[][] to) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.projToLatLon:" + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("Projections.projToLatLon: null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.projToLatLon:" + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("Projections.projToLatLon: null array argument or wrong dimension (to)");
     }
 
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("Projections.projToLatLon:" + "from array not same length as to array");
+      throw new IllegalArgumentException("Projections.projToLatLon: from array not same length as to array");
     }
 
     for (int i = 0; i < from[0].length; i++) {
@@ -165,16 +161,14 @@ public class Projections {
    */
   public static double[][] latLonToProj(Projection proj, double[][] from, double[][] to, int latIndex, int lonIndex) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.latLonToProj:" + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("Projections.latLonToProj: null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.latLonToProj:" + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("Projections.latLonToProj: null array argument or wrong dimension (to)");
     }
 
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("Projections.latLonToProj:" + "from array not same length as to array");
+      throw new IllegalArgumentException("Projections.latLonToProj: from array not same length as to array");
     }
 
     for (int i = 0; i < from[0].length; i++) {
@@ -245,16 +239,14 @@ public class Projections {
    */
   public static float[][] latLonToProj(Projection proj, float[][] from, float[][] to, int latIndex, int lonIndex) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.latLonToProj:" + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("Projections.latLonToProj: null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException(
-          "Projections.latLonToProj:" + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("Projections.latLonToProj: null array argument or wrong dimension (to)");
     }
 
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("Projections.latLonToProj:" + "from array not same length as to array");
+      throw new IllegalArgumentException("Projections.latLonToProj: from array not same length as to array");
     }
 
     for (int i = 0; i < from[0].length; i++) {

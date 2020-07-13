@@ -44,7 +44,8 @@ public class Stereographic extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    return new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(),
+        getEarthRadius());
   }
 
   /**
@@ -119,7 +120,8 @@ public class Stereographic extends AbstractProjection {
    * @param false_northing false northing in units of y coords
    * @param radius earth radius in km
    */
-  public Stereographic(double latt, double lont, double scale, double false_easting, double false_northing, double radius) {
+  public Stereographic(double latt, double lont, double scale, double false_easting, double false_northing,
+      double radius) {
     super("Stereographic", false);
 
     this.latt = Math.toRadians(latt);

@@ -59,7 +59,8 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
    * @param earthRadius radius of the earth in km
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
-  public LambertAzimuthalEqualArea(double lat0, double lon0, double false_easting, double false_northing, double earthRadius) {
+  public LambertAzimuthalEqualArea(double lat0, double lon0, double false_easting, double false_northing,
+      double earthRadius) {
     super("LambertAzimuthalEqualArea", false);
 
     this.lat0 = Math.toRadians(lat0);

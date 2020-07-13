@@ -5,11 +5,12 @@
 
 package thredds.ui.catalog;
 
+import java.util.Formatter;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
@@ -480,9 +481,11 @@ public class CatalogTreeView extends JPanel {
         System.out.println("readCatref on =" + ds.getName() + " " + isReading);
       if (!isReading) {
         isReading = true;
-        Optional<DatasetNode> opt = catref.readCatref();
+        Formatter errLog = new Formatter();
+
+        Optional<DatasetNode> opt = catref.readCatref(errLog);
         if (!opt.isPresent()) {
-          javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, opt.getErrorMessage());
+          javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, errLog.toString());
           return;
         }
         setCatalog(opt.get());

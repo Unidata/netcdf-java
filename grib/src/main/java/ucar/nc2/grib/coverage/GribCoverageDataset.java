@@ -36,7 +36,7 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.Immutable;
@@ -56,14 +56,20 @@ import java.util.stream.Collectors;
 public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private static final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
 
-  public static Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
+  /**
+   * Open GribCoverageDataset as a FeatureDatasetCoverage.
+   * 
+   * @param errLog if is grib but error, add error message to this log.
+   * @return empty if not a GribCoverageDataset or on error.
+   */
+  public static Optional<FeatureDatasetCoverage> open(String endpoint, Formatter errLog) {
     GribCollectionImmutable gc;
 
     if (endpoint.startsWith("file:"))
       endpoint = endpoint.substring("file:".length());
 
     // try to fail fast
-    RandomAccessFile raf = null;
+    RandomAccessFile raf;
     try {
       raf = new RandomAccessFile(endpoint, "r");
       gc = GribCdmIndex.openGribCollectionFromRaf(raf, new FeatureCollectionConfig(), CollectionUpdateType.nocheck,
@@ -71,16 +77,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
       if (gc == null) {
         raf.close();
-        return Optional.empty(CoverageDatasetFactory.NOT_GRIB_FILE);
+        return Optional.empty();
       }
 
-    } catch (IOException ioe) {
-      if (raf != null)
-        raf.close();
-      throw ioe;
-    }
-
-    try {
       List<CoverageCollection> datasets = new ArrayList<>();
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
         for (GribCollectionImmutable.GroupGC group : ds.getGroups()) {
@@ -93,7 +92,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     } catch (Throwable t) {
       logger.error("GribCoverageDataset.open failed", t);
-      return Optional.empty(t.getMessage());
+      errLog.format("%s", t.getMessage());
+      return Optional.empty();
     }
   }
 
@@ -1169,9 +1169,11 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       throws IOException, InvalidRangeException {
     GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, false, true);
-    if (!opt.isPresent())
-      throw new InvalidRangeException(opt.getErrorMessage());
+    Formatter errLog = new Formatter();
+    java.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, false, true, errLog);
+    if (!opt.isPresent()) {
+      throw new InvalidRangeException(errLog.toString());
+    }
 
     CoverageCoordSys subsetCoordSys = opt.get();
     List<CoverageCoordAxis> coordsSetAxes = new ArrayList<>(); // for CoordsSet.factory()

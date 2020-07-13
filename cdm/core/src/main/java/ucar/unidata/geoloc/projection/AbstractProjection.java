@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * See LICENSE for license information.
  */
 package ucar.unidata.geoloc.projection;
 
@@ -34,7 +34,8 @@ import java.util.*;
  * <p>
  * Note on "false_easting" and "fale_northing" projection parameters:
  * <ul>
- * <li>false_easting(northing) = The value added to all x (y) values in the rectangular coordinates for a map projection.
+ * <li>false_easting(northing) = The value added to all x (y) values in the rectangular coordinates for a map
+ * projection.
  * This value frequently is assigned to eliminate negative numbers.
  * Expressed in the unit of measure identified in Planar Coordinate Units.
  * <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.

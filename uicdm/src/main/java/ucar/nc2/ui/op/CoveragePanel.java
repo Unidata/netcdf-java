@@ -17,7 +17,7 @@ import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
@@ -117,15 +117,13 @@ public class CoveragePanel extends OpPanel {
     }
 
     try {
-      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(command);
+      Formatter errLog = new Formatter();
+      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(command, errLog);
       if (!opt.isPresent()) {
-        JOptionPane.showMessageDialog(null, opt.getErrorMessage());
+        JOptionPane.showMessageDialog(null, errLog.toString());
         return false;
       }
       covDatasetCollection = opt.get();
-      if (covDatasetCollection == null) {
-        return false;
-      }
       dsTable.setCollection(covDatasetCollection);
       setSelectedItem(command);
     } catch (IOException e) {

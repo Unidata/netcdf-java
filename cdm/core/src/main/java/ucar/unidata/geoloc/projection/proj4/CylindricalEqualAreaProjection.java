@@ -83,7 +83,7 @@ public class CylindricalEqualAreaProjection extends AbstractProjection {
 
     if (!earth.isSpherical()) {
       t = Math.sin(t);
-      scaleFactor = cost/Math.sqrt(1. - es * t * t);
+      scaleFactor = cost / Math.sqrt(1. - es * t * t);
       apa = MapMath.authset(es);
       qp = MapMath.qsfn(1., e, one_es);
     } else {

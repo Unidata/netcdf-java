@@ -5,6 +5,7 @@
 package ucar.nc2.ft2.coverage;
 
 import com.google.common.collect.Lists;
+import java.util.Formatter;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
@@ -12,7 +13,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,20 +66,22 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys {
    * 2b time (not range) = constant forecast dataset
    */
   public Optional<List<CoverageCoordAxis>> subset(SubsetParams params, AtomicBoolean isConstantForcast,
-      boolean makeCFcompliant) {
+      boolean makeCFcompliant, Formatter errLog) {
     List<CoverageCoordAxis> result = new ArrayList<>();
 
-    Optional<CoverageCoordAxis> axiso = runAxis.subset(params);
-    if (!axiso.isPresent())
-      return Optional.empty(axiso.getErrorMessage());
+    Optional<CoverageCoordAxis> axiso = runAxis.subset(params, errLog);
+    if (!axiso.isPresent()) {
+      return Optional.empty();
+    }
     CoverageCoordAxis1D runAxisSubset = (CoverageCoordAxis1D) axiso.get();
     result.add(runAxisSubset);
 
     // subset on timeOffset (1a, 1c, 2a)
     if (params.hasTimeOffsetParam() || !params.hasTimeParam()) {
-      axiso = timeOffset.subset(params);
-      if (!axiso.isPresent())
-        return Optional.empty(axiso.getErrorMessage());
+      axiso = timeOffset.subset(params, errLog);
+      if (!axiso.isPresent()) {
+        return Optional.empty();
+      }
       CoverageCoordAxis timeOffsetSubset = axiso.get();
       result.add(timeOffsetSubset);
 
@@ -92,9 +95,10 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys {
     if (runAxisSubset.getNcoords() == 1) {
       double val = runAxisSubset.getCoordMidpoint(0); // not sure runAxis is needed. maybe use runtimeSubset
       CalendarDate runDate = runAxisSubset.makeDate(val);
-      Optional<TimeOffsetAxis> too = timeOffset.subsetFromTime(params, runDate);
-      if (!too.isPresent())
-        return Optional.empty(too.getErrorMessage());
+      Optional<TimeOffsetAxis> too = timeOffset.subsetFromTime(params, runDate, errLog);
+      if (!too.isPresent()) {
+        return Optional.empty();
+      }
       TimeOffsetAxis timeOffsetSubset = too.get();
       result.add(timeOffsetSubset);
 

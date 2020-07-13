@@ -130,10 +130,11 @@ public class CFGridCoverageWriter {
 
     // We need global attributes, subsetted axes, transforms, and the coverages with attributes and referencing
     // subsetted axes.
-    ucar.nc2.util.Optional<CoverageCollection> opt =
-        CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
+    Formatter errLog = new Formatter();
+    java.util.Optional<CoverageCollection> opt =
+        CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams, errLog);
     if (!opt.isPresent()) {
-      return Result.create(0, false, opt.getErrorMessage());
+      return Result.create(0, false, errLog.toString());
     }
 
     CoverageCollection subsetDataset = opt.get();

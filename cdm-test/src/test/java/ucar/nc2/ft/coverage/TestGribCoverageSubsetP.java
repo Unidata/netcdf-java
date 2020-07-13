@@ -1,6 +1,7 @@
 package ucar.nc2.ft.coverage;
 
 import java.util.Arrays;
+import java.util.Formatter;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -16,8 +17,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Misc;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -140,10 +140,11 @@ public class TestGribCoverageSubsetP {
       int[] csysShape = csys.getShape();
       logger.debug("csys shape = {}", Arrays.toString(csysShape));
 
+      Formatter errLog = new Formatter();
       SubsetParams params = new SubsetParams().setHorizStride(2).set(SubsetParams.runtimeAll, true);
-      Optional<CoverageCoordSys> opt = csys.subset(params);
+      Optional<CoverageCoordSys> opt = csys.subset(params, errLog);
       if (!opt.isPresent()) {
-        logger.debug("err={}", opt.getErrorMessage());
+        logger.debug("err={}", errLog.toString());
         assert false;
       }
 
@@ -173,10 +174,11 @@ public class TestGribCoverageSubsetP {
       int[] csysShape = csys.getShape();
       logger.debug("csys shape = {}", Arrays.toString(csysShape));
 
+      Formatter errLog = new Formatter();
       SubsetParams params = new SubsetParams().setHorizStride(2);
-      Optional<CoverageCoordSys> opt = csys.subset(params);
+      Optional<CoverageCoordSys> opt = csys.subset(params, errLog);
       if (!opt.isPresent()) {
-        logger.debug("err={}", opt.getErrorMessage());
+        logger.debug("err={}", errLog.toString());
         assert false;
       }
 

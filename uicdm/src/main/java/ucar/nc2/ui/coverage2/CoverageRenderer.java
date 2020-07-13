@@ -9,7 +9,7 @@ import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
@@ -197,7 +197,7 @@ public class CoverageRenderer {
 
     // get value, construct the string
     if (!opt.isPresent())
-      return opt.getErrorMessage();
+      return "hcs.findXYindexFromCoord failed";
     else {
       HorizCoordSys.CoordReturn cr = opt.get();
       try {

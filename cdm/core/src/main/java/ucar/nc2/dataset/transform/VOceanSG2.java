@@ -64,8 +64,7 @@ public class VOceanSG2 extends AbstractTransformBuilder implements VertTransform
     return "OceanSG2:" + " s:" + s + " c:" + c + " eta:" + eta + " depth:" + depth + " depth_c:" + depth_c;
   }
 
-  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new OceanSG2(ds, timeDim, vCT.getParameters());
   }
 }

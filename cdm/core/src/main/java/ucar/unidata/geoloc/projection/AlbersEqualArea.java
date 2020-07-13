@@ -26,8 +26,8 @@ public class AlbersEqualArea extends AbstractProjection {
 
   /** copy constructor - avoid clone !! */
   public Projection constructCopy() {
-    return new AlbersEqualArea(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
-        getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    return new AlbersEqualArea(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(), getFalseEasting(),
+        getFalseNorthing(), getEarthRadius());
   }
 
   /**
@@ -81,7 +81,8 @@ public class AlbersEqualArea extends AbstractProjection {
    * @param earth_radius radius of the earth in km
    * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
    */
-  public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing, double earth_radius) {
+  public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing,
+      double earth_radius) {
     super("AlbersEqualArea", false);
 
     this.lon0Degrees = lon0;

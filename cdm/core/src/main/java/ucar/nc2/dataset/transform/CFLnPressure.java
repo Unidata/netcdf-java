@@ -58,8 +58,7 @@ public class CFLnPressure extends AbstractTransformBuilder implements VertTransf
   }
 
 
-  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new AtmosLnPressure(ds, timeDim, vCT.getParameters());
   }
 }

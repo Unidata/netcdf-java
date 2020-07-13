@@ -11,8 +11,7 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.Optional;
-import javax.annotation.Nonnull;
+import java.util.Optional;
 import java.util.Formatter;
 import ucar.nc2.write.Ncdump;
 
@@ -70,7 +69,7 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(SubsetParams params) {
+  public Optional<CoverageCoordAxis> subset(SubsetParams params, Formatter errlog) {
     if (params == null)
       return Optional.of(new TimeAxis2DFmrc(new CoverageCoordAxisBuilder(this)));
 
@@ -89,7 +88,7 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
     }
     if (run_index >= 0) {
       CoverageCoordAxis1D time1D = getTimeAxisForRun(run_index);
-      return time1D.subset(params);
+      return time1D.subset(params, errlog);
     }
 
     // no subsetting needed
@@ -97,15 +96,13 @@ public class TimeAxis2DFmrc extends CoverageCoordAxis {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented,
-                                                                                            // maybe illegal ??
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride, Formatter errLog) {
     return Optional.of(new TimeAxis2DFmrc(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  @Nonnull
-  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal
-                                                                                 // ??
+  // LOOK not implemented, maybe illegal ??
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from, Formatter errLog) {
     throw new UnsupportedOperationException();
   }
 

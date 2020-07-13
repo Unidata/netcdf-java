@@ -54,15 +54,11 @@ import java.lang.reflect.Proxy;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
-/**
- * Netcdf Tools user interface.
- *
- * @author caron
- */
+/** Netcdf Tools user interface. */
 public class ToolsUI extends JPanel {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String DIALOG_VERSION = "5.0";
+  private static final String DIALOG_VERSION = "6.0";
 
   public static final String WORLD_DETAIL_MAP = "/resources/ui/maps/Countries.shp";
   public static final String US_MAP = "/resources/ui/maps/us_state.shp";
@@ -1576,7 +1572,7 @@ public class ToolsUI extends JPanel {
       } catch (HTTPException e) {
         log.error("Failed to set global credentials");
       }
-      HTTPSession.setGlobalUserAgent("ToolsUI v5.0");
+      HTTPSession.setGlobalUserAgent("ToolsUI v6.0");
 
       java.net.Authenticator.setDefault(provider);
     });

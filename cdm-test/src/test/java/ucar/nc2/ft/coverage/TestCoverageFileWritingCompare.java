@@ -37,7 +37,7 @@ import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.CompareNetcdf2.ObjFilter;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.nc2.write.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
@@ -121,12 +121,12 @@ public class TestCoverageFileWritingCompare {
 
       // write the file using CFGridCoverageWriter2
       System.out.printf(" CFGridCoverageWriter2 write to %s%n", tempFile2.getAbsolutePath());
-
+      Formatter errLog = new Formatter();
       try (NetcdfFileWriter writer = NetcdfFileWriter
           .createNew(NetcdfFormatWriter.convertToNetcdfFileWriterVersion(format), tempFile2.getPath(), null)) {
-        Optional<Long> estimatedSizeo = CFGridCoverageWriter2.write(gcs, covList, params, false, writer);
+        Optional<Long> estimatedSizeo = CFGridCoverageWriter2.write(gcs, covList, params, false, writer, errLog);
         if (!estimatedSizeo.isPresent()) {
-          throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+          throw new InvalidRangeException("Request contains no data: " + errLog.toString());
         }
       }
 

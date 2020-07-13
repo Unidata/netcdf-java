@@ -388,7 +388,7 @@ public class PolyconicProjection extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new PolyconicProjection(getOriginLatitude(), getOriginLongitude(), getFalseEasting(),
-        getFalseNorthing(), getEarth());
+    return new PolyconicProjection(getOriginLatitude(), getOriginLongitude(), getFalseEasting(), getFalseNorthing(),
+        getEarth());
   }
 }

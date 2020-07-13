@@ -56,8 +56,7 @@ public class TestProjections {
       if (Double.isNaN(p.getX()) || Double.isNaN(p.getY()))
         continue;
       LatLonPoint endL = proj.projToLatLon(p);
-      if (Double.isNaN(endL.getLatitude()) || Double.isNaN(endL.getLongitude())
-          || endL.equals(LatLonPoint.INVALID))
+      if (Double.isNaN(endL.getLatitude()) || Double.isNaN(endL.getLongitude()) || endL.equals(LatLonPoint.INVALID))
         continue;
 
       Assert.assertEquals(LatLonPoints.toString(startL, 8), startL.getLatitude(), endL.getLatitude(), 1.0e-3);
@@ -425,9 +424,9 @@ public class TestProjections {
       System.out.println("Tested " + n + " pts for UTM projection ");
   }
 
-   @Test
+  @Test
   // Test known values from the port to 6. It was sad how many mistakes I made without test failure.
-   // These values are gotten from th5.X version, before porting.
+  // These values are gotten from th5.X version, before porting.
   public void makeSanityTest() {
     ProjectionPoint ppt = ProjectionPoint.create(-4000, -2000);
     LatLonPoint lpt = LatLonPoint.create(11, -22);
@@ -516,23 +515,23 @@ public class TestProjections {
     test(ceaSpherical, ppt, LatLonPoint.create(5.99931086, 8.98526842));
     test(ceaSpherical, lpt, ProjectionPoint.create(15343.1142, 1226.78838));
 
-    makeEquidistantAzimuthalProjectionTest(0, false,
-        LatLonPoint.create(5.99817760, 9.00687785), ProjectionPoint.create(4612.89929, 1343.46918));
-    makeEquidistantAzimuthalProjectionTest(45, false,
-        LatLonPoint.create(50.18393050, 14.04526295), ProjectionPoint.create(5360.13920, 5340.66199));
-    makeEquidistantAzimuthalProjectionTest(90, false,
-        LatLonPoint.create(79.24928617, 123.69006753), ProjectionPoint.create(5871.24515, 6520.67834));
-    makeEquidistantAzimuthalProjectionTest(-90, false,
-        LatLonPoint.create(-79.24928617, 56.30993247), ProjectionPoint.create(7513.99763, -8345.13980));
+    makeEquidistantAzimuthalProjectionTest(0, false, LatLonPoint.create(5.99817760, 9.00687785),
+        ProjectionPoint.create(4612.89929, 1343.46918));
+    makeEquidistantAzimuthalProjectionTest(45, false, LatLonPoint.create(50.18393050, 14.04526295),
+        ProjectionPoint.create(5360.13920, 5340.66199));
+    makeEquidistantAzimuthalProjectionTest(90, false, LatLonPoint.create(79.24928617, 123.69006753),
+        ProjectionPoint.create(5871.24515, 6520.67834));
+    makeEquidistantAzimuthalProjectionTest(-90, false, LatLonPoint.create(-79.24928617, 56.30993247),
+        ProjectionPoint.create(7513.99763, -8345.13980));
 
-    makeEquidistantAzimuthalProjectionTest(0, true,
-        LatLonPoint.create(5.96464789, 9.01660332), ProjectionPoint.create(14599.9299, 4280.76724));
-    makeEquidistantAzimuthalProjectionTest(45, true,
-        LatLonPoint.create(50.18063010, 14.08788032), ProjectionPoint.create(8862.91638, 8797.76181));
-    makeEquidistantAzimuthalProjectionTest(90, true,
-        LatLonPoint.create(79.20269606, 123.69006753), ProjectionPoint.create(5870.68098, 6520.05176));
-    makeEquidistantAzimuthalProjectionTest(-90, true,
-        LatLonPoint.create(-79.20269606, 56.30993247), ProjectionPoint.create(7522.50757, -8354.59105));
+    makeEquidistantAzimuthalProjectionTest(0, true, LatLonPoint.create(5.96464789, 9.01660332),
+        ProjectionPoint.create(14599.9299, 4280.76724));
+    makeEquidistantAzimuthalProjectionTest(45, true, LatLonPoint.create(50.18063010, 14.08788032),
+        ProjectionPoint.create(8862.91638, 8797.76181));
+    makeEquidistantAzimuthalProjectionTest(90, true, LatLonPoint.create(79.20269606, 123.69006753),
+        ProjectionPoint.create(5870.68098, 6520.05176));
+    makeEquidistantAzimuthalProjectionTest(-90, true, LatLonPoint.create(-79.20269606, 56.30993247),
+        ProjectionPoint.create(7522.50757, -8354.59105));
 
     LambertConformalConicEllipse lcc = new LambertConformalConicEllipse();
     test(lcc, ppt, LatLonPoint.create(28.45959294, -85.80653902));
@@ -542,23 +541,22 @@ public class TestProjections {
     test(pc, ppt, LatLonPoint.create(29.15559062, 86.84046566));
     test(pc, lpt, ProjectionPoint.create(6658.86657, -695.508749));
 
-    makeStereographicAzimuthalProjectionTest(0, false,
-        LatLonPoint.create(0, 0), ProjectionPoint.create(0, 2297.78968));
-    makeStereographicAzimuthalProjectionTest(45, false,
-        LatLonPoint.create(50.47225526, 15.09952044), ProjectionPoint.create(11084.6954, 2585.73594));
-    makeStereographicAzimuthalProjectionTest(90, false,
-        LatLonPoint.create(78.51651479, 123.69006753), ProjectionPoint.create(6540.11179, 7263.53001));
-    makeStereographicAzimuthalProjectionTest(-90, false,
-        LatLonPoint.create(-78.51651479, 56.30993247), ProjectionPoint.create(9633.88149, -10699.5093));
+    makeStereographicAzimuthalProjectionTest(0, false, LatLonPoint.create(0, 0), ProjectionPoint.create(0, 2297.78968));
+    makeStereographicAzimuthalProjectionTest(45, false, LatLonPoint.create(50.47225526, 15.09952044),
+        ProjectionPoint.create(11084.6954, 2585.73594));
+    makeStereographicAzimuthalProjectionTest(90, false, LatLonPoint.create(78.51651479, 123.69006753),
+        ProjectionPoint.create(6540.11179, 7263.53001));
+    makeStereographicAzimuthalProjectionTest(-90, false, LatLonPoint.create(-78.51651479, 56.30993247),
+        ProjectionPoint.create(9633.88149, -10699.5093));
 
-    makeStereographicAzimuthalProjectionTest(0, true,
-        LatLonPoint.create(6.36756802, 9.63623417), ProjectionPoint.create( .0, 1155.24055));
-    makeStereographicAzimuthalProjectionTest(45, true,
-        LatLonPoint.create(50.46642756, 15.15040679), ProjectionPoint.create(11070.7987, 2591.21171));
-    makeStereographicAzimuthalProjectionTest(90, true,
-        LatLonPoint.create(78.46658754, 123.69006753), ProjectionPoint.create(6546.11795, 7270.20052));
-    makeStereographicAzimuthalProjectionTest(-90, true,
-        LatLonPoint.create(-78.46658754, 56.30993247), ProjectionPoint.create(9667.61835, -10736.9779));
+    makeStereographicAzimuthalProjectionTest(0, true, LatLonPoint.create(6.36756802, 9.63623417),
+        ProjectionPoint.create(.0, 1155.24055));
+    makeStereographicAzimuthalProjectionTest(45, true, LatLonPoint.create(50.46642756, 15.15040679),
+        ProjectionPoint.create(11070.7987, 2591.21171));
+    makeStereographicAzimuthalProjectionTest(90, true, LatLonPoint.create(78.46658754, 123.69006753),
+        ProjectionPoint.create(6546.11795, 7270.20052));
+    makeStereographicAzimuthalProjectionTest(-90, true, LatLonPoint.create(-78.46658754, 56.30993247),
+        ProjectionPoint.create(9667.61835, -10736.9779));
 
 
     TransverseMercatorProjection tm = new TransverseMercatorProjection();
@@ -570,16 +568,19 @@ public class TestProjections {
     test(tmSpherical, lpt, ProjectionPoint.create(5009.10324, 18363.9569));
   }
 
-  private void makeEquidistantAzimuthalProjectionTest(double lat0, boolean isSpherical, LatLonPoint expectl, ProjectionPoint expectp) {
+  private void makeEquidistantAzimuthalProjectionTest(double lat0, boolean isSpherical, LatLonPoint expectl,
+      ProjectionPoint expectp) {
     ProjectionPoint ppt = ProjectionPoint.create(999, 666);
     LatLonPoint lpt = LatLonPoint.create(11.1, -222);
 
-    EquidistantAzimuthalProjection ea = new EquidistantAzimuthalProjection(lat0, 0, 0, 0, isSpherical ? new Earth() : EarthEllipsoid.WGS84);
+    EquidistantAzimuthalProjection ea =
+        new EquidistantAzimuthalProjection(lat0, 0, 0, 0, isSpherical ? new Earth() : EarthEllipsoid.WGS84);
     test(ea, ppt, expectl);
     test(ea, lpt, expectp);
   }
 
-  private void makeStereographicAzimuthalProjectionTest(double lat0, boolean isSpherical, LatLonPoint expectl, ProjectionPoint expectp) {
+  private void makeStereographicAzimuthalProjectionTest(double lat0, boolean isSpherical, LatLonPoint expectl,
+      ProjectionPoint expectp) {
     ProjectionPoint ppt = ProjectionPoint.create(999, 666);
     LatLonPoint lpt = LatLonPoint.create(11.1, -222);
 

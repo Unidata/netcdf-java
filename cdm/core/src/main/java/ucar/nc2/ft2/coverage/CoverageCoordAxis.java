@@ -15,7 +15,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -121,13 +121,13 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   public abstract CoverageCoordAxis copy();
 
   // create a subset of this axis based on the SubsetParams. return copy if no subset requested, or params = null
-  public abstract Optional<CoverageCoordAxis> subset(SubsetParams params);
+  public abstract Optional<CoverageCoordAxis> subset(SubsetParams params, Formatter errlog);
 
   // called from HorizCoordSys
-  public abstract Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride);
+  public abstract Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride, Formatter errLog);
 
   // called only on dependent axes. pass in independent axis
-  public abstract Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn);
+  public abstract Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn, Formatter errlog);
 
   public abstract Array getCoordsAsArray();
 

@@ -31,8 +31,8 @@ public class LambertConformal extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
-        getFalseEasting(), getFalseNorthing(), earth_radius);
+    return new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(), getFalseEasting(),
+        getFalseNorthing(), earth_radius);
   }
 
   /**

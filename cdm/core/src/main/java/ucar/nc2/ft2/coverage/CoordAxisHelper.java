@@ -5,16 +5,16 @@
 package ucar.nc2.ft2.coverage;
 
 import com.google.common.math.DoubleMath;
+import java.util.Formatter;
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Optional;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.Misc;
-import javax.annotation.Nonnull;
-import java.util.Arrays;
-import ucar.nc2.util.Optional;
 
 /**
  * Helper class for CoverageCoordAxis1D for subsetting and searching.
@@ -321,8 +321,8 @@ class CoordAxisHelper {
 
   //////////////////////////////////////////////////////////////
 
-  public Optional<CoverageCoordAxisBuilder> subset(double minValue, double maxValue, int stride) {
-    return subsetValues(minValue, maxValue, stride);
+  public Optional<CoverageCoordAxisBuilder> subset(double minValue, double maxValue, int stride, Formatter errLog) {
+    return subsetValues(minValue, maxValue, stride, errLog);
   }
 
   @Nonnull
@@ -364,16 +364,14 @@ class CoordAxisHelper {
     }
 
     // if we found one or more intervals, try to handle that by subsetting over a range of time
-    Optional<CoverageCoordAxisBuilder> multipleIntervalBuilder = Optional.empty("");
+    Optional<CoverageCoordAxisBuilder> multipleIntervalBuilder = Optional.empty();
     if (intervals > 0) {
-      multipleIntervalBuilder = subset(target, maxDateToSearch, 1);
+      multipleIntervalBuilder = subset(target, maxDateToSearch, 1, new Formatter());
     }
 
     // if multipleIntervalBuilder exists, return it. Otherwise fallback to subsetValuesClosest.
-    return multipleIntervalBuilder.isPresent() ? multipleIntervalBuilder.get()
-        : subsetValuesClosest(axis.convert(date));
+    return multipleIntervalBuilder.orElseGet(() -> subsetValuesClosest(axis.convert(date)));
   }
-
 
   @Nonnull
   public CoverageCoordAxisBuilder subsetClosest(CalendarDate[] date) {
@@ -383,14 +381,15 @@ class CoordAxisHelper {
     return subsetValuesClosest(want);
   }
 
-  public Optional<CoverageCoordAxisBuilder> subset(CalendarDateRange dateRange, int stride) {
+  public Optional<CoverageCoordAxisBuilder> subset(CalendarDateRange dateRange, int stride, Formatter errLog) {
     double min = axis.convert(dateRange.getStart());
     double max = axis.convert(dateRange.getEnd());
-    return subsetValues(min, max, stride);
+    return subsetValues(min, max, stride, errLog);
   }
 
   // LOOK could specialize when only one point
-  private Optional<CoverageCoordAxisBuilder> subsetValues(double minValue, double maxValue, int stride) {
+  private Optional<CoverageCoordAxisBuilder> subsetValues(double minValue, double maxValue, int stride,
+      Formatter errLog) {
 
     double lower = axis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = axis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
@@ -398,10 +397,14 @@ class CoordAxisHelper {
     int minIndex = findCoordElement(lower, false);
     int maxIndex = findCoordElement(upper, false);
 
-    if (minIndex >= axis.getNcoords())
-      return Optional.empty(String.format("no points in subset: lower %f > end %f", lower, axis.getEndValue()));
-    if (maxIndex < 0)
-      return Optional.empty(String.format("no points in subset: upper %f < start %f", upper, axis.getStartValue()));
+    if (minIndex >= axis.getNcoords()) {
+      errLog.format("no points in subset: lower %f > end %f", lower, axis.getEndValue());
+      return Optional.empty();
+    }
+    if (maxIndex < 0) {
+      errLog.format("no points in subset: upper %f < start %f", upper, axis.getStartValue());
+      return Optional.empty();
+    }
 
     if (minIndex < 0)
       minIndex = 0;
@@ -415,11 +418,12 @@ class CoordAxisHelper {
     try {
       return Optional.of(subsetByIndex(new Range(minIndex, maxIndex, stride)));
     } catch (InvalidRangeException e) {
-      return Optional.empty(e.getMessage());
+      errLog.format("%s", e.getMessage());
+      return Optional.empty();
     }
   }
 
-  public Optional<RangeIterator> makeRange(double minValue, double maxValue, int stride) {
+  public Optional<RangeIterator> makeRange(double minValue, double maxValue, int stride, Formatter errLog) {
 
     double lower = axis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = axis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
@@ -427,10 +431,14 @@ class CoordAxisHelper {
     int minIndex = findCoordElement(lower, false);
     int maxIndex = findCoordElement(upper, false);
 
-    if (minIndex >= axis.getNcoords())
-      return Optional.empty(String.format("no points in subset: lower %f > end %f", lower, axis.getEndValue()));
-    if (maxIndex < 0)
-      return Optional.empty(String.format("no points in subset: upper %f < start %f", upper, axis.getStartValue()));
+    if (minIndex >= axis.getNcoords()) {
+      errLog.format("no points in subset: lower %f > end %f", lower, axis.getEndValue());
+      return Optional.empty();
+    }
+    if (maxIndex < 0) {
+      errLog.format("no points in subset: upper %f < start %f", upper, axis.getStartValue());
+      return Optional.empty();
+    }
 
     if (minIndex < 0)
       minIndex = 0;
@@ -438,13 +446,16 @@ class CoordAxisHelper {
       maxIndex = axis.getNcoords() - 1;
 
     int count = maxIndex - minIndex + 1;
-    if (count <= 0)
-      return Optional.empty("no points in subset");
+    if (count <= 0) {
+      errLog.format("no points in subset");
+      return Optional.empty();
+    }
 
     try {
       return Optional.of(new Range(minIndex, maxIndex, stride));
     } catch (InvalidRangeException e) {
-      return Optional.empty(e.getMessage());
+      errLog.format("%s", e.getMessage());
+      return Optional.empty();
     }
   }
 
@@ -544,10 +555,12 @@ class CoordAxisHelper {
     return builder;
   }
 
-  Optional<CoverageCoordAxisBuilder> subsetContaining(double want) {
+  Optional<CoverageCoordAxisBuilder> subsetContaining(double want, Formatter errlog) {
     int index = findCoordElement(want, false); // not bounded, may not be valid index
-    if (index < 0 || index >= axis.getNcoords())
-      return Optional.empty(String.format("value %f not in axis %s", want, axis.getName()));
+    if (index < 0 || index >= axis.getNcoords()) {
+      errlog.format("value %f not in axis %s", want, axis.getName());
+      return Optional.empty();
+    }
 
     double val = axis.getCoordMidpoint(index);
 

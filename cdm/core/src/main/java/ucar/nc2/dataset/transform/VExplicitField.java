@@ -34,8 +34,7 @@ public class VExplicitField extends AbstractTransformBuilder implements VertTran
     return ct;
   }
 
-  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new VTfromExistingData(ds, timeDim, vCT.getParameters());
   }
 

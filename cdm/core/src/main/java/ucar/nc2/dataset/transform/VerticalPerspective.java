@@ -36,8 +36,7 @@ public class VerticalPerspective extends AbstractTransformBuilder implements Hor
 
     // We assume distance comes in 'm' (CF-compliant) and we pass in as 'km'
     VerticalPerspectiveView proj =
-        new VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000.,
-            false_easting, false_northing);
+        new VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000., false_easting, false_northing);
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }

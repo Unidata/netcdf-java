@@ -341,7 +341,7 @@ public class StereographicAzimuthalProjection extends AbstractProjection {
   @Override
   public Projection constructCopy() {
     return new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
-            scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
+        scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
   }
 
   @Override

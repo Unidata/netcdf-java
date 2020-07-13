@@ -762,55 +762,58 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
   }
 
-  // LOOK turns longitude coordinate into monotonic, dealing with possible wrap.
-  public void correctLongitudeWrap() {
+  /**
+   * If longitude coordinate is not monotic, construct a new one that is.
+   * LOOK Should this be here? Perhaps its a Grid method?
+   */
+  public CoordinateAxis1D correctLongitudeWrap() {
     // correct non-monotonic longitude coords
     if (axisType != AxisType.Lon) {
-      return;
+      return this;
     }
 
-    if (!wasRead)
+    if (!wasRead) {
       doRead();
-    if (!wasBoundsDone)
-      makeBounds();
+    }
 
     boolean monotonic = true;
-    for (int i = 0; i < coords.length - 1; i++)
+    for (int i = 0; i < coords.length - 1; i++) {
       monotonic &= isAscending ? coords[i] < coords[i + 1] : coords[i] > coords[i + 1];
+    }
+    if (monotonic) {
+      return this;
+    }
 
-    if (!monotonic) {
-      boolean cross = false;
-      if (isAscending) {
-        for (int i = 0; i < coords.length; i++) {
-          if (cross)
-            coords[i] += 360;
-          if (!cross && (i < coords.length - 1) && (coords[i] > coords[i + 1]))
-            cross = true;
-        }
-      } else {
-        for (int i = 0; i < coords.length; i++) {
-          if (cross)
-            coords[i] -= 360;
-          if (!cross && (i < coords.length - 1) && (coords[i] < coords[i + 1]))
-            cross = true;
-        }
+    CoordinateAxis1D.Builder builder = this.toBuilder();
+    boolean cross = false;
+    if (isAscending) {
+      for (int i = 0; i < coords.length; i++) {
+        if (cross)
+          coords[i] += 360;
+        if (!cross && (i < coords.length - 1) && (coords[i] > coords[i + 1]))
+          cross = true;
       }
-
-      // LOOK - need to make sure we get stuff from the cache
-      Array cachedData = Array.factory(DataType.DOUBLE, getShape(), coords);
-      if (getDataType() != DataType.DOUBLE)
-        cachedData = MAMath.convert(cachedData, getDataType());
-      setCachedData(cachedData);
-
-      if (!isInterval) {
-        makeEdges();
+    } else {
+      for (int i = 0; i < coords.length; i++) {
+        if (cross)
+          coords[i] -= 360;
+        if (!cross && (i < coords.length - 1) && (coords[i] < coords[i + 1]))
+          cross = true;
       }
     }
 
+    Array cachedData = Array.factory(DataType.DOUBLE, getShape(), coords);
+    if (getDataType() != DataType.DOUBLE)
+      cachedData = MAMath.convert(cachedData, getDataType());
+
+    // LOOK should be "pinned" meaning cant be purged
+    builder.setCachedData(cachedData, true);
+
+    // LOOK repalce in parentGroup? too late for that.
+    return builder.build(this.getParentGroup());
   }
 
   // only used if String
-
   private void readStringValues() {
     int count = 0;
     Array data;

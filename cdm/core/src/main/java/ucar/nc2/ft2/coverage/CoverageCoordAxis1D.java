@@ -11,7 +11,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.util.Format;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
@@ -227,11 +227,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) {
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride, Formatter errLog) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride);
-    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage())
-        : Optional.of(new CoverageCoordAxis1D(buildero.get()));
+    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride, errLog);
+    return buildero.map(CoverageCoordAxis1D::new);
   }
 
   // CalendarDate, double[2], or Double
@@ -277,18 +276,21 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(SubsetParams params) {
-    Optional<CoverageCoordAxisBuilder> buildero = subsetBuilder(params);
-    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage())
-        : Optional.of(new CoverageCoordAxis1D(buildero.get()));
+  public Optional<CoverageCoordAxis> subset(SubsetParams params, Formatter errLog) {
+    Optional<CoverageCoordAxisBuilder> buildero = subsetBuilder(params, errLog);
+    return buildero.map(CoverageCoordAxis1D::new);
   }
 
   // only for longitude, only for regular (do we need a subclass for longitude 1D coords ??
-  public Optional<CoverageCoordAxis> subsetByIntervals(List<MAMath.MinMax> lonIntvs, int stride) {
-    if (axisType != AxisType.Lon)
-      return Optional.empty("subsetByIntervals only for longitude");
-    if (!isRegular())
-      return Optional.empty("subsetByIntervals only for regular longitude");
+  public Optional<CoverageCoordAxis> subsetByIntervals(List<MAMath.MinMax> lonIntvs, int stride, Formatter errLog) {
+    if (axisType != AxisType.Lon) {
+      errLog.format("subsetByIntervals only for longitude");
+      return Optional.empty();
+    }
+    if (!isRegular()) {
+      errLog.format("subsetByIntervals only for regular longitude");
+      return Optional.empty();
+    }
 
     // adjust the resolution of the subset based on stride
     double subsetResolution = stride > 1 ? stride * resolution : resolution;
@@ -303,9 +305,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         start = lonIntv.min;
       first = false;
 
-      Optional<RangeIterator> opt = helper.makeRange(lonIntv.min, lonIntv.max, stride);
-      if (!opt.isPresent())
-        return Optional.empty(opt.getErrorMessage());
+      Optional<RangeIterator> opt = helper.makeRange(lonIntv.min, lonIntv.max, stride, errLog);
+      if (!opt.isPresent()) {
+        return Optional.empty();
+      }
       ranges.add(opt.get());
     }
 
@@ -323,18 +326,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     return Optional.of(new CoverageCoordAxis1D(builder));
   }
 
-  public Optional<CoverageCoordAxis> subsetByIndex(Range range) {
+  public Optional<CoverageCoordAxis> subsetByIndex(Range range, Formatter errLog) {
     try {
       CoordAxisHelper helper = new CoordAxisHelper(this);
       CoverageCoordAxisBuilder builder = helper.subsetByIndex(range);
       return Optional.of(new CoverageCoordAxis1D(builder));
     } catch (InvalidRangeException e) {
-      return Optional.empty(e.getMessage());
+      errLog.format("%s", e.getMessage());
+      return Optional.empty();
     }
   }
 
   // LOOK incomplete handling of subsetting params
-  protected Optional<CoverageCoordAxisBuilder> subsetBuilder(SubsetParams params) {
+  protected Optional<CoverageCoordAxisBuilder> subsetBuilder(SubsetParams params, Formatter errLog) {
     if (params == null)
       return Optional.of(new CoverageCoordAxisBuilder(this));
 
@@ -345,16 +349,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
       case Pressure:
       case Height:
         Double dval = params.getVertCoord();
-        if (dval != null)
+        if (dval != null) {
           return Optional.of(helper.subsetClosest(dval));
+        }
         // use midpoint of interval LOOK may not always be unique
         double[] intv = params.getVertCoordIntv();
-        if (intv != null)
+        if (intv != null) {
           return Optional.of(helper.subsetClosest((intv[0] + intv[1]) / 2));
+        }
 
         double[] vertRange = params.getVertRange(); // used by WCS
-        if (vertRange != null)
-          return helper.subset(vertRange[0], vertRange[1], 1);
+        if (vertRange != null) {
+          return helper.subset(vertRange[0], vertRange[1], 1, errLog);
+        }
 
         // default is all
         break;
@@ -389,7 +396,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
 
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
-          return helper.subset(dateRange, stride);
+          return helper.subset(dateRange, stride, errLog);
 
         // If no time range or time point, a timeOffset can be used to specify the time point.
         /*
@@ -425,7 +432,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
           try {
             return Optional.of(helper.subsetByIndex(getRange().copyWithStride(stride)));
           } catch (InvalidRangeException e) {
-            return Optional.empty(e.getMessage());
+            errLog.format(e.getMessage());
+            return Optional.empty();
           }
 
         // default is all
@@ -465,7 +473,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
           try {
             return Optional.of(helper.subsetByIndex(new Range(1)));
           } catch (InvalidRangeException e) {
-            return Optional.empty(e.getMessage());
+            errLog.format(e.getMessage());
+            return Optional.empty();
           }
         }
         // default is all
@@ -477,12 +486,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn) {
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn, Formatter errLog) {
     CoverageCoordAxisBuilder builder;
     try {
       builder = new CoordAxisHelper(this).subsetByIndex(dependsOn.getRange()); // LOOK Other possible subsets?
     } catch (InvalidRangeException e) {
-      return Optional.empty(e.getMessage());
+      errLog.format("%s", e.getMessage());
+      return Optional.empty();
     }
     return Optional.of(new CoverageCoordAxis1D(builder));
   }

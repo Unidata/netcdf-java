@@ -6,6 +6,7 @@ package ucar.nc2.ft.coverage;
 
 import com.google.common.collect.Lists;
 import java.util.Arrays;
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -16,7 +17,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -66,6 +67,7 @@ public class TestCoverageMisc {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     logger.info("open {}", endpoint);
 
+    Formatter errLog = new Formatter();
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
       Assert.assertEquals(1, cc.getCoverageCollections().size());
@@ -74,8 +76,8 @@ public class TestCoverageMisc {
       Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
 
       // CFGridCoverageWriter2 adds another (dependent) time coordinate, so we need to test this case
-      ucar.nc2.util.Optional<Long> opt = CFGridCoverageWriter2.getSizeOfOutput(gds,
-          Lists.newArrayList("Temperature_isobaric"), new SubsetParams(), false);
+      java.util.Optional<Long> opt = CFGridCoverageWriter2.getSizeOfOutput(gds,
+          Lists.newArrayList("Temperature_isobaric"), new SubsetParams(), false, errLog);
       Assert.assertTrue(opt.isPresent());
 
       long size = opt.get();
@@ -110,8 +112,9 @@ public class TestCoverageMisc {
       logger.info("LatLonBB = {}", llbb);
       logger.info("ProjRect2 = {}", projBB2);
 
+      Formatter errLog = new Formatter();
       SubsetParams subset = new SubsetParams().setLatLonBoundingBox(gds.getLatlonBoundingBox()); // should be the same!
-      Optional<CoverageCoordSys> opt = csys.subset(subset);
+      Optional<CoverageCoordSys> opt = csys.subset(subset, errLog);
       Assert.assertTrue(opt.isPresent());
 
       CoverageCoordSys csyss = opt.get();
@@ -147,8 +150,9 @@ public class TestCoverageMisc {
       logger.info("LatLonBB = {}", llbb);
       logger.info("ProjRect2 = {}", projBB2);
 
+      Formatter errLog = new Formatter();
       SubsetParams subset = new SubsetParams().setLatLonBoundingBox(gds.getLatlonBoundingBox()); // should be the same!
-      Optional<CoverageCoordSys> opt = csys.subset(subset);
+      Optional<CoverageCoordSys> opt = csys.subset(subset, errLog);
       Assert.assertTrue(opt.isPresent());
 
       CoverageCoordSys csyss = opt.get();

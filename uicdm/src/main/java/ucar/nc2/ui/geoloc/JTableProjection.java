@@ -197,8 +197,8 @@ public class JTableProjection extends JTable {
           return proj.getClassName();
         case 2:
           return proj.paramsToString();
-        //case 3:
-        //  return proj.getDefaultMapArea();
+        // case 3:
+        // return proj.getDefaultMapArea();
       }
       return "error";
     }
@@ -209,7 +209,7 @@ public class JTableProjection extends JTable {
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
       Projection proj = (Projection) list.get(rowIndex);
-      //proj.setName((String) aValue);
+      // proj.setName((String) aValue);
     }
 
     // do our own listener management to get around serialization bug

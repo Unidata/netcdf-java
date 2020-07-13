@@ -405,8 +405,8 @@ public class CoverageViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         getProjectionManager();
         // set the bounding box
-       // Projection proj = navPanel.getProjectionImpl().constructCopy();
-       // proj.setDefaultMapArea(navPanel.getMapArea());
+        // Projection proj = navPanel.getProjectionImpl().constructCopy();
+        // proj.setDefaultMapArea(navPanel.getMapArea());
         // if (debug) System.out.println(" GV save projection "+ proj);
 
         // projManage.setMap(renderAll.get("Map")); LOOK!

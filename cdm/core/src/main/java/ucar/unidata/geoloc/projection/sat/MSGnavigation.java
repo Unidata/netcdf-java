@@ -324,8 +324,8 @@ public class MSGnavigation extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new MSGnavigation(lat0, Math.toDegrees(lon0), 1000 * major_axis, 1000 * minor_axis,
-        1000 * sat_height, scale_x, scale_y);
+    return new MSGnavigation(lat0, Math.toDegrees(lon0), 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height,
+        scale_x, scale_y);
   }
 
   @Override

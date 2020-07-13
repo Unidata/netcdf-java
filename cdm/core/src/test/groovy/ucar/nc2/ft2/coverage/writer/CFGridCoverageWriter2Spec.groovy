@@ -44,7 +44,7 @@ class CFGridCoverageWriter2Spec extends Specification {
         and: "calculate actual size excluding 2D lat/lon vars"
         long actualSizeNoLatLon = CFGridCoverageWriter2.getSizeOfOutput(
                 // No subset; don't addLatLon; calc file size but don't write file.
-                covColl, null, null, false).get()
+                covColl, null, null, false, new Formatter()).get()
         
         then: "expected equals actual"
         expectedSizeNoLatLon == actualSizeNoLatLon
@@ -57,7 +57,7 @@ class CFGridCoverageWriter2Spec extends Specification {
         and: "calculate actual size excluding 2D lat/lon vars"
         long actualSizeWithLatLon = CFGridCoverageWriter2.getSizeOfOutput(
                 // No subset; do addLatLon; calc file size but don't write file.
-                covColl, null, null, true).get()
+                covColl, null, null, true, new Formatter()).get()
     
         then: "expected equals actual"
         expectedSizeWithLatLon == actualSizeWithLatLon
@@ -85,7 +85,7 @@ class CFGridCoverageWriter2Spec extends Specification {
         
         and: "write output file"
         // No subset; do addLatLon; write to outputFile.
-        CFGridCoverageWriter2.write(covColl, null, null, true, writer)
+        CFGridCoverageWriter2.write(covColl, null, null, true, writer, new Formatter())
 
         and: "open output file"
         NetcdfFile ncFile = NetcdfFiles.open(pathout)

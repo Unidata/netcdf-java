@@ -108,8 +108,7 @@ public class CSMConvention extends COARDSConvention {
       return rs;
     }
 
-    public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-        VerticalCT vCT) {
+    public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
       return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
     }
   }
@@ -133,8 +132,7 @@ public class CSMConvention extends COARDSConvention {
       return rs;
     }
 
-    public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-        VerticalCT vCT) {
+    public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
       return new AtmosSigma(ds, timeDim, vCT.getParameters());
     }
   }

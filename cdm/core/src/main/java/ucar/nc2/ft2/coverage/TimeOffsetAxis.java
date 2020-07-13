@@ -4,9 +4,10 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Formatter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 
 /**
  * A new way to handle 2D time, a runtime axis with orthogonal offset values, so time = (runtime x offset).
@@ -28,7 +29,7 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
   }
 
   // normal case already handled, this is the case where a time has been specified, and only one runtime
-  public Optional<TimeOffsetAxis> subsetFromTime(SubsetParams params, CalendarDate runDate) {
+  public Optional<TimeOffsetAxis> subsetFromTime(SubsetParams params, CalendarDate runDate, Formatter errLog) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
     CoverageCoordAxisBuilder builder = null;
     if (params.isTrue(SubsetParams.timePresent)) {
@@ -50,11 +51,12 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
     if (dateRange != null) {
       double min = getOffsetInTimeUnits(runDate, dateRange.getStart());
       double max = getOffsetInTimeUnits(runDate, dateRange.getEnd());
-      Optional<CoverageCoordAxisBuilder> buildero = helper.subset(min, max, stride);
-      if (buildero.isPresent())
+      Optional<CoverageCoordAxisBuilder> buildero = helper.subset(min, max, stride, errLog);
+      if (buildero.isPresent()) {
         builder = buildero.get();
-      else
-        return Optional.empty(buildero.getErrorMessage());
+      } else {
+        return Optional.empty();
+      }
     }
 
     assert (builder != null);
@@ -70,18 +72,16 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(SubsetParams params) {
-    Optional<CoverageCoordAxisBuilder> buildero = subsetBuilder(params);
-    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage())
-        : Optional.of(new TimeOffsetAxis(buildero.get()));
+  public Optional<CoverageCoordAxis> subset(SubsetParams params, Formatter errLog) {
+    Optional<CoverageCoordAxisBuilder> buildero = subsetBuilder(params, errLog);
+    return buildero.map(TimeOffsetAxis::new);
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) {
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride, Formatter errLog) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride);
-    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage())
-        : Optional.of(new TimeOffsetAxis(buildero.get()));
+    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride, errLog);
+    return buildero.map(TimeOffsetAxis::new);
   }
 
 }

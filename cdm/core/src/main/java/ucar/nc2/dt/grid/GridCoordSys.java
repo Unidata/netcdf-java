@@ -283,7 +283,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       isLatLon = true;
 
       if (lonAxis instanceof CoordinateAxis1D) {
-        ((CoordinateAxis1D) lonAxis).correctLongitudeWrap();
+        this.lonAxis = ((CoordinateAxis1D) lonAxis).correctLongitudeWrap();
       }
 
     } else
@@ -293,8 +293,16 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     coordAxes.add(horizYaxis);
 
     // set canonical area
-    this.proj = cs.getProjection();
     this.mapArea = getBoundingBox();
+    Projection projOrig = cs.getProjection();
+    if (projOrig != null) {
+      if (projOrig instanceof LatLonProjection) {
+        // recenter the latlon projection to center of the bounding box.
+        this.proj = new LatLonProjection("LatLonProjection", null, this.mapArea.getCenterX());
+      } else {
+        this.proj = projOrig;
+      }
+    }
 
     // LOOK: require 1D vertical - need to generalize to nD vertical.
     CoordinateAxis z_oneD = hAxis = cs.getHeightAxis();

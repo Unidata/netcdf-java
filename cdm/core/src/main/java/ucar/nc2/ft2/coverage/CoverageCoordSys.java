@@ -4,15 +4,21 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.util.*;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LatLonProjection;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A Coverage Coordinate System
@@ -395,11 +401,12 @@ public class CoverageCoordSys {
         && (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent);
   }
 
-  public Optional<CoverageCoordSys> subset(SubsetParams params) {
-    return subset(params, false, true);
+  public Optional<CoverageCoordSys> subset(SubsetParams params, Formatter errLog) {
+    return subset(params, false, true, errLog);
   }
 
-  public Optional<CoverageCoordSys> subset(SubsetParams params, boolean makeCFcompliant, boolean finish) {
+  public Optional<CoverageCoordSys> subset(SubsetParams params, boolean makeCFcompliant, boolean finish,
+      Formatter errLog) {
     Formatter errMessages = new Formatter();
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
@@ -410,45 +417,37 @@ public class CoverageCoordSys {
       if (isTime2D(axis))
         continue;
 
-      ucar.nc2.util.Optional<CoverageCoordAxis> axiso = axis.subset(params);
-      if (!axiso.isPresent())
-        errMessages.format("%s: %s;%n", axis.getName(), axiso.getErrorMessage());
-      else {
+      java.util.Optional<CoverageCoordAxis> axiso = axis.subset(params, errMessages);
+      if (axiso.isPresent()) {
         CoverageCoordAxis1D subsetInd = (CoverageCoordAxis1D) axiso.get(); // independent always 1D
         subsetAxes.add(subsetInd);
 
         // subset any dependent axes
         for (CoverageCoordAxis dependent : getDependentAxes(subsetInd)) {
-          Optional<CoverageCoordAxis> depo = dependent.subsetDependent(subsetInd);
-          if (depo.isPresent())
-            subsetAxes.add(depo.get());
-          else
-            errMessages.format("%s;%n", depo.getErrorMessage());
+          Optional<CoverageCoordAxis> depo = dependent.subsetDependent(subsetInd, errMessages);
+          depo.ifPresent(subsetAxes::add);
         }
       }
     }
 
     AtomicBoolean isConstantForecast = new AtomicBoolean(false); // need a mutable boolean
     if (time2DCoordSys != null) {
-      ucar.nc2.util.Optional<List<CoverageCoordAxis>> time2Do =
-          time2DCoordSys.subset(params, isConstantForecast, makeCFcompliant);
-      if (!time2Do.isPresent())
-        errMessages.format("%s;%n", time2Do.getErrorMessage());
-      else
-        subsetAxes.addAll(time2Do.get());
+      Optional<List<CoverageCoordAxis>> time2Do =
+          time2DCoordSys.subset(params, isConstantForecast, makeCFcompliant, errMessages);
+      time2Do.ifPresent(subsetAxes::addAll);
     }
 
-    Optional<HorizCoordSys> horizo = horizCoordSys.subset(params);
-    if (!horizo.isPresent())
-      errMessages.format("%s;%n", horizo.getErrorMessage());
-    else {
+    Optional<HorizCoordSys> horizo = horizCoordSys.subset(params, errMessages);
+    if (horizo.isPresent()) {
       HorizCoordSys subsetHcs = horizo.get();
       subsetAxes.addAll(subsetHcs.getCoordAxes());
     }
 
     String errs = errMessages.toString();
-    if (!errs.isEmpty())
-      return Optional.empty(errs);
+    if (!errs.isEmpty()) {
+      errLog.format("%s", errs);
+      return Optional.empty();
+    }
 
     Collections.sort(subsetAxes);
 
