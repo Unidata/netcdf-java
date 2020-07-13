@@ -8,4 +8,5 @@ ext {
   buildPlugins.coveralls = 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1'
   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
+  buildPlugins.grgit = 'org.ajoberstar.grgit:grgit-core:4.0.2'
 }
