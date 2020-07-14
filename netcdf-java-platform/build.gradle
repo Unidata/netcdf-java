@@ -6,10 +6,6 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 
 platformProjects.add(project)
 
-javaPlatform {
-  allowDependencies()
-}
-
 dependencies {
   constraints {
     // general dependencies
@@ -118,7 +114,7 @@ dependencies {
 
 publishing {
   publications {
-    netcdfJavaPlatformBom(MavenPublication) {
+    netcdfJavaPlatform(MavenPublication) {
       from components.javaPlatform
     }
   }

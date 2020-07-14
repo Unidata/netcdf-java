@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
@@ -34,7 +33,7 @@ class PublishToRawRepoTask extends DefaultTask {
     
     /**
      * The local file that will be published. If it is a directory, all descendant files within will be published.
-     * The paths of those files, relative to {@code srcFile}, will be retained in the final artifact URL. For example:
+     * The paths of those files, relative to {@code publishSrc}, will be retained in the final artifact URL. For example:
      * <pre>
      *     [cwardgar@lenny ~/foo] $ tree
      *     .
@@ -43,14 +42,14 @@ class PublishToRawRepoTask extends DefaultTask {
      *         └── publishing
      *             └── PublishToRawRepoTask.groovy
      * </pre>
-     * If {@code srcFile == ~/foo}, then the URLs of the artifacts will be:
+     * If {@code publishSrc == ~/foo}, then the URLs of the artifacts will be:
      * <ul>
      *     <li>{@code $host/$repoName/$destPath/build/PublishingUtil.groovy}</li>
      *     <li>{@code $host/$repoName/$destPath/build/publishing/PublishToRawRepoTask.groovy}</li>
      * </ul>
      */
-    @InputFile
-    File srcFile
+    @Input
+    String publishSrc
     
     /**
      * The destination, relative to {@code repoName}'s root, to which artifacts will be published, e.g.
@@ -87,7 +86,7 @@ class PublishToRawRepoTask extends DefaultTask {
     @TaskAction
     def publish() {
         LinkedList<File> srcFiles = new LinkedList<>()
-    
+        File srcFile = new File(publishSrc)
         if (srcFile.isFile()) {
             srcFiles << srcFile
         } else if (srcFile.isDirectory()) {
@@ -95,7 +94,7 @@ class PublishToRawRepoTask extends DefaultTask {
                 srcFiles << file
             }
         } else {
-            throw new GradleException("'$srcFile' isn't a normal file or directory. Most likely it doesn't exist.")
+            throw new GradleException("'$publishSrc' isn't a normal file or directory. Most likely it doesn't exist.")
         }
     
         HttpBuilder http = OkHttpBuilder.configure {
