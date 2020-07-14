@@ -42,8 +42,8 @@ Most of what we need in the `any/` directory can be found in these two script pl
    See https://docs.gradle.org/6.5.1/userguide/command_line_interface.html#sec:command_line_warnings
    ~~~
 
-   This is more about doing proactive maintenance with our gradle infrastructure. I do not want to be in the
-   position of trying to jump three major versions again :-)
+   This is more about doing proactive maintenance with our gradle infrastructure.
+   I do not want to be in the position of trying to jump three major versions again :-)
 
 4. Find new dependency license checker
    The license plugin we used in the past does not seem to work with the java-library and java-platform plugins.

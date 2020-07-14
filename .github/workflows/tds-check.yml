@@ -1,4 +1,7 @@
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - '**.temporarily-disable'
 
 jobs:
   tests-adpotopenjdk-hs-8:
