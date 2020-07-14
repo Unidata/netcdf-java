@@ -87,7 +87,7 @@ public class TestThreading extends UnitTestCommon {
         if (this.nthreads <= 0)
           throw new NumberFormatException();
       } catch (NumberFormatException e) {
-        System.err.println("-Dnthreads value must be positive integer: " + sn);
+        logger.error("-Dnthreads value must be positive integer: {}", sn);
         this.nthreads = DFALTTHREADS;
       }
     }
@@ -111,8 +111,7 @@ public class TestThreading extends UnitTestCommon {
       // session.setConnectionTimeout(10000);
       // session.setSOTimeout(10000);
       for (int i = 0; i < this.nthreads; i++) {
-        if (DEBUG)
-          System.err.printf("[%d]: %s%n", i, testurls[i]);
+        logger.debug("[{}}]: {}}", i, testurls[i]);
         runners[i] = new Thread(new Runner(session, testurls[i], i));
         runners[i].start();
       }
@@ -125,12 +124,12 @@ public class TestThreading extends UnitTestCommon {
         }
         if (DEBUG)
           for (int i = 0; i < this.nthreads; i++) {
-            System.err.printf("[%d]: %s%n", i, (state[i] ? "up" : "down"));
+            logger.debug("[{}]: {}", i, (state[i] ? "up" : "down"));
           }
         for (int i = 0; i < this.nthreads; i++) {
           Thread t = runners[i];
           if (t.isAlive()) {
-            System.err.printf("[%d] forced %n");
+            logger.error("[{}] forced", i);
             t.interrupt();
           }
           t.join();
@@ -147,13 +146,12 @@ public class TestThreading extends UnitTestCommon {
           }
           if (upcount == 0)
             break;
-          System.err.println("upcount=" + upcount);
-          System.err.flush();
+          logger.debug("upcount={}", upcount);
           Thread.sleep(1 * 1000);
         }
       }
     }
-    System.err.println("All threads terminated");
+    logger.debug("All threads terminated");
     HTTPSession.validatestate();
   }
 
@@ -166,7 +164,7 @@ public class TestThreading extends UnitTestCommon {
       // session.setSOTimeout(10000);
       for (int i = 0; i < this.nthreads; i++) {
         if (DEBUG)
-          System.err.printf("[%d]: %s%n", i, testurls[i]);
+          logger.debug("[{}]: {}", i, testurls[i]);
         runners[i] = new Runner(session, testurls[i], i);
       }
       for (int i = 0; i < this.nthreads; i++) {
@@ -174,7 +172,7 @@ public class TestThreading extends UnitTestCommon {
         runner.run();
       }
     }
-    System.err.println("All threads terminated");
+    logger.debug("All threads terminated");
     HTTPSession.validatestate();
   }
 
@@ -197,7 +195,7 @@ public class TestThreading extends UnitTestCommon {
           Assert.assertTrue("Bad return code: " + status, (status == 200 || status == 404));
         }
       } catch (Exception e) {
-        new Failure("Index: " + index, e).printStackTrace(System.err);
+        logger.error("Error {}", new Failure("Index: " + index, e));
       }
     }
   }

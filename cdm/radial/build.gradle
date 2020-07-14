@@ -1,31 +1,28 @@
-description = "The Common Data Model (CDM) radial data IOSPs."
-ext.title = "CDM radial library"
+description = 'The Common Data Model (CDM) radial data IOSPs.'
+ext.title = 'CDM radial library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
-    compile project(':udunits')
-    compile project(':cdm:cdm-core')
+  api platform(project(':netcdf-java-platform'))
 
-    compile libraries["jdom2"]
-    compile libraries["jsr305"]
-    compile libraries["re2j"]
-    compile libraries["slf4j-api"]
+  compile project(':udunits')
+  compile project(':cdm:cdm-core')
 
-    testCompile project(":netcdf4")
+  compile 'org.jdom:jdom2'
+  compile 'com.google.code.findbugs:jsr305'
+  compile 'com.google.re2j:re2j'
+  compile 'org.slf4j:slf4j-api'
 
-    // These are for Spock.
-    testCompile libraries["groovy-all"]
-    testCompile libraries["spock-core"]
+  testImplementation project(':cdm-test-utils')
+  testImplementation project(':netcdf4')
 
-    testCompile libraries["commons-io"]
-    testCompile libraries["mockito"]
-    testCompile libraries["truth"]
+  testImplementation 'org.codehaus.groovy:groovy-all' // for spock
+  testImplementation 'org.spockframework:spock-core'
+  testImplementation 'commons-io:commons-io'
+  testImplementation 'org.mockito:mockito-core'
+  testImplementation 'com.google.truth:truth'
 }

@@ -1,50 +1,45 @@
 // The buildscript {} block is evaluated before anything else in the script (regardless of location in file).
 // See http://goo.gl/EO8S1k. So, might as well put it first.
 //
-// Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
-// exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
-// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See http://goo.gl/2y3KhZ.
 buildscript {
-    // Add the "libraries" ExtraProperty. It should be usable from the rest of this script as well.
-    // See http://goo.gl/9bixNV
-    apply from: "$rootDir/gradle/any/dependencies.gradle"
+  // Add the "buildPlugins" ExtraProperty. It should be usable from the rest of this script as well.
+  // See http://goo.gl/9bixNV
+  apply from: "$rootDir/gradle/any/plugins.gradle"
 
-    // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
-    // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
-    repositories {
-        jcenter()
-        maven {
-            url "https://plugins.gradle.org/m2/"  // For Gradle plugins.
-        }
+  // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
+  // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
+  repositories {
+    jcenter()
+    maven {
+      url 'https://plugins.gradle.org/m2/'  // For Gradle plugins.
     }
+  }
 
-    dependencies {
-        classpath libraries["gretty"]
-        classpath libraries["shadow"]
-        classpath libraries["coveralls-gradle-plugin"]
-        classpath libraries["sonarqube-gradle-plugin"]
-        classpath libraries["license-gradle-plugin"]
-        classpath libraries["spotless"]
-
-        classpath libraries["guava"]  // For various utility methods used in the build scripts.
-    }
+  dependencies {
+    classpath buildPlugins.shadow
+    classpath buildPlugins.coveralls
+    classpath buildPlugins.sonarqube
+    classpath buildPlugins.spotless
+    classpath buildPlugins.gretty
+    classpath buildPlugins.grgit
+  }
 }
 
 allprojects {
-    // Matches Maven's "project.groupId". Used in MANIFEST.MF for "Implementation-Vendor-Id".
-    group = "edu.ucar"
-    // Matches Maven's "project.version". Used in MANIFEST.MF for "Implementation-Version".
-    // We try to follow semantic versioning, and thus we use <major>.<minor>.<patch>-<prerelease version>
-    // <prerelease version> may be SNAPSHOT, alphax, betax, etc.
-    // Note - if bumping to a new major or minor version, be sure to update the docs (see step 1 in
-    // docs/src/private/internal/release.md for details)
-    version = '5.4.0-SNAPSHOT'
-    // Eventually, we'll stop appending "SNAPSHOT" to our versions and just use this.
-    status = 'development'
+  // Matches Maven's "project.groupId". Used in MANIFEST.MF for "Implementation-Vendor-Id".
+  group = 'edu.ucar'
+  // Matches Maven's "project.version". Used in MANIFEST.MF for "Implementation-Version".
+  // We try to follow semantic versioning, and thus we use <major>.<minor>.<patch>-<prerelease version>
+  // <prerelease version> may be SNAPSHOT, alphax, betax, etc.
+  // Note - if bumping to a new major or minor version, be sure to update the docs (see step 1 in
+  // docs/src/private/internal/release.md for details)
+  version = '6.0.0-SNAPSHOT'
+  // Eventually, we'll stop appending "SNAPSHOT" to our versions and just use this.
+  status = 'development'
 }
 
 // Matches Maven's "project.description".
-description = "The Unidata netCDF-Java library (aka CDM) "
+description = 'The Unidata netCDF-Java library (aka CDM).'
 
 import java.text.SimpleDateFormat
 
@@ -54,54 +49,95 @@ import java.text.SimpleDateFormat
 // That way, the property will be robustly resolved, as described here: http://goo.gl/UBq0en
 // Otherwise, only the one specific ExtraPropertiesExtension will be searched.
 ext {
-    // Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
-    title = "CDM modules"
+  // Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
+  title = 'CDM modules'
 
-    // Matches Maven's "project.organization.name". Used in MANIFEST.MF for "Implementation-Vendor".
-    vendor = "UCAR/Unidata"
+  // Matches Maven's "project.organization.name". Used in MANIFEST.MF for "Implementation-Vendor".
+  vendor = 'UCAR/Unidata'
 
-    // It makes sense to publish major.minor versions of the docs, as
-    // any patch bumps should be backwards compatible bug fixes only
-    // To do this, we need to make a special "doc version" string.
-    // First, drop any dangling snapshot, alpha, beta tags
-    cleanVersion = "$version".split("-")[0]
+  // It makes sense to publish major.minor versions of the docs, as
+  // any patch bumps should be backwards compatible bug fixes only
+  // To do this, we need to make a special "doc version" string.
+  // First, drop any dangling snapshot, alpha, beta tags
+  cleanVersion = "$version".split('-')[0]
 
-    // tokenize version on the '.' character, which gives us a list of [major, minor, patch]
-    docVersionParts = cleanVersion.tokenize('.')
+  // tokenize version on the '.' character, which gives us a list of [major, minor, patch]
+  docVersionParts = cleanVersion.tokenize('.')
 
-    // we should always have a major, minor, and patch value in our version
-    assert docVersionParts.size == 3
+  // we should always have a major, minor, and patch value in our version
+  assert docVersionParts.size == 3
 
-    // keep major and minor parts of the version and use those to version the docs
-    docVersion = docVersionParts[0] + "." + docVersionParts[1]
-    
-    // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
-    url = "https://docs.unidata.ucar.edu/thredds/netcdf-java/$docVersion/userguide/index.html"
+  // keep major and minor parts of the version and use those to version the docs
+  docVersion = docVersionParts[0] + '.' + docVersionParts[1]
 
-    SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-    buildTimestamp = iso_8601_format.format(new Date())
-    
-    // Project groups
-    javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
-    
-    internalProjects = subprojects.findAll { it.path in [
-            ':dap4', ':dap4:d4tests', ':docs', ':cdm-test', ':testUtil'
-    ] }
-    
-    publishedProjects = subprojects - internalProjects
+  // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
+  url = "https://docs.unidata.ucar.edu/thredds/netcdf-java/$docVersion/userguide/index.html"
+
+  SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+  buildTimestamp = iso_8601_format.format(new Date())
+
+  // will hold the list of projects that apply the java-platform plugin
+  // These projects are individually marked by calling platformProjects.add(project) in
+  // their build scripts (for example, see netcdf-java-platform/build.gradle).
+  platformProjects = []
+
+  // Will hold the list of projects that apply the maven-publish plugin
+  // A project is registered when the gradle/any/publishing.gradle script plugin
+  // is applied.
+  publishedProjects = []
+
+  // Projects that are explicitly for internal use (although might still be published)
+  // These projects are individual marked by calling internalProjects.add(project) in
+  // their build scripts (for example, see cdm-test-utils/build.gradle).
+  internalProjects = []
+
+  // Will hold list of public projects.
+  // Here, public projects are defined to be those projects which are not:
+  //   * platforms (e.g. BOMs)
+  //   * shadowed (e.g. fatJars)
+  //   * internal use (e.g. test utils)
+  // These projects are the projects included in the root coverage report,
+  // and are submitted to sonarcloud for static analysis
+  // Effectively publishedProjects - internalProjects - platformProjects
+  // after all projects have been evaluated (see gradle.projectsEvaluated below)
+  publicProjects = []
+
+  publicProjectSourceDirs = files()
+  publicProjectClassDirs = files()
+
+  publicJavadocSourceDirs = files()
+  publicJavadocClassDirs = files()
+
+  // slf4j version is declaired in a place where we cannot use the netcdf-java-platform project.
+  // best we can do is define the version here, which can be read in all of the places we need it to be read.
+  slf4jVersion = '1.7.28'
 }
 
+gradle.projectsEvaluated {
+  publicProjects = publishedProjects - internalProjects - platformProjects - project.rootProject
+  // Need to make sure to add in netcdf4 project's unloadedTests sourceSet as well
+  publicProjectSourceDirs = files(publicProjects*.sourceSets*.main*.allSource*.srcDirs +
+      project(':netcdf4').sourceSets.unloadedTest*.allSource*.srcDirs.flatten())
+  publicProjectClassDirs =
+      files(publicProjects*.sourceSets*.main*.output + project(':netcdf4').sourceSets.unloadedTest*.output)
+}
+
+// Set up properties needed for all testing, adds "testAll" task to root
 apply from: "$rootDir/gradle/root/testing.gradle"
+// Generates coverage report for testAll and submit to coveralls
 apply from: "$rootDir/gradle/root/coverage.gradle"
+// Attaches fatJar tasks to root project (makes toolsUI, ncIdv, etc.)
 // apply from: "$rootDir/gradle/root/fatJars.gradle"
-apply from: "$rootDir/gradle/root/publishing.gradle" // Creates pubs for artifacts created in fatJars.gradle
+// Creates pubs for artifacts created in fatJars.gradle
+apply from: "$rootDir/gradle/root/publishing.gradle"
+// Adds "sonarqube" task to the root project
 apply from: "$rootDir/gradle/root/sonarqube.gradle"
-apply from: "$rootDir/gradle/root/license.gradle"
+// Adds the spotless tasks to the root project and add check for .gradle files
+apply from: "$rootDir/gradle/root/spotless.gradle"
 
-apply from: "$rootDir/gradle/any/coverage.gradle"    // Modifies Test task from root/testing.gradle and
-                                                     // JacocoReport task from root/coverage.gradle
-apply from: "$rootDir/gradle/any/archiving.gradle"   // Modifies Jar tasks created in fatJars.gradle
-apply from: "$rootDir/gradle/any/publishing.gradle"  // Modifies pubs created in root/publishing.gradle
-apply from: "$rootDir/gradle/any/spotless.gradle"
-
-
+// Modifies Test task from root/testing.gradle and JacocoReport task from root/coverage.gradle
+apply from: "$rootDir/gradle/any/coverage.gradle"
+// Modifies Jar tasks created in fatJars.gradle
+apply from: "$rootDir/gradle/any/archiving.gradle"
+// Modifies pubs created in root/publishing.gradle
+apply from: "$rootDir/gradle/any/publishing.gradle"

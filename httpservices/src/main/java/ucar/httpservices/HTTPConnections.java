@@ -16,6 +16,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Centralized management of the connections used by HTTPSession/HTTPMethod.

@@ -37,7 +37,7 @@ public abstract class CDMUtil {
    * More or less the inverst of create CDMRanges
    *
    * @param rangelist the set of ucar.ma2.Range
-   * @result the equivalent list of Slice
+   * @return the equivalent list of Slice
    */
   public static List<Slice> createSlices(List<Range> rangelist) throws dap4.core.util.DapException {
     List<Slice> slices = new ArrayList<Slice>(rangelist.size());
@@ -63,7 +63,7 @@ public abstract class CDMUtil {
    * @param dimset the set of DapDimensions
    * @param start start looking here
    * @param stop stop looking here
-   * @result true if rangelist is whole; false otherwise.
+   * @return true if rangelist is whole; false otherwise.
    */
 
   public static boolean isWhole(List<Range> rangelist, List<DapDimension> dimset, int start, int stop)
@@ -92,7 +92,7 @@ public abstract class CDMUtil {
    *
    * @param rangelist the set of ucar.ma2.Range
    * @param slices the set of slices
-   * @result true if rangelist is whole wrt slices; false otherwise.
+   * @return true if rangelist is whole wrt slices; false otherwise.
    */
   public static boolean isWhole(List<Range> rangelist, List<Slice> slices) throws dap4.core.util.DapException {
     if (rangelist.size() != slices.size())
@@ -113,7 +113,7 @@ public abstract class CDMUtil {
    *
    * @param rangelist the set of ucar.ma2.Range
    * @param var the cdm var
-   * @result true if rangelist is whole wrt slices; false otherwise.
+   * @return true if rangelist is whole wrt slices; false otherwise.
    */
   public static boolean isWhole(List<Range> rangelist, Variable var) throws dap4.core.util.DapException {
     List<Dimension> dimset = var.getDimensions();
@@ -230,7 +230,7 @@ public abstract class CDMUtil {
    * ignored.
    *
    * @param dimset from which to generate shape
-   * @return
+   * @return effective shape
    */
   public static int[] computeEffectiveShape(List<DapDimension> dimset) {
     if (dimset == null || dimset.size() == 0)

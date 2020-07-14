@@ -1,50 +1,30 @@
-if (name != "netcdf-java") {
-    throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
+if (name != 'netcdf-java') {
+  throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
 apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
 
-import edu.ucar.build.publishing.PublishingUtil
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
 
 publishing {
-    publications {
-        // Publish all artifacts we've added to the "archives" configuration of the root project. See fatJars.gradle.
-        rootProject.configurations.archives.allArtifacts.each {
-            if (it instanceof ArchivePublishArtifact) {
-                AbstractArchiveTask task = (it as ArchivePublishArtifact).archiveTask
-                
-                "$task.baseName"(MavenPublication) {
-                    artifactId task.baseName
-                    artifact task
-                }
-            }
+  // Publish all artifacts we've added to the "archives" configuration of the root project. See fatJars.gradle.
+  publications {
+    rootProject.configurations.archives.allArtifacts.each {
+      if (it instanceof ArchivePublishArtifact) {
+        AbstractArchiveTask task = (it as ArchivePublishArtifact).archiveTask
+        "$task.name"(MavenPublication) {
+          artifactId task.archiveBaseName.get()
+          artifact task
         }
-        
-        ncjBom(MavenPublication) {  // Maven BOM publication
-            artifactId 'netcdf-java-bom'
-
-            pom.withXml{
-                List<Project> publishedProjects = allprojects*.findAll { it.plugins.withType(MavenPublishPlugin) }
-                List<MavenPublication> allPubs = publishedProjects.publishing.publications.flatten()
-
-                // Don't include ncjBom (and related), legacy, or any of the fatJar
-                // pubs in dependencyManagement.
-                def ignoreThesePubNames = ["dap4lib",
-                                           "ncIdv",
-                                           "ncjBom",
-                                           "toolsUI",
-                                           "legacy"]
-
-                List<MavenPublication> pubsToUseForBom = allPubs.findAll {
-                    !ignoreThesePubNames.contains(it.name)
-                }
-
-                asNode().append PublishingUtil.createDependencyManagement(pubsToUseForBom)
-            }
-        }
+      }
     }
+  }
+}
+
+tasks.withType(GenerateModuleMetadata) {
+  enabled = false
 }
 
 // The "publish" tasks require credentials for our Nexus server, which they look for in Gradle properties.
@@ -52,14 +32,16 @@ publishing {
 // Therefore, we only want to configure credentials when a "publish" task is part of the execution plan. Otherwise,
 // unavailable credentials could cause a build to fail even if we aren't doing any publishing. The TaskExecutionGraph
 // allows us to do that.
-gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
-    // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
-    Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
-    
-    mavenPublishTasks.each {
-        it.repository.credentials.with {
-            username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
-            password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
-        }
+gradle.taskGraph.whenReady {TaskExecutionGraph taskGraph ->
+  // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
+  Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll {
+    it instanceof PublishToMavenRepository
+  }
+
+  mavenPublishTasks.each {
+    it.repository.credentials.with {
+      username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+      password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
     }
+  }
 }

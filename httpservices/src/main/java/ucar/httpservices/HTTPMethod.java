@@ -6,10 +6,10 @@
 package ucar.httpservices;
 
 import static ucar.httpservices.HTTPSession.Prop;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multimap;
@@ -39,6 +39,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -141,7 +143,9 @@ import org.apache.http.util.EntityUtils;
 
 @NotThreadSafe
 public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
+
   static final boolean DEBUG = false;
+  private static final Logger logger = LoggerFactory.getLogger(HTTPMethod.class);
 
   //////////////////////////////////////////////////
   // Type Decl
@@ -507,7 +511,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
     if (!executed)
       throw new IllegalStateException("HTTPMethod: method has not been executed");
     if (this.methodstream != null) { // duplicate: caller's problem
-      HTTPSession.log.warn("HTTPRequest.getResponseBodyAsStream: Getting method stream multiple times");
+      logger.warn("HTTPRequest.getResponseBodyAsStream: Getting method stream multiple times");
     } else { // first time
       HTTPMethodStream stream = null;
       try {
@@ -675,9 +679,9 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod> {
       try {
         InputStream stream = content.getContent();
         String report = HTTPUtil.readtextfile(stream);
-        System.err.println("DEBUG: request content: " + report);
+        logger.debug("DEBUG: request content: {}", report);
       } catch (IOException | UnsupportedOperationException e) {
-        System.err.println("Cannot print content");
+        logger.debug("Cannot print content: ", e);
       }
 
     this.content = content;

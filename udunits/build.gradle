@@ -1,20 +1,23 @@
-description = "The ucar.units Java package is for decoding and encoding formatted unit specifications " +
-        "(e.g. \"m/s\"), converting numeric values between compatible units (e.g. between \"m/s\" and \"knot\"), " +
-        "and for performing arithmetic operations on units (e.g. dividing one unit by another, " +
-        "or raising a unit to a power)."
-ext.title = "UDUNITS"
-ext.url = "https://www.unidata.ucar.edu/software/udunits/"
+description = 'The ucar.units Java package is for decoding and encoding formatted unit specifications ' +
+    '(e.g. "m/s"), converting numeric values between compatible units (e.g. between "m/s" ' +
+    'and "knot"), and for performing arithmetic operations on units (e.g. dividing one unit ' +
+    'by another, or raising a unit to a power).'
+
+ext.title = 'UDUNITS'
+ext.url = 'https://www.unidata.ucar.edu/software/udunits/'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-    compile libraries["jsr305"]
-    
-    compile libraries["slf4j-api"]
-    testRuntime libraries["logback-classic"]
+  api platform(project(':netcdf-java-platform'))
+
+  implementation 'com.google.code.findbugs:jsr305'
+
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'junit:junit'
+  testImplementation 'org.slf4j:slf4j-api'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

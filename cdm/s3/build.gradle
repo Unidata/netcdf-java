@@ -1,24 +1,34 @@
-description = "The Common Data Model (CDM) AWS S3 support."
-ext.title = "CDM S3 support library"
+description = 'The Common Data Model (CDM) AWS S3 support.'
+ext.title = 'CDM S3 support library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
 
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
-    compile project(':cdm:cdm-core')
+  api platform(project(':netcdf-java-platform'))
 
-    compile libraries["aws-s3"]
-    compile libraries["jsr305"]
-    compile libraries["slf4j-api"]
+  compile project(':cdm:cdm-core')
+  compile 'org.slf4j:slf4j-api'
 
-    testRuntime libraries["logback-classic"]
+  implementation('software.amazon.awssdk:s3') {
+    // exclude netty nio client due to open CVEs. See
+    // https://github.com/aws/aws-sdk-java-v2/issues/1632
+    // we don't use the nio http client in our S3 related code,
+    // so we should be ok here (others may need to add it specifically to
+    // their code if they are using our S3 stuff, but then it's their
+    // explicit decision to run it).
+    exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+  }
 
-    testCompile project(':cdm:cdm-radial')
-    testCompile libraries["truth"]
+  implementation 'software.amazon.awssdk:apache-client'
+  implementation 'com.google.code.findbugs:jsr305'
+
+  testImplementation project(':cdm:cdm-radial')
+  testImplementation project(':cdm-test-utils')
+
+  testImplementation 'com.google.truth:truth'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

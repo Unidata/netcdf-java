@@ -17,6 +17,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -111,7 +112,7 @@ public class TestGridSubsetCoordinateSystem {
     System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       Assert.assertNotNull(filename, ncd);
       VariableDS vds = (VariableDS) ncd.findVariable(gridName);
       Assert.assertNotNull(gridName, vds);

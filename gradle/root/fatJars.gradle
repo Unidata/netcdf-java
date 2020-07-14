@@ -2,143 +2,160 @@
 // However, that behavior doesn't seem to hold for script plugins (this file) applied from the parent script.
 // So we have to repeat ourselves. See the root project's build script for more notes on buildscript {} block weirdness.
 buildscript {
-    apply from: "$rootDir/gradle/any/dependencies.gradle"
+  // get buildPlugins map
+  apply from: "$rootDir/gradle/any/plugins.gradle"
 
-    repositories {
-        jcenter()
+  repositories {
+    mavenCentral()
+    maven {
+      url 'https://plugins.gradle.org/m2/'  // For Gradle plugins.
     }
-    dependencies {
-        classpath libraries["shadow"]  // We want to import the ShadowJar class.
-    }
+  }
+  dependencies {
+    classpath buildPlugins.shadow // We want to import the ShadowJar class.
+  }
 }
 
-if (name != "netcdf-java") {
-    throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
+if (name != 'netcdf-java') {
+  throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
+
+// need this to resolve dependencies defined through the netcdf-java-platform project
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply plugin: 'com.github.johnrengelman.shadow'
+
+// todo: this indicates we need have too much logic in our script plugin
+// This script plugin is a candidate for moving into buildSrc.
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 configurations {
-    ncIdv
-    netcdfAll
-    toolsUI
-    dap4lib
+  ncIdv
+  netcdfAll
+  toolsUI
+  dap4lib
 }
 
 dependencies {
-    ncIdv project(':cdm:cdm-core')
-    ncIdv project(':cdm:cdm-image')
-    ncIdv project(':cdm:cdm-radial')
-    ncIdv project(':cdm:cdm-misc')
-    ncIdv project(':bufr')
-    ncIdv project(':grib')
-    ncIdv project(':netcdf4')
-    ncIdv project(':opendap')
-    ncIdv project(':visad:cdm-mcidas')
-    ncIdv project(':visad:cdm-vis5d')
-    ncIdv project(':httpservices')
-    ncIdv project(':legacy')
+  ncIdv platform(project(':netcdf-java-platform'))
+  ncIdv project(':cdm:cdm-core')
+  ncIdv project(':cdm:cdm-image')
+  ncIdv project(':cdm:cdm-radial')
+  ncIdv project(':cdm:cdm-misc')
+  ncIdv project(':bufr')
+  ncIdv project(':grib')
+  ncIdv project(':netcdf4')
+  ncIdv project(':opendap')
+  ncIdv project(':visad:cdm-mcidas')
+  ncIdv project(':visad:cdm-vis5d')
+  ncIdv project(':httpservices')
+  ncIdv project(':legacy')
 
-    netcdfAll project(":cdm:cdm-core")
-    netcdfAll project(":cdm:cdm-image")
-    netcdfAll project(":cdm:cdm-radial")
-    netcdfAll project(":cdm:cdm-misc")
-    netcdfAll project(":bufr")
-    netcdfAll project(":grib")
-    netcdfAll project(":netcdf4")
-    netcdfAll project(":opendap")
-    netcdfAll project(":httpservices")
-    netcdfAll project(':visad:cdm-mcidas')
+  netcdfAll platform(project(':netcdf-java-platform'))
+  netcdfAll project(':cdm:cdm-core')
+  netcdfAll project(':cdm:cdm-image')
+  netcdfAll project(':cdm:cdm-radial')
+  netcdfAll project(':cdm:cdm-misc')
+  netcdfAll project(':bufr')
+  netcdfAll project(':grib')
+  netcdfAll project(':netcdf4')
+  netcdfAll project(':opendap')
+  netcdfAll project(':httpservices')
+  netcdfAll project(':visad:cdm-mcidas')
 
-    toolsUI project(':uicdm')
-    
-    dap4lib project(':dap4:d4core')
-    dap4lib project(':dap4:d4lib')
-    dap4lib libraries["logback-classic"]
+  toolsUI platform(project(':netcdf-java-platform'))
+  toolsUI project(':uicdm')
+  toolsUI 'ch.qos.logback:logback-classic'
+
+  dap4lib platform(project(':netcdf-java-platform'))
+  dap4lib project(':dap4:d4core')
+  dap4lib project(':dap4:d4lib')
+  dap4lib 'ch.qos.logback:logback-classic'
 }
-
-apply plugin: 'com.github.johnrengelman.shadow'
-
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 def fatJarTasks = []
 
 fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
-    baseName = 'ncIdv'
-    configurations = [project.configurations.ncIdv]
-    
-    dependencies {
-        exclude(dependency('c3p0:c3p0'))  // Transitive dependency dragged in by libraries["quartz"]
-    }
-    
-    // Filter out crap from libraries["visad"]
-    exclude 'edu/wisc/**'
-    exclude 'nom/**'
-    exclude 'visad/**'
-    
-    manifest.attributes 'Implementation-Title': 'ncIdv Module'
+  // it looks like ShadowJar needs us to set both
+  // baseName and setArchivesBaseName even though
+  // baseName is deprecated.
+  // todo: keep an eye on ShadowJar to see when we can stop setting baseName in these tasks
+  baseName = 'ncIdv'
+  setArchiveBaseName('ncIdv')
+
+  configurations = [project.configurations.ncIdv]
+
+  // Filter out crap from visad
+  exclude 'edu/wisc/**'
+  exclude 'nom/**'
+  exclude 'visad/**'
+
+  manifest.attributes 'Implementation-Title': 'ncIdv Module'
 }
 
 fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
-    baseName = 'netcdfAll'
-    configurations = [project.configurations.netcdfAll]
-    
-    doFirst {
-        manifest.attributes project(':cdm:cdm-core').tasks.jar.manifest.attributes
-    }
+  baseName = 'netcdfAll'
+  setArchiveBaseName('netcdfAll')
+
+  configurations = [project.configurations.netcdfAll]
+
+  doFirst {
+    manifest.attributes project(':cdm:cdm-core').tasks.jar.manifest.attributes
+  }
 }
 
 fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
-    baseName = 'toolsUI'
-    configurations = [project.configurations.toolsUI]
-    
-    doFirst {
-        manifest.attributes project(':uicdm').tasks.jar.manifest.attributes
-    }
+  baseName = 'toolsUI'
+  setArchiveBaseName('toolsUI')
+  configurations = [project.configurations.toolsUI]
+
+  doFirst {
+    manifest.attributes project(':uicdm').tasks.jar.manifest.attributes
+  }
 }
 
 fatJarTasks << tasks.create(name: 'buildDap4Lib', type: ShadowJar) {
-    baseName = 'dap4lib'
-    configurations = [project.configurations.dap4lib]
-    
-    doFirst {
-        manifest.attributes project(':dap4:d4lib').tasks.jar.manifest.attributes
-    }
+  archiveBaseName = 'dap4lib'
+  baseName = 'dap4lib'
+  setArchiveBaseName('dap4lib')
+  configurations = [project.configurations.dap4lib]
+
+  doFirst {
+    manifest.attributes project(':dap4:d4lib').tasks.jar.manifest.attributes
+  }
 }
 
 // Common configuration.
 configure(fatJarTasks) {
-    dependsOn configurations*.buildDependencies
-    group = "shadow"
-    
-    // Filter out crap from various other packages.
-    exclude 'AUTHORS'
-    exclude 'DATE'
-    exclude 'LICENCE'
-    exclude 'LICENSE'
-    exclude 'NOTICE'
-    exclude '*.txt'
-    exclude 'META-INF/INDEX.LIST'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/*.SF'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.txt'
-    exclude 'META-INF/*.xml'
-    
-    // Transformations
-    append('META-INF/spring.handlers')
-    append('META-INF/spring.schemas')
-    mergeServiceFiles()
-}
+  dependsOn configurations*.buildDependencies
+  group = 'shadow'
 
-// See: https://docs.gradle.org/current/userguide/standard_plugins.html#sec:base_plugins
-apply plugin: 'base'
+  // Filter out crap from various other packages.
+  exclude 'AUTHORS'
+  exclude 'DATE'
+  exclude 'LICENCE'
+  exclude 'LICENSE'
+  exclude 'NOTICE'
+  exclude '*.txt'
+  exclude 'META-INF/INDEX.LIST'
+  exclude 'META-INF/DEPENDENCIES'
+  exclude 'META-INF/LICENSE'
+  exclude 'META-INF/NOTICE'
+  exclude 'META-INF/*.SF'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
+  exclude 'META-INF/*.txt'
+  exclude 'META-INF/*.xml'
+
+  // Transformations
+  append('META-INF/spring.handlers')
+  append('META-INF/spring.schemas')
+  mergeServiceFiles()
+}
 
 // The base-plugin's "assemble" task automatically creates all artifacts added to the "archives" configuration.
 artifacts {
-    archives buildNcIdv
-    archives buildNetcdfAll
-    archives buildToolsUI
-    archives buildDap4Lib
+  archives buildNcIdv
+  archives buildNetcdfAll
+  archives buildToolsUI
+  archives buildDap4Lib
 }

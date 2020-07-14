@@ -1,14 +1,19 @@
 # buildSrc
 
 Contains custom [Task](https://docs.gradle.org/current/dsl/org.gradle.api.Task.html)s
-and utilities for use in the building of THREDDS. For reference, see
+for publishing to the Unidata nexus server. For reference, see
 [this](https://docs.gradle.org/current/userguide/organizing_build_logic.html#sec:build_sources).
 
-## Inclusion of third-party software
+## Debugging
 
-This project contains source code from [Gretty](https://github.com/akhikhl/gretty), version 1.4.2.
-The license for Gretty is available in `docs/src/private/licenses/third-party/gretty/`.
+Setup a Remote task (which is a debug task) in Intelli (default settings are fine).
+Then, from the command line, run:
 
-### Details of use:
+~~~
+./gradlew help -Dorg.gradle.debug=true --no-daemon
+~~~
 
-Copied and modified `org.akhikhl.gretty.GradleUtils`.
+The `help` task is just to trigger the compile and tests run of buildSrc.
+I suppose it could be any task.
+Once gradle is listening for a remote debugger, return to intellij and run (debug) the Remote task.
+See https://docs.gradle.org/current/userguide/troubleshooting.html#_attaching_a_debugger_to_your_build

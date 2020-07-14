@@ -134,7 +134,7 @@ public class TestState extends UnitTestCommon {
     try {
       stream = (HTTPMethodStream) method.getResponseBodyAsStream();
       readbinaryfile(stream);
-      System.err.println("Stream not closed.");
+      logger.debug("Stream not closed.");
       Assert.assertFalse(stream.isClosed());
     } catch (Exception e) {
       Assert.assertFalse(method.hasStreamOpen());

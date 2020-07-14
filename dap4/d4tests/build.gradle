@@ -1,55 +1,43 @@
 apply from: "$rootDir/gradle/any/dependencies.gradle"
-apply from: "$rootDir/gradle/any/java.gradle"
-apply from: "$rootDir/gradle/any/testing.gradle"
-apply from: "$rootDir/gradle/any/coverage.gradle"
-// d4tests is not published
+apply from: "$rootDir/gradle/any/test-only-projects.gradle"
 apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
-    // A lot of these dependencies should be in the testRuntime config, not testCompile.
+  // I bet some of these dependencies could be in the testRuntimeOnly config, not testImplementation.
+  compile platform(project(':netcdf-java-platform'))
 
-    testCompile project(':dap4:d4core')
-    testCompile project(':dap4:d4lib')
-    testCompile project(':dap4:d4cdm')
-    testCompile project(':cdm:cdm-core')
-    testCompile project(':httpservices')
-    
-    testCompile libraries["javax.servlet-api"]
-    testCompile libraries["slf4j-api"]
+  testImplementation project(':dap4:d4core')
+  testImplementation project(':dap4:d4lib')
+  testImplementation project(':dap4:d4cdm')
+  testImplementation project(':cdm:cdm-core')
+  testImplementation project(':cdm-test-utils')
+  testImplementation project(':httpservices')
 
-    compile libraries["slf4j-api"]
-    runtime libraries["log4j-slf4j-impl"]
-    runtime libraries["log4j-web"]
-    testRuntime libraries["logback-classic"]
+  testImplementation 'junit:junit'
+  testImplementation 'org.slf4j:slf4j-api'
 
-    // Spring
-    compile libraries["spring-test"]
-    compile libraries["spring-core"]
-    compile libraries["spring-context"]
-    compile libraries["spring-beans"]
-    compile libraries["spring-web"]
-    compile libraries["spring-webmvc"]
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
 test {
-    systemProperties['testargs'] = System.getProperty("testargs", "")
-    
-    include 'dap4/test/TestCDMClient.class'
-    include 'dap4/test/TestConstraints.class'
-    include 'dap4/test/TestDSP.class'
-    include 'dap4/test/TestDSR.class'
-    include 'dap4/test/TestNc4Iosp.class'
-    include 'dap4/test/TestParserCE.class'
-    include 'dap4/test/TestParserDMR.class'
-    include 'dap4/test/TestServlet.class'
-    include 'dap4/test/TestServletConstraints.class'
-    include 'dap4/test/TestFrontPage.class'
-    //include 'dap4/test/TestFilters.class'
-    //include 'dap4/test/TestH5Iosp.class'
-    //include 'dap4/test/TestHyrax.class'
-    //include 'dap4/test/TestPrinter.class'
-    //include 'dap4/test/TestSerial.class'
+  systemProperties['testargs'] = System.getProperty('testargs', '')
 
-    dependsOn("farmBeforeIntegrationTest")
-    finalizedBy("farmAfterIntegrationTest")
+  include 'dap4/test/TestCDMClient.class'
+  include 'dap4/test/TestConstraints.class'
+  include 'dap4/test/TestDSP.class'
+  include 'dap4/test/TestDSR.class'
+  include 'dap4/test/TestNc4Iosp.class'
+  include 'dap4/test/TestParserCE.class'
+  include 'dap4/test/TestParserDMR.class'
+  include 'dap4/test/TestServlet.class'
+  include 'dap4/test/TestServletConstraints.class'
+  include 'dap4/test/TestFrontPage.class'
+  //include 'dap4/test/TestFilters.class'
+  //include 'dap4/test/TestH5Iosp.class'
+  //include 'dap4/test/TestHyrax.class'
+  //include 'dap4/test/TestPrinter.class'
+  //include 'dap4/test/TestSerial.class'
+
+  dependsOn('farmBeforeIntegrationTest')
+  finalizedBy('farmAfterIntegrationTest')
 }

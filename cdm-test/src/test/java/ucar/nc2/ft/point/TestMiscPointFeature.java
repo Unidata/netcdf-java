@@ -50,6 +50,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -303,12 +304,12 @@ public class TestMiscPointFeature {
   @Test
   public void testTryWithWrap() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "testWrite.nc";
-    NetcdfDataset ncd = NetcdfDataset.openDataset(location);
-    Formatter errlog = new Formatter();
-    try (FeatureDataset fdataset = FeatureDatasetFactoryManager.wrap(null, ncd, null, errlog)) {
-      assert (fdataset == null);
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(location)) {
+      Formatter errlog = new Formatter();
+      try (FeatureDataset fdataset = FeatureDatasetFactoryManager.wrap(null, ncd, null, errlog)) {
+        assert (fdataset == null);
+      }
     }
-    ncd.close();
   }
 
   // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
