@@ -10,10 +10,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.ui.event.ActionSourceListener;
 import ucar.nc2.ui.widget.ScaledPanel;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.ProjectionImpl;
 import javax.swing.*;
 import java.awt.*;
 
@@ -158,7 +156,7 @@ public class VertPanel extends JPanel {
   }
 
   private String getYstr(double xvalue, double yvalue) {
-    LatLonPoint lpt = ((ProjectionImpl) proj).projToLatLon(xvalue, yvalue);
+    LatLonPoint lpt = proj.projToLatLon(xvalue, yvalue);
     return LatLonPoints.latToString(lpt.getLatitude(), 3);
   }
 

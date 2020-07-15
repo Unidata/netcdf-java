@@ -7,6 +7,7 @@ package ucar.unidata.geoloc.projection;
 
 
 import com.google.common.math.DoubleMath;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
@@ -16,22 +17,17 @@ import ucar.unidata.util.SpecialMathFunction;
  * Transverse Mercator projection, spherical earth.
  * Projection plane is a cylinder tangent to the earth at tangentLon.
  * See John Snyder, Map Projections used by the USGS, Bulletin 1532, 2nd edition (1983), p 53
- *
- * @author John Caron
  */
+@Immutable
+public class TransverseMercator extends AbstractProjection {
 
-public class TransverseMercator extends ProjectionImpl {
-
-  private double lat0, lon0, scale, earthRadius;
-  private double falseEasting, falseNorthing;
+  private final double lat0, lon0, scale, earthRadius;
+  private final double falseEasting, falseNorthing;
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new TransverseMercator(getOriginLat(), getTangentLon(), getScale(), getFalseEasting(),
-        getFalseNorthing(), getEarthRadius());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public AbstractProjection constructCopy() {
+    return new TransverseMercator(getOriginLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(),
+        getEarthRadius());
   }
 
   /**
@@ -150,58 +146,6 @@ public class TransverseMercator extends ProjectionImpl {
     return earthRadius;
   }
 
-  //////////////////////////////////////////////
-  // setters for IDV serialization - do not use except for object creating
-
-  /**
-   * Set the scale
-   *
-   * @param scale the scale
-   */
-  public void setScale(double scale) {
-    this.scale = earthRadius * scale;
-  }
-
-  /**
-   * Set the origin latitude
-   *
-   * @param lat the origin latitude
-   */
-  public void setOriginLat(double lat) {
-    lat0 = Math.toRadians(lat);
-  }
-
-  /**
-   * Set the tangent longitude
-   *
-   * @param lon the tangent longitude
-   */
-  public void setTangentLon(double lon) {
-    lon0 = Math.toRadians(lon);
-  }
-
-  /**
-   * Set the false_easting, in km.
-   * natural_x_coordinate + false_easting = x coordinate
-   * 
-   * @param falseEasting x offset
-   */
-  public void setFalseEasting(double falseEasting) {
-    this.falseEasting = falseEasting;
-  }
-
-  /**
-   * Set the false northing, in km.
-   * natural_y_coordinate + false_northing = y coordinate
-   * 
-   * @param falseNorthing y offset
-   */
-  public void setFalseNorthing(double falseNorthing) {
-    this.falseNorthing = falseNorthing;
-  }
-
-  /////////////////////////////////////////////
-
   /**
    * Get the label to be used in the gui for this type of projection
    *
@@ -270,10 +214,7 @@ public class TransverseMercator extends ProjectionImpl {
     if (DoubleMath.fuzzyCompare(that.scale, scale, tolerance) != 0)
       return false;
 
-    if ((defaultMapArea == null) != (that.defaultMapArea == null))
-      return false; // common case is that these are null
-    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
-
+    return true;
   }
 
   @Override
@@ -295,53 +236,8 @@ public class TransverseMercator extends ProjectionImpl {
     return result;
   }
 
-  /*
-   * MACROBODY
-   * projToLatLon {} {
-   * double x = (fromX-falseEasting)/scale;
-   * double d = (fromY-falseNorthing)/scale + lat0;
-   * toLon = Math.toDegrees(lon0 + Math.atan2(SpecialMathFunction.sinh(x), Math.cos(d)));
-   * toLat = Math.toDegrees(Math.asin( Math.sin(d)/ SpecialMathFunction.cosh(x)));
-   * }
-   * 
-   * latLonToProj {} {
-   * double lon = Math.toRadians(fromLon);
-   * double lat = Math.toRadians(fromLat);
-   * double dlon = lon-lon0;
-   * double b = Math.cos( lat) * Math.sin(dlon);
-   * // infinite projection
-   * if ((Math.abs(Math.abs(b) - 1.0)) < TOLERANCE) {
-   * toX = 0.0; toY = 0.0;
-   * } else {
-   * toX = scale * SpecialMathFunction.atanh(b) + falseEasting;
-   * toY = scale * (Math.atan2(Math.tan(lat),Math.cos(dlon)) - lat0) + falseNorthing;
-   * }
-   * }
-   * 
-   * 
-   * 
-   * MACROBODY
-   */
-
-  /* BEGINGENERATED */
-
-  /*
-   * Note this section has been generated using the convert.tcl script.
-   * This script, run as:
-   * tcl convert.tcl TransverseMercator.java
-   * takes the actual projection conversion code defined in the MACROBODY
-   * section above and generates the following 6 methods
-   */
-
-
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -359,19 +255,11 @@ public class TransverseMercator extends ProjectionImpl {
       toY = scale * (Math.atan2(Math.tan(lat), Math.cos(dlon)) - lat0);
     }
 
-    result.setLocation(toX + falseEasting, toY + falseNorthing);
-    return result;
+    return ProjectionPoint.create(toX + falseEasting, toY + falseNorthing);
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   * Note: a new object is not created on each call for the return value.
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint convert to these lat/lon coordinates
-   */
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double toLat, toLon;
     double fromX = world.getX();
     double fromY = world.getY();
@@ -380,10 +268,7 @@ public class TransverseMercator extends ProjectionImpl {
     double d = (fromY - falseNorthing) / scale + lat0;
     toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
     toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
-
-    result.setLatitude(toLat);
-    result.setLongitude(toLon);
-    return result;
+    return LatLonPoint.create(toLat, toLon);
   }
 
   /**

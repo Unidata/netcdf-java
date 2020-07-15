@@ -18,22 +18,16 @@ import static ucar.unidata.geoloc.LatLonPointImmutable.INVALID;
 /**
  * Sinusoidal projection, spherical earth.
  * See John Snyder, Map Projections used by the USGS, Bulletin 1532, 2nd edition (1983), p 243
- *
- * @author John Caron
- * @since Feb 24, 2013
  */
 
-public class Sinusoidal extends ProjectionImpl {
+public class Sinusoidal extends AbstractProjection {
   private final double earthRadius;
-  private double centMeridian; // central Meridian in degrees
-  private double falseEasting, falseNorthing;
+  private final double centMeridian; // central Meridian in degrees
+  private final double falseEasting, falseNorthing;
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new Sinusoidal(getCentMeridian(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new Sinusoidal(getCentMeridian(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
   }
 
   /**
@@ -102,41 +96,6 @@ public class Sinusoidal extends ProjectionImpl {
     return earthRadius;
   }
 
-  //////////////////////////////////////////////
-  // setters for IDV serialization - do not use except for object creating
-
-  /**
-   * Set the central Meridian
-   *
-   * @param centMeridian central Meridian in degrees
-   */
-  public void setCentMeridian(double centMeridian) {
-    this.centMeridian = centMeridian;
-  }
-
-  /**
-   * Set the false_easting, in km.
-   * natural_x_coordinate + false_easting = x coordinate
-   *
-   * @param falseEasting x offset
-   */
-  public void setFalseEasting(double falseEasting) {
-    this.falseEasting = falseEasting;
-  }
-
-  /**
-   * Set the false northing, in km.
-   * natural_y_coordinate + false_northing = y coordinate
-   *
-   * @param falseNorthing y offset
-   */
-  public void setFalseNorthing(double falseNorthing) {
-    this.falseNorthing = falseNorthing;
-  }
-
-  /////////////////////////////////////////////////////
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -147,7 +106,6 @@ public class Sinusoidal extends ProjectionImpl {
     }
 
     Sinusoidal that = (Sinusoidal) o;
-
     if (Double.compare(that.centMeridian, centMeridian) != 0) {
       return false;
     }
@@ -183,23 +141,11 @@ public class Sinusoidal extends ProjectionImpl {
     return sb;
   }
 
-  /**
-   * Get the parameters as a String
-   *
-   * @return the parameters as a String
-   */
   @Override
   public String paramsToString() {
     return toString();
   }
 
-  /**
-   * Does the line between these two points cross the projection "seam".
-   *
-   * @param pt1 the line goes between these two points
-   * @param pt2 the line goes between these two points
-   * @return false if there is no seam
-   */
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     // either point is infinite
@@ -213,34 +159,19 @@ public class Sinusoidal extends ProjectionImpl {
     return (x1 * x2 < 0) && (Math.abs(x1 - x2) > earthRadius);
   }
 
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
   @Override
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double deltaLon_d = LatLonPoints.range180(latLon.getLongitude() - centMeridian);
     double fromLat_r = Math.toRadians(latLon.getLatitude());
 
     double toX = earthRadius * Math.toRadians(deltaLon_d) * Math.cos(fromLat_r);
     double toY = earthRadius * fromLat_r; // p 247 Snyder
 
-    result.setLocation(toX + falseEasting, toY + falseNorthing);
-    return result;
+    return ProjectionPoint.create(toX + falseEasting, toY + falseNorthing);
   }
 
-  /**
-   * Convert projection coordinates to a LatLonPoint
-   *
-   * @param world convert from these projection coordinates
-   * @param result the object to write to
-   * @return LatLonPoint the lat/lon coordinates
-   */
   @Override
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double fromX = world.getX() - falseEasting;
     double fromY = world.getY() - falseNorthing;
 
@@ -261,10 +192,7 @@ public class Sinusoidal extends ProjectionImpl {
     } else if (Math.abs(toLon_r) > PI) {
       return INVALID; // Projection point is off the map.
     }
-
-    result.setLatitude(Math.toDegrees(toLat_r));
-    result.setLongitude(Math.toDegrees(toLon_r));
-    return result;
+    return LatLonPoint.create(Math.toDegrees(toLat_r), Math.toDegrees(toLon_r));
   }
 
   @Override

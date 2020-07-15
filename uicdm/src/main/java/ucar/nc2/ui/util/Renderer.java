@@ -35,7 +35,7 @@ public interface Renderer {
    * 
    * @param project the projection to use.
    */
-  void setProjection(ucar.unidata.geoloc.ProjectionImpl project);
+  void setProjection(ucar.unidata.geoloc.Projection project);
 
   /**
    * Tell the Renderer to use the given color.

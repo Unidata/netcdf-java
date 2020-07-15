@@ -8,7 +8,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.util.Indent;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 
@@ -25,7 +25,7 @@ public class CoverageTransform implements AttributeContainer {
   private final String name;
   private final AttributeContainer attributes;
   private final boolean isHoriz;
-  private ProjectionImpl projection; // lazy instantiation
+  private Projection projection; // lazy instantiation
 
   public CoverageTransform(String name, AttributeContainer attributes, boolean isHoriz) {
     this.name = name;
@@ -37,7 +37,7 @@ public class CoverageTransform implements AttributeContainer {
     return isHoriz;
   }
 
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     synchronized (this) {
       if (projection == null && isHoriz) {
         projection = CoordTransBuilder.makeProjection(this, new Formatter());

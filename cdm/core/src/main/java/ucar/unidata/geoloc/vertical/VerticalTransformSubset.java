@@ -12,6 +12,7 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.unidata.geoloc.VerticalTransform;
 
 /**
  * A subset of a vertical transform.

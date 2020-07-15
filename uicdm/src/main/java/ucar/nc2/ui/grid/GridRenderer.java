@@ -40,8 +40,8 @@ public class GridRenderer {
 
   private ColorScale cs;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
-  private ProjectionImpl drawProjection; // current drawing Projection
-  private ProjectionImpl dataProjection; // current GridDatatype Projection
+  private Projection drawProjection; // current drawing Projection
+  private Projection dataProjection; // current GridDatatype Projection
   private GridDatatype orgGrid;
   private GridDatatype stridedGrid;
 
@@ -123,21 +123,21 @@ public class GridRenderer {
   /**
    * get the current GridDatatype data projection
    */
-  public ProjectionImpl getDataProjection() {
+  public Projection getDataProjection() {
     return dataProjection;
   }
 
   /**
    * get the current display projection
    */
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     return drawProjection;
   }
 
   /**
    * set the Projection to use for drawing
    */
-  public void setProjection(ProjectionImpl project) {
+  public void setProjection(Projection project) {
     drawProjection = project;
   }
 

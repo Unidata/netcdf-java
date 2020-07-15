@@ -235,7 +235,7 @@ class Giniheader {
     att = new Attribute("NY", ny);
     ncfile.addAttribute(null, att);
 
-    ProjectionImpl projection = null;
+    Projection projection = null;
     double dxKm = 0.0, dyKm = 0.0, latin, lonProjectionOrigin;
 
     switch (proj) {

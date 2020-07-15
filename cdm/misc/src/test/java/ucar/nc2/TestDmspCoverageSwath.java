@@ -5,6 +5,7 @@
 package ucar.nc2;
 
 import java.util.Arrays;
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -15,7 +16,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -55,8 +56,9 @@ public class TestDmspCoverageSwath {
       Assert.assertNotNull("getLatlonBoundingBox", llbb);
       logger.debug("llbb={} ({})", llbb.toString2(), llbb);
 
+      Formatter errLog = new Formatter();
       SubsetParams subset = new SubsetParams().setLatLonBoundingBox(gds.getLatlonBoundingBox()); // should be the same!
-      Optional<CoverageCoordSys> opt = csys.subset(subset);
+      Optional<CoverageCoordSys> opt = csys.subset(subset, errLog);
       Assert.assertTrue(opt.isPresent());
 
       CoverageCoordSys csyss = opt.get();

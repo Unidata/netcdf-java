@@ -109,16 +109,6 @@ public class EarthEllipsoid extends Earth {
     hash.put(name, this);
   }
 
-
-  /**
-   * EPSG name
-   *
-   * @return the EPSG name
-   */
-  public String getName() {
-    return name;
-  }
-
   /**
    * EPSG id
    *
@@ -134,31 +124,22 @@ public class EarthEllipsoid extends Earth {
    * @return the EPSG name
    */
   public String toString() {
-    return name;
+    return getName();
   }
 
-  /**
-   * Override Object.hashCode() to be consistent with this equals.
-   *
-   * @return hashCode
-   */
+  /** Override Object.hashCode() to be consistent with equals. */
   public int hashCode() {
-    return name.hashCode();
+    return getName().hashCode();
   }
 
-  /**
-   * Objects with same name are equal.
-   *
-   * @param o test this for equals
-   * @return +,0,-
-   */
+  /** EarthEllipsoid with same name are equal */
   public boolean equals(Object o) {
     if (this == o)
       return true;
     if (!(o instanceof EarthEllipsoid))
       return false;
     EarthEllipsoid oe = (EarthEllipsoid) o;
-    return oe.name.equals(name);
+    return oe.getName().equals(getName());
   }
 }
 

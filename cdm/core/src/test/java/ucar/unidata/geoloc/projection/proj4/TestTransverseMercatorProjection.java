@@ -3,15 +3,13 @@ package ucar.unidata.geoloc.projection.proj4;
 import org.junit.Test;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 
 public class TestTransverseMercatorProjection {
 
 
-  static private void test(ProjectionImpl proj, double[] lat, double[] lon) {
+  static private void test(Projection proj, double[] lat, double[] lon) {
     double[] x = new double[lat.length];
     double[] y = new double[lat.length];
     for (int i = 0; i < lat.length; ++i) {
@@ -41,7 +39,7 @@ public class TestTransverseMercatorProjection {
   public void testStuff() {
     // test-code
     Earth e = new Earth(6378.137, 6356.7523142, 0);
-    ProjectionImpl proj = new TransverseMercatorProjection(e, 9., 0., 0.9996, 500.000, 0.);
+    Projection proj = new TransverseMercatorProjection(e, 9., 0., 0.9996, 500.000, 0.);
 
     double[] lat = {60., 90., 60.};
     double[] lon = {0., 0., 10.};

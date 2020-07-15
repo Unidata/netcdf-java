@@ -180,29 +180,32 @@ public class StationRegionDateChooser extends NPController {
     }
 
     if (regionSelect) {
-      double defArea = 1.0 / 8; // default area is 1/4 total
-      LatLonRect llbb = np.getProjectionImpl().getDefaultMapAreaLL();
-      LatLonPoint left = llbb.getLowerLeftPoint();
-      LatLonPoint right = llbb.getUpperRightPoint();
-      double centerLon = llbb.getCenterLon();
-      double width = llbb.getWidth();
-      double centerLat = (right.getLatitude() + left.getLatitude()) / 2;
-      double height = right.getLatitude() - left.getLatitude();
-      right = LatLonPoint.create(centerLat + height * defArea, centerLon + width * defArea);
-      left = LatLonPoint.create(centerLat - height * defArea, centerLon - width * defArea);
-      LatLonRect selected = new LatLonRect(left, right);
-      setGeoSelection(selected);
-
-      // get GeoSelectionEvents from the navigated panel
-      np.addGeoSelectionListener(new GeoSelectionListener() {
-        public void actionPerformed(GeoSelectionEvent e) {
-          setGeoSelection(e.getProjectionRect());
-          if (debugEvent)
-            System.out.println("GeoSelectionEvent=" + geoSelection);
-          firePropertyChangeEvent(geoSelection, "GeoRegion");
-          redraw();
-        }
-      });
+      /*
+       * LOOK
+       * double defArea = 1.0 / 8; // default area is 1/4 total
+       * LatLonRect llbb = np.getProjectionImpl().getDefaultMapAreaLL();
+       * LatLonPoint left = llbb.getLowerLeftPoint();
+       * LatLonPoint right = llbb.getUpperRightPoint();
+       * double centerLon = llbb.getCenterLon();
+       * double width = llbb.getWidth();
+       * double centerLat = (right.getLatitude() + left.getLatitude()) / 2;
+       * double height = right.getLatitude() - left.getLatitude();
+       * right = LatLonPoint.create(centerLat + height * defArea, centerLon + width * defArea);
+       * left = LatLonPoint.create(centerLat - height * defArea, centerLon - width * defArea);
+       * LatLonRect selected = new LatLonRect(left, right);
+       * setGeoSelection(selected);
+       * 
+       * // get GeoSelectionEvents from the navigated panel
+       * np.addGeoSelectionListener(new GeoSelectionListener() {
+       * public void actionPerformed(GeoSelectionEvent e) {
+       * setGeoSelection(e.getProjectionRect());
+       * if (debugEvent)
+       * System.out.println("GeoSelectionEvent=" + geoSelection);
+       * firePropertyChangeEvent(geoSelection, "GeoRegion");
+       * redraw();
+       * }
+       * });
+       */
     }
 
     if (dateSelect) {
@@ -346,7 +349,7 @@ public class StationRegionDateChooser extends NPController {
   }
 
   public void setMapArea(ProjectionRect ma) {
-    np.getProjectionImpl().setDefaultMapArea(ma);
+    // np.getProjectionImpl().setDefaultMapArea(ma);
     // np.setMapArea(ma);
   }
 
@@ -476,14 +479,14 @@ public class StationRegionDateChooser extends NPController {
   public void setGeoBounds(LatLonRect llbb) {
     np.setMapArea(llbb);
     geoBounds = np.getProjectionImpl().latLonToProjBB(llbb);
-    np.getProjectionImpl().setDefaultMapArea(geoBounds);
+    // np.getProjectionImpl().setDefaultMapArea(geoBounds);
     setGeoSelection(geoBounds);
   }
 
   public void setGeoBounds(ProjectionRect bb) {
     geoBounds = new ProjectionRect(bb);
     np.setMapArea(bb);
-    np.getProjectionImpl().setDefaultMapArea(geoBounds);
+    // np.getProjectionImpl().setDefaultMapArea(geoBounds);
   }
 
   public void setGeoSelection(LatLonRect llbb) {

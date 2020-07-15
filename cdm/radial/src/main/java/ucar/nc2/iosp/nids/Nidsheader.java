@@ -13,8 +13,8 @@ import ucar.nc2.iosp.nexrad2.NexradStationDB;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.constants.*;
 import ucar.nc2.units.DateFormatter;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.FlatEarth;
-import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
 import ucar.unidata.util.Parameter;
@@ -1353,8 +1353,7 @@ class Nidsheader {
       yaxis.setCachedData(dataA, false);
       ncfile.addVariable(null, yaxis);
 
-      ProjectionImpl projection = new FlatEarth(lat_min, lon_max);
-      // ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
+      Projection projection = new FlatEarth(lat_min, lon_max);
       // coordinate transform variable
       Variable ct = new Variable(ncfile, null, null, projection.getClassName());
       ct.setDataType(DataType.CHAR);
@@ -1507,8 +1506,7 @@ class Nidsheader {
     yaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, yaxis);
 
-    ProjectionImpl projection = new FlatEarth(lat_min, lon_max);
-    // ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
+    Projection projection = new FlatEarth(lat_min, lon_max);
     // coordinate transform variable
     Variable ct = new Variable(ncfile, null, null, projection.getClassName());
     ct.setDataType(DataType.CHAR);

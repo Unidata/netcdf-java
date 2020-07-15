@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.geoloc.*;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
@@ -140,7 +140,7 @@ public class HorizCoordSys {
 
   /////////////////////////////////////////////////////////////////////////////////////
 
-  public Optional<HorizCoordSys> subset(SubsetParams params) {
+  public Optional<HorizCoordSys> subset(SubsetParams params, Formatter errMessages) {
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
     ProjectionRect projbb = (ProjectionRect) params.get(SubsetParams.projBB);
     LatLonPoint latlon = (LatLonPoint) params.get(SubsetParams.latlonPoint);
@@ -153,7 +153,6 @@ public class HorizCoordSys {
     Optional<CoverageCoordAxis> opt;
     Optional<CoverageCoordAxisBuilder> optb;
 
-    Formatter errMessages = new Formatter();
     try {
       if (latlon != null) { // overrides other horiz subset params
         if (isProjection) {
@@ -161,55 +160,49 @@ public class HorizCoordSys {
           CoordAxisHelper yhelper = new CoordAxisHelper(yAxis);
 
           // we have to transform latlon to projection coordinates
-          ProjectionImpl proj = transform.getProjection();
+          Projection proj = transform.getProjection();
           ProjectionPoint pp = proj.latLonToProj(latlon);
-          optb = xhelper.subsetContaining(pp.getX());
-          if (optb.isPresent())
+          optb = xhelper.subsetContaining(pp.getX(), errMessages);
+          if (optb.isPresent()) {
             xaxisSubset = new CoverageCoordAxis1D(optb.get());
-          else
-            errMessages.format("xaxis: %s;%n", optb.getErrorMessage());
+          }
 
-          optb = yhelper.subsetContaining(pp.getY());
-          if (optb.isPresent())
+          optb = yhelper.subsetContaining(pp.getY(), errMessages);
+          if (optb.isPresent()) {
             yaxisSubset = new CoverageCoordAxis1D(optb.get());
-          else
-            errMessages.format("yaxis: %s;%n", optb.getErrorMessage());
+          }
 
         } else {
           CoordAxisHelper xhelper = new CoordAxisHelper(lonAxis);
           CoordAxisHelper yhelper = new CoordAxisHelper(latAxis);
 
           double lonNormal = LatLonPoints.lonNormalFrom(latlon.getLongitude(), lonAxis.getStartValue());
-          optb = xhelper.subsetContaining(lonNormal);
-          if (optb.isPresent())
+          optb = xhelper.subsetContaining(lonNormal, errMessages);
+          if (optb.isPresent()) {
             lonaxisSubset = new CoverageCoordAxis1D(optb.get());
-          else
-            errMessages.format("lonaxis: %s;%n", optb.getErrorMessage());
+          }
 
-          optb = yhelper.subsetContaining(latlon.getLatitude());
-          if (optb.isPresent())
+          optb = yhelper.subsetContaining(latlon.getLatitude(), errMessages);
+          if (optb.isPresent()) {
             lataxisSubset = new CoverageCoordAxis1D(optb.get());
-          else
-            errMessages.format("lataxis: %s;%n", optb.getErrorMessage());
+          }
         }
 
       } else if (projbb != null) {
         if (isProjection) {
-          opt = xAxis.subset(projbb.getMinX(), projbb.getMaxX(), horizStride);
-          if (opt.isPresent())
+          opt = xAxis.subset(projbb.getMinX(), projbb.getMaxX(), horizStride, errMessages);
+          if (opt.isPresent()) {
             xaxisSubset = (CoverageCoordAxis1D) opt.get();
-          else
-            errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
+          }
 
-          opt = yAxis.subset(projbb.getMinY(), projbb.getMaxY(), horizStride);
-          if (opt.isPresent())
+          opt = yAxis.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errMessages);
+          if (opt.isPresent()) {
             yaxisSubset = (CoverageCoordAxis1D) opt.get();
-          else
-            errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
+          }
 
         } /*
            * else { // WTF projbb on non Projection ?
-           * ProjectionImpl proj = transform.getProjection();
+           * Projection proj = transform.getProjection();
            * LatLonRect llrect = proj.projToLatLonBB(projbb);
            * opt = lonaxis.subset(llrect.getLonMin(), llrect.getLonMax(), horizStride);
            * if (opt.isPresent()) lonaxisSubset = opt.get();
@@ -229,61 +222,53 @@ public class HorizCoordSys {
 
           if (isProjection) {
             // we have to transform latlon to projection coordinates
-            ProjectionImpl proj = transform.getProjection();
+            Projection proj = transform.getProjection();
             ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
-            opt = xAxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
-            if (opt.isPresent())
+            opt = xAxis.subset(prect.getMinX(), prect.getMaxX(), horizStride, errMessages);
+            if (opt.isPresent()) {
               xaxisSubset = (CoverageCoordAxis1D) opt.get();
-            else
-              errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
+            }
 
-            opt = yAxis.subset(prect.getMinY(), prect.getMaxY(), horizStride);
-            if (opt.isPresent())
+            opt = yAxis.subset(prect.getMinY(), prect.getMaxY(), horizStride, errMessages);
+            if (opt.isPresent()) {
               yaxisSubset = (CoverageCoordAxis1D) opt.get();
-            else
-              errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
+            }
 
           } else {
-            opt = subsetLon(llbb, horizStride);
-            if (opt.isPresent())
+            opt = subsetLon(llbb, horizStride, errMessages);
+            if (opt.isPresent()) {
               lonaxisSubset = opt.get();
-            else
-              errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
+            }
 
-            opt = latAxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride);
-            if (opt.isPresent())
+            opt = latAxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride, errMessages);
+            if (opt.isPresent()) {
               lataxisSubset = opt.get();
-            else
-              errMessages.format("lataxis: %s;%n", opt.getErrorMessage());
+            }
           }
         }
 
       } else if (horizStride > 1) { // no bounding box, just horiz stride
         if (isProjection) {
-          opt = xAxis.subsetByIndex(xAxis.getRange().copyWithStride(horizStride));
-          if (opt.isPresent())
+          opt = xAxis.subsetByIndex(xAxis.getRange().copyWithStride(horizStride), errMessages);
+          if (opt.isPresent()) {
             xaxisSubset = (CoverageCoordAxis1D) opt.get();
-          else
-            errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
+          }
 
-          opt = yAxis.subsetByIndex(yAxis.getRange().copyWithStride(horizStride));
-          if (opt.isPresent())
+          opt = yAxis.subsetByIndex(yAxis.getRange().copyWithStride(horizStride), errMessages);
+          if (opt.isPresent()) {
             yaxisSubset = (CoverageCoordAxis1D) opt.get();
-          else
-            errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
+          }
 
         } else {
-          opt = lonAxis.subsetByIndex(lonAxis.getRange().copyWithStride(horizStride));
-          if (opt.isPresent())
+          opt = lonAxis.subsetByIndex(lonAxis.getRange().copyWithStride(horizStride), errMessages);
+          if (opt.isPresent()) {
             lonaxisSubset = opt.get();
-          else
-            errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
+          }
 
-          opt = latAxis.subsetByIndex(latAxis.getRange().copyWithStride(horizStride));
-          if (opt.isPresent())
+          opt = latAxis.subsetByIndex(latAxis.getRange().copyWithStride(horizStride), errMessages);
+          if (opt.isPresent()) {
             lataxisSubset = opt.get();
-          else
-            errMessages.format("lataxis: %s;%n", opt.getErrorMessage());
+          }
         }
       }
     } catch (InvalidRangeException e) {
@@ -292,7 +277,7 @@ public class HorizCoordSys {
 
     String errs = errMessages.toString();
     if (!errs.isEmpty())
-      return Optional.empty(errs);
+      return Optional.empty();
 
     // makes a copy of the axis
     if (xaxisSubset == null && xAxis != null)
@@ -311,7 +296,7 @@ public class HorizCoordSys {
     if (isProjection) {
       double x = xAxis.getCoordMidpoint(xindex);
       double y = yAxis.getCoordMidpoint(xindex);
-      ProjectionImpl proj = transform.getProjection();
+      Projection proj = transform.getProjection();
       return proj.projToLatLon(x, y);
     } else {
       double lat = latAxis.getCoordMidpoint(yindex);
@@ -321,7 +306,7 @@ public class HorizCoordSys {
   }
 
   // here's where to deal with crossing seam
-  private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) {
+  private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride, Formatter errLog) {
     double wantMin = LatLonPoints.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
     double wantMax = LatLonPoints.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
     double start = lonAxis.getStartValue();
@@ -330,17 +315,18 @@ public class HorizCoordSys {
     // use MAMath.MinMax as a container for two values, min and max
     List<MAMath.MinMax> lonIntvs = subsetLonIntervals(wantMin, wantMax, start, end);
 
-    if (lonIntvs.isEmpty())
-      return Optional.empty(
-          String.format("longitude want [%f,%f] does not intersect lon axis [%f,%f]", wantMin, wantMax, start, end));
+    if (lonIntvs.isEmpty()) {
+      errLog.format("longitude want [%f,%f] does not intersect lon axis [%f,%f]", wantMin, wantMax, start, end);
+      return Optional.empty();
+    }
 
     if (lonIntvs.size() == 1) {
       MAMath.MinMax lonIntv = lonIntvs.get(0);
-      return lonAxis.subset(lonIntv.min, lonIntv.max, stride);
+      return lonAxis.subset(lonIntv.min, lonIntv.max, stride, errLog);
     }
 
     // this is the seam crossing case
-    return lonAxis.subsetByIntervals(lonIntvs, stride);
+    return lonAxis.subsetByIntervals(lonIntvs, stride, errLog);
   }
 
   /*
@@ -435,7 +421,7 @@ public class HorizCoordSys {
         result.ycoord = yAxis.getCoordMidpoint(result.y);
         return Optional.of(result);
       } else {
-        return Optional.empty("not in grid");
+        return Optional.empty();
       }
 
     } else { // 1D lat lon case
@@ -450,7 +436,7 @@ public class HorizCoordSys {
         result.ycoord = latAxis.getCoordMidpoint(result.y);
         return Optional.of(result);
       } else {
-        return Optional.empty("not in grid");
+        return Optional.empty();
       }
     }
   }

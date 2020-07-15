@@ -69,7 +69,7 @@ public class PolarStereographic extends AbstractTransformBuilder implements Hori
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
 
-    ucar.unidata.geoloc.ProjectionImpl proj;
+    ucar.unidata.geoloc.Projection proj;
 
     // check for ellipsoidal earth
     if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {

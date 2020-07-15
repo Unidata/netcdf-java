@@ -22,7 +22,7 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.lang.invoke.MethodHandles;
@@ -141,7 +141,7 @@ public class TestGridSubset {
       // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
       LatLonRect bbox = new LatLonRect(LatLonPoint.create(-16.79, -20.5), LatLonPoint.create(14.1, 20.9));
 
-      ProjectionImpl p = gcs.getProjection();
+      Projection p = gcs.getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
       logger.debug("{} -> {}", bbox, prect);
 
@@ -338,8 +338,8 @@ public class TestGridSubset {
       GridCoordSystem gcs = grid.getCoordinateSystem();
       assert null != gcs;
 
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-      logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
+      System.out.printf("original bbox = %s%n", gcs.getBoundingBox());
+      System.out.printf("lat/lon bbox = %s%n", gcs.getLatLonBoundingBox());
 
       ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(LatLonPoint.create(), 20.0, 40.0);
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
@@ -348,12 +348,14 @@ public class TestGridSubset {
       GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
       assert null != gcs2;
 
-      logger.debug("result lat/lon bbox = {}", gcs2.getLatLonBoundingBox());
-      logger.debug("result bbox = {}", gcs2.getBoundingBox());
+      System.out.printf("result lat/lon bbox = %s%n", gcs2.getLatLonBoundingBox().toStringSpec());
+      System.out.printf("result bbox = %s%n", gcs2.getBoundingBox().toStringSpec());
 
-      ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
-      logger.debug("projection mapArea = {}", pr);
-      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
+      LatLonRect expectLBB = new LatLonRect("-0.043318, -0.043487, 21.202380, 44.559265");
+      assert (expectLBB.nearlyEquals(gcs2.getLatLonBoundingBox()));
+
+      ProjectionRect expectBB = new ProjectionRect("-4.502221, -4.570379, 3925.936303, 2148.077947");
+      assert (expectBB.nearlyEquals(gcs2.getBoundingBox()));
     }
   }
 
@@ -369,8 +371,8 @@ public class TestGridSubset {
       GridCoordSystem gcs = grid.getCoordinateSystem();
       assert null != gcs;
 
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-      logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
+      System.out.printf("original bbox = %s%n", gcs.getBoundingBox());
+      System.out.printf("lat/lon bbox = %s%n", gcs.getLatLonBoundingBox());
 
       ucar.unidata.geoloc.LatLonRect llbb_subset =
           new LatLonRect(LatLonPoint.create(38, -110), LatLonPoint.create(42, -90));
@@ -380,12 +382,14 @@ public class TestGridSubset {
       GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
       assert null != gcs2;
 
-      logger.debug("result lat/lon bbox = {}", gcs2.getLatLonBoundingBox());
-      logger.debug("result bbox = {}", gcs2.getBoundingBox());
+      System.out.printf("result lat/lon bbox = %s%n", gcs2.getLatLonBoundingBox().toStringSpec());
+      System.out.printf("result bbox = %s%n", gcs2.getBoundingBox().toStringSpec());
 
-      ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
-      logger.debug("projection mapArea = {}", pr);
-      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
+      LatLonRect expectLBB = new LatLonRect("46.992792, -103.156421, 0.540102, 14.635361");
+      assert (expectLBB.nearlyEquals(gcs2.getLatLonBoundingBox()));
+
+      ProjectionRect expectBB = new ProjectionRect("-25.000000, -25.000000, 1250.000000, 50.000000");
+      assert (expectBB.nearlyEquals(gcs2.getBoundingBox()));
 
       CoordinateAxis xaxis = gcs.getXHorizAxis();
       CoordinateAxis yaxis = gcs.getYHorizAxis();
@@ -404,8 +408,8 @@ public class TestGridSubset {
       GridCoordSystem gcs = grid.getCoordinateSystem();
       assert null != gcs;
 
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-      logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
+      System.out.printf("original bbox = {}", gcs.getBoundingBox());
+      System.out.printf("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
 
       ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(LatLonPoint.create(), 20.0, 40.0);
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
@@ -414,12 +418,14 @@ public class TestGridSubset {
       GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
       assert null != gcs2;
 
-      logger.debug("result lat/lon bbox = {}", gcs2.getLatLonBoundingBox());
-      logger.debug("result bbox = {}", gcs2.getBoundingBox());
+      System.out.printf("result lat/lon bbox = %s%n", gcs2.getLatLonBoundingBox().toStringSpec());
+      System.out.printf("result bbox = %s%n", gcs2.getBoundingBox().toStringSpec());
 
-      ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
-      logger.debug("projection mapArea = {}", pr);
-      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
+      LatLonRect expectLBB = new LatLonRect("-0.043318, -0.043487, 21.202380, 44.559265");
+      assert (expectLBB.nearlyEquals(gcs2.getLatLonBoundingBox()));
+
+      ProjectionRect expectBB = new ProjectionRect("-4.502221, -4.570379, 2148.077947, 3925.936303");
+      assert (expectBB.nearlyEquals(gcs2.getBoundingBox()));
     }
   }
 

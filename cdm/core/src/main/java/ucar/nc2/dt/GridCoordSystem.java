@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dt;
 
+import javax.annotation.Nullable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.time.CalendarDate;
@@ -15,6 +16,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import ucar.unidata.geoloc.VerticalTransform;
 
 /**
  * A Coordinate System for gridded data. Assume:
@@ -131,16 +133,17 @@ public interface GridCoordSystem {
    * 
    * @return ProjectionCT or null.
    */
+  @Nullable
   ProjectionCT getProjectionCT();
 
   /**
    * Get the Projection that performs the transform math.
    * Same as getProjectionCT().getProjection().
    * 
-   * @return ProjectionImpl or null.
-   * @deprecated this will return Projection, not ProjectionImpl in 6.
+   * @return Projection or null.
    */
-  ucar.unidata.geoloc.ProjectionImpl getProjection();
+  @Nullable
+  ucar.unidata.geoloc.Projection getProjection();
 
   /**
    * Use the bounding box to set the defaule map are of the projection.
@@ -153,6 +156,7 @@ public interface GridCoordSystem {
    * 
    * @return VerticalCT or null.
    */
+  @Nullable
   VerticalCT getVerticalCT();
 
   /**
@@ -161,7 +165,8 @@ public interface GridCoordSystem {
    * 
    * @return VerticalTransform or null.
    */
-  ucar.unidata.geoloc.vertical.VerticalTransform getVerticalTransform();
+  @Nullable
+  VerticalTransform getVerticalTransform();
 
   // horiz
 

@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ui.geoloc;
 
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 
 /**
  * Used to notify listeners that there is a new Projection.
@@ -12,14 +12,14 @@ import ucar.unidata.geoloc.ProjectionImpl;
  * @author John Caron
  */
 public class NewProjectionEvent extends java.util.EventObject {
-  private ProjectionImpl project;
+  private Projection project;
 
-  public NewProjectionEvent(Object source, ProjectionImpl proj) {
+  public NewProjectionEvent(Object source, Projection proj) {
     super(source);
     this.project = proj;
   }
 
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     return project;
   }
 

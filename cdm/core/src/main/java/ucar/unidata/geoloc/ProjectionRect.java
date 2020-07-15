@@ -5,6 +5,7 @@
 package ucar.unidata.geoloc;
 
 import com.google.common.math.DoubleMath;
+import java.util.StringTokenizer;
 import ucar.nc2.util.Misc;
 import java.io.*;
 
@@ -71,6 +72,24 @@ public class ProjectionRect implements java.io.Serializable {
     double width = Math.abs(x1 - x2);
     double height = Math.abs(y1 - y2);
     setRect(wx0 - width / 2, wy0 - height / 2, width, height);
+  }
+
+  /**
+   * Construct a bounding box from a string.
+   *
+   * @param spec "startx, starty, width, height"
+   */
+  public ProjectionRect(String spec) {
+    StringTokenizer stoker = new StringTokenizer(spec, " ,");
+    int n = stoker.countTokens();
+    if (n != 4)
+      throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
+    double startx = Double.parseDouble(stoker.nextToken());
+    double starty = Double.parseDouble(stoker.nextToken());
+    double width = Double.parseDouble(stoker.nextToken());
+    double height = Double.parseDouble(stoker.nextToken());
+
+    setRect(startx, starty, width, height);
   }
 
   public double getX() {
@@ -388,6 +407,14 @@ public class ProjectionRect implements java.io.Serializable {
   public String toString2(int ndec) {
     String f = " %." + ndec + "f";
     return String.format("min:" + f + f + " max:" + f + f, getX(), getY(), getMaxX(), getMaxY());
+  }
+
+  /**
+   * Return a String representation of this ProjectionRect that can be used in new ProjectionRect(String):
+   * "x, y, width, height"
+   */
+  public String toStringSpec() {
+    return String.format("%f, %f, %f, %f", x, y, getWidth(), getHeight());
   }
 
   /**

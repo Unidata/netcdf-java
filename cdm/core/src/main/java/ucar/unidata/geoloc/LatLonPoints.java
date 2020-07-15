@@ -5,6 +5,7 @@
 package ucar.unidata.geoloc;
 
 import java.util.Formatter;
+import ucar.unidata.util.Format;
 
 /**
  * Static utilities for LatLonPoint.
@@ -171,17 +172,25 @@ public class LatLonPoints {
   }
 
   /**
-   * String representation in the form, eg 40.23N 105.1W
-   * 
+   * String representation in the form, eg 40.23, -105.1
+   *
    * @param pt the LatLonPoint
    * @param sigDigits significant digits
    * @return String representation
    */
   public static String toString(LatLonPoint pt, int sigDigits) {
-    Formatter sbuff = new Formatter();
-    sbuff.format("%s %s", LatLonPoints.latToString(pt.getLatitude(), sigDigits),
-        LatLonPoints.lonToString(pt.getLongitude(), sigDigits));
-    return sbuff.toString();
+    return String.format("%s, %s", Format.d(pt.getLatitude(), sigDigits), Format.d(pt.getLongitude(), sigDigits));
+  }
+
+  /**
+   * String representation in the form, eg x, y
+   *
+   * @param pt the ProjectionPoint
+   * @param sigDigits significant digits
+   * @return String representation
+   */
+  public static String toString(ProjectionPoint pt, int sigDigits) {
+    return String.format("%s, %s", Format.d(pt.getX(), sigDigits), Format.d(pt.getY(), sigDigits));
   }
 
 }

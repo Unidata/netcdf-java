@@ -5,11 +5,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoints;
-import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -29,7 +26,7 @@ public class TestRotatedPole {
    * A rotated lat/lon projection with origin at 54 degrees North, 254 degrees
    * East.
    */
-  private Projection proj = new RotatedPole(90 - 54, LatLonPoints.lonNormal(254 + 180));
+  private RotatedPole proj = new RotatedPole(90 - 54, LatLonPoints.lonNormal(254 + 180));
 
   /**
    * Test that the unrotated centre lat/lon is the origin of the rotated

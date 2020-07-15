@@ -83,7 +83,7 @@ public class NavigatedPanel extends JPanel {
 
   // main delegates
   private Navigation navigate;
-  private ProjectionImpl project;
+  private Projection project;
 
   // ui stuff
   private BufferedImage bImage;
@@ -149,7 +149,7 @@ public class NavigatedPanel extends JPanel {
     // default navigation and projection
     navigate = new Navigation(this);
     project = new LatLonProjection("Cyl.Eq"); // default projection
-    navigate.setMapArea(project.getDefaultMapArea());
+    // navigate.setMapArea(project.getDefaultMapArea());
 
     // toolbar actions
     makeActions();
@@ -284,7 +284,7 @@ public class NavigatedPanel extends JPanel {
 
       if ((lonBeg < center - 180) || (lonEnd > center + 180)) { // got to do it
         double wx0 = box.getX() + box.getWidth() / 2;
-        llproj.setCenterLon(wx0); // shift cylinder seam
+        // llproj.setCenterLon(wx0); // shift cylinder seam
         double newWx0 = llproj.getCenterLon(); // normalize wx0 to [-180,180]
         setWorldCenterX(newWx0); // tell navigation panel to shift
         if (showShift)
@@ -353,12 +353,12 @@ public class NavigatedPanel extends JPanel {
   }
 
   /** Get the current Projection. */
-  public ProjectionImpl getProjectionImpl() {
+  public Projection getProjectionImpl() {
     return project;
   }
 
   /** Set the Projection, change the Map Area to the projection's default. */
-  public void setProjectionImpl(ProjectionImpl p) {
+  public void setProjectionImpl(Projection p) {
     // transfer selection region to new coord system
     if (geoSelection != null) {
       LatLonRect geoLL = project.projToLatLonBB(geoSelection);
@@ -367,7 +367,7 @@ public class NavigatedPanel extends JPanel {
 
     // switch projections
     project = p;
-    navigate.setMapArea(project.getDefaultMapArea());
+    // navigate.setMapArea(project.getDefaultMapArea());
     if (Debug.isSet("projection/set") || debugNewProjection)
       System.out.println("projection/set NP=" + project);
 
@@ -1043,7 +1043,7 @@ public class NavigatedPanel extends JPanel {
 
     zoomDefault = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        navigate.setMapArea(project.getDefaultMapArea());
+        // navigate.setMapArea(project.getDefaultMapArea());
         drawG();
       }
     };

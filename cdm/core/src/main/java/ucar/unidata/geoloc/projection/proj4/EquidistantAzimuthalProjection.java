@@ -20,37 +20,42 @@
 package ucar.unidata.geoloc.projection.proj4;
 
 import java.util.Objects;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.AbstractProjection;
 
 /**
  * AzimuthalEquidistant Projection.
  * Port from proj4.
  */
-public class EquidistantAzimuthalProjection extends ProjectionImpl {
-  public static final int NORTH_POLE = 1;
-  public static final int SOUTH_POLE = 2;
-  public static final int EQUATOR = 3;
-  public static final int OBLIQUE = 4;
+@Immutable
+public class EquidistantAzimuthalProjection extends AbstractProjection {
+  private static final int NORTH_POLE = 1;
+  private static final int SOUTH_POLE = 2;
+  private static final int EQUATOR = 3;
+  private static final int OBLIQUE = 4;
 
   private static final double TOL = 1.e-8;
 
-  private double lat0, lon0; // degrees
-  private double projectionLatitude, projectionLongitude; // radians
-  private double falseEasting;
-  private double falseNorthing;
-  private Earth earth;
-  private double e, es, one_es;
-  private double totalScale;
+  private final double lat0, lon0; // degrees
+  private final double projectionLatitude, projectionLongitude; // radians
+  private final double falseEasting;
+  private final double falseNorthing;
+  private final Earth earth;
+  private final double e, es, one_es;
+  private final double totalScale;
 
-  private int mode;
-  private double[] en;
-  private double N1;
-  private double Mp;
-  private double He;
-  private double G;
-  private double sinphi0, cosphi0;
+  private final int mode;
+  private final double sinphi0, cosphi0;
+
+  // depends on the mode if these are defined
+  private final double[] en;
+  private final double N1;
+  private final double Mp;
+  private final double He;
+  private final double G;
 
   public EquidistantAzimuthalProjection() {
     this(90, 0, 0, 0, new Earth());
@@ -90,57 +95,64 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
     addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor());
     addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening());
 
-    initialize();
-  }
-
-  @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new EquidistantAzimuthalProjection(lat0, lon0, falseEasting, falseNorthing, earth);
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
-  }
-
-  private void initialize() {
     if (Math.abs(Math.abs(projectionLatitude) - MapMath.HALFPI) < MapMath.EPS10) {
-      mode = projectionLatitude < 0. ? SOUTH_POLE : NORTH_POLE;
-      sinphi0 = projectionLatitude < 0. ? -1. : 1.;
-      cosphi0 = 0.;
+      this.mode = projectionLatitude < 0. ? SOUTH_POLE : NORTH_POLE;
+      this.sinphi0 = projectionLatitude < 0. ? -1. : 1.;
+      this.cosphi0 = 0.;
 
     } else if (Math.abs(projectionLatitude) < MapMath.EPS10) {
-      mode = EQUATOR;
-      sinphi0 = 0.;
-      cosphi0 = 1.;
+      this.mode = EQUATOR;
+      this.sinphi0 = 0.;
+      this.cosphi0 = 1.;
 
     } else {
-      mode = OBLIQUE;
-      sinphi0 = Math.sin(projectionLatitude);
-      cosphi0 = Math.cos(projectionLatitude);
+      this.mode = OBLIQUE;
+      this.sinphi0 = Math.sin(projectionLatitude);
+      this.cosphi0 = Math.cos(projectionLatitude);
     }
 
+    double[] enTemp = null;
+    double N1Temp = Double.NaN;
+    double MpTemp = Double.NaN;
+    double HeTemp = Double.NaN;
+    double GTemp = Double.NaN;
+
     if (!earth.isSpherical()) {
-      en = MapMath.enfn(es);
+      enTemp = MapMath.enfn(es);
       switch (mode) {
         case NORTH_POLE:
-          Mp = MapMath.mlfn(MapMath.HALFPI, 1., 0., en);
+          MpTemp = MapMath.mlfn(MapMath.HALFPI, 1., 0., enTemp);
           break;
         case SOUTH_POLE:
-          Mp = MapMath.mlfn(-MapMath.HALFPI, -1., 0., en);
+          MpTemp = MapMath.mlfn(-MapMath.HALFPI, -1., 0., enTemp);
           break;
         case EQUATOR:
         case OBLIQUE:
-          N1 = 1. / Math.sqrt(1. - es * sinphi0 * sinphi0);
-          G = sinphi0 * (He = e / Math.sqrt(one_es));
-          He *= cosphi0;
+          N1Temp = 1. / Math.sqrt(1. - es * sinphi0 * sinphi0);
+          HeTemp = e / Math.sqrt(one_es);
+          GTemp = sinphi0 * HeTemp;
+          HeTemp *= cosphi0;
           break;
       }
     }
+
+    this.en = enTemp;
+    this.N1 = N1Temp;
+    this.Mp = MpTemp;
+    this.He = HeTemp;
+    this.G = GTemp;
   }
 
   @Override
-  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl xy) {
+  public Projection constructCopy() {
+    return new EquidistantAzimuthalProjection(lat0, lon0, falseEasting, falseNorthing, earth);
+  }
+
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latlon) {
     double lam = Math.toRadians(latlon.getLongitude() - lon0);
     double phi = Math.toRadians(latlon.getLatitude());
+    double toX = 0, toY = 0;
 
     if (earth.isSpherical()) {
       double coslam, cosphi, sinphi;
@@ -152,22 +164,25 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
         case EQUATOR:
         case OBLIQUE:
           if (mode == EQUATOR)
-            xy.setY(cosphi * coslam);
+            toY = cosphi * coslam;
           else
-            xy.setY(sinphi0 * sinphi + cosphi0 * cosphi * coslam);
+            toY = sinphi0 * sinphi + cosphi0 * cosphi * coslam;
 
-          if (Math.abs(Math.abs(xy.getY()) - 1.) < TOL) {
-            if (xy.getY() < 0.)
+          if (Math.abs(Math.abs(toY) - 1.) < TOL) {
+            if (toY < 0.)
               throw new IllegalStateException();
-            else
-              xy.setLocation(0, 0);
+            else {
+              toX = 0;
+              toY = 0;
+            }
 
           } else {
-            double y = Math.acos(xy.getY());
+            double y = Math.acos(toY);
             y /= Math.sin(y);
             double x = y * cosphi * Math.sin(lam);
             y *= (mode == EQUATOR) ? sinphi : cosphi0 * sinphi - sinphi0 * cosphi * coslam;
-            xy.setLocation(x, y);
+            toY = y;
+            toX = x;
           }
           break;
 
@@ -181,7 +196,8 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
           double y = (MapMath.HALFPI + phi);
           double x = y * Math.sin(lam);
           y *= coslam;
-          xy.setLocation(x, y);
+          toY = y;
+          toX = x;
           break;
       }
 
@@ -197,13 +213,14 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
           // coverity[missing_break]
         case SOUTH_POLE:
           double x = (rho = Math.abs(Mp - MapMath.mlfn(phi, sinphi, cosphi, en))) * Math.sin(lam);
-          double y = rho * coslam;
-          xy.setLocation(x, y);
+          toY = rho * coslam;
+          toX = x;
           break;
         case EQUATOR:
         case OBLIQUE:
           if (Math.abs(lam) < MapMath.EPS10 && Math.abs(phi - projectionLatitude) < MapMath.EPS10) {
-            xy.setLocation(0, 0);
+            toY = 0;
+            toX = 0;
             break;
           }
           t = Math.atan2(one_es * sinphi + es * N1 * sinphi0 * Math.sqrt(1. - es * sinphi * sinphi), cosphi);
@@ -217,19 +234,20 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
           H2 = H * H;
           c = N1 * s * (1. + s * s * (-H2 * (1. - H2) / 6. + s * (G * H * (1. - 2. * H2 * H2) / 8.
               + s * ((H2 * (4. - 7. * H2) - 3. * G * G * (1. - 7. * H2)) / 120. - s * G * H / 48.))));
-          xy.setLocation(c * sA, c * cA);
+          toY = c * cA;
+          toX = c * sA;
           break;
       }
     }
 
-    xy.setLocation(totalScale * xy.getX() + falseEasting, totalScale * xy.getY() + falseNorthing);
-    return xy;
+    return ProjectionPoint.create(totalScale * toX + falseEasting, totalScale * toY + falseNorthing);
   }
 
   @Override
-  public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl lp) {
+  public LatLonPoint projToLatLon(ProjectionPoint ppt) {
     double x = (ppt.getX() - falseEasting) / totalScale; // assumes cartesion coords in km
     double y = (ppt.getY() - falseNorthing) / totalScale;
+    double toLat, toLon;
 
     if (earth.isSpherical()) {
       double cosc, c_rh, sinc;
@@ -240,41 +258,37 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
         c_rh = Math.PI;
 
       } else if (c_rh < MapMath.EPS10) {
-        lp.setLatitude(lat0);
-        lp.setLongitude(0.0);
-        return lp;
+        return LatLonPoint.create(lat0, 0.0);
       }
       if (mode == OBLIQUE || mode == EQUATOR) {
         sinc = Math.sin(c_rh);
         cosc = Math.cos(c_rh);
         if (mode == EQUATOR) {
-          lp.setLatitude(Math.toDegrees(MapMath.asin(y * sinc / c_rh)));
+          toLat = Math.toDegrees(MapMath.asin(y * sinc / c_rh));
           x *= sinc;
           y = cosc * c_rh;
 
         } else {
-          lp.setLatitude(Math.toDegrees(MapMath.asin(cosc * sinphi0 + y * sinc * cosphi0 / c_rh)));
-          y = (cosc - sinphi0 * MapMath.sind(lp.getLatitude())) * c_rh;
+          toLat = Math.toDegrees(MapMath.asin(cosc * sinphi0 + y * sinc * cosphi0 / c_rh));
+          y = (cosc - sinphi0 * MapMath.sind(toLat)) * c_rh;
           x *= sinc * cosphi0;
         }
-        lp.setLongitude(Math.toDegrees(y == 0. ? 0. : Math.atan2(x, y)));
+        toLon = Math.toDegrees(y == 0. ? 0. : Math.atan2(x, y));
 
       } else if (mode == NORTH_POLE) {
-        lp.setLatitude(Math.toDegrees(MapMath.HALFPI - c_rh));
-        lp.setLongitude(Math.toDegrees(Math.atan2(x, -y)));
+        toLat = Math.toDegrees(MapMath.HALFPI - c_rh);
+        toLon = Math.toDegrees(Math.atan2(x, -y));
 
       } else {
-        lp.setLatitude(Math.toDegrees(c_rh - MapMath.HALFPI));
-        lp.setLongitude(Math.toDegrees(Math.atan2(x, y)));
+        toLat = Math.toDegrees(c_rh - MapMath.HALFPI);
+        toLon = Math.toDegrees(Math.atan2(x, y));
       }
 
     } else {
       double c, Az, cosAz, A, B, D, E, F, psi, t;
 
       if ((c = MapMath.distance(x, y)) < MapMath.EPS10) {
-        lp.setLatitude(lat0);
-        lp.setLongitude(0.0);
-        return (lp);
+        return LatLonPoint.create(lat0, 0.0);
       }
 
       if (mode == OBLIQUE || mode == EQUATOR) {
@@ -287,21 +301,20 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
         E = D * (1. - D * D * (A * (1. + A) / 6. + B * (1. + 3. * A) * D / 24.));
         F = 1. - E * E * (A / 2. + B * E / 6.);
         psi = MapMath.asin(sinphi0 * Math.cos(E) + t * Math.sin(E));
-        lp.setLongitude(Math.toDegrees(MapMath.asin(Math.sin(Az) * Math.sin(E) / Math.cos(psi))));
+        toLon = Math.toDegrees(MapMath.asin(Math.sin(Az) * Math.sin(E) / Math.cos(psi)));
         if ((t = Math.abs(psi)) < MapMath.EPS10)
-          lp.setLatitude(0.0);
+          toLat = 0.0;
         else if (Math.abs(t - MapMath.HALFPI) < 0.)
-          lp.setLatitude(Math.toDegrees(MapMath.HALFPI));
+          toLat = Math.toDegrees(MapMath.HALFPI);
         else
-          lp.setLatitude(Math.toDegrees(Math.atan((1. - es * F * sinphi0 / Math.sin(psi)) * Math.tan(psi) / one_es)));
+          toLat = Math.toDegrees(Math.atan((1. - es * F * sinphi0 / Math.sin(psi)) * Math.tan(psi) / one_es));
       } else {
-        lp.setLatitude(Math.toDegrees(MapMath.inv_mlfn(mode == NORTH_POLE ? Mp - c : Mp + c, es, en)));
-        lp.setLongitude(Math.toDegrees(Math.atan2(x, mode == NORTH_POLE ? -y : y)));
+        toLat = Math.toDegrees(MapMath.inv_mlfn(mode == NORTH_POLE ? Mp - c : Mp + c, es, en));
+        toLon = Math.toDegrees(Math.atan2(x, mode == NORTH_POLE ? -y : y));
       }
     }
 
-    lp.setLongitude(lp.getLongitude() + lon0);
-    return lp;
+    return LatLonPoint.create(toLat, toLon + lon0);
   }
 
   @Override
@@ -333,10 +346,7 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
       return false;
     if (!Objects.equals(earth, that.earth))
       return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null))
-      return false; // common case is that these are null
-    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
-
+    return true;
   }
 
   @Override

@@ -20,39 +20,43 @@
 package ucar.unidata.geoloc.projection.proj4;
 
 import java.util.Formatter;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.AbstractProjection;
 
 /**
  * taken from the USGS PROJ package.
  *
  * @author Heiko.Klein@met.no
  */
-public class StereographicAzimuthalProjection extends ProjectionImpl {
-  // projection parameters
-  double projectionLatitude, projectionLongitude; // origin in radian
-  double n; // Math.sin(projectionLatitude)
-  double scaleFactor, trueScaleLatitude; // scale or trueScale in radian
-  double falseEasting, falseNorthing; // km
-
-  // earth shape
-  private Earth earth;
-  private double e; // earth.getEccentricity
-  private double totalScale; // scale to convert cartesian coords in km
-
+@Immutable
+public class StereographicAzimuthalProjection extends AbstractProjection {
   private static final int NORTH_POLE = 1;
   private static final int SOUTH_POLE = 2;
   private static final int EQUATOR = 3;
   private static final int OBLIQUE = 4;
-
   private static final double TOL = 1.e-8;
 
-  private double akm1, sinphi0, cosphi0;
-  private int mode;
+  // projection parameters
+  private final double projectionLatitude, projectionLongitude; // origin in radian
+  private final double n; // Math.sin(projectionLatitude)
+  private final double scaleFactor, trueScaleLatitude; // scale or trueScale in radian
+  private final double falseEasting, falseNorthing; // km
+
+  // earth shape
+  private final Earth earth;
+  private final double e; // earth.getEccentricity
+  private final double totalScale; // scale to convert cartesian coords in km
+
+  private final double akm1;
+  private final double sinphi0;
+  private final double cosphi0;
+  private final int mode;
 
   public StereographicAzimuthalProjection() { // polar stereographic with true longitude at 60 deg
-    this(90.0, 0.0, 0.9330127018922193, 60., 0, 0, new Earth());
+    this(90.0, 0.0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84);
   }
 
   /**
@@ -72,7 +76,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     projectionLatitude = Math.toRadians(latt);
     n = Math.abs(Math.sin(projectionLatitude));
     projectionLongitude = Math.toRadians(lont);
-    trueScaleLatitude = Math.toRadians(trueScaleLat);
+    trueScaleLatitude = Math.abs(Math.toRadians(trueScaleLat));
     scaleFactor = Math.abs(scale);
     falseEasting = false_easting;
     falseNorthing = false_northing;
@@ -80,9 +84,66 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     // earth figure
     this.earth = earth;
     this.e = earth.getEccentricity();
-    this.totalScale = earth.getMajor() * 0.001; // scale factor for cartesion coords in km. // issue if semimajor and
-                                                // semiminor axis defined in dataset?
-    initialize();
+    // scale factor for cartesion coords in km. // issue if semimajor and semiminor axis defined in dataset?
+    this.totalScale = earth.getMajor() * 0.001;
+
+    double t = Math.abs(projectionLatitude);
+    if (Math.abs(t - MapMath.HALFPI) < MapMath.EPS10)
+      mode = projectionLatitude < 0. ? SOUTH_POLE : NORTH_POLE;
+    else
+      mode = t > MapMath.EPS10 ? OBLIQUE : EQUATOR;
+
+    double tsinp = 0.0;
+    double tcosp = 0.0;
+    double takm1;
+
+    if (earth.isSpherical()) { // sphere
+      switch (mode) {
+        case OBLIQUE:
+          tsinp = Math.sin(projectionLatitude);
+          tcosp = Math.cos(projectionLatitude);
+        case EQUATOR:
+          takm1 = 2. * scaleFactor;
+          break;
+        case SOUTH_POLE:
+        case NORTH_POLE:
+          takm1 = Math.abs(trueScaleLatitude - MapMath.HALFPI) >= MapMath.EPS10
+              ? Math.cos(trueScaleLatitude) / Math.tan(MapMath.QUARTERPI - .5 * trueScaleLatitude)
+              : 2. * scaleFactor;
+          break;
+        default:
+          throw new IllegalStateException();
+      }
+    } else { // ellipsoid
+      switch (mode) {
+        case NORTH_POLE:
+        case SOUTH_POLE:
+          if (Math.abs(trueScaleLatitude - MapMath.HALFPI) < MapMath.EPS10)
+            takm1 = 2. * scaleFactor / Math.sqrt(Math.pow(1 + e, 1 + e) * Math.pow(1 - e, 1 - e));
+          else {
+            takm1 = Math.cos(trueScaleLatitude) / MapMath.tsfn(trueScaleLatitude, t = Math.sin(trueScaleLatitude), e);
+            t *= e;
+            takm1 /= Math.sqrt(1. - t * t);
+          }
+          break;
+        case EQUATOR:
+          takm1 = 2. * scaleFactor;
+          break;
+        case OBLIQUE:
+          t = Math.sin(projectionLatitude);
+          double X = 2. * Math.atan(ssfn(projectionLatitude, t, e)) - MapMath.HALFPI;
+          t *= e;
+          takm1 = 2. * scaleFactor * Math.cos(projectionLatitude) / Math.sqrt(1. - t * t);
+          tsinp = Math.sin(X);
+          tcosp = Math.cos(X);
+          break;
+        default:
+          throw new IllegalStateException();
+      }
+    }
+    this.akm1 = takm1;
+    this.sinphi0 = tsinp;
+    this.cosphi0 = tcosp;
 
     // parameters
     addParameter(CF.GRID_MAPPING_NAME, CF.STEREOGRAPHIC);
@@ -94,71 +155,18 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       addParameter(CF.FALSE_NORTHING, false_northing);
       addParameter(CDM.UNITS, "km");
     }
-    addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor()); // seems correct for case where dataset has semimajor axis
-                                                        // information, but where is semiminor?
-    addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening()); // this gets us the semiminor axis from the
-                                                                      // semimajor (semimajor - flattening*semimajor)
 
-    // System.err.println(paramsToString());
-
+    // seems correct for case where dataset has semimajor axis information, but where is semiminor?
+    addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor());
+    // this gets us the semiminor axis from the semimajor (semimajor - flattening*semimajor)
+    addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening());
   }
 
-  private void initialize() {
-    double t;
-
-    if (Math.abs((t = Math.abs(projectionLatitude)) - MapMath.HALFPI) < MapMath.EPS10)
-      mode = projectionLatitude < 0. ? SOUTH_POLE : NORTH_POLE;
-    else
-      mode = t > MapMath.EPS10 ? OBLIQUE : EQUATOR;
-    trueScaleLatitude = Math.abs(trueScaleLatitude);
-    if (earth.isSpherical()) { // sphere
-      switch (mode) {
-        case OBLIQUE:
-          sinphi0 = Math.sin(projectionLatitude);
-          cosphi0 = Math.cos(projectionLatitude);
-        case EQUATOR:
-          akm1 = 2. * scaleFactor;
-          break;
-        case SOUTH_POLE:
-        case NORTH_POLE:
-          akm1 = Math.abs(trueScaleLatitude - MapMath.HALFPI) >= MapMath.EPS10
-              ? Math.cos(trueScaleLatitude) / Math.tan(MapMath.QUARTERPI - .5 * trueScaleLatitude)
-              : 2. * scaleFactor;
-          break;
-      }
-    } else { // ellipsoid
-      double X;
-
-      switch (mode) {
-        case NORTH_POLE:
-        case SOUTH_POLE:
-          if (Math.abs(trueScaleLatitude - MapMath.HALFPI) < MapMath.EPS10)
-            akm1 = 2. * scaleFactor / Math.sqrt(Math.pow(1 + e, 1 + e) * Math.pow(1 - e, 1 - e));
-          else {
-            akm1 = Math.cos(trueScaleLatitude) / MapMath.tsfn(trueScaleLatitude, t = Math.sin(trueScaleLatitude), e);
-            t *= e;
-            akm1 /= Math.sqrt(1. - t * t);
-          }
-          break;
-        case EQUATOR:
-          akm1 = 2. * scaleFactor;
-          break;
-        case OBLIQUE:
-          t = Math.sin(projectionLatitude);
-          X = 2. * Math.atan(ssfn(projectionLatitude, t, e)) - MapMath.HALFPI;
-          t *= e;
-          akm1 = 2. * scaleFactor * Math.cos(projectionLatitude) / Math.sqrt(1. - t * t);
-          sinphi0 = Math.sin(X);
-          cosphi0 = Math.cos(X);
-          break;
-      }
-    }
-  }
-
-  private ProjectionPoint project(double lam, double phi, ProjectionPointImpl xy) {
+  private ProjectionPoint project(double lam, double phi) {
     double coslam = Math.cos(lam);
     double sinlam = Math.sin(lam);
     double sinphi = Math.sin(phi);
+    double toX = 0, toY = 0;
 
     if (earth.isSpherical()) { // sphere
       double cosphi = Math.cos(phi);
@@ -170,7 +178,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
             throw new RuntimeException("I");
           double x = (y = akm1 / y) * cosphi * sinlam;
           y *= sinphi;
-          xy.setLocation(x, y);
+          toX = x;
+          toY = y;
           break;
         case OBLIQUE:
           y = 1. + sinphi0 * sinphi + cosphi0 * cosphi * coslam;
@@ -178,7 +187,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
             throw new RuntimeException("I");
           x = (y = akm1 / y) * cosphi * sinlam;
           y *= cosphi0 * sinphi - sinphi0 * cosphi * coslam;
-          xy.setLocation(x, y);
+          toX = x;
+          toY = y;
           break;
         case NORTH_POLE:
           coslam = -coslam;
@@ -190,7 +200,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           y = akm1 * Math.tan(MapMath.QUARTERPI + .5 * phi);
           x = sinlam * y;
           y *= coslam;
-          xy.setLocation(x, y);
+          toX = x;
+          toY = y;
           break;
       }
     } else { // ellipsoid
@@ -205,13 +216,15 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           A = akm1 / (cosphi0 * (1. + sinphi0 * sinX + cosphi0 * cosX * coslam));
           double y = A * (cosphi0 * sinX - sinphi0 * cosX * coslam);
           double x = A * cosX;
-          xy.setLocation(x, y);
+          toX = x;
+          toY = y;
           break;
         case EQUATOR:
           A = 2. * akm1 / (1. + cosX * coslam);
           y = A * sinX;
           x = A * cosX;
-          xy.setLocation(x, y);
+          toX = x;
+          toY = y;
           break;
         case SOUTH_POLE:
           phi = -phi;
@@ -221,17 +234,19 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
         case NORTH_POLE:
           x = akm1 * MapMath.tsfn(phi, sinphi, e);
           y = -x * coslam;
-          xy.setLocation(x, y);
+          toX = x;
+          toY = y;
           break;
       }
-      xy.setX(xy.getX() * sinlam);
+      toX *= sinlam;
     }
-    return xy;
+    return ProjectionPoint.create(toX, toY);
   }
 
-  public ProjectionPoint projectInverse(double x, double y, ProjectionPointImpl lp) {
+  private ProjectionPoint projectInverse(double x, double y) {
     double lpx = 0.;
     double lpy;
+    double toX = 0, toY = 0;
 
     if (earth.isSpherical()) {
       double c, rh, sinc, cosc;
@@ -246,7 +261,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
             lpy = Math.asin(y * sinc / rh);
           if (cosc != 0. || x != 0.)
             lpx = Math.atan2(x * sinc, cosc * rh);
-          lp.setLocation(lpx, lpy);
+          toX = lpx;
+          toY = lpy;
           break;
         case OBLIQUE:
           if (Math.abs(rh) <= MapMath.EPS10)
@@ -255,7 +271,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
             lpy = Math.asin(cosc * sinphi0 + y * sinc * cosphi0 / rh);
           if ((c = cosc - sinphi0 * Math.sin(lpy)) != 0. || x != 0.)
             lpx = Math.atan2(x * sinc * cosphi0, c * rh);
-          lp.setLocation(lpx, lpy);
+          toX = lpx;
+          toY = lpy;
           break;
         case NORTH_POLE:
           y = -y;
@@ -265,7 +282,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           else
             lpy = Math.asin(mode == SOUTH_POLE ? -cosc : cosc);
           lpx = (x == 0. && y == 0.) ? 0. : Math.atan2(x, y);
-          lp.setLocation(lpx, lpy);
+          toX = lpx;
+          toY = lpy;
           break;
       }
     } else {
@@ -300,13 +318,14 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           if (mode == SOUTH_POLE)
             lpy = -lpy;
           lpx = (x == 0. && y == 0.) ? 0. : Math.atan2(x, y);
-          lp.setLocation(lpx, lpy);
-          return lp;
+          toX = lpx;
+          toY = lpy;
+          return ProjectionPoint.create(toX, toY);
         }
       }
       throw new RuntimeException("Iteration didn't converge");
     }
-    return lp;
+    return ProjectionPoint.create(toX, toY);
   }
 
   private double ssfn(double phit, double sinphi, double eccen) {
@@ -320,13 +339,9 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result =
-        new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
-            scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
+        scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
   }
 
   @Override
@@ -338,34 +353,30 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl destPoint) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double fromLat = Math.toRadians(latLon.getLatitude());
     double theta = computeTheta(latLon.getLongitude());
 
-    // System.err.println(Math.toDegrees(theta) + " " + Math.toDegrees(fromLat));
-    ProjectionPoint res = project(theta, fromLat, new ProjectionPointImpl());
-
-    destPoint.setLocation(totalScale * res.getX() + falseEasting, totalScale * res.getY() + falseNorthing);
-    return destPoint;
+    ProjectionPoint res = project(theta, fromLat);
+    return ProjectionPoint.create(totalScale * res.getX() + falseEasting, totalScale * res.getY() + falseNorthing);
   }
 
   @Override
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double fromX = (world.getX() - falseEasting) / totalScale; // assumes cartesian coords in km
     double fromY = (world.getY() - falseNorthing) / totalScale;
 
-    ProjectionPointImpl dst = new ProjectionPointImpl();
-    projectInverse(fromX, fromY, dst);
-    if (dst.getX() < -Math.PI)
-      dst.setX(-Math.PI);
-    else if (dst.getX() > Math.PI)
-      dst.setX(Math.PI);
+    ProjectionPoint pt = projectInverse(fromX, fromY);
+    double toLon = pt.getX();
+    double toLat = pt.getY();
+    if (toLon < -Math.PI)
+      toLon = -Math.PI;
+    else if (toLon > Math.PI)
+      toLon = Math.PI;
     if (projectionLongitude != 0)
-      dst.setX(MapMath.normalizeLongitude(dst.getX() + projectionLongitude));
+      toLon = MapMath.normalizeLongitude(toLon + projectionLongitude);
 
-    result.setLongitude(Math.toDegrees(dst.getX()));
-    result.setLatitude(Math.toDegrees(dst.getY()));
-    return result;
+    return LatLonPoint.create(Math.toDegrees(toLat), Math.toDegrees(toLon));
   }
 
   @Override
@@ -381,11 +392,6 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       return false;
     }
     StereographicAzimuthalProjection oo = (StereographicAzimuthalProjection) proj;
-    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null))
-      return false; // common case is that these are null
-    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea))
-      return false;
-
     return ((this.projectionLatitude == oo.projectionLatitude) && (this.projectionLongitude == oo.projectionLongitude)
         && (this.scaleFactor == oo.scaleFactor) && (this.trueScaleLatitude == oo.trueScaleLatitude)
         && (this.falseEasting == oo.falseEasting) && (this.falseNorthing == oo.falseNorthing)

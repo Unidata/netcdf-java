@@ -13,7 +13,7 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.Section;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;

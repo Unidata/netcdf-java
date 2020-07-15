@@ -35,22 +35,20 @@ public class Earth implements Serializable {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-  protected final double eccentricity; // eccentricity
-  protected final double eccentricitySquared; // eccentricity squared
-  protected final double equatorRadius; // equatorial radius (semimajor axis)
-  protected final double poleRadius; // polar radius (semiminor axis)
-  protected final double flattening; // flattening
-  protected final String name;
+  private final double eccentricity; // eccentricity
+  private final double eccentricitySquared; // eccentricity squared
+  private final double equatorRadius; // equatorial radius (semimajor axis)
+  private final double poleRadius; // polar radius (semiminor axis)
+  private final double flattening; // flattening
+  private final String name;
 
-  /**
-   * Spherical earth with canonical radius.
-   */
+  /** Spherical earth with canonical radius. */
   public Earth() {
     this(WGS84_EARTH_RADIUS_METERS);
   }
 
   /**
-   * Create a spherical earth.
+   * Assume a spherical cow, I mean earth.
    *
    * @param radius radius of spherical earth.
    */
@@ -205,9 +203,7 @@ public class Earth implements Serializable {
 
   @Override
   public String toString() {
-    Formatter ff = new Formatter();
-    ff.format("equatorRadius=%f inverseFlattening=%f", equatorRadius, (1.0 / flattening));
-    return ff.toString();
+    return String.format("%s equatorRadius=%f inverseFlattening=%f", name, equatorRadius, (1.0 / flattening));
   }
 
 }

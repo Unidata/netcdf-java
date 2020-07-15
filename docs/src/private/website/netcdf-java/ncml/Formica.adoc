@@ -317,7 +317,7 @@ public interface GridCoordSystem {
    // transforms
    public List getCoordinateTransforms();
    public ProjectionCT getProjectionCT();
-   public ucar.unidata.geoloc.ProjectionImpl getProjection();
+   public ucar.unidata.geoloc.Projection getProjection();
    public VerticalCT getVerticalCT();
    public ucar.unidata.geoloc.vertical.VerticalTransform getVerticalTransform();
 --------------------------------------------------------------------------------

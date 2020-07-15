@@ -5,6 +5,7 @@
 
 package ucar.unidata.geoloc.projection;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
@@ -14,13 +15,9 @@ import ucar.unidata.util.SpecialMathFunction;
  * Mercator projection, spherical earth.
  * Projection plane is a cylinder tangent to the earth at tangentLon.
  * See John Snyder, Map Projections used by the USGS, Bulletin 1532, 2nd edition (1983), p 43-47
- *
- * @author John Caron
- * @see Projection
- * @see ProjectionImpl
  */
-
-public class Mercator extends ProjectionImpl {
+@Immutable
+public class Mercator extends AbstractProjection {
 
   /**
    * Convert "scale at standard parellel" to "standard parellel"
@@ -37,20 +34,14 @@ public class Mercator extends ProjectionImpl {
 
   /////////////////////////////////////////////////////////////////////
   private final double earthRadius;
-  private double lon0; // longitude of the origin in degrees
-  private double par; // standard parallel in degrees
-  private double falseEasting, falseNorthing;
-
-  private double par_r; // standard parallel in radians
-  private double A;
+  private final double lon0; // longitude of the origin in degrees
+  private final double par; // standard parallel in degrees
+  private final double falseEasting, falseNorthing;
+  private final double A;
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result =
-        new Mercator(getOriginLon(), getParallel(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new Mercator(getOriginLon(), getParallel(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
   }
 
   /**
@@ -92,9 +83,8 @@ public class Mercator extends ProjectionImpl {
     this.falseNorthing = false_northing;
     this.earthRadius = radius;
 
-    this.par_r = Math.toRadians(par);
-
-    precalculate();
+    // standard parallel in radians
+    this.A = earthRadius * Math.cos(Math.toRadians(par)); // incorporates the scale factor at par
 
     addParameter(CF.GRID_MAPPING_NAME, CF.MERCATOR);
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, lon0);
@@ -106,13 +96,6 @@ public class Mercator extends ProjectionImpl {
       addParameter(CDM.UNITS, "km");
     }
 
-  }
-
-  /**
-   * Precalculate some params
-   */
-  private void precalculate() {
-    A = earthRadius * Math.cos(par_r); // incorporates the scale factor at par
   }
 
   /**
@@ -154,52 +137,6 @@ public class Mercator extends ProjectionImpl {
   public double getEarthRadius() {
     return earthRadius;
   }
-
-  //////////////////////////////////////////////
-  // setters for IDV serialization - do not use except for object creating
-
-  /**
-   * Set the first standard parallel
-   *
-   * @param par the first standard parallel
-   */
-  public void setParallel(double par) {
-    this.par = par;
-    this.par_r = Math.toRadians(par);
-    precalculate();
-  }
-
-  /**
-   * Set the origin longitude.
-   *
-   * @param lon the origin longitude.
-   */
-  public void setOriginLon(double lon) {
-    lon0 = lon;
-    precalculate();
-  }
-
-  /**
-   * Set the false_easting, in km.
-   * natural_x_coordinate + false_easting = x coordinate
-   *
-   * @param falseEasting x offset
-   */
-  public void setFalseEasting(double falseEasting) {
-    this.falseEasting = falseEasting;
-  }
-
-  /**
-   * Set the false northing, in km.
-   * natural_y_coordinate + false_northing = y coordinate
-   *
-   * @param falseNorthing y offset
-   */
-  public void setFalseNorthing(double falseNorthing) {
-    this.falseNorthing = falseNorthing;
-  }
-
-  /////////////////////////////////////////////////////
 
   /**
    * Get the parameters as a String
@@ -254,10 +191,7 @@ public class Mercator extends ProjectionImpl {
       return false;
     if (Double.compare(mercator.par, par) != 0)
       return false;
-    if ((defaultMapArea == null) != (mercator.defaultMapArea == null))
-      return false; // common case is that these are null
-    return defaultMapArea == null || mercator.defaultMapArea.equals(defaultMapArea);
-
+    return true;
   }
 
   @Override
@@ -278,7 +212,7 @@ public class Mercator extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
@@ -293,12 +227,11 @@ public class Mercator extends ProjectionImpl {
       toY = A * SpecialMathFunction.atanh(Math.sin(fromLat_r)); // p 41 Snyder
     }
 
-    result.setLocation(toX + falseEasting, toY + falseNorthing);
-    return result;
+    return ProjectionPoint.create(toX + falseEasting, toY + falseNorthing);
   }
 
   @Override
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double fromX = world.getX() - falseEasting;
     double fromY = world.getY() - falseNorthing;
 
@@ -307,9 +240,7 @@ public class Mercator extends ProjectionImpl {
     double e = Math.exp(-fromY / A);
     double toLat = Math.toDegrees(Math.PI / 2 - 2 * Math.atan(e)); // Snyder p 44
 
-    result.setLatitude(toLat);
-    result.setLongitude(toLon);
-    return result;
+    return LatLonPoint.create(toLat, toLon);
   }
 
 }

@@ -7,7 +7,7 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 
 /**
  * MSGnavigation projection
@@ -33,8 +33,8 @@ public class MSGnavigation extends AbstractTransformBuilder implements HorizTran
     double scale_x = readAttributeDouble(ctv, ucar.unidata.geoloc.projection.sat.MSGnavigation.SCALE_X, Double.NaN);
     double scale_y = readAttributeDouble(ctv, ucar.unidata.geoloc.projection.sat.MSGnavigation.SCALE_Y, Double.NaN);
 
-    ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis,
-        height, scale_x, scale_y);
+    Projection proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis, height,
+        scale_x, scale_y);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 

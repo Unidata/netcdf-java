@@ -17,8 +17,8 @@ import java.util.*;
  */
 public class CoverageSubsetter2 {
 
-  public static ucar.nc2.util.Optional<CoverageCollection> makeCoverageDatasetSubset(CoverageCollection org,
-      List<String> gridsWanted, SubsetParams params) {
+  public static java.util.Optional<CoverageCollection> makeCoverageDatasetSubset(CoverageCollection org,
+      List<String> gridsWanted, SubsetParams params, Formatter errlog) {
 
     // Get subset of original objects that are needed by the requested grids
     List<Coverage> orgCoverages = new ArrayList<>();
@@ -41,9 +41,9 @@ public class CoverageSubsetter2 {
     Map<String, CoverageCoordSys> subsetCFCoordSys = new HashMap<>();
     for (CoverageCoordSys orgCs : orgCoordSys.values()) {
       // subsetCF make do some CF tweaks, not needed in regular subset
-      ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCs.subset(params, true, false);
+      java.util.Optional<CoverageCoordSys> opt = orgCs.subset(params, true, false, errlog);
       if (!opt.isPresent()) {
-        return ucar.nc2.util.Optional.empty(opt.getErrorMessage());
+        return java.util.Optional.empty();
       }
 
       CoverageCoordSys subsetCoordSys = opt.get();
@@ -77,7 +77,7 @@ public class CoverageSubsetter2 {
     }
 
     // put it all together
-    return ucar.nc2.util.Optional.of(new CoverageCollection(org.getName(), org.getCoverageType(),
+    return java.util.Optional.of(new CoverageCollection(org.getName(), org.getCoverageType(),
         new AttributeContainerMutable(org.getName(), org.getGlobalAttributes()), null, null, null, coordSys,
         coordTransforms, coordAxes, coverages, org.getReader())); // use org.reader -> subset always in coord space !
   }

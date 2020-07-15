@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -56,11 +55,9 @@ import java.lang.invoke.MethodHandles;
 public class TestLongitudeWrap {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  /** The following tests BugFixes.evalTimeAxes, called by ucar.nc2.dt.grid.GridCoordSys.isGridCoordSys */
   @Test
   public void testTimeAxisEval() throws IOException {
-    /**
-     * The following tests BugFixes.evalTimeAxes, called by ucar.nc2.dt.grid.GridCoordSys.isGridCoordSys
-     */
     String testFileFullPath = TestDir.cdmUnitTestDir + "ft/grid/echoTops_runtime.nc";
     GridDataset runtimeDataset = new GridDataset(new NetcdfDataset(NetcdfFiles.open(testFileFullPath)));
     if (runtimeDataset.getGrids().isEmpty()) {
@@ -69,7 +66,6 @@ public class TestLongitudeWrap {
     if (runtimeDataset.getGrids().get(0).getCoordinateSystem().getRunTimeAxis() == null) {
       throw new RuntimeException("Runtime data file did not generate a dataset with a RunTime axis");
     }
-
     System.out.println("BugFixesTest - completed.");
   }
 

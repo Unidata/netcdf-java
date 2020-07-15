@@ -130,10 +130,11 @@ public class CFGridCoverageWriter {
 
     // We need global attributes, subsetted axes, transforms, and the coverages with attributes and referencing
     // subsetted axes.
-    ucar.nc2.util.Optional<CoverageCollection> opt =
-        CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
+    Formatter errLog = new Formatter();
+    java.util.Optional<CoverageCollection> opt =
+        CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams, errLog);
     if (!opt.isPresent()) {
-      return Result.create(0, false, opt.getErrorMessage());
+      return Result.create(0, false, errLog.toString());
     }
 
     CoverageCollection subsetDataset = opt.get();
@@ -203,12 +204,11 @@ public class CFGridCoverageWriter {
     Projection proj = horizCoordSys.getTransform().getProjection();
     // Projection is a "fake"; we already have lat/lon.
     return !(proj instanceof LatLonProjection);
-
   }
 
   private void addGlobalAttributes(CoverageCollection gds, Group.Builder group) {
     // global attributes
-    for (Attribute att : gds.getGlobalAttributes()) {
+    for (Attribute att : gds.attributes()) {
       if (att.getShortName().equals(CDM.FILE_FORMAT))
         continue;
       if (att.getShortName().equals(_Coordinate._CoordSysBuilder))
@@ -216,9 +216,10 @@ public class CFGridCoverageWriter {
       group.addAttribute(att);
     }
 
-    Attribute att = gds.findAttributeIgnoreCase(CDM.CONVENTIONS);
-    if (att == null || !att.getStringValue().startsWith("CF-")) // preserve prev version of CF Convention if exists
+    Attribute att = gds.attributes().findAttributeIgnoreCase(CDM.CONVENTIONS);
+    if (att == null || !att.getStringValue().startsWith("CF-")) {// preserve prev version of CF Convention if exists
       group.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.0"));
+    }
 
     group.addAttribute(
         new Attribute("History", "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridCoverageWriter)\n"
@@ -240,14 +241,14 @@ public class CFGridCoverageWriter {
     for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
         Dimension d = Dimension.builder(axis.getName(), axis.getNcoords()).build();
-        group.addDimension(d);
+        group.addDimensionIfNotExists(d);
         dimHash.put(axis.getName(), d);
       }
 
       if (axis.isInterval()) {
         if (null == dimHash.get(BOUNDS_DIM)) {
           Dimension d = Dimension.builder(BOUNDS_DIM, 2).build();
-          group.addDimension(d);
+          group.addDimensionIfNotExists(d);
           dimHash.put(BOUNDS_DIM, d);
         }
       }
@@ -277,7 +278,7 @@ public class CFGridCoverageWriter {
 
       Variable.Builder vb = Variable.builder().setName(axis.getName()).setDataType(axis.getDataType())
           .setParentGroupBuilder(parent).setDimensionsByName(dims);
-      addVariableAttributes(vb, axis.getAttributeContainer());
+      addVariableAttributes(vb, axis.attributes());
       vb.addAttribute(new Attribute(CDM.UNITS, axis.getUnits())); // override what was in att list
       if (hasBounds)
         vb.addAttribute(new Attribute(CF.BOUNDS, axis.getName() + BOUNDS));

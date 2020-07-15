@@ -13,7 +13,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class TestProjectionCoordinates {
     NetcdfDataset ncd = NetcdfDatasets.openDataset(filename);
     GridDataset gds = new GridDataset(ncd);
     GridCoordSystem gsys = null;
-    ProjectionImpl p = null;
+    Projection p = null;
 
     for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
       gsys = g.getGeoCoordSystem();

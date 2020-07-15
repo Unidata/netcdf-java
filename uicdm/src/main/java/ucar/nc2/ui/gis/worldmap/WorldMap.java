@@ -14,9 +14,8 @@ import ucar.nc2.ui.gis.GisFeatureRenderer;
 import ucar.nc2.ui.gis.GisPart;
 import ucar.ui.util.Resource;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import java.io.EOFException;
 import java.util.ArrayList;
@@ -137,7 +136,7 @@ public class WorldMap extends GisFeatureRenderer {
   }
 
   /////////////////////////////////////////////////
-  private final ProjectionImpl dataProjection;
+  private final Projection dataProjection;
 
   // constructor
   public WorldMap() {
@@ -156,7 +155,7 @@ public class WorldMap extends GisFeatureRenderer {
     return gisList;
   }
 
-  protected ProjectionImpl getDataProjection() {
+  protected Projection getDataProjection() {
     return dataProjection;
   }
 }

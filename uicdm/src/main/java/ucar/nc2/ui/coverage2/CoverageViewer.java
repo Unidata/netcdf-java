@@ -14,9 +14,7 @@ import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.*;
 import ucar.ui.widget.*;
 import ucar.nc2.util.NamedObject;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
@@ -131,7 +129,7 @@ public class CoverageViewer extends JPanel {
   private DataState dataState;
   private CoverageCollection coverageDataset;
   private Coverage currentField;
-  private ProjectionImpl project;
+  private Projection project;
 
   // state
   private List<NamedObject> levelNames, timeNames, ensembleNames, runtimeNames;
@@ -312,7 +310,7 @@ public class CoverageViewer extends JPanel {
       setDrawHorizAndVert(drawHorizOn, drawVertOn);
 
       // get last saved Projection
-      project = (ProjectionImpl) store.getBean(LastProjectionName, null);
+      project = (Projection) store.getBean(LastProjectionName, null);
       if (project != null)
         setProjection(project);
 
@@ -407,8 +405,8 @@ public class CoverageViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         getProjectionManager();
         // set the bounding box
-        ProjectionImpl proj = navPanel.getProjectionImpl().constructCopy();
-        proj.setDefaultMapArea(navPanel.getMapArea());
+        // Projection proj = navPanel.getProjectionImpl().constructCopy();
+        // proj.setDefaultMapArea(navPanel.getMapArea());
         // if (debug) System.out.println(" GV save projection "+ proj);
 
         // projManage.setMap(renderAll.get("Map")); LOOK!
@@ -594,7 +592,7 @@ public class CoverageViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
         if (state) {
-          ProjectionImpl dataProjection = coverageRenderer.getDataProjection();
+          Projection dataProjection = coverageRenderer.getDataProjection();
           if (null != dataProjection)
             setProjection(dataProjection);
         } else {
@@ -1017,7 +1015,7 @@ public class CoverageViewer extends JPanel {
     setField(currentField);
 
     // LOOK if possible, change the projection and the map area to one that fits this dataset
-    ProjectionImpl dataProjection = currentField.getCoordSys().getProjection();
+    Projection dataProjection = currentField.getCoordSys().getProjection();
     if (dataProjection != null)
       setProjection(dataProjection);
 
@@ -1176,7 +1174,7 @@ public class CoverageViewer extends JPanel {
     }
   }
 
-  public void setProjection(ProjectionImpl p) {
+  public void setProjection(Projection p) {
     project = p;
     if (mapRenderer != null)
       mapRenderer.setProjection(p);
@@ -1324,8 +1322,8 @@ public class CoverageViewer extends JPanel {
     projManager.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("ProjectionImpl")) {
-          ProjectionImpl p = (ProjectionImpl) e.getNewValue();
-          p = p.constructCopy();
+          Projection p = (Projection) e.getNewValue();
+          // p = p.constructCopy();
           // System.out.println("UI: new Projection "+p);
           setProjection(p);
         }

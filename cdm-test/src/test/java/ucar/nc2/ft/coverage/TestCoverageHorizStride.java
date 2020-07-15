@@ -4,6 +4,7 @@ package ucar.nc2.ft.coverage;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -20,8 +21,7 @@ import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.nc2.util.Misc;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -48,10 +48,11 @@ public class TestCoverageHorizStride {
       int[] csysShape = csys.getShape();
       System.out.printf("csys shape = %s%n", Arrays.toString(csysShape));
 
+      Formatter errLog = new Formatter();
       SubsetParams params = new SubsetParams().setHorizStride(2);
-      Optional<CoverageCoordSys> opt = csys.subset(params);
+      Optional<CoverageCoordSys> opt = csys.subset(params, errLog);
       if (!opt.isPresent()) {
-        System.out.printf("err=%s%n", opt.getErrorMessage());
+        System.out.printf("err=%s%n", errLog.toString());
         assert false;
       }
 
@@ -92,10 +93,11 @@ public class TestCoverageHorizStride {
       int[] csysShape = csys.getShape();
       System.out.printf("csys shape = %s%n", Arrays.toString(csysShape));
 
+      Formatter errLog = new Formatter();
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setHorizStride(2);
-      Optional<CoverageCoordSys> opt = csys.subset(params);
+      Optional<CoverageCoordSys> opt = csys.subset(params, errLog);
       if (!opt.isPresent()) {
-        System.out.printf("err=%s%n", opt.getErrorMessage());
+        System.out.printf("err=%s%n", errLog.toString());
         assert false;
       }
 

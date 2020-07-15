@@ -314,10 +314,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   /**
    * get the Projection.
-   * 
-   * @deprecated this will return Projection, not ProjectionImpl in 6.
    */
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     return gcs.getProjection();
   }
 
@@ -367,8 +365,6 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   public java.lang.String getUnitString() {
     return getUnitsString();
   }
-
-  // public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
 
   /**
    * true if there may be missing data, see VariableDS.hasMissing()

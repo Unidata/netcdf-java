@@ -10,7 +10,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.unidata.geoloc.Earth;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 
 /**
@@ -42,7 +42,7 @@ public class AzimuthalEquidistant extends AbstractTransformBuilder implements Ho
       }
     }
 
-    ProjectionImpl proj = new EquidistantAzimuthalProjection(lat0, lon0, false_easting, false_northing, earth);
+    Projection proj = new EquidistantAzimuthalProjection(lat0, lon0, false_easting, false_northing, earth);
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }

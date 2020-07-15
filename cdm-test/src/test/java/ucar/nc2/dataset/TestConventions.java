@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,7 +26,7 @@ import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -82,8 +83,8 @@ public class TestConventions {
 
   @Test
   public void testIfps() throws IOException {
-    Optional<FeatureDatasetCoverage> ds =
-        CoverageDatasetFactory.openCoverageDataset(TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf");
+    Optional<FeatureDatasetCoverage> ds = CoverageDatasetFactory
+        .openCoverageDataset(TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf", new Formatter());
     assert ds.isPresent();
     CoverageCollection cc = ds.get().getSingleCoverageCollection();
     assert cc != null;

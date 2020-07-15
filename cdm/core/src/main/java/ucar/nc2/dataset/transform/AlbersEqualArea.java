@@ -28,7 +28,7 @@ public class AlbersEqualArea extends AbstractTransformBuilder implements HorizTr
 
     readStandardParams(ctv, geoCoordinateUnits);
 
-    ucar.unidata.geoloc.ProjectionImpl proj;
+    ucar.unidata.geoloc.Projection proj;
 
     if (earth != null) {
       proj = new AlbersEqualAreaEllipse(lat0, lon0, pars[0], pars[1], false_easting, false_northing, earth);

@@ -32,14 +32,12 @@
 
 package ucar.unidata.geoloc.projection;
 
-
 import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import java.lang.*;
 
-
 /**
+ * Helper class for UtmProjection.
  * Class: Utm_To_Gdc_Converter
  * <p/>
  * Converts UTM coordinate(s) to GDC.
@@ -184,10 +182,9 @@ class Utm_To_Gdc_Converter {
   /**
    * @param x the UTM easting coordinate (meters)
    * @param y the UTM northing coordinate (meters)
-   * @param latlon put result here
    * @return LatLonPoint
    */
-  public LatLonPoint projToLatLon(double x, double y, LatLonPointImpl latlon) {
+  public LatLonPoint projToLatLon(double x, double y) {
 
     double source_x, source_y, u, su, cu, su2, xlon0, temp, phi1;
     double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1, d2;
@@ -240,143 +237,7 @@ class Utm_To_Gdc_Converter {
     double latitude = phi1 - tp * top * (d2 * (Con2 + d2 * ((-Con24) * b4 + d2 * Con720 * b6)));
     double longitude = xlon0 + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
 
-    latlon.setLatitude(latitude * DEGREES_PER_RADIAN);
-    latlon.setLongitude(longitude * DEGREES_PER_RADIAN);
-    return latlon;
-  }
-
-  /**
-   * _more_
-   *
-   * @param from _more_
-   * @param to _more_
-   * @return _more_
-   */
-  public float[][] projToLatLon(float[][] from, float[][] to) {
-
-    double source_x, source_y, u, su, cu, su2, temp, phi1;
-    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1, d2;
-
-    double xlon0 = (6.0 * ((double) zone) - 183.0) / DEGREES_PER_RADIAN;
-
-    for (int i = 0; i < from[0].length; i++) {
-      source_x = from[0][i] * 1000.0; // wants meters
-      source_x = (source_x - 500000.0) / .9996;
-
-      if (hemisphere_north) {
-        source_y = from[1][i] * 1000.0 / .9996;
-      } else {
-        source_y = (from[1][i] * 1000.0 - 1.0E7) / .9996;
-      }
-
-      u = source_y / conap;
-      su = Math.sin(u);
-      cu = Math.cos(u);
-      su2 = su * su;
-
-      temp = polx2b + su2 * (polx3b + su2 * (polx4b + su2 * polx5b));
-      phi1 = u + su * cu * temp;
-
-      sp = Math.sin(phi1);
-      cp = Math.cos(phi1);
-      tp = sp / cp;
-      tp2 = tp * tp;
-      sp2 = sp * sp;
-      cp2 = cp * cp;
-      eta2 = Epsp2 * cp2;
-
-      top = .25 - (sp2 * (Eps2 / 4));
-
-      /* inline sq root */
-      rn = A
-          / ((.25 - Eps25 * sp2 + .9999944354799 / 4) + (.25 - Eps25 * sp2) / (.25 - Eps25 * sp2 + .9999944354799 / 4));
-
-      b3 = 1.0 + tp2 + tp2 + eta2;
-      b4 = 5 + tp2 * (3 - 9 * eta2) + eta2 * (1 - 4 * eta2);
-      b5 = 5 + tp2 * (tp2 * 24.0 + 28.0);
-      b5 += eta2 * (tp2 * 8.0 + 6.0);
-      b6 = 46.0 - 3.0 * eta2 + tp2 * (-252.0 - tp2 * 90.0);
-      b6 = eta2 * (b6 + eta2 * tp2 * (tp2 * 225.0 - 66.0));
-      b6 += 61.0 + tp2 * (tp2 * 45.0 + 90.0);
-
-      d1 = source_x / rn;
-      d2 = d1 * d1;
-
-      double latitude = phi1 - tp * top * (d2 * (Con2 + d2 * ((-Con24) * b4 + d2 * Con720 * b6)));
-      double longitude = xlon0 + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
-
-      to[0][i] = (float) (latitude * DEGREES_PER_RADIAN);
-      to[1][i] = (float) (longitude * DEGREES_PER_RADIAN);
-    }
-
-    return to;
-  }
-
-  /**
-   * _more_
-   *
-   * @param from _more_
-   * @param to _more_
-   * @return _more_
-   */
-  public double[][] projToLatLon(double[][] from, double[][] to) {
-
-    double source_x, source_y, u, su, cu, su2, temp, phi1;
-    double sp, sp2, cp, cp2, tp, tp2, eta2, top, rn, b3, b4, b5, b6, d1, d2;
-
-    double xlon0 = (6.0 * ((double) zone) - 183.0) / DEGREES_PER_RADIAN;
-
-    for (int i = 0; i < from[0].length; i++) {
-      source_x = from[0][i] * 1000.0; // wants meters
-      source_x = (source_x - 500000.0) / .9996;
-
-      if (hemisphere_north) {
-        source_y = from[1][i] * 1000.0 / .9996;
-      } else {
-        source_y = (from[1][i] * 1000.0 - 1.0E7) / .9996;
-      }
-
-      u = source_y / conap;
-      su = Math.sin(u);
-      cu = Math.cos(u);
-      su2 = su * su;
-
-      temp = polx2b + su2 * (polx3b + su2 * (polx4b + su2 * polx5b));
-      phi1 = u + su * cu * temp;
-
-      sp = Math.sin(phi1);
-      cp = Math.cos(phi1);
-      tp = sp / cp;
-      tp2 = tp * tp;
-      sp2 = sp * sp;
-      cp2 = cp * cp;
-      eta2 = Epsp2 * cp2;
-
-      top = .25 - (sp2 * (Eps2 / 4));
-
-      /* inline sq root */
-      rn = A
-          / ((.25 - Eps25 * sp2 + .9999944354799 / 4) + (.25 - Eps25 * sp2) / (.25 - Eps25 * sp2 + .9999944354799 / 4));
-
-      b3 = 1.0 + tp2 + tp2 + eta2;
-      b4 = 5 + tp2 * (3 - 9 * eta2) + eta2 * (1 - 4 * eta2);
-      b5 = 5 + tp2 * (tp2 * 24.0 + 28.0);
-      b5 += eta2 * (tp2 * 8.0 + 6.0);
-      b6 = 46.0 - 3.0 * eta2 + tp2 * (-252.0 - tp2 * 90.0);
-      b6 = eta2 * (b6 + eta2 * tp2 * (tp2 * 225.0 - 66.0));
-      b6 += 61.0 + tp2 * (tp2 * 45.0 + 90.0);
-
-      d1 = source_x / rn;
-      d2 = d1 * d1;
-
-      double latitude = phi1 - tp * top * (d2 * (Con2 + d2 * ((-Con24) * b4 + d2 * Con720 * b6)));
-      double longitude = xlon0 + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
-
-      to[0][i] = (latitude * DEGREES_PER_RADIAN);
-      to[1][i] = (longitude * DEGREES_PER_RADIAN);
-    }
-
-    return to;
+    return LatLonPoint.create(latitude * DEGREES_PER_RADIAN, longitude * DEGREES_PER_RADIAN);
   }
 
 }

@@ -4,6 +4,8 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Format;
@@ -13,72 +15,40 @@ import ucar.unidata.util.Format;
  * Topologically its the same as a cylinder tangent to the earth at the equator.
  * The cylinder is cut at the "seam" = centerLon +- 180.
  * Longitude values are always kept in the range [centerLon +-180]
- *
- * @author John Caron
- * @see ProjectionImpl
  */
-
-
-public class LatLonProjection extends ProjectionImpl {
-
-  /**
-   * center longitude
-   */
-  private double centerLon;
-  private Earth earth = EarthEllipsoid.DEFAULT;
+@Immutable
+public class LatLonProjection extends AbstractProjection {
+  private final double centerLon;
+  private final Earth earth;
 
   @Override
-  public ProjectionImpl constructCopy() {
-    LatLonProjection result = new LatLonProjection(getName(), getDefaultMapArea());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    result.earth = this.earth;
-    return result;
+  public Projection constructCopy() {
+    return new LatLonProjection(getName(), getEarth(), getCenterLon());
   }
 
-  /**
-   * Default constructor
-   */
   public LatLonProjection() {
-    this("LatLonProjection");
-    addParameters();
+    this("LatLonProjection", EarthEllipsoid.DEFAULT, 0.0);
+  }
+
+  public LatLonProjection(String name) {
+    this(name, EarthEllipsoid.DEFAULT, 0.0);
   }
 
   public LatLonProjection(Earth earth) {
-    this("LatLonProjection");
-    this.earth = earth;
-    addParameters();
+    this("LatLonProjection", earth, 0.0);
   }
 
-  /**
-   * Create a new LatLonProjection
-   *
-   * @param name name of projection
-   */
-  public LatLonProjection(String name) {
-    this(name, new ProjectionRect(-180, -90, 180, 90));
-    addParameters();
-  }
-
-  /**
-   * Create a new LatLonProjection
-   *
-   * @param name name of projection
-   * @param defaultMapArea bounding box
-   */
-  public LatLonProjection(String name, ProjectionRect defaultMapArea) {
+  public LatLonProjection(String name, @Nullable Earth earth, double centerLon) {
     super(name, true);
-    this.defaultMapArea = defaultMapArea;
-    addParameters();
-  }
+    this.earth = earth == null ? EarthEllipsoid.DEFAULT : earth;
+    this.centerLon = centerLon;
 
-  private void addParameters() {
     addParameter(CF.GRID_MAPPING_NAME, CF.LATITUDE_LONGITUDE);
-    if (earth.isSpherical())
-      addParameter(CF.EARTH_RADIUS, earth.getEquatorRadius());
-    else {
-      addParameter(CF.SEMI_MAJOR_AXIS, earth.getEquatorRadius());
-      addParameter(CF.SEMI_MINOR_AXIS, earth.getPoleRadius());
+    if (this.earth.isSpherical()) {
+      addParameter(CF.EARTH_RADIUS, this.earth.getEquatorRadius());
+    } else {
+      addParameter(CF.SEMI_MAJOR_AXIS, this.earth.getEquatorRadius());
+      addParameter(CF.SEMI_MINOR_AXIS, this.earth.getPoleRadius());
     }
   }
 
@@ -116,11 +86,6 @@ public class LatLonProjection extends ProjectionImpl {
       return false;
 
     LatLonProjection that = (LatLonProjection) o;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null))
-      return false; // common case is that these are null
-    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea))
-      return false;
-
     return Double.compare(that.centerLon, centerLon) == 0;
   }
 
@@ -130,144 +95,31 @@ public class LatLonProjection extends ProjectionImpl {
     long temp;
     temp = Double.doubleToLongBits(centerLon);
     result = (int) (temp ^ (temp >>> 32));
-    if (defaultMapArea != null)
-      result = 31 * result + defaultMapArea.hashCode();
     return result;
   }
 
-  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl result) {
-    result.setLocation(LatLonPoints.lonNormal(latlon.getLongitude(), centerLon), latlon.getLatitude());
-    return result;
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latlon) {
+    return latLonToProj(latlon, centerLon);
   }
 
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
-    result.setLongitude(world.getX());
-    result.setLatitude(world.getY());
-    return result;
+  private ProjectionPoint latLonToProj(LatLonPoint latlon, double centerLon) {
+    return ProjectionPoint.create(LatLonPoints.lonNormal(latlon.getLongitude(), centerLon), latlon.getLatitude());
   }
 
-  /**
-   * Convert projection coordinates to lat/lon coordinate.
-   *
-   * @param from array of projection coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (x, y) coordinate
-   *        of the ith point
-   * @param to resulting array of lat/lon coordinates: to[2][n] where
-   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *        the ith point
-   * @return the "to" array
-   */
-  public float[][] projToLatLon(float[][] from, float[][] to) {
-
-    float[] fromX = from[INDEX_X];
-    float[] fromY = from[INDEX_Y];
-    to[INDEX_LAT] = fromY;
-    to[INDEX_LON] = fromX;
-    return to;
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
+    return LatLonPoint.create(world.getX(), world.getY());
   }
 
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *        the ith point
-   * @param latIndex index of lat coordinate; must be 0 or 1
-   * @param lonIndex index of lon coordinate; must be 0 or 1
-   * @return the "to" array
-   */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    float[] toX = to[INDEX_X];
-    float[] toY = to[INDEX_Y];
-    float[] fromLat = from[latIndex];
-    float[] fromLon = from[lonIndex];
-    float lat, lon;
-    for (int i = 0; i < cnt; i++) {
-      lat = fromLat[i];
-      lon = (float) (centerLon + Math.IEEEremainder(fromLon[i] - centerLon, 360.0));
-      toX[i] = lon;
-      toY[i] = lat;
-    }
-    return to;
-  }
-
-
-  /**
-   * Convert projection coordinates to lat/lon coordinate.
-   *
-   * @param from array of projection coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (x, y) coordinate
-   *        of the ith point
-   * @param to resulting array of lat/lon coordinates: to[2][n] where
-   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *        the ith point
-   * @return the "to" array
-   */
-  public double[][] projToLatLon(double[][] from, double[][] to) {
-
-    double[] fromX = from[INDEX_X];
-    double[] fromY = from[INDEX_Y];
-    to[INDEX_LAT] = fromY;
-    to[INDEX_LON] = fromX;
-    return to;
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *        the ith point
-   * @param latIndex index of lat coordinate; must be 0 or 1
-   * @param lonIndex index of lon coordinate; must be 0 or 1
-   * @return the "to" array
-   */
-  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    double[] toX = to[INDEX_X];
-    double[] toY = to[INDEX_Y];
-    double[] fromLat = from[latIndex];
-    double[] fromLon = from[lonIndex];
-    double lat, lon;
-    for (int i = 0; i < cnt; i++) {
-      lat = fromLat[i];
-      lon = centerLon + Math.IEEEremainder(fromLon[i] - centerLon, 360.0);
-      toX[i] = lon;
-      toY[i] = lat;
-    }
-    return to;
-  }
-
-
-  /**
-   * Set the center of the Longitude range. It is normalized to +/- 180.
-   * The cylinder is cut at the "seam" = centerLon +- 180.
-   * Use this to keep the Longitude values kept in the range [centerLon +-180], which
-   * makes seam handling easier.
-   *
-   * @param centerLon the center of the Longitude range.
-   * @return centerLon normalized to +/- 180.
-   */
-  public double setCenterLon(double centerLon) {
-    this.centerLon = LatLonPoints.lonNormal(centerLon);
-    return this.centerLon;
-  }
-
-  /**
-   * Get the center of the Longitude range. It is normalized to +/- 180.
-   *
-   * @return the center longitude
-   */
+  /** Get the center of the Longitude range. It is normalized to +/- 180. */
   public double getCenterLon() {
     return centerLon;
+  }
+
+  /** Get the Earth used in this projection. */
+  public Earth getEarth() {
+    return earth;
   }
 
   /**
@@ -277,20 +129,9 @@ public class LatLonProjection extends ProjectionImpl {
    * @param pt2 the line goes between these two points
    * @return false if there is no seam
    */
+  @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return Math.abs(pt1.getX() - pt2.getX()) > 270.0; // ?? LOOK: do I believe this
-  }
-
-
-  /**
-   * Set a reasonable bounding box for this projection.
-   *
-   * @param bb a reasonable bounding box
-   */
-  public void setDefaultMapArea(ProjectionRect bb) {
-    super.setDefaultMapArea(bb);
-    this.centerLon = bb.getCenterX();
-    // setCenterLon( bb.getCenterX());
   }
 
   /**
@@ -323,6 +164,7 @@ public class LatLonProjection extends ProjectionImpl {
     return rects;
   }
 
+  @Override
   public LatLonRect projToLatLonBB(ProjectionRect world) {
     double startLat = world.getMinY();
     double startLon = world.getMinX();
@@ -371,6 +213,29 @@ public class LatLonProjection extends ProjectionImpl {
       rects[1].setRect(lon1 - width + y, lat0, width - y, height);
     }
     return rects;
+  }
+
+  // Override so we can adjust centerLon to center of the rectangle.
+  @Override
+  public ProjectionRect latLonToProjBB(LatLonRect latlonRect) {
+    double centerLon = latlonRect.getCenterLon();
+
+    LatLonPoint ll = latlonRect.getLowerLeftPoint();
+    LatLonPoint ur = latlonRect.getUpperRightPoint();
+    ProjectionPoint w1 = latLonToProj(ll, centerLon);
+    ProjectionPoint w2 = latLonToProj(ur, centerLon);
+
+    // make bounding box out of those two corners
+    ProjectionRect world = new ProjectionRect(w1.getX(), w1.getY(), w2.getX(), w2.getY());
+
+    LatLonPoint la = LatLonPoint.create(ur.getLatitude(), ll.getLongitude());
+    LatLonPoint lb = LatLonPoint.create(ll.getLatitude(), ur.getLongitude());
+
+    // now extend if needed to the other two corners
+    world.add(latLonToProj(la, centerLon));
+    world.add(latLonToProj(lb, centerLon));
+
+    return world;
   }
 
 }

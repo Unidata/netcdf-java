@@ -18,7 +18,7 @@ import ucar.unidata.geoloc.projection.Mercator;
 import ucar.unidata.geoloc.projection.Orthographic;
 import ucar.unidata.geoloc.projection.RotatedLatLon;
 import ucar.unidata.geoloc.projection.Stereographic;
-import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
+import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.util.GaussianLatitudes;
 import ucar.unidata.util.StringUtil2;
@@ -86,7 +86,7 @@ public class GridHorizCoordSys {
   /**
    * projection
    */
-  private ProjectionImpl proj;
+  private Projection proj;
 
   /**
    * list of attributes
@@ -1154,7 +1154,7 @@ public class GridHorizCoordSys {
    * @param starty starting y projection point
    * @param proj projection for transform
    */
-  private void setDxDy(double startx, double starty, ProjectionImpl proj) {
+  private void setDxDy(double startx, double starty, Projection proj) {
     double Lo2 = gds.getDouble(GridDefRecord.LO2);
     double La2 = gds.getDouble(GridDefRecord.LA2);
     if (Double.isNaN(Lo2) || Double.isNaN(La2)) {

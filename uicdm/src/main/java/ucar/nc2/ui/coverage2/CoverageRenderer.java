@@ -9,7 +9,7 @@ import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
@@ -40,8 +40,8 @@ public class CoverageRenderer {
 
   private ColorScale colorScale;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
-  private ProjectionImpl drawProjection; // current drawing Projection
-  private ProjectionImpl dataProjection; // current data Projection
+  private Projection drawProjection; // current drawing Projection
+  private Projection dataProjection; // current data Projection
 
   // data stuff
   private DataState dataState;
@@ -97,21 +97,21 @@ public class CoverageRenderer {
   }
 
   /* get the current data projection */
-  public ProjectionImpl getDataProjection() {
+  public Projection getDataProjection() {
     return dataProjection;
   }
 
-  public void setDataProjection(ProjectionImpl dataProjection) {
+  public void setDataProjection(Projection dataProjection) {
     this.dataProjection = dataProjection;
   }
 
   /* get the current display projection */
-  public ProjectionImpl getDisplayProjection() {
+  public Projection getDisplayProjection() {
     return drawProjection;
   }
 
   /* set the Projection to use for drawing */
-  public void setViewProjection(ProjectionImpl project) {
+  public void setViewProjection(Projection project) {
     drawProjection = project;
   }
 
@@ -197,7 +197,7 @@ public class CoverageRenderer {
 
     // get value, construct the string
     if (!opt.isPresent())
-      return opt.getErrorMessage();
+      return "hcs.findXYindexFromCoord failed";
     else {
       HorizCoordSys.CoordReturn cr = opt.get();
       try {

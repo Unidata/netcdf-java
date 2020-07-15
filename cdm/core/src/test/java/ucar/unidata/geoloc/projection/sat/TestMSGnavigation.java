@@ -6,10 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 
 public class TestMSGnavigation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -43,7 +41,7 @@ public class TestMSGnavigation {
     System.out.printf("x = %f %f %f %n", x, x / want, want / x);
   }
 
-  static private void doOne(ProjectionImpl proj, double lat, double lon) {
+  static private void doOne(Projection proj, double lat, double lon) {
     LatLonPoint startL = LatLonPoint.create(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
     LatLonPoint endL = proj.projToLatLon(p);
@@ -54,7 +52,7 @@ public class TestMSGnavigation {
 
   }
 
-  static private void doTwo(ProjectionImpl proj, double x, double y) {
+  static private void doTwo(Projection proj, double x, double y) {
     ProjectionPoint startL = ProjectionPoint.create(x, y);
     LatLonPoint p = proj.projToLatLon(startL);
     ProjectionPoint endL = proj.latLonToProj(p);

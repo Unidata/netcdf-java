@@ -49,7 +49,7 @@ import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
@@ -674,7 +674,7 @@ public class Grib1CollectionPanel extends JPanel {
     if (gdsHc == null)
       return;
     f.format("%n%n%s", gdsHc);
-    ProjectionImpl proj = gdsHc.proj;
+    Projection proj = gdsHc.proj;
     f.format("%n%nProjection %s%n", proj.getName());
     for (Parameter p : proj.getProjectionParameters())
       f.format("  %s == %s%n", p.getName(), p.getStringValue());

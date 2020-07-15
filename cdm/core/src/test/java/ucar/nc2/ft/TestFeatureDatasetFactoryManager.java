@@ -5,6 +5,8 @@
 
 package ucar.nc2.ft;
 
+import static com.google.common.truth.Truth.assertThat;
+import java.util.Formatter;
 import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,21 +16,15 @@ import ucar.unidata.util.test.TestDir;
 
 public class TestFeatureDatasetFactoryManager {
 
-  /**
-   * Tests a non-CF compliant trajectory file
-   *
-   * This tests a non-CF compliant trajectory file
-   * which is read in using the ucar.nc2.ft.point.standard.plug.SimpleTrajectory
-   * plug.
-   */
+  /** Tests a non-CF compliant trajectory file */
   @Test
   public void testSimpleTrajectory() throws IOException {
-    FeatureType type = FeatureType.ANY;
     Path location_path =
         Paths.get(TestDir.cdmLocalTestDataDir, "trajectory", "aircraft", "uw_kingair-2005-01-19-113957.nc");
-    FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(type, location_path.toString(), null, null);
-    assert featureDataset != null;
-    assert featureDataset.getFeatureType() == FeatureType.TRAJECTORY;
+    System.out.printf("testSimpleTrajectory on %s%n", location_path);
+    FeatureDataset featureDataset =
+        FeatureDatasetFactoryManager.open(FeatureType.ANY, location_path.toString(), null, new Formatter());
+    assertThat(featureDataset).isNotNull();
+    assertThat(featureDataset.getFeatureType()).isEqualTo(FeatureType.TRAJECTORY);
   }
-
 }

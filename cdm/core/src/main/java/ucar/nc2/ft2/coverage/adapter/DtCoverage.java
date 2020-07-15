@@ -12,7 +12,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableDS;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.util.Format;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -309,7 +309,7 @@ public class DtCoverage implements IsMissingEvaluator {
   /**
    * get the Projection.
    */
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     return gcs.getProjection();
   }
 
@@ -328,8 +328,6 @@ public class DtCoverage implements IsMissingEvaluator {
     return (units == null) ? "" : units;
   }
 
-
-  // public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
 
   /**
    * true if there may be missing data, see VariableDS.hasMissing()

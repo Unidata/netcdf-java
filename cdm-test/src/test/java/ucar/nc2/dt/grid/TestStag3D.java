@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
 import junit.framework.TestCase;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.lang.invoke.MethodHandles;
@@ -64,7 +65,7 @@ public class TestStag3D extends TestCase {
     assert null != gcs;
     assert grid.getRank() == 4;
 
-    ucar.unidata.geoloc.vertical.VerticalTransform vt = gcs.getVerticalTransform();
+    VerticalTransform vt = gcs.getVerticalTransform();
     Array a = vt.getCoordinateArray(0);
     System.out.printf("vt shape= %s%n", showShape(a.getShape()));
 

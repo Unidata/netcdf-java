@@ -366,7 +366,7 @@ public class ProjectionManager {
   // inner class ProjectionClass: parsed projection classes
   class ProjectionClass {
     Class projClass;
-    ProjectionImpl projInstance;
+    Projection projInstance;
     String name;
     java.util.List<ProjectionParam> paramList = new ArrayList<>();
 
@@ -380,7 +380,7 @@ public class ProjectionManager {
       // eliminate common properties with "stop class" for getBeanInfo()
       Class stopClass;
       try {
-        stopClass = Class.forName("ucar.unidata.geoloc.ProjectionImpl");
+        stopClass = Class.forName("ucar.unidata.geoloc.projection.ProjectionImpl");
       } catch (Exception ee) {
         System.err.println("constructParamInput failed ");
         stopClass = null;
@@ -437,14 +437,14 @@ public class ProjectionManager {
       }
     }
 
-    ProjectionImpl makeDefaultProjection() {
+    Projection makeDefaultProjection() {
       Class[] voidClassArg = {};
       Object[] voidObjectArg = {};
 
       // the default constructor
       try {
         Constructor c = projClass.getConstructor(voidClassArg);
-        projInstance = (ProjectionImpl) c.newInstance(voidObjectArg);
+        projInstance = (Projection) c.newInstance(voidObjectArg);
         return projInstance;
 
       } catch (Exception ee) {

@@ -15,19 +15,18 @@ import java.util.List;
  * @author caron
  * @since 7/29/2014
  */
-public class BoundingBoxHelper {
+class BoundingBoxHelper {
 
   private double maxR, maxR2;
   private Projection proj;
 
-  public BoundingBoxHelper(Projection proj, double maxR) {
+  BoundingBoxHelper(Projection proj, double maxR) {
     this.proj = proj;
     this.maxR = maxR;
     this.maxR2 = maxR * maxR;
   }
 
   public ProjectionRect latLonToProjBB(LatLonRect rect) {
-
     ProjectionPoint llpt = proj.latLonToProj(rect.getLowerLeftPoint());
     ProjectionPoint urpt = proj.latLonToProj(rect.getUpperRightPoint());
     ProjectionPoint lrpt = proj.latLonToProj(rect.getLowerRightPoint());

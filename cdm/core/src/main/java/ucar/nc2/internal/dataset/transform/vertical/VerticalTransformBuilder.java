@@ -7,7 +7,7 @@ package ucar.nc2.internal.dataset.transform.vertical;
 
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 
 public interface VerticalTransformBuilder {
 
@@ -17,7 +17,7 @@ public interface VerticalTransformBuilder {
    * 
    * @param ds the dataset
    * @param timeDim the time dimension
-   * @return ucar.unidata.geoloc.vertical.VerticalTransform math transform
+   * @return ucar.unidata.geoloc.VerticalTransform math transform
    */
   VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim);
 }

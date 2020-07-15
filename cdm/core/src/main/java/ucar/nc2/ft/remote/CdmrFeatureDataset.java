@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft.remote;
 
+import java.util.Formatter;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -19,7 +20,7 @@ import ucar.nc2.ft2.coverage.remote.CdmrfReader;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,24 +66,28 @@ public class CdmrFeatureDataset {
     }
   }
 
-  public static Optional<FeatureDataset> factory(FeatureType wantFeatureType, String endpoint) throws IOException {
+  public static Optional<FeatureDataset> factory(FeatureType wantFeatureType, String endpoint, Formatter errLog)
+      throws IOException {
     if (endpoint.startsWith(SCHEME))
       endpoint = endpoint.substring(SCHEME.length());
 
     FeatureType featureType;
     try {
       featureType = isCdmrfEndpoint(endpoint);
-      if (featureType == null)
-        return Optional.empty("Not a valid CdmrFeatureDataset endpoint=" + endpoint);
+      if (featureType == null) {
+        errLog.format("Not a valid CdmrFeatureDataset endpoint=%s", endpoint);
+        return Optional.empty();
+      }
 
     } catch (IOException ioe) {
-      return Optional
-          .empty(String.format("Error opening CdmrFeatureDataset endpoint=%s err=%s", endpoint, ioe.getMessage()));
+      errLog.format("Error opening CdmrFeatureDataset endpoint=%s err=%s", endpoint, ioe.getMessage());
+      return Optional.empty();
     }
 
-    if (!FeatureDatasetFactoryManager.featureTypeOk(wantFeatureType, featureType))
-      return Optional.empty(String.format("Not a compatible featureType=%s, want=%s, endpoint=%s", featureType,
-          wantFeatureType, endpoint));
+    if (!FeatureDatasetFactoryManager.featureTypeOk(wantFeatureType, featureType)) {
+      errLog.format("Not a compatible featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint);
+      return Optional.empty();
+    }
 
     if (featureType.isCoverageFeatureType()) {
       CdmrfReader reader = new CdmrfReader(endpoint);
@@ -110,8 +115,8 @@ public class CdmrFeatureDataset {
       return Optional.of(new PointDatasetRemote(wantFeatureType, endpoint, timeUnit, altUnits, dataVars, bb, dr));
     }
 
-    return Optional.empty(
-        String.format("Unimplemented featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint));
+    errLog.format("Unimplemented featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint);
+    return Optional.empty();
   }
 
   private static org.jdom2.Document getCapabilities(String endpoint) throws IOException {

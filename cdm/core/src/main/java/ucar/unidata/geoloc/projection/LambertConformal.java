@@ -4,6 +4,7 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
@@ -16,29 +17,22 @@ import ucar.unidata.util.Parameter;
  * one parellel par1 = par2. The cone is flattened by splitting along the longitude = lon0+180.
  * <p/>
  * See John Snyder, Map Projections used by the USGS, Bulletin 1532, 2nd edition (1983), p 104
- *
- * @author John Caron
- * @see Projection
- * @see ProjectionImpl
  */
-
-public class LambertConformal extends ProjectionImpl {
+@Immutable
+public class LambertConformal extends AbstractProjection {
   private final double earth_radius;
-  private double lat0, lon0; // lat/lon in radians
-  private double par1, par2; // standard parallel 1 and 2 degrees
-  private double falseEasting, falseNorthing;
+  private final double lat0, lon0; // lat/lon in radians
+  private final double par1, par2; // standard parallel 1 and 2 degrees
+  private final double falseEasting, falseNorthing;
 
-  private double n, F, rho; // constants from Snyder's equations
-  private double earthRadiusTimesF;// Earth's radius time F
-  private double lon0Degrees; // lon naught ??
+  private final double n, F, rho; // constants from Snyder's equations
+  private final double earthRadiusTimesF;// Earth's radius time F
+  private final double lon0Degrees; // lon naught ??
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
-        getFalseEasting(), getFalseNorthing(), earth_radius);
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(), getFalseEasting(),
+        getFalseNorthing(), earth_radius);
   }
 
   /**
@@ -98,6 +92,7 @@ public class LambertConformal extends ProjectionImpl {
 
     super("LambertConformal", false);
 
+    this.lon0Degrees = lon0;
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
 
@@ -108,32 +103,7 @@ public class LambertConformal extends ProjectionImpl {
     this.falseNorthing = false_northing;
     this.earth_radius = earth_radius;
 
-    precalculate();
-
-    addParameter(CF.GRID_MAPPING_NAME, CF.LAMBERT_CONFORMAL_CONIC);
-    addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
-    addParameter(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, lon0);
-    if (par2 == par1) {
-      addParameter(CF.STANDARD_PARALLEL, par1);
-    } else {
-      double[] data = new double[2];
-      data[0] = par1;
-      data[1] = par2;
-      addParameter(new Parameter(CF.STANDARD_PARALLEL, data));
-    }
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      addParameter(CF.FALSE_EASTING, false_easting);
-      addParameter(CF.FALSE_NORTHING, false_northing);
-      addParameter(CDM.UNITS, "km");
-    }
-    addParameter(CF.EARTH_RADIUS, earth_radius * 1000);
-  }
-
-  /**
-   * Precalculate some stuff
-   */
-  private void precalculate() {
-    if (Math.abs(lat0) > PI_OVER_2) {
+    if (Math.abs(this.lat0) > PI_OVER_2) {
       throw new IllegalArgumentException("LambertConformal lat0 outside range (-90,90)");
     }
     if (Math.abs(par1) >= 90.0) {
@@ -163,24 +133,36 @@ public class LambertConformal extends ProjectionImpl {
     double t2 = Math.tan(Math.PI / 4 + par2r / 2);
 
     if (Math.abs(par2 - par1) < TOLERANCE) { // single parallel
-      n = Math.sin(par1r);
+      this.n = Math.sin(par1r);
     } else {
-      n = Math.log(Math.cos(par1r) / Math.cos(par2r)) / Math.log(t2 / t1);
+      this.n = Math.log(Math.cos(par1r) / Math.cos(par2r)) / Math.log(t2 / t1);
     }
 
     double t1n = Math.pow(t1, n);
-    F = Math.cos(par1r) * t1n / n;
-    earthRadiusTimesF = earth_radius * F;
+    this.F = Math.cos(par1r) * t1n / n;
+    this.earthRadiusTimesF = earth_radius * F;
 
-    double t0n = Math.pow(Math.tan(Math.PI / 4 + lat0 / 2), n);
-    rho = earthRadiusTimesF / t0n;
+    double t0n = Math.pow(Math.tan(Math.PI / 4 + this.lat0 / 2), n);
+    this.rho = earthRadiusTimesF / t0n;
 
-    lon0Degrees = Math.toDegrees(lon0);
-    // need to know the pole value for crossSeam
-    // Point2D pt = latLonToProj( 90.0, 0.0);
-    // maxY = pt.getY();
+    addParameter(CF.GRID_MAPPING_NAME, CF.LAMBERT_CONFORMAL_CONIC);
+    addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
+    addParameter(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, lon0);
+    if (par2 == par1) {
+      addParameter(CF.STANDARD_PARALLEL, par1);
+    } else {
+      double[] data = new double[2];
+      data[0] = par1;
+      data[1] = par2;
+      addParameter(new Parameter(CF.STANDARD_PARALLEL, data));
+    }
+    if ((false_easting != 0.0) || (false_northing != 0.0)) {
+      addParameter(CF.FALSE_EASTING, false_easting);
+      addParameter(CF.FALSE_NORTHING, false_northing);
+      addParameter(CDM.UNITS, "km");
+    }
+    addParameter(CF.EARTH_RADIUS, earth_radius * 1000);
   }
-
 
   @Override
   public boolean equals(Object o) {
@@ -205,10 +187,7 @@ public class LambertConformal extends ProjectionImpl {
       return false;
     if (Double.compare(that.par2, par2) != 0)
       return false;
-    if ((defaultMapArea == null) != (that.defaultMapArea == null))
-      return false; // common case is that these are null
-    return defaultMapArea == null || that.defaultMapArea.equals(defaultMapArea);
-
+    return true;
   }
 
   @Override
@@ -288,63 +267,6 @@ public class LambertConformal extends ProjectionImpl {
     return falseNorthing;
   }
 
-  //////////////////////////////////////////////
-  // setters for IDV serialization - do not use except for object creating
-
-  public void setOriginLat(double lat0) {
-    this.lat0 = Math.toRadians(lat0);
-    precalculate();
-  }
-
-  public void setOriginLon(double lon0) {
-    this.lon0 = Math.toRadians(lon0);
-    precalculate();
-  }
-
-  // sic
-  public void setParellelOne(double par1) {
-    this.par1 = par1;
-    precalculate();
-  }
-
-  // sic
-  public void setParellelTwo(double par2) {
-    this.par2 = par2;
-    precalculate();
-  }
-
-  public void setParallelOne(double par1) {
-    this.par1 = par1;
-    precalculate();
-  }
-
-  public void setParallelTwo(double par2) {
-    this.par2 = par2;
-    precalculate();
-  }
-
-  /**
-   * Set the false_easting, in km.
-   * natural_x_coordinate + false_easting = x coordinate
-   * 
-   * @param falseEasting x offset
-   */
-  public void setFalseEasting(double falseEasting) {
-    this.falseEasting = falseEasting;
-  }
-
-  /**
-   * Set the false northing, in km.
-   * natural_y_coordinate + false_northing = y coordinate
-   *
-   * @param falseNorthing y offset
-   */
-  public void setFalseNorthing(double falseNorthing) {
-    this.falseNorthing = falseNorthing;
-  }
-
-  //////////////////////////////////////////////
-
   /**
    * Get the label to be used in the gui for this type of projection
    *
@@ -416,7 +338,6 @@ public class LambertConformal extends ProjectionImpl {
     return r1 / r2;
   }
 
-
   /**
    * This returns true when the line between pt1 and pt2 crosses the seam.
    * When the cone is flattened, the "seam" is lon0 +- 180.
@@ -434,67 +355,11 @@ public class LambertConformal extends ProjectionImpl {
     return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 20000.0);
   }
 
-  /*
-   * MACROBODY
-   * latLonToProj {} {
-   * fromLat = Math.toRadians(fromLat);
-   * double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
-   * double theta = n * Math.toRadians(dlon);
-   * double tn = Math.pow( Math.tan(PI_OVER_4 + fromLat/2), n);
-   * double r = earthRadiusTimesF / tn;
-   * toX = r * Math.sin(theta);
-   * toY = rho - r * Math.cos(theta);
-   * }
-   * projToLatLon {} {
-   * double rhop = rho;
-   * if (n < 0) {
-   * rhop *= -1.0;
-   * fromX *= -1.0;
-   * fromY *= -1.0;
-   * }
-   * 
-   * double yd = (rhop - fromY);
-   * double theta = Math.atan2( fromX, yd);
-   * double r = Math.sqrt( fromX*fromX + yd*yd);
-   * if (n < 0.0)
-   * r *= -1.0;
-   * 
-   * toLon = (Math.toDegrees(theta/n + lon0));
-   * 
-   * if (Math.abs(r) < TOLERANCE) {
-   * toLat = ((n < 0.0) ? -90.0 : 90.0);
-   * } else {
-   * double rn = Math.pow( EARTH_RADIUS * F / r, 1/n);
-   * toLat = Math.toDegrees(2.0 * Math.atan( rn) - Math.PI/2);
-   * }
-   * }
-   * 
-   * MACROBODY
-   */
-
-  /* BEGINGENERATED */
-
-  /*
-   * Note this section has been generated using the convert.tcl script.
-   * This script, run as:
-   * tcl convert.tcl LambertConformal.java
-   * takes the actual projection conversion code defined in the MACROBODY
-   * section above and generates the following 6 methods
-   */
-
-
-  /**
-   * Convert a LatLonPoint to projection coordinates
-   *
-   * @param latLon convert from these lat, lon coordinates
-   * @param result the object to write to
-   * @return the given result
-   */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double toX, toY;
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
-
 
     fromLat = Math.toRadians(fromLat);
     double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
@@ -504,11 +369,11 @@ public class LambertConformal extends ProjectionImpl {
     toX = r * Math.sin(theta);
     toY = rho - r * Math.cos(theta);
 
-    result.setLocation(toX + falseEasting, toY + falseNorthing);
-    return result;
+    return ProjectionPoint.create(toX + falseEasting, toY + falseNorthing);
   }
 
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double toLat, toLon;
     double fromX = world.getX() - falseEasting;
     double fromY = world.getY() - falseNorthing;
@@ -536,193 +401,8 @@ public class LambertConformal extends ProjectionImpl {
       toLat = Math.toDegrees(2.0 * Math.atan(rn) - Math.PI / 2);
     }
 
-    result.setLatitude(toLat);
-    result.setLongitude(toLon);
-    return result;
+    return LatLonPoint.create(toLat, toLon);
   }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *        the ith point
-   * @param latIndex index of lat coordinate; must be 0 or 1
-   * @param lonIndex index of lon coordinate; must be 0 or 1
-   * @return the "to" array
-   */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    float[] fromLatA = from[latIndex];
-    float[] fromLonA = from[lonIndex];
-    float[] resultXA = to[INDEX_X];
-    float[] resultYA = to[INDEX_Y];
-    double toX, toY;
-
-    for (int i = 0; i < cnt; i++) {
-      double fromLat = fromLatA[i];
-      double fromLon = fromLonA[i];
-
-      fromLat = Math.toRadians(fromLat);
-      double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
-      double theta = n * Math.toRadians(dlon);
-      double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
-      double r = earthRadiusTimesF / tn;
-      toX = r * Math.sin(theta);
-      toY = rho - r * Math.cos(theta);
-
-      resultXA[i] = (float) (toX + falseEasting);
-      resultYA[i] = (float) (toY + falseNorthing);
-    }
-    return to;
-  }
-
-  /**
-   * Convert projection coordinates to lat/lon coordinate.
-   *
-   * @param from array of projection coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (x, y) coordinate
-   *        of the ith point
-   * @param to resulting array of lat/lon coordinates: to[2][n] where
-   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *        the ith point
-   * @return the "to" array
-   */
-  public float[][] projToLatLon(float[][] from, float[][] to) {
-    int cnt = from[0].length;
-    float[] fromXA = from[INDEX_X];
-    float[] fromYA = from[INDEX_Y];
-    float[] toLatA = to[INDEX_LAT];
-    float[] toLonA = to[INDEX_LON];
-    double toLat, toLon;
-    for (int i = 0; i < cnt; i++) {
-      double fromX = fromXA[i] - falseEasting;
-      double fromY = fromYA[i] - falseNorthing;
-      double rhop = rho;
-
-      if (n < 0) {
-        rhop *= -1.0;
-        fromX *= -1.0;
-        fromY *= -1.0;
-      }
-
-      double yd = (rhop - fromY);
-      double theta = Math.atan2(fromX, yd);
-      double r = Math.sqrt(fromX * fromX + yd * yd);
-      if (n < 0.0) {
-        r *= -1.0;
-      }
-
-      toLon = (Math.toDegrees(theta / n + lon0));
-
-      if (Math.abs(r) < TOLERANCE) {
-        toLat = ((n < 0.0) ? -90.0 : 90.0);
-      } else {
-        double rn = Math.pow(earth_radius * F / r, 1 / n);
-        toLat = Math.toDegrees(2.0 * Math.atan(rn) - Math.PI / 2);
-      }
-
-      toLatA[i] = (float) toLat;
-      toLonA[i] = (float) toLon;
-    }
-    return to;
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[latIndex][i], from[lonIndex][i]) is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate of
-   *        the ith point
-   * @param latIndex index of lat coordinate; must be 0 or 1
-   * @param lonIndex index of lon coordinate; must be 0 or 1
-   * @return the "to" array
-   */
-  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    double[] fromLatA = from[latIndex];
-    double[] fromLonA = from[lonIndex];
-    double[] resultXA = to[INDEX_X];
-    double[] resultYA = to[INDEX_Y];
-    double toX, toY;
-
-    for (int i = 0; i < cnt; i++) {
-      double fromLat = fromLatA[i];
-      double fromLon = fromLonA[i];
-
-      fromLat = Math.toRadians(fromLat);
-      double dlon = LatLonPoints.lonNormal(fromLon - lon0Degrees);
-      double theta = n * Math.toRadians(dlon);
-      double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
-      double r = earthRadiusTimesF / tn;
-      toX = r * Math.sin(theta);
-      toY = rho - r * Math.cos(theta);
-
-      resultXA[i] = toX + falseEasting;
-      resultYA[i] = toY + falseNorthing;
-    }
-    return to;
-  }
-
-  /**
-   * Convert projection coordinates to lat/lon coordinate.
-   *
-   * @param from array of projection coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (x, y) coordinate
-   *        of the ith point
-   * @param to resulting array of lat/lon coordinates: to[2][n] where
-   *        (to[0][i], to[1][i]) is the (lat, lon) coordinate of
-   *        the ith point
-   * @return the "to" array
-   */
-  public double[][] projToLatLon(double[][] from, double[][] to) {
-    int cnt = from[0].length;
-    double[] fromXA = from[INDEX_X];
-    double[] fromYA = from[INDEX_Y];
-    double[] toLatA = to[INDEX_LAT];
-    double[] toLonA = to[INDEX_LON];
-    double toLat, toLon;
-    for (int i = 0; i < cnt; i++) {
-      double fromX = fromXA[i] - falseEasting;
-      double fromY = fromYA[i] - falseNorthing;
-      double rhop = rho;
-
-      if (n < 0) {
-        rhop *= -1.0;
-        fromX *= -1.0;
-        fromY *= -1.0;
-      }
-
-      double yd = (rhop - fromY);
-      double theta = Math.atan2(fromX, yd);
-      double r = Math.sqrt(fromX * fromX + yd * yd);
-      if (n < 0.0) {
-        r *= -1.0;
-      }
-
-      toLon = (Math.toDegrees(theta / n + lon0));
-
-      if (Math.abs(r) < TOLERANCE) {
-        toLat = ((n < 0.0) ? -90.0 : 90.0);
-      } else {
-        double rn = Math.pow(earth_radius * F / r, 1 / n);
-        toLat = Math.toDegrees(2.0 * Math.atan(rn) - Math.PI / 2);
-      }
-
-      toLatA[i] = toLat;
-      toLonA[i] = toLon;
-    }
-    return to;
-  }
-
-  /* ENDGENERATED */
-
 
 }
 

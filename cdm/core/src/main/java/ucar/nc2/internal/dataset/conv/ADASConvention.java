@@ -29,7 +29,6 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.LambertConformal;
 
@@ -98,7 +97,7 @@ public class ADASConvention extends CoordSystemBuilder {
       }
     }
 
-    ProjectionImpl proj;
+    Projection proj;
     if ("lambert_conformal_conic".equalsIgnoreCase(projName)) {
       proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing);
       projCT = new ProjectionCT("Projection", "FGDC", proj);

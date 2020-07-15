@@ -5,6 +5,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
 public class TestVerticalPerspectiveView {
 

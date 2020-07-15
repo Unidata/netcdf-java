@@ -31,7 +31,7 @@ import ucar.unidata.geoloc.ProjectionRect;
  * @since Oct 8, 2009
  */
 
-public class MapMath {
+class MapMath {
 
   public static final double HALFPI = Math.PI / 2.0;
   public static final double QUARTERPI = Math.PI / 4.0;

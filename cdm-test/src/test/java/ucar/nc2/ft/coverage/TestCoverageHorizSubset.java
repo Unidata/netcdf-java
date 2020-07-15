@@ -17,7 +17,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -51,7 +50,7 @@ public class TestCoverageHorizSubset {
       // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
       LatLonRect bbox = new LatLonRect(LatLonPoint.create(-16.79, -20.5), LatLonPoint.create(14.1, 20.9));
 
-      ProjectionImpl p = hcs.getTransform().getProjection();
+      Projection p = hcs.getTransform().getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
       System.out.printf("%s -> %s %n", bbox, prect);
 

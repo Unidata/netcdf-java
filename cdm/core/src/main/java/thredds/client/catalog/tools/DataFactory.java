@@ -24,7 +24,7 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.Nonnull;
 
@@ -70,10 +70,9 @@ public class DataFactory {
 
     @Override
     public String toString() {
-      String sb = "Result" + "{fatalError=" + fatalError + ", errLog=" + errLog + ", featureType=" + featureType
+      return "Result{" + "fatalError=" + fatalError + ", errLog=" + errLog + ", featureType=" + featureType
           + ", featureDataset=" + featureDataset + ", imageURL='" + imageURL + '\'' + ", location='" + location + '\''
           + ", accessUsed=" + accessUsed + '}';
-      return sb;
     }
 
     @Override
@@ -273,11 +272,11 @@ public class DataFactory {
     }
 
     if (access.getService().getType() == ServiceType.CdmrFeature) {
-      Optional<FeatureDataset> opt = CdmrFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
-      if (opt.isPresent())
+      Optional<FeatureDataset> opt =
+          CdmrFeatureDataset.factory(wantFeatureType, access.getStandardUrlName(), result.errLog);
+      if (opt.isPresent()) {
         result.featureDataset = opt.get();
-      else
-        result.errLog.format("%s", opt.getErrorMessage());
+      }
 
     } else {
 

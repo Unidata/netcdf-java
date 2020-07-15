@@ -4,13 +4,14 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Formatter;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +71,9 @@ public class Time2DCoordSys {
    * 2b time (not range) = constant forecast dataset
    */
   public Optional<List<CoverageCoordAxis>> subset(SubsetParams params, AtomicBoolean isConstantForcast,
-      boolean makeCFcompliant) {
-    return Optional.empty("not implemented by " + getClass().getName());
+      boolean makeCFcompliant, Formatter errLog) {
+    errLog.format("not implemented by %s", getClass().getName());
+    return Optional.empty();
 
     /*
      * List<CoverageCoordAxis> result = new ArrayList<>();

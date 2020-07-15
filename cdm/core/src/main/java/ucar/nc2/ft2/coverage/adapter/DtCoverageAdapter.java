@@ -56,9 +56,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
       for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordAxes()) {
         if (null == covAxesMap.get(axis.getFullName())) {
-          ucar.nc2.util.Optional<CoverageCoordAxis> opt = makeCoordAxis(proxy.getCoverageType(), axis, reader);
+          Optional<CoverageCoordAxis> opt = makeCoordAxis(proxy.getCoverageType(), axis, reader, errlog);
           if (!opt.isPresent()) {
-            errlog.format("%s%n", opt.getErrorMessage());
             continue;
           }
           CoverageCoordAxis covAxis = opt.get();
@@ -152,8 +151,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     return new CoverageCoordAxis1D(builder);
   }
 
-  private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis(FeatureType ftype,
-      ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
+  private static Optional<CoverageCoordAxis> makeCoordAxis(FeatureType ftype,
+      ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader, Formatter errlog) {
     String name = dtCoordAxis.getFullName();
     DataType dataType = dtCoordAxis.getDataType();
     AxisType axisType = dtCoordAxis.getAxisType();
@@ -161,8 +160,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     String description = dtCoordAxis.getDescription();
     AttributeContainer atts = dtCoordAxis.attributes();
 
-    if (axisType == null)
-      return ucar.nc2.util.Optional.empty("Coordinate " + name + " has no axisType");
+    if (axisType == null) {
+      errlog.format("Coordinate %s has no axisType", name);
+      return Optional.empty();
+    }
 
     CoverageCoordAxis.DependenceType dependenceType;
     String dependsOn = null;
@@ -206,7 +207,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     if (dtCoordAxis instanceof CoordinateAxis1D) {
       CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
       // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
-      axis1D.correctLongitudeWrap();
+      axis1D = axis1D.correctLongitudeWrap();
 
       startValue = axis1D.getCoordValue(0);
       endValue = axis1D.getCoordValue((int) dtCoordAxis.getSize() - 1);
@@ -258,9 +259,9 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       builder.isSubset = false;
 
       if (axisType == AxisType.TimeOffset)
-        return ucar.nc2.util.Optional.of(new TimeOffsetAxis(builder));
+        return Optional.of(new TimeOffsetAxis(builder));
       else
-        return ucar.nc2.util.Optional.of(new CoverageCoordAxis1D(builder));
+        return Optional.of(new CoverageCoordAxis1D(builder));
     }
 
     // TwoD case
@@ -327,19 +328,20 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     if (axisType == AxisType.Time) {
       if (ftype == FeatureType.FMRC) {
         builder.setDependsOn(dtCoordAxis.getDimension(0).getFullName()); // only the first dimension
-        return ucar.nc2.util.Optional.of(new TimeAxis2DFmrc(builder));
+        return Optional.of(new TimeAxis2DFmrc(builder));
 
       } else if (ftype == FeatureType.SWATH) {
-        return ucar.nc2.util.Optional.of(new TimeAxis2DSwath(builder));
+        return Optional.of(new TimeAxis2DSwath(builder));
       }
     }
 
     // 2D Lat Lon
     if (axisType == AxisType.Lat || axisType == AxisType.Lon) {
-      return ucar.nc2.util.Optional.of(new LatLonAxis2D(builder));
+      return Optional.of(new LatLonAxis2D(builder));
     }
 
-    return ucar.nc2.util.Optional.empty("Dont know what to do with axis " + dtCoordAxis);
+    errlog.format("Dont know what to do with axis %s", dtCoordAxis);
+    return Optional.empty();
   }
 
   ////////////////////////
@@ -368,9 +370,11 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       throws IOException, InvalidRangeException {
     DtCoverage grid = (DtCoverage) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params);
-    if (!opt.isPresent())
-      throw new InvalidRangeException(opt.getErrorMessage());
+    Formatter errlog = new Formatter();
+    Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, errlog);
+    if (!opt.isPresent()) {
+      throw new InvalidRangeException(errlog.toString());
+    }
 
     CoverageCoordSys subsetCoordSys = opt.get();
     List<RangeIterator> rangeIters = subsetCoordSys.getRanges();

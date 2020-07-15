@@ -11,10 +11,7 @@ import ucar.unidata.geoloc.projection.*;
 import junit.framework.*;
 import java.lang.invoke.MethodHandles;
 
-/**
- *
- * @author John Caron
- */
+/** Test the LatLonProjection */
 public class TestLatLonProjection extends TestCase {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -37,11 +34,10 @@ public class TestLatLonProjection extends TestCase {
    */
 
   void runCenter() {
-    LatLonPointImpl ptL = new LatLonPointImpl(-73.79, 0.0);
     double xinc = 22.5;
     double yinc = 20.0;
     for (double lon = 0.0; lon < 380.0; lon += xinc) {
-      ptL.setLongitude(lon);
+      LatLonPoint ptL = LatLonPoint.create(-73.79, lon);
       LatLonRect llbb = new LatLonRect(ptL, yinc, xinc);
 
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
@@ -52,11 +48,10 @@ public class TestLatLonProjection extends TestCase {
   }
 
   void runCenter(double center) {
-    LatLonPointImpl ptL = new LatLonPointImpl(0.0, 0.0);
     double xinc = 22.5;
     double yinc = 20.0;
     for (double lon = 0.0; lon < 380.0; lon += xinc) {
-      ptL.setLongitude(center + lon);
+      LatLonPoint ptL = LatLonPoint.create(0, center + lon);
       LatLonRect llbb = new LatLonRect(ptL, yinc, xinc);
 
       ProjectionRect ma2 = p.latLonToProjBB(llbb);

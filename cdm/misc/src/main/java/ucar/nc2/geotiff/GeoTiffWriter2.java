@@ -38,7 +38,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       }
 
       GridCoordSystem gcs = grid.getCoordinateSystem();
-      ProjectionImpl proj = grid.getProjection();
+      Projection proj = grid.getProjection();
 
       if (!gcs.isRegularSpatial()) {
         Attribute att = dataset.attributes().findAttribute("datasetId");
@@ -144,7 +144,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
     GridDatatype grid = dataset.findGridDatatype(gridName);
     GridCoordSystem gcs = grid.getCoordinateSystem();
-    ProjectionImpl proj = grid.getProjection();
+    Projection proj = grid.getProjection();
 
     CoordinateAxis2D xaxis = (CoordinateAxis2D) gcs.getXHorizAxis();
     CoordinateAxis2D yaxis = (CoordinateAxis2D) gcs.getYHorizAxis();

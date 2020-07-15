@@ -5,7 +5,7 @@
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.*;
-import ucar.nc2.util.Optional;
+import java.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
@@ -39,7 +39,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
   }
 
   @Override
-  public Optional<HorizCoordSys> subset(SubsetParams params) {
+  public Optional<HorizCoordSys> subset(SubsetParams params, Formatter errLog) {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
     Integer horizStride = (Integer) params.get(SubsetParams.horizStride);
@@ -51,9 +51,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
     Formatter errMessages = new Formatter();
     if (llbb != null) {
       Optional<List<RangeIterator>> opt = computeBounds(llbb, horizStride);
-      if (!opt.isPresent()) {
-        errMessages.format("%s;%n", opt.getErrorMessage());
-      } else {
+      if (opt.isPresent()) {
         List<RangeIterator> ranges = opt.get();
         lataxisSubset = latAxis2D.subset(ranges.get(1), ranges.get(0)); // x, y
         lonaxisSubset = lonAxis2D.subset(ranges.get(1), ranges.get(0));
@@ -68,8 +66,10 @@ public class HorizCoordSys2D extends HorizCoordSys {
     }
 
     String errs = errMessages.toString();
-    if (!errs.isEmpty())
-      return Optional.empty(errs);
+    if (!errs.isEmpty()) {
+      errLog.format("%s", errs);
+      return Optional.empty();
+    }
 
     // makes a copy of the axis
     if (lataxisSubset == null)
@@ -101,8 +101,9 @@ public class HorizCoordSys2D extends HorizCoordSys {
     CoordReturn result = new CoordReturn();
     int[] index = new int[2];
     boolean ok = edges.findCoordElement(y, x, index);
-    if (!ok)
-      return Optional.empty("not in grid2D");
+    if (!ok) {
+      return Optional.empty();
+    }
 
     result.x = index[1];
     result.y = index[0];
@@ -476,7 +477,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       }
 
       if (minx > lonMinMax.max && maxx > lonMinMax.max && minx < maxx) { // otherwise ignoring minx > maxx
-        return Optional.empty("no intersection");
+        return Optional.empty();
       } else if (minx > lonMinMax.max && maxx > lonMinMax.max && minx > maxx) {
         minCol = 0; // all of x
         maxCol = nx;

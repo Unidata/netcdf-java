@@ -176,7 +176,7 @@ public final class FysatHeader {
 
         // set projection attribute
         // ? which projection
-        ProjectionImpl projection = null;
+        Projection projection = null;
         double dxKm = 0.0, dyKm = 0.0;
         short nv = geoSatelliteSecondHeader.flagOfProjection;
         att = new Attribute("ProjIndex", nv);
@@ -515,7 +515,7 @@ public final class FysatHeader {
         ncfile.addAttribute(null, att);
 
 
-        ProjectionImpl projection = null;
+        Projection projection = null;
         double dxKm = 0.0, dyKm = 0.0, latin, lonProjectionOrigin;
 
         // deal with projection

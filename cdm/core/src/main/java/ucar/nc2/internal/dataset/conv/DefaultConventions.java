@@ -26,7 +26,7 @@ import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.TransverseMercator;
@@ -336,7 +336,7 @@ public class DefaultConventions extends CoordSystemBuilder {
 
     parseInfo.format("Default Conventions projection %s params = %f %f %f %f%n", projection, p[0], p[1], p[2], p[3]);
 
-    ProjectionImpl proj;
+    Projection proj;
     if (projection.equalsIgnoreCase("LambertConformal")) {
       proj = new LambertConformal(p[0], p[1], p[2], p[3]);
     } else if (projection.equalsIgnoreCase("TransverseMercator")) {

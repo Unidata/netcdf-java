@@ -30,14 +30,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 
-/**
- *
- */
 public class ToolsAboutWindow extends JWindow {
 
-  /**
-   *
-   */
   public ToolsAboutWindow(JFrame parent) {
     super(parent);
 
@@ -116,14 +110,11 @@ public class ToolsAboutWindow extends JWindow {
     setVisible(true);
   }
 
-  /**
-   *
-   */
   private String getVersion() {
     String version;
     try (InputStream is = Resource.getFileResource("/README")) {
       if (is == null) {
-        return "5.0";
+        return "6.0";
       }
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
       StringBuilder sbuff = new StringBuilder();

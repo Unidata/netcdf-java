@@ -21,17 +21,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 
-/**
- *
- */
 public class ToolsSplashScreen extends JWindow {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static ToolsSplashScreen instance;
 
-  /**
-   *
-   */
   public static ToolsSplashScreen getSharedInstance() {
     if (instance == null) {
       instance = new ToolsSplashScreen();
@@ -40,9 +34,6 @@ public class ToolsSplashScreen extends JWindow {
     return instance;
   }
 
-  /**
-   *
-   */
   private ToolsSplashScreen() {
     Image image = Resource.getImage("/resources/ui/pix/ring2.jpg");
 

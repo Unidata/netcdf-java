@@ -9,7 +9,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;
 import java.text.ParseException;
 
@@ -513,20 +513,20 @@ public class WKTParser {
 
 
   /**
-   * Convert OGC spatial reference WKT to a ProjectionImpl.
+   * Convert OGC spatial reference WKT to a Projection.
    * An IllegalArgumentException may be thrown if a parameter is missing.
    *
    * @param srp The parsed OGC WKT spatial reference text.
-   * @return The ProjectionImpl class.
+   * @return the Projection.
    */
-  public static ProjectionImpl convertWKTToProjection(WKTParser srp) {
+  public static Projection convertWKTToProjection(WKTParser srp) {
     if (!srp.isPlanarProjection()) {
       return new ucar.unidata.geoloc.projection.LatLonProjection();
     } else {
       String projectionType = srp.getProjectionType();
       double falseEasting = 0;
       double falseNorthing = 0;
-      ProjectionImpl proj = null;
+      Projection proj = null;
       if (srp.hasParameter("False_Easting")) {
         falseEasting = srp.getParameter("False_Easting");
       }
@@ -596,7 +596,7 @@ public class WKTParser {
 
   }
 
-  static ProjectionImpl processUTM(WKTParser srp) {
+  static Projection processUTM(WKTParser srp) {
     // NAD_1983_UTM_Zone_12N
     String name = srp.getProjName();
     int pos = name.indexOf("UTM_Zone_");

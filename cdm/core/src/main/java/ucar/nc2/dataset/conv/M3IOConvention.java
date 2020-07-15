@@ -11,7 +11,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-import ucar.unidata.geoloc.ProjectionRect;
 import java.util.*;
 import ucar.unidata.geoloc.projection.AlbersEqualArea;
 import ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea;
@@ -247,11 +246,9 @@ public class M3IOConvention extends CoordSysBuilder {
 
     // Get lower left and upper right corners of domain in lat/lon
     double x1 = findAttributeDouble(ds, "XORIG");
-    double y1 = findAttributeDouble(ds, "YORIG");
     double x2 = x1 + findAttributeDouble(ds, "XCELL") * findAttributeDouble(ds, "NCOLS");
-    double y2 = y1 + findAttributeDouble(ds, "YCELL") * findAttributeDouble(ds, "NROWS");
 
-    LatLonProjection ll = new LatLonProjection("LatitudeLongitudeProjection", new ProjectionRect(x1, y1, x2, y2));
+    LatLonProjection ll = new LatLonProjection("LatitudeLongitudeProjection", null, (x1 + x2) / 2);
     return new ProjectionCT("LatitudeLongitudeProjection", "FGDC", ll);
   }
 

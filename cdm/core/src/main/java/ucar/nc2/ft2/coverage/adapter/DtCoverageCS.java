@@ -28,7 +28,7 @@ public class DtCoverageCS {
   /////////////////////////////////////////////////////////////////////////////
   protected DtCoverageCSBuilder builder;
   private String name;
-  private ProjectionImpl proj;
+  private Projection proj;
   private GeoGridCoordinate2D g2d;
   private boolean isLatLon;
 
@@ -51,7 +51,7 @@ public class DtCoverageCS {
       setHorizStaggerType(att.getStringValue());
 
     if (builder.orgProj != null) {
-      proj = builder.orgProj.constructCopy();
+      proj = builder.orgProj;
     }
   }
 
@@ -113,7 +113,7 @@ public class DtCoverageCS {
     return builder.ensAxis;
   }
 
-  public ProjectionImpl getProjection() {
+  public Projection getProjection() {
     return proj;
   }
 
@@ -283,7 +283,7 @@ public class DtCoverageCS {
         llbb = new LatLonRect(llpt, deltaLat, deltaLon);
 
       } else {
-        ProjectionImpl dataProjection = getProjection();
+        Projection dataProjection = getProjection();
         ProjectionRect bb = getBoundingBox();
         if (bb != null)
           llbb = dataProjection.projToLatLonBB(bb);

@@ -53,7 +53,7 @@ import ucar.ui.widget.FontUtil;
 public class PointRenderer implements Renderer {
 
   private java.util.List<ObservationUI> obsUIlist = new ArrayList<>(); // ObservationUI objects
-  private ProjectionImpl project; // display projection
+  private Projection project; // display projection
 
   // drawing parameters
   private Color color = Color.black;
@@ -143,7 +143,7 @@ public class PointRenderer implements Renderer {
     return declutter;
   }
 
-  public void setProjection(ProjectionImpl project) {
+  public void setProjection(Projection project) {
     this.project = project;
     calcWorldPos();
   }

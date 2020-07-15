@@ -56,7 +56,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    logger.debug("test1Runtime1TimeOffset Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testNoIntervalFound Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -85,7 +85,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    logger.debug("test1Runtime1TimeOffset Dataset {} coverage {}", endpoint, covName);
+    System.out.format("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -116,7 +116,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    logger.debug("test1Runtime1TimeInterval Dataset {} coverage {}", endpoint, covName);
+    System.out.format("test1Runtime1TimeIntervalEdge Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -150,7 +150,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    logger.debug("test1Runtime1TimeInterval Dataset {} coverage {}", endpoint, covName);
+    System.out.format("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -183,7 +183,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Total_ozone_entire_atmosphere_single_layer";
 
-    logger.debug("test1Runtime1Time Dataset {} coverage {}", endpoint, covName);
+    System.out.format("test1Runtime1Time Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -214,7 +214,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    logger.debug("testConstantRuntime Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testConstantRuntime Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -254,7 +254,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    logger.debug("testConstantOffset Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testConstantOffset Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -301,7 +301,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Pressure_convective_cloud_bottom";
 
-    logger.debug("testConstantForecast Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testConstantForecast Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -352,7 +352,7 @@ public class TestCoverageSubsetTime {
     }
   }
 
-  public static void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
+  static void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
     CoverageCoordSys geoCs = geo.getCoordSysForData();
 
     CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
@@ -400,7 +400,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
-    logger.debug("testBestPresent Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -431,7 +431,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
-    logger.debug("testBestPresent Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testBestTimeCoord Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -462,7 +462,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
-    logger.debug("testBestPresent Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testBestTimeOffsetCoord Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -496,7 +496,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     String covName = "Temperature_isobaric";
 
-    logger.debug("testSrcNoParams Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testSrcNoParams Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -520,7 +520,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     String covName = "Temperature_isobaric";
 
-    logger.debug("testSrcTimePresent Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testSrcTimePresent Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -555,7 +555,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
     String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
 
-    logger.debug("testDiscontiguousIntervalSubsetSingleTime Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testDiscontiguousIntervalSubsetSingleTime Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
       assertThat(featureDatasetCoverage).isNotNull();
@@ -609,7 +609,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
     String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
 
-    logger.debug("testDiscontiguousIntervalSubsetSpecificOffsets Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testDiscontiguousIntervalSubsetSpecificOffsets Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
       assertThat(featureDatasetCoverage).isNotNull();
@@ -673,7 +673,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
     String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
 
-    logger.debug("testDiscontiguousIntervalSubsetSpecificOffsetsNoExactMatch Dataset {} coverage {}", endpoint,
+    System.out.format("testDiscontiguousIntervalSubsetSpecificOffsetsNoExactMatch Dataset %s coverage %s%n", endpoint,
         covName);
 
     try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
@@ -720,7 +720,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
     String covName = "Total_precipitation_surface_Mixed_intervals_Accumulation";
 
-    logger.debug("testDiscontiguousIntervalTime Dataset {} coverage {}", endpoint, covName);
+    System.out.format("testDiscontiguousIntervalSubsetTimeRange Dataset %s coverage %s%n", endpoint, covName);
 
     try (FeatureDatasetCoverage featureDatasetCoverage = CoverageDatasetFactory.open(endpoint)) {
       assertThat(featureDatasetCoverage).isNotNull();
@@ -755,12 +755,5 @@ public class TestCoverageSubsetTime {
       assertThat(timeAxis.getRange()).isEqualTo(new Range(expectedStartIndex, expectedEndIndex));
     }
   }
-
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  // ENsemble
-
-  // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC,
-  // "geopotential"});
-
 
 }

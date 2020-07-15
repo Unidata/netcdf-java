@@ -32,9 +32,11 @@
 
 package ucar.unidata.geoloc.projection.proj4;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.AbstractProjection;
 import ucar.unidata.util.Parameter;
 import java.util.Formatter;
 
@@ -43,40 +45,34 @@ import java.util.Formatter;
  *
  * @see "http://www.jhlabs.com/java/maps/proj/index.html"
  * @see "http://trac.osgeo.org/proj/"
- *
- * @author caron
- * @since Oct 20, 2009
  */
-public class LambertConformalConicEllipse extends ProjectionImpl {
+@Immutable
+public class LambertConformalConicEllipse extends AbstractProjection {
   private static final double TOL = 1.0e-10;
 
   // projection parameters
-  private double lat0deg, lon0deg; // projection origin, degrees
-  private double lat0rad, lon0rad; // projection origin, radians
-  private double par1deg, par2deg; // standard parellels, degrees
-  private double par1rad, par2rad; // standard parellels, radians
-  private double falseEasting, falseNorthing; // km
+  private final double lat0deg, lon0deg; // projection origin, degrees
+  private final double lat0rad, lon0rad; // projection origin, radians
+  private final double par1deg, par2deg; // standard parellels, degrees
+  private final double par1rad, par2rad; // standard parellels, radians
+  private final double falseEasting, falseNorthing; // km
 
   // earth shape
-  private Earth earth;
-  private double e; // earth.getEccentricitySquared
-  private double es; // earth.getEccentricitySquared
-  private double totalScale; // scale to convert cartesian coords in km
+  private final Earth earth;
+  private final double e; // earth.getEccentricitySquared
+  private final double totalScale; // scale to convert cartesian coords in km
 
-  private double n;
-  private double c;
-  private double rho0;
+  private final double n;
+  private final double c;
+  private final double rho0;
 
   // spherical vs ellipsoidal
-  private boolean isSpherical;
+  private final boolean isSpherical;
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new LambertConformalConicEllipse(getOriginLat(), getOriginLon(), getParallelOne(),
-        getParallelTwo(), getFalseEasting(), getFalseNorthing(), getEarth());
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new LambertConformalConicEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+        getFalseEasting(), getFalseNorthing(), getEarth());
   }
 
   /**
@@ -113,19 +109,60 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
     this.par1deg = par1;
     this.par2deg = par2;
 
-    this.par1rad = Math.toRadians(par1);
-    this.par2rad = Math.toRadians(par2);
+    if (par1 == 0) {
+      this.par1rad = lat0rad;
+      this.par2rad = lat0rad;
+    } else {
+      this.par1rad = Math.toRadians(par1);
+      this.par2rad = Math.toRadians(par2);
+    }
 
     this.falseEasting = falseEasting;
     this.falseNorthing = falseNorthing;
 
     this.earth = earth;
     this.e = earth.getEccentricity();
-    this.es = earth.getEccentricitySquared();
-    this.isSpherical = (e == 0.0);
+    double es = earth.getEccentricitySquared();
+    this.isSpherical = earth.isSpherical();
     this.totalScale = earth.getMajor() * .001; // scale factor for cartesion coords in km.
 
-    initialize();
+    if (Math.abs(par1rad + par2rad) < TOL)
+      throw new IllegalArgumentException("par1rad + par2rad < TOL");
+
+    double sinphi = Math.sin(par1rad);
+    double cosphi = Math.cos(par1rad);
+    boolean isSecant = Math.abs(par1rad - par2rad) >= TOL;
+
+    double nTemp = sinphi;
+    double rho0Temp;
+
+    if (!isSpherical) {
+      double ml1, m1;
+
+      m1 = MapMath.msfn(sinphi, cosphi, es);
+      ml1 = MapMath.tsfn(par1rad, sinphi, e);
+      if (isSecant) {
+        nTemp = Math.log(m1 / MapMath.msfn(sinphi = Math.sin(par2rad), Math.cos(par2rad), es));
+        nTemp /= Math.log(ml1 / MapMath.tsfn(par2rad, sinphi, e));
+      }
+      rho0Temp = m1 * Math.pow(ml1, -nTemp) / nTemp;
+      c = rho0Temp;
+      rho0Temp *= (Math.abs(Math.abs(lat0rad) - MapMath.HALFPI) < TOL) ? 0.
+          : Math.pow(MapMath.tsfn(lat0rad, Math.sin(lat0rad), e), nTemp);
+
+    } else {
+      if (isSecant) {
+        nTemp = Math.log(cosphi / Math.cos(par2rad))
+            / Math.log(Math.tan(MapMath.QUARTERPI + .5 * par2rad) / Math.tan(MapMath.QUARTERPI + .5 * par1rad));
+      }
+
+      c = cosphi * Math.pow(Math.tan(MapMath.QUARTERPI + .5 * par1rad), nTemp) / nTemp;
+      rho0Temp = (Math.abs(Math.abs(lat0rad) - MapMath.HALFPI) < TOL) ? 0.
+          : c * Math.pow(Math.tan(MapMath.QUARTERPI + .5 * lat0rad), -nTemp);
+    }
+
+    this.n = nTemp;
+    this.rho0 = rho0Temp;
 
     addParameter(CF.GRID_MAPPING_NAME, CF.LAMBERT_CONFORMAL_CONIC);
     addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, lat0);
@@ -150,97 +187,6 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
 
   }
 
-  private void initialize() {
-
-    if (par1rad == 0)
-      par1rad = par2rad = lat0rad;
-
-    if (Math.abs(par1rad + par2rad) < TOL)
-      throw new IllegalArgumentException("par1rad + par2rad < TOL");
-
-    double sinphi = Math.sin(par1rad);
-    double cosphi = Math.cos(par1rad);
-    boolean isSecant = Math.abs(par1rad - par2rad) >= TOL;
-    n = sinphi;
-
-    if (!isSpherical) {
-      double ml1, m1;
-
-      m1 = MapMath.msfn(sinphi, cosphi, es);
-      ml1 = MapMath.tsfn(par1rad, sinphi, e);
-      if (isSecant) {
-        n = Math.log(m1 / MapMath.msfn(sinphi = Math.sin(par2rad), Math.cos(par2rad), es));
-        n /= Math.log(ml1 / MapMath.tsfn(par2rad, sinphi, e));
-      }
-      c = (rho0 = m1 * Math.pow(ml1, -n) / n);
-      rho0 *= (Math.abs(Math.abs(lat0rad) - MapMath.HALFPI) < TOL) ? 0.
-          : Math.pow(MapMath.tsfn(lat0rad, Math.sin(lat0rad), e), n);
-
-    } else {
-      if (isSecant)
-        n = Math.log(cosphi / Math.cos(par2rad))
-            / Math.log(Math.tan(MapMath.QUARTERPI + .5 * par2rad) / Math.tan(MapMath.QUARTERPI + .5 * par1rad));
-
-      c = cosphi * Math.pow(Math.tan(MapMath.QUARTERPI + .5 * par1rad), n) / n;
-      rho0 = (Math.abs(Math.abs(lat0rad) - MapMath.HALFPI) < TOL) ? 0.
-          : c * Math.pow(Math.tan(MapMath.QUARTERPI + .5 * lat0rad), -n);
-    }
-  }
-
-
-  /*
-   * private void precalculate() {
-   * if (Math.abs(lat0 - PI_OVER_2) < TOLERANCE) {
-   * throw new IllegalArgumentException("LambertConformal lat0 = 90");
-   * }
-   * if (Math.abs(lat0 + PI_OVER_2) < TOLERANCE) {
-   * throw new IllegalArgumentException("LambertConformal lat0 = -90");
-   * }
-   * if (Math.abs(par1 - 90.0) < TOLERANCE) {
-   * throw new IllegalArgumentException("LambertConformal par1 = 90");
-   * }
-   * if (Math.abs(par1 + 90.0) < TOLERANCE) {
-   * throw new IllegalArgumentException("LambertConformal par1 = -90");
-   * }
-   * if (Math.abs(par2 - 90.0) < TOLERANCE) {
-   * throw new IllegalArgumentException("LambertConformal par2 = 90");
-   * }
-   * if (Math.abs(par2 + 90.0) < TOLERANCE) {
-   * throw new IllegalArgumentException("LambertConformal par2 = -90");
-   * }
-   * 
-   * double par1r = Math.toRadians(this.par1);
-   * double par2r = Math.toRadians(this.par2);
-   * 
-   * double t1 = Math.tan(Math.PI / 4 + par1r / 2);
-   * double t2 = Math.tan(Math.PI / 4 + par2r / 2);
-   * 
-   * if (Math.abs(par2 - par1) < TOLERANCE) { // single parallel
-   * n = Math.sin(par1r);
-   * } else {
-   * n = Math.log(Math.cos(par1r) / Math.cos(par2r))
-   * / Math.log(t2 / t1);
-   * }
-   * 
-   * double t1n = Math.pow(t1, n);
-   * F = Math.cos(par1r) * t1n / n;
-   * earthRadiusTimesF = EARTH_RADIUS * F;
-   * 
-   * double t0n = Math.pow(Math.tan(Math.PI / 4 + lat0 / 2), n);
-   * rho = EARTH_RADIUS * F / t0n;
-   * 
-   * lon0Degrees = Math.toDegrees(lon0);
-   * // need to know the pole value for crossSeam
-   * //Point2D pt = latLonToProj( 90.0, 0.0);
-   * //maxY = pt.getY();
-   * //System.out.println("LC = " +pt);
-   * }
-   */
-
-  // public LambertConformalConicEllipse(double lat0, double lon0, double par1, double par2, double falseEasting, double
-  // falseNorthing, Earth earth) {
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -263,7 +209,6 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
     if (Double.compare(that.par2rad, par2rad) != 0)
       return false;
     return earth.equals(that.earth);
-
   }
 
   @Override
@@ -285,30 +230,6 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
     result = 31 * result + earth.hashCode();
     return result;
   }
-
-  /*
-   * Check for equality with the Object in question
-   *
-   * @param proj object to check
-   * 
-   * @return true if they are equal
-   *
-   * public boolean equals2(Object proj) {
-   * if (!(proj instanceof LambertConformalConicEllipse))
-   * return false;
-   * 
-   * LambertConformalConicEllipse oo = (LambertConformalConicEllipse) proj;
-   * 
-   * if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these
-   * are null
-   * if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
-   * return ((this.getParallelOne() == oo.getParallelOne())
-   * && (this.getParallelTwo() == oo.getParallelTwo())
-   * && (this.getOriginLat() == oo.getOriginLat())
-   * && (this.getOriginLon() == oo.getOriginLon())
-   * && this.earth.equals(oo.earth));
-   * }
-   */
 
   // bean properties
 
@@ -418,7 +339,7 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
    * sbuff.format("PARAMETER[\"scale_factor\",1],");
    * sbuff.format("PARAMETER[\"false_easting\",").append(falseEasting).append("],");
    * sbuff.format("PARAMETER[\"false_northing\",").append(falseNorthing).append("],");
-   * 
+   *
    * return sbuff.toString();
    * }
    */
@@ -441,47 +362,14 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
      */
   }
 
-  /*
-   * public ProjectionPoint latLonToProj(LatLonPoint latLon,
-   * ProjectionPointImpl result) {
-   * double toX, toY;
-   * double fromLat = latLon.getLatitude();
-   * double fromLon = latLon.getLongitude();
-   * 
-   * fromLat = Math.toRadians(fromLat);
-   * double dlon = LatLonPointImpl.lonNormal(fromLon - lon0Degrees);
-   * double theta = n * Math.toRadians(dlon);
-   * double tn = Math.pow(Math.tan(PI_OVER_4 + fromLat / 2), n);
-   * double r = earthRadiusTimesF / tn;
-   * toX = r * Math.sin(theta);
-   * toY = rho - r * Math.cos(theta);
-   * 
-   * result.setLocation(toX + falseEasting, toY + falseNorthing);
-   * return result;
-   * }
-   * 
-   * /*
-   * public Point2D.Double project(double x, double y, Point2D.Double out) {
-   * double rho;
-   * if (Math.abs(Math.abs(y) - MapMath.HALFPI) < 1e-10)
-   * rho = 0.0;
-   * else
-   * rho = c * (spherical ?
-   * Math.pow(Math.tan(MapMath.QUARTERPI + .5 * y), -n) :
-   * Math.pow(MapMath.tsfn(y, Math.sin(y), e), n));
-   * out.x = scaleFactor * (rho * Math.sin(x *= n));
-   * out.y = scaleFactor * (rho0 - rho * Math.cos(x));
-   * return out;
-   * }
-   */
-
   private double computeTheta(double lon) {
     double dlon = LatLonPoints.lonNormal(lon - lon0deg);
     return n * Math.toRadians(dlon);
   }
 
   // also see Snyder p 101
-  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
+  @Override
+  public ProjectionPoint latLonToProj(LatLonPoint latLon) {
     double fromLat = Math.toRadians(latLon.getLatitude());
     double theta = computeTheta(latLon.getLongitude());
 
@@ -498,74 +386,11 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
     double toX = (rho * Math.sin(theta));
     double toY = (rho0 - rho * Math.cos(theta));
 
-    result.setLocation(totalScale * toX + falseEasting, totalScale * toY + falseNorthing);
-    return result;
+    return ProjectionPoint.create(totalScale * toX + falseEasting, totalScale * toY + falseNorthing);
   }
 
-  /*
-   * public LatLonPoint projToLatLon(ProjectionPoint world,
-   * LatLonPointImpl result) {
-   * double toLat, toLon;
-   * double fromX = world.getX() - falseEasting;
-   * double fromY = world.getY() - falseNorthing;
-   * double rhop = rho;
-   * 
-   * if (n < 0) {
-   * rhop *= -1.0;
-   * fromX *= -1.0;
-   * fromY *= -1.0;
-   * }
-   * 
-   * double yd = (rhop - fromY);
-   * double theta = Math.atan2(fromX, yd);
-   * double r = Math.sqrt(fromX * fromX + yd * yd);
-   * if (n < 0.0) {
-   * r *= -1.0;
-   * }
-   * 
-   * toLon = (Math.toDegrees(theta / n + lon0));
-   * 
-   * if (Math.abs(r) < TOLERANCE) {
-   * toLat = ((n < 0.0)
-   * ? -90.0
-   * : 90.0);
-   * } else {
-   * double rn = Math.pow(EARTH_RADIUS * F / r, 1 / n);
-   * toLat = Math.toDegrees(2.0 * Math.atan(rn) - Math.PI / 2);
-   * }
-   * 
-   * result.setLatitude(toLat);
-   * result.setLongitude(toLon);
-   * return result;
-   * }
-   * 
-   * 
-   * 
-   * public Point2D.Double projectInverse(double x, double y, Point2D.Double out) {
-   * x /= scaleFactor;
-   * y /= scaleFactor;
-   * double rho = MapMath.distance(x, y = rho0 - y);
-   * if (rho != 0) {
-   * if (n < 0.0) {
-   * rho = -rho;
-   * x = -x;
-   * y = -y;
-   * }
-   * if (spherical)
-   * out.y = 2.0 * Math.atan(Math.pow(c / rho, 1.0/n)) - MapMath.HALFPI;
-   * else
-   * out.y = MapMath.phi2(Math.pow(rho / c, 1.0/n), e);
-   * out.x = Math.atan2(x, y) / n;
-   * } else {
-   * out.x = 0.0;
-   * out.y = n > 0.0 ? MapMath.HALFPI : -MapMath.HALFPI;
-   * }
-   * return out;
-   * }
-   * }
-   */
-
-  public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
+  @Override
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
     double toLat, toLon;
     double fromX = (world.getX() - falseEasting) / totalScale; // assumes cartesion coords in km
     double fromY = (world.getY() - falseNorthing) / totalScale;
@@ -591,9 +416,7 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
       toLat = n > 0.0 ? MapMath.HALFPI : -MapMath.HALFPI;
     }
 
-    result.setLatitude(Math.toDegrees(toLat));
-    result.setLongitude(Math.toDegrees(toLon) + lon0deg);
-    return result;
+    return LatLonPoint.create(Math.toDegrees(toLat), Math.toDegrees(toLon) + lon0deg);
   }
 
 }

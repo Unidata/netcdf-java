@@ -21,7 +21,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.util.Parameter;
@@ -370,7 +370,7 @@ public class NOWRadheader {
     return 0;
   }
 
-  ProjectionImpl nowradL(int hoff, float lat1, float lat2, float clat, float clon, float lat, float lon, Date dd) {
+  Projection nowradL(int hoff, float lat1, float lat2, float clat, float clon, float lat, float lon, Date dd) {
     List<Dimension> dims = new ArrayList<>();
     Dimension dimT = new Dimension("time", 1, true, false, false);
 
@@ -430,7 +430,7 @@ public class NOWRadheader {
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
     double[] data1 = new double[numX];
-    ProjectionImpl projection = new LambertConformal(clat, clon, lat1, lat2);
+    Projection projection = new LambertConformal(clat, clon, lat1, lat2);
     double ullat = 51.8294;
     double ullon = -135.8736;
     double lrlat = 17.2454;
@@ -499,7 +499,7 @@ public class NOWRadheader {
    *
    * @return soff -- not used
    */
-  ProjectionImpl nowrad(int hoff, float rlat1, float rlon1, float rlat2, float rlon2, float dlat, float dlon, Date dd) {
+  Projection nowrad(int hoff, float rlat1, float rlon1, float rlat2, float rlon2, float dlat, float dlon, Date dd) {
     List<Dimension> dims = new ArrayList<>();
     Dimension dimT = new Dimension("time", 1, true, false, false);
 

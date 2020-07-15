@@ -8,6 +8,7 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
+import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
 /**
  * VerticalPerspectiveView projection.
@@ -34,9 +35,8 @@ public class VerticalPerspective extends AbstractTransformBuilder implements Hor
           + "attributes");
 
     // We assume distance comes in 'm' (CF-compliant) and we pass in as 'km'
-    ucar.unidata.geoloc.projection.VerticalPerspectiveView proj =
-        new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000.,
-            false_easting, false_northing);
+    VerticalPerspectiveView proj =
+        new VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000., false_easting, false_northing);
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }

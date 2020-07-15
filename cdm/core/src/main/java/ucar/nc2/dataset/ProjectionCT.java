@@ -5,13 +5,13 @@
 
 package ucar.nc2.dataset;
 
-import ucar.unidata.geoloc.ProjectionImpl;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import ucar.unidata.geoloc.Projection;
 
 /** A Projection CoordinateTransform has a Projection bijection (GeoX, GeoY) <-> (Lat, Lon). */
 @Immutable
 public class ProjectionCT extends CoordinateTransform {
-
   /**
    * Create a Projection Coordinate Transform.
    * 
@@ -19,7 +19,7 @@ public class ProjectionCT extends CoordinateTransform {
    * @param authority naming authority.
    * @param proj projection function. TODO will be Projection in ver6.
    */
-  public ProjectionCT(String name, String authority, ProjectionImpl proj) {
+  public ProjectionCT(String name, String authority, Projection proj) {
     super(name, authority, TransformType.Projection, proj.getProjectionParameters());
     this.projection = proj;
   }
@@ -27,15 +27,15 @@ public class ProjectionCT extends CoordinateTransform {
   /**
    * Get the Projection function.
    * 
-   * @return the Projection
-   * @deprecated this will return Projection, not ProjectionImpl in 6.
+   * @return the Projection or null
    */
-  public ProjectionImpl getProjection() {
+  @Nullable
+  public Projection getProjection() {
     return projection;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private final ProjectionImpl projection;
+  private final Projection projection;
 
   protected ProjectionCT(Builder<?> builder, NetcdfDataset ncd) {
     super(builder, ncd);
@@ -64,12 +64,12 @@ public class ProjectionCT extends CoordinateTransform {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends CoordinateTransform.Builder<T> {
-    public ProjectionImpl projection;
+    public Projection projection;
     private boolean built;
 
     protected abstract T self();
 
-    public Builder<?> setProjection(ProjectionImpl projection) {
+    public Builder<?> setProjection(Projection projection) {
       this.projection = projection;
       return self();
     }

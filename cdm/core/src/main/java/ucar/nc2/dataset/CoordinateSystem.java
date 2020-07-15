@@ -6,6 +6,7 @@ package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
@@ -375,10 +376,10 @@ public class CoordinateSystem {
    * If isLatLon(), then returns a LatLonProjection. Otherwise, extracts the
    * projection from any ProjectionCT CoordinateTransform.
    * 
-   * @return ProjectionImpl or null if none.
-   *         TODO return Projection in ver6
+   * @return Projection or null if none.
    */
-  public ProjectionImpl getProjection() {
+  @Nullable
+  public Projection getProjection() {
     if (projection == null) {
       if (isLatLon())
         projection = new LatLonProjection();
@@ -388,8 +389,6 @@ public class CoordinateSystem {
     }
     return projection;
   }
-
-  private ProjectionImpl projection;
 
   ////////////////////////////////////////////////////////////////////////////
   // classification
@@ -705,6 +704,7 @@ public class CoordinateSystem {
   protected NetcdfDataset ds; // needed?
   protected List<CoordinateAxis> coordAxes = new ArrayList<>();
   protected List<CoordinateTransform> coordTrans = new ArrayList<>();
+  private Projection projection;
 
   // these are calculated
   protected String name;

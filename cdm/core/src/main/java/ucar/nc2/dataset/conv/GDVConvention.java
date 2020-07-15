@@ -212,7 +212,7 @@ public class GDVConvention extends CSMConvention {
 
     parseInfo.format("GDV Conventions projection %s params = %f %f %f %f%n", projection, p[0], p[1], p[2], p[3]);
 
-    ProjectionImpl proj;
+    Projection proj;
     if (projection.equalsIgnoreCase("LambertConformal"))
       proj = new LambertConformal(p[0], p[1], p[2], p[3]);
     else if (projection.equalsIgnoreCase("TransverseMercator"))

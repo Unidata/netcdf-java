@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.transform.VertTransformBuilderIF;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.Parameter;
 
 
@@ -18,7 +18,7 @@ import ucar.unidata.util.Parameter;
  * A VerticalCT is a CoordinateTransform function CT: (GeoZ) -> Height or Pressure.
  * Typically it may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -> Height or Pressure.
  * This class just records the transformation parameters. The mathematical transformation itself is
- * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform.
+ * delegated to a class implementing ucar.unidata.geoloc.VerticalTransform.
  */
 @Immutable
 public class VerticalCT extends CoordinateTransform {

@@ -13,7 +13,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 
 /**
  * 
@@ -122,7 +122,7 @@ public final class GridBoundariesExtractor {
     Gridset gridset = gridDataset.getGridsets().get(0);
 
     GridCoordSystem coordSystem = gridset.getGeoCoordSystem();
-    ProjectionImpl fromProj = coordSystem.getProjection();
+    Projection fromProj = coordSystem.getProjection();
     coordSystem.getLatLonBoundingBox();
 
     if (coordSystem.getYHorizAxis() instanceof CoordinateAxis1D

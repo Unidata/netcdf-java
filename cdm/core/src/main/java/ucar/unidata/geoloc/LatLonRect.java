@@ -123,7 +123,6 @@ public class LatLonRect {
     init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
   }
 
-
   /**
    * Copy Constructor
    *
@@ -560,7 +559,6 @@ public class LatLonRect {
     return " ll: " + lowerLeft + "+ ur: " + upperRight;
   }
 
-
   /**
    * Return a String representation of this object.
    * 
@@ -574,4 +572,13 @@ public class LatLonRect {
     return " lat= [" + Format.dfrac(getLatMin(), 2) + "," + Format.dfrac(getLatMax(), 2) + "] lon= ["
         + Format.dfrac(getLonMin(), 2) + "," + Format.dfrac(getLonMax(), 2) + "]";
   }
+
+  /**
+   * Return a String representation of this LatLonRect that can be used in new LatLonRect(String):
+   * "lat, lon, deltaLat, deltaLon"
+   */
+  public String toStringSpec() {
+    return String.format("%f, %f, %f, %f", lowerLeft.getLatitude(), lowerLeft.getLongitude(), getHeight(), getWidth());
+  }
+
 }

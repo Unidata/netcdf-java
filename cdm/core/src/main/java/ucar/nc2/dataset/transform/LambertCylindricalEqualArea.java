@@ -9,7 +9,7 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.Earth;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 
 /**
@@ -39,7 +39,7 @@ public class LambertCylindricalEqualArea extends AbstractTransformBuilder implem
       }
     }
 
-    ProjectionImpl proj = new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
+    Projection proj = new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
 
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }

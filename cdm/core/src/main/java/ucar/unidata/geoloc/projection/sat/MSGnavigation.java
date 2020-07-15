@@ -4,8 +4,10 @@
  */
 package ucar.unidata.geoloc.projection.sat;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.AbstractProjection;
 
 /**
  * Port Eumetsat MSG_navigation.c to java.
@@ -17,9 +19,8 @@ import ucar.unidata.geoloc.*;
  * @see "www.itc.nl/library/papers_2005/conf/gieske_pro.pdf"
  * @since Jan 9, 2010
  */
-
-
-public class MSGnavigation extends ProjectionImpl {
+@Immutable
+public class MSGnavigation extends AbstractProjection {
 
   /**
    * **********************************************************************
@@ -153,14 +154,14 @@ public class MSGnavigation extends ProjectionImpl {
   private static final double SUB_LON = 0.0; // longitude of sub-satellite point in radiant
 
 
-  private double lat0; // always 0
-  private double lon0; // longitude of sub-satellite point in radians
-  private double major_axis, minor_axis; // ellipsoidal shape
-  private double sat_height; // distance from Earth centre to satellite
-  private double scale_x, scale_y;
+  private final double lat0 = 0; // always 0
+  private final double lon0; // longitude of sub-satellite point in radians
+  private final double major_axis, minor_axis; // ellipsoidal shape
+  private final double sat_height; // distance from Earth centre to satellite
+  private final double scale_x, scale_y;
 
-  private double const1, const2, const3;
-  private double maxR;
+  private final double const1, const2, const3;
+  private final double maxR;
 
   public MSGnavigation() {
     this(0.0, SUB_LON, R_EQ, R_POL, SAT_HEIGHT, SAT_HEIGHT - R_EQ, SAT_HEIGHT - R_EQ);
@@ -188,10 +189,10 @@ public class MSGnavigation extends ProjectionImpl {
     this.sat_height = .001 * sat_height;
     this.scale_x = scale_x;
     this.scale_y = scale_y;
-    const1 = major_axis / minor_axis;
-    const1 *= const1; // (req * rpol)**2
-    const2 = 1.0 - (minor_axis * minor_axis) / (major_axis * major_axis); // (req**2 - rpol**2) / req**2 = 1 - rpol**2 /
-                                                                          // req**2
+    double r = major_axis / minor_axis;
+    this.const1 = r * r; // (req * rpol)**2
+    // (req**2 - rpol**2) / req**2 = 1 - rpol**2 / req**2
+    const2 = 1.0 - (minor_axis * minor_axis) / (major_axis * major_axis);
     const3 = this.sat_height * this.sat_height - this.major_axis * this.major_axis;
 
     // "map limit" circle of this radius from the origin, p 173 (Vertical Perspective Projection)
@@ -214,7 +215,7 @@ public class MSGnavigation extends ProjectionImpl {
         + minor_axis + ", sat_height=" + sat_height + ", scale_x=" + scale_x + ", scale_y=" + scale_y + '}';
   }
 
-  private int pixcoord2geocoord(double xkm, double ykm, LatLonPointImpl result) {
+  private LatLonPoint pixcoord2geocoord(double xkm, double ykm) {
 
     /* calculate viewing angle of the satellite by use of the equation */
     /* on page 28, Ref [1]. */
@@ -240,8 +241,7 @@ public class MSGnavigation extends ProjectionImpl {
 
     /* produce error values */
     if (sa <= 0.0) {
-      result.set(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-      return (-1);
+      return LatLonPoint.create(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
     /* now calculate the rest of the formulas using equations on */
@@ -264,19 +264,14 @@ public class MSGnavigation extends ProjectionImpl {
     double lati = Math.atan(const1 * s3 / sxy);
 
     /* convert from radians into degrees */
-    result.setLatitude(Math.toDegrees(lati));
-    result.setLongitude(Math.toDegrees(longi));
-
-    return (0);
-
+    return LatLonPoint.create(Math.toDegrees(lati), Math.toDegrees(longi));
   }
 
-  private int geocoord2pixcoord(double latitude, double longitude, ProjectionPointImpl result) {
+  private ProjectionPoint geocoord2pixcoord(double latitude, double longitude) {
 
     /* check if the values are sane, otherwise return error values */
     if (latitude < -90.0 || latitude > 90.0 || longitude < -180.0 || longitude > 180.0) {
-      result.setLocation(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-      return (-1);
+      return ProjectionPoint.create(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
     /* convert to radians */
@@ -314,8 +309,7 @@ public class MSGnavigation extends ProjectionImpl {
 
     double dotprod = r1 * (re * coscLat * cosLon) - r2 * r2 - r3 * r3 * const1;
     if (dotprod <= 0) {
-      result.setLocation(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-      return (-1);
+      return ProjectionPoint.create(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
     double xx = Math.atan(-r2 / r1);
@@ -325,17 +319,13 @@ public class MSGnavigation extends ProjectionImpl {
     // double cc = x_off + xx * cfac;
     // double ll = y_off + yy * lfac;
 
-    result.setLocation(scale_x * xx, scale_y * yy);
-    return (0);
+    return ProjectionPoint.create(scale_x * xx, scale_y * yy);
   }
 
   @Override
-  public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new MSGnavigation(lat0, Math.toDegrees(lon0), 1000 * major_axis, 1000 * minor_axis,
-        1000 * sat_height, scale_x, scale_y);
-    result.setDefaultMapArea(defaultMapArea);
-    result.setName(name);
-    return result;
+  public Projection constructCopy() {
+    return new MSGnavigation(lat0, Math.toDegrees(lon0), 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height,
+        scale_x, scale_y);
   }
 
   @Override
@@ -344,15 +334,13 @@ public class MSGnavigation extends ProjectionImpl {
   }
 
   @Override
-  public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
-    geocoord2pixcoord(latlon.getLatitude(), latlon.getLongitude(), destPoint);
-    return destPoint;
+  public ProjectionPoint latLonToProj(LatLonPoint latlon) {
+    return geocoord2pixcoord(latlon.getLatitude(), latlon.getLongitude());
   }
 
   @Override
-  public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
-    pixcoord2geocoord(ppt.getX(), ppt.getY(), destPoint);
-    return destPoint;
+  public LatLonPoint projToLatLon(ProjectionPoint ppt) {
+    return pixcoord2geocoord(ppt.getX(), ppt.getY());
   }
 
   @Override

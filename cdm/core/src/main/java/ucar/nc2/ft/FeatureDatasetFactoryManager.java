@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft;
 
+import javax.annotation.Nullable;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
@@ -17,8 +18,8 @@ import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.util.Optional;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory.GribCoverageOpenAttempt;
+import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -43,10 +44,9 @@ import java.util.ServiceLoader;
  * @since Mar 19, 2008
  */
 public class FeatureDatasetFactoryManager {
-
   private static List<Factory> factoryList = new ArrayList<>();
   private static boolean userMode;
-  private static boolean debug;
+  private static boolean debug = false;
 
   // search in the order added
   static {
@@ -226,6 +226,7 @@ public class FeatureDatasetFactoryManager {
    * @return a subclass of FeatureDataset, or null if no suitable factory was found, message in errlog
    * @throws java.io.IOException on io error
    */
+  @Nullable
   public static FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task,
       Formatter errlog) throws IOException {
 
@@ -243,11 +244,8 @@ public class FeatureDatasetFactoryManager {
 
       // special processing for cdmrFeature: datasets
     } else if (location.startsWith(CdmrFeatureDataset.SCHEME)) {
-      Optional<FeatureDataset> opt = CdmrFeatureDataset.factory(wantFeatureType, location);
-      if (opt.isPresent())
-        return opt.get();
-      errlog.format("%s", opt.getErrorMessage());
-      return null;
+      Optional<FeatureDataset> opt = CdmrFeatureDataset.factory(wantFeatureType, location, errlog);
+      return opt.orElse(null);
 
       // special processing for collection: datasets
     } else if (location.startsWith(ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME)) {
@@ -257,16 +255,11 @@ public class FeatureDatasetFactoryManager {
     }
 
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location); // Cache ServiceType so we don't have to keep figuring it out
-    if (durl.serviceType == null) { // skip GRIB check for anything not a plain ole file
+    if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
       // check if its GRIB, may not have to go through NetcdfDataset
-      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openGrib(location);
-      if (opt.isPresent()) { // its a GRIB file
-        return opt.get();
-
-      } else if (!opt.getErrorMessage().startsWith(CoverageDatasetFactory.NOT_GRIB_FILE)
-          && !opt.getErrorMessage().startsWith(CoverageDatasetFactory.NO_GRIB_CLASS)) {
-        errlog.format("%s%n", opt.getErrorMessage()); // its a GRIB file with an error
-        return null;
+      GribCoverageOpenAttempt gribCoverage = CoverageDatasetFactory.openGrib(location, errlog);
+      if (gribCoverage.isGrib) {
+        return gribCoverage.coverage;
       }
     }
 

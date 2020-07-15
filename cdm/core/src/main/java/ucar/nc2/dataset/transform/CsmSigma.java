@@ -14,6 +14,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
 import ucar.unidata.util.Parameter;
@@ -40,8 +41,7 @@ public class CsmSigma extends AbstractTransformBuilder implements VertTransformB
     return rs;
   }
 
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-      VerticalCT vCT) {
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new AtmosSigma(ds, timeDim, vCT.getParameters());
   }
 
@@ -115,8 +115,7 @@ public class CsmSigma extends AbstractTransformBuilder implements VertTransformB
       return rs;
     }
 
-    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim,
-        VerticalCT vCT) {
+    public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
       return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
     }
   }

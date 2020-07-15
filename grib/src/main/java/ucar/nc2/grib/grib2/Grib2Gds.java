@@ -999,7 +999,7 @@ public abstract class Grib2Gds {
         scale = (1.0 + Math.sin(Math.toRadians(Math.abs(Math.abs(lad))))) / 2;
       }
 
-      ProjectionImpl proj;
+      Projection proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1172,7 +1172,7 @@ public abstract class Grib2Gds {
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj;
+      Projection proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1259,7 +1259,7 @@ public abstract class Grib2Gds {
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj;
+      Projection proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
