@@ -20,7 +20,7 @@ import java.util.List;
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  */
 
-public class OceanSigma extends VerticalTransformImpl {
+public class OceanSigma extends AbstractVerticalTransform {
 
   /**
    * The eta variable name identifier

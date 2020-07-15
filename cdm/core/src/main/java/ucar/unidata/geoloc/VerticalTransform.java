@@ -41,19 +41,10 @@ public interface VerticalTransform {
    */
   ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;
 
-
-  /**
-   * Get the unit string for the vertical coordinate.
-   * 
-   * @return unit string
-   */
+  /** Get the unit string for the vertical coordinate. */
   String getUnitString();
 
-  /**
-   * Get whether this coordinate is time dependent.
-   * 
-   * @return true if time dependent
-   */
+  /** Get whether this coordinate is time dependent. */
   boolean isTimeDependent();
 
   /**

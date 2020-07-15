@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author john
  */
-public class VTfromExistingData extends VerticalTransformImpl {
+public class VTfromExistingData extends AbstractVerticalTransform {
 
   /**
    * The name of the Parameter whose value is the variable that contains the 2D Height or Pressure field

@@ -25,7 +25,7 @@ import java.io.IOException;
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  * @since May 6, 2008
  */
-public class AtmosLnPressure extends VerticalTransformImpl {
+public class AtmosLnPressure extends AbstractVerticalTransform {
   public static final String P0 = "ReferencePressureVariableName";
   public static final String LEV = "VerticalCoordinateVariableName";
 
