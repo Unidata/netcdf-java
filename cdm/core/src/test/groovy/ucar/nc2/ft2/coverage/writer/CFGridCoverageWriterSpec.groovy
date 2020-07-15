@@ -9,19 +9,19 @@ import ucar.ma2.DataType
 import ucar.ma2.MAMath
 import ucar.nc2.NetcdfFile
 import ucar.nc2.NetcdfFiles
-import ucar.nc2.NetcdfFileWriter
 import ucar.nc2.ft2.coverage.CoverageCollection
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage
 import ucar.nc2.ft2.coverage.HorizCoordSysCrossSeamBoundarySpec
+import ucar.nc2.write.NetcdfFormatWriter
 
 /**
- * Tests that CFGridCoverageWriter2 properly adds 2D lat/lon variables to output file when {@code addLatLon == true}.
+ * Tests that CFGridCoverageWriter properly adds 2D lat/lon variables to output file when {@code addLatLon == true}.
  *
  * @author cwardgar
  * @since 2018-03-17
  */
-class CFGridCoverageWriter2Spec extends Specification {
+class CFGridCoverageWriterSpec extends Specification {
     def "calc output file sizes with and without 2D lat/lon"() {
         def numY = 4, numX = 4  // Lengths of the y and x axes in the dataset.
         
@@ -33,7 +33,11 @@ class CFGridCoverageWriter2Spec extends Specification {
         assert featDsetCov != null
         assert featDsetCov.getCoverageCollections().size() == 1
         CoverageCollection covColl = featDsetCov.getCoverageCollections().get(0)
-        
+
+        and: "setup NetcdfFormatWriter"
+        File outputFile = tempFolder.newFile()
+        NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.createNewNetcdf3(outputFile.getAbsolutePath())
+
         when: "calculate expected size excluding 2D lat/lon vars"
         long expectedSizeNoLatLon =
                 numY * numX * DataType.FLOAT.size +  // Temperature_surface
@@ -42,25 +46,31 @@ class CFGridCoverageWriter2Spec extends Specification {
                 1 * DataType.INT.size                // PolarStereographic_Projection
         
         and: "calculate actual size excluding 2D lat/lon vars"
-        long actualSizeNoLatLon = CFGridCoverageWriter2.getSizeOfOutput(
-                // No subset; don't addLatLon; calc file size but don't write file.
-                covColl, null, null, false, new Formatter()).get()
+        // No subset; don't addLatLon; calc file size but don't write file.
+        CFGridCoverageWriter.Result result = CFGridCoverageWriter.write(covColl, null, null, false, writer, 1)
+        assert !result.wasWritten();
+        assert result.getErrorMessage().startsWith("Too large");
         
         then: "expected equals actual"
-        expectedSizeNoLatLon == actualSizeNoLatLon
+        expectedSizeNoLatLon == result.sizeToBeWritten();
     
         when: "calculate expected size including 2D lat/lon vars"
         long expectedSizeWithLatLon = expectedSizeNoLatLon +
                 numY * numX * DataType.DOUBLE.size +          // lat
                 numY * numX * DataType.DOUBLE.size            // lon
-    
+
+        and: "setup NetcdfFormatWriter"
+        File outputFile2 = tempFolder.newFile()
+        NetcdfFormatWriter.Builder writer2 = NetcdfFormatWriter.createNewNetcdf3(outputFile2.getAbsolutePath())
+
         and: "calculate actual size excluding 2D lat/lon vars"
-        long actualSizeWithLatLon = CFGridCoverageWriter2.getSizeOfOutput(
-                // No subset; do addLatLon; calc file size but don't write file.
-                covColl, null, null, true, new Formatter()).get()
+        // No subset; addLatLon; calc file size but don't write file.
+        CFGridCoverageWriter.Result result2 = CFGridCoverageWriter.write(covColl, null, null, true, writer2, 1)
+        assert !result2.wasWritten();
+        assert result2.getErrorMessage().startsWith("Too large");
     
         then: "expected equals actual"
-        expectedSizeWithLatLon == actualSizeWithLatLon
+        expectedSizeWithLatLon == result2.sizeToBeWritten()
         
         cleanup: "close all resources"
         featDsetCov?.close()
@@ -78,17 +88,18 @@ class CFGridCoverageWriter2Spec extends Specification {
         assert featDsetCov.getCoverageCollections().size() == 1
         CoverageCollection covColl = featDsetCov.getCoverageCollections().get(0)
         
-        and: "setup NetcdfFileWriter"
-        // File outputFile = tempFolder.newFile()
-        String pathout = "C:/temp/failure.nc"
-        NetcdfFileWriter writer = NetcdfFileWriter.createNew(pathout, false)
+        and: "setup NetcdfFormatWriter"
+        File outputFile = tempFolder.newFile()
+        NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.createNewNetcdf3(outputFile.getAbsolutePath())
         
         and: "write output file"
         // No subset; do addLatLon; write to outputFile.
-        CFGridCoverageWriter2.write(covColl, null, null, true, writer, new Formatter())
+        CFGridCoverageWriter.Result result = CFGridCoverageWriter.write(covColl, null, null, true, writer, 0)
+        assert result.wasWritten();
+        assert result.getErrorMessage() == null;
 
         and: "open output file"
-        NetcdfFile ncFile = NetcdfFiles.open(pathout)
+        NetcdfFile ncFile = NetcdfFiles.open(outputFile.getAbsolutePath())
         
         and: "declare expected lats"
         def expectedShape = [4, 4] as int[]
@@ -125,7 +136,6 @@ class CFGridCoverageWriter2Spec extends Specification {
         
         cleanup: "close all resources"
         ncFile?.close()
-        writer?.close()
         featDsetCov?.close()
     }
 }
