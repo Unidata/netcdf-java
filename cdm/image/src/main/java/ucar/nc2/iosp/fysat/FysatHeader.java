@@ -317,7 +317,7 @@ public final class FysatHeader {
 
         if (projection != null && proj != 4) {
           // we have to project in order to find the origin
-          ProjectionPointImpl start = (ProjectionPointImpl) projection.latLonToProj(
+          ProjectionPoint start = projection.latLonToProj(
               LatLonPoint.create(geoSatelliteSecondHeader.latitudeOfSouth, geoSatelliteSecondHeader.longitudeOfWest));
           double startx = start.getX();
           double starty = start.getY();
@@ -340,8 +340,8 @@ public final class FysatHeader {
 
             for (int i = 0; i < data.length; i++) {
               double ln = lon_2 + i * dx;
-              ProjectionPointImpl pt = (ProjectionPointImpl) projection
-                  .latLonToProj(LatLonPoint.create(geoSatelliteSecondHeader.latitudeOfSouth, ln));
+              ProjectionPoint pt =
+                  projection.latLonToProj(LatLonPoint.create(geoSatelliteSecondHeader.latitudeOfSouth, ln));
               data[i] = pt.getX(); // startx + i*dx;
             }
           } else {
@@ -368,8 +368,8 @@ public final class FysatHeader {
             double dy = (lat2 - lat1) / (ny - 1);
             for (int i = 0; i < data.length; i++) {
               double la = lat2 - i * dy;
-              ProjectionPointImpl pt = (ProjectionPointImpl) projection
-                  .latLonToProj(LatLonPoint.create(la, geoSatelliteSecondHeader.longitudeOfWest));
+              ProjectionPoint pt =
+                  projection.latLonToProj(LatLonPoint.create(la, geoSatelliteSecondHeader.longitudeOfWest));
               data[i] = pt.getY(); // endyy - i*dy;
             }
           } else {

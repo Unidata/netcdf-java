@@ -78,7 +78,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
         wmo_strlen = Math.max(wmo_strlen, stn.getWmoId().length());
     }
 
-    llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
+    // llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
   }
 
   public int writeProfile(StationProfileFeature spf, ProfileFeature profile) throws IOException {

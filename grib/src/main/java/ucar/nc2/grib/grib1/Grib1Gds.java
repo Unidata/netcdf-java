@@ -879,7 +879,7 @@ public abstract class Grib1Gds {
             0.0, 0.0, earth);
       }
 
-      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(LatLonPoint.create(la1, lo1));
+      ProjectionPoint start = proj.latLonToProj(LatLonPoint.create(la1, lo1));
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(),
           getDy(), getNx(), getNy(), null);
     }
@@ -1061,7 +1061,7 @@ public abstract class Grib1Gds {
       }
 
       LatLonPoint startLL = LatLonPoint.create(la1, lo1);
-      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
+      ProjectionPoint start = proj.latLonToProj(startLL);
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(),
           getDy(), getNx(), getNy(), null);
     }

@@ -217,7 +217,7 @@ public class VerticalPerspectiveView extends AbstractProjection {
 
 
     fromLat = Math.toRadians(fromLat);
-    double lonDiff = Math.toRadians(LatLonPointImpl.lonNormal(fromLon - lon0Degrees));
+    double lonDiff = Math.toRadians(LatLonPoints.lonNormal(fromLon - lon0Degrees));
     double cosc = sinLat0 * Math.sin(fromLat) + cosLat0 * Math.cos(fromLat) * Math.cos(lonDiff);
     double ksp = (P - 1.0) / (P - cosc);
     if (cosc < 1.0 / P) {

@@ -1054,7 +1054,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         double deltaLon = horizXaxis.getMaxValue() - startLon;
 
         LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
-        llbb = new LatLonRect(llpt, deltaLat, deltaLon);
+        llbb = new LatLonRect.Builder(llpt, deltaLat, deltaLon).build();
 
       } else {
         Projection dataProjection = getProjection();
@@ -1064,62 +1064,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     return llbb;
-
-    /*
-     * // look at all 4 corners of the bounding box
-     * LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerLeftPoint(), new
-     * LatLonPointImpl());
-     * LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerRightPoint(), new
-     * LatLonPointImpl());
-     * LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperRightPoint(), new
-     * LatLonPointImpl());
-     * LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperLeftPoint(), new
-     * LatLonPointImpl());
-     * 
-     * // Check if grid contains poles.
-     * boolean includesNorthPole = false;
-     * int[] resultNP;
-     * resultNP = findXYindexFromLatLon(90.0, 0, null);
-     * if (resultNP[0] != -1 && resultNP[1] != -1)
-     * includesNorthPole = true;
-     * boolean includesSouthPole = false;
-     * int[] resultSP;
-     * resultSP = findXYindexFromLatLon(-90.0, 0, null);
-     * if (resultSP[0] != -1 && resultSP[1] != -1)
-     * includesSouthPole = true;
-     * 
-     * if (includesNorthPole && !includesSouthPole) {
-     * llbb = new LatLonRect(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
-     * llbb.extend(lrpt);
-     * llbb.extend(urpt);
-     * llbb.extend(ulpt);
-     * // OR
-     * //llbb.extend( new LatLonRect( llpt, lrpt ));
-     * //llbb.extend( new LatLonRect( lrpt, urpt ) );
-     * //llbb.extend( new LatLonRect( urpt, ulpt ) );
-     * //llbb.extend( new LatLonRect( ulpt, llpt ) );
-     * } else if (includesSouthPole && !includesNorthPole) {
-     * llbb = new LatLonRect(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
-     * llbb.extend(lrpt);
-     * llbb.extend(urpt);
-     * llbb.extend(ulpt);
-     * } else {
-     * double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-     * double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
-     * 
-     * // longitude is a bit tricky as usual
-     * double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-     * double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
-     * 
-     * llpt.set(latMin, lonMin);
-     * urpt.set(latMax, lonMax);
-     * 
-     * llbb = new LatLonRect(llpt, urpt);
-     * }
-     * }
-     * }
-     */
-
   }
 
   /**
@@ -1691,72 +1635,5 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     lon2 = LatLonPoints.lonNormal(lon2, midpoint);
 
     return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
-  }
-
-  public static LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx,
-      double endy) {
-
-    if (proj instanceof LatLonProjection) {
-      double deltaLat = endy - starty;
-      double deltaLon = endx - startx;
-
-      LatLonPoint llpt = LatLonPoint.create(starty, startx);
-      return new LatLonRect(llpt, deltaLat, deltaLon);
-
-    }
-
-    ProjectionRect bb = new ProjectionRect(startx, starty, endx, endy);
-
-    // look at all 4 corners of the bounding box
-    LatLonPointImpl llpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerLeftPoint());
-    LatLonPointImpl lrpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerRightPoint());
-    LatLonPointImpl urpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperRightPoint());
-    LatLonPointImpl ulpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperLeftPoint());
-
-    // Check if grid contains poles. LOOK disabled
-    boolean includesNorthPole = false;
-    /*
-     * int[] resultNP = new int[2];
-     * resultNP = findXYindexFromLatLon(90.0, 0, null);
-     * if (resultNP[0] != -1 && resultNP[1] != -1)
-     * includesNorthPole = true;
-     */
-
-    boolean includesSouthPole = false;
-    /*
-     * int[] resultSP = new int[2];
-     * resultSP = findXYindexFromLatLon(-90.0, 0, null);
-     * if (resultSP[0] != -1 && resultSP[1] != -1)
-     * includesSouthPole = true;
-     */
-
-    LatLonRect llbb;
-
-    if (includesNorthPole && !includesSouthPole) {
-      llbb = new LatLonRect(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
-      llbb.extend(lrpt);
-      llbb.extend(urpt);
-      llbb.extend(ulpt);
-
-    } else if (includesSouthPole && !includesNorthPole) {
-      llbb = new LatLonRect(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
-      llbb.extend(lrpt);
-      llbb.extend(urpt);
-      llbb.extend(ulpt);
-
-    } else {
-      double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-      double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
-
-      // longitude is a bit tricky as usual
-      double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-      double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
-
-      llpt.set(latMin, lonMin);
-      urpt.set(latMax, lonMax);
-
-      llbb = new LatLonRect(llpt, urpt);
-    }
-    return llbb;
   }
 }

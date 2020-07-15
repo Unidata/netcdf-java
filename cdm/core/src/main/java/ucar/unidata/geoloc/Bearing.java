@@ -173,13 +173,10 @@ public class Bearing {
    * @param pt1 Point 1
    * @param az azimuth (degrees)
    * @param dist distance from the point (km)
-   * @param result Object to use if non-null
    * @return The LatLonPoint
-   * @see #findPoint(double,double,double,double,LatLonPointImpl)
-   * @deprecated will return LatLonPoint in 6.
    */
-  public static LatLonPointImpl findPoint(Earth e, LatLonPoint pt1, double az, double dist, LatLonPointImpl result) {
-    return findPoint(e, pt1.getLatitude(), pt1.getLongitude(), az, dist, result);
+  public static LatLonPoint findPoint(Earth e, LatLonPoint pt1, double az, double dist) {
+    return findPoint(e, pt1.getLatitude(), pt1.getLongitude(), az, dist);
   }
 
   /**
@@ -189,13 +186,10 @@ public class Bearing {
    * @param pt1 Point 1
    * @param az azimuth (degrees)
    * @param dist distance from the point (km)
-   * @param result Object to use if non-null
    * @return The LatLonPoint
-   * @see #findPoint(double,double,double,double,LatLonPointImpl)
-   * @deprecated will return LatLonPoint in 6.
    */
-  public static LatLonPointImpl findPoint(LatLonPoint pt1, double az, double dist, LatLonPointImpl result) {
-    return findPoint(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), az, dist, result);
+  public static LatLonPoint findPoint(LatLonPoint pt1, double az, double dist) {
+    return findPoint(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), az, dist);
   }
 
   /**
@@ -206,25 +200,11 @@ public class Bearing {
    * @param lon1 longitude of starting point
    * @param az forward azimuth (degrees)
    * @param dist distance from the point (km)
-   * @param result Object to use if non-null
    * @return the position as a LatLonPointImpl
    * @deprecated will return LatLonPoint in 6.
    */
-  public static LatLonPointImpl findPoint(double lat1, double lon1, double az, double dist, LatLonPointImpl result) {
-    return findPoint(defaultEarth, lat1, lon1, az, dist, result);
-  }
-
-  /** @deprecated use findPoint(Earth e, double lat1, double lon1, double az, double dist) */
-  @Deprecated
-  public static LatLonPointImpl findPoint(Earth e, double lat1, double lon1, double az, double dist,
-      LatLonPointImpl result) {
-    LatLonPoint pt = findPoint(e, lat1, lon1, az, dist);
-    if (result == null) {
-      result = new LatLonPointImpl();
-    }
-    result.setLatitude(pt.getLatitude());
-    result.setLongitude(pt.getLongitude());
-    return result;
+  public static LatLonPoint findPoint(double lat1, double lon1, double az, double dist) {
+    return findPoint(defaultEarth, lat1, lon1, az, dist);
   }
 
   /**

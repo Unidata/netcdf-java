@@ -145,7 +145,7 @@ public class WorldMap extends GisFeatureRenderer {
     dataProjection = new LatLonProjection("Cylindrical Equidistant");
   }
 
-  private LatLonRect defaultLLBB = new LatLonRect(LatLonPoint.create(-180., -90.), 360., 180.);
+  private LatLonRect defaultLLBB = new LatLonRect.Builder(LatLonPoint.create(-180., -90.), 360., 180.).build();
 
   public LatLonRect getPreferredArea() {
     return defaultLLBB;

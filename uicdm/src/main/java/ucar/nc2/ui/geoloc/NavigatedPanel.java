@@ -107,8 +107,8 @@ public class NavigatedPanel extends JPanel {
 
   // track reference point
   private boolean isReferenceMode, hasReference;
-  private ProjectionPoint refWorld = ProjectionPoint.create();
-  private LatLonPoint refLatLon = LatLonPoint.create();
+  private ProjectionPoint refWorld = ProjectionPoint.create(0, 0);
+  private LatLonPoint refLatLon = LatLonPoint.create(0, 0);
   private Point2D refScreen = new Point2D.Double();
   private int referenceSize = 12;
   private Cursor referenceCursor;
@@ -128,7 +128,7 @@ public class NavigatedPanel extends JPanel {
 
   // some working objects to minimize excessive garbage collection
   private StringBuffer sbuff = new StringBuffer(100);
-  private ProjectionPoint workW = ProjectionPoint.create();
+  private ProjectionPoint workW = ProjectionPoint.create(0, 0);
   private Point2D workS = new Point2D.Double();
   private Rectangle myBounds = new Rectangle();
   private ProjectionRect boundingBox = new ProjectionRect();

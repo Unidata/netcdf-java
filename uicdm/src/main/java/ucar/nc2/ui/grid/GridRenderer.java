@@ -58,9 +58,6 @@ public class GridRenderer {
   private boolean sameProjection;
   private LatLonProjection projectll; // special handling for LatLonProjection
 
-  // working objects to minimize excessive gc
-  private ProjectionPoint ptP1 = ProjectionPoint.create();
-
   private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private static boolean debugPathShape, debugArrayShape, debugPts;
 
@@ -1040,7 +1037,7 @@ public class GridRenderer {
     if (debugPts)
       System.out.println("** moveTo = " + pt.getX() + " " + pt.getY());
     gpRun.moveTo((float) pt.getX(), (float) pt.getY());
-    ptP1 = pt;
+    ProjectionPoint ptP1 = pt;
 
     for (int e = x1 + 1; e <= x2 + 1; e++) {
       llp = dataProjection.projToLatLon(xaxis.getCoordEdge(e), y1);

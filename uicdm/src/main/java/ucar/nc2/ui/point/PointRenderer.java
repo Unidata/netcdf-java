@@ -302,7 +302,7 @@ public class PointRenderer implements Renderer {
     private PointFeature obs;
 
     private LatLonPoint latlonPos; // latlon pos
-    private ProjectionPoint worldPos = ProjectionPoint.create();// world pos
+    private ProjectionPoint worldPos = ProjectionPoint.create(0, 0);// world pos
     private Point2D.Double screenPos = new Point2D.Double(); // normalized screen pos
 
     private Rectangle2D bb; // bounding box, in normalized screen coords, loc = 0, 0

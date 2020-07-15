@@ -41,7 +41,7 @@ public class CollectionInfo {
     if (bbox == null)
       bbox = info.bbox;
     else if (info.bbox != null)
-      bbox.extend(info.bbox);
+      bbox.toBuilder().extend(info.bbox).build();
 
     minTime = Math.min(minTime, info.minTime);
     maxTime = Math.max(maxTime, info.maxTime);

@@ -21,7 +21,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
   protected boolean calcBounds;
   protected CollectionInfo info;
 
-  private LatLonRect bb;
+  private LatLonRect.Builder bb;
   private double minTime = Double.MAX_VALUE;
   private double maxTime = -Double.MAX_VALUE;
   private int count;
@@ -41,7 +41,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
       return;
 
     if (bb == null)
-      bb = new LatLonRect(pf.getLocation().getLatLon(), .001, .001);
+      bb = new LatLonRect.Builder(pf.getLocation().getLatLon(), .001, .001);
     else
       bb.extend(pf.getLocation().getLatLon());
 
@@ -51,16 +51,19 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
   }
 
   protected void finishCalcBounds() {
-    if (!calcBounds)
+    if (!calcBounds || bb == null) {
       return;
-
-    if ((bb != null) && bb.crossDateline() && (bb.getWidth() > 350.0)) { // call it global - less confusing
-      double lat_min = bb.getLowerLeftPoint().getLatitude();
-      double deltaLat = bb.getUpperLeftPoint().getLatitude() - lat_min;
-      bb = new LatLonRect(LatLonPoint.create(lat_min, -180.0), deltaLat, 360.0);
     }
 
-    info.bbox = bb;
+    LatLonRect llrect = bb.build();
+
+    if (llrect.crossDateline() && (llrect.getWidth() > 350.0)) { // call it global - less confusing
+      double lat_min = llrect.getLowerLeftPoint().getLatitude();
+      double deltaLat = llrect.getUpperLeftPoint().getLatitude() - lat_min;
+      llrect = new LatLonRect.Builder(LatLonPoint.create(lat_min, -180.0), deltaLat, 360.0).build();
+    }
+
+    info.bbox = llrect;
     info.minTime = minTime;
     info.maxTime = maxTime;
 

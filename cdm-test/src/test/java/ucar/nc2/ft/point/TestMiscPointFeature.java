@@ -352,7 +352,7 @@ public class TestMiscPointFeature {
           // subset criteria not important, just want to get data
           // into flattened representation
           PointFeatureCollection pfc =
-              stsfc.flatten(new LatLonRect(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180)),
+              stsfc.flatten(new LatLonRect.Builder(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180)).build(),
                   CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"),
                       CalendarDate.parseISOformat(null, "2100-01-01")));
 

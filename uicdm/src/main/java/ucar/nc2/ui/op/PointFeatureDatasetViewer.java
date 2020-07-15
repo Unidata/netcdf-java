@@ -31,7 +31,6 @@ import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.util.prefs.PreferencesExt;

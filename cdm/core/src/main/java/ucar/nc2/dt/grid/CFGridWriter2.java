@@ -155,10 +155,11 @@ public class CFGridWriter2 {
 
       GridCoordSystem gcsWant = gridWant.getCoordinateSystem();
       LatLonRect gridBB = gcsWant.getLatLonBoundingBox();
-      if (resultBB == null)
+      if (resultBB == null) {
         resultBB = gridBB;
-      else
-        resultBB.extend(gridBB);
+      } else {
+        resultBB = resultBB.toBuilder().extend(gridBB).build();
+      }
 
       Variable gridV = gridWant.getVariable(); // LOOK WTF ??
       varList.add(gridV);

@@ -43,7 +43,7 @@ public class TestGridSubset {
 
       logger.debug("original bbox = {}" + gcs.getBoundingBox());
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
 
       LatLonProjection llproj = new LatLonProjection();
       ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
@@ -92,7 +92,7 @@ public class TestGridSubset {
 
       logger.debug("original bbox = {}", gcs.getBoundingBox());
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
 
       LatLonProjection llproj = new LatLonProjection();
       ProjectionRect[] prect = llproj.latLonToProjRect(bbox);

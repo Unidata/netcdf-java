@@ -162,7 +162,7 @@ public class CdmrfReader {
    */
   LatLonRect decodeLatLonRectangle(CdmrFeatureProto.Rectangle proto) {
     LatLonPoint start = LatLonPoint.create(proto.getStarty(), proto.getStartx());
-    return new LatLonRect(start, proto.getIncy(), proto.getIncx());
+    return new LatLonRect.Builder(start, proto.getIncy(), proto.getIncx()).build();
   }
 
   ProjectionRect decodeProjRectangle(CdmrFeatureProto.Rectangle proto) {

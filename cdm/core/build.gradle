@@ -20,6 +20,9 @@ dependencies {
   compile 'org.jdom:jdom2'
   compile 'org.slf4j:slf4j-api'
 
+  compile "com.google.auto.value:auto-value-annotations"
+  annotationProcessor "com.google.auto.value:auto-value:1.7.4"
+
   implementation 'com.google.code.findbugs:jsr305'
 
   testImplementation project(':cdm-test-utils')
@@ -33,7 +36,6 @@ dependencies {
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
-
 
 spotless {
   java {

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft.point;
 
+import javax.annotation.Nullable;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -43,41 +44,30 @@ public class StationHelper {
 
   private LatLonRect rect;
 
+  @Nullable
   public LatLonRect getBoundingBox() {
+    // lazy evaluation
     if (rect == null) {
       if (stations.isEmpty())
         return null;
 
       Station s = stations.get(0);
-      LatLonPoint llpt = LatLonPoint.create(s.getLatitude(), s.getLongitude());
-      rect = new LatLonRect(llpt, 0, 0);
+      LatLonRect.Builder builder = new LatLonRect.Builder(s.getLatitude(), s.getLongitude());
       if (debug)
         System.out.println("start=" + s.getLatitude() + " " + s.getLongitude() + " rect= " + rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
         s = stations.get(i);
-        rect.extend(LatLonPoint.create(s.getLatitude(), s.getLongitude()));
+        builder.extend(LatLonPoint.create(s.getLatitude(), s.getLongitude()));
         if (debug)
           System.out.println("add=" + s.getLatitude() + " " + s.getLongitude() + " rect= " + rect.toString2());
       }
+
+      // call it global when width > 350 and crossing the seam
+      // slightly expand the bounding box
+      builder = builder.extendToAllLongitudes(350.0).expand(.0005);
+      rect = builder.build();
     }
-    if (rect.crossDateline() && rect.getWidth() > 350.0) { // call it global - less confusing
-      double lat_min = rect.getLowerLeftPoint().getLatitude();
-      double deltaLat = rect.getUpperLeftPoint().getLatitude() - lat_min;
-      rect = new LatLonRect(LatLonPoint.create(lat_min, -180.0), deltaLat, 360.0);
-    }
-
-    // To give a little "wiggle room", we're going to slightly expand the bounding box.
-    double newLowerLeftLat = rect.getLowerLeftPoint().getLatitude() - .0005;
-    double newLowerLeftLon = rect.getLowerLeftPoint().getLongitude() - .0005;
-    LatLonPoint newLowerLeftPoint = LatLonPoint.create(newLowerLeftLat, newLowerLeftLon);
-
-    double newUpperRightLat = rect.getUpperRightPoint().getLatitude() + .0005;
-    double newUpperRightLon = rect.getUpperRightPoint().getLongitude() + .0005;
-    LatLonPoint newUpperRightPoint = LatLonPoint.create(newUpperRightLat, newUpperRightLon);
-
-    rect.extend(newLowerLeftPoint);
-    rect.extend(newUpperRightPoint);
 
     return rect;
   }

@@ -42,7 +42,7 @@ public class TestGeoTiffWriter2 {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[] {topdir + "formats/dmsp/F14200307192230.n.OIS", "infraredImagery",
-        new LatLonRect(LatLonPoint.create(-5, -52.0), LatLonPoint.create(25, -20.0))});
+        new LatLonRect.Builder(LatLonPoint.create(-5, -52.0), LatLonPoint.create(25, -20.0)).build()});
 
     // this fails
     // result.add(new Object[]{topdir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4",

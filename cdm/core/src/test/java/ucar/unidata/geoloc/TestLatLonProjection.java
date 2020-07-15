@@ -5,26 +5,23 @@
 package ucar.unidata.geoloc;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.*;
-import junit.framework.*;
 import java.lang.invoke.MethodHandles;
 
 /** Test the LatLonProjection */
-public class TestLatLonProjection extends TestCase {
+public class TestLatLonProjection {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private LatLonProjection p;
 
-  public TestLatLonProjection(String name) {
-    super(name);
-  }
-
+  @Before
   public void setUp() {
     p = new LatLonProjection();
   }
-
 
   /*
    * void showLatLonNormal(double lon, double center) {
@@ -38,7 +35,7 @@ public class TestLatLonProjection extends TestCase {
     double yinc = 20.0;
     for (double lon = 0.0; lon < 380.0; lon += xinc) {
       LatLonPoint ptL = LatLonPoint.create(-73.79, lon);
-      LatLonRect llbb = new LatLonRect(ptL, yinc, xinc);
+      LatLonRect llbb = new LatLonRect.Builder(ptL, yinc, xinc).build();
 
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
@@ -52,7 +49,7 @@ public class TestLatLonProjection extends TestCase {
     double yinc = 20.0;
     for (double lon = 0.0; lon < 380.0; lon += xinc) {
       LatLonPoint ptL = LatLonPoint.create(0, center + lon);
-      LatLonRect llbb = new LatLonRect(ptL, yinc, xinc);
+      LatLonRect llbb = new LatLonRect.Builder(ptL, yinc, xinc).build();
 
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
@@ -61,6 +58,7 @@ public class TestLatLonProjection extends TestCase {
     }
   }
 
+  @Test
   public void testLatLonToProjBB() {
     runCenter();
     runCenter(110.45454545454547);
@@ -77,81 +75,79 @@ public class TestLatLonProjection extends TestCase {
     return result;
   }
 
+  @Test
   public void testIntersection() {
-    LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
-    LatLonRect bbox2 = new LatLonRect(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0);
+    LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
+    LatLonRect bbox2 = new LatLonRect.Builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
     assert testIntersection(bbox, bbox2) != null;
 
-    bbox = new LatLonRect(LatLonPoint.create(-90.0, -100.0), 90.0, 300.0);
-    bbox2 = new LatLonRect(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0);
+    bbox = new LatLonRect.Builder(LatLonPoint.create(-90.0, -100.0), 90.0, 300.0).build();
+    bbox2 = new LatLonRect.Builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
     assert testIntersection(bbox, bbox2) != null;
 
-    bbox2 = new LatLonRect(LatLonPoint.create(10, -180.0), 120.0, 300.0);
+    bbox2 = new LatLonRect.Builder(LatLonPoint.create(10, -180.0), 120.0, 300.0).build();
     assert testIntersection(bbox, bbox2) == null;
 
-    bbox = new LatLonRect(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0);
-    bbox2 = new LatLonRect(LatLonPoint.create(-40.0, 120.0), 120.0, 300.0);
+    bbox = new LatLonRect.Builder(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0).build();
+    bbox2 = new LatLonRect.Builder(LatLonPoint.create(-40.0, 120.0), 120.0, 300.0).build();
     assert testIntersection(bbox, bbox2) != null;
 
-    bbox = new LatLonRect(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0);
-    bbox2 = new LatLonRect(LatLonPoint.create(-40.0, -220.0), 120.0, 140.0);
+    bbox = new LatLonRect.Builder(LatLonPoint.create(-90.0, -100.0), 90.0, 200.0).build();
+    bbox2 = new LatLonRect.Builder(LatLonPoint.create(-40.0, -220.0), 120.0, 140.0).build();
     assert testIntersection(bbox, bbox2) != null;
   }
 
-  private LatLonRect testExtend(LatLonRect bbox, LatLonRect bbox2) {
+  private LatLonRect testExtend(LatLonRect.Builder bbox, LatLonRect bbox2) {
     bbox.extend(bbox2);
-    return bbox;
+    return bbox.build();
   }
 
+  @Test
   public void testExtend() {
     LatLonRect bbox;
 
-    // ---------
-    // --------
-    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, 30.0), LatLonPoint.create(-60.0, 120.0)),
-        new LatLonRect(LatLonPoint.create(-81.0, -10.0), LatLonPoint.create(-60.0, 55.0)));
+    bbox = testExtend(new LatLonRect.Builder(LatLonPoint.create(-81.0, 30.0), LatLonPoint.create(-60.0, 120.0)),
+        new LatLonRect.Builder(LatLonPoint.create(-81.0, -10.0), LatLonPoint.create(-60.0, 55.0)).build());
     Assert.assertEquals(bbox.toString2(), 130.0, bbox.getWidth(), 0.01);
     Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
-    // ---------
-    // ----
-    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
-        new LatLonRect(LatLonPoint.create(-81.0, 177.0), LatLonPoint.create(-60.0, 200.0)));
+    bbox = testExtend(new LatLonRect.Builder(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
+        new LatLonRect.Builder(LatLonPoint.create(-81.0, 177.0), LatLonPoint.create(-60.0, 200.0)).build());
     Assert.assertEquals(bbox.toString2(), 100.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     // ---------
     // --------------
-    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
-        new LatLonRect(LatLonPoint.create(-81.0, -150.0), LatLonPoint.create(-60.0, 200.0)));
+    bbox = testExtend(new LatLonRect.Builder(LatLonPoint.create(-81.0, -200.0), LatLonPoint.create(-60.0, -100.0)),
+        new LatLonRect.Builder(LatLonPoint.create(-81.0, -150.0), LatLonPoint.create(-60.0, 200.0)).build());
     Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
     Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     // -------
     // ---------
-    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 135.0)),
-        new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)));
+    bbox = testExtend(new LatLonRect.Builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 135.0)),
+        new LatLonRect.Builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)).build());
     Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
     Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     // ------
     // ------
-    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
-        new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 160.0)));
+    bbox = testExtend(new LatLonRect.Builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
+        new LatLonRect.Builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 160.0)).build());
     Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     // ---------
     // ------
-    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
-        new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)));
+    bbox = testExtend(new LatLonRect.Builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)),
+        new LatLonRect.Builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)).build());
     Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     // ---------
     // ------
-    bbox = testExtend(new LatLonRect(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)),
-        new LatLonRect(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)));
+    bbox = testExtend(new LatLonRect.Builder(LatLonPoint.create(-81.0, 135.0), LatLonPoint.create(-60.0, 180.0)),
+        new LatLonRect.Builder(LatLonPoint.create(-81.0, -180.0), LatLonPoint.create(-60.0, 0.0)).build());
     Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
     Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
   }

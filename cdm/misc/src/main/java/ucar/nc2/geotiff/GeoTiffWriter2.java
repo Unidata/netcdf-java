@@ -208,7 +208,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       // construct the swath LatLonRect
       LatLonPoint pUpLeft = LatLonPoint.create(swathInfo[3], swathInfo[4]);
       LatLonPoint pDownRight = LatLonPoint.create(swathInfo[2], swathInfo[5]);
-      LatLonRect swathLLR = new LatLonRect(pUpLeft, pDownRight);
+      LatLonRect swathLLR = new LatLonRect.Builder(pUpLeft, pDownRight).build();
       LatLonRect bIntersect = swathLLR.intersect(llr);
       if (bIntersect == null) {
         throw new IllegalArgumentException(

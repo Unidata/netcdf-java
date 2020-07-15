@@ -166,26 +166,22 @@ public class FeatureDatasetCapabilitiesWriter {
   }
 
   private Element writeBoundingBox(LatLonRect bb) {
-    int decToKeep = 6;
-    double bbExpand = Math.pow(10, -decToKeep);
-
     // extend the bbox to make sure the implicit rounding does not result in a bbox that does not contain
     // any points (can happen when you have a single station with very precise lat/lon values)
     // See https://github.com/Unidata/thredds/issues/470
     // This accounts for the implicit rounding errors that result from the use of
     // ucar.unidata.util.Format.dfrac when writing out the lat/lon box on the NCSS for Points dataset.html
     // page
-    LatLonPoint extendNorthEast = LatLonPoint.create(bb.getLatMax() + bbExpand, bb.getLonMax() + bbExpand);
-    LatLonPoint extendSouthWest = LatLonPoint.create(bb.getLatMin() - bbExpand, bb.getLonMin() - bbExpand);
-    bb.extend(extendNorthEast);
-    bb.extend(extendSouthWest);
+    int decToKeep = 6;
+    double bbExpand = Math.pow(10, -decToKeep);
+    LatLonRect bbextend = bb.toBuilder().expand(bbExpand).build();
 
     Element bbElem = new Element("LatLonBox"); // from KML
 
-    bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMin(), decToKeep)));
-    bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMax(), decToKeep)));
-    bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMin(), decToKeep)));
-    bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMax(), decToKeep)));
+    bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(bbextend.getLonMin(), decToKeep)));
+    bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(bbextend.getLonMax(), decToKeep)));
+    bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(bbextend.getLatMin(), decToKeep)));
+    bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(bbextend.getLatMax(), decToKeep)));
     return bbElem;
   }
 
@@ -232,7 +228,7 @@ public class FeatureDatasetCapabilitiesWriter {
       double east = Double.parseDouble(eastS);
       double south = Double.parseDouble(southS);
       double north = Double.parseDouble(northS);
-      return new LatLonRect(LatLonPoint.create(south, east), LatLonPoint.create(north, west));
+      return new LatLonRect.Builder(LatLonPoint.create(south, east), LatLonPoint.create(north, west)).build();
 
     } catch (Exception e) {
       return null;

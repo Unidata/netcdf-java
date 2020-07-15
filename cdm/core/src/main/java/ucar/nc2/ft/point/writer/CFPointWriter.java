@@ -359,7 +359,7 @@ public abstract class CFPointWriter implements Closeable {
   private Map<String, Variable> extraMap; // added as variables just as they are
   protected List<Variable> extra;
 
-  protected LatLonRect llbb;
+  protected LatLonRect.Builder llbb;
   protected CalendarDate minDate;
   protected CalendarDate maxDate;
 
@@ -780,7 +780,7 @@ public abstract class CFPointWriter implements Closeable {
   protected void trackBB(LatLonPoint loc, CalendarDate obsDate) {
     if (loc != null) {
       if (llbb == null) {
-        llbb = new LatLonRect(loc, .001, .001);
+        llbb = new LatLonRect.Builder(loc, .001, .001);
       } else {
         llbb.extend(loc);
       }
@@ -795,10 +795,11 @@ public abstract class CFPointWriter implements Closeable {
 
   public void finish() throws IOException {
     if (llbb != null) {
-      writer.updateAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLowerLeftPoint().getLatitude()));
-      writer.updateAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
-      writer.updateAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
-      writer.updateAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
+      LatLonRect bb = llbb.build();
+      writer.updateAttribute(null, new Attribute(ACDD.LAT_MIN, bb.getLowerLeftPoint().getLatitude()));
+      writer.updateAttribute(null, new Attribute(ACDD.LAT_MAX, bb.getUpperRightPoint().getLatitude()));
+      writer.updateAttribute(null, new Attribute(ACDD.LON_MIN, bb.getLowerLeftPoint().getLongitude()));
+      writer.updateAttribute(null, new Attribute(ACDD.LON_MAX, bb.getUpperRightPoint().getLongitude()));
     }
 
     if (!noTimeCoverage) {

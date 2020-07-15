@@ -186,7 +186,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
 
         and: "the bounds include all 9 PointFeatures"
         flattenedDatasetCol.size() == 9
-        flattenedDatasetCol.boundingBox == new LatLonRect(LatLonPoint.create(-85, -70), LatLonPoint.create(85, 170))
+        flattenedDatasetCol.boundingBox == new LatLonRect.Builder(LatLonPoint.create(-85, -70), LatLonPoint.create(85, 170)).build()
 
         and:
         def calDateUnit = flattenedDatasetCol.timeUnit
