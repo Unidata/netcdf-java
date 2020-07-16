@@ -5,9 +5,10 @@
 
 package ucar.nc2.ft.point;
 
-import ucar.ma2.StructureData;
-import ucar.unidata.geoloc.StationImpl;
 import java.io.IOException;
+import javax.annotation.concurrent.Immutable;
+import ucar.ma2.StructureData;
+import ucar.unidata.geoloc.Station;
 
 /**
  * Implement StationFeature
@@ -15,18 +16,25 @@ import java.io.IOException;
  * @author caron
  * @since 7/8/2014
  */
-public class StationFeatureImpl extends StationImpl implements StationFeature {
-  private StructureData sdata;
+@Immutable
+public class StationFeatureImpl implements StationFeature {
+  private final Station station;
+  private final StructureData sdata;
 
   public StationFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, int nobs,
       StructureData sdata) {
-    super(name, desc, wmoId, lat, lon, alt, nobs);
+    this.station = new Station(name, desc, wmoId, lat, lon, alt, nobs);
     this.sdata = sdata;
   }
 
   public StationFeatureImpl(StationFeature from) throws IOException {
-    super(from, 0);
+    this.station = from.getStation();
     this.sdata = from.getFeatureData();
+  }
+
+  @Override
+  public Station getStation() {
+    return station;
   }
 
   @Override

@@ -18,7 +18,7 @@ import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
-import ucar.unidata.geoloc.StationImpl;
+import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.*;
@@ -49,30 +49,9 @@ public class BufrConfig {
   private FieldConverter rootConverter;
   private int messHash;
   private FeatureType featureType;
-  private Map<String, BufrStation> map;
+  private Map<String, StationCheck> map;
   private long start = Long.MAX_VALUE;
   private long end = Long.MIN_VALUE;
-  private boolean debug;
-
-  /*
-   * Open file as a stream of BUFR messages, create config file.
-   *
-   * Examine length of sequences, annotate
-   *
-   * @param bufrFilename open this file
-   * 
-   * @throws java.io.IOException on IO error
-   *
-   * private BufrConfig(String bufrFilename, boolean read) throws IOException {
-   * this.filename = bufrFilename;
-   * try {
-   * scanBufrFile(new RandomAccessFile(bufrFilename, "r"), read);
-   * } catch (Exception e) {
-   * e.printStackTrace();
-   * throw new RuntimeException(e.getMessage());
-   * }
-   * }
-   */
 
   private BufrConfig(RandomAccessFile raf) {
     this.filename = raf.getLocation();
@@ -84,7 +63,7 @@ public class BufrConfig {
     }
   }
 
-  private BufrConfig(RandomAccessFile raf, Message m) throws IOException {
+  private BufrConfig(RandomAccessFile raf, Message m) {
     this.filename = raf.getLocation();
     this.messHash = m.hashCode();
     this.rootConverter = new FieldConverter(m.ids.getCenterId(), m.getRootDataDescriptor());
@@ -99,7 +78,7 @@ public class BufrConfig {
     return rootConverter;
   }
 
-  public Map<String, BufrStation> getStationMap() {
+  public Map<String, StationCheck> getStationMap() {
     return map;
   }
 
@@ -303,12 +282,11 @@ public class BufrConfig {
   }
 
   private void processStations(FieldConverter parent, StructureData sdata) {
-    BufrStation station = new BufrStation();
-    station.read(parent, sdata);
+    Station station = readBufrStation(sdata);
 
-    BufrStation check = map.get(station.getName());
+    StationCheck check = map.get(station.getName());
     if (check == null)
-      map.put(station.getName(), station);
+      map.put(station.getName(), new StationCheck(station));
     else {
       check.count++;
       if (!station.equals(check))
@@ -316,107 +294,35 @@ public class BufrConfig {
     }
   }
 
-  public class BufrStation extends StationImpl {
-    public int count = 1;
+  public class StationCheck implements Comparable<StationCheck> {
+    public Station s;
+    public int count;
 
-    void read(FieldConverter parent, StructureData sdata) {
-      extract.extract(sdata);
-
-      setName(extract.getStationId());
-      setLatitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.lat));
-      setLongitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.lon));
-      if (extract.hasField(BufrCdmIndexProto.FldType.stationDesc))
-        setDescription(extract.getFieldValueS(BufrCdmIndexProto.FldType.stationDesc));
-      if (extract.hasField(BufrCdmIndexProto.FldType.wmoId))
-        setWmoId(extract.getFieldValueS(BufrCdmIndexProto.FldType.wmoId));
-      if (extract.hasField(BufrCdmIndexProto.FldType.heightOfStation))
-        setAltitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.heightOfStation));
-    }
-
-    /*
-     * void read(FieldConverter parent, StructureData sdata) {
-     * int count = 0;
-     * List<FieldConverter> flds = parent.getChildren(); // asssume these track exactly the members
-     * for (StructureMembers.Member m : sdata.getMembers()) {
-     * FieldConverter fld = flds.get(count++);
-     * if (fld.getType() == null) continue;
-     * 
-     * switch (fld.getType()) {
-     * case stationId:
-     * setName( readString(sdata, m));
-     * break;
-     * case stationDesc:
-     * setDescription(sdata.getScalarString(m));
-     * break;
-     * case wmoId:
-     * setWmoId(readString(sdata, m));
-     * break;
-     * case lat:
-     * setLatitude(sdata.convertScalarDouble(m));
-     * break;
-     * case lon:
-     * setLongitude(sdata.convertScalarDouble(m));
-     * break;
-     * case height:
-     * setAltitude(sdata.convertScalarDouble(m));
-     * break;
-     * case heightOfStation:
-     * setAltitude(sdata.convertScalarDouble(m));
-     * break;
-     * }
-     * }
-     * }
-     * 
-     * String readString(StructureData sdata, StructureMembers.Member m) {
-     * if (m.getDataType().isString())
-     * return sdata.getScalarString(m);
-     * else if (m.getDataType().isIntegral())
-     * return Integer.toString(sdata.convertScalarInt(m));
-     * else if (m.getDataType().isNumeric())
-     * return Double.toString(sdata.convertScalarDouble(m));
-     * else return "type "+ m.getDataType();
-     * }
-     */
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-
-      BufrStation that = (BufrStation) o;
-
-      if (Double.compare(that.alt, alt) != 0)
-        return false;
-      if (Double.compare(that.lat, lat) != 0)
-        return false;
-      if (Double.compare(that.lon, lon) != 0)
-        return false;
-      if (!Objects.equals(desc, that.desc))
-        return false;
-      if (!name.equals(that.name))
-        return false;
-      return Objects.equals(wmoId, that.wmoId);
-
+    StationCheck(Station s) {
+      this.s = s;
+      this.count = 0;
     }
 
     @Override
-    public int hashCode() {
-      int result;
-      long temp;
-      temp = Double.doubleToLongBits(lat);
-      result = (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(lon);
-      result = 31 * result + (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(alt);
-      result = 31 * result + (int) (temp ^ (temp >>> 32));
-      result = 31 * result + name.hashCode();
-      result = 31 * result + (desc != null ? desc.hashCode() : 0);
-      result = 31 * result + (wmoId != null ? wmoId.hashCode() : 0);
-      return result;
+    public int compareTo(StationCheck o) {
+      return s.getName().compareTo(o.s.getName());
     }
+  }
 
+  Station readBufrStation(StructureData sdata) {
+    extract.extract(sdata);
+
+    Station.Builder builder = Station.builder(extract.getStationId());
+    builder.setLatitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.lat));
+    builder.setLongitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.lon));
+    if (extract.hasField(BufrCdmIndexProto.FldType.stationDesc))
+      builder.setDescription(extract.getFieldValueS(BufrCdmIndexProto.FldType.stationDesc));
+    if (extract.hasField(BufrCdmIndexProto.FldType.wmoId))
+      builder.setWmoId(extract.getFieldValueS(BufrCdmIndexProto.FldType.wmoId));
+    if (extract.hasField(BufrCdmIndexProto.FldType.heightOfStation))
+      builder.setAltitude(extract.getFieldValueD(BufrCdmIndexProto.FldType.heightOfStation));
+
+    return builder.build();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////

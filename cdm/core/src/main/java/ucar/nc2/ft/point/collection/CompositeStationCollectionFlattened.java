@@ -107,8 +107,8 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       } else {
         List<StationFeature> stations = stnCollection.getStationFeatures(bbSubset);
         List<String> names = new ArrayList<>();
-        for (StationFeature s : stations)
-          names.add(s.getName());
+        for (StationFeature sf : stations)
+          names.add(sf.getStation().getName());
 
         pc = stnCollection.flatten(names, dateRange, null);
       }

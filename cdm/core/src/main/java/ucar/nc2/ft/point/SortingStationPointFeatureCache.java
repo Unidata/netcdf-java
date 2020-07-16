@@ -20,7 +20,7 @@ import ucar.nc2.units.DateUnit;
 // that info? Can't it calculate it from one of its features? That interface may need to be re-thought.
 public class SortingStationPointFeatureCache {
   public static final Comparator<StationPointFeature> stationNameComparator =
-      Comparator.comparing(pointFeat -> pointFeat.getStation().getName());
+      Comparator.comparing(pointFeat -> pointFeat.getAsStationFeature().getStation().getName());
 
   private final SortedMap<StationPointFeature, List<StationPointFeature>> inMemCache;
 

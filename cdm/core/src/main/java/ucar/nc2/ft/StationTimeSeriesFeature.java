@@ -4,11 +4,8 @@
  */
 package ucar.nc2.ft;
 
-import ucar.ma2.StructureData;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * Time series of PointFeature at a named location aka 'station'.
@@ -31,13 +28,4 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
    * @return subsetted collection, may be null if empty
    */
   StationTimeSeriesFeature subset(CalendarDateRange dateRange);
-
-  /**
-   * The actual data of just this StationTimeSeries feature.
-   * 
-   * @return the actual data associated with this StationTimeSeries
-   * @throws java.io.IOException on i/o error
-   */
-  @Nonnull
-  StructureData getFeatureData() throws IOException;
 }

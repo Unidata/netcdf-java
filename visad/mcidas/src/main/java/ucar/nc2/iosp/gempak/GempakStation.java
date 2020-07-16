@@ -15,7 +15,7 @@ import ucar.unidata.util.StringUtil2;
  *
  * @author Don Murray
  */
-public class GempakStation implements Station {
+public class GempakStation {
 
   /**
    * STID identifier

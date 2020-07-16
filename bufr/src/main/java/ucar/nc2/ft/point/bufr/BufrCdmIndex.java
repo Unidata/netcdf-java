@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.File;
 import java.io.IOException;
@@ -89,11 +90,11 @@ public class BufrCdmIndex {
       indexBuilder.setEnd(config.getEnd());
       indexBuilder.setNobs(config.getNobs());
 
-      Map<String, BufrConfig.BufrStation> smaps = config.getStationMap();
+      Map<String, BufrConfig.StationCheck> smaps = config.getStationMap();
       if (smaps != null) {
-        List<BufrConfig.BufrStation> stations = new ArrayList<>(smaps.values());
+        List<BufrConfig.StationCheck> stations = new ArrayList<>(smaps.values());
         Collections.sort(stations);
-        for (BufrConfig.BufrStation s : stations) {
+        for (BufrConfig.StationCheck s : stations) {
           indexBuilder.addStations(buildStation(s));
         }
       }
@@ -149,11 +150,11 @@ public class BufrCdmIndex {
     }
   }
 
-  private BufrCdmIndexProto.Station buildStation(BufrConfig.BufrStation s) {
+  private BufrCdmIndexProto.Station buildStation(BufrConfig.StationCheck check) {
     BufrCdmIndexProto.Station.Builder builder = BufrCdmIndexProto.Station.newBuilder();
-
+    Station s = check.s;
     builder.setId(s.getName());
-    builder.setCount(s.count);
+    builder.setCount(check.count);
     if (s.getWmoId() != null)
       builder.setWmoId(s.getWmoId());
     if (s.getDescription() != null)

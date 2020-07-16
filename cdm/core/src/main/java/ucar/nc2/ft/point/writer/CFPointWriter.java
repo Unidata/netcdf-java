@@ -155,7 +155,7 @@ public abstract class CFPointWriter implements Closeable {
         if (count == 0)
           cfWriter.writeHeader(fc.getStationFeatures(), spf);
 
-        cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
+        cfWriter.writeRecord(spf.getAsStationFeature().getStation(), pf, pf.getFeatureData());
         count++;
         if (debug && count % 100 == 0)
           System.out.printf("%d ", count);
