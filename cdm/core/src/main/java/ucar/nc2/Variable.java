@@ -290,6 +290,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    *
    * @return unit string, or null if not found.
    */
+  @Nullable
   public String getUnitsString() {
     String units = null;
     Attribute att = attributes().findAttributeIgnoreCase(CDM.UNITS);

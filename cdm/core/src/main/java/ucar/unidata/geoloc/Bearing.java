@@ -365,6 +365,12 @@ public abstract class Bearing {
     return new AutoValue_Bearing(azimuth, backazimuth, distance);
   }
 
+  /** @deprecated use getAzimuth() */
+  @Deprecated
+  public double getAngle() {
+    return getAzimuth();
+  }
+
   /** Get the azimuth in degrees, 0 = north, clockwise positive */
   public abstract double getAzimuth();
 

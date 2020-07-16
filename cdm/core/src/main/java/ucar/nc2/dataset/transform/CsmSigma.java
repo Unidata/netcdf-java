@@ -42,7 +42,7 @@ public class CsmSigma extends AbstractTransformBuilder implements VertTransformB
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new AtmosSigma(ds, timeDim, vCT.getParameters());
+    return AtmosSigma.create(ds, timeDim, vCT.getParameters());
   }
 
   /**
@@ -116,7 +116,7 @@ public class CsmSigma extends AbstractTransformBuilder implements VertTransformB
     }
 
     public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-      return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
+      return HybridSigmaPressure.create(ds, timeDim, vCT.getParameters());
     }
   }
 

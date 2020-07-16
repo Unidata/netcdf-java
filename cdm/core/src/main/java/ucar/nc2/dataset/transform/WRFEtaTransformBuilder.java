@@ -56,7 +56,7 @@ public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements 
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new WRFEta(ds, timeDim, vCT.getParameters());
+    return WRFEta.create(ds, timeDim, vCT.getParameters());
   }
 
   private boolean isStaggered(CoordinateAxis axis) {

@@ -13,34 +13,23 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Create a 3D height(z,y,x) array using the CF formula for
- * "ocean sigma vertical coordinate".
- *
- * @author caron
- * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
+ * Create a 3D height(z,y,x) array using the CF formula for "ocean_sigma_z_coordinate".
+ * 
+ * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_ocean_sigma_over_z_coordinate"
  */
 
 public class OceanSigma extends AbstractVerticalTransform {
 
-  /**
-   * The eta variable name identifier
-   */
+  /** The eta variable name identifier */
   public static final String ETA = "Eta_variableName";
 
-  /**
-   * The "s" variable name identifier
-   */
+  /** The "s" variable name identifier */
   public static final String SIGMA = "Sigma_variableName";
 
-  /**
-   * The "depth" variable name identifier
-   */
+  /** The "depth" variable name identifier */
   public static final String DEPTH = "Depth_variableName";
 
-  /**
-   * The eta, s and depth variables
-   */
-  private Variable etaVar, sVar, depthVar;
+  private final Variable etaVar, sVar, depthVar;
 
   /**
    * Create a new vertical transform for Ocean S coordinates
@@ -49,18 +38,21 @@ public class OceanSigma extends AbstractVerticalTransform {
    * @param timeDim time dimension
    * @param params list of transformation Parameters
    */
-  public OceanSigma(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static OceanSigma create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
 
-    super(timeDim);
-    String etaName = getParameterStringValue(params, ETA);
-    String sName = getParameterStringValue(params, SIGMA);
-    String depthName = getParameterStringValue(params, DEPTH);
+    Variable etaVar = findVariableFromParameterName(ds, params, ETA);
+    Variable sVar = findVariableFromParameterName(ds, params, SIGMA);
+    Variable depthVar = findVariableFromParameterName(ds, params, DEPTH);
+    String units = depthVar.findAttributeString(CDM.UNITS, "none");
 
-    etaVar = ds.findVariable(etaName);
-    sVar = ds.findVariable(sName);
-    depthVar = ds.findVariable(depthName);
+    return new OceanSigma(timeDim, units, etaVar, sVar, depthVar);
+  }
 
-    units = depthVar.findAttributeString(CDM.UNITS, "none");
+  private OceanSigma(Dimension timeDim, String units, Variable etaVar, Variable sVar, Variable depthVar) {
+    super(timeDim, units);
+    this.etaVar = etaVar;
+    this.sVar = sVar;
+    this.depthVar = depthVar;
   }
 
   /**
@@ -68,9 +60,8 @@ public class OceanSigma extends AbstractVerticalTransform {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException problem reading data
-   * @throws InvalidRangeException _more_
    */
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array eta = readArray(etaVar, timeIndex);
     Array sigma = readArray(sVar, timeIndex);
@@ -110,9 +101,8 @@ public class OceanSigma extends AbstractVerticalTransform {
    * @param xIndex the x index
    * @param yIndex the y index
    * @return vertical coordinate array
-   * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_
    */
+  @Override
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
 
     Array eta = readArray(etaVar, timeIndex);

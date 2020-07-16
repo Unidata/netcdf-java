@@ -723,7 +723,7 @@ public class NavigatedPanel extends JPanel {
     if (hasReference) {
       Bearing bearing = Bearing.calculateBearing(refLatLon, workL);
       sbuff.append("  (");
-      sbuff.append(Format.dfrac(bearing.getAngle(), 0));
+      sbuff.append(Format.dfrac(bearing.getAzimuth(), 0));
       sbuff.append(" deg ");
       sbuff.append(Format.d(bearing.getDistance(), 4, 5));
       sbuff.append(" km)");

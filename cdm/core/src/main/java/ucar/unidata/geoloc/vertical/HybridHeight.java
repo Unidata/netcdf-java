@@ -4,6 +4,7 @@
  */
 package ucar.unidata.geoloc.vertical;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.nc2.*;
@@ -12,42 +13,27 @@ import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.List;
 
-
 /**
  * Create a 3D height(z,y,x) array using the netCDF CF convention formula for
- * "Atmospheric Hybrid Height".
+ * "atmosphere_hybrid_height_coordinate".
  * <p>
  * <strong>height(x,y,z) = a(z) + b(z)*orog(x,y)</strong>
  *
- * @author murray
- * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
+ * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#atmosphere-hybrid-height-coordinate"
  */
+@Immutable
 public class HybridHeight extends AbstractVerticalTransform {
 
-  /**
-   * Surface pressure name identifier
-   */
+  /** Surface pressure name identifier */
   public static final String OROG = "Orography_variableName";
 
-  /**
-   * The "a" variable name identifier
-   */
+  /** The "a" variable name identifier */
   public static final String A = "A_variableName";
 
-  /**
-   * The "b" variable name identifier
-   */
+  /** The "b" variable name identifier */
   public static final String B = "B_variableName";
 
-  /**
-   * ps, a, and b variables
-   */
-  private Variable aVar, bVar, orogVar;
-
-  /**
-   * a and b Arrays
-   */
-  private Array aArray, bArray;
+  private final Variable aVar, bVar, orogVar;
 
   /**
    * Construct a coordinate transform for hybrid height
@@ -56,18 +42,20 @@ public class HybridHeight extends AbstractVerticalTransform {
    * @param timeDim time dimension
    * @param params list of transformation Parameters
    */
-  public HybridHeight(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static HybridHeight create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+    Variable aVar = findVariableFromParameterName(ds, params, A);
+    Variable bVar = findVariableFromParameterName(ds, params, B);
+    Variable orogVar = findVariableFromParameterName(ds, params, OROG);
+    String units = orogVar.findAttributeString(CDM.UNITS, "none");
 
-    super(timeDim);
-    String aName = getParameterStringValue(params, A);
-    String bName = getParameterStringValue(params, B);
-    String orogName = getParameterStringValue(params, OROG);
+    return new HybridHeight(timeDim, units, aVar, bVar, orogVar);
+  }
 
-    aVar = ds.findVariable(aName);
-    bVar = ds.findVariable(bName);
-    orogVar = ds.findVariable(orogName);
-    units = orogVar.findAttributeString(CDM.UNITS, "none");
-
+  private HybridHeight(Dimension timeDim, String units, Variable aVar, Variable bVar, Variable orogVar) {
+    super(timeDim, units);
+    this.aVar = aVar;
+    this.bVar = bVar;
+    this.orogVar = orogVar;
   }
 
   /**
@@ -75,16 +63,13 @@ public class HybridHeight extends AbstractVerticalTransform {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException problem reading data
    * @throws InvalidRangeException not a valid time range
    */
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array orogArray = readArray(orogVar, timeIndex);
-
-    if (null == aArray) {
-      aArray = aVar.read();
-      bArray = bVar.read();
-    }
+    Array aArray = aVar.read();
+    Array bArray = bVar.read();
 
     int nz = (int) aArray.getSize();
     Index aIndex = aArray.getIndex();
@@ -119,15 +104,13 @@ public class HybridHeight extends AbstractVerticalTransform {
    * @param xIndex the x index
    * @param yIndex the y index
    * @return vertical coordinate array
-   * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_
+   * @throws InvalidRangeException not a valid time range
    */
+  @Override
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
     Array orogArray = readArray(orogVar, timeIndex);
-    if (null == aArray) {
-      aArray = aVar.read();
-      bArray = bVar.read();
-    }
+    Array aArray = aVar.read();
+    Array bArray = bVar.read();
 
     int nz = (int) aArray.getSize();
     Index aIndex = aArray.getIndex();

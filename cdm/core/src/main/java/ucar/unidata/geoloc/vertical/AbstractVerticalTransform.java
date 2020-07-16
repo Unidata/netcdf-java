@@ -4,27 +4,35 @@
  */
 package ucar.unidata.geoloc.vertical;
 
+import com.google.common.base.Preconditions;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.List;
 
 /** Abstract superclass for implementations of VerticalTransform. */
+@Immutable
 abstract class AbstractVerticalTransform implements VerticalTransform {
-  protected String units;
-  private Dimension timeDim;
+  protected final String units;
+  private final Dimension timeDim;
 
   /**
    * Construct a VerticalCoordinate
    *
    * @param timeDim time dimension
+   * @param units vertical coordinate unit
    */
-  AbstractVerticalTransform(Dimension timeDim) {
+  AbstractVerticalTransform(Dimension timeDim, @Nullable String units) {
     this.timeDim = timeDim;
+    this.units = units;
   }
 
   @Override
@@ -36,6 +44,7 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
       throws IOException, InvalidRangeException;
 
   @Override
+  @Nullable
   public String getUnitString() {
     return units;
   }
@@ -84,7 +93,16 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return new VerticalTransformSubset(this, t_range, z_range, y_range, x_range);
   }
 
-  String getParameterStringValue(List<Parameter> params, String name) {
+  static Variable findVariableFromParameterName(NetcdfFile ds, List<Parameter> params, String paramName) {
+    String vName = getParameterStringValue(params, paramName);
+    Preconditions.checkNotNull(vName, String.format("VerticalTransform parameter %s not found", paramName));
+    Variable v = ds.findVariable(vName);
+    Preconditions.checkNotNull(v, String.format("VerticalTransform variable %s not found", vName));
+    return v;
+  }
+
+  @Nullable
+  static String getParameterStringValue(List<Parameter> params, String name) {
     for (Parameter a : params) {
       if (name.equalsIgnoreCase(a.getName()))
         return a.getStringValue();
@@ -92,12 +110,37 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return null;
   }
 
-  boolean getParameterBooleanValue(List<Parameter> params, String name) {
+  static boolean getParameterBooleanValue(List<Parameter> params, String name) {
     for (Parameter p : params) {
       if (name.equalsIgnoreCase(p.getName()))
         return Boolean.parseBoolean(p.getStringValue());
     }
     return false;
+  }
+
+  static double readAndConvertUnit(Variable scalarVariable, String convertToUnit) {
+    double result;
+    try {
+      result = scalarVariable.readScalarDouble();
+    } catch (IOException e) {
+      throw new IllegalArgumentException(
+          "VerticalTransform failed to read " + scalarVariable + " err= " + e.getMessage());
+    }
+
+    String scalarUnitStr = scalarVariable.findAttributeString(CDM.UNITS, null);
+    // if no unit is given, assume its the correct unit
+    if (scalarUnitStr != null && !convertToUnit.equalsIgnoreCase(scalarUnitStr)) {
+      // Convert result to units of wantUnit
+      double factor = convertUnitFactor(scalarUnitStr, convertToUnit);
+      result *= factor;
+    }
+    return result;
+  }
+
+  static double convertUnitFactor(String unit, String convertToUnit) {
+    SimpleUnit wantUnit = SimpleUnit.factory(convertToUnit);
+    SimpleUnit haveUnit = SimpleUnit.factory(unit);
+    return haveUnit.convertTo(1.0, wantUnit);
   }
 
 }

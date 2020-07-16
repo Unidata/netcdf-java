@@ -7,6 +7,7 @@ package ucar.unidata.geoloc.vertical;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayDouble.D1;
@@ -14,16 +15,12 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.unidata.geoloc.VerticalTransform;
 
-/**
- * A subset of a vertical transform.
- *
- * @author Unidata Development Team
- */
+/** A subset of a vertical transform. */
+@Immutable
 public class VerticalTransformSubset extends AbstractVerticalTransform {
-
-  private VerticalTransform original;
-  private Range t_range;
-  private List<Range> subsetList = new ArrayList<>();
+  private final VerticalTransform original;
+  private final Range t_range;
+  private final List<Range> subsetList = new ArrayList<>();
 
   /**
    * Create a subset of an existing VerticalTransform
@@ -34,19 +31,17 @@ public class VerticalTransformSubset extends AbstractVerticalTransform {
    * @param y_range subset the y dimension, or null if you want all of it
    * @param x_range subset the x dimension, or null if you want all of it
    */
-  public VerticalTransformSubset(VerticalTransform original, Range t_range, Range z_range, Range y_range,
-      Range x_range) {
-    super(null); // timeDim not used in this class
+  VerticalTransformSubset(VerticalTransform original, Range t_range, Range z_range, Range y_range, Range x_range) {
+    super(null, original.getUnitString()); // timeDim not used in this class
 
     this.original = original;
     this.t_range = t_range;
     subsetList.add(z_range);
     subsetList.add(y_range);
     subsetList.add(x_range);
-
-    units = original.getUnitString();
   }
 
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int subsetIndex) throws IOException, InvalidRangeException {
     int orgIndex = subsetIndex;
     if (isTimeDependent() && (t_range != null)) {
@@ -66,12 +61,9 @@ public class VerticalTransformSubset extends AbstractVerticalTransform {
    * @param xIndex the x index
    * @param yIndex the y index
    * @return vertical coordinate array
-   * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_
    */
+  @Override
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
-
-
     ArrayDouble.D3 data = original.getCoordinateArray(timeIndex);
 
     int[] origin = new int[3];
@@ -92,11 +84,9 @@ public class VerticalTransformSubset extends AbstractVerticalTransform {
     Array section = data.section(origin, shape);
 
     return (ArrayDouble.D1) section.reduce();
-
-
   }
 
-
+  @Override
   public boolean isTimeDependent() {
     return original.isTimeDependent();
   }

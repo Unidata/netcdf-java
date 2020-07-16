@@ -77,7 +77,7 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder {
 
     @Override
     public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
-      return new WRFEta(ds, timeDim, this.getParameters());
+      return WRFEta.create(ds, timeDim, this.getParameters());
     }
   }
 

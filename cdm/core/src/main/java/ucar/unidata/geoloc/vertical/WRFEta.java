@@ -4,6 +4,7 @@
  */
 package ucar.unidata.geoloc.vertical;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.Index;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 /** Models the vertical coordinate for the Weather Research and Forecast (WRF) model's vertical Eta coordinate */
+@Immutable
 public class WRFEta extends AbstractVerticalTransform {
   public static final String BasePressureVariable = "base_presure";
   public static final String PerturbationPressureVariable = "perturbation_presure";
@@ -27,24 +29,22 @@ public class WRFEta extends AbstractVerticalTransform {
   public static final String IsStaggeredY = "staggered_y";
   public static final String IsStaggeredZ = "staggered_z";
 
-  private Variable pertVar;
-  private Variable baseVar;
-  private boolean isXStag, isYStag, isZStag;
+  private final Variable pertVar;
+  private final Variable baseVar;
+  private final boolean isXStag, isYStag, isZStag;
 
   /**
-   * Construct a vertical coordinate for the Weather Research and Forecast
-   * (WRF) model's vertical Eta coordinate
+   * Construct a vertical coordinate for WRF vertical Eta coordinate
    *
    * @param ds netCDF dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
    */
-  public WRFEta(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
-    super(timeDim);
-
-    isXStag = getParameterBooleanValue(params, IsStaggeredX);
-    isYStag = getParameterBooleanValue(params, IsStaggeredY);
-    isZStag = getParameterBooleanValue(params, IsStaggeredZ);
+  public static WRFEta create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+    boolean isXStag = getParameterBooleanValue(params, IsStaggeredX);
+    boolean isYStag = getParameterBooleanValue(params, IsStaggeredY);
+    boolean isZStag = getParameterBooleanValue(params, IsStaggeredZ);
+    String units;
 
     String pertVarName;
     String baseVarName;
@@ -62,8 +62,8 @@ public class WRFEta extends AbstractVerticalTransform {
       units = "Pa"; // P and PB are in Pascals //ADD:safe assumption? grab unit attribute?
     }
 
-    pertVar = ds.findVariable(pertVarName);
-    baseVar = ds.findVariable(baseVarName);
+    Variable pertVar = ds.findVariable(pertVarName);
+    Variable baseVar = ds.findVariable(baseVarName);
 
     if (pertVar == null) {
       throw new RuntimeException("Cant find perturbation pressure variable= " + pertVarName + " in WRF file");
@@ -71,6 +71,18 @@ public class WRFEta extends AbstractVerticalTransform {
     if (baseVar == null) {
       throw new RuntimeException("Cant find base state pressure variable=  " + baseVarName + " in WRF file");
     }
+
+    return new WRFEta(timeDim, units, pertVar, baseVar, isXStag, isYStag, isZStag);
+  }
+
+  private WRFEta(Dimension timeDim, String units, Variable pertVar, Variable baseVar, boolean isXStag, boolean isYStag,
+      boolean isZStag) {
+    super(timeDim, units);
+    this.pertVar = pertVar;
+    this.baseVar = baseVar;
+    this.isXStag = isXStag;
+    this.isYStag = isYStag;
+    this.isZStag = isZStag;
   }
 
   /**
@@ -80,9 +92,8 @@ public class WRFEta extends AbstractVerticalTransform {
    * @return vertical coordinate array
    * @throws IOException problem reading data
    */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException {
-    ArrayDouble.D3 array;
-
+  @Override
+  public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array pertArray = getTimeSlice(pertVar, timeIndex);
     Array baseArray = getTimeSlice(baseVar, timeIndex);
 
@@ -95,7 +106,7 @@ public class WRFEta extends AbstractVerticalTransform {
     int nj = shape[1];
     int nk = shape[2];
 
-    array = new ArrayDouble.D3(ni, nj, nk);
+    ArrayDouble.D3 array = new ArrayDouble.D3(ni, nj, nk);
     Index index = array.getIndex();
 
     for (int i = 0; i < ni; i++) {
@@ -132,6 +143,7 @@ public class WRFEta extends AbstractVerticalTransform {
    * @throws java.io.IOException problem reading data
    * @throws ucar.ma2.InvalidRangeException _more_
    */
+  @Override
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
     ArrayDouble.D3 data = getCoordinateArray(timeIndex);
 
@@ -158,7 +170,7 @@ public class WRFEta extends AbstractVerticalTransform {
    * @param dimIndex use this dimension
    * @return new array with stagger
    */
-  private ArrayDouble.D3 addStagger(ArrayDouble.D3 array, int dimIndex) {
+  private ArrayDouble.D3 addStagger(ArrayDouble.D3 array, int dimIndex) throws InvalidRangeException {
 
     // ADD: assert 0<=dimIndex<=2
 
@@ -184,30 +196,25 @@ public class WRFEta extends AbstractVerticalTransform {
     }
     int[] origin = new int[3];
 
-    try {
-      // loop through the other 2 dimensions and "extrapinterpolate" the other
-      for (int i = 0; i < ((dimIndex == 0) ? 1 : ni); i++) {
-        for (int j = 0; j < ((dimIndex == 1) ? 1 : nj); j++) {
-          for (int k = 0; k < ((dimIndex == 2) ? 1 : nk); k++) {
-            origin[0] = i;
-            origin[1] = j;
-            origin[2] = k;
-            IndexIterator it = array.section(origin, eshape).getIndexIterator();
-            for (int l = 0; l < n; l++) {
-              d[l] = it.getDoubleNext(); // get the original values
-            }
-            double[] d2 = extrapinterpolate(d); // compute new values
-            // define slice of new array to write into
-            IndexIterator newit = newArray.section(origin, neweshape).getIndexIterator();
-            for (int l = 0; l < n + 1; l++) {
-              newit.setDoubleNext(d2[l]);
-            }
+    // loop through the other 2 dimensions and "extrapinterpolate" the other
+    for (int i = 0; i < ((dimIndex == 0) ? 1 : ni); i++) {
+      for (int j = 0; j < ((dimIndex == 1) ? 1 : nj); j++) {
+        for (int k = 0; k < ((dimIndex == 2) ? 1 : nk); k++) {
+          origin[0] = i;
+          origin[1] = j;
+          origin[2] = k;
+          IndexIterator it = array.section(origin, eshape).getIndexIterator();
+          for (int l = 0; l < n; l++) {
+            d[l] = it.getDoubleNext(); // get the original values
+          }
+          double[] d2 = extrapinterpolate(d); // compute new values
+          // define slice of new array to write into
+          IndexIterator newit = newArray.section(origin, neweshape).getIndexIterator();
+          for (int l = 0; l < n + 1; l++) {
+            newit.setDoubleNext(d2[l]);
           }
         }
       }
-    } catch (InvalidRangeException e) {
-      // ADD: report error?
-      return null;
     }
 
     return newArray;
@@ -246,7 +253,7 @@ public class WRFEta extends AbstractVerticalTransform {
    * @return Array of data
    * @throws IOException problem getting Array
    */
-  private Array getTimeSlice(Variable v, int timeIndex) throws IOException {
+  private Array getTimeSlice(Variable v, int timeIndex) throws IOException, InvalidRangeException {
     // ADD: this would make a good utility method
     // ADD: use Array.slice?
     int[] shape = v.getShape();
@@ -260,11 +267,7 @@ public class WRFEta extends AbstractVerticalTransform {
       }
     }
 
-    try {
-      return v.read(origin, shape).reduce();
-    } catch (InvalidRangeException e) {
-      throw new IOException(e);
-    }
+    return v.read(origin, shape).reduce();
   }
 
 }

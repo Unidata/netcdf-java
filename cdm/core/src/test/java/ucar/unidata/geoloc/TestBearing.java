@@ -1,7 +1,5 @@
 package ucar.unidata.geoloc;
 
-import static ucar.unidata.geoloc.Bearing.calculateBearing;
-import static ucar.unidata.geoloc.Bearing.findPoint;
 import org.junit.Test;
 
 public class TestBearing {
@@ -11,11 +9,11 @@ public class TestBearing {
     // Bearing workBearing = new Bearing();
     LatLonPoint pt1 = LatLonPoint.create(40, -105);
     LatLonPoint pt2 = LatLonPoint.create(37.4, -118.4);
-    Bearing b = calculateBearing(pt1, pt2, null);
+    Bearing b = Bearing.calculateBearing(pt1, pt2);
     System.out.println("Bearing from " + pt1 + " to " + pt2 + " = \n\t" + b);
-    LatLonPoint pt3 = findPoint(pt1, b.getAngle(), b.getDistance());
+    LatLonPoint pt3 = Bearing.findPoint(pt1, b.getAzimuth(), b.getDistance());
     System.out.println("using first point, angle and distance, found second point at " + pt3);
-    pt3 = findPoint(pt2, b.getBackAzimuth(), b.getDistance());
+    pt3 = Bearing.findPoint(pt2, b.getBackAzimuth(), b.getDistance());
     System.out.println("using second point, backazimuth and distance, found first point at " + pt3);
     /*
      * uncomment for timing tests

@@ -5,6 +5,7 @@
 
 package ucar.unidata.geoloc.vertical;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
@@ -25,6 +26,7 @@ import java.io.IOException;
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  * @since May 6, 2008
  */
+@Immutable
 public class AtmosLnPressure extends AbstractVerticalTransform {
   public static final String P0 = "ReferencePressureVariableName";
   public static final String LEV = "VerticalCoordinateVariableName";
@@ -32,27 +34,27 @@ public class AtmosLnPressure extends AbstractVerticalTransform {
   private final Array pressure;
 
   /**
-   * Create a new vertical transform for Ocean S coordinates
+   * Create a new vertical transform for CF vertical coordinate "atmosphere_ln_pressure_coordinate"
    *
    * @param ds dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
    */
-  public AtmosLnPressure(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
-    super(timeDim);
+  public static AtmosLnPressure create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+    Variable p0var = findVariableFromParameterName(ds, params, P0);
 
-    String p0name = getParameterStringValue(params, P0);
-    Variable p0var = ds.findVariable(p0name);
     double p0;
     try {
       p0 = p0var.readScalarDouble();
     } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosLnPressure failed to read " + p0name + " err= " + e.getMessage());
+      throw new IllegalArgumentException(
+          "AtmosLnPressure failed to read " + p0var.getShortName() + " err= " + e.getMessage());
     }
+    String units = p0var.getUnitsString();
 
-    String levName = getParameterStringValue(params, LEV);
-    Variable levVar = ds.findVariable(levName);
+    Variable levVar = findVariableFromParameterName(ds, params, LEV);
 
+    Array pressure;
     try {
       Array lev = levVar.read();
       assert lev.getRank() == 1;
@@ -64,10 +66,16 @@ public class AtmosLnPressure extends AbstractVerticalTransform {
       }
 
     } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosLnPressure failed to read " + levName + " err= " + e.getMessage());
+      throw new IllegalArgumentException(
+          "AtmosLnPressure failed to read " + levVar.getShortName() + " err= " + e.getMessage());
     }
 
-    units = p0var.getUnitsString();
+    return new AtmosLnPressure(timeDim, units, pressure);
+  }
+
+  private AtmosLnPressure(Dimension timeDim, String units, Array pressure) {
+    super(timeDim, units);
+    this.pressure = pressure;
   }
 
   /**
@@ -76,6 +84,7 @@ public class AtmosLnPressure extends AbstractVerticalTransform {
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
    */
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) {
 
     int nz = (int) pressure.getSize();
@@ -106,8 +115,8 @@ public class AtmosLnPressure extends AbstractVerticalTransform {
    * @param yIndex the y index
    * @return vertical coordinate array
    */
+  @Override
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) {
-
     throw new UnsupportedOperationException("1D subsetting is not implemented yet for this vertical tranformation");
   }
 

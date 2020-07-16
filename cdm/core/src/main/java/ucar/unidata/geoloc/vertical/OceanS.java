@@ -4,6 +4,7 @@
  */
 package ucar.unidata.geoloc.vertical;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -12,62 +13,34 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Create a 3D height(z,y,x) array using the CF formula for
- * "ocean s vertical coordinate".
+ * Create a 3D height(z,y,x) array using the CF formula for "ocean_s_coordinate".
  * <p/>
  * Modified April 20, 2009 by sachin
- *
- * @author caron
- * @author skbhate@gmail.com
- * @see "https://www.myroms.org/wiki/index.php/Vertical_S-coordinate#Metadata_Considerations"
+ * 
+ * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_ocean_s_coordinate"
  */
-
+@Immutable
 public class OceanS extends AbstractVerticalTransform {
-
-  /**
-   * The eta variable name identifier
-   */
+  /** The eta variable name identifier */
   public static final String ETA = "Eta_variableName";
 
-  /**
-   * The "s" variable name identifier
-   */
+  /** The "s" variable name identifier */
   public static final String S = "S_variableName";
 
-  /**
-   * The "depth" variable name identifier
-   */
+  /** The "depth" variable name identifier */
   public static final String DEPTH = "Depth_variableName";
 
-  /**
-   * The "depth c" variable name identifier
-   */
+  /** The "depth c" variable name identifier */
   public static final String DEPTH_C = "Depth_c_variableName";
 
-  /**
-   * The "a" variable name
-   */
+  /** The "a" variable name */
   public static final String A = "A_variableName";
 
-  /**
-   * The "b" variable name
-   */
+  /** The "b" variable name */
   public static final String B = "B_variableName";
 
-  /**
-   * the values of depth_c, a, and b
-   */
-  private double depth_c;
-
-  /**
-   * The eta, s and depth variables
-   */
-  private Variable etaVar, sVar, depthVar, aVar, bVar, depthCVar;
-
-  /**
-   * the c array
-   */
-  private Array c;
+  private final Variable etaVar, sVar, depthVar;
+  private final double a, b, depth_c;
 
   /**
    * Create a new vertical transform for Ocean S coordinates
@@ -76,24 +49,33 @@ public class OceanS extends AbstractVerticalTransform {
    * @param timeDim time dimension
    * @param params list of transformation Parameters
    */
-  public OceanS(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static OceanS create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+    Variable etaVar = findVariableFromParameterName(ds, params, ETA);
+    Variable sVar = findVariableFromParameterName(ds, params, S);
+    Variable depthVar = findVariableFromParameterName(ds, params, DEPTH);
+    Variable aVar = findVariableFromParameterName(ds, params, A);
+    Variable bVar = findVariableFromParameterName(ds, params, B);
+    Variable depthCVar = findVariableFromParameterName(ds, params, DEPTH_C);
 
-    super(timeDim);
-    String etaName = getParameterStringValue(params, ETA);
-    String sName = getParameterStringValue(params, S);
-    String depthName = getParameterStringValue(params, DEPTH);
-    String aName = getParameterStringValue(params, A);
-    String bName = getParameterStringValue(params, B);
-    String depthCName = getParameterStringValue(params, DEPTH_C);
+    String units = depthVar.findAttributeString(CDM.UNITS, "none");
 
-    etaVar = ds.findVariable(etaName);
-    sVar = ds.findVariable(sName);
-    depthVar = ds.findVariable(depthName);
-    aVar = ds.findVariable(aName);
-    bVar = ds.findVariable(bName);
-    depthCVar = ds.findVariable(depthCName);
+    return new OceanS(timeDim, units, etaVar, sVar, depthVar, aVar, bVar, depthCVar);
+  }
 
-    units = depthVar.findAttributeString(CDM.UNITS, "none");
+  private OceanS(Dimension timeDim, String units, Variable etaVar, Variable sVar, Variable depthVar, Variable aVar,
+      Variable bVar, Variable depthCVar) {
+    super(timeDim, units);
+    this.etaVar = etaVar;
+    this.sVar = sVar;
+    this.depthVar = depthVar;
+
+    try {
+      this.a = aVar.readScalarDouble();
+      this.b = bVar.readScalarDouble();
+      this.depth_c = depthCVar.readScalarDouble();
+    } catch (IOException ioe) {
+      throw new IllegalStateException(ioe);
+    }
   }
 
   /**
@@ -101,20 +83,14 @@ public class OceanS extends AbstractVerticalTransform {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException problem reading data
-   * @throws InvalidRangeException _more_
+   * @throws InvalidRangeException index out of range
    */
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array etaArray = readArray(etaVar, timeIndex);
     Array sArray = readArray(sVar, timeIndex);
     Array depthArray = readArray(depthVar, timeIndex);
-
-    if (null == c) {
-      double a = aVar.readScalarDouble();
-      double b = bVar.readScalarDouble();
-      depth_c = depthCVar.readScalarDouble();
-      c = makeC(sArray, a, b);
-    }
+    Array c = makeC(sArray, a, b);
 
     return makeHeight(etaArray, sArray, depthArray, c, depth_c);
   }
@@ -127,22 +103,15 @@ public class OceanS extends AbstractVerticalTransform {
    * @param xIndex the x index
    * @param yIndex the y index
    * @return vertical coordinate array
-   * @throws IOException problem reading data
-   * @throws InvalidRangeException _more_
+   * @throws InvalidRangeException index out of range
    */
+  @Override
   public ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
       throws IOException, InvalidRangeException {
     Array etaArray = readArray(etaVar, timeIndex);
     Array sArray = readArray(sVar, timeIndex);
     Array depthArray = readArray(depthVar, timeIndex);
-
-    if (null == c) {
-      double a = aVar.readScalarDouble();
-      double b = bVar.readScalarDouble();
-      depth_c = depthCVar.readScalarDouble();
-      c = makeC(sArray, a, b);
-    }
-
+    Array c = makeC(sArray, a, b);
 
     return makeHeight1D(etaArray, sArray, depthArray, c, depth_c, xIndex, yIndex);
   }
