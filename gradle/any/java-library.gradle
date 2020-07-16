@@ -13,11 +13,13 @@ java {
 }
 
 def sourceJar = tasks.register('sourceJar', Jar) {
+  classifier 'sources'
   from sourceSets.main.allJava
 }
 
 def javadocJar = tasks.register('javadocJar', Jar) {
   dependsOn javadoc
+  classifier 'javadoc'
   from files(javadoc.destinationDir)
 }
 
@@ -28,23 +30,10 @@ publish.configure {
 
 publishing {
   publications {
-    mavenJava(MavenPublication) {
-      artifact('sourceJar') {
-        classifier 'sources'
-      }
-      artifact('javadocJar') {
-        classifier 'javadoc'
-      }
+    mavenSources(MavenPublication) {
       from components.java
-      pom {
-        //name = name
-        description = title
-        scm {
-          connection = 'scm:git:https://github.com/Unidata/netcdf-java.git'
-          developerConnection = 'scm:git:https://github.com/Unidata/netcdf-java.git'
-          url = 'https://www.unidata.ucar.edu/software/netcdf-java/'
-        }
-      }
+      artifact tasks.sourceJar
+      artifact tasks.javadocJar
     }
   }
 }
@@ -54,5 +43,5 @@ tasks.withType(JavaCompile).all {
   options.encoding = 'UTF-8'
 
   // show deprecation details
-  options.compilerArgs = ['-Xlint:deprecation']
+  //options.compilerArgs = ['-Xlint:deprecation']
 }
