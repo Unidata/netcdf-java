@@ -98,7 +98,8 @@ public class TestFindXYcoords {
       System.out.println(
           "\nSUBGRID (latmin=" + latMin + "  latmax=" + latMax + "  lonmin=" + lonMin + "  lonmax=" + lonMax + ")");
 
-      LatLonRect latLonRect = new LatLonRect(LatLonPoint.create(latMin, lonMin), LatLonPoint.create(latMax, lonMax));
+      LatLonRect latLonRect =
+          new LatLonRect.Builder(LatLonPoint.create(latMin, lonMin), LatLonPoint.create(latMax, lonMax)).build();
 
       GeoGrid gridSubset = firstGrid.subset(null, null, latLonRect, 0, 1, 1);
 

@@ -402,24 +402,6 @@ public class TestProjections {
       Assert.assertEquals(startL.toString(), startL.getLongitude(), endL.getLongitude(), .02);
     }
 
-    /*
-     * ProjectionPointImpl startP = ProjectionPoint.create();
-     * for (int i = 0; i < NTRIALS; i++) {
-     * startP.setLocation(10000.0 * (r.nextDouble() - .5), // random proj point
-     * 10000.0 * (r.nextDouble() - .5));
-     * 
-     * double lon = startL.getLongitude();
-     * int zone = (int) ((lon + 183)/6);
-     * UtmProjection proj = new UtmProjection(zone, lon >= 0.0);
-     * 
-     * LatLonPoint ll = proj.projToLatLon(startP);
-     * ProjectionPoint endP = proj.latLonToProj(ll);
-     * 
-     * assert (TestAll.nearlyEquals(startP.getX(), endP.getX()));
-     * assert (TestAll.nearlyEquals(startP.getY(), endP.getY()));
-     * }
-     */
-
     if (show)
       System.out.println("Tested " + n + " pts for UTM projection ");
   }

@@ -25,7 +25,7 @@ import java.util.List;
  * @author caron
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  */
-public class HybridSigmaPressure extends VerticalTransformImpl {
+public class HybridSigmaPressure extends AbstractVerticalTransform {
 
   /** P-naught identifier */
   public static final String P0 = "P0_variableName";

@@ -13,10 +13,9 @@ public class TestBearing {
     LatLonPoint pt2 = LatLonPoint.create(37.4, -118.4);
     Bearing b = calculateBearing(pt1, pt2, null);
     System.out.println("Bearing from " + pt1 + " to " + pt2 + " = \n\t" + b);
-    LatLonPointImpl pt3 = new LatLonPointImpl();
-    pt3 = findPoint(pt1, b.getAngle(), b.getDistance(), pt3);
+    LatLonPoint pt3 = findPoint(pt1, b.getAngle(), b.getDistance());
     System.out.println("using first point, angle and distance, found second point at " + pt3);
-    pt3 = findPoint(pt2, b.getBackAzimuth(), b.getDistance(), pt3);
+    pt3 = findPoint(pt2, b.getBackAzimuth(), b.getDistance());
     System.out.println("using second point, backazimuth and distance, found first point at " + pt3);
     /*
      * uncomment for timing tests

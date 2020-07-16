@@ -47,14 +47,14 @@ public class DsgCollectionHelper {
 
   private CollectionInfo calcBounds(PointFeatureCollection pfc) {
 
-    LatLonRect bbox = null;
+    LatLonRect.Builder bbox = null;
     double minTime = Double.MAX_VALUE;
     double maxTime = -Double.MAX_VALUE;
     int count = 0;
 
     for (PointFeature pf : pfc) {
       if (bbox == null)
-        bbox = new LatLonRect(pf.getLocation().getLatLon(), .001, .001);
+        bbox = new LatLonRect.Builder(pf.getLocation().getLatLon(), .001, .001);
       else
         bbox.extend(pf.getLocation().getLatLon());
 
@@ -70,7 +70,7 @@ public class DsgCollectionHelper {
 
     CalendarDateUnit cdu = dsg.getTimeUnit();
     CalendarDateRange dateRange = CalendarDateRange.of(cdu.makeCalendarDate(minTime), cdu.makeCalendarDate(maxTime));
-    return new CollectionInfo(bbox, dateRange, count, count);
+    return new CollectionInfo(bbox.build(), dateRange, count, count);
   }
 
   private CollectionInfo calcBounds(PointFeatureCC pfcc) throws IOException {

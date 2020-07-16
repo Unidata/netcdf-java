@@ -25,7 +25,7 @@ import java.util.List;
  *      "https://www.myroms.org/wiki/index.php/Vertical_S-coordinate#Metadata_Considerations">https://www.myroms.org/wiki/index.php/Vertical_S-coordinate#Metadata_Considerations</a>
  */
 
-public class OceanSG1 extends VerticalTransformImpl {
+public class OceanSG1 extends AbstractVerticalTransform {
 
   /**
    * The eta variable name identifier

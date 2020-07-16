@@ -5,7 +5,6 @@
 package ucar.nc2.ui.geoloc;
 
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import java.awt.geom.Point2D;
 
 /**

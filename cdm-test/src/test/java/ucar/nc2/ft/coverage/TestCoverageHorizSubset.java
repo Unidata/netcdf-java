@@ -48,7 +48,8 @@ public class TestCoverageHorizSubset {
       Assert.assertEquals("coordSys", 3, cs.getShape().length);
 
       // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(-16.79, -20.5), LatLonPoint.create(14.1, 20.9));
+      LatLonRect bbox =
+          new LatLonRect.Builder(LatLonPoint.create(-16.79, -20.5), LatLonPoint.create(14.1, 20.9)).build();
 
       Projection p = hcs.getTransform().getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
@@ -90,10 +91,10 @@ public class TestCoverageHorizSubset {
 
       Assert.assertEquals("rank", 2, cs.getShape().length);
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
       checkLatLonSubset(gcs, coverage, bbox, new int[] {141, 281});
 
-      bbox = new LatLonRect(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0);
+      bbox = new LatLonRect.Builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
       checkLatLonSubset(gcs, coverage, bbox, new int[] {800, 1300});
     }
   }
@@ -119,7 +120,7 @@ public class TestCoverageHorizSubset {
       Assert.assertNotNull("HorizCoordSys", hcs);
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 20.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
       checkLatLonSubset(gcs, coverage, bbox, new int[] {1, 11, 21});
     }
   }
@@ -145,7 +146,8 @@ public class TestCoverageHorizSubset {
       Assert.assertNotNull("HorizCoordSys", hcs);
       Assert.assertEquals("rank", 4, cs.getShape().length);
 
-      LatLonRect llbb_subset = new LatLonRect(LatLonPoint.create(-15, -140), LatLonPoint.create(55, 30));
+      LatLonRect llbb_subset =
+          new LatLonRect.Builder(LatLonPoint.create(-15, -140), LatLonPoint.create(55, 30)).build();
 
       System.out.println("subset lat/lon bbox= " + llbb_subset);
 
@@ -175,7 +177,7 @@ public class TestCoverageHorizSubset {
       Assert.assertNotNull("HorizCoordSys", hcs);
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 120.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 120.0).build();
       checkLatLonSubset(gcs, coverage, bbox, new int[] {1, 21, 241});
     }
   }
@@ -201,7 +203,7 @@ public class TestCoverageHorizSubset {
       params.setTime(validTime);
 
       // subset across the seam
-      final LatLonRect subsetLatLonRequest = new LatLonRect(LatLonPoint.create(-15, -10), 30, 20);
+      final LatLonRect subsetLatLonRequest = new LatLonRect.Builder(LatLonPoint.create(-15, -10), 30, 20).build();
       params.setLatLonBoundingBox(subsetLatLonRequest);
 
       // set a horizontal stride

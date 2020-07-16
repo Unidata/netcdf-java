@@ -13,14 +13,8 @@ import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * A transformation to a vertical reference coordinate system,
- * such as height or pressure.
- *
- * @author Unidata Development Team
- */
-
-public abstract class VerticalTransformImpl implements VerticalTransform {
+/** Abstract superclass for implementations of VerticalTransform. */
+abstract class AbstractVerticalTransform implements VerticalTransform {
   protected String units;
   private Dimension timeDim;
 
@@ -29,61 +23,32 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
    *
    * @param timeDim time dimension
    */
-  public VerticalTransformImpl(Dimension timeDim) {
+  AbstractVerticalTransform(Dimension timeDim) {
     this.timeDim = timeDim;
   }
 
-  /**
-   * Get the 3D vertical coordinate array for this time step.
-   *
-   * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @return vertical coordinate array
-   * @throws InvalidRangeException _more_
-   * @throws java.io.IOException problem reading the data
-   */
+  @Override
   public abstract ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex)
       throws java.io.IOException, InvalidRangeException;
 
-  /**
-   * Get the 1D vertical coordinate array for this time step and point
-   * 
-   * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @param xIndex the x index
-   * @param yIndex the y index
-   * @return vertical coordinate array
-   * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_
-   */
+  @Override
   public abstract ucar.ma2.ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
       throws IOException, InvalidRangeException;
 
-  /**
-   * Get the unit string for the vertical coordinate.
-   * 
-   * @return unit string
-   */
+  @Override
   public String getUnitString() {
     return units;
   }
 
-  /**
-   * Get whether this coordinate is time dependent.
-   * 
-   * @return true if time dependent
-   */
+  @Override
   public boolean isTimeDependent() {
     return (timeDim != null);
   }
 
-  /**
-   * Get the time Dimension
-   *
-   * @return time Dimension
-   */
+  /** Get the time Dimension, if it exists */
   protected Dimension getTimeDimension() {
     return timeDim;
   }
-
 
   /**
    * Read the data {@link ucar.ma2.Array} from the variable, at the specified
@@ -98,7 +63,7 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
    * @throws IOException problem reading data
    * @throws InvalidRangeException _more_
    */
-  protected Array readArray(Variable v, int timeIndex) throws IOException, InvalidRangeException {
+  Array readArray(Variable v, int timeIndex) throws IOException, InvalidRangeException {
     int[] shape = v.getShape();
     int[] origin = new int[v.getRank()];
 
@@ -114,22 +79,12 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
     return v.read(origin, shape);
   }
 
-  /**
-   * Create a subset of this VerticalTransform.
-   *
-   * @param t_range subset the time dimension, or null if you want all of it
-   * @param z_range subset the vertical dimension, or null if you want all of it
-   * @param y_range subset the y dimension, or null if you want all of it
-   * @param x_range subset the x dimension, or null if you want all of it
-   *
-   * @return the subsetted VerticalTransform
-   *
-   */
+  @Override
   public VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) {
     return new VerticalTransformSubset(this, t_range, z_range, y_range, x_range);
   }
 
-  protected String getParameterStringValue(List<Parameter> params, String name) {
+  String getParameterStringValue(List<Parameter> params, String name) {
     for (Parameter a : params) {
       if (name.equalsIgnoreCase(a.getName()))
         return a.getStringValue();
@@ -137,7 +92,7 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
     return null;
   }
 
-  protected boolean getParameterBooleanValue(List<Parameter> params, String name) {
+  boolean getParameterBooleanValue(List<Parameter> params, String name) {
     for (Parameter p : params) {
       if (name.equalsIgnoreCase(p.getName()))
         return Boolean.parseBoolean(p.getStringValue());

@@ -144,10 +144,10 @@ public class DtCoverageDataset implements Closeable {
   }
 
   private void makeHorizRanges() {
+    LatLonRect.Builder llbbBuilder = null;
 
     for (Gridset gset : getGridsets()) {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
-
       ProjectionRect bb = gcs.getBoundingBox();
       if (projBB == null)
         projBB = bb;
@@ -155,10 +155,14 @@ public class DtCoverageDataset implements Closeable {
         projBB.add(bb);
 
       LatLonRect llbb = gcs.getLatLonBoundingBox();
-      if (llbbMax == null)
-        llbbMax = llbb;
+      if (llbbBuilder == null)
+        llbbBuilder = llbb.toBuilder();
       else if (llbb != null)
-        llbbMax.extend(llbb);
+        llbbBuilder.extend(llbb);
+    }
+
+    if (llbbBuilder != null) {
+      llbbMax = llbbBuilder.build();
     }
   }
 

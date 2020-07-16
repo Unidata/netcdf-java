@@ -13,7 +13,7 @@ import ucar.unidata.geoloc.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import static ucar.unidata.geoloc.LatLonPointImmutable.INVALID;
+import static ucar.unidata.geoloc.LatLonPoint.INVALID;
 
 /**
  * Sinusoidal projection, spherical earth.
@@ -210,7 +210,7 @@ public class Sinusoidal extends AbstractProjection {
     }
 
     if (pointsOfInterest.size() == 2) { // projBB contains both north and south poles, and thus, the entire map.
-      return new LatLonRect(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180));
+      return new LatLonRect();
     }
 
     List<ProjectionPoint> corners = Arrays.asList(projBB.getLowerLeftPoint(), projBB.getLowerRightPoint(),
@@ -363,6 +363,6 @@ public class Sinusoidal extends AbstractProjection {
       maxLon = Math.max(maxLon, latLonPoint.getLongitude());
     }
 
-    return new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
+    return new LatLonRect.Builder(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon)).build();
   }
 }

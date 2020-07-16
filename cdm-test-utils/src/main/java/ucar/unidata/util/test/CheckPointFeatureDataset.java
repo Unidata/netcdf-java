@@ -222,7 +222,7 @@ public class CheckPointFeatureDataset {
     // try a subset
     LatLonRect bb = sfc.getBoundingBox();
     Assert.assertNotNull(bb);
-    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
+    LatLonRect bb2 = new LatLonRect.Builder(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2).build();
     System.out.println(" BB Subset= " + bb2.toString2());
     StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
     int countSub = countLocations(sfcSub);
@@ -525,7 +525,7 @@ public class CheckPointFeatureDataset {
     }
 
     // subset with a bounding box, test result is in the bounding box
-    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
+    LatLonRect bb2 = new LatLonRect.Builder(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2).build();
     PointFeatureCollection subset = pfc.subset(bb2, null);
     if (show) {
       System.out.println(" subset bb= " + bb2.toString2());
@@ -576,7 +576,7 @@ public class CheckPointFeatureDataset {
       countLocations(pfc);
 
       LatLonRect bb = pfc.getBoundingBox();
-      LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
+      LatLonRect bb2 = new LatLonRect.Builder(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2).build();
       PointFeatureCollection subset = pfc.subset(bb2, (CalendarDateRange) null);
       countLocations(subset);
 
@@ -587,7 +587,7 @@ public class CheckPointFeatureDataset {
 
       LatLonRect bb = sfc.getBoundingBox();
       assert bb != null;
-      LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
+      LatLonRect bb2 = new LatLonRect.Builder(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2).build();
       PointFeatureCollection pfcSub = sfc.flatten(bb2, (CalendarDateRange) null);
       System.out.printf("Unique Locations sub1 = %d %n", countLocations(pfcSub));
 

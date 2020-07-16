@@ -52,7 +52,7 @@ public class TestCoverageCrossSeamWriteFile {
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(10.0, 40.0), 50.0, 120.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(10.0, 40.0), 50.0, 120.0).build();
       writeTestFile(gcs, coverage, bbox, new int[] {1, 51, 121});
     }
   }
@@ -78,7 +78,7 @@ public class TestCoverageCrossSeamWriteFile {
       HorizCoordSys hcs = cs.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 120.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 120.0).build();
       writeTestFile(gcs, coverage, bbox, new int[] {1, 11, 121});
     }
   }
@@ -106,7 +106,7 @@ public class TestCoverageCrossSeamWriteFile {
       Assert.assertNotNull("HorizCoordSys", hcs);
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
-      LatLonRect bbox = new LatLonRect(LatLonPoint.create(40.0, -100.0), 10.0, 120.0);
+      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 120.0).build();
       writeTestFile(gcs, coverage, bbox, new int[] {1, 21, 241});
     }
   }

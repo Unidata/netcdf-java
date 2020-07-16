@@ -29,7 +29,7 @@ import ucar.unidata.util.Parameter;
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  */
 
-public class AtmosSigma extends VerticalTransformImpl {
+public class AtmosSigma extends AbstractVerticalTransform {
 
   /**
    * P-naught identifier

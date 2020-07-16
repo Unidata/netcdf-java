@@ -35,7 +35,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.util.StringUtil2;
@@ -437,7 +437,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     LambertConformal lc = new LambertConformal(rotation, centralLon, centralLat, centralLat);
     double lat0 = findAttributeDouble(ds, "lat00");
     double lon0 = findAttributeDouble(ds, "lon00");
-    ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj(LatLonPoint.create(lat0, lon0));
+    ProjectionPoint start = lc.latLonToProj(LatLonPoint.create(lat0, lon0));
     if (debugProj)
       parseInfo.format("getLCProjection start at proj coord %s%n", start);
     startx = start.getX();
@@ -462,7 +462,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     // we have to project in order to find the origin
     double lat0 = findAttributeDouble(ds, "lat00");
     double lon0 = findAttributeDouble(ds, "lon00");
-    ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(LatLonPoint.create(lat0, lon0));
+    ProjectionPoint start = proj.latLonToProj(LatLonPoint.create(lat0, lon0));
     startx = start.getX();
     starty = start.getY();
 
@@ -471,7 +471,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     double latN = findAttributeDouble(ds, "latNxNy");
     double lonN = findAttributeDouble(ds, "lonNxNy");
-    ProjectionPointImpl pt = (ProjectionPointImpl) proj.latLonToProj(LatLonPoint.create(latN, lonN));
+    ProjectionPoint pt = proj.latLonToProj(LatLonPoint.create(latN, lonN));
     parseInfo.format("                        end at proj coord %s%n", pt);
     parseInfo.format("                        scale= %f%n", scale);
 

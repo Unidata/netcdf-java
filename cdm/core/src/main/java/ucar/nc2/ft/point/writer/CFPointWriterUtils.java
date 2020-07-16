@@ -10,7 +10,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers.Member;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import java.util.Iterator;
@@ -68,27 +67,16 @@ public final class CFPointWriterUtils {
 
   public static LatLonRect getBoundingBox(List<? extends Station> stnList) {
     Station s = stnList.get(0);
-    LatLonPoint llpt = LatLonPoint.create(s.getLatitude(), s.getLongitude());
-    LatLonRect rect = new LatLonRect(llpt, 0, 0);
+    LatLonRect.Builder rect = new LatLonRect.Builder(s.getLatitude(), s.getLongitude());
 
     for (int i = 1; i < stnList.size(); i++) {
       s = stnList.get(i);
-      rect.extend(LatLonPoint.create(s.getLatitude(), s.getLongitude()));
+      rect.extend(s.getLatitude(), s.getLongitude());
     }
 
     // To give a little "wiggle room", we're going to slightly expand the bounding box.
-    double newLowerLeftLat = rect.getLowerLeftPoint().getLatitude() - .0005;
-    double newLowerLeftLon = rect.getLowerLeftPoint().getLongitude() - .0005;
-    LatLonPoint newLowerLeftPoint = LatLonPoint.create(newLowerLeftLat, newLowerLeftLon);
-
-    double newUpperRightLat = rect.getUpperRightPoint().getLatitude() + .0005;
-    double newUpperRightLon = rect.getUpperRightPoint().getLongitude() + .0005;
-    LatLonPoint newUpperRightPoint = LatLonPoint.create(newUpperRightLat, newUpperRightLon);
-
-    rect.extend(newLowerLeftPoint);
-    rect.extend(newUpperRightPoint);
-
-    return rect;
+    rect.expand(.0005);
+    return rect.build();
   }
 
   public static Attribute findCDMAtt(List<Attribute> atts, String attName) {

@@ -112,9 +112,6 @@ public class GridController {
   private boolean eventsOK = true;
   private boolean startOK;
 
-  // optimize GC
-  private ProjectionPoint projPoint = ProjectionPoint.create();
-
   // debugging
   private final boolean debugThread = false;
 
@@ -450,7 +447,7 @@ public class GridController {
     // get Pick events from the navigated panel
     np.addPickEventListener(new PickEventListener() {
       public void actionPerformed(PickEvent e) {
-        projPoint = e.getLocation();
+        ProjectionPoint projPoint = e.getLocation();
         int slice = renderGrid.findSliceFromPoint(projPoint);
         if (Debug.isSet("pick/event"))
           System.out.println("pick.event: " + projPoint + " " + slice);
@@ -465,7 +462,7 @@ public class GridController {
     // get Move events from the navigated panel
     np.addCursorMoveEventListener(new CursorMoveEventListener() {
       public void actionPerformed(CursorMoveEvent e) {
-        projPoint = e.getLocation();
+        ProjectionPoint projPoint = e.getLocation();
         String valueS = renderGrid.getXYvalueStr(projPoint);
         dataValueLabel.setText(valueS);
       }

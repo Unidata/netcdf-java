@@ -63,7 +63,8 @@ public class TestGempakPointFeature {
       sample = time < 1;
       DsgFeatureCollection fc = collectionList.get(0);
       PointFeatureCollection collection = null;
-      LatLonRect llr = new LatLonRect(LatLonPoint.create(33.4, -92.2), LatLonPoint.create(47.9, -75.89));
+      LatLonRect llr =
+          new LatLonRect.Builder(LatLonPoint.create(33.4, -92.2), LatLonPoint.create(47.9, -75.89)).build();
       System.out.println("llr = " + llr);
       if (fc instanceof PointFeatureCollection) {
         collection = (PointFeatureCollection) fc;

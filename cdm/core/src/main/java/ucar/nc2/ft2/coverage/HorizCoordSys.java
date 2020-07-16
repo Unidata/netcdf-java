@@ -483,7 +483,7 @@ public class HorizCoordSys {
       maxLon = Math.max(maxLon, boundaryPoint.getLongitude());
     }
 
-    return new LatLonRect(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon));
+    return new LatLonRect.Builder(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon)).build();
   }
 
   /**

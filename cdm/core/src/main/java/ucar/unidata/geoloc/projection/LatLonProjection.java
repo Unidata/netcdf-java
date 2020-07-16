@@ -173,7 +173,7 @@ public class LatLonProjection extends AbstractProjection {
     double deltaLon = world.getWidth();
 
     LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
-    return new LatLonRect(llpt, deltaLat, deltaLon);
+    return new LatLonRect.Builder(llpt, deltaLat, deltaLon).build();
   }
 
   /**

@@ -4,44 +4,29 @@
  */
 package ucar.unidata.geoloc;
 
+import com.google.auto.value.AutoValue;
 import ucar.nc2.util.Misc;
 
-/**
- * Points on the Projective geometry plane.
- *
- * TODO will be an Immutable class in ver6
- */
-public interface ProjectionPoint {
+/** Points on the Projective geometry plane. */
+@AutoValue
+public abstract class ProjectionPoint {
 
-  /** Standard way to create a ProjectionPoint. */
-  static ProjectionPoint create(double x, double y) {
-    return new ProjectionPointImpl(x, y);
+  /** Create a ProjectionPoint. */
+  public static ProjectionPoint create(double x, double y) {
+    return new AutoValue_ProjectionPoint(x, y);
   }
 
-  /** Standard way to create a "default" ProjectionPoint. */
-  static ProjectionPoint create() {
-    return new ProjectionPointImpl();
-  }
+  /** Get the X coordinate */
+  public abstract double getX();
 
-  /**
-   * Get the X coordinate
-   *
-   * @return the X coordinate
-   */
-  double getX();
-
-  /**
-   * Get the Y coordinate
-   *
-   * @return the Y coordinate
-   */
-  double getY();
+  /** Get the Y coordinate */
+  public abstract double getY();
 
   /**
    * Returns the result of {@link #nearlyEquals(ProjectionPoint, double)}, with
    * {@link Misc#defaultMaxRelativeDiffDouble}.
    */
-  default boolean nearlyEquals(ProjectionPoint other) {
+  public boolean nearlyEquals(ProjectionPoint other) {
     return nearlyEquals(other, Misc.defaultMaxRelativeDiffDouble);
   }
 
@@ -53,5 +38,12 @@ public interface ProjectionPoint {
    * @param maxRelDiff the maximum {@link Misc#relativeDifference relative difference} the two points may have.
    * @return {@code true} if this point is nearly equal to {@code other}.
    */
-  boolean nearlyEquals(ProjectionPoint other, double maxRelDiff);
+  public boolean nearlyEquals(ProjectionPoint other, double maxRelDiff) {
+    return Misc.nearlyEquals(getX(), other.getX(), maxRelDiff) && Misc.nearlyEquals(getY(), other.getY(), maxRelDiff);
+  }
+
+  public boolean isInfinite() {
+    return (getX() == java.lang.Double.POSITIVE_INFINITY) || (getX() == java.lang.Double.NEGATIVE_INFINITY)
+        || (getY() == java.lang.Double.POSITIVE_INFINITY) || (getY() == java.lang.Double.NEGATIVE_INFINITY);
+  }
 }

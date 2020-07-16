@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 /** Models the vertical coordinate for the Weather Research and Forecast (WRF) model's vertical Eta coordinate */
-public class WRFEta extends VerticalTransformImpl {
+public class WRFEta extends AbstractVerticalTransform {
   public static final String BasePressureVariable = "base_presure";
   public static final String PerturbationPressureVariable = "perturbation_presure";
   public static final String BaseGeopotentialVariable = "base_geopotential";

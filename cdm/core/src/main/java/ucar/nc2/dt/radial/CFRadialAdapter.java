@@ -135,7 +135,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
 
     double lat1 = origin.getLatitude() - dLat / 2;
     double lon1 = origin.getLongitude() - dLon / 2;
-    bb = new LatLonRect(LatLonPoint.create(lat1, lon1), dLat, dLon);
+    bb = new LatLonRect.Builder(LatLonPoint.create(lat1, lon1), dLat, dLon).build();
 
     boundingBox = bb;
   }

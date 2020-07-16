@@ -19,6 +19,9 @@ dependencies {
     api 'org.jdom:jdom2:2.0.6'
     api 'joda-time:joda-time:2.10.3' // replace by javax.time
 
+    // see https://github.com/google/auto/blob/master/value/userguide/index.md
+    api "com.google.auto.value:auto-value-annotations:1.7.4"
+
     // netcdf4, dap4:d4lib
     // Tricky dependency here. We need to make sure that we keep in-line with the version
     // that chronicle-map uses in the TDS, or else we see bad things happen on the TDS side.

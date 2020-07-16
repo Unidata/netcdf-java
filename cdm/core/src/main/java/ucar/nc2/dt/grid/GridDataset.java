@@ -157,7 +157,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   private ProjectionRect projBB;
 
   private void makeRanges() {
-
+    LatLonRect.Builder llbbBuilder = null;
     for (ucar.nc2.dt.GridDataset.Gridset gset : getGridsets()) {
       GridCoordSystem gcs = gset.getGeoCoordSystem();
 
@@ -168,10 +168,11 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
         projBB.add(bb);
 
       LatLonRect llbb = gcs.getLatLonBoundingBox();
-      if (llbbMax == null)
-        llbbMax = llbb;
-      else
-        llbbMax.extend(llbb);
+      if (llbbBuilder == null) {
+        llbbBuilder = llbb.toBuilder();
+      } else {
+        llbbBuilder = llbbBuilder.extend(llbb);
+      }
 
       CalendarDateRange dateRange = gcs.getCalendarDateRange();
       if (dateRange != null) {
@@ -180,6 +181,10 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
         else
           dateRangeMax = dateRangeMax.extend(dateRange);
       }
+    }
+
+    if (llbbBuilder != null) {
+      llbbMax = llbbBuilder.build();
     }
   }
 

@@ -4,7 +4,7 @@
  */
 package ucar.unidata.geoloc;
 
-import junit.framework.*;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.Format;
@@ -12,8 +12,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Random;
 
 /** Test basic projection methods */
-
-public class TestBasic extends TestCase {
+public class TestBasic {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final boolean debug1 = false;
@@ -21,16 +20,12 @@ public class TestBasic extends TestCase {
   private final boolean debug3 = false;
   private final boolean debug4 = false;
 
-  public TestBasic(String name) {
-    super(name);
-  }
-
   /////////////////// testLatLonArea /////////////////
 
   LatLonRect makeLatLonBoundingBox2(double lon1, double lon2) {
     LatLonPoint pt1 = LatLonPoint.create(-10.0, lon1);
     LatLonPoint pt2 = LatLonPoint.create(10.0, lon2);
-    LatLonRect llbb = new LatLonRect(pt1, pt2);
+    LatLonRect llbb = new LatLonRect.Builder(pt1, pt2).build();
     if (debug2)
       System.out.println(Format.formatDouble(lon1, 8, 5) + " " + Format.formatDouble(lon2, 8, 5) + " => " + llbb
           + " crossDateline= " + llbb.crossDateline());
@@ -39,7 +34,7 @@ public class TestBasic extends TestCase {
 
   LatLonRect makeLatLonBoundingBox(double lon, double loninc) {
     LatLonPoint pt = LatLonPoint.create(-10.0, lon);
-    LatLonRect llbb = new LatLonRect(pt, 20.0, loninc);
+    LatLonRect llbb = new LatLonRect.Builder(pt, 20.0, loninc).build();
     if (debug2)
       System.out.println(Format.formatDouble(lon, 8, 5) + " " + Format.formatDouble(loninc, 8, 5) + " => " + llbb
           + " crossDateline= " + llbb.crossDateline());
@@ -60,26 +55,28 @@ public class TestBasic extends TestCase {
   LatLonRect testExtend(LatLonRect b, LatLonPoint pt) {
     if (debug4)
       System.out.println("start " + b + " crossDateline= " + b.crossDateline());
-    b.extend(pt);
+    LatLonRect bextend = b.toBuilder().extend(pt).build();
     if (debug4)
-      System.out.println("extend " + pt + " ==> " + b + " crossDateline= " + b.crossDateline());
+      System.out.println("extend " + pt + " ==> " + b + " crossDateline= " + bextend.crossDateline());
     if (!debug4)
-      assert (b.contains(pt));
-    return b;
+      assert (bextend.contains(pt));
+    return bextend;
   }
 
+  @Test
   public void testGlobalBB() {
     Random rand = new Random(System.currentTimeMillis());
     int count = 0;
     while (count++ < 1000) {
       double r = 360. * rand.nextFloat() - 180;
-      LatLonRect llbb = new LatLonRect(LatLonPoint.create(20.0, r), 20.0, 360.0);
+      LatLonRect llbb = new LatLonRect.Builder(LatLonPoint.create(20.0, r), 20.0, 360.0).build();
       double r2 = 360. * rand.nextFloat() - 180;
       LatLonPoint p = LatLonPoint.create(30.0, r2);
       assert llbb.contains(p);
     }
   }
 
+  @Test
   public void testLatLonBoundingBox() {
     /* check constructors */
     assert (makeLatLonBoundingBox(140.0, 50.0).equals(makeLatLonBoundingBox(190.0, -50.0)));
@@ -167,6 +164,7 @@ public class TestBasic extends TestCase {
     }
   }
 
+  @Test
   public void testLatLonNormal() {
     runCenter(10.45454545454547);
     runCenter(110.45454545454547);

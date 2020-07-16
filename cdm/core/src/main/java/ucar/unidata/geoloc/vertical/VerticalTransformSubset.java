@@ -19,7 +19,7 @@ import ucar.unidata.geoloc.VerticalTransform;
  *
  * @author Unidata Development Team
  */
-public class VerticalTransformSubset extends VerticalTransformImpl {
+public class VerticalTransformSubset extends AbstractVerticalTransform {
 
   private VerticalTransform original;
   private Range t_range;

@@ -229,20 +229,18 @@ public abstract class AbstractProjection implements Projection {
     LatLonRect llbb;
 
     if (includesNorthPole && !includesSouthPole) {
-      llbb = new LatLonRect(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
-      llbb.extend(lrpt);
-      llbb.extend(urpt);
-      llbb.extend(ulpt);
-      // OR
-      // llbb.extend( new LatLonRect( llpt, lrpt ));
-      // llbb.extend( new LatLonRect( lrpt, urpt ) );
-      // llbb.extend( new LatLonRect( urpt, ulpt ) );
-      // llbb.extend( new LatLonRect( ulpt, llpt ) );
+      LatLonRect.Builder builder = new LatLonRect.Builder(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
+      builder.extend(lrpt);
+      builder.extend(urpt);
+      builder.extend(ulpt);
+      llbb = builder.build();
+
     } else if (includesSouthPole && !includesNorthPole) {
-      llbb = new LatLonRect(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
-      llbb.extend(lrpt);
-      llbb.extend(urpt);
-      llbb.extend(ulpt);
+      LatLonRect.Builder builder = new LatLonRect.Builder(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
+      builder.extend(lrpt);
+      builder.extend(urpt);
+      builder.extend(ulpt);
+      llbb = builder.build();
 
     } else {
       double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
@@ -252,9 +250,10 @@ public abstract class AbstractProjection implements Projection {
       double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
       double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
 
-      LatLonPoint min = LatLonPoint.create(latMin, lonMin);
-      LatLonPoint max = LatLonPoint.create(latMax, lonMax);
-      llbb = new LatLonRect(min, max);
+      LatLonPoint ll = LatLonPoint.create(latMin, lonMin);
+      LatLonPoint ur = LatLonPoint.create(latMax, lonMax);
+
+      llbb = new LatLonRect.Builder(ll, ur).build();
     }
 
     return llbb;

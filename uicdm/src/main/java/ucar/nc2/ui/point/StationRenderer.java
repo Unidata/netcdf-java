@@ -251,8 +251,8 @@ class StationRenderer implements Renderer {
     private ucar.unidata.geoloc.Station ddStation;
     private String id;
 
-    private LatLonPoint latlonPos = LatLonPoint.create(); // latlon pos
-    private ProjectionPoint worldPos = ProjectionPoint.create();// world pos
+    private LatLonPoint latlonPos; // latlon pos
+    private ProjectionPoint worldPos = ProjectionPoint.create(0, 0);// world pos
     private Point2D.Double screenPos = new Point2D.Double(); // normalized screen pos
 
     private Rectangle2D bb; // bounding box, in normalized screen coords, loc = 0, 0

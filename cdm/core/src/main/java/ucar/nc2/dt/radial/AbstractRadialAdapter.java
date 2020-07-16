@@ -91,18 +91,20 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
 
   // you must set EarthLocation before you call this.
   protected void setBoundingBox() {
-    LatLonRect largestBB = null;
+    LatLonRect.Builder largestBB = null;
     // look through all the coord systems
     for (Object o : csHash.values()) {
       RadialCoordSys sys = (RadialCoordSys) o;
       sys.setOrigin(origin);
       LatLonRect bb = sys.getBoundingBox();
-      if (largestBB == null)
-        largestBB = bb;
-      else if (bb != null)
-        largestBB.extend(bb);
+      if (largestBB == null) {
+        largestBB = bb.toBuilder();
+      } else {
+        largestBB = largestBB.extend(bb);
+      }
     }
-    boundingBox = largestBB;
+
+    boundingBox = largestBB == null ? null : largestBB.build();
   }
 
 

@@ -22,7 +22,7 @@ import java.util.List;
  * @author murray
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  */
-public class HybridHeight extends VerticalTransformImpl {
+public class HybridHeight extends AbstractVerticalTransform {
 
   /**
    * Surface pressure name identifier

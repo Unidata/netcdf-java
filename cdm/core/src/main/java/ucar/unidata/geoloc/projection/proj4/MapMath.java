@@ -17,7 +17,6 @@
 package ucar.unidata.geoloc.projection.proj4;
 
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 
 /**
@@ -243,7 +242,7 @@ class MapMath {
   public static final int COLLINEAR = 2;
 
   public static int intersectSegments(ProjectionPoint aStart, ProjectionPoint aEnd, ProjectionPoint bStart,
-      ProjectionPoint bEnd, ProjectionPointImpl p) {
+      ProjectionPoint bEnd) {
     double a1, a2, b1, b2, c1, c2;
     double r1, r2, r3, r4;
     double denom, offset, num;
@@ -269,14 +268,6 @@ class MapMath {
     denom = a1 * b2 - a2 * b1;
     if (denom == 0)
       return COLLINEAR;
-
-    offset = denom < 0 ? -denom / 2 : denom / 2;
-
-    num = b1 * c2 - b2 * c1;
-    p.setX((num < 0 ? num - offset : num + offset) / denom);
-
-    num = a2 * c1 - a1 * c2;
-    p.setY((num < 0 ? num - offset : num + offset) / denom);
 
     return DO_INTERSECT;
   }
@@ -309,13 +300,13 @@ class MapMath {
     return x1 * y2 - x2 * y1;
   }
 
-  public static void normalize(ProjectionPointImpl a) {
+  public static ProjectionPoint normalize(ProjectionPoint a) {
     double d = distance(a.getX(), a.getY());
-    a.setLocation(a.getX() / d, a.getY() / d);
+    return ProjectionPoint.create(a.getX() / d, a.getY() / d);
   }
 
-  public static void negate(ProjectionPointImpl a) {
-    a.setLocation(-a.getX(), -a.getY());
+  public static ProjectionPoint negate(ProjectionPoint a) {
+    return ProjectionPoint.create(-a.getX(), -a.getY());
   }
 
   public static double longitudeDistance(double l1, double l2) {

@@ -482,7 +482,7 @@ class Giniheader {
     if (projection != null)
       start = projection.latLonToProj(LatLonPoint.create(lat1, lon1));
     else
-      start = ProjectionPoint.create();
+      start = ProjectionPoint.create(0, 0);
     if (debug)
       log.warn("start at proj coord " + start);
 
