@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft.point;
 
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
@@ -32,7 +33,7 @@ public class StationHelper {
 
   public void addStation(StationFeature s) {
     stations.add(s);
-    stationHash.put(s.getName(), s);
+    stationHash.put(s.getStation().getName(), s);
   }
 
   public void setStations(List<StationFeature> nstations) {
@@ -51,13 +52,13 @@ public class StationHelper {
       if (stations.isEmpty())
         return null;
 
-      Station s = stations.get(0);
+      Station s = stations.get(0).getStation();
       LatLonRect.Builder builder = new LatLonRect.Builder(s.getLatitude(), s.getLongitude());
       if (debug)
         System.out.println("start=" + s.getLatitude() + " " + s.getLongitude() + " rect= " + rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
-        s = stations.get(i);
+        s = stations.get(i).getStation();
         builder.extend(LatLonPoint.create(s.getLatitude(), s.getLongitude()));
         if (debug)
           System.out.println("add=" + s.getLatitude() + " " + s.getLongitude() + " rect= " + rect.toString2());
@@ -77,7 +78,8 @@ public class StationHelper {
       return getStations();
 
     List<Station> result = new ArrayList<>();
-    for (StationFeature s : stations) {
+    for (StationFeature sf : stations) {
+      Station s = sf.getStation();
       LatLonPoint latlonPt = LatLonPoint.create(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt))
         result.add(s);
@@ -90,10 +92,11 @@ public class StationHelper {
       return stations;
 
     List<StationFeature> result = new ArrayList<>();
-    for (StationFeature s : stations) {
+    for (StationFeature sf : stations) {
+      Station s = sf.getStation();
       LatLonPoint latlonPt = LatLonPoint.create(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt))
-        result.add(s);
+        result.add(sf);
     }
     return result;
   }
@@ -107,9 +110,7 @@ public class StationHelper {
   }
 
   public List<Station> getStations() {
-    List<Station> result = new ArrayList<>(stations.size());
-    result.addAll(stations);
-    return result;
+    return stations.stream().map(sf -> sf.getStation()).collect(Collectors.toList());
   }
 
   public List<StationFeature> getStationFeaturesFromNames(List<String> stnNames) {
@@ -139,9 +140,9 @@ public class StationHelper {
   public List<Station> getStations(List<String> stnNames) {
     List<Station> result = new ArrayList<>(stnNames.size());
     for (String ss : stnNames) {
-      Station s = stationHash.get(ss);
-      if (s != null)
-        result.add(s);
+      StationFeature sf = stationHash.get(ss);
+      if (sf != null)
+        result.add(sf.getStation());
     }
     return result;
   }

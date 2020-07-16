@@ -19,10 +19,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.StationImpl;
 
 /**
  * Abstract superclass for implementations of StationProfileFeature.
@@ -39,7 +37,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
   public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
       CalendarDateUnit timeUnit, String altUnits, int npts) {
     super(name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
-    station = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
+    station = new Station(name, desc, wmoId, lat, lon, alt, npts);
     this.timeSeriesNpts = npts;
   }
 
@@ -55,54 +53,13 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
   }
 
   @Override
-  public String getWmoId() {
-    return station.getWmoId();
+  public Station getStation() {
+    return station;
   }
 
   @Override
   public int size() {
     return timeSeriesNpts;
-  }
-
-  @Nonnull
-  @Override
-  public String getName() {
-    return station.getName();
-  }
-
-  @Override
-  public String getDescription() {
-    return station.getDescription();
-  }
-
-  @Override
-  public double getLatitude() {
-    return station.getLatitude();
-  }
-
-  @Override
-  public double getLongitude() {
-    return station.getLongitude();
-  }
-
-  @Override
-  public double getAltitude() {
-    return station.getAltitude();
-  }
-
-  @Override
-  public LatLonPoint getLatLon() {
-    return station.getLatLon();
-  }
-
-  @Override
-  public boolean isMissing() {
-    return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
-  }
-
-  @Override
-  public int compareTo(@Nonnull Station so) {
-    return station.getName().compareTo(so.getName());
   }
 
   // @Override

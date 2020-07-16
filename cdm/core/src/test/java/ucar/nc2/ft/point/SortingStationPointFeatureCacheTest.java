@@ -91,7 +91,7 @@ public class SortingStationPointFeatureCacheTest {
     try (PointFeatureIterator iter = cache.getPointFeatureIterator()) {
       while (iter.hasNext()) {
         StationPointFeature stationPointFeat = (StationPointFeature) iter.next();
-        actualStationNames.add(stationPointFeat.getStation().getName());
+        actualStationNames.add(stationPointFeat.getAsStationFeature().getStation().getName());
       }
     }
 
@@ -104,7 +104,8 @@ public class SortingStationPointFeatureCacheTest {
     Comparator<StationPointFeature> longestStationNameFirst = new Comparator<StationPointFeature>() {
       @Override
       public int compare(StationPointFeature o1, StationPointFeature o2) {
-        return -Integer.compare(o1.getStation().getName().length(), o2.getStation().getName().length());
+        return -Integer.compare(o1.getAsStationFeature().getStation().getName().length(),
+            o2.getAsStationFeature().getStation().getName().length());
       }
     };
     SortingStationPointFeatureCache cache = new SortingStationPointFeatureCache(longestStationNameFirst);

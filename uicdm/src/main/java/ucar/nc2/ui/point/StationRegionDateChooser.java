@@ -29,7 +29,6 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-
 /**
  * A Swing widget for THREDDS clients to choose a station and/or a region from navigatable map.
  * <p/>
@@ -56,7 +55,7 @@ import java.beans.PropertyChangeListener;
 
 /*
  * implementation note:
- * do we wnat to remove actionSource ? we have setSelectedStation instead.
+ * do we want to remove actionSource ? we have setSelectedStation instead.
  */
 public class StationRegionDateChooser extends NPController {
   private boolean regionSelect, stationSelect, dateSelect;

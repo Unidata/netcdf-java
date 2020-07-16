@@ -98,8 +98,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         }
 
         stationProfileData = sdataIter.next();
-        Station s = ft.makeStation(stationProfileData);
-        if (s == null)
+        StationFeature sf = ft.makeStation(stationProfileData);
+        if (sf == null)
           continue; // skip missing station ids
         if (!ft.isFeatureMissing(stationProfileData))
           break;
@@ -134,8 +134,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     // int recnum;
     Cursor cursor;
 
-    StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) {
-      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(),
+    StandardStationProfileFeature(StationFeature s, Cursor cursor, StructureData stationProfileData, int recnum) {
+      super(s.getStation(), StandardStationProfileCollectionImpl.this.getTimeUnit(),
           StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       // this.recnum = recnum;

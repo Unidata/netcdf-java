@@ -103,7 +103,7 @@ public class PointTestUtil {
 
     if (!equals((PointFeature) stationPointFeat1, stationPointFeat2)) {
       return false;
-    } else if (!equals(stationPointFeat1.getStation(), stationPointFeat2.getStation())) {
+    } else if (!equals(stationPointFeat1.getAsStationFeature(), stationPointFeat2.getAsStationFeature())) {
       return false;
     }
 
@@ -117,7 +117,7 @@ public class PointTestUtil {
       return false;
     }
 
-    if (!equals((Station) stationFeat1, stationFeat2)) {
+    if (!equals(stationFeat1, stationFeat2)) {
       return false;
     } else if (!equals(stationFeat1.getFeatureData(), stationFeat2.getFeatureData())) {
       return false;

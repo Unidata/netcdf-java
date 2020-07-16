@@ -220,30 +220,27 @@ public class CoverageAsPoint {
     }
 
     private class MyPointFeature extends PointFeatureImpl implements StationPointFeature {
-      StationFeature stn;
+      StationFeature stationFeature;
       StructureData sdata;
 
       MyPointFeature(StationFeature stn, double obsTime, double nomTime, CalendarDateUnit timeUnit,
           StructureData sdata) {
-        super(MyStationFeature.this, stn, obsTime, nomTime, timeUnit);
-        this.stn = stn;
+        super(MyStationFeature.this, stn.getStation(), obsTime, nomTime, timeUnit);
+        this.stationFeature = stn;
         this.sdata = sdata;
       }
 
       @Override
-      @Nonnull
-      public StationFeature getStation() {
-        return stn;
+      public StationFeature getAsStationFeature() {
+        return stationFeature;
       }
 
       @Override
-      @Nonnull
       public StructureData getFeatureData() {
         return sdata;
       }
 
       @Override
-      @Nonnull
       public StructureData getDataAll() {
         return sdata;
       }
