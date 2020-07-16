@@ -9,11 +9,10 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
-import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ft.point.writer2.CFPointWriter;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -22,7 +21,6 @@ import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NetcdfFileFormat;
-import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.util.Resource;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentDialog;
@@ -368,8 +366,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     try {
-      Version version = NetcdfFormatWriter.convertToNetcdfFileWriterVersion(data.format);
-      int count = CFPointWriter.writeFeatureCollection(pfDataset, data.outputFilename, version);
+      int count = CFPointWriter.writeFeatureCollection(pfDataset, data.outputFilename, data.format);
       JOptionPane.showMessageDialog(this, count + " records written");
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
