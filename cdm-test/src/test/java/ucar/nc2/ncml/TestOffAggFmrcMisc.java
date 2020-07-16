@@ -39,6 +39,7 @@ import thredds.client.catalog.ServiceType;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -83,7 +84,7 @@ public class TestOffAggFmrcMisc {
   @Test
   public void testScaling2() throws Exception {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location + "fine.ncml");
-    NetcdfFile ncfile = NetcdfDataset.acquireFile(durl, null);
+    NetcdfFile ncfile = NetcdfDatasets.acquireFile(durl, null);
 
     // make sure that scaling is applied
     VariableDS vs = (VariableDS) ncfile.findVariable("hs");

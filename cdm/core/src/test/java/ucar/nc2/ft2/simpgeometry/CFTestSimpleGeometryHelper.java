@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 
 /**
@@ -59,7 +60,7 @@ public class CFTestSimpleGeometryHelper {
 
 
   public CFTestSimpleGeometryHelper() throws IOException {
-    dataset = NetcdfDataset.openDataset(path);
-    datasetReverse = NetcdfDataset.openDataset(pathReverse);
+    dataset = NetcdfDatasets.openDataset(path);
+    datasetReverse = NetcdfDatasets.openDataset(pathReverse);
   }
 }

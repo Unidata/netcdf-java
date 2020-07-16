@@ -19,6 +19,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +98,7 @@ public class TestWriteMiscProblems {
     String outName = tempFolder.newFile().getAbsolutePath();
 
     DatasetUrl durl = DatasetUrl.create(null, inName);
-    try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, true, null)) {
       assert ncd.removeVariable(null, "temperature");
       ncd.finish();
       NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(outName);
@@ -108,7 +109,7 @@ public class TestWriteMiscProblems {
     }
 
     DatasetUrl durl2 = DatasetUrl.create(null, outName);
-    try (NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(durl2, true, null)) {
+    try (NetcdfDataset ncdnew2 = NetcdfDatasets.acquireDataset(durl2, true, null)) {
       assert ncdnew2.findVariable("temperature") == null;
     }
   }

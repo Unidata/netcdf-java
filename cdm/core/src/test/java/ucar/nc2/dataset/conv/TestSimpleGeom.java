@@ -8,6 +8,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +27,7 @@ public class TestSimpleGeom {
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
 
     // open the test file
-    NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile);
 
     // make sure this dataset used the cfConvention
     expected = cfConvention;
@@ -56,7 +57,7 @@ public class TestSimpleGeom {
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/outflow_3seg_5timesteps_vlen.nc";
 
     // open the test file
-    NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile);
 
     // make sure this dataset used the cfConvention
     expected = cfConvention;
@@ -81,7 +82,7 @@ public class TestSimpleGeom {
   public void testCoordinateVariable() throws IOException {
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array data = axis.read();
@@ -94,7 +95,7 @@ public class TestSimpleGeom {
   public void testVarLenDataVariable() throws IOException {
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/outflow_3seg_5timesteps_vlen.nc";
     // open the test file
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
         Array data = axis.read();

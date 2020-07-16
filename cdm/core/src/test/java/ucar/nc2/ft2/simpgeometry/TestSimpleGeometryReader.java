@@ -4,6 +4,7 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.simpgeometry.GeometryType;
 import ucar.nc2.ft2.simpgeometry.Line;
 import ucar.nc2.ft2.simpgeometry.Point;
@@ -22,7 +23,7 @@ public class TestSimpleGeometryReader {
   private SimpleGeometryReader openReaderOverFile(String filename) throws IOException {
     String filepath = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/" + filename;
     NetcdfDataset dataset = null;
-    dataset = NetcdfDataset.openDataset(filepath);
+    dataset = NetcdfDatasets.openDataset(filepath);
     return new SimpleGeometryReader(dataset);
   }
 

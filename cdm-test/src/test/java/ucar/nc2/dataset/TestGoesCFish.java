@@ -24,14 +24,7 @@ public class TestGoesCFish {
   private static String testFile = TestDir.cdmUnitTestDir + "/conventions/cf/cf-ish/OR_EFD-060.nc";
 
   @Test
-  public void testBadProjVarAttrsOld() throws IOException {
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testFile)) {
-      checkAxis(ncd);
-    }
-  }
-
-  @Test
-  public void testBadProjVarAttrsNew() throws IOException {
+  public void testBadProjVarAttrs() throws IOException {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testFile)) {
       checkAxis(ncd);
     }

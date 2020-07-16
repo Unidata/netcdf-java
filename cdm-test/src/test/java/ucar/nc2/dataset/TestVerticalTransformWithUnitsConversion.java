@@ -79,7 +79,7 @@ public class TestVerticalTransformWithUnitsConversion {
   public void shouldGetSameVerticalProfile() throws IOException, InvalidRangeException {
     System.out.printf("Open %s%n", sameUnitsFile);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(sameUnitsFile);
-    NetcdfDataset dsGood = NetcdfDataset.acquireDataset(durl, true, null);
+    NetcdfDataset dsGood = NetcdfDatasets.acquireDataset(durl, true, null);
     GridDataset gdsGood = new GridDataset(dsGood);
 
     GeoGrid gridGood = gdsGood.findGridByName(var);
@@ -88,7 +88,7 @@ public class TestVerticalTransformWithUnitsConversion {
 
     double[] dataGood = getVertTransformationForPoint(pp, 0, gridGood);
 
-    NetcdfDataset dsDiff = NetcdfDataset.acquireDataset(durl, true, null);
+    NetcdfDataset dsDiff = NetcdfDatasets.acquireDataset(durl, true, null);
     GridDataset gdsDiff = new GridDataset(dsDiff);
 
     GeoGrid gridDiff = gdsDiff.findGridByName(var);

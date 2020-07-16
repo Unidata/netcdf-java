@@ -8,6 +8,7 @@ package ucar.nc2.ui.menu;
 import com.google.common.collect.ImmutableList;
 import java.util.Set;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -49,7 +50,7 @@ public class SystemMenu extends JMenu {
         }
         f.format("%nNetcdfFileCache contents%n");
 
-        FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+        FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
         if (null != cache) {
           cache.showCache(f);
         }
@@ -75,7 +76,7 @@ public class SystemMenu extends JMenu {
     AbstractAction clearCacheAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+        FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
         if (cache != null)
           cache.clearCache(true);
       }
@@ -92,14 +93,14 @@ public class SystemMenu extends JMenu {
         }
         isCacheInit = state;
         if (isCacheInit) {
-          FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+          FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
           if (cache != null) {
             cache.enable();
           } else {
-            NetcdfDataset.initNetcdfFileCache(10, 20, 10 * 60);
+            NetcdfDatasets.initNetcdfFileCache(10, 20, 10 * 60);
           }
         } else {
-          FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+          FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
           if (cache != null) {
             cache.disable();
           }

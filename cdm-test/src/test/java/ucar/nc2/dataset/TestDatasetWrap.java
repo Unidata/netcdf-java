@@ -52,10 +52,10 @@ public class TestDatasetWrap {
 
   @Test
   public void doOne() throws Exception {
-    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(durl, null);
+    try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(durl, null);
         NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
 
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
+      NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, true, null);
       System.out.println(" dataset wraps= " + durl.trueurl);
 
       Assert.assertTrue(CompareNetcdf2.compareFiles(ncd, ncWrap, new Formatter()));

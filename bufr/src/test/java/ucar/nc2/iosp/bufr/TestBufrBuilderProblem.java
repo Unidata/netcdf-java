@@ -50,7 +50,7 @@ public class TestBufrBuilderProblem {
         TestDir.cdmUnitTestDir + "/formats/bufr/userExamples/US058MCUS-BUFtdp.SPOUT_00011_buoy_20091101021700.bufr";
     System.out.printf("Compare %s%n", fileLocation);
     logger.info("TestCoordSysCompare on {}%n", fileLocation);
-    try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
+    try (NetcdfDataset org = NetcdfDatasets.openDataset(fileLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);

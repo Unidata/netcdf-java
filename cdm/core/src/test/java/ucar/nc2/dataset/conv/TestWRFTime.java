@@ -22,7 +22,7 @@ public class TestWRFTime {
     String tstFile = TestDir.cdmLocalTestDataDir + "wrf/WrfTimesStrUnderscore.nc";
     System.out.println(tstFile);
     String wrfConvention = new WRFConvention().getConventionUsed();
-    NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile);
     // make sure this file went through the WrfConvention
     assert ncd.getConventionUsed().equals(wrfConvention);
     CoordinateAxis tca = ncd.findCoordinateAxis(AxisType.Time);
@@ -45,7 +45,7 @@ public class TestWRFTime {
     EnumSet<NetcdfDataset.Enhance> enhanceMode = EnumSet.copyOf(defaultEnhanceMode);
     enhanceMode.add(NetcdfDataset.Enhance.IncompleteCoordSystems);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(tstFile);
-    NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, enhanceMode, null);
+    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, enhanceMode, null);
 
     List<CoordinateSystem> cs = ncd.getCoordinateSystems();
     Assert.assertEquals(1, cs.size());

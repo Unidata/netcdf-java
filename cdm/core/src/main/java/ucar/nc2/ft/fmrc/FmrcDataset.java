@@ -34,6 +34,7 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.VariableDS;
@@ -1080,10 +1081,10 @@ class FmrcDataset {
     }
 
     if (config.innerNcml == null) {
-      ncd = NetcdfDataset.acquireDataset(DatasetUrl.create(null, location), true, null); // default enhance
+      ncd = NetcdfDatasets.acquireDataset(DatasetUrl.create(null, location), true, null); // default enhance
 
     } else {
-      NetcdfFile nc = NetcdfDataset.acquireFile(DatasetUrl.create(null, location), null);
+      NetcdfFile nc = NetcdfDatasets.acquireFile(DatasetUrl.create(null, location), null);
       ncd = NcMLReader.mergeNcML(nc, config.innerNcml); // create new dataset
       ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
     }

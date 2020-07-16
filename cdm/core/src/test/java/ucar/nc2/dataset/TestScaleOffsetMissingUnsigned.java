@@ -138,7 +138,7 @@ public class TestScaleOffsetMissingUnsigned {
     File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
     // LOOK removeEnhancement does not work in new
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
 
       double expectedFillValue = .99999;
@@ -176,7 +176,7 @@ public class TestScaleOffsetMissingUnsigned {
     File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
 
     // LOOK removeEnhancement does not work in new
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
       fooVar.removeEnhancement(Enhance.ConvertMissing);
 

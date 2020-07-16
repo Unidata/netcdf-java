@@ -286,9 +286,7 @@ public class NcmlEditor extends JPanel {
 
   private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
     try {
-      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
-      return useBuilders ? NetcdfDatasets.openDataset(location, addCoords, task)
-          : NetcdfDataset.openDataset(location, addCoords, task);
+      return NetcdfDatasets.openDataset(location, addCoords, task);
 
       // if (setUseRecordStructure)
       // ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -344,8 +342,7 @@ public class NcmlEditor extends JPanel {
       return;
     }
     boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
-    try (NetcdfDataset ncd =
-        useBuilders ? NetcdfDatasets.openDataset(ncmlLocation) : NetcdfDataset.openDataset(ncmlLocation)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(ncmlLocation)) {
       ncd.check(f);
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

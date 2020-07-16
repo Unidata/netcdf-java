@@ -19,6 +19,7 @@ import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.time.CalendarDate;
@@ -77,15 +78,15 @@ public class TestAggFmrc {
       varExplicit = ncfileScan.findVariable(AGG_VAR_NAME);
       valuesExplicit = varExplicit.read();
 
-      ncfileA = NetcdfDataset.openDataset(filenameA);
+      ncfileA = NetcdfDatasets.openDataset(filenameA);
       varA = ncfileA.findVariable(AGG_VAR_NAME);
       valuesA = varA.read();
 
-      ncfileB = NetcdfDataset.openDataset(filenameB);
+      ncfileB = NetcdfDatasets.openDataset(filenameB);
       varB = ncfileB.findVariable(AGG_VAR_NAME);
       valuesB = varB.read();
 
-      ncfileC = NetcdfDataset.openDataset(filenameC);
+      ncfileC = NetcdfDatasets.openDataset(filenameC);
       varC = ncfileC.findVariable(AGG_VAR_NAME);
       valuesC = varC.read();
 

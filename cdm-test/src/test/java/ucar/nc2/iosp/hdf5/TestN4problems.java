@@ -15,6 +15,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.DebugFlagsImpl;
@@ -80,14 +81,14 @@ public class TestN4problems {
 
   // @Test
   public void utestEnum2() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = NetcdfDataset.openFile("D:/netcdf4/tst_enum_data.nc", null);
+    NetcdfFile ncfile = NetcdfDatasets.openFile("D:/netcdf4/tst_enum_data.nc", null);
     Variable v2 = ncfile.findVariable("primary_cloud");
     assert v2 != null;
 
     Array data = v2.read();
     assert data.getElementType() == byte.class;
 
-    NetcdfDataset ncd = NetcdfDataset.openDataset("D:/netcdf4/tst_enum_data.nc");
+    NetcdfDataset ncd = NetcdfDatasets.openDataset("D:/netcdf4/tst_enum_data.nc");
     v2 = ncd.findVariable("primary_cloud");
     assert v2 != null;
 

@@ -67,7 +67,7 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDataset() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
     System.out.printf("Open %s%n", ncfile.getLocation());
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
@@ -121,7 +121,7 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
-    try (NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc")) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc")) {
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");
       assert null != v;
       assert v.getDataType() == DataType.FLOAT;

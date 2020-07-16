@@ -18,6 +18,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
@@ -43,7 +44,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     String location = TestDir.cdmUnitTestDir + "ncml/nc/namExtract/test_agg.ncml";
     logger.debug(" TestOffAggExistingTimeUnitsChange.open {}", location);
 
-    NetcdfFile ncfile = NetcdfDataset.openFile(location, null);
+    NetcdfFile ncfile = NetcdfDatasets.openFile(location, null);
 
     Variable v = ncfile.findVariable("time");
 
