@@ -252,7 +252,7 @@ public class TestReadRecord {
   // This only works on old iosp
   @Test
   public void testDatasetAddRecordAfter() throws InvalidRangeException, IOException {
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc")) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc")) {
       assert (Boolean) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
       // record variable

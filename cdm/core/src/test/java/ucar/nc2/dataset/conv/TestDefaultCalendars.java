@@ -10,6 +10,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxisTimeHelper;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
@@ -35,7 +36,7 @@ public class TestDefaultCalendars {
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/cfMissingCalendarAttr.nc";
 
     // open the test file
-    NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile);
 
     // make sure this dataset used the cfConvention
     expected = cfConvention;
@@ -93,7 +94,7 @@ public class TestDefaultCalendars {
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/coardsMissingCalendarAttr.nc";
 
     // open the test file
-    NetcdfDataset ncd = NetcdfDataset.openDataset(tstFile);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile);
 
     // make sure this dataset used the coardsConvention
     found = ncd.getConventionUsed();

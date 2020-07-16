@@ -8,6 +8,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.simpgeometry.GeometryType;
 import ucar.nc2.ft2.simpgeometry.Polygon;
 import ucar.nc2.ft2.simpgeometry.SimpleGeometry;
@@ -26,7 +27,7 @@ public class TestSimpleGeometryCSAll {
   @Test
   public void testSimpleGeometryBuildCS() throws IOException, InvalidRangeException {
     NetcdfDataset data =
-        NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_3hru_5timestep.nc");
+        NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_3hru_5timestep.nc");
     List<CoordinateSystem> csl = data.getCoordinateSystems();
     SimpleGeometryCSBuilder builder = new SimpleGeometryCSBuilder(data, csl.get(0), null);
     Variable hru_test = data.findVariable("hru_soil_moist");

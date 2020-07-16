@@ -38,7 +38,7 @@ public class TestDatasetWrapProblem {
   private void doOne(String filename) throws Exception {
     try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(DatasetUrl.create(null, filename), null);
         NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true);
-        NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.create(null, filename), true, null)) {
+        NetcdfDataset ncd = NetcdfDatasets.acquireDataset(DatasetUrl.create(null, filename), true, null)) {
       System.out.println(" dataset wraps= " + filename);
       Assert.assertTrue(CompareNetcdf2.compareFiles(ncd, ncWrap, new Formatter()));
     }

@@ -84,7 +84,7 @@ public class AggPanel extends OpPanel {
         }
       }
       boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
-      ncd = useBuilders ? NetcdfDatasets.openDataset(command) : NetcdfDataset.openDataset(command);
+      ncd = NetcdfDatasets.openDataset(command);
       aggTable.setAggDataset(ncd);
     } catch (FileNotFoundException ioe) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());

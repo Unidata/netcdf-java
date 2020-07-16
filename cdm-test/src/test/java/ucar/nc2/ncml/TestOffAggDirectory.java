@@ -17,6 +17,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -47,7 +48,7 @@ public class TestOffAggDirectory extends TestCase {
   public void testNcmlDataset() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.openDataset {}", filename);
 
     testDimensions(ncfile);

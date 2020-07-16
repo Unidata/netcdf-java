@@ -157,15 +157,6 @@ public class DatasetViewer extends JPanel {
     compareButton.addActionListener(e -> compareDataset());
     buttPanel.add(compareButton);
 
-    AbstractButton builderButton = BAMutil.makeButtcon("Select", "Compare w/wo builder", false);
-    builderButton.addActionListener(e -> {
-      if (useCoords)
-        compareBuilderDS();
-      else
-        compareBuilder();
-    });
-    buttPanel.add(builderButton);
-
     AbstractAction attAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         showAtts();
@@ -253,29 +244,6 @@ public class DatasetViewer extends JPanel {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
         boolean ok = compare.compare(org, withBuilder, new CoordsObjFilter());
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.setTitle("Compare Old (file1) with Builder (file 2)");
-        infoWindow.show();
-      }
-    } catch (Throwable ioe) {
-      StringWriter sw = new StringWriter(10000);
-      ioe.printStackTrace(new PrintWriter(sw));
-      infoTA.setText(sw.toString());
-      infoTA.gotoTop();
-      infoWindow.show();
-    }
-  }
-
-  private void compareBuilderDS() {
-    if (ds == null)
-      return;
-    String fileLocation = ds.getLocation();
-    try (NetcdfDataset org = NetcdfDataset.openDataset(fileLocation)) {
-      try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(fileLocation)) {
-        Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        compare.compare(org, withBuilder, new CoordsObjFilter());
         infoTA.setText(f.toString());
         infoTA.gotoTop();
         infoWindow.setTitle("Compare Old (file1) with Builder (file 2)");

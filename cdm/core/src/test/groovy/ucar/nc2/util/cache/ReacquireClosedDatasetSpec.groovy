@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import ucar.nc2.dataset.DatasetUrl
 import ucar.nc2.dataset.NetcdfDataset
+import ucar.nc2.dataset.NetcdfDatasets
 import ucar.unidata.util.test.TestDir
 
 /**
@@ -18,12 +19,12 @@ class ReacquireClosedDatasetSpec extends Specification {
     
     def setupSpec() {
         // All datasets, once opened, will be added to this cache. Config values copied from CdmInit.
-        NetcdfDataset.initNetcdfFileCache(100, 150, 12 * 60);
+        NetcdfDatasets.initNetcdfFileCache(100, 150, 12 * 60);
     }
 
     def cleanupSpec() {
         // Undo global changes we made in setupSpec() so that they do not affect subsequent test classes.
-        NetcdfDataset.shutdown();
+        NetcdfDatasets.shutdown();
     }
 
     def "reacquire"() {
@@ -32,12 +33,12 @@ class ReacquireClosedDatasetSpec extends Specification {
 
         when: 'Acquire and close dataset 4 times'
         (1..4).each {
-            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(location), true, null).close()
+            NetcdfDatasets.acquireDataset(DatasetUrl.findDatasetUrl(location), true, null).close()
         }
 
         and: 'Query cache stats'
         Formatter formatter = new Formatter()
-        NetcdfDataset.netcdfFileCache.showStats(formatter)
+        NetcdfDatasets.netcdfFileCache.showStats(formatter)
 
         then: 'The cache will have recorded 1 miss (1st trial) and 3 hits (subsequent trials)'
         // This is kludgy, but FileCache doesn't provide getHits() or getMisses() methods.

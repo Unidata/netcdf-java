@@ -27,7 +27,6 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
    * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @return SimpleGeometryFeatureDataset
    * @throws java.io.IOException on read error
-   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
   public static SimpleGeometryFeatureDataset open(String location) throws IOException {
     return open(location, NetcdfDataset.getDefaultEnhanceMode());
@@ -41,11 +40,10 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
    * @param enhanceMode open netcdf dataset with this enhanceMode
    * @return SimpleGeometryFeatureDataset
    * @throws java.io.IOException on read error
-   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
   public static SimpleGeometryFeatureDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode)
       throws IOException {
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, DatasetUrl.findDatasetUrl(location),
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.acquireDataset(null, DatasetUrl.findDatasetUrl(location),
         enhanceMode, -1, null, null);
     return new SimpleGeometryFeatureDataset(ds);
   }

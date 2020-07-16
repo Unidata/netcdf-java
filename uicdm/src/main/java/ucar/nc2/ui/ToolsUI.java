@@ -1199,11 +1199,10 @@ public class ToolsUI extends JPanel {
     try {
       DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
       if (addCoords) {
-        ncfile = useBuilders
-            ? NetcdfDatasets.acquireDataset(null, durl, NetcdfDataset.getDefaultEnhanceMode(), -1, task, iospMessage)
-            : NetcdfDataset.acquireDataset(durl, true, task);
+        ncfile =
+            NetcdfDatasets.acquireDataset(null, durl, NetcdfDataset.getDefaultEnhanceMode(), -1, task, iospMessage);
       } else {
-        ncfile = useBuilders ? NetcdfDatasets.acquireFile(durl, task) : NetcdfDataset.acquireFile(durl, task);
+        ncfile = NetcdfDatasets.acquireFile(durl, task);
       }
 
       if (ncfile == null) {
@@ -1300,7 +1299,7 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
-    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
     if (cache != null) {
       cache.clearCache(true);
     }

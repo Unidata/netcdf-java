@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CompareNetcdf2;
 
 /** Test netcdf dataset in the JUnit framework. */
@@ -35,7 +36,7 @@ public class TestNcMLequals {
   private void testEquals(String ncmlLocation) throws IOException {
     System.out.println("testEquals");
     try (NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, null);
-        NetcdfDataset ncdref = NetcdfDataset.openDataset(ncd.getReferencedFile().getLocation(), false, null)) {
+        NetcdfDataset ncdref = NetcdfDatasets.openDataset(ncd.getReferencedFile().getLocation(), false, null)) {
       Assert.assertTrue(CompareNetcdf2.compareFiles(ncd, ncdref, new Formatter(), false, false, false));
     }
   }
@@ -46,7 +47,7 @@ public class TestNcMLequals {
         NetcdfDataset ncmlEnhanced = new NetcdfDataset(ncml, true)) {
 
       String locref = ncml.getReferencedFile().getLocation();
-      NetcdfDataset ncdrefEnhanced = NetcdfDataset.openDataset(locref, true, null);
+      NetcdfDataset ncdrefEnhanced = NetcdfDatasets.openDataset(locref, true, null);
 
       Assert
           .assertTrue(CompareNetcdf2.compareFiles(ncmlEnhanced, ncdrefEnhanced, new Formatter(), false, false, false));
