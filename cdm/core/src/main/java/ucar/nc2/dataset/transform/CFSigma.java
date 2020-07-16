@@ -65,7 +65,7 @@ public class CFSigma extends AbstractTransformBuilder implements VertTransformBu
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new AtmosSigma(ds, timeDim, vCT.getParameters());
+    return AtmosSigma.create(ds, timeDim, vCT.getParameters());
   }
 }
 

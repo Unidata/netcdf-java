@@ -5,7 +5,7 @@
 
 package ucar.unidata.geoloc.vertical;
 
-
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -13,54 +13,33 @@ import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.List;
 
-
 /**
- * Create a 3D height(z,y,x) array using the CF formula for
- * "ocean s vertical coordinate g2".
+ * Create a 3D height(z,y,x) array using the CF formula for "ocean s vertical coordinate g2".
  * standard name: ocean_s_coordinate_g2
  *
  * @author Sachin (skbhate@ngi.msstate.edu)
- * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
- * @see <a href=
- *      "https://www.myroms.org/wiki/index.php/Vertical_S-coordinate#Metadata_Considerations">https://www.myroms.org/wiki/index.php/Vertical_S-coordinate#Metadata_Considerations</a>
+ * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_ocean_s_coordinate_generic_form_2"
  */
-
+@Immutable
 public class OceanSG2 extends AbstractVerticalTransform {
 
-  /**
-   * The eta variable name identifier
-   */
+  /** The eta variable name identifier */
   public static final String ETA = "Eta_variableName";
 
-  /**
-   * The "s" variable name identifier
-   */
+  /** The "s" variable name identifier */
   public static final String S = "S_variableName";
 
-  /**
-   * The "depth" variable name identifier
-   */
+  /** The "depth" variable name identifier */
   public static final String DEPTH = "Depth_variableName";
 
-  /**
-   * The "depth c" variable name identifier
-   */
+  /** The "depth c" variable name identifier */
   public static final String DEPTH_C = "Depth_c_variableName";
 
-  /**
-   * The "C" variable name identifier
-   */
+  /** The "C" variable name identifier */
   public static final String C = "c_variableName";
-  /**
-   * the values of depth_c
-   */
-  private double depth_c;
 
-  /**
-   * The eta, s, C and depth variables
-   */
-  private Variable etaVar, sVar, depthVar, cVar, depthCVar;
-
+  private final double depth_c;
+  private final Variable etaVar, sVar, depthVar, cVar;
 
   /**
    * Create a new vertical transform for Ocean_S_coordinate_g2
@@ -69,22 +48,31 @@ public class OceanSG2 extends AbstractVerticalTransform {
    * @param timeDim time dimension
    * @param params list of transformation Parameters
    */
-  public OceanSG2(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static OceanSG2 create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+    Variable etaVar = findVariableFromParameterName(ds, params, ETA);
+    Variable sVar = findVariableFromParameterName(ds, params, S);
+    Variable depthVar = findVariableFromParameterName(ds, params, DEPTH);
+    Variable depthCVar = findVariableFromParameterName(ds, params, DEPTH_C);
+    Variable cVar = findVariableFromParameterName(ds, params, C);
 
-    super(timeDim);
-    String etaName = getParameterStringValue(params, ETA);
-    String sName = getParameterStringValue(params, S);
-    String depthName = getParameterStringValue(params, DEPTH);
-    String depthCName = getParameterStringValue(params, DEPTH_C);
-    String cName = getParameterStringValue(params, C);
+    String units = depthVar.findAttributeString(CDM.UNITS, "none");
 
-    etaVar = ds.findVariable(etaName);
-    sVar = ds.findVariable(sName);
-    depthVar = ds.findVariable(depthName);
-    depthCVar = ds.findVariable(depthCName);
-    cVar = ds.findVariable(cName);
+    return new OceanSG2(timeDim, units, etaVar, sVar, depthVar, depthCVar, cVar);
+  }
 
-    units = depthVar.findAttributeString(CDM.UNITS, "none");
+  private OceanSG2(Dimension timeDim, String units, Variable etaVar, Variable sVar, Variable depthVar,
+      Variable depthCVar, Variable cVar) {
+    super(timeDim, units);
+    this.etaVar = etaVar;
+    this.sVar = sVar;
+    this.depthVar = depthVar;
+    this.cVar = cVar;
+
+    try {
+      this.depth_c = depthCVar.readScalarDouble();
+    } catch (IOException ioe) {
+      throw new IllegalStateException(ioe);
+    }
   }
 
   /**
@@ -95,13 +83,12 @@ public class OceanSG2 extends AbstractVerticalTransform {
    * @throws java.io.IOException problem reading data
    * @throws ucar.ma2.InvalidRangeException _more_
    */
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array etaArray = readArray(etaVar, timeIndex);
     Array sArray = readArray(sVar, timeIndex);
     Array depthArray = readArray(depthVar, timeIndex);
     Array cArray = readArray(cVar, timeIndex);
-
-    depth_c = depthCVar.readScalarDouble();
 
     return makeHeight(etaArray, sArray, depthArray, cArray, depth_c);
   }
@@ -117,6 +104,7 @@ public class OceanSG2 extends AbstractVerticalTransform {
    * @throws java.io.IOException problem reading data
    * @throws ucar.ma2.InvalidRangeException _more_
    */
+  @Override
   public ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
       throws IOException, InvalidRangeException {
     Array etaArray = readArray(etaVar, timeIndex);
@@ -124,20 +112,16 @@ public class OceanSG2 extends AbstractVerticalTransform {
     Array depthArray = readArray(depthVar, timeIndex);
     Array cArray = readArray(cVar, timeIndex);
 
-    depth_c = depthCVar.readScalarDouble();
-
     return makeHeight1D(etaArray, sArray, depthArray, cArray, depth_c, xIndex, yIndex);
   }
 
   /**
    * Make height from the given data. <br>
    *
-   *
    * height(x,y,z) = eta(x,y) + ( eta(x,y) + depth([n],x,y) ) * S(x,y,z)
    *
    * where,
    * S(x,y,z) = (depth_c*s(z) + (depth([n],x,y) * C(z)) / (depth_c + depth([n],x,y))
-   * /
    *
    * @param eta eta Array
    * @param s s Array
@@ -178,7 +162,6 @@ public class OceanSG2 extends AbstractVerticalTransform {
           double hterm = term3 + term4;
 
           height.set(z, y, x, hterm);
-
         }
       }
     }
@@ -192,7 +175,6 @@ public class OceanSG2 extends AbstractVerticalTransform {
     int nz = (int) s.getSize();
     Index sIndex = s.getIndex();
     Index cIndex = c.getIndex();
-
 
     Index etaIndex = eta.getIndex();
     Index depthIndex = depth.getIndex();
@@ -215,7 +197,6 @@ public class OceanSG2 extends AbstractVerticalTransform {
       double hterm = term3 + term4;
 
       height.set(z, hterm);
-
     }
 
     return height;

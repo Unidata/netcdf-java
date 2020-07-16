@@ -6,16 +6,10 @@
 package ucar.unidata.geoloc;
 
 import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Formatter;
 
-/**
- * Defines the shape of the earth ellipsoid.
- *
- * LOOK will not implement Serializable in ver6
- */
+/** Defines the shape of the earth ellipsoid. */
 @Immutable
-public class Earth implements Serializable {
+public class Earth {
   public static final Earth DEFAULT = new Earth();
 
   /** Get canonical radius of the spherical earth in meters from "WGS 84" */
@@ -23,16 +17,6 @@ public class Earth implements Serializable {
 
   /** Get canonical radius of the spherical earth in km from "WGS 84" */
   public static final double WGS84_EARTH_RADIUS_KM = 6371.229;
-
-  /**
-   * Get canonical radius of spherical earth, in meters
-   * 
-   * @deprecated use WGS84_EARTH_RADIUS_METERS
-   */
-  @Deprecated
-  public static double getRadius() {
-    return WGS84_EARTH_RADIUS_METERS;
-  }
 
   ///////////////////////////////////////////////////////////////////////////////////
   private final double eccentricity; // eccentricity
@@ -97,78 +81,47 @@ public class Earth implements Serializable {
     eccentricity = Math.sqrt(eccentricitySquared);
   }
 
+  /** Is this a spherical earth? */
   public boolean isSpherical() {
     return flattening == 0.0;
   }
 
-  /**
-   * Get the equatorial radius (semimajor axis) of the earth, in meters.
-   *
-   * @return equatorial radius (semimajor axis) in meters
-   */
+  /** Get the equatorial radius (semimajor axis) of the earth, in meters. */
   public double getMajor() {
     return equatorRadius;
   }
 
-  /**
-   * Get the polar radius (semiminor axis) of the earth, in meters.
-   *
-   * @return polar radius (semiminor axis) in meters
-   */
+  /** Get the polar radius (semiminor axis) of the earth, in meters. */
   public double getMinor() {
     return poleRadius;
   }
 
-  /**
-   * Get the Name property.
-   *
-   * @return The Name
-   */
+  /** Get the Name. */
   public String getName() {
     return name;
   }
 
-  /**
-   * Get the Eccentricity property.
-   *
-   * @return The Eccentricity
-   */
+  /** Get the Eccentricity . */
   public double getEccentricity() {
     return eccentricity;
   }
 
-  /**
-   * Get the EccentricitySquared property.
-   *
-   * @return The EccentricitySquared
-   */
+  /** Get the Eccentricity squared. */
   public double getEccentricitySquared() {
     return eccentricitySquared;
   }
 
-  /**
-   * Get the EquatorRadius property.
-   *
-   * @return The EquatorRadius
-   */
+  /** Get the Equatorial Radius in meters. */
   public double getEquatorRadius() {
     return equatorRadius;
   }
 
-  /**
-   * Get the PoleRadius property.
-   *
-   * @return The PoleRadius
-   */
+  /** Get the Polar Radius in meters. */
   public double getPoleRadius() {
     return poleRadius;
   }
 
-  /**
-   * Get the Flattening property.
-   *
-   * @return The Flattening
-   */
+  /** Get the Flattening. */
   public double getFlattening() {
     return flattening;
   }
@@ -185,8 +138,6 @@ public class Earth implements Serializable {
     if (Double.compare(earth.equatorRadius, equatorRadius) != 0)
       return false;
     return Double.compare(earth.poleRadius, poleRadius) == 0;
-    // if (name != null ? !name.equals(earth.name) : earth.name != null) return false;
-
   }
 
   @Override

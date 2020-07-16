@@ -4,6 +4,7 @@
  */
 package ucar.unidata.geoloc;
 
+import com.google.auto.value.AutoValue;
 import java.lang.Math;
 
 /**
@@ -12,20 +13,13 @@ import java.lang.Math;
  *
  * You may use a default Earth (EarthEllipsoid.WGS84) or you may define your own using
  * a ucar.unidata.geoloc.Earth object.
- *
- * @author Unidata Development Team
  */
-public class Bearing {
+@AutoValue
+public abstract class Bearing {
   private static final Earth defaultEarth = EarthEllipsoid.WGS84;
   private static final double EPS = 0.5E-13;
   private static final double DEGREES_TO_RADIANS = Math.toRadians(1.0);
   private static final double RADIANS_TO_DEGREES = Math.toDegrees(1.0);
-
-  /** @deprecated do not use */
-  @Deprecated
-  public static Bearing calculateBearing(Earth e, LatLonPoint pt1, LatLonPoint pt2, Bearing result) {
-    return calculateBearing(e, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude(), result);
-  }
 
   /**
    * Calculate the bearing between the 2 points.
@@ -40,13 +34,6 @@ public class Bearing {
     return calculateBearing(e, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude());
   }
 
-  /** @deprecated do not use */
-  @Deprecated
-  public static Bearing calculateBearing(LatLonPoint pt1, LatLonPoint pt2, Bearing result) {
-    return calculateBearing(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude(),
-        result);
-  }
-
   /**
    * Calculate the bearing between the 2 points.
    * See calculateBearing below. Uses default Earth object.
@@ -57,12 +44,6 @@ public class Bearing {
    */
   public static Bearing calculateBearing(LatLonPoint pt1, LatLonPoint pt2) {
     return calculateBearing(defaultEarth, pt1.getLatitude(), pt1.getLongitude(), pt2.getLatitude(), pt2.getLongitude());
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public static Bearing calculateBearing(double lat1, double lon1, double lat2, double lon2, Bearing result) {
-    return calculateBearing(defaultEarth, lat1, lon1, lat2, lon2, result);
   }
 
   /**
@@ -80,89 +61,6 @@ public class Bearing {
    */
   public static Bearing calculateBearing(double lat1, double lon1, double lat2, double lon2) {
     return calculateBearing(defaultEarth, lat1, lon1, lat2, lon2);
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public static Bearing calculateBearing(Earth e, double lat1, double lon1, double lat2, double lon2, Bearing result) {
-    if (result == null) {
-      result = new Bearing();
-    }
-
-    if ((lat1 == lat2) && (lon1 == lon2)) {
-      result.distance = 0;
-      result.azimuth = 0;
-      result.backazimuth = 0;
-      return result;
-    }
-
-    double A = e.getMajor(); // Earth radius
-    double F = e.getFlattening(); // Earth flattening value
-    double R = 1.0 - F;
-
-    double GLAT1 = DEGREES_TO_RADIANS * lat1;
-    double GLAT2 = DEGREES_TO_RADIANS * lat2;
-    double TU1 = R * Math.sin(GLAT1) / Math.cos(GLAT1);
-    double TU2 = R * Math.sin(GLAT2) / Math.cos(GLAT2);
-    double CU1 = 1. / Math.sqrt(TU1 * TU1 + 1.);
-    double SU1 = CU1 * TU1;
-    double CU2 = 1. / Math.sqrt(TU2 * TU2 + 1.);
-    double S = CU1 * CU2;
-    double BAZ = S * TU2;
-    double FAZ = BAZ * TU1;
-    double GLON1 = DEGREES_TO_RADIANS * lon1;
-    double GLON2 = DEGREES_TO_RADIANS * lon2;
-    double X = GLON2 - GLON1;
-    double D, SX, CX, SY, CY, Y, SA, C2A, CZ, E, C;
-    int loopCnt = 0;
-    do {
-      loopCnt++;
-      // Check for an infinite loop
-      if (loopCnt > 1000) {
-        throw new IllegalArgumentException(
-            "Too many iterations calculating bearing:" + lat1 + " " + lon1 + " " + lat2 + " " + lon2);
-      }
-      SX = Math.sin(X);
-      CX = Math.cos(X);
-      TU1 = CU2 * SX;
-      TU2 = BAZ - SU1 * CU2 * CX;
-      SY = Math.sqrt(TU1 * TU1 + TU2 * TU2);
-      CY = S * CX + FAZ;
-      Y = Math.atan2(SY, CY);
-      SA = S * SX / SY;
-      C2A = -SA * SA + 1.;
-      CZ = FAZ + FAZ;
-      if (C2A > 0.) {
-        CZ = -CZ / C2A + CY;
-      }
-      E = CZ * CZ * 2. - 1.;
-      C = ((-3. * C2A + 4.) * F + 4.) * C2A * F / 16.;
-      D = X;
-      X = ((E * CY * C + CZ) * SY * C + Y) * SA;
-      X = (1. - C) * X * F + GLON2 - GLON1;
-    } while (Math.abs(D - X) > EPS);
-
-    FAZ = Math.atan2(TU1, TU2);
-    BAZ = Math.atan2(CU1 * SX, BAZ * CX - SU1 * CU2) + Math.PI;
-    X = Math.sqrt((1. / R / R - 1.) * C2A + 1.) + 1.;
-    X = (X - 2.) / X;
-    C = 1. - X;
-    C = (X * X / 4. + 1.) / C;
-    D = (0.375 * X * X - 1.) * X;
-    X = E * CY;
-    S = 1. - E - E;
-    S = ((((SY * SY * 4. - 3.) * S * CZ * D / 6. - X) * D / 4. + CZ) * SY * D + Y) * C * A * R;
-
-    result.distance = S / 1000.0; // meters to km
-    result.azimuth = FAZ * RADIANS_TO_DEGREES; // radians to degrees
-
-    if (result.azimuth < 0.0) {
-      result.azimuth += 360.0; // reset azs from -180 to 180 to 0 to 360
-    }
-
-    result.backazimuth = BAZ * RADIANS_TO_DEGREES; // radians to degrees; already in 0 to 360 range
-
-    return result;
   }
 
   /**
@@ -351,7 +249,7 @@ public class Bearing {
   public static Bearing calculateBearing(Earth e, double lat1, double lon1, double lat2, double lon2) {
 
     if ((lat1 == lat2) && (lon1 == lon2)) {
-      return new Bearing(0, 0, 0);
+      return Bearing.create(0, 0, 0);
     }
 
     double A = e.getMajor(); // Earth radius
@@ -451,115 +349,34 @@ public class Bearing {
 
     double backazimuth = BAZ * RADIANS_TO_DEGREES; // radians to degrees; already in 0 to 360 range
 
-    return new Bearing(azimuth, backazimuth, distance);
+    return Bearing.create(azimuth, backazimuth, distance);
   }
-
-  /*
-   * This method is for same use as calculateBearing, but has much simpler calculations
-   * by assuming a spherical earth. It is actually slower than
-   * "calculateBearing" code, probably due to having more trig function calls.
-   * It is less accurate, too.
-   * Errors are on the order of 1/300 or less. This code
-   * saved here only as a warning to future programmers thinking of this approach.
-   *
-   * Requires close to 2.0 E-5 seconds wall clock time per call
-   * on a 550 MHz Pentium with Linux 7.2.
-   *
-   * public static Bearing calculateBearingAlternate
-   * (LatLonPoint pt1, LatLonPoint pt2, Bearing result) {
-   *
-   * // to convert degrees to radians, multiply by:
-   * final double rad = Math.toRadians(1.0);
-   * // to convert radians to degrees:
-   * final double deg = Math.toDegrees(1.0);
-   *
-   * if (result == null)
-   * result = new Bearing();
-   *
-   * double R = 6371008.7; // mean earth radius in meters; WGS 84 definition
-   * double GLAT1 = rad*(pt1.getLatitude());
-   * double GLAT2 = rad*(pt2.getLatitude());
-   * double GLON1 = rad*(pt1.getLongitude());
-   * double GLON2 = rad*(pt2.getLongitude());
-   *
-   * // great circle angular separation in radians
-   * double alpha = Math.acos( Math.sin(GLAT1)*Math.sin(GLAT2)
-   * +Math.cos(GLAT1)*Math.cos(GLAT2)*Math.cos(GLON1-GLON2) );
-   * // great circle distance in meters
-   * double gcd = R * alpha;
-   *
-   * result.distance = gcd / 1000.0; // meters to km
-   *
-   * // forward azimuth from point 1 to 2 in radians
-   * double s2 = rad*(90.0-pt2.getLatitude());
-   * double FAZ = Math.asin(Math.sin(s2)*Math.sin(GLON2-GLON1) / Math.sin(alpha));
-   *
-   * result.azimuth = FAZ * deg; // radians to degrees
-   * if (result.azimuth < 0.0)
-   * result.azimuth += 360.0; // reset az from -180 to 180 to 0 to 360
-   *
-   * // back azimuth from point 2 to 1 in radians
-   * double s1 = rad*(90.0-pt1.getLatitude());
-   * double BAZ = Math.asin(Math.sin(s1)*Math.sin(GLON1-GLON2) / Math.sin(alpha));
-   *
-   * result.backazimuth = BAZ * deg;
-   * if (result.backazimuth < 0.0)
-   * result.backazimuth += 360.0; // reset backaz from -180 to 180 to 0 to 360
-   *
-   * return result;
-   * }
-   */
 
   /////////////////////////////////////////////////////////////////////////////////////
-  // TODO make these final in 6.
-
-  /** the azimuth, degrees, 0 = north, clockwise positive */
-  private double azimuth;
-
-  /** the back azimuth, degrees, 0 = north, clockwise positive */
-  private double backazimuth;
-
-  /** separation in kilometers */
-  private double distance;
-
-  // TODO go away in 6.0
-  private Bearing() {}
-
-  public Bearing(double azimuth, double backazimuth, double distance) {
-    this.azimuth = azimuth;
-    this.backazimuth = backazimuth;
-    this.distance = distance;
-  }
 
   /**
-   * Get the azimuth in degrees, 0 = north, clockwise positive
-   *
-   * @return azimuth in degrees
+   * Create a Bearing object.
+   * 
+   * @param azimuth the azimuth, degrees, 0 = north, clockwise positive
+   * @param backazimuth the back azimuth, degrees, 0 = north, clockwise positive
+   * @param distance separation in kilometers
    */
+  public static Bearing create(double azimuth, double backazimuth, double distance) {
+    return new AutoValue_Bearing(azimuth, backazimuth, distance);
+  }
+
+  /** @deprecated use getAzimuth() */
+  @Deprecated
   public double getAngle() {
-    return azimuth;
+    return getAzimuth();
   }
 
-  /**
-   * Get the back azimuth in degrees, 0 = north, clockwise positive
-   *
-   * @return back azimuth in degrees
-   */
-  public double getBackAzimuth() {
-    return backazimuth;
-  }
+  /** Get the azimuth in degrees, 0 = north, clockwise positive */
+  public abstract double getAzimuth();
 
-  /**
-   * Get the distance in kilometers
-   *
-   * @return distance in km
-   */
-  public double getDistance() {
-    return distance;
-  }
+  /** Get the back azimuth in degrees, 0 = north, clockwise positive */
+  public abstract double getBackAzimuth();
 
-  @Override
-  public String toString() {
-    return "Azimuth: " + azimuth + " Back azimuth: " + backazimuth + " Distance: " + distance;
-  }
+  /** Get the distance in kilometers */
+  public abstract double getDistance();
 }

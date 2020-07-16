@@ -6,6 +6,7 @@ package ucar.unidata.geoloc.vertical;
 
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayDouble.D1;
@@ -18,48 +19,29 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.util.Parameter;
 
-
 /**
- * Create a 3D height(z,y,x) array using the CF formula for
- * "atmospheric sigma vertical coordinate".
+ * Create a 3D height(z,y,x) array using the CF formula for "atmospheric sigma vertical coordinate".
  * <p>
  * <strong>pressure(x,y,z) = ptop + sigma(z)*surfacePressure(x,y)</strong>
- *
- * @author caron
- * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
  */
-
+@Immutable
 public class AtmosSigma extends AbstractVerticalTransform {
 
-  /**
-   * P-naught identifier
-   */
+  /** P-naught identifier */
   public static final String PTOP = "PressureTop_variableName";
 
-  /**
-   * Surface pressure name identifier
-   */
+  /** Surface pressure name identifier */
   public static final String PS = "SurfacePressure_variableName";
 
-  /**
-   * The "depth" variable name identifier
-   */
+  /** The "depth" variable name identifier */
   public static final String SIGMA = "Sigma_variableName";
 
-  /**
-   * The ps, sigma variables
-   */
-  private Variable psVar;
-
-  /**
-   * The sigma array, function of z
-   */
-  private double[] sigma;
-
-  /**
-   * Top of the model
-   */
-  private double ptop;
+  // surface pressure
+  private final Variable psVar;
+  // The sigma array, function of z
+  private final double[] sigma;
+  // Top of the model
+  private final double ptop;
 
   /**
    * Create a new vertical transform for Ocean S coordinates
@@ -68,41 +50,31 @@ public class AtmosSigma extends AbstractVerticalTransform {
    * @param timeDim time dimension
    * @param params list of transformation Parameters
    */
-  public AtmosSigma(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
-    super(timeDim);
+  public static AtmosSigma create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
 
-    String psName = getParameterStringValue(params, PS);
-    psVar = ds.findVariable(psName);
+    Variable psVar = findVariableFromParameterName(ds, params, PS);
+    String units = psVar.findAttributeString(CDM.UNITS, "none");
 
-    String ptopName = getParameterStringValue(params, PTOP);
-    Variable ptopVar = ds.findVariable(ptopName);
-    try {
-      this.ptop = ptopVar.readScalarDouble();
-    } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosSigma failed to read " + ptopVar + " err= " + e.getMessage());
-    }
+    Variable ptopVar = findVariableFromParameterName(ds, params, PTOP);
+    double ptop = readAndConvertUnit(ptopVar, units);
 
-    String sigmaName = getParameterStringValue(params, SIGMA);
-    Variable sigmaVar = ds.findVariable(sigmaName);
-
+    Variable sigmaVar = findVariableFromParameterName(ds, params, SIGMA);
+    double[] sigma;
     try {
       Array data = sigmaVar.read();
       sigma = (double[]) data.get1DJavaArray(double.class);
     } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosSigma failed to read " + sigmaName + " err= " + e.getMessage());
+      throw new IllegalArgumentException("AtmosSigma failed to read " + sigmaVar + " err= " + e.getMessage());
     }
 
-    units = psVar.findAttributeString(CDM.UNITS, "none");
+    return new AtmosSigma(timeDim, units, psVar, sigma, ptop);
+  }
 
-    String ptopUnitStr = ptopVar.findAttributeString(CDM.UNITS, "none");
-    if (!units.equalsIgnoreCase(ptopUnitStr)) {
-      // Convert ptopVar to units of psVar
-      SimpleUnit psUnit = SimpleUnit.factory(units);
-      SimpleUnit ptopUnit = SimpleUnit.factory(ptopUnitStr);
-      double factor = ptopUnit.convertTo(1.0, psUnit);
-      this.ptop = this.ptop * factor;
-    }
-
+  private AtmosSigma(Dimension timeDim, String units, Variable psVar, double[] sigma, double ptop) {
+    super(timeDim, units);
+    this.psVar = psVar;
+    this.sigma = sigma;
+    this.ptop = ptop;
   }
 
   /**
@@ -110,9 +82,8 @@ public class AtmosSigma extends AbstractVerticalTransform {
    *
    * @param timeIndex the time index. Ignored if !isTimeDependent().
    * @return vertical coordinate array
-   * @throws IOException problem reading data
-   * @throws InvalidRangeException _more_
    */
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
     Array ps = readArray(psVar, timeIndex);
     Index psIndex = ps.getIndex();
@@ -145,9 +116,8 @@ public class AtmosSigma extends AbstractVerticalTransform {
    * @param xIndex the x index
    * @param yIndex the y index
    * @return vertical coordinate array
-   * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_
    */
+  @Override
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
 
     Array ps = readArray(psVar, timeIndex);
@@ -161,7 +131,6 @@ public class AtmosSigma extends AbstractVerticalTransform {
     }
 
     return result;
-
   }
 
 }

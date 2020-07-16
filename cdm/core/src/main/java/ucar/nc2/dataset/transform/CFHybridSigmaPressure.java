@@ -91,7 +91,7 @@ public class CFHybridSigmaPressure extends AbstractTransformBuilder implements V
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
+    return HybridSigmaPressure.create(ds, timeDim, vCT.getParameters());
   }
 }
 
