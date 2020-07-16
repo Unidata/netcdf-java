@@ -12,7 +12,6 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
-import javax.annotation.Nonnull;
 
 /**
  * A factory for making deep copies of StationPointFeature, so all data is self contained.
@@ -59,44 +58,41 @@ public class StationFeatureCopyFactory {
   }
 
   public StationPointFeature deepCopy(StationPointFeature from) throws IOException {
-    StationFeature s = from.getStation();
-    StationFeatureImpl sUse = stationMap.get(s.getName());
+    StationFeature sf = from.getAsStationFeature();
+    StationFeatureImpl sUse = stationMap.get(sf.getStation().getName());
     if (sUse == null) {
-      sUse = new StationFeatureImpl(s);
-      stationMap.put(s.getName(), sUse);
+      sUse = new StationFeatureImpl(sf);
+      stationMap.put(sf.getStation().getName(), sUse);
     }
-    sUse.incrNobs();
+    // LOOK sUse.incrNobs();
     StationPointFeatureCopy deep = new StationPointFeatureCopy(sUse, from);
     deep.data = StructureDataDeep.copy(from.getFeatureData(), sm);
     return deep;
   }
 
   private static class StationPointFeatureCopy extends PointFeatureImpl implements StationPointFeature {
-
-    final StationFeature station;
+    final StationFeature sf;
     StructureData data;
 
-    StationPointFeatureCopy(StationFeature station, PointFeature pf) {
-      super(pf.getFeatureCollection(), station, pf.getObservationTime(), pf.getNominalTime(),
+    StationPointFeatureCopy(StationFeature sf, PointFeature pf) {
+      super(pf.getFeatureCollection(), sf.getStation(), pf.getObservationTime(), pf.getNominalTime(),
           pf.getFeatureCollection().getTimeUnit());
-      this.station = station;
+      this.sf = sf;
     }
 
-    @Nonnull
     @Override
     public StructureData getDataAll() {
       return data; // ??
     }
 
-    @Nonnull
     @Override
     public StructureData getFeatureData() {
       return data;
     }
 
     @Override
-    public StationFeature getStation() {
-      return station;
+    public StationFeature getAsStationFeature() {
+      return sf;
     }
   }
 }

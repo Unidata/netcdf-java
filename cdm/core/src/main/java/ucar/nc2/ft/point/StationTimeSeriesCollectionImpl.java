@@ -29,6 +29,7 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     implements StationTimeSeriesFeatureCollection {
+
   private volatile StationHelper stationHelper;
 
   public StationTimeSeriesCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
@@ -169,7 +170,6 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     List<StationFeature> subsetStations = getStationHelper().getStationFeatures(boundingBox);
     return new StationTimeSeriesCollectionFlattened(new StationSubset(this, subsetStations), dateRange);
   }
-
 
   @Override
   public StationFeature getStationFeature(PointFeature flatPointFeature) {

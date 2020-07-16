@@ -64,9 +64,9 @@ public class StationRadialViewer extends JPanel {
     });
 
     // station table
-    stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
+    stnTable = new BeanTable(Station.class, (PreferencesExt) prefs.node("StationBeans"), false);
     stnTable.addListSelectionListener(e -> {
-      StationBean sb = (StationBean) stnTable.getSelectedBean();
+      Station sb = (Station) stnTable.getSelectedBean();
       setStation(sb);
       if (debugStationRegionSelect)
         System.out.println("stnTable selected= " + sb.getName());
@@ -103,20 +103,16 @@ public class StationRadialViewer extends JPanel {
     if ((startDate != null) && (endDate != null))
       chooser.setDateRange(new DateRange(startDate.toDate(), endDate.toDate()));
 
-    List<StationBean> stationBeans = new ArrayList<>();
     List<Station> stations = sds.getStations();
     if (stations == null)
       return;
 
-    for (Station station : stations)
-      stationBeans.add(new StationBean(station));
-
-    stnTable.setBeans(stationBeans);
-    chooser.setStations(stationBeans);
+    stnTable.setBeans(stations);
+    chooser.setStations(stations);
     rdTable.clear();
   }
 
-  public void setStation(StationBean sb) {
+  public void setStation(Station sb) {
     RadialDatasetSweep rsds = sds.getRadarDataset(sb.getName(), new Date()); // LOOK kludge - should show all
                                                                              // possibilities
     rdTable.setDataset(rsds);
@@ -132,55 +128,6 @@ public class StationRadialViewer extends JPanel {
     prefs.putInt("splitPos", splitV.getDividerLocation());
     prefs.putInt("splitPosH", splitH.getDividerLocation());
     // rdTable.saveState();
-  }
-
-  public static class StationBean implements Station {
-    private Station s;
-
-    public StationBean(Station s) {
-      this.s = s;
-    }
-
-    public String getName() {
-      return s.getName();
-    }
-
-    public String getDescription() {
-      return s.getDescription();
-    }
-
-    public String getWmoId() {
-      return s.getWmoId();
-    }
-
-    public double getLatitude() {
-      return s.getLatitude();
-    }
-
-    public double getLongitude() {
-      return s.getLongitude();
-    }
-
-    public double getAltitude() {
-      return s.getAltitude();
-    }
-
-    public LatLonPoint getLatLon() {
-      return s.getLatLon();
-    }
-
-    public boolean isMissing() {
-      return s.isMissing();
-    }
-
-    public int compareTo(Station so) {
-      return getName().compareTo(so.getName());
-    }
-
-    public int getNobs() {
-      return -1;
-    }
-
   }
 
 }

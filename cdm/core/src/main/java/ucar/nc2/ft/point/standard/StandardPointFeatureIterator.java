@@ -96,7 +96,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     }
 
     @Override
-    public StationFeature getStation() {
+    public StationFeature getAsStationFeature() {
       return ft.makeStation(cursor.getParentStructure()); // LOOK is this always possible??
     }
 

@@ -63,7 +63,8 @@ public class WriterCFStationCollection extends CFPointWriter {
     this.stnList = stns;
 
     // see if there's altitude, wmoId for any stations
-    for (Station stn : stnList) {
+    for (StationFeature sf : stnList) {
+      Station stn = sf.getStation();
       if (!Double.isNaN(stn.getAltitude()))
         useAlt = true;
       if ((stn.getWmoId() != null) && (!stn.getWmoId().trim().isEmpty()))
@@ -81,7 +82,7 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     // llbb = CFPointWriterUtils.getBoundingBox(stnList); // gets written in super.finish();
 
-    StationFeature sf = spf.getStation();
+    StationFeature sf = spf.getAsStationFeature();
     StructureData stnData = sf.getFeatureData();
     StructureData obsData = spf.getFeatureData();
 
@@ -101,9 +102,9 @@ public class WriterCFStationCollection extends CFPointWriter {
 
     int count = 0;
     stationIndexMap = new HashMap<>(2 * stns.size());
-    for (StationFeature stn : stnList) {
-      writeStationData(stn);
-      stationIndexMap.put(stn.getName(), count);
+    for (StationFeature stf : stnList) {
+      writeStationData(stf);
+      stationIndexMap.put(stf.getStation().getName(), count);
       count++;
     }
 
@@ -153,7 +154,8 @@ public class WriterCFStationCollection extends CFPointWriter {
 
   private int stnRecno;
 
-  private void writeStationData(StationFeature stn) throws IOException {
+  private void writeStationData(StationFeature sf) throws IOException {
+    Station stn = sf.getStation();
 
     StructureMembers.Builder smb = StructureMembers.builder().setName("Coords");
     smb.addMemberScalar(latName, null, null, DataType.DOUBLE, stn.getLatLon().getLatitude());
@@ -166,7 +168,7 @@ public class WriterCFStationCollection extends CFPointWriter {
       smb.addMemberString(wmoName, null, null, stn.getWmoId().trim(), wmo_strlen);
     StructureData stnCoords = new StructureDataFromMember(smb.build());
 
-    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(stnCoords, stn.getFeatureData()));
+    StructureDataComposite sdall = StructureDataComposite.create(ImmutableList.of(stnCoords, sf.getFeatureData()));
     stnRecno = super.writeStructureData(stnRecno, stationStruct, sdall, featureVarMap);
   }
 

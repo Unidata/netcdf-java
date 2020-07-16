@@ -183,7 +183,7 @@ public class TestMiscPointFeature {
       StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
       List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() > 0) : "No stations";
-      Station s = stations.get(0);
+      Station s = stations.get(0).getStation();
       assert s.getName().equals("666") : "name should be '666'";
       assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
       assert s.getDescription() != null : "No description on station";
@@ -206,7 +206,8 @@ public class TestMiscPointFeature {
       StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
       List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() == 3) : "Should be 3 stations";
-      for (Station s : stations) {
+      for (StationFeature sf : stations) {
+        Station s = sf.getStation();
         System.out.printf("%s%n", s);
         assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
         assert s.getDescription() != null && !s.getDescription().isEmpty() : "No description on station";
@@ -251,7 +252,8 @@ public class TestMiscPointFeature {
       StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
       List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() == 5) : "Should be 5 stations";
-      for (Station s : stations) {
+      for (StationFeature sf : stations) {
+        Station s = sf.getStation();
         System.out.printf("%s%n", s);
         assert !Double.isNaN(s.getAltitude()) : "No altitude on station";
         assert s.getDescription() != null && !s.getDescription().isEmpty() : "No description on station";

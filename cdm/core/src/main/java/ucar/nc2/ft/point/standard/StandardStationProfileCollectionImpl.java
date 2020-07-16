@@ -32,7 +32,7 @@ import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.Station;
 
 /**
- * Netsed Table implementat ion of StationProfileCollection
+ * Nested Table implementation of StationProfileCollection
  * Object Heirarchy:
  * StationProfileFeatureCollection (StandardStationProfileCollectionImpl)
  * StationProfileFeature (StandardStationProfileFeature)
@@ -98,8 +98,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         }
 
         stationProfileData = sdataIter.next();
-        Station s = ft.makeStation(stationProfileData);
-        if (s == null)
+        StationFeature sf = ft.makeStation(stationProfileData);
+        if (sf == null)
           continue; // skip missing station ids
         if (!ft.isFeatureMissing(stationProfileData))
           break;
@@ -134,7 +134,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     // int recnum;
     Cursor cursor;
 
-    StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) {
+    StandardStationProfileFeature(StationFeature s, Cursor cursor, StructureData stationProfileData, int recnum) {
       super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(),
           StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
@@ -168,7 +168,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
-      return ((StationFeature) station).getFeatureData();
+      return stationFeature.getFeatureData();
     }
 
     @Override
@@ -226,8 +226,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       @Override
       public PointFeatureCollection next() {
         count++;
-        PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(),
-            ft.getObsTime(cursor), cursor.copy(), profileData);
+        PointFeatureCollection result = new StandardProfileFeature(stationFeature.getStation(), getTimeUnit(),
+            getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
         prev = (DsgCollectionImpl) result;
         return result;
       }

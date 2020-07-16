@@ -15,6 +15,8 @@ import java.io.IOException;
  * @author caron
  * @since 7/8/2014
  */
-public interface StationFeature extends Station {
+public interface StationFeature {
+  Station getStation();
+
   StructureData getFeatureData() throws IOException;
 }

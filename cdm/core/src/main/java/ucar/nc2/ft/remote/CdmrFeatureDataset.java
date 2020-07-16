@@ -11,7 +11,7 @@ import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
-import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
+import ucar.nc2.ft.point.writer2.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft2.coverage.CoverageCollection;

@@ -10,7 +10,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.standard.PointConfigXML;
-import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
+import ucar.nc2.ft.point.writer2.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;

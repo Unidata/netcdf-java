@@ -91,7 +91,8 @@ public class FeatureDatasetCapabilitiesWriter {
     else
       stations = sobs.getStationFeatures();
 
-    for (Station s : stations) {
+    for (StationFeature sf : stations) {
+      Station s = sf.getStation();
       Element sElem = new Element("station");
       sElem.setAttribute("name", s.getName());
       if (s.getWmoId() != null)
