@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.unidata.io;
+package ucar.nc2.ui.gis.shapefile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,9 +18,7 @@ import java.net.URL;
  * big- and little-endian representations.
  *
  * @author Russ Rew
- * @deprecated not part of public API.
  */
-@Deprecated
 public class BeLeDataInputStream extends DataInputStream {
 
   private byte[] w = new byte[8]; // work array for buffering bytes

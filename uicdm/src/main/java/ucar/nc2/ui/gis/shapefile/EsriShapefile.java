@@ -6,7 +6,6 @@ package ucar.nc2.ui.gis.shapefile;
 
 import ucar.nc2.ui.gis.AbstractGisFeature;
 import ucar.nc2.ui.gis.GisPart;
-import ucar.unidata.io.BeLeDataInputStream;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedInputStream;
 import java.io.InputStream;

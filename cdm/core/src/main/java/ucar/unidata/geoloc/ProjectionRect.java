@@ -14,12 +14,14 @@ import java.io.*;
  * Note that getX() getY() really means getMinX(), getMinY(), rather than
  * "upper left point" of the rectangle.
  *
- * LOOK will not implement Serializable in ver6
  * LOOK may be immutable AutoValue in ver6
  */
-public class ProjectionRect implements java.io.Serializable {
+public class ProjectionRect {
   // TODO make final in ver6
-  private double x, y, width, height;
+  private double x;
+  private double y;
+  private double width;
+  private double height;
 
   /**
    * default constructor, initialized to center (0,0) and width (10000, 10000)
@@ -51,8 +53,6 @@ public class ProjectionRect implements java.io.Serializable {
 
   /**
    * Copy Constructor
-   *
-   * @param r rectangle to copy
    */
   public ProjectionRect(ProjectionRect r) {
     this(r.getMinX(), r.getMinY(), r.getMaxX(), r.getMaxY());
