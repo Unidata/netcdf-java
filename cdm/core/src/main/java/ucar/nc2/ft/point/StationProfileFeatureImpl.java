@@ -31,19 +31,12 @@ import ucar.unidata.geoloc.Station;
  */
 public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl implements StationProfileFeature {
   protected int timeSeriesNpts;
-  protected Station station;
+  protected StationFeature stationFeature;
   protected PointFeatureCollectionIterator localIterator;
 
-  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
-      CalendarDateUnit timeUnit, String altUnits, int npts) {
-    super(name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
-    station = new Station(name, desc, wmoId, lat, lon, alt, npts);
-    this.timeSeriesNpts = npts;
-  }
-
-  public StationProfileFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
-    super(s.getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
-    this.station = s;
+  public StationProfileFeatureImpl(StationFeature s, CalendarDateUnit timeUnit, String altUnits, int npts) {
+    super(s.getStation().getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
+    this.stationFeature = s;
     this.timeSeriesNpts = npts;
   }
 
@@ -54,7 +47,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
   @Override
   public Station getStation() {
-    return station;
+    return stationFeature.getStation();
   }
 
   @Override
@@ -77,7 +70,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     private final CalendarDateRange dateRange;
 
     public StationProfileFeatureSubset(StationProfileFeatureImpl from, CalendarDateRange filter_date) {
-      super(from.station, from.getTimeUnit(), from.getAltUnits(), -1);
+      super(from.stationFeature, from.getTimeUnit(), from.getAltUnits(), -1);
       this.from = from;
       this.dateRange = filter_date;
     }

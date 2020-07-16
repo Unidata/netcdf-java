@@ -32,7 +32,7 @@ import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.Station;
 
 /**
- * Netsed Table implementat ion of StationProfileCollection
+ * Nested Table implementation of StationProfileCollection
  * Object Heirarchy:
  * StationProfileFeatureCollection (StandardStationProfileCollectionImpl)
  * StationProfileFeature (StandardStationProfileFeature)
@@ -135,7 +135,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     Cursor cursor;
 
     StandardStationProfileFeature(StationFeature s, Cursor cursor, StructureData stationProfileData, int recnum) {
-      super(s.getStation(), StandardStationProfileCollectionImpl.this.getTimeUnit(),
+      super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(),
           StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
       // this.recnum = recnum;
@@ -168,7 +168,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
-      return ((StationFeature) station).getFeatureData();
+      return stationFeature.getFeatureData();
     }
 
     @Override
@@ -226,7 +226,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       @Override
       public PointFeatureCollection next() {
         count++;
-        PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(),
+        PointFeatureCollection result = new StandardProfileFeature(stationFeature.getStation(), getTimeUnit(), getAltUnits(),
             ft.getObsTime(cursor), cursor.copy(), profileData);
         prev = (DsgCollectionImpl) result;
         return result;
