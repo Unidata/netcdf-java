@@ -92,14 +92,14 @@ tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask confi
 task publishAsVersionedUserGuide(type: PublishToRawRepoTask, dependsOn: buildJekyllSite) {
   description = 'Publish user guide (versioned) to Nexus under /major.minor/.'
 
-  srcFile = jekyllDestinationDir
+  publishSrc = jekyllDestinationDir
   destPath = "netcdf-java/$project.docVersion/userguide/"
 }
 
 task publishAsCurrentUserGuide(type: PublishToRawRepoTask, dependsOn: buildJekyllSite) {
   description = 'Publish the user guide to Nexus under /current/.'
 
-  srcFile = jekyllDestinationDir
+  publishSrc = jekyllDestinationDir
   destPath = 'netcdf-java/current/userguide/'
 }
 
@@ -110,28 +110,28 @@ gradle.projectsEvaluated {
   task publishAsVersionedJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
     description = 'Publish Javadoc for the CDM subproject to Nexus under /major.minor/.'
 
-    srcFile = tasks.buildJavadocPublicApi.destinationDir
+    publishSrc = tasks.buildJavadocPublicApi.destinationDir
     destPath = "netcdf-java/$project.docVersion/javadoc/"
   }
 
   task publishAsCurrentJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
     description = 'Publish Javadoc for the CDM subproject to Nexus under /current/.'
 
-    srcFile = tasks.buildJavadocPublicApi.destinationDir
+    publishSrc = tasks.buildJavadocPublicApi.destinationDir
     destPath = 'netcdf-java/current/javadoc/'
   }
 
   task publishAsVersionedJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
     description = 'Publish Javadoc for all Java subprojects to Nexus under /major.minor/.'
 
-    srcFile = tasks.buildJavadocAll.destinationDir
+    publishSrc = tasks.buildJavadocAll.destinationDir
     destPath = "netcdf-java/$project.docVersion/javadocAll/"
   }
 
   task publishAsCurrentJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
     description = 'Publish Javadoc for all Java subprojects to Nexus under /current/.'
 
-    srcFile = tasks.buildJavadocAll.destinationDir
+    publishSrc = tasks.buildJavadocAll.destinationDir
     destPath = 'netcdf-java/current/javadocAll/'
   }
 
