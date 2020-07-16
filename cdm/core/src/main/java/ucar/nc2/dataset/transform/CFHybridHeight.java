@@ -109,6 +109,6 @@ public class CFHybridHeight extends AbstractTransformBuilder implements VertTran
    * @return the VerticalTransform
    */
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new HybridHeight(ds, timeDim, vCT.getParameters());
+    return HybridHeight.create(ds, timeDim, vCT.getParameters());
   }
 }

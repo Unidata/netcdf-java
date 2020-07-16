@@ -65,6 +65,6 @@ public class VOceanSG1 extends AbstractTransformBuilder implements VertTransform
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new OceanSG1(ds, timeDim, vCT.getParameters());
+    return OceanSG1.create(ds, timeDim, vCT.getParameters());
   }
 }

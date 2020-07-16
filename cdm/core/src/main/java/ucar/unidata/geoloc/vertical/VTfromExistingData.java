@@ -5,6 +5,7 @@
 
 package ucar.unidata.geoloc.vertical;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.nc2.Dimension;
@@ -14,24 +15,17 @@ import ucar.unidata.util.Parameter;
 import java.io.IOException;
 import java.util.List;
 
-
 /**
  * This implements a VerticalTransform using an existing 3D variable.
  * This is a common case when the 3D pressure or height field is stored in the file.
- *
- * @author john
  */
+@Immutable
 public class VTfromExistingData extends AbstractVerticalTransform {
-
-  /**
-   * The name of the Parameter whose value is the variable that contains the 2D Height or Pressure field
-   */
+  /** The name of the Parameter whose value is the variable that contains the 2D Height or Pressure field */
   public static final String existingDataField = "existingDataField";
 
-  /**
-   * The variable that contains the 2D Height or Pressure field
-   */
-  private Variable existingData;
+  // The variable that contains the 2D Height or Pressure field
+  private final Variable existingDataVar;
 
   /**
    * Constructor.
@@ -40,15 +34,20 @@ public class VTfromExistingData extends AbstractVerticalTransform {
    * @param timeDim time Dimension
    * @param params list of transformation Parameters
    */
-  public VTfromExistingData(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
-    super(timeDim);
-    String vname = getParameterStringValue(params, existingDataField);
-    this.existingData = ds.findVariable(vname);
-    units = existingData.getUnitsString();
+  public static VTfromExistingData create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+    Variable existingDataVar = findVariableFromParameterName(ds, params, existingDataField);
+    String units = existingDataVar.getUnitsString();
+    return new VTfromExistingData(timeDim, units, existingDataVar);
   }
 
+  private VTfromExistingData(Dimension timeDim, String units, Variable existingDataVar) {
+    super(timeDim, units);
+    this.existingDataVar = existingDataVar;
+  }
+
+  @Override
   public ArrayDouble.D3 getCoordinateArray(int timeIndex) throws IOException, InvalidRangeException {
-    Array data = readArray(existingData, timeIndex);
+    Array data = readArray(existingDataVar, timeIndex);
 
     // copy for now - better to just return Array, with promise its rank 3
     int[] shape = data.getShape();
@@ -64,12 +63,9 @@ public class VTfromExistingData extends AbstractVerticalTransform {
    * @param xIndex the x index
    * @param yIndex the y index
    * @return vertical coordinate array
-   * @throws java.io.IOException problem reading data
-   * @throws ucar.ma2.InvalidRangeException _more_
    */
+  @Override
   public D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException {
-
-
     ArrayDouble.D3 ddata = getCoordinateArray(timeIndex);
     int[] origin = {0, yIndex, xIndex};
     int[] shape = {ddata.getShape()[0], 1, 1};

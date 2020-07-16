@@ -5,6 +5,7 @@
 package ucar.unidata.geoloc;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -42,6 +43,7 @@ public interface VerticalTransform {
   ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;
 
   /** Get the unit string for the vertical coordinate. */
+  @Nullable
   String getUnitString();
 
   /** Get whether this coordinate is time dependent. */
