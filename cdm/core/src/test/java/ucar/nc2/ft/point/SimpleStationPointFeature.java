@@ -13,12 +13,12 @@ public class SimpleStationPointFeature extends SimplePointFeature implements Sta
 
   public SimpleStationPointFeature(DsgFeatureCollection dsg, StationFeature stationFeat, double obsTime, double nomTime,
       CalendarDateUnit timeUnit, StructureData featureData) {
-    super(dsg, stationFeat, obsTime, nomTime, timeUnit, featureData);
+    super(dsg, stationFeat.getStation(), obsTime, nomTime, timeUnit, featureData);
     this.stationFeat = stationFeat;
   }
 
   @Override
-  public StationFeature getStation() {
+  public StationFeature getAsStationFeature() {
     return stationFeat;
   }
 }

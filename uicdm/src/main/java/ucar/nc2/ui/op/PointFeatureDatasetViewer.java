@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
@@ -136,7 +135,7 @@ public class PointFeatureDatasetViewer extends JPanel {
           geoRegion = stationMap.getGeoSelectionLL();
           log.debug("geoRegion={}", geoRegion);
         } else {
-          selectedStation = (StationBean) stationMap.getSelectedStation();
+          selectedStation = null; // LOOK (StationBean) stationMap.getSelectedStation();
         }
 
         try {
@@ -471,7 +470,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private void setStations(List<StationFeature> stations) {
     List<StationBean> stationBeans = new ArrayList<>();
     try {
-      for (Station station : stations) {
+      for (StationFeature station : stations) {
         stationBeans.add(new StationBean(station));
       }
     } catch (IOException ioe) {
@@ -826,8 +825,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  public static class StationBean extends FeatureBean implements Station {
+  public static class StationBean extends FeatureBean {
     private StationFeature stnFeat;
+    private Station stn;
     private int npts = -1;
 
     public StationBean() {}
@@ -836,10 +836,11 @@ public class PointFeatureDatasetViewer extends JPanel {
       super(sdata);
     }
 
-    public StationBean(Station s) throws IOException {
-      super(((StationFeature) s).getFeatureData());
-      this.stnFeat = (StationFeature) s;
-      this.npts = s.getNobs();
+    public StationBean(StationFeature sf) throws IOException {
+      super(sf.getFeatureData());
+      this.stnFeat = sf;
+      this.stn = sf.getStation();
+      this.npts = stn.getNobs();
     }
 
     // for BeanTable
@@ -856,36 +857,36 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     public String getWmoId() {
-      return stnFeat.getWmoId();
+      return stn.getWmoId();
     }
 
     // all the station dependent methods need to be overridden
     public String getName() {
-      return stnFeat.getName();
+      return stn.getName();
     }
 
     public String getDescription() {
-      return stnFeat.getDescription();
+      return stn.getDescription();
     }
 
     public double getLatitude() {
-      return stnFeat.getLatitude();
+      return stn.getLatitude();
     }
 
     public double getLongitude() {
-      return stnFeat.getLongitude();
+      return stn.getLongitude();
     }
 
     public double getAltitude() {
-      return stnFeat.getAltitude();
+      return stn.getAltitude();
     }
 
     public LatLonPoint getLatLon() {
-      return stnFeat.getLatLon();
+      return stn.getLatLon();
     }
 
     public boolean isMissing() {
-      return stnFeat.isMissing();
+      return stn.isMissing();
     }
 
     public int compareTo(Station so) {

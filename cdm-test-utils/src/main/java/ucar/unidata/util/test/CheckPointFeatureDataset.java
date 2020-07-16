@@ -282,11 +282,11 @@ public class CheckPointFeatureDataset {
         stns.put(sf.getName(), sf);
       }
 
-      MyLocation loc = new MyLocation(sf);
+      MyLocation loc = new MyLocation(sf.getStation());
       StationTimeSeriesFeature already = locs.get(loc);
       if (already != null) {
-        System.out.printf("  duplicate location %s(%s) of %s(%s) %n", sf.getName(), sf.getDescription(),
-            already.getName(), already.getDescription());
+        System.out.printf("  duplicate location %s(%s) of %s(%s) %n", sf.getName(), sf.getStation().getDescription(),
+            already.getName(), already.getStation().getDescription());
       } else {
         locs.put(loc, sf);
       }
@@ -305,7 +305,7 @@ public class CheckPointFeatureDataset {
     int count = 0;
     for (StationProfileFeature spf : stationProfileFeatureCollection) {
       checkDsgFeatureCollection(spf);
-      Assert.assertNotNull("StationProfileFeature latlon", spf.getLatLon());
+      Assert.assertNotNull("StationProfileFeature latlon", spf.getStation().getLatLon());
       Assert.assertNotNull("StationProfileFeature featureData", spf.getFeatureData());
 
       // iterates through the profile but not the profile data

@@ -112,8 +112,8 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     @Override
     public String makeQuery() {
       StringBuilder query = new StringBuilder("stns=");
-      for (StationFeature s : getStationHelper().getStationFeatures()) {
-        query.append(s.getName());
+      for (StationFeature sf : getStationHelper().getStationFeatures()) {
+        query.append(sf.getStation().getName());
         query.append(",");
       }
       return PointDatasetRemote.makeQuery(query.toString(), boundingBoxSubset, dateRangeSubset);
@@ -191,7 +191,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     @Nullable
     public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
       if (boundingBox != null) {
-        if (!boundingBox.contains(s.getLatLon()))
+        if (!boundingBox.contains(stationFeature.getStation().getLatLon()))
           return null;
         if (dateRange == null)
           return this;
@@ -202,8 +202,8 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     // an iterator over the observations for this station
     @Override
     public PointFeatureIterator getPointFeatureIterator() throws IOException {
-      String query =
-          PointDatasetRemote.makeQuery("stn=" + s.getName(), null, getInfo().getCalendarDateRange(this.getTimeUnit()));
+      String query = PointDatasetRemote.makeQuery("stn=" + stationFeature.getStation().getName(), null,
+          getInfo().getCalendarDateRange(this.getTimeUnit()));
 
       InputStream in = null;
       try {

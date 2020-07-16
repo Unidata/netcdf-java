@@ -267,7 +267,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
       // Create a new CompositeStationFeature from the subsetted collection.
       CompositeStationFeature compStnFeatSubset =
-          new CompositeStationFeature(s, getTimeUnit(), getAltUnits(), sdata, collectionSubset);
+          new CompositeStationFeature(stationFeature, getTimeUnit(), getAltUnits(), sdata, collectionSubset);
 
       // We're not done yet! While compStnFeatSubset has been limited to only include datasets that intersect dateRange,
       // it'll often be the case that those datasets contain some times that we don't want. In the example above,
@@ -291,7 +291,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     @Nullable
     public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) {
       if (boundingBox != null) {
-        if (!boundingBox.contains(s.getLatLon()))
+        if (!boundingBox.contains(stationFeature.getStation().getLatLon()))
           return null;
         if (dateRange == null)
           return this;
@@ -300,7 +300,6 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     }
 
     // the iterator over PointFeature - an iterator over iterators, one for each dataset
-
     private class CompositeStationFeatureIterator extends PointIteratorAbstract {
       private Iterator<TimedCollection.Dataset> iter;
       private FeatureDatasetPoint currentDataset;
@@ -323,8 +322,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
         List<DsgFeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
-        StationFeature s = stnCollection.findStationFeature(getName());
-        if (s == null) {
+        StationFeature sf = stnCollection.findStationFeature(getName());
+        if (sf == null) {
           log.debug("CompositeStationFeatureIterator dataset: {} missing station {}", td.getLocation(), getName());
           // close (or just release if cache is enabled) current dataset and check for station in
           // next dataset in collection
@@ -332,9 +331,10 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
           return getNextIterator();
         }
 
-        StationTimeSeriesFeature stnFeature = stnCollection.getStationTimeSeriesFeature(s);
+        StationTimeSeriesFeature stnFeature = stnCollection.getStationTimeSeriesFeature(sf);
         if (CompositeDatasetFactory.debug)
-          System.out.printf("CompositeStationFeatureIterator open dataset: %s for %s%n", td.getLocation(), s.getName());
+          System.out.printf("CompositeStationFeatureIterator open dataset: %s for %s%n", td.getLocation(),
+              sf.getStation().getName());
         return stnFeature.getPointFeatureIterator();
       }
 

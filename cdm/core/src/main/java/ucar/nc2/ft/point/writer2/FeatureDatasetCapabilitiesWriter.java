@@ -90,18 +90,19 @@ public class FeatureDatasetCapabilitiesWriter {
     else
       stations = sobs.getStationFeatures();
 
-    for (Station s : stations) {
+    for (StationFeature sf : stations) {
+      Station stn = sf.getStation();
       Element sElem = new Element("station");
-      sElem.setAttribute("name", s.getName());
-      if (s.getWmoId() != null)
-        sElem.setAttribute("wmo_id", s.getWmoId());
-      if ((s.getDescription() != null) && (!s.getDescription().isEmpty()))
-        sElem.addContent(new Element("description").addContent(s.getDescription()));
+      sElem.setAttribute("name", stn.getName());
+      if (stn.getWmoId() != null)
+        sElem.setAttribute("wmo_id", stn.getWmoId());
+      if ((stn.getDescription() != null) && (!stn.getDescription().isEmpty()))
+        sElem.addContent(new Element("description").addContent(stn.getDescription()));
 
-      sElem.addContent(new Element("longitude").addContent(Double.toString(s.getLongitude())));
-      sElem.addContent(new Element("latitide").addContent(Double.toString(s.getLatitude())));
-      if (!Double.isNaN(s.getAltitude()))
-        sElem.addContent(new Element("altitude").addContent(Double.toString(s.getAltitude())));
+      sElem.addContent(new Element("longitude").addContent(Double.toString(stn.getLongitude())));
+      sElem.addContent(new Element("latitide").addContent(Double.toString(stn.getLatitude())));
+      if (!Double.isNaN(stn.getAltitude()))
+        sElem.addContent(new Element("altitude").addContent(Double.toString(stn.getAltitude())));
       rootElem.addContent(sElem);
     }
 

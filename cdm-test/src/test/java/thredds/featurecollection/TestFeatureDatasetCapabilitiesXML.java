@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
+import ucar.nc2.ft.point.writer2.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
