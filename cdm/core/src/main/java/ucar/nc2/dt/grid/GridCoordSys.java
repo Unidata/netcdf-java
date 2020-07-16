@@ -1708,6 +1708,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
   }
 
+  /** @deprecated use Projection.projToLatlonBB */
+  @Deprecated
   public static LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx,
       double endy) {
 
