@@ -226,8 +226,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       @Override
       public PointFeatureCollection next() {
         count++;
-        PointFeatureCollection result = new StandardProfileFeature(stationFeature.getStation(), getTimeUnit(), getAltUnits(),
-            ft.getObsTime(cursor), cursor.copy(), profileData);
+        PointFeatureCollection result = new StandardProfileFeature(stationFeature.getStation(), getTimeUnit(),
+            getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
         prev = (DsgCollectionImpl) result;
         return result;
       }
