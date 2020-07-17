@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.util.test.TestDir;
 
+/** Test that FeatureDatasetFactoryManager works when grib module is not loaded. */
 public class TestFeatureDatasetFactoryManager {
 
   /** Tests a non-CF compliant trajectory file */

@@ -744,7 +744,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /** @deprecated Use NetcdfDatasets.open() with IOSP_MESSAGE_ADD_RECORD_STRUCTURE */
   @Deprecated
   @Override
-  protected Boolean makeRecordStructure() {
+  protected boolean makeRecordStructure() {
     if (this.orgFile == null)
       return false;
 
