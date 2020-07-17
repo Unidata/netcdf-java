@@ -96,43 +96,4 @@ class CacheAggregationsSpec extends Specification {
             expecteds == actuals
         }
     }
-
-    /* Disable 10/23/2019 jlcaron
-    def "tiled"() {
-        setup:
-        String filename = "file:./"+TestNcMLRead.topDir + "tiled/testAggTiled.ncml";
-        def expecteds = [202.0, 264.0, 266.0, 268.0]
-        def actuals
-
-        (1..numTrials).each {
-            when:
-            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null).withCloseable {
-                Variable var = it.findVariable('temperature')
-                Array array = var.read('10,10:16:2')
-                actuals = array.getStorage() as List
-            }
-
-            then:
-            expecteds == actuals
-        }
-    } */
-
-    def "fmrc"() {
-        setup:
-        String filename = "file:./"+TestNcmlRead.topDir + "fmrc/testAggFmrcScan.ncml";
-        def expecteds = [232.0, 232.4, 232.5]
-        def actuals
-
-        (1..numTrials).each {
-            when:
-            NetcdfDatasets.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null).withCloseable {
-                Variable var = it.findVariable('Temperature_isobaric')
-                Array array = var.read(':, 11, 0, 0, 0')
-                actuals = array.getStorage() as List
-            }
-
-            then:
-            expecteds == actuals
-        }
-    }
 }

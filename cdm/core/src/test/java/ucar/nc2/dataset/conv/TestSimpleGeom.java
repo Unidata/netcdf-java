@@ -16,7 +16,7 @@ import static java.lang.String.format;
 
 public class TestSimpleGeom {
 
-  private final String cfConvention = CF1Convention.class.getName();
+  private final String cfConvention = "CF-1.X";
 
   @Test
   public void testLine() throws IOException {
