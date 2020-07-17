@@ -67,7 +67,8 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDataset() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", true, -1,
+        null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     System.out.printf("Open %s%n", ncfile.getLocation());
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
@@ -121,28 +122,26 @@ public class TestScaleOffsetMissingForStructure {
 
   @Test
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
-    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc")) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", true, -1,
+        null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");
       assert null != v;
       assert v.getDataType() == DataType.FLOAT;
 
       assert v.getUnitsString().equals("m");
-      v.setUnitsString("meters");
-      assert v.getUnitsString().equals("meters");
-      assert v.attributes().findAttributeString("units", "").equals("meters");
+      assert v.attributes().findAttributeString("units", "").equals("m");
 
-      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       Structure s = (Structure) ncfile.findVariable("record");
       assert (s != null);
 
       Variable v2 = s.findVariable("testScale");
-      assert v2.getUnitsString().equals("meters");
+      assert v2.getUnitsString().equals("m");
       assert v2.getDataType() == DataType.FLOAT;
 
       StructureData sdata = s.readStructure(0);
       StructureMembers.Member m = sdata.findMember("testScale");
       assert null != m;
-      assert m.getUnitsString().equals("meters") : m.getUnitsString();
+      assert m.getUnitsString().equals("m") : m.getUnitsString();
       assert m.getDataType() == DataType.FLOAT;
 
       try (StructureDataIterator siter = s.getStructureIterator()) {
@@ -150,7 +149,7 @@ public class TestScaleOffsetMissingForStructure {
           sdata = siter.next();
           m = sdata.findMember("testScale");
           assert null != m;
-          assert m.getUnitsString().equals("meters");
+          assert m.getUnitsString().equals("m");
         }
       }
     }

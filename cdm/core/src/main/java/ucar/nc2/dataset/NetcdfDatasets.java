@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.util.EnumSet;
 import java.util.ServiceLoader;
 import java.util.Set;
+import javax.annotation.Nullable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -113,7 +114,7 @@ public class NetcdfDatasets {
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  public static NetcdfDataset openDataset(String location, boolean enhance, ucar.nc2.util.CancelTask cancelTask)
+  public static NetcdfDataset openDataset(String location, boolean enhance, @Nullable CancelTask cancelTask)
       throws IOException {
     return openDataset(location, enhance, -1, cancelTask, null);
   }
@@ -125,15 +126,15 @@ public class NetcdfDatasets {
    * @param enhance if true, use defaultEnhanceMode, else no enhancements
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
-   * @param spiObject sent to iosp.setSpecial() if not null
+   * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
   public static NetcdfDataset openDataset(String location, boolean enhance, int buffer_size,
-      ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+      @Nullable CancelTask cancelTask, @Nullable Object iospMessage) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
     return openDataset(durl, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null, buffer_size, cancelTask,
-        spiObject);
+        iospMessage);
   }
 
   /**
@@ -143,13 +144,13 @@ public class NetcdfDatasets {
    * @param enhanceMode set of enhancements. If null, then none
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
-   * @param spiObject sent to iosp.setSpecial() if not null
+   * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  public static NetcdfDataset openDataset(DatasetUrl location, Set<Enhance> enhanceMode, int buffer_size,
-      CancelTask cancelTask, Object spiObject) throws IOException {
-    NetcdfFile ncfile = openProtocolOrFile(location, buffer_size, cancelTask, spiObject);
+  public static NetcdfDataset openDataset(DatasetUrl location, @Nullable Set<Enhance> enhanceMode, int buffer_size,
+      @Nullable CancelTask cancelTask, @Nullable Object iospMessage) throws IOException {
+    NetcdfFile ncfile = openProtocolOrFile(location, buffer_size, cancelTask, iospMessage);
     return enhance(ncfile, enhanceMode, cancelTask);
   }
 
@@ -159,13 +160,12 @@ public class NetcdfDatasets {
    *
    * @param reader the Reader containing the NcML document
    * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
-   *        dataset,
-   *        or may be just a unique name for caching purposes.
+   *        dataset, or may be just a unique name for caching purposes.
    * @param cancelTask allow user to cancel the task; may be null
    * @return the resulting NetcdfDataset.Builder
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  public static NetcdfDataset openNcmlDataset(Reader reader, String ncmlLocation, CancelTask cancelTask)
+  public static NetcdfDataset openNcmlDataset(Reader reader, String ncmlLocation, @Nullable CancelTask cancelTask)
       throws IOException {
     NetcdfDataset.Builder<?> builder = NcmlReader.readNcml(reader, ncmlLocation, cancelTask);
     if (!builder.getEnhanceMode().isEmpty()) {
@@ -184,7 +184,8 @@ public class NetcdfDatasets {
    * @return NetcdfDataset.Builder wrapping the given ncfile
    * @throws IOException on io error
    */
-  public static NetcdfDataset enhance(NetcdfFile ncfile, Set<Enhance> mode, CancelTask cancelTask) throws IOException {
+  public static NetcdfDataset enhance(NetcdfFile ncfile, @Nullable Set<Enhance> mode, @Nullable CancelTask cancelTask)
+      throws IOException {
     if (ncfile instanceof NetcdfDataset) {
       NetcdfDataset ncd = (NetcdfDataset) ncfile;
       NetcdfDataset.Builder builder = ncd.toBuilder();
@@ -209,34 +210,32 @@ public class NetcdfDatasets {
   // acquiring through the cache
 
   /**
-   * Same as openDataset, but file is acquired through the File Cache, with defaultEnhanceMode,
-   * without the need of setting the enhanceMode via the signature.
-   * You still close with NetcdfDataset.close(), the release is handled automatically.
-   * You must first call initNetcdfFileCache() for caching to actually take place.
-   *
-   * @param location location of file, passed to FileFactory
-   * @param cancelTask allow task to be cancelled; may be null.
-   * @return NetcdfDataset object
-   * @throws java.io.IOException on read error
-   */
-  public static NetcdfDataset acquireDataset(DatasetUrl location, ucar.nc2.util.CancelTask cancelTask)
-      throws IOException {
-    return acquireDataset(null, location, NetcdfDataset.getDefaultEnhanceMode(), -1, cancelTask, null);
-  }
-
-  /**
    * Same as openDataset, but file is acquired through the File Cache, with defaultEnhanceMode.
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    * You must first call initNetcdfFileCache() for caching to actually take place.
    *
    * @param location location of file, passed to FileFactory
-   * @param enhanceMode how to enhance. if null, then no enhancement
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  public static NetcdfDataset acquireDataset(DatasetUrl location, boolean enhanceMode,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public static NetcdfDataset acquireDataset(DatasetUrl location, @Nullable CancelTask cancelTask) throws IOException {
+    return acquireDataset(null, location, NetcdfDataset.getDefaultEnhanceMode(), -1, cancelTask, null);
+  }
+
+  /**
+   * Same as openDataset, but file is acquired through the File Cache, with optional enhancement.
+   * You still close with NetcdfDataset.close(), the release is handled automatically.
+   * You must first call initNetcdfFileCache() for caching to actually take place.
+   *
+   * @param location location of file, passed to FileFactory
+   * @param enhanceMode whether to enhance.
+   * @param cancelTask allow task to be cancelled; may be null.
+   * @return NetcdfDataset object
+   * @throws java.io.IOException on read error
+   */
+  public static NetcdfDataset acquireDataset(DatasetUrl location, boolean enhanceMode, @Nullable CancelTask cancelTask)
+      throws IOException {
     return acquireDataset(null, location, enhanceMode ? NetcdfDataset.getDefaultEnhanceMode() : null, -1, cancelTask,
         null);
   }
@@ -249,12 +248,13 @@ public class NetcdfDatasets {
    * @param location location of file, passed to FileFactory
    * @param enhanceMode how to enhance. if null, then no enhancement
    * @param cancelTask allow task to be cancelled; may be null.
+   * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  public static NetcdfDataset acquireDataset(DatasetUrl location, Set<Enhance> enhanceMode,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return acquireDataset(null, location, enhanceMode, -1, cancelTask, null);
+  public static NetcdfDataset acquireDataset(DatasetUrl location, @Nullable Set<Enhance> enhanceMode,
+      @Nullable CancelTask cancelTask, @Nullable Object iospMessage) throws IOException {
+    return acquireDataset(null, location, enhanceMode, -1, cancelTask, iospMessage);
   }
 
   /**
@@ -267,12 +267,13 @@ public class NetcdfDatasets {
    * @param enhanceMode how to enhance. if null, then no enhancement
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
-   * @param iospMessage sent to iosp.setSpecial() if not null
+   * @param iospMessage send to iosp.sendIospMessage() if not null
    *
    * @return NetcdfDataset or throw Exception
    */
-  public static NetcdfDataset acquireDataset(FileFactory fac, DatasetUrl durl, Set<Enhance> enhanceMode,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
+  public static NetcdfDataset acquireDataset(@Nullable FileFactory fac, DatasetUrl durl,
+      @Nullable Set<Enhance> enhanceMode, int buffer_size, @Nullable CancelTask cancelTask,
+      @Nullable Object iospMessage) throws IOException {
 
     // caching not turned on
     if (netcdfFileCache == null) {
@@ -338,13 +339,12 @@ public class NetcdfDatasets {
    * @param location location of dataset.
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
-   * @param spiObject sent to iosp.setSpecial() if not null
+   * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfFile object
-   * @throws java.io.IOException on read error
    */
   public static NetcdfFile openFile(DatasetUrl location, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
-      Object spiObject) throws IOException {
-    return openProtocolOrFile(location, buffer_size, cancelTask, spiObject);
+      Object iospMessage) throws IOException {
+    return openProtocolOrFile(location, buffer_size, cancelTask, iospMessage);
   }
 
   /**
@@ -355,7 +355,6 @@ public class NetcdfDatasets {
    * @param location location of file, passed to FileFactory
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfFile object
-   * @throws java.io.IOException on read error
    */
   public static NetcdfFile acquireFile(DatasetUrl location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return acquireFile(null, null, location, -1, cancelTask, null);
@@ -371,12 +370,13 @@ public class NetcdfDatasets {
    * @param location location of file, passed to FileFactory
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
-   * @param spiObject sent to iosp.setSpecial(); may be null
+   * @param spiObject send to iosp.sendIospMessage(); may be null
    * @return NetcdfFile object
    * @throws java.io.IOException on read error
    */
-  public static NetcdfFile acquireFile(ucar.nc2.util.cache.FileFactory factory, Object hashKey, DatasetUrl location,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+  public static NetcdfFile acquireFile(@Nullable ucar.nc2.util.cache.FileFactory factory, @Nullable Object hashKey,
+      DatasetUrl location, int buffer_size, @Nullable ucar.nc2.util.CancelTask cancelTask, @Nullable Object spiObject)
+      throws IOException {
 
     // must use the factory if there is one but no fileCache
     if ((netcdfFileCache == null) && (factory != null)) {
@@ -395,22 +395,22 @@ public class NetcdfDatasets {
    * @param durl location of file
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
-   * @param spiObject sent to iosp.setSpecial() if not null
+   * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfFile or throw an Exception.
    */
   private static NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey, DatasetUrl durl,
-      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+      int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
     if (factory == null)
       factory = defaultNetcdfFileFactory;
 
     // Theres a cache
     if (cache != null) {
-      return (NetcdfFile) cache.acquire(factory, hashKey, durl, buffer_size, cancelTask, spiObject);
+      return (NetcdfFile) cache.acquire(factory, hashKey, durl, buffer_size, cancelTask, iospMessage);
     }
 
     // Use the factory to open.
-    return (NetcdfFile) factory.open(durl, buffer_size, cancelTask, spiObject);
+    return (NetcdfFile) factory.open(durl, buffer_size, cancelTask, iospMessage);
   }
 
   /**
@@ -419,11 +419,11 @@ public class NetcdfDatasets {
    * @param durl location of file, with protocol or as a file.
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
-   * @param spiObject sent to iosp.setSpecial() if not null
+   * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfFile or throw an Exception.
    */
   private static NetcdfFile openProtocolOrFile(DatasetUrl durl, int buffer_size, ucar.nc2.util.CancelTask cancelTask,
-      Object spiObject) throws IOException {
+      Object iospMessage) throws IOException {
 
     // look for dynamically loaded NetcdfFileProvider
     for (NetcdfFileProvider provider : ServiceLoader.load(NetcdfFileProvider.class)) {
@@ -452,6 +452,6 @@ public class NetcdfDatasets {
     }
 
     // Open as a file or remote file
-    return NetcdfFiles.open(durl.getTrueurl(), buffer_size, cancelTask, spiObject);
+    return NetcdfFiles.open(durl.getTrueurl(), buffer_size, cancelTask, iospMessage);
   }
 }

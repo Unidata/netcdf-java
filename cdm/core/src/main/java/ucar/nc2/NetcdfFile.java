@@ -42,6 +42,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
+import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -1922,19 +1923,19 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @return true if it has a Nectdf-3 record structure
    */
   @Deprecated
-  protected Boolean makeRecordStructure() {
+  protected boolean makeRecordStructure() {
     if (immutable)
       throw new IllegalStateException("Cant modify");
 
     Boolean didit = false;
-    if ((iosp != null) && (iosp instanceof N3iosp) && hasUnlimitedDimension()) {
+    if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
       didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
-    return didit;
+    return (didit != null) && didit;
   }
 
   @Deprecated
-  protected Boolean removeRecordStructure() {
+  protected boolean removeRecordStructure() {
     if (immutable)
       throw new IllegalStateException("Cant modify");
 
@@ -1942,7 +1943,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     if ((iosp != null) && (iosp instanceof N3iosp)) {
       didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
     }
-    return didit;
+    return (didit != null) && didit;
   }
 
   // protected boolean addedRecordStructure = false;

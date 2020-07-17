@@ -274,10 +274,12 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
       setValueCharset((Charset) message);
+      return Boolean.TRUE;
     }
     if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
+      // LOOK does this work? must be sent before construction????
       this.useRecordStructure = true;
-      return null;
+      return Boolean.TRUE;
     }
     return super.sendIospMessage(message);
   }

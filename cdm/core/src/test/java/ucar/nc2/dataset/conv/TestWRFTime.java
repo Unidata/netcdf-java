@@ -45,7 +45,7 @@ public class TestWRFTime {
     EnumSet<NetcdfDataset.Enhance> enhanceMode = EnumSet.copyOf(defaultEnhanceMode);
     enhanceMode.add(NetcdfDataset.Enhance.IncompleteCoordSystems);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(tstFile);
-    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, enhanceMode, null);
+    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, enhanceMode, null, null);
 
     List<CoordinateSystem> cs = ncd.getCoordinateSystems();
     Assert.assertEquals(1, cs.size());
