@@ -463,8 +463,8 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
    */
   protected AggDataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
       String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
-    return new AggDataset(cacheName, location, id, enhance, reader, spiObject, ncmlElem); // overridden in OuterDim,
-                                                                                          // tiled
+    // overridden in AggregationOuter
+    return new AggDataset(cacheName, location, id, enhance, reader, spiObject, ncmlElem);
   }
 
   protected AggDataset makeDataset(MFile dset) {

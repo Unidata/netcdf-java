@@ -209,8 +209,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     if (vname.equalsIgnoreCase("z") || findAlias(vb).equalsIgnoreCase("z") || vname.equalsIgnoreCase("altitude")
         || desc.contains("altitude") || vname.equalsIgnoreCase("depth") || vname.equalsIgnoreCase("elev")
         || vname.equalsIgnoreCase("elevation")) {
-      if (SimpleUnit.isCompatible("m", unit)) // units of meters
-      {
+      if (SimpleUnit.isCompatible("m", unit)) { // units of meters
         return AxisType.Height;
       }
     }
@@ -235,6 +234,8 @@ public class DefaultConventions extends CoordSystemBuilder {
         } catch (IOException | InvalidRangeException e) {
           logger.warn("time string error", e);
         }
+      } else {
+        return AxisType.Time; // kludge: see aggSynGrid.xml example test
       }
     }
 
@@ -274,8 +275,7 @@ public class DefaultConventions extends CoordSystemBuilder {
       return AxisType.Lat;
     }
 
-    if (SimpleUnit.isDateUnit(unit)) // || SimpleUnit.isTimeUnit(unit)) removed dec 18, 2008
-    {
+    if (SimpleUnit.isDateUnit(unit)) { // || SimpleUnit.isTimeUnit(unit)) removed dec 18, 2008
       return AxisType.Time;
     }
 

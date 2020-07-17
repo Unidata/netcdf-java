@@ -27,10 +27,8 @@ public class TestAggSynGrid {
 
   @BeforeClass
   public static void setUp() throws IOException {
-    if (gds != null)
-      return;
     gds = ucar.nc2.dt.grid.GridDataset.open(filename);
-    logger.debug("open {}", filename);
+    System.out.printf("open %s%n", filename);
   }
 
   @AfterClass
