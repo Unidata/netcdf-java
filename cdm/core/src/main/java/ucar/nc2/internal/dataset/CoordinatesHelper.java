@@ -238,7 +238,7 @@ public class CoordinatesHelper {
     }
 
     // Check if this Coordinate System is complete for v, ie if v dimensions are a subset..
-    public boolean isComplete(CoordinateSystem.Builder<?> cs, VariableDS.Builder<?> vb) {
+    public boolean isComplete(CoordinateSystem.Builder<?> cs, Variable.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(vb);
       // TODO using strings instead of Dimensions, to avoid exposing mutable Dimension objects.
