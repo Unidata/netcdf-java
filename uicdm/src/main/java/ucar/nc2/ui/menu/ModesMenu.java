@@ -7,10 +7,10 @@ package ucar.nc2.ui.menu;
 
 import thredds.client.catalog.tools.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
+import ucar.nc2.internal.dataset.CoordSystemFactory;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
@@ -74,11 +74,11 @@ public class ModesMenu extends JMenu {
       @Override
       public void actionPerformed(ActionEvent e) {
         boolean state = (Boolean) getValue(BAMutil.STATE);
-        CoordSysBuilder.setUseMaximalCoordSys(state);
+        CoordSystemFactory.setUseMaximalCoordSys(state);
       }
     };
-    BAMutil.setActionPropertiesToggle(a, null, "Set Use Maximal CoordSystem", CoordSysBuilder.getUseMaximalCoordSys(),
-        'N', -1);
+    BAMutil.setActionPropertiesToggle(a, null, "Set Use Maximal CoordSystem",
+        CoordSystemFactory.getUseMaximalCoordSys(), 'N', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {

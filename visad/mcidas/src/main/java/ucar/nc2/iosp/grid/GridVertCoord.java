@@ -310,7 +310,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     ncfile.addVariable(g, v);
 
     if (usesBounds) {
-      Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension(ncfile);
+      Dimension bd = GridCoordSys.makeBoundsDimension(ncfile);
 
       String bname = getVariableName() + "_bounds";
       v.addAttribute(new Attribute("bounds", bname));

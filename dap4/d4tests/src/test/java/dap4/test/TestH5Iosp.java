@@ -7,6 +7,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.category.NotJenkins;
 import java.io.File;
 import java.io.IOException;
@@ -236,9 +237,9 @@ public class TestH5Iosp extends DapTestCommon {
     }
 
     // Print the meta-databuffer using these args to NcdumpW
-    ok = false;
+    ok = true;
     try {
-      ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       ok = false;
@@ -265,9 +266,9 @@ public class TestH5Iosp extends DapTestCommon {
     }
     // Dump the databuffer
     sw = new StringWriter();
-    ok = false;
+    ok = true;
     try {
-      ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       ok = false;

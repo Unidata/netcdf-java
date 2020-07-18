@@ -4,6 +4,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.internal.dataset.conv.CF1Convention;
 
 /**
  * A class which given a dataset, will read from the dataset one of the simple geometry types. Those being polygon,
@@ -35,7 +36,7 @@ public class SimpleGeometryReader {
 
     // CFConvention
     if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (ucar.nc2.dataset.conv.CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
+      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
         poly = new CFPolygon();
 
     if (poly == null)
@@ -62,7 +63,7 @@ public class SimpleGeometryReader {
 
     // CFConvention
     if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (ucar.nc2.dataset.conv.CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
+      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
         line = new CFLine();
 
     if (line == null)
@@ -89,7 +90,7 @@ public class SimpleGeometryReader {
 
     // CFConvention
     if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (ucar.nc2.dataset.conv.CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
+      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
         pt = new CFPoint();
 
     if (pt == null)
@@ -112,8 +113,7 @@ public class SimpleGeometryReader {
 
     // CFConvention
     if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (ucar.nc2.dataset.conv.CF1Convention
-          .getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8) {
+      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8) {
         Attribute geometryTypeAttr;
         String geometry_type;
 

@@ -25,13 +25,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Synthetic (Ncml) datasets for testing point feature variants.
- * not dependent on cdmUnitTest, so can be run with travis.
- *
- * @author caron
- * @since 6/27/2014
- */
+/** Synthetic (Ncml) datasets for testing point feature variants.* */
 @RunWith(Parameterized.class)
 public class TestCFPointDatasets {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -45,7 +39,6 @@ public class TestCFPointDatasets {
     result.add(new Object[] {CFpointObs_topdir + "pointMissing.ncml", FeatureType.POINT, 4});
     return result;
   }
-
 
   public static List<Object[]> getStationDatasets() {
     List<Object[]> result = new ArrayList<>();

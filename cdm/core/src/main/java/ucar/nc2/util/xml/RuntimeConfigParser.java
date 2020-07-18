@@ -17,9 +17,9 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.internal.dataset.CoordSystemFactory;
 
 /**
  * Read Runtime Configuration.
@@ -27,10 +27,10 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
  * 
  * <pre>
  * <runtimeConfig>
- * <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
- * <coordSysBuilder convention="foo" class="test.Foo"/>
- * <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
- * <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
+ *   <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
+ *   <coordSystemFactory convention="foo" class="test.Foo"/>
+ *   <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
+ *   <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
  * </runtimeConfig>
  * </pre>
  *
@@ -70,16 +70,16 @@ public class RuntimeConfigParser {
 
           break;
         }
-        case "coordSysBuilder": {
+        case "coordSystemFactory": {
           String conventionName = elem.getAttributeValue("convention");
           String className = elem.getAttributeValue("class");
 
           try {
-            CoordSysBuilder.registerConvention(conventionName, className);
+            CoordSystemFactory.registerConvention(conventionName, className);
           } catch (ClassNotFoundException e) {
-            errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
+            errlog.append("CoordSystemFactory class not found= " + className + "; check your classpath\n");
           } catch (Exception e) {
-            errlog.append("CoordSysBuilder " + className + " failed= " + e.getMessage() + "\n");
+            errlog.append("CoordSystemFactory " + className + " failed= " + e.getMessage() + "\n");
           }
 
           break;

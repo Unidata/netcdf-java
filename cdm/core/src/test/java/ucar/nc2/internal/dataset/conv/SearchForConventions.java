@@ -1,5 +1,8 @@
-/* Copyright Unidata */
-package ucar.nc2.dataset.conv;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+package ucar.nc2.internal.dataset.conv;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;

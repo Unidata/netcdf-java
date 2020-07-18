@@ -9,6 +9,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NotJenkins;
 import ucar.unidata.util.test.category.NotTravis;
@@ -323,8 +324,7 @@ public class TestHyrax extends DapTestCommon {
     }
     // Print the meta-databuffer using these args to NcdumpW
     try {
-      if (!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
-        throw new Exception("NcdumpW failed");
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       throw new Exception("NcdumpW failed", ioe);
     }
@@ -344,8 +344,7 @@ public class TestHyrax extends DapTestCommon {
     // Dump the databuffer
     sw = new StringWriter();
     try {
-      if (!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
-        throw new Exception("NCdumpW failed");
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       throw new Exception("NCdumpW failed", ioe);
