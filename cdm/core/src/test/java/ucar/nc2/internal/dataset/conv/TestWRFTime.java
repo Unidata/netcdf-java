@@ -1,4 +1,9 @@
-package ucar.nc2.dataset.conv;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -21,10 +26,9 @@ public class TestWRFTime {
   public void testWrfTimeUnderscore() throws IOException {
     String tstFile = TestDir.cdmLocalTestDataDir + "wrf/WrfTimesStrUnderscore.nc";
     System.out.println(tstFile);
-    String wrfConvention = new WRFConvention().getConventionUsed();
     NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile);
     // make sure this file went through the WrfConvention
-    assert ncd.getConventionUsed().equals(wrfConvention);
+    assert ncd.getConventionUsed().equals("WRF");
     CoordinateAxis tca = ncd.findCoordinateAxis(AxisType.Time);
     Array times = tca.read();
     ncd.close();

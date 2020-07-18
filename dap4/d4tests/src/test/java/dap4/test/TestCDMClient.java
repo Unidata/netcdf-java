@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
@@ -265,8 +266,7 @@ public class TestCDMClient extends DapTestCommon {
     }
     // Print the meta-databuffer using these args to NcdumpW
     try {
-      if (!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
-        throw new Exception("NcdumpW failed");
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       throw new Exception("NcdumpW failed", ioe);
     }
@@ -284,8 +284,7 @@ public class TestCDMClient extends DapTestCommon {
     // Dump the databuffer
     sw = new StringWriter();
     try {
-      if (!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
-        throw new Exception("NCdumpW failed");
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       throw new Exception("NCdumpW failed", ioe);

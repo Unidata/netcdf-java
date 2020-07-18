@@ -11,8 +11,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.conv.CF1Convention;
-import ucar.nc2.dataset.conv.COARDSConvention;
+import ucar.nc2.internal.dataset.conv.CF1Convention;
 import ucar.nc2.time.Calendar;
 import java.io.IOException;
 import java.util.Formatter;
@@ -412,7 +411,7 @@ public class CoordinateAxis extends VariableDS {
           // if (version < 7 ) return Calendar.gregorian;
           // if (version >= 7 ) return Calendar.proleptic_gregorian; //
         }
-        if (COARDSConvention.isMine(hasName))
+        if (hasName.equalsIgnoreCase("COARDS"))
           return Calendar.gregorian;
       }
     }

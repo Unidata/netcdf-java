@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import java.io.IOException;
@@ -224,9 +225,9 @@ public class TestSerial extends DapTestCommon {
     }
 
     // Print the meta-databuffer using these args to NcdumpW
-    ok = false;
+    ok = true;
     try {
-      ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       ok = false;
@@ -254,9 +255,9 @@ public class TestSerial extends DapTestCommon {
 
     // Dump the databuffer
     sw = new StringWriter();
-    ok = false;
+    ok = true;
     try {
-      ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
+      Ncdump.ncdump(ncfile, args.toString(), sw, null);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       ok = false;

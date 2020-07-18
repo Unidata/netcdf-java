@@ -36,7 +36,7 @@ import java.util.concurrent.Executor;
  *
  * @author caron
  */
-public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
+public abstract class Aggregation {
 
   protected enum Type {
     forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting, joinExistingOne, joinNew, tiled, union
@@ -218,7 +218,6 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
    * @return true if directory was rescanned and dataset may have been updated
    * @throws IOException on io error
    */
-  @Override
   public synchronized boolean syncExtend() throws IOException {
     return false; // LOOK datasetManager.isScanNeeded() && _sync();
   }
@@ -227,8 +226,6 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
   // return datasetManager.isScanNeeded() && _sync();
   // }
 
-  // LOOK could also use syncExtend()
-  @Override
   public long getLastModified() {
     try {
       datasetManager.scanIfNeeded();
@@ -261,7 +258,6 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
    * }
    */
 
-  @Override
   public String getFileTypeId() { // LOOK - should cache ??
     AggDataset ds = null;
     NetcdfFile ncfile = null;
@@ -284,7 +280,6 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
     return "N/A";
   }
 
-  @Override
   public String getFileTypeDescription() { // LOOK - should cache ??
     AggDataset ds = null;
     NetcdfFile ncfile = null;
@@ -324,7 +319,6 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
    *
    * @throws IOException on error
    */
-  @Override
   public void persistWrite() throws IOException {}
 
   /**
@@ -332,7 +326,6 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
    */
   protected void persistRead() {}
 
-  @Override
   public void getDetailInfo(Formatter f) {
     f.format("  Type=%s%n", type);
     f.format("  dimName=%s%n", dimName);

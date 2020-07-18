@@ -161,7 +161,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    *
    * @param conventionName name of Convention, must be in the "Conventions" global attribute.
    * @param ncmlLocation location of NcML file, may be local file or URL.
-   * @see ucar.nc2.ncml.NcMLReader#wrapNcML
    */
   public static void registerNcML(String conventionName, String ncmlLocation) {
     ncmlHash.put(conventionName, ncmlLocation);

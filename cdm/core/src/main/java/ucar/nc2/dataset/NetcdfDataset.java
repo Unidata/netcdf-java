@@ -83,6 +83,8 @@ import java.util.*;
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
 
+  public static final String AGGREGATION = "Aggregaation";
+
   /**
    * Possible enhancements for a NetcdfDataset
    */
@@ -399,29 +401,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   ////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * If its an NcML aggregation, it has an Aggregation object associated.
-   * This is public for use by NcmlWriter.
-   *
-   * @return Aggregation or null
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  public ucar.nc2.ncml.AggregationIF getAggregation() {
-    return agg;
-  }
-
-  /**
-   * Set the Aggregation object associated with this NcML dataset
-   *
-   * @param agg the Aggregation object
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void setAggregation(ucar.nc2.ncml.AggregationIF agg) {
-    this.agg = agg;
-  }
-
-  /**
    * Get the list of all CoordinateSystem objects used by this dataset.
    *
    * @return list of type CoordinateSystem; may be empty, not null.
@@ -567,6 +546,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return v;
     }
     return null;
+  }
+
+  @Override
+  public Object sendIospMessage(Object message) {
+    if (message == AGGREGATION) {
+      return this.agg;
+    }
+    return super.sendIospMessage(message);
   }
 
   /**
@@ -1155,7 +1142,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private List<CoordinateTransform> coordTransforms = new ArrayList<>();
   private String convUsed;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
-  private ucar.nc2.ncml.AggregationIF agg;
+  private ucar.nc2.internal.ncml.Aggregation agg;
 
   private NetcdfDataset(Builder<?> builder) {
     super(builder);
@@ -1237,7 +1224,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
     private String convUsed;
     private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
-    public ucar.nc2.ncml.AggregationIF agg; // If its an aggregation
+    public ucar.nc2.internal.ncml.Aggregation agg; // If its an aggregation
 
     private boolean built;
 
@@ -1299,7 +1286,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       this.enhanceMode = result.build();
     }
 
-    public T setAggregation(ucar.nc2.ncml.AggregationIF agg) {
+    public T setAggregation(ucar.nc2.internal.ncml.Aggregation agg) {
       this.agg = agg;
       return self();
     }

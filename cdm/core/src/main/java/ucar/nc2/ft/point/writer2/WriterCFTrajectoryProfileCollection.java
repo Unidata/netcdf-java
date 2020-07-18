@@ -25,7 +25,6 @@ import ucar.nc2.VariableSimpleBuilder;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.TrajectoryProfileFeature;
@@ -98,7 +97,7 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     if (useAlt) {
       obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
           .addAttribute(CF.STANDARD_NAME, "altitude")
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+          .addAttribute(CF.POSITIVE, getZisPositive(altitudeCoordinateName, altUnits)).build());
       coordNames.format(" %s", altitudeCoordinateName);
     }
 
