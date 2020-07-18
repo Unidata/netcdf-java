@@ -40,6 +40,8 @@ public class TestPointDatasets {
 
     List<FileSort> files = new ArrayList<>();
     for (File f : filea) {
+      if (f.isDirectory())
+        continue;
       if (filter != null && !filter.accept(f))
         continue;
       files.add(new FileSort(f));
