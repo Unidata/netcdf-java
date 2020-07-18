@@ -9,6 +9,7 @@ dependencies {
 
   // todo: a lot of these could probably be runtimeOnly
   compile project(':cdm:cdm-core')
+  compile project(':cdm:cdm-fmrc')
   compile project(':cdm:cdm-image')    // things that depend on java.awt
   compile project(':cdm:cdm-misc')     // misc iosps
   compile project(':cdm:cdm-radial')   // radial data
