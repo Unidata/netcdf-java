@@ -262,9 +262,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     if (!(oo instanceof Dimension))
       return false;
     Dimension other = (Dimension) oo;
-    Group g = getGroup();
-    if ((g != null) && !g.equals(other.getGroup())) // TODO remove group in 6
-      return false;
     if ((getShortName() == null) && (other.getShortName() != null))
       return false;
     if ((getShortName() != null) && !getShortName().equals(other.getShortName()))
@@ -279,9 +276,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   @Override
   public int hashCode() {
     int result = 17;
-    Group g = getGroup(); // TODO remove group in 6
-    if (g != null)
-      result += 37 * result + g.hashCode();
     if (null != getShortName())
       result += 37 * result + getShortName().hashCode();
     result += 37 * result + getLength();

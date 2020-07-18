@@ -22,9 +22,9 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationHelper;
-import ucar.unidata.geoloc.Station;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -143,7 +143,7 @@ public class TestCompositeStationCollectionsWithCaches {
     // is made up of multiple files. Here, we use the StationHelper to get at the PointFeatureIterator
     // at the individual file level of the collection.
     StationHelper helper = csc.createStationHelper();
-    List<Station> stations = helper.getStations();
+    List<StationFeature> stations = helper.getStationFeatures();
 
     // Ensure the RandomAccessFile cache does not contain any locked files
     if (checkRafCache) {
@@ -157,9 +157,11 @@ public class TestCompositeStationCollectionsWithCaches {
     // Now, iterate over the stations. Each station cycles through one or more files of the collection,
     // and the bug is that the file isn't closed or released if it does not contain the given station.
     for (int station = 0; station < 2; station++) {
+      StationFeature sf = stations.get(station);
+      assertThat(sf instanceof StationTimeSeriesFeatureImpl);
+      StationTimeSeriesFeatureImpl timeSeries = (StationTimeSeriesFeatureImpl) sf;
       // Get the PointFeatureIterator for the given station
-      PointFeatureIterator pointFeatureIterator =
-          ((StationTimeSeriesFeature) stations.get(station)).getPointFeatureIterator();
+      PointFeatureIterator pointFeatureIterator = timeSeries.getPointFeatureIterator();
       // all we have to do is call .hasNext(), and if not, the underlying code will cycle through the
       // datasets of the collection but not close them
       pointFeatureIterator.hasNext();
