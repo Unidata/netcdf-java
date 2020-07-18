@@ -16,6 +16,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -43,7 +44,7 @@ public class TestOffAggExistingSSTA {
     int count = openfiles.size();
     System.out.println("count files at start=" + count);
 
-    NetcdfDataset.disableNetcdfFileCache();
+    NetcdfDatasets.disableNetcdfFileCache();
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestNcmlAggExisting.open " + filename);
 

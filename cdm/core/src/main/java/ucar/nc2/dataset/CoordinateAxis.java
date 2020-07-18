@@ -67,7 +67,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
-   * Create a coordinate axis from an existing Variable.Builder.
+   * Create a coordinate axis from an existing VariableDS.Builder.
    *
    * @param vdsBuilder an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).

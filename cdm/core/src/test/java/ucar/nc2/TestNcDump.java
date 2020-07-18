@@ -29,7 +29,7 @@ public class TestNcDump {
       NCdumpW.print(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml", sw, true, true, false, false, null,
           null);
 
-      File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValue.dump");
+      File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValueNew.dump");
       String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
 
       Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(sw.toString()));

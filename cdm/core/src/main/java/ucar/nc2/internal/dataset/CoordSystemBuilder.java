@@ -141,6 +141,9 @@ public class CoordSystemBuilder {
   protected CoordinatesHelper.Builder coords;
 
   protected List<VarProcess> varList = new ArrayList<>();
+  // TODO Not processing coordinates attribute on Structures. See problem/kunicki.structs.nc4
+  protected List<StructureDS.Builder> structList = new ArrayList<>();
+
   // coordinate variables for Dimension (name)
   protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
   // default name of Convention, override in subclass
@@ -235,6 +238,7 @@ public class CoordSystemBuilder {
   }
 
   private void addStructure(Group.Builder group, StructureDS.Builder<?> structure) {
+    structList.add(structure);
     List<Variable.Builder<?>> nested = structure.vbuilders;
     for (Variable.Builder<?> vb : nested) {
       if (vb instanceof VariableDS.Builder) {
@@ -565,7 +569,7 @@ public class CoordSystemBuilder {
     }
   }
 
-  protected CoordinateTransform.Builder makeCoordinateTransform(VariableDS.Builder<?> vb) {
+  protected CoordinateTransform.Builder makeCoordinateTransform(Variable.Builder<?> vb) {
     return CoordinateTransform.builder().setName(vb.getFullName()).setAttributeContainer(vb.getAttributeContainer());
   }
 

@@ -43,6 +43,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -137,7 +138,7 @@ public class TestOffAggUpdating {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
 
     // open the agg
-    NetcdfFile ncfile = NetcdfDataset.acquireDataset(new NcmlStringFileFactory(), durl, null, -1, null, null);
+    NetcdfFile ncfile = NetcdfDatasets.acquireDataset(new NcmlStringFileFactory(), durl, null, -1, null, null);
 
     check(ncfile, 12);
 

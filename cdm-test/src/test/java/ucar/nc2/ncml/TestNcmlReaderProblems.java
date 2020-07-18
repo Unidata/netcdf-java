@@ -74,7 +74,7 @@ public class TestNcmlReaderProblems {
 
   private void compareDS(String ncmlLocation) throws IOException {
     System.out.printf("Compare NetcdfDataset.openDataset %s%n", ncmlLocation);
-    try (NetcdfDataset org = NetcdfDataset.openDataset(ncmlLocation)) {
+    try (NetcdfDataset org = NetcdfDatasets.openDataset(ncmlLocation)) {
       try (NetcdfDataset withBuilder = NetcdfDatasets.openDataset(ncmlLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);

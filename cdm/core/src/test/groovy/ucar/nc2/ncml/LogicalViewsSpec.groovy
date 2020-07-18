@@ -1,9 +1,11 @@
 package ucar.nc2.ncml
 
+import org.junit.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import ucar.nc2.Variable
 import ucar.nc2.dataset.NetcdfDataset
+import ucar.nc2.dataset.NetcdfDatasets
 
 /**
  * Tests the logical view NcML elements: logicalSection, logicalSlice, and logicalReduce.
@@ -11,13 +13,14 @@ import ucar.nc2.dataset.NetcdfDataset
  * @author cwardgar
  * @since 2018-01-03
  */
+@Ignore("Logical views not implemented yet")
 class LogicalViewsSpec extends Specification {
     @Shared
     NetcdfDataset ncDataset
     
     def setupSpec() {
         File testFile = new File(getClass().getResource("afterLogicalViews.ncml").toURI())
-        ncDataset = NetcdfDataset.openDataset(testFile.absolutePath)
+        ncDataset = NetcdfDatasets.openDataset(testFile.absolutePath)
     }
     
     def cleanupSpec() {

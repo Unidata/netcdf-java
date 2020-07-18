@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.TestDir;
 
@@ -22,7 +23,7 @@ public class TestRemoteAggregation {
 
     System.out.printf(" testAggExisting: read %s%n%n%s", filename, IO.readFile(filename));
 
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(filename);
     System.out.println(" testAggExisting.open " + ncd);
 
     Variable sst_time = ncd.findVariable("sst_time");

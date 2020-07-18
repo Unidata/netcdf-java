@@ -452,7 +452,7 @@ public class NcMLReader {
         }
         refds = new NetcdfDataset(ncfile, false);
       } else {
-        refds = NetcdfDataset.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
+        refds = NetcdfDatasets.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
         // refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been
         // applied
       }

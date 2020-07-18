@@ -7,7 +7,6 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.GetDataRunnable;
 import ucar.nc2.ui.GetDataTask;
@@ -90,11 +89,10 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
     try {
       boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
       if (useCoords) {
-        ncfile = useBuilders ? NetcdfDatasets.openDataset(filename, true, null)
-            : NetcdfDataset.openDataset(filename, true, null);
+        ncfile = NetcdfDatasets.openDataset(filename, true, null);
       } else {
         DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
-        ncfile = useBuilders ? NetcdfDatasets.openFile(durl, -1, null, null) : NetcdfDataset.openFile(filename, null);
+        ncfile = NetcdfDatasets.openFile(durl, -1, null, null);
       }
 
       StringWriter sw = new StringWriter(50000);

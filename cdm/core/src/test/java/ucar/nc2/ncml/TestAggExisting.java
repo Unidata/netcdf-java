@@ -21,6 +21,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -52,7 +53,7 @@ public class TestAggExisting {
   public void testNcmlDataset() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting.xml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -67,7 +68,7 @@ public class TestAggExisting {
   public void testNcmlDatasetNoProtocolInFilename() throws IOException, InvalidRangeException {
     String filename = "./" + TestNcmlRead.topDir + "aggExisting.xml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -85,7 +86,7 @@ public class TestAggExisting {
     // this should fail with an IOException
     String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggExisting6.xml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -103,7 +104,7 @@ public class TestAggExisting {
     // this should fail with an IOException
     String filename = "./" + TestNcmlRead.topDir + "exclude/aggExisting6.xml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -118,7 +119,7 @@ public class TestAggExisting {
   public void testNcmlDatasetNoProtocolInNcmlRelPath() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting7.xml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -133,7 +134,7 @@ public class TestAggExisting {
   public void testNcmlDatasetNoProtocolInFilenameOrNcmlRelPath() throws IOException, InvalidRangeException {
     String filename = "./" + TestNcmlRead.topDir + "aggExisting7.xml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -148,7 +149,7 @@ public class TestAggExisting {
   public void testNcmlDatasetWcoords() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExistingWcoords.xml";
 
-    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, true, null);
+    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
     logger.debug(" testNcmlDatasetWcoords.open {}", filename);
 
     testDimensions(ncfile);
@@ -168,7 +169,7 @@ public class TestAggExisting {
     NetcdfDataset ncd = null;
 
     try {
-      ncd = NetcdfDataset.openDataset(filename, true, null);
+      ncd = NetcdfDatasets.openDataset(filename, true, null);
       Variable time = ncd.getRootGroup().findVariableLocal("time");
       Array data = time.read();
       // all missing
@@ -186,7 +187,7 @@ public class TestAggExisting {
   public void testNoCoordsDir() throws IOException {
     String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggExistingNoCoordsDir.xml";
 
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename, true, null)) {
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename, true, null)) {
       System.out.printf("testNoCoordsDir supposed to fail = %s", ncd);
       assert false;
     } catch (Exception e) {
@@ -202,7 +203,7 @@ public class TestAggExisting {
     NetcdfDataset ncd = null;
 
     try {
-      ncd = NetcdfDataset.openDataset(filename, true, null);
+      ncd = NetcdfDatasets.openDataset(filename, true, null);
       logger.debug("{}", ncd);
     } finally {
       if (ncd != null)

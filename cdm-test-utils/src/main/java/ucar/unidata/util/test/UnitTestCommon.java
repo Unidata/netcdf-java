@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.Ncdump;
 
 public abstract class UnitTestCommon {
@@ -435,7 +436,7 @@ public abstract class UnitTestCommon {
   // Properly access a dataset
   public static NetcdfDataset openDataset(String url) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(url);
-    return NetcdfDataset.acquireDataset(null, durl, ENHANCEMENT, -1, null, null);
+    return NetcdfDatasets.acquireDataset(null, durl, ENHANCEMENT, -1, null, null);
   }
 
   // Fix up a filename reference in a string

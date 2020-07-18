@@ -127,7 +127,7 @@ public class TestAggUnionSimple {
     if (ncfile != null)
       return;
     String filename = "file:./" + TestNcmlRead.topDir + "aggUnionSimple.xml";
-    ncfile = NetcdfDataset.openDataset(filename, false, null);
+    ncfile = NetcdfDatasets.openDataset(filename, false, null);
   }
 
   @AfterClass

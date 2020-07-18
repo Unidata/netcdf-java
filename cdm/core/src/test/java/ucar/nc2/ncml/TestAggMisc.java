@@ -40,6 +40,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class TestAggMisc {
   public void testNestedAgg() throws IOException, InvalidRangeException, InterruptedException {
     String filename = "file:./" + TestDir.cdmLocalTestDataDir + "testNested.ncml";
 
-    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
       TestDir.readAllData(ncfile);
 
       Variable v = ncfile.findVariable("time");
@@ -97,7 +98,7 @@ public class TestAggMisc {
   public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
     String filename = "file:./" + TestNcmlRead.topDir + "nested/TestNestedDirs.ncml";
 
-    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
       TestDir.readAllData(ncfile);
 
       Variable v = ncfile.findVariable("time");

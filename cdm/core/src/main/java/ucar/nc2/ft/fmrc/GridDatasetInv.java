@@ -16,6 +16,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
@@ -84,7 +85,7 @@ public class GridDatasetInv {
           gds = GridDataset.open(mfile.getPath());
 
         } else {
-          NetcdfFile nc = NetcdfDataset.acquireFile(DatasetUrl.create(null, mfile.getPath()), null);
+          NetcdfFile nc = NetcdfDatasets.acquireFile(DatasetUrl.create(null, mfile.getPath()), null);
           NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
           ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
           gds = new GridDataset(ncd);

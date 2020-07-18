@@ -39,7 +39,6 @@ public class DtCoverageDataset implements Closeable {
    * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @return GridDataset
    * @throws java.io.IOException on read error
-   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
   public static DtCoverageDataset open(String location) throws java.io.IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
@@ -58,11 +57,10 @@ public class DtCoverageDataset implements Closeable {
    * @param enhanceMode open netcdf dataset with this enhanceMode
    * @return GridDataset
    * @throws java.io.IOException on read error
-   * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
   public static DtCoverageDataset open(DatasetUrl durl, Set<NetcdfDataset.Enhance> enhanceMode)
       throws java.io.IOException {
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, durl, enhanceMode, -1, null, null);
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.acquireDataset(null, durl, enhanceMode, -1, null, null);
     return new DtCoverageDataset(ds, null);
   }
 

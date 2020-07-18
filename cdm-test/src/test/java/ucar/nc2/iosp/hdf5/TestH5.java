@@ -12,6 +12,7 @@ import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -66,7 +67,7 @@ public class TestH5 {
   public static NetcdfDataset openH5dataset(String filename) {
     try {
       System.out.println("**** Open " + testDir + filename);
-      NetcdfDataset ncfile = NetcdfDataset.openDataset(testDir + filename);
+      NetcdfDataset ncfile = NetcdfDatasets.openDataset(testDir + filename);
       if (TestH5.dumpFile)
         System.out.println("open H5 " + ncfile);
       return ncfile;

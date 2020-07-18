@@ -5,6 +5,8 @@
 
 package ucar.nc2.ft;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE;
+
 import javax.annotation.Nullable;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.inventory.MFileCollectionManager;
@@ -13,6 +15,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
@@ -264,7 +267,8 @@ public class FeatureDatasetFactoryManager {
     }
 
     // otherwise open as NetcdfDataset and run it through the FeatureDatasetFactories
-    NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, task);
+    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, NetcdfDataset.getDefaultEnhanceMode(), task,
+        IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     FeatureDataset fd = wrap(wantFeatureType, ncd, task, errlog);
     if (fd == null)
       ncd.close();
