@@ -6,6 +6,7 @@ package ucar.nc2.ft.point;
 
 import java.io.IOException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.util.test.CheckPointFeatureDataset;
@@ -15,6 +16,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestPointProblem {
 
   @Test
+  @Ignore
   public void checkPointDataset() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "pointPre1.6/kunicki.structs.nc4";
     FeatureType ftype = FeatureType.ANY_POINT;
