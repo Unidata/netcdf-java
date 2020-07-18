@@ -203,7 +203,7 @@ public class CoordinatesHelper {
       return axes;
     }
 
-    String makeCanonicalName(VariableDS.Builder<?> vb, String axesNames) {
+    String makeCanonicalName(Variable.Builder<?> vb, String axesNames) {
       Preconditions.checkNotNull(axesNames);
       List<CoordinateAxis.Builder> axes = new ArrayList<>();
       StringTokenizer stoker = new StringTokenizer(axesNames);

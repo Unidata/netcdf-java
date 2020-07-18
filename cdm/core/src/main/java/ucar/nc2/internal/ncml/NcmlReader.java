@@ -1293,8 +1293,9 @@ public class NcmlReader {
 
       if (dtype == DataType.CHAR) {
         int nhave = values.length();
-        char[] data = new char[nhave];
-        for (int i = 0; i < nhave; i++) {
+        int nwant = (int) Dimensions.getSize(v.getDimensions());
+        char[] data = new char[nwant];
+        for (int i = 0; i < nhave && i < nwant; i++) {
           data[i] = values.charAt(i);
         }
         Array dataArray = Array.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);

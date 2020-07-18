@@ -141,6 +141,8 @@ public class CoordSystemBuilder {
   protected CoordinatesHelper.Builder coords;
 
   protected List<VarProcess> varList = new ArrayList<>();
+  protected List<StructureDS.Builder> structList = new ArrayList<>();
+
   // coordinate variables for Dimension (name)
   protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
   // default name of Convention, override in subclass
@@ -225,6 +227,7 @@ public class CoordSystemBuilder {
       if (vb instanceof VariableDS.Builder) {
         varList.add(new VarProcess(group, (VariableDS.Builder) vb));
       } else if (vb instanceof StructureDS.Builder) {
+        structList.add((StructureDS.Builder) vb);
         addStructure(group, (StructureDS.Builder) vb);
       }
     }
