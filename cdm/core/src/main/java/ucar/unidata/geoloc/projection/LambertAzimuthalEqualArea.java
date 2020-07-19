@@ -24,8 +24,12 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
   /** constants from Snyder's equations */
   private final double R, sinLat0, cosLat0, lon0Degrees;
 
-  private final double lat0, lon0; // center lat/lon in degrees
+  private final double lat0, lon0; // center lat/lon in radians
   private final double falseEasting, falseNorthing;
+
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0;
 
   @Override
   public Projection constructCopy() {
@@ -62,6 +66,8 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
   public LambertAzimuthalEqualArea(double lat0, double lon0, double false_easting, double false_northing,
       double earthRadius) {
     super("LambertAzimuthalEqualArea", false);
+
+    this._lat0 = lat0;
 
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
@@ -132,21 +138,21 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
   // bean properties
 
   /**
-   * Get the origin longitude.
+   * Get the origin longitude in degrees.
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return lon0Degrees;
   }
 
   /**
-   * Get the origin latitude.
+   * Get the origin latitude in degrees.
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -188,7 +194,7 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
   @Override
   public String toString() {
     return "LambertAzimuthalEqualArea{" + "falseNorthing=" + falseNorthing + ", falseEasting=" + falseEasting
-        + ", lon0=" + lon0 + ", lat0=" + lat0 + ", R=" + R + '}';
+        + ", lon0=" + lon0Degrees + ", lat0=" + _lat0 + ", R=" + R + '}';
   }
 
   /**

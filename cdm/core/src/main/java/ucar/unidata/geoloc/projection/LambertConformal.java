@@ -25,6 +25,10 @@ public class LambertConformal extends AbstractProjection {
   private final double par1, par2; // standard parallel 1 and 2 degrees
   private final double falseEasting, falseNorthing;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0, _lon0;
+
   private final double n, F, rho; // constants from Snyder's equations
   private final double earthRadiusTimesF;// Earth's radius time F
   private final double lon0Degrees; // lon naught ??
@@ -91,6 +95,9 @@ public class LambertConformal extends AbstractProjection {
       double false_northing, double earth_radius) {
 
     super("LambertConformal", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     this.lon0Degrees = lon0;
     this.lat0 = Math.toRadians(lat0);
@@ -234,19 +241,19 @@ public class LambertConformal extends AbstractProjection {
   /**
    * Get the origin longitude in degrees
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
    * Get the origin latitude in degrees
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -287,9 +294,8 @@ public class LambertConformal extends AbstractProjection {
 
   @Override
   public String toString() {
-    return "LambertConformal{" + "earth_radius=" + earth_radius + ", lat0=" + Math.toDegrees(lat0) + ", lon0="
-        + Math.toDegrees(lon0) + ", par1=" + par1 + ", par2=" + par2 + ", falseEasting=" + falseEasting
-        + ", falseNorthing=" + falseNorthing + '}';
+    return "LambertConformal{" + "earth_radius=" + earth_radius + ", lat0=" + _lat0 + ", lon0=" + _lon0 + ", par1="
+        + par1 + ", par2=" + par2 + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + '}';
   }
 
   /**

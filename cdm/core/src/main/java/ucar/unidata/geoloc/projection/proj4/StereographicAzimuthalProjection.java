@@ -39,6 +39,12 @@ public class StereographicAzimuthalProjection extends AbstractProjection {
   private static final int OBLIQUE = 4;
   private static final double TOL = 1.e-8;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _latt;
+  private final double _lont;
+  private final double _trueScaleLat;
+
   // projection parameters
   private final double projectionLatitude, projectionLongitude; // origin in radian
   private final double n; // Math.sin(projectionLatitude)
@@ -72,6 +78,10 @@ public class StereographicAzimuthalProjection extends AbstractProjection {
   public StereographicAzimuthalProjection(double latt, double lont, double scale, double trueScaleLat,
       double false_easting, double false_northing, Earth earth) {
     super("StereographicAzimuthalProjection", false);
+
+    _latt = latt;
+    _lont = lont;
+    _trueScaleLat = trueScaleLat;
 
     projectionLatitude = Math.toRadians(latt);
     n = Math.abs(Math.sin(projectionLatitude));
@@ -340,15 +350,14 @@ public class StereographicAzimuthalProjection extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
-        scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
+    return new StereographicAzimuthalProjection(_latt, _lont, scaleFactor, _trueScaleLat, falseEasting, falseNorthing,
+        earth);
   }
 
   @Override
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat,lon=%f,%f scale,trueScaleLat=%f,%f earth=%s", Math.toDegrees(projectionLatitude),
-        Math.toDegrees(projectionLongitude), scaleFactor, Math.toDegrees(trueScaleLatitude), earth);
+    f.format("origin lat,lon=%f,%f scale,trueScaleLat=%f,%f earth=%s", _latt, _lont, scaleFactor, _trueScaleLat, earth);
     return f.toString();
   }
 

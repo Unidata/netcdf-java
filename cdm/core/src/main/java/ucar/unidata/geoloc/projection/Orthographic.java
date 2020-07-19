@@ -22,6 +22,10 @@ public class Orthographic extends AbstractProjection {
   private double lon0Degrees;
   private double cosLat0, sinLat0;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private double _lat0;
+
   @Override
   public Projection constructCopy() {
     return new Orthographic(getOriginLat(), getOriginLon(), R);
@@ -52,6 +56,7 @@ public class Orthographic extends AbstractProjection {
   public Orthographic(double lat0, double lon0, double earthRadius) {
     super("Orthographic", false);
 
+    this._lat0 = lat0;
     this.lon0Degrees = lon0;
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
@@ -105,7 +110,7 @@ public class Orthographic extends AbstractProjection {
    * @return the origin longitude.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return lon0Degrees;
   }
 
   /**
@@ -114,7 +119,7 @@ public class Orthographic extends AbstractProjection {
    * @return the origin latitude.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   @Override
@@ -129,7 +134,7 @@ public class Orthographic extends AbstractProjection {
 
   @Override
   public String toString() {
-    return "Orthographic{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", R=" + R + '}';
+    return "Orthographic{" + "lat0=" + _lat0 + ", lon0=" + lon0Degrees + ", R=" + R + '}';
   }
 
   /**
