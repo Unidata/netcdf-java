@@ -43,5 +43,4 @@ spotless {
   }
 }
 
-// todo: move to ucar.nc2.write.Ncdump in 6?
-jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'
+jar.manifest.attributes 'Main-Class': 'ucar.nc2.writer.Ncdump'

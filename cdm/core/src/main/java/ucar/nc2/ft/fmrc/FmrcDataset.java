@@ -26,7 +26,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.CoordSysBuilderIF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
@@ -42,6 +41,7 @@ import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.internal.dataset.CoordSystemFactory;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -304,7 +304,7 @@ class FmrcDataset {
       // some additional global attributes
       Group root = result.getRootGroup();
       String orgConv = root.attributes().findAttributeString(CDM.CONVENTIONS, null);
-      String convAtt = CoordSysBuilder.buildConventionAttribute("CF-1.4", orgConv);
+      String convAtt = CoordSystemFactory.buildConventionAttribute("CF-1.4", orgConv);
       root.addAttribute(new Attribute(CDM.CONVENTIONS, convAtt));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
       root.addAttribute(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));

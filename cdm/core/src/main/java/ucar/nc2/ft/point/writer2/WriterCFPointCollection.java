@@ -21,7 +21,6 @@ import ucar.nc2.VariableSimpleBuilder;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -59,7 +58,7 @@ class WriterCFPointCollection extends WriterCFPointAbstract {
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (altUnits != null) {
       coords.add(VariableSimpleBuilder.makeScalar(altName, "altitude of measurement", altUnits, DataType.DOUBLE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+          .addAttribute(CF.POSITIVE, getZisPositive(altName, altUnits)).build());
       coordNames.format(" %s", altName);
     }
 

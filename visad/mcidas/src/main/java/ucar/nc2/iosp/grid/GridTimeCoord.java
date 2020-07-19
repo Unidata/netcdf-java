@@ -193,7 +193,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       // add times bound variable
       if (g == null)
         g = ncfile.getRootGroup();
-      Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension(ncfile);
+      Dimension bd = GridCoordSys.makeBoundsDimension(ncfile);
 
       Variable vb = new Variable(ncfile, g, null, getName() + "_bounds");
       vb.setDataType(DataType.INT);

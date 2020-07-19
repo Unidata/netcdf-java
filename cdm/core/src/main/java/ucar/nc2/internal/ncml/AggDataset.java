@@ -26,7 +26,7 @@ import ucar.nc2.util.CancelTask;
 
 /** Encapsolates a NetcdfFile, used by AggProxyReader. */
 @Immutable
-class AggDataset implements Comparable<AggDataset> {
+public class AggDataset implements Comparable<AggDataset> {
   private static final boolean debugOpenFile = false;
   private static final boolean debugRead = false;
 

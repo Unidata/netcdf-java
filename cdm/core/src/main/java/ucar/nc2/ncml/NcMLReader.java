@@ -533,7 +533,6 @@ public class NcMLReader {
       Aggregation agg = readAgg(aggElem, ncmlLocation, targetDS, cancelTask);
       if (agg == null)
         return; // cancel task
-      targetDS.setAggregation(agg);
       agg.finish(cancelTask);
     }
 

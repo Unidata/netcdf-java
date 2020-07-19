@@ -33,7 +33,7 @@ import ucar.unidata.geoloc.projection.TransverseMercator;
 
 /** Default Coordinate Conventions. Used when no other is specified or recognized. */
 public class DefaultConventions extends CoordSystemBuilder {
-  private static final Logger logger = LoggerFactory.getLogger(ucar.nc2.dataset.conv.DefaultConvention.class);
+  private static final Logger logger = LoggerFactory.getLogger(DefaultConventions.class);
 
   protected ProjectionCT projCT;
 

@@ -39,6 +39,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.internal.dataset.conv.CF1Convention;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
@@ -562,6 +563,11 @@ abstract class WriterCFPointAbstract implements Closeable {
   @Override
   public void close() throws IOException {
     writer.close();
+  }
+
+  // cover CF1Convention
+  static String getZisPositive(String zaxisName, String vertCoordUnits) {
+    return CF1Convention.getZisPositive(zaxisName, vertCoordUnits);
   }
 
 }

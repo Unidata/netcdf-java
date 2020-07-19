@@ -27,7 +27,6 @@ import ucar.nc2.VariableSimpleBuilder;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.StationProfileFeature;
@@ -128,7 +127,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     Formatter coordNames = new Formatter().format("%s %s %s", profileTimeName, latName, lonName);
     obsCoords.add(VariableSimpleBuilder.makeScalar(altitudeCoordinateName, "obs altitude", altUnits, DataType.DOUBLE)
         .addAttribute(CF.STANDARD_NAME, "altitude")
-        .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altitudeCoordinateName, altUnits)).build());
+        .addAttribute(CF.POSITIVE, getZisPositive(altitudeCoordinateName, altUnits)).build());
     coordNames.format(" %s", altitudeCoordinateName);
 
     super.writeHeader(obsCoords, stnData, profileData, obsData, coordNames.toString());
@@ -155,7 +154,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
     if (useAlt) {
       stnVars.add(VariableSimpleBuilder.makeScalar(stationAltName, "station altitude", altUnits, DataType.DOUBLE)
           .addAttribute(CF.STANDARD_NAME, CF.SURFACE_ALTITUDE)
-          .addAttribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)).build());
+          .addAttribute(CF.POSITIVE, getZisPositive(altName, altUnits)).build());
     }
 
     stnVars.add(VariableSimpleBuilder.makeString(stationIdName, "station identifier", null, id_strlen)

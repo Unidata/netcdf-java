@@ -306,5 +306,16 @@ public class GridCoordSys {
     Double d = record.getLevel1();
     return levels.indexOf(d);
   }
+
+
+  private static final String boundsDimName = "bounds_dim";
+
+  static Dimension makeBoundsDimension(NetcdfFile ncfile) {
+    Group g = ncfile.getRootGroup();
+    Dimension d = g.findDimension(boundsDimName);
+    if (d == null)
+      d = ncfile.addDimension(g, new Dimension(boundsDimName, 2));
+    return d;
+  }
 }
 

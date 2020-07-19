@@ -16,6 +16,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.category.NotTravis;
 
 @Category(NotTravis.class)
@@ -237,10 +238,10 @@ public class TestNc4Iosp extends DapTestCommon {
     }
 
     // Print the meta-databuffer using these args to NcdumpW
-    ok = false;
+    ok = true;
     try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8)) {
-      ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), outputStreamWriter, null);
+      Ncdump.ncdump(ncfile, args.toString(), outputStreamWriter, null);
       dump = byteArrayOutputStream.toString(StandardCharsets.UTF_8.name());
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -266,10 +267,10 @@ public class TestNc4Iosp extends DapTestCommon {
 
     // Dump the databuffer
 
-    ok = false;
+    ok = true;
     try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8)) {
-      ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), outputStreamWriter, null);
+      Ncdump.ncdump(ncfile, args.toString(), outputStreamWriter, null);
       dump = byteArrayOutputStream.toString(StandardCharsets.UTF_8.name());
     } catch (IOException ioe) {
       ioe.printStackTrace();

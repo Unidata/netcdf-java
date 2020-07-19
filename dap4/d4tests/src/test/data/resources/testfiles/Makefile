@@ -66,7 +66,7 @@ x::
 	rm -f ${F}.hdf5 ${F}.nc
 	ncgen -k3 -o ${F}.nc ${F}.cdl
 	cp ${F}.nc ${F}.hdf5
-	java -cp ${UI} ucar.nc2.NCdumpW ${F}.hdf5
+	java -cp ${UI} ucar.nc2.write.Ncdump ${F}.hdf5
 
 #	ncdump ${F}.hdf5
 
