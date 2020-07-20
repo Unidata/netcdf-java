@@ -43,6 +43,12 @@ public class Stereographic extends ProjectionImpl {
   private boolean isNorth;
   private boolean isPolar;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _latts;
+  private final double _latt;
+  private final double _lont;
+
   @Override
   public ProjectionImpl constructCopy() {
     ProjectionImpl result = new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(),
@@ -95,6 +101,10 @@ public class Stereographic extends ProjectionImpl {
       double radius) {
     super("Stereographic", false);
 
+    this._latts = 0.0;
+    this._latt = latt;
+    this._lont = lont;
+
     this.latt = Math.toRadians(latt);
     this.lont = Math.toRadians(lont);
     this.earthRadius = radius;
@@ -127,6 +137,10 @@ public class Stereographic extends ProjectionImpl {
    */
   public Stereographic(double lat_ts_deg, double latt_deg, double lont_deg, boolean north) {
     super("PolarStereographic", false);
+
+    this._latts = lat_ts_deg;
+    this._latt = latt_deg;
+    this._lont = lont_deg;
 
     this.latts = Math.toRadians(lat_ts_deg);
     this.latt = Math.toRadians(latt_deg);
@@ -196,30 +210,30 @@ public class Stereographic extends ProjectionImpl {
   }
 
   /**
-   * Get the latitude at natural origin
+   * Get the latitude at natural origin in degrees
    *
    * @return latitude at natural origin
    */
   public double getNaturalOriginLat() {
-    return Math.toDegrees(latts);
+    return _latts;
   }
 
   /**
    * Get the tangent longitude in degrees
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getTangentLon() {
-    return Math.toDegrees(lont);
+    return _lont;
   }
 
   /**
    * Get the tangent latitude in degrees
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getTangentLat() {
-    return Math.toDegrees(latt);
+    return _latt;
   }
 
   public double getEarthRadius() {
@@ -303,7 +317,7 @@ public class Stereographic extends ProjectionImpl {
   @Override
   public String toString() {
     return "Stereographic{" + "falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", scale=" + scale
-        + ", earthRadius=" + earthRadius + ", latt=" + latt + ", lont=" + lont + '}';
+        + ", earthRadius=" + earthRadius + ", latt=" + _latt + ", lont=" + _lont + '}';
   }
 
   /**
@@ -389,24 +403,24 @@ public class Stereographic extends ProjectionImpl {
    * double c = 2.0 * Math.atan2( rho, 2.0*scale);
    * double sinc = Math.sin(c);
    * double cosc = Math.cos(c);
-   * 
+   *
    * if (Math.abs(rho) < TOLERANCE)
    * phi = latt;
    * else
    * phi = Math.asin( cosc * sinlatt + fromY * sinc * coslatt / rho);
-   * 
+   *
    * toLat = Math.toDegrees(phi);
-   * 
+   *
    * if ((Math.abs(fromX) < TOLERANCE) && (Math.abs(fromY) < TOLERANCE))
    * lam = lont;
    * else if (Math.abs(coslatt) < TOLERANCE)
    * lam = lont + Math.atan2( fromX, ((latt > 0) ? -fromY : fromY) );
    * else
    * lam = lont + Math.atan2( fromX*sinc, rho*coslatt*cosc - fromY*sinc*sinlatt);
-   * 
+   *
    * toLon = Math.toDegrees(lam);
    * }
-   * 
+   *
    * latLonToProj {} {
    * double lat = Math.toRadians (fromLat);
    * double lon = Math.toRadians(fromLon);
@@ -414,12 +428,12 @@ public class Stereographic extends ProjectionImpl {
    * if ((Math.abs(lat + latt) <= TOLERANCE)) {
    * lat = -latt * (1.0 - TOLERANCE);
    * }
-   * 
+   *
    * double sdlon = Math.sin(lon - lont);
    * double cdlon = Math.cos(lon - lont);
    * double sinlat = Math.sin(lat);
    * double coslat = Math.cos(lat);
-   * 
+   *
    * double k = 2.0 * scale / (1.0 + sinlatt * sinlat + coslatt * coslat * cdlon);
    * toX = k * coslat * sdlon;
    * toY = k * ( coslatt * sinlat - sinlatt * coslat * cdlon);
