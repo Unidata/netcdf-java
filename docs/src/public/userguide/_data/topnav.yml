@@ -34,6 +34,8 @@ topnav_dropdowns:
       folderitems:
         - title: netCDF-Java Public Javadocs
           external_url: ../javadoc/
+        - title: netCDF-Java Public Javadocs (including deprecations)
+          external_url: ../javadoc-with-deprecations/
 
     - title: External Docs
       folderitems:

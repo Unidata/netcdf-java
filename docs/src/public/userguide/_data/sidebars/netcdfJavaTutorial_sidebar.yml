@@ -282,7 +282,3 @@ entries:
     - title: Unidata Defined System Properties
       url: /systemproperties.html
       output: web, pdf
-
-    - title: 5.0 Changes
-      url: /upgrade_to_50.html
-      output: web, pdf
