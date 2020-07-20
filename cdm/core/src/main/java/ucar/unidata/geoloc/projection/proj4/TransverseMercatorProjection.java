@@ -79,6 +79,11 @@ public class TransverseMercatorProjection extends AbstractProjection {
   private final double totalScale; // scale to convert cartesian coords in km
   private final boolean spherical;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0;
+  private final double _lon0;
+
   public TransverseMercatorProjection() {
     this(EarthEllipsoid.WGS84, 0, 0, 0.9996, 0, 0);
   }
@@ -94,6 +99,10 @@ public class TransverseMercatorProjection extends AbstractProjection {
   public TransverseMercatorProjection(Earth ellipsoid, double lon_0_deg, double lat_0_deg, double k, double falseEast,
       double falseNorth) {
     super("TransverseMercatorProjection", false);
+
+    this._lat0 = lat_0_deg;
+    this._lon0 = lon_0_deg;
+
     this.ellipsoid = ellipsoid;
     projectionLongitude = Math.toRadians(lon_0_deg);
     projectionLatitude = Math.toRadians(lat_0_deg);
@@ -217,15 +226,14 @@ public class TransverseMercatorProjection extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return new TransverseMercatorProjection(ellipsoid, Math.toDegrees(projectionLongitude),
-        Math.toDegrees(projectionLatitude), scaleFactor, falseEasting, falseNorthing);
+    return new TransverseMercatorProjection(ellipsoid, _lon0, _lat0, scaleFactor, falseEasting, falseNorthing);
   }
 
   @Override
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat,lon=%f,%f scale=%f earth=%s falseEast/North=%f,%f", Math.toDegrees(projectionLatitude),
-        Math.toDegrees(projectionLongitude), scaleFactor, ellipsoid, falseEasting, falseNorthing);
+    f.format("origin lat,lon=%f,%f scale=%f earth=%s falseEast/North=%f,%f", _lat0, _lon0, scaleFactor, ellipsoid,
+        falseEasting, falseNorthing);
     return f.toString();
   }
 

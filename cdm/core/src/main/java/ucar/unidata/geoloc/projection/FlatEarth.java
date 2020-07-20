@@ -28,6 +28,10 @@ public class FlatEarth extends AbstractProjection {
   private final double rotAngle, radius;
   private final double lat0, lon0; // center lat/lon in radians
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0, _lon0;
+
   private final double cosRot, sinRot;
 
   @Override
@@ -60,6 +64,9 @@ public class FlatEarth extends AbstractProjection {
    */
   public FlatEarth(double lat0, double lon0, double rotAngle, double radius) {
     super("FlatEarth", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
@@ -114,21 +121,21 @@ public class FlatEarth extends AbstractProjection {
   // bean properties
 
   /**
-   * Get the origin longitude.
+   * Get the origin longitude in degrees.
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
-   * Get the origin latitude.
+   * Get the origin latitude in degrees.
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -152,7 +159,7 @@ public class FlatEarth extends AbstractProjection {
 
   @Override
   public String toString() {
-    return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", lat0=" + lat0 + ", lon0=" + lon0 + '}';
+    return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", lat0=" + _lat0 + ", lon0=" + _lon0 + '}';
   }
 
   @Override

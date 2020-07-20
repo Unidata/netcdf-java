@@ -42,6 +42,12 @@ public class Stereographic extends AbstractProjection {
   private boolean isNorth;
   private boolean isPolar;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _latts;
+  private final double _latt;
+  private final double _lont;
+
   @Override
   public Projection constructCopy() {
     return new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(),
@@ -89,6 +95,10 @@ public class Stereographic extends AbstractProjection {
   public Stereographic(double lat_ts_deg, double latt_deg, double lont_deg, boolean north) {
     super("PolarStereographic", false);
 
+    this._latts = lat_ts_deg;
+    this._latt = latt_deg;
+    this._lont = lont_deg;
+
     this.latts = Math.toRadians(lat_ts_deg);
     this.latt = Math.toRadians(latt_deg);
     this.lont = Math.toRadians(lont_deg);
@@ -123,6 +133,10 @@ public class Stereographic extends AbstractProjection {
   public Stereographic(double latt, double lont, double scale, double false_easting, double false_northing,
       double radius) {
     super("Stereographic", false);
+
+    this._latts = 0.0;
+    this._latt = latt;
+    this._lont = lont;
 
     this.latt = Math.toRadians(latt);
     this.lont = Math.toRadians(lont);
@@ -187,30 +201,30 @@ public class Stereographic extends AbstractProjection {
   }
 
   /**
-   * Get the latitude at natural origin
+   * Get the latitude at natural origin in degrees
    *
    * @return latitude at natural origin
    */
   public double getNaturalOriginLat() {
-    return Math.toDegrees(latts);
+    return _latts;
   }
 
   /**
    * Get the tangent longitude in degrees
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getTangentLon() {
-    return Math.toDegrees(lont);
+    return _lont;
   }
 
   /**
    * Get the tangent latitude in degrees
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getTangentLat() {
-    return Math.toDegrees(latt);
+    return _latt;
   }
 
   public double getEarthRadius() {
@@ -235,7 +249,7 @@ public class Stereographic extends AbstractProjection {
   @Override
   public String toString() {
     return "Stereographic{" + "falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", scale=" + scale
-        + ", earthRadius=" + earthRadius + ", latt=" + latt + ", lont=" + lont + '}';
+        + ", earthRadius=" + earthRadius + ", latt=" + _latt + ", lont=" + _lont + '}';
   }
 
   /**

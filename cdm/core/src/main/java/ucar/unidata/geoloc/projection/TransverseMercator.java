@@ -24,6 +24,10 @@ public class TransverseMercator extends AbstractProjection {
   private final double lat0, lon0, scale, earthRadius;
   private final double falseEasting, falseNorthing;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0, _lon0, _scale;
+
   @Override
   public AbstractProjection constructCopy() {
     return new TransverseMercator(getOriginLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(),
@@ -74,6 +78,10 @@ public class TransverseMercator extends AbstractProjection {
   public TransverseMercator(double lat0, double tangentLon, double scale, double east, double north, double radius) {
     super("TransverseMercator", false);
 
+    this._lon0 = tangentLon;
+    this._lat0 = lat0;
+    this._scale = scale;
+
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(tangentLon);
     this.earthRadius = radius;
@@ -102,26 +110,26 @@ public class TransverseMercator extends AbstractProjection {
    * @return the scale
    */
   public double getScale() {
-    return scale / earthRadius;
+    return _scale;
   }
 
 
   /**
    * Get the tangent longitude in degrees
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getTangentLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
    * Get the origin latitude in degrees
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -167,7 +175,7 @@ public class TransverseMercator extends AbstractProjection {
 
   @Override
   public String toString() {
-    return "TransverseMercator{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", scale=" + scale + ", earthRadius="
+    return "TransverseMercator{" + "lat0=" + _lat0 + ", lon0=" + _lon0 + ", scale=" + _scale + ", earthRadius="
         + earthRadius + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + '}';
   }
 

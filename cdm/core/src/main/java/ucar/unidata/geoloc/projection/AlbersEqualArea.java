@@ -21,6 +21,10 @@ public class AlbersEqualArea extends AbstractProjection {
   private final double falseEasting, falseNorthing;
   private final double earth_radius; // radius in km
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0, _lon0;
+
   /** constants from Snyder's equations */
   private final double n, C, rho0, lon0Degrees;
 
@@ -84,6 +88,9 @@ public class AlbersEqualArea extends AbstractProjection {
   public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing,
       double earth_radius) {
     super("AlbersEqualArea", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     this.lon0Degrees = lon0;
     this.lat0 = Math.toRadians(lat0);
@@ -208,21 +215,21 @@ public class AlbersEqualArea extends AbstractProjection {
   }
 
   /**
-   * Get the origin longitude.
+   * Get the origin longitude in degrees.
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
-   * Get the origin latitude.
+   * Get the origin latitude in degrees.
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -264,7 +271,7 @@ public class AlbersEqualArea extends AbstractProjection {
 
   @Override
   public String toString() {
-    return "AlbersEqualArea{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", par1=" + par1 + ", par2=" + par2
+    return "AlbersEqualArea{" + "lat0=" + _lat0 + ", lon0=" + _lon0 + ", par1=" + par1 + ", par2=" + par2
         + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", earth_radius=" + earth_radius
         + '}';
   }
