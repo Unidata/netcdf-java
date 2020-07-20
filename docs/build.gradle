@@ -21,15 +21,36 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
     source cdmCoreSourceSet.allJava
 
-    SourceSet cdmImageSourceSet = rootProject.project(':cdm:cdm-image').sourceSets.main
-    source cdmImageSourceSet.allJava
+    classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
 
-    SourceSet cdmRadialSourceSet = rootProject.project(':cdm:cdm-radial').sourceSets.main
-    source cdmRadialSourceSet.allJava
+    // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
+    include 'thredds/client/catalog/*.java'
+    include 'thredds/client/catalog/builder/*.java'
+    include 'ucar/ma2/*.java'
+    include 'ucar/nc2/*.java'
+    include 'ucar/nc2/constants/*.java'
+    include 'ucar/nc2/dataset/*.java'
+    include 'ucar/nc2/dataset/spi/*.java'
+    include 'ucar/nc2/iosp/*.java'
+    include 'ucar/nc2/time/*.java'
+    include 'ucar/nc2/units/*.java'
+    include 'ucar/nc2/util/*.java'
+    include 'ucar/nc2/write/*.java'
+    include 'ucar/unidata/geoloc/*.java'
+    include 'ucar/unidata/io/*.java'
+    include 'ucar/unidata/io/spi/*.java'
+  }
 
-    classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output,
-                       cdmImageSourceSet.compileClasspath, cdmImageSourceSet.output,
-                       cdmRadialSourceSet.compileClasspath, cdmRadialSourceSet.output])
+  task buildJavadocPublicApiWithDeps(type: Javadoc) {
+    description = 'Generate Javadoc for the CDM subproject - included deprecated classes and methods.'
+
+    title = "NetCDF-Java CDM Public API v${version} - with deprecations"
+    destinationDir = file("$buildDir/javadocCdmWithDeps/")
+
+    SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
+    source cdmCoreSourceSet.allJava
+
+    classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
 
     // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
     include 'thredds/client/catalog/*.java'
@@ -121,6 +142,20 @@ gradle.projectsEvaluated {
     destPath = 'netcdf-java/current/javadoc/'
   }
 
+  task publishAsVersionedJavadocPublicApiWithDeps(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApiWithDeps) {
+    description = 'Publish Javadoc for the CDM subproject to Nexus under /major.minor/.'
+
+    publishSrc = tasks.buildJavadocPublicApiWithDeps.destinationDir
+    destPath = "netcdf-java/$project.docVersion/javadoc-with-deprecations/"
+  }
+
+  task publishAsCurrentJavadocPublicApiWithDeps(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApiWithDeps) {
+    description = 'Publish Javadoc for the CDM subproject to Nexus under /current/.'
+
+    publishSrc = tasks.buildJavadocPublicApiWithDeps.destinationDir
+    destPath = 'netcdf-java/current/javadoc-with-deprecations/'
+  }
+
   task publishAsVersionedJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
     description = 'Publish Javadoc for all Java subprojects to Nexus under /major.minor/.'
 
@@ -142,14 +177,16 @@ gradle.projectsEvaluated {
     description = 'Publish user guide and both Javadoc sets to Nexus under /major.minor/.'
 
     // Aggregates the individual "publish*" tasks.
-    dependsOn publishAsVersionedUserGuide, publishAsVersionedJavadocPublicApi, publishAsVersionedJavadocAll
+    dependsOn publishAsVersionedUserGuide, publishAsVersionedJavadocPublicApi,
+        publishAsVersionedJavadocPublicApiWithDeps, publishAsVersionedJavadocAll
   }
 
   task publishAllDocsAsCurrent(group: 'Documentation') {
     description = 'Publish user guide and both Javadoc sets to Nexus under /current/.'
 
     // Aggregates the individual "publish*" tasks.
-    dependsOn publishAsCurrentUserGuide, publishAsCurrentJavadocPublicApi, publishAsCurrentJavadocAll
+    dependsOn publishAsCurrentUserGuide, publishAsCurrentJavadocPublicApi, publishAsCurrentJavadocPublicApiWithDeps,
+        publishAsCurrentJavadocAll
   }
 }
 
