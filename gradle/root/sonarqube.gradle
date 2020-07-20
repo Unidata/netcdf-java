@@ -26,7 +26,7 @@ apply plugin: 'org.sonarqube'
 
 apply from: "$rootDir/gradle/any/properties.gradle"  // For SonarQube user token.
 
-def grgit = Grgit.open()
+def grgit = Grgit.open(currentDir: project.rootDir)
 def branchName = grgit.branch.current.name
 grgit.close()
 

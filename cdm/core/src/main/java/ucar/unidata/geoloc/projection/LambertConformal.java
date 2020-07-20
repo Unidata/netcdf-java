@@ -28,6 +28,10 @@ public class LambertConformal extends ProjectionImpl {
   private double par1, par2; // standard parallel 1 and 2 degrees
   private double falseEasting, falseNorthing;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private double _lat0, _lon0;
+
   private double n, F, rho; // constants from Snyder's equations
   private double earthRadiusTimesF;// Earth's radius time F
   private double lon0Degrees; // lon naught ??
@@ -97,6 +101,9 @@ public class LambertConformal extends ProjectionImpl {
       double false_northing, double earth_radius) {
 
     super("LambertConformal", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     this.lat0 = Math.toRadians(lat0);
     this.lon0 = Math.toRadians(lon0);
@@ -255,19 +262,19 @@ public class LambertConformal extends ProjectionImpl {
   /**
    * Get the origin longitude in degrees
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
    * Get the origin latitude in degrees
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -326,7 +333,7 @@ public class LambertConformal extends ProjectionImpl {
   /**
    * Set the false_easting, in km.
    * natural_x_coordinate + false_easting = x coordinate
-   * 
+   *
    * @param falseEasting x offset
    */
   public void setFalseEasting(double falseEasting) {
@@ -365,9 +372,8 @@ public class LambertConformal extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "LambertConformal{" + "earth_radius=" + earth_radius + ", lat0=" + Math.toDegrees(lat0) + ", lon0="
-        + Math.toDegrees(lon0) + ", par1=" + par1 + ", par2=" + par2 + ", falseEasting=" + falseEasting
-        + ", falseNorthing=" + falseNorthing + '}';
+    return "LambertConformal{" + "earth_radius=" + earth_radius + ", lat0=" + _lat0 + ", lon0=" + _lon0 + ", par1="
+        + par1 + ", par2=" + par2 + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + '}';
   }
 
   /**
@@ -452,15 +458,15 @@ public class LambertConformal extends ProjectionImpl {
    * fromX *= -1.0;
    * fromY *= -1.0;
    * }
-   * 
+   *
    * double yd = (rhop - fromY);
    * double theta = Math.atan2( fromX, yd);
    * double r = Math.sqrt( fromX*fromX + yd*yd);
    * if (n < 0.0)
    * r *= -1.0;
-   * 
+   *
    * toLon = (Math.toDegrees(theta/n + lon0));
-   * 
+   *
    * if (Math.abs(r) < TOLERANCE) {
    * toLat = ((n < 0.0) ? -90.0 : 90.0);
    * } else {
@@ -468,7 +474,7 @@ public class LambertConformal extends ProjectionImpl {
    * toLat = Math.toDegrees(2.0 * Math.atan( rn) - Math.PI/2);
    * }
    * }
-   * 
+   *
    * MACROBODY
    */
 

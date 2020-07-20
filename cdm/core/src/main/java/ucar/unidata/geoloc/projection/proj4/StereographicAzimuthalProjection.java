@@ -48,6 +48,12 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
 
   private static final double TOL = 1.e-8;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _latt;
+  private final double _lont;
+  private final double _trueScaleLat;
+
   private double akm1, sinphi0, cosphi0;
   private int mode;
 
@@ -68,6 +74,10 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   public StereographicAzimuthalProjection(double latt, double lont, double scale, double trueScaleLat,
       double false_easting, double false_northing, Earth earth) {
     super("StereographicAzimuthalProjection", false);
+
+    _latt = latt;
+    _lont = lont;
+    _trueScaleLat = trueScaleLat;
 
     projectionLatitude = Math.toRadians(latt);
     n = Math.abs(Math.sin(projectionLatitude));
@@ -321,9 +331,8 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result =
-        new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
-            scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
+    ProjectionImpl result = new StereographicAzimuthalProjection(_latt, _lont, scaleFactor, _trueScaleLat, falseEasting,
+        falseNorthing, earth);
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
     return result;
@@ -332,8 +341,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   @Override
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat,lon=%f,%f scale,trueScaleLat=%f,%f earth=%s", Math.toDegrees(projectionLatitude),
-        Math.toDegrees(projectionLongitude), scaleFactor, Math.toDegrees(trueScaleLatitude), earth);
+    f.format("origin lat,lon=%f,%f scale,trueScaleLat=%f,%f earth=%s", _latt, _lont, scaleFactor, _trueScaleLat, earth);
     return f.toString();
   }
 

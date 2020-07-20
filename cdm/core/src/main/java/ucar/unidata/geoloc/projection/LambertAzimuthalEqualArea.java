@@ -29,6 +29,10 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   private double lat0, lon0; // center lat/lon in degrees
   private double falseEasting, falseNorthing;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0;
+
   @Override
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =
@@ -69,6 +73,8 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
       double earthRadius) {
 
     super("LambertAzimuthalEqualArea", false);
+
+    this._lat0 = lat0;
 
     this.lat0 = Math.toRadians(lat0);
     lon0Degrees = lon0;
@@ -149,21 +155,21 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   // bean properties
 
   /**
-   * Get the origin longitude.
+   * Get the origin longitude in degrees.
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return lon0Degrees;
   }
 
   /**
-   * Get the origin latitude.
+   * Get the origin latitude in degrees.
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   /**
@@ -189,7 +195,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
 
   /**
    * Set the origin longitude.
-   * 
+   *
    * @param lon the origin longitude.
    */
   public void setOriginLon(double lon) {
@@ -210,7 +216,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   /**
    * Set the false_easting, in km.
    * natural_x_coordinate + false_easting = x coordinate
-   * 
+   *
    * @param falseEasting x offset
    */
   public void setFalseEasting(double falseEasting) {
@@ -220,7 +226,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   /**
    * Set the false northing, in km.
    * natural_y_coordinate + false_northing = y coordinate
-   * 
+   *
    * @param falseNorthing y offset
    */
   public void setFalseNorthing(double falseNorthing) {
@@ -249,7 +255,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   @Override
   public String toString() {
     return "LambertAzimuthalEqualArea{" + "falseNorthing=" + falseNorthing + ", falseEasting=" + falseEasting
-        + ", lon0=" + lon0 + ", lat0=" + lat0 + ", R=" + R + '}';
+        + ", lon0=" + lon0Degrees + ", lat0=" + _lat0 + ", R=" + R + '}';
   }
 
   /**

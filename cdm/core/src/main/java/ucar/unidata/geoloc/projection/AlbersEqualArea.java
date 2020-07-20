@@ -27,11 +27,14 @@ public class AlbersEqualArea extends ProjectionImpl {
   private double falseEasting, falseNorthing;
   private final double earth_radius; // radius in km
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0, _lon0;
+
   /**
    * constants from Snyder's equations
    */
   private double n, C, rho0, lon0Degrees;
-
 
   /**
    * copy constructor - avoid clone !!
@@ -98,6 +101,9 @@ public class AlbersEqualArea extends ProjectionImpl {
   public AlbersEqualArea(double lat0, double lon0, double par1, double par2, double falseEasting, double falseNorthing,
       double earth_radius) {
     super("AlbersEqualArea", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     this.lat0 = Math.toRadians(lat0);
     lon0Degrees = lon0;
@@ -246,21 +252,21 @@ public class AlbersEqualArea extends ProjectionImpl {
   }
 
   /**
-   * Get the origin longitude.
+   * Get the origin longitude in degrees.
    *
-   * @return the origin longitude.
+   * @return the origin longitude in degrees.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
-   * Get the origin latitude.
+   * Get the origin latitude in degrees.
    *
-   * @return the origin latitude.
+   * @return the origin latitude in degrees.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   //////////////////////////////////////////////
@@ -289,7 +295,7 @@ public class AlbersEqualArea extends ProjectionImpl {
 
   /**
    * Set the origin longitude.
-   * 
+   *
    * @param lon the origin longitude.
    */
   public void setOriginLon(double lon) {
@@ -378,7 +384,7 @@ public class AlbersEqualArea extends ProjectionImpl {
 
   @Override
   public String toString() {
-    return "AlbersEqualArea{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", par1=" + par1 + ", par2=" + par2
+    return "AlbersEqualArea{" + "lat0=" + _lat0 + ", lon0=" + _lon0 + ", par1=" + par1 + ", par2=" + par2
         + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", earth_radius=" + earth_radius
         + '}';
   }
@@ -421,7 +427,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    * fromLon = Math.toRadians(fromLon);
    * double rho = computeRho(fromLat);
    * double theta = computeTheta(fromLon);
-   * 
+   *
    * toX = rho * Math.sin(theta);
    * toY = rho0 - rho*Math.cos(theta);
    * }
@@ -431,17 +437,17 @@ public class AlbersEqualArea extends ProjectionImpl {
    * fromX *= -1.0;
    * fromY *= -1.0;
    * }
-   * 
-   * 
+   *
+   *
    * double yd = rrho0-fromY;
    * double rho = Math.sqrt(fromX * fromX + yd*yd);
    * double theta = Math.atan2( fromX, yd);
    * if (n < 0) rho *= -1.0;
-   * 
+   *
    * toLat = Math.toDegrees(Math.asin((C-Math.pow((rho*n/EARTH_RADIUS),2))/(2*n)));
-   * 
+   *
    * toLon = Math.toDegrees(theta/n + lon0);
-   * 
+   *
    * }
    * MACROBODY
    */

@@ -71,6 +71,10 @@ public class PolyconicProjection extends ProjectionImpl {
   private double falseNorthing;
   private double totalScale;
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private final double _lat0, _lon0;
+
   public PolyconicProjection() {
     this(23.56, 76.54);
   }
@@ -86,6 +90,9 @@ public class PolyconicProjection extends ProjectionImpl {
 
   public PolyconicProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth ellipsoid) {
     super("Polyconic", false);
+
+    this._lat0 = lat0;
+    this._lon0 = lon0;
 
     // Initialization
     this.projectionLatitude = Math.toRadians(lat0);
@@ -316,7 +323,7 @@ public class PolyconicProjection extends ProjectionImpl {
    * @return the origin longitude in degrees
    */
   public double getOriginLatitude() {
-    return Math.toDegrees(projectionLatitude);
+    return _lat0;
   }
 
   /**
@@ -334,7 +341,7 @@ public class PolyconicProjection extends ProjectionImpl {
    * @return the origin longitude in degrees
    */
   public double getOriginLongitude() {
-    return Math.toDegrees(projectionLongitude);
+    return _lon0;
   }
 
   /**
@@ -392,8 +399,7 @@ public class PolyconicProjection extends ProjectionImpl {
   @Override
   public String paramsToString() {
     Formatter f = new Formatter();
-    f.format("origin lat=%f, origin lon=%f earth=%s", Math.toDegrees(projectionLatitude),
-        Math.toDegrees(projectionLongitude), ellipsoid);
+    f.format("origin lat=%f, origin lon=%f earth=%s", _lat0, _lon0, ellipsoid);
     return f.toString();
   }
 
