@@ -11,18 +11,23 @@ repositories {
 }
 
 dependencies {
+  // since this is a plugin, and will eventually be shared between the various THREDDS projects, make sure we use
+  // localGroovy() (i.e. the groovy version shipped with gradle). Currently, for version 6.5.1 of Gradle, this is
+  // groovy 2.5.11.
+  // If the version of groovy changes, we should make sure to find a spock version that works.
+  compile localGroovy()
   compile 'io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3'  // For Nexus tasks.
   compile 'com.github.jruby-gradle:jruby-gradle-plugin:2.0.0' // for jekyll plugin
   testImplementation 'org.slf4j:slf4j-api:1.7.28'
   testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 
-  testImplementation('org.spockframework:spock-core:1.0-groovy-2.4') {
+  testImplementation('org.spockframework:spock-core:1.3-groovy-2.5') {
     // The Gradle API drags in the bundled version of Groovy that Gradle ships with (localGroovy()) –
     // see https://discuss.gradle.org/t/unable-to-force-gradle-to-use-groovy-2-0-0-for-the-project/7021.
     // Spock drags in another Groovy as a transitive dependency.
     //
     // So, there are multiple candidate versions of the Groovy dependency. Ordinarily, this is no problem for
-    // Gradle; it bas version-conflict-resolution machinery to deal with it. However, localGroovy() is a special
+    // Gradle; it has version-conflict-resolution machinery to deal with it. However, localGroovy() is a special
     // kind of dependency that doesn't participate in that resolution (again, see above URL).
     //
     // Once added to a configuration, localGroovy() will remain part of it no matter what. Furthermore, since
