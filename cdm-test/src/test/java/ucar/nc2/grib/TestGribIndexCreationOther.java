@@ -27,6 +27,7 @@ import java.util.Formatter;
  * @author caron
  * @since 11/14/2014
  */
+@Ignore("too long")
 public class TestGribIndexCreationOther {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
