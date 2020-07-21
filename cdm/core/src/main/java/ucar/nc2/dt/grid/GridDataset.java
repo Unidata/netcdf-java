@@ -122,7 +122,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   }
 
   private void constructCoordinateSystems(NetcdfDataset ds, VariableEnhanced v, Formatter parseInfo) {
-
     if (v instanceof StructureDS) {
       StructureDS s = (StructureDS) v;
       List<Variable> members = s.getVariables();

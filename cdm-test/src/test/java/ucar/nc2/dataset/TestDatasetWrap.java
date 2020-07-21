@@ -22,12 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Compare acquireDataset with wrap(acquireFile)
- *
- * @author caron
- * @since 11/17/2015.
- */
+/** Compare acquireDataset with enhance(acquireFile) */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestDatasetWrap {
@@ -53,12 +48,17 @@ public class TestDatasetWrap {
   @Test
   public void doOne() throws Exception {
     try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(durl, null);
-        NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
+        NetcdfDataset ncWrap = NetcdfDatasets.enhance(ncfile,  NetcdfDataset.getDefaultEnhanceMode(), null)) {
 
       NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, true, null);
-      System.out.println(" dataset wraps= " + durl.trueurl);
+      System.out.println(" dataset wraps= " + durl.getTrueurl());
 
-      Assert.assertTrue(CompareNetcdf2.compareFiles(ncd, ncWrap, new Formatter()));
+      Formatter errlog = new Formatter();
+      boolean ok = CompareNetcdf2.compareFiles(ncd, ncWrap, errlog);
+      if (!ok) {
+        System.out.printf("FAIL %s %s%n", durl, errlog);
+      }
+      Assert.assertTrue(ok);
     }
   }
 }
