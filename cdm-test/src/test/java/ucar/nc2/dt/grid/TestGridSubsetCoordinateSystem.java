@@ -5,7 +5,6 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
