@@ -16,6 +16,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestPointProblem {
 
   @Test
+  @Ignore
   public void checkPointDataset() throws IOException {
     String location = TestDir.cdmUnitTestDir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc";
     FeatureType ftype = FeatureType.ANY_POINT;
