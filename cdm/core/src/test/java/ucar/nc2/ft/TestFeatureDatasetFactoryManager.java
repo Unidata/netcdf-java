@@ -24,7 +24,7 @@ public class TestFeatureDatasetFactoryManager {
         Paths.get(TestDir.cdmLocalTestDataDir, "trajectory", "aircraft", "uw_kingair-2005-01-19-113957.nc");
     System.out.printf("testSimpleTrajectory on %s%n", location_path);
     FeatureDataset featureDataset =
-        FeatureDatasetFactoryManager.open(FeatureType.ANY, location_path.toString(), null, new Formatter());
+        FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location_path.toString(), null, new Formatter());
     assertThat(featureDataset).isNotNull();
     assertThat(featureDataset.getFeatureType()).isEqualTo(FeatureType.TRAJECTORY);
   }

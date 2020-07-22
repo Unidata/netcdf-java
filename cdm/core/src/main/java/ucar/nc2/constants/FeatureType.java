@@ -90,8 +90,8 @@ public enum FeatureType {
   }
 
   public boolean isPointFeatureType() {
-    return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY)
-        || (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE)
+    return (this == FeatureType.ANY_POINT) || (this == FeatureType.POINT) || (this == FeatureType.STATION)
+        || (this == FeatureType.TRAJECTORY) || (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE)
         || (this == FeatureType.TRAJECTORY_PROFILE);
   }
 
