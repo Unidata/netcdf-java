@@ -556,13 +556,13 @@ abstract class WriterCFPointAbstract implements Closeable {
       writer.updateAttribute(null, new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(minDate)));
       writer.updateAttribute(null, new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(maxDate)));
     }
-
-    writer.close();
   }
 
   @Override
   public void close() throws IOException {
-    writer.close();
+    if (writer != null) {
+      writer.close();
+    }
   }
 
   // cover CF1Convention

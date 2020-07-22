@@ -22,9 +22,6 @@ import java.lang.invoke.MethodHandles;
 
 /**
  * Test things are ok when wrapping by a Dataset
- *
- * @author caron
- * @since 11/6/13
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestDatasetWrapProblem {
@@ -36,11 +33,19 @@ public class TestDatasetWrapProblem {
   }
 
   private void doOne(String filename) throws Exception {
-    try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(DatasetUrl.create(null, filename), null);
-        NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true);
-        NetcdfDataset ncd = NetcdfDatasets.acquireDataset(DatasetUrl.create(null, filename), true, null)) {
-      System.out.println(" dataset wraps= " + filename);
-      Assert.assertTrue(CompareNetcdf2.compareFiles(ncd, ncWrap, new Formatter()));
+    DatasetUrl durl = DatasetUrl.create(null, filename);
+    try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(durl, null);
+        NetcdfDataset ncWrap = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null)) {
+
+      NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, true, null);
+      System.out.println(" dataset wraps= " + durl.getTrueurl());
+
+      Formatter errlog = new Formatter();
+      boolean ok = CompareNetcdf2.compareFiles(ncd, ncWrap, errlog);
+      if (!ok) {
+        System.out.printf("FAIL %s %s%n", durl, errlog);
+      }
+      Assert.assertTrue(ok);
     }
   }
 

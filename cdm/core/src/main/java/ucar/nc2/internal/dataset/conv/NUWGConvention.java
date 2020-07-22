@@ -76,6 +76,9 @@ public class NUWGConvention extends CoordSystemBuilder {
     // put them into a NavInfoList
     // make their data into metadata
     for (Variable.Builder vb : rootGroup.vbuilders) {
+      if (!(vb instanceof VariableDS.Builder)) {
+        continue;
+      }
       VariableDS.Builder v = (VariableDS.Builder) vb;
       if (0 <= v.orgVar.findDimensionIndex("nav")) {
         if (dumpNav)

@@ -2068,15 +2068,15 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     }
 
     // Get all dimension names, including parent structure
-    public ImmutableSet<String> getDimensionsAll() {
+    public ImmutableSet<String> getDimensionNamesAll() {
       ImmutableSet.Builder<String> dimsAll = new ImmutableSet.Builder<>();
-      addDimensionsAll(dimsAll, this);
+      addDimensionNamesAll(dimsAll, this);
       return dimsAll.build();
     }
 
-    private void addDimensionsAll(ImmutableSet.Builder<String> result, Variable.Builder<?> v) {
+    private void addDimensionNamesAll(ImmutableSet.Builder<String> result, Variable.Builder<?> v) {
       if (v.parentStructureBuilder != null) {
-        v.parentStructureBuilder.getDimensionsAll().forEach(result::add);
+        v.parentStructureBuilder.getDimensionNamesAll().forEach(result::add);
       }
       getDimensionNames().forEach(result::add);
     }
@@ -2203,7 +2203,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
      * @param index at what index value
      */
     public Variable.Builder<?> makeSliceBuilder(int dim, int index) {
-      System.out.printf(" slice of %s%n", this.shortName);
       // create a copy of this builder with a slicer
       Variable.Builder<?> sliced = this.copy();
       sliced.slicer = new Slicer(dim, index, this.shortName);

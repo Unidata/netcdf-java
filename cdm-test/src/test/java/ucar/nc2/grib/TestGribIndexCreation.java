@@ -3,6 +3,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import java.util.Formatter;
  * @since 11/14/2014
  */
 @Category(NeedsCdmUnitTest.class)
+@Ignore("too long")
 public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

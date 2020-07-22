@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
+import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.AxisType;
@@ -128,10 +129,27 @@ public class CF1Convention extends CSMConvention {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
+    augmentDataset(cancelTask, rootGroup);
+    augmentSimpleGeometry();
+
+    for (Group.Builder nested : rootGroup.gbuilders) {
+      augmentDataset(cancelTask, nested);
+    }
+
+    // TODO remove this
+    // make corrections for specific datasets
+    String src = rootGroup.getAttributeContainer().findAttributeString("Source", "");
+    if (src.equals("NOAA/National Climatic Data Center")) {
+      String title = rootGroup.getAttributeContainer().findAttributeString("title", "");
+      avhrr_oiv2 = title.indexOf("OI-V2") > 0;
+    }
+  }
+
+  private void augmentDataset(CancelTask cancelTask, Group.Builder group) throws IOException {
     boolean got_grid_mapping = false;
 
     // look for transforms
-    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : group.vbuilders) {
       // look for special standard_names
       String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
       if (sname != null) {
@@ -168,8 +186,8 @@ public class CF1Convention extends CSMConvention {
           if (sname.equalsIgnoreCase(vertical_coord)) {
             vb.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
             if (vb.getAttributeContainer().findAttribute(_Coordinate.Axes) == null) {
-              vb.addAttribute(new Attribute(_Coordinate.Axes, vb.shortName)); // LOOK: may also be time dependent; was
-                                                                              // getFullName()
+              // LOOK: may also be time dependent; was getFullName()
+              vb.addAttribute(new Attribute(_Coordinate.Axes, vb.shortName));
             }
           }
         }
@@ -181,7 +199,7 @@ public class CF1Convention extends CSMConvention {
       // look for horiz transforms. only ones that are referenced by another variable.
       String grid_mapping = vb.getAttributeContainer().findAttributeString(CF.GRID_MAPPING, null);
       if (grid_mapping != null) {
-        Optional<Variable.Builder<?>> gridMapOpt = rootGroup.findVariableLocal(grid_mapping);
+        Optional<Variable.Builder<?>> gridMapOpt = group.findVariableLocal(grid_mapping);
         if (gridMapOpt.isPresent()) {
           // TODO might be group relative - CF does not specify - see original version
           Variable.Builder<?> gridMap = gridMapOpt.get();
@@ -196,23 +214,44 @@ public class CF1Convention extends CSMConvention {
             gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
           }
 
-          // check for CF-ish GOES-16/17 grid mappings
-          Attribute productionLocation =
-              rootGroup.getAttributeContainer().findAttributeIgnoreCase("production_location");
-          Attribute icdVersion = rootGroup.getAttributeContainer().findAttributeIgnoreCase("ICD_version");
-          if (productionLocation != null && icdVersion != null) {
-            // the fact that those two global attributes are not null means we should check to see
-            // if the grid mapping variable has attributes that need corrected.
-            correctGoes16(productionLocation, icdVersion, gridMap);
+          // TODO remove this
+          if (group == rootGroup) {
+            // check for CF-ish GOES-16/17 grid mappings
+            Attribute productionLocation =
+                rootGroup.getAttributeContainer().findAttributeIgnoreCase("production_location");
+            Attribute icdVersion = rootGroup.getAttributeContainer().findAttributeIgnoreCase("ICD_version");
+            if (productionLocation != null && icdVersion != null) {
+              // the fact that those two global attributes are not null means we should check to see
+              // if the grid mapping variable has attributes that need corrected.
+              correctGoes16(productionLocation, icdVersion, gridMap);
+            }
           }
           got_grid_mapping = true;
         }
       }
+    }
+
+    if (!got_grid_mapping) { // see if there are any grid mappings anyway
+      for (Variable.Builder vds : group.vbuilders) {
+        String grid_mapping_name = vds.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
+        if (grid_mapping_name != null) {
+          vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
+
+          if (grid_mapping_name.equals(CF.LATITUDE_LONGITUDE)) {
+            vds.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));
+          } else {
+            vds.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
+          }
+        }
+      }
+    }
+  }
+
+  private void augmentSimpleGeometry() {
+    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
 
       // TODO simple geometry
-
       if (cfVersion >= 8) { // only acknowledge simple geometry standard extension if CF-1.8 or higher
-
         if (vb.getAttributeContainer().findAttribute(CF.GEOMETRY) != null) {
           String geomValue = vb.getAttributeContainer().findAttributeString(CF.GEOMETRY, null);
           rootGroup.findVariableLocal(geomValue).ifPresent(coordsvar -> {
@@ -253,10 +292,6 @@ public class CF1Convention extends CSMConvention {
                 });
               }
 
-              if (vb.shortName.equals("et")) {
-                System.out.println("WTF");
-              }
-
               List<String> dimNames = ImmutableList.copyOf(vb.getDimensionNames());
               // Append any geometry dimensions as axis
               final StringBuilder pre = new StringBuilder();
@@ -280,28 +315,6 @@ public class CF1Convention extends CSMConvention {
           });
         }
       }
-    }
-
-    if (!got_grid_mapping) { // see if there are any grid mappings anyway
-      for (Variable.Builder vds : rootGroup.vbuilders) {
-        String grid_mapping_name = vds.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
-        if (grid_mapping_name != null) {
-          vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
-
-          if (grid_mapping_name.equals(CF.LATITUDE_LONGITUDE)) {
-            vds.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));
-          } else {
-            vds.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
-          }
-        }
-      }
-    }
-
-    // make corrections for specific datasets
-    String src = rootGroup.getAttributeContainer().findAttributeString("Source", "");
-    if (src.equals("NOAA/National Climatic Data Center")) {
-      String title = rootGroup.getAttributeContainer().findAttributeString("title", "");
-      avhrr_oiv2 = title.indexOf("OI-V2") > 0;
     }
   }
 

@@ -26,7 +26,6 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
 
 /** A helper class for NetcdfDataset to build and manage coordinates. */
@@ -243,9 +242,9 @@ public class CoordinatesHelper {
       Preconditions.checkNotNull(vb);
       // TODO using strings instead of Dimensions, to avoid exposing mutable Dimension objects.
       // TODO Might reconsider in 6.
-      Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionsAll().iterator());
+      Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionNamesAll().iterator());
       HashSet<String> csDomain = new HashSet<>();
-      getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.getDimensionsAll()));
+      getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.getDimensionNamesAll()));
       return CoordinateSystem.isSubset(varDomain, csDomain);
     }
 

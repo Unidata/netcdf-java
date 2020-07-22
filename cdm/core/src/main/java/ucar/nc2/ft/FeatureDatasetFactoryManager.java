@@ -267,8 +267,7 @@ public class FeatureDatasetFactoryManager {
     }
 
     // otherwise open as NetcdfDataset and run it through the FeatureDatasetFactories
-    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, NetcdfDataset.getDefaultEnhanceMode(), task,
-        IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, task); // Open with enhancements
     FeatureDataset fd = wrap(wantFeatureType, ncd, task, errlog);
     if (fd == null)
       ncd.close();

@@ -29,6 +29,9 @@ class CSMConvention extends CoardsConventions {
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
     for (Variable.Builder vb : rootGroup.vbuilders) {
+      if (!(vb instanceof VariableDS.Builder)) {
+        continue;
+      }
       VariableDS.Builder vds = (VariableDS.Builder) vb;
       String unit = vds.getUnits();
       if (unit != null && (unit.equalsIgnoreCase("hybrid_sigma_pressure") || unit.equalsIgnoreCase("sigma_level"))) {

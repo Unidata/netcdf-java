@@ -30,11 +30,11 @@ public class TestAggNested {
   @Test
   public void TestNotCached() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ncml/nestedAgg/test.ncml";
+    System.out.printf("TestAggNested %s%n", filename);
 
     try (NetcdfDataset ncd = NetcdfDatasets.acquireDataset(DatasetUrl.findDatasetUrl(filename), true, null)) {
       Variable time = ncd.findVariable("time");
       assertThat(time.getSize()).isEqualTo(19723);
-      // System.out.printf(" time array = %s%n", NCdumpW.toString(time.read()));
     }
   }
 
@@ -47,7 +47,6 @@ public class TestAggNested {
       try (NetcdfDataset ncd = NetcdfDatasets.acquireDataset(DatasetUrl.findDatasetUrl(filename), true, null)) {
         Variable time = ncd.findVariable("time");
         assertThat(time.getSize()).isEqualTo(19723);
-        // System.out.printf(" time array = %s%n", NCdumpW.toString(time.read()));
       }
 
       FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
