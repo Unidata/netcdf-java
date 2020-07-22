@@ -35,12 +35,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Test FeatureDatasetCapabilitiesXML
- *
- * @author caron
- * @since 9/23/2015
- */
+/** Test FeatureDatasetCapabilitiesXML */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestFeatureDatasetCapabilitiesXML {
@@ -59,9 +54,9 @@ public class TestFeatureDatasetCapabilitiesXML {
     return result;
   }
 
-  String location;
-  String path;
-  boolean hasAlt;
+  private final String location;
+  private final String path;
+  private final boolean hasAlt;
 
   public TestFeatureDatasetCapabilitiesXML(String location, String path, boolean hasAlt) {
     this.location = location;
@@ -72,6 +67,7 @@ public class TestFeatureDatasetCapabilitiesXML {
   @Test
   public void doOne() throws IOException, JDOMException {
     FeatureDatasetCapabilitiesWriter capWriter;
+    System.out.printf("TestFeatureDatasetCapabilitiesXML %s%n", location);
 
     try (Formatter formatter = new Formatter()) {
       FeatureDatasetPoint fdp =
