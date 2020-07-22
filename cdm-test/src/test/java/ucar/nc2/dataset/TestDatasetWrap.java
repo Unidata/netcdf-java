@@ -48,7 +48,7 @@ public class TestDatasetWrap {
   @Test
   public void doOne() throws Exception {
     try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(durl, null);
-        NetcdfDataset ncWrap = NetcdfDatasets.enhance(ncfile,  NetcdfDataset.getDefaultEnhanceMode(), null)) {
+        NetcdfDataset ncWrap = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null)) {
 
       NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, true, null);
       System.out.println(" dataset wraps= " + durl.getTrueurl());

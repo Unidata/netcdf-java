@@ -132,7 +132,7 @@ public class CF1Convention extends CSMConvention {
     augmentDataset(cancelTask, rootGroup);
     augmentSimpleGeometry();
 
-    for ( Group.Builder nested : rootGroup.gbuilders) {
+    for (Group.Builder nested : rootGroup.gbuilders) {
       augmentDataset(cancelTask, nested);
     }
 
