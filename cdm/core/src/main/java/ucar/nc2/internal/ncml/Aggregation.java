@@ -81,6 +81,11 @@ public abstract class Aggregation {
 
   protected static boolean debug, debugOpenFile, debugSyncDetail, debugProxy, debugRead, debugDateParse, debugConvert;
 
+
+  //////////////////////////////////////////////////
+  // back door for testing
+  public static int countCacheUse;
+
   //////////////////////////////////////////////////////////////////////////////////////////
 
   protected NetcdfDataset.Builder ncDataset; // the aggregation belongs to this dataset

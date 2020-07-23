@@ -24,11 +24,7 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * TestWrite NcML, read back and compare with original.
- *
  * This is identical to TestNcmlWriteAndCompareShared, except that we're using local datasets.
- *
- * @author caron
- * @since 11/2/13
  */
 @RunWith(Parameterized.class)
 public class TestNcmlWriteAndCompareLocal {

@@ -20,7 +20,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
 
 public class TestNcmlModifyVars {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

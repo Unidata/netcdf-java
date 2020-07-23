@@ -15,9 +15,9 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.Ncdump;
 
 /** Test promoting an attribute to a variable. */
@@ -36,7 +36,7 @@ public class TestAggExistingPromote {
         + "  </aggregation>\n" // leavit
         + "</netcdf>"; // leavit
 
-    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(aggExistingPromote), filename, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingPromote), filename, null);
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     // the promoted var
@@ -164,7 +164,7 @@ public class TestAggExistingPromote {
         + "</netcdf>"; // leavit
 
 
-    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(aggExistingPromote2), filename, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingPromote2), filename, null);
     Dimension dim = ncfile.findDimension("time");
 
     // the promoted var

@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.write.Ncdump;
@@ -30,7 +30,7 @@ public class TestAggExistingCoordVars {
   public void testType1() throws IOException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting1.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     Variable time = ncfile.findVariable("time");
@@ -78,7 +78,7 @@ public class TestAggExistingCoordVars {
   public void testType2() throws IOException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting2.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(aggExisting2), filename, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(aggExisting2), filename, null);
     logger.debug(" TestNcmlAggExisting.open {}\n{}", filename, ncfile);
 
     Variable time = ncfile.findVariable("time");
@@ -115,7 +115,7 @@ public class TestAggExistingCoordVars {
   public void testType3() throws IOException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}\n{}", filename, ncfile);
 
     Variable time = ncfile.findVariable("time");
@@ -151,7 +151,7 @@ public class TestAggExistingCoordVars {
   public void testType4() throws IOException {
     String filename = "file:" + TestNcmlRead.topDir + "aggExisting4.ncml";
 
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -185,8 +185,7 @@ public class TestAggExistingCoordVars {
   @Test
   public void testWithDateFormatMark() throws Exception {
     String filename = "file:" + TestNcmlRead.topDir + "aggExistingOne.xml";
-
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -223,8 +222,7 @@ public class TestAggExistingCoordVars {
   // @Test
   public void oldTestWithDateFormatMark() throws Exception {
     String filename = "file:" + TestNcmlRead.topDir + "aggExistingOne.xml";
-
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -267,8 +265,7 @@ public class TestAggExistingCoordVars {
   @Test
   public void testClimatologicalDate() throws IOException {
     String filename = "file:" + TestNcmlRead.topDir + "aggExisting5.ncml";
-
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;

@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,50 +28,47 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 @Category(NeedsCdmUnitTest.class)
-public class TestOffAggDirectory extends TestCase {
+public class TestOffAggDirectory {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  @Test
   public void testNcmlDirect() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    logger.debug(" TestNcmlAggDirectory.open {}", filename);
-
-    testDimensions(ncfile);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile);
-    testReadData(ncfile);
-
-    ncfile.close();
+    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null)) {
+      logger.debug(" TestNcmlAggDirectory.open {}", filename);
+      testDimensions(ncfile);
+      testCoordVar(ncfile);
+      testAggCoordVar(ncfile);
+      testReadData(ncfile);
+    }
   }
 
+  @Test
   public void testNcmlDataset() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
-    NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null);
-    logger.debug(" TestNcmlAggExisting.openDataset {}", filename);
-
-    testDimensions(ncfile);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile);
-    testReadData2(ncfile);
-
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfDatasets.openDataset(filename, true, null)) {
+      logger.debug(" TestNcmlAggExisting.openDataset {}", filename);
+      testDimensions(ncfile);
+      testCoordVar(ncfile);
+      testAggCoordVar(ncfile);
+      testReadData2(ncfile);
+    }
   }
 
+  @Test
   public void testNcmlGrid() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
-    GridDataset gds = GridDataset.open(filename);
-    logger.debug(" TestNcmlAggExisting.openGrid {}", filename);
-
-    List grids = gds.getGrids();
-    assert grids.size() == 2;
-
-    gds.close();
+    try (GridDataset gds = GridDataset.open(filename)) {
+      logger.debug(" TestNcmlAggExisting.openGrid {}", filename);
+      List grids = gds.getGrids();
+      assert grids.size() == 2;
+    }
   }
 
-  public void testDimensions(NetcdfFile ncfile) {
+  private void testDimensions(NetcdfFile ncfile) {
     Dimension latDim = ncfile.findDimension("latitude");
     assert null != latDim;
     assert latDim.getShortName().equals("latitude");
@@ -90,8 +87,7 @@ public class TestOffAggDirectory extends TestCase {
     assert timeDim.getLength() == 6;
   }
 
-  public void testCoordVar(NetcdfFile ncfile) throws IOException {
-
+  private void testCoordVar(NetcdfFile ncfile) throws IOException {
     Variable lat = ncfile.findVariable("latitude");
     assert lat.getDataType() == DataType.FLOAT;
     assert lat.getDimension(0).equals(ncfile.findDimension("latitude"));
@@ -115,7 +111,7 @@ public class TestOffAggDirectory extends TestCase {
     Assert2.assertNearlyEquals(dataI.getFloatNext(), 43.020893f);
   }
 
-  public void testAggCoordVar(NetcdfFile ncfile) throws IOException {
+  private void testAggCoordVar(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
     assert time.getShortName().equals("time");
@@ -139,7 +135,7 @@ public class TestOffAggDirectory extends TestCase {
       Assert2.assertNearlyEquals(dataI.getFloatNext(), vals[count++]);
   }
 
-  public void testReadData(NetcdfFile ncfile) throws IOException {
+  private void testReadData(NetcdfFile ncfile) throws IOException {
     Variable v = ncfile.findVariable("chlorophylle_a");
     assert null != v;
     assert v.getShortName().equals("chlorophylle_a");
@@ -171,7 +167,7 @@ public class TestOffAggDirectory extends TestCase {
     }
   }
 
-  public void testReadData2(NetcdfFile ncfile) throws IOException {
+  private void testReadData2(NetcdfFile ncfile) throws IOException {
     Variable v = ncfile.findVariable("chlorophylle_a");
     assert null != v;
     assert v.getShortName().equals("chlorophylle_a");
@@ -206,6 +202,7 @@ public class TestOffAggDirectory extends TestCase {
     }
   }
 
+  @Test
   public void testBlanksInDirectory() throws IOException {
     String dir = TestDir.cdmUnitTestDir + "encoding/";
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
@@ -213,8 +210,8 @@ public class TestOffAggDirectory extends TestCase {
         + " <aggregation type='joinNew' dimName='fake'>\n" + "  <netcdf location='" + dir
         + "dir mit blank/20070101.nc' coord='1'/>\n" + "  <netcdf location='" + dir
         + "dir mit blank/20070301.nc' coord='2'/>\n" + " </aggregation>\n" + "</netcdf> ";
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
-    logger.debug("result={}", ncfile);
-    ncfile.close();
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
+      logger.debug("result={}", ncfile);
+    }
   }
 }

@@ -25,7 +25,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ncml.TestNcmlRead;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.Assert2;
 

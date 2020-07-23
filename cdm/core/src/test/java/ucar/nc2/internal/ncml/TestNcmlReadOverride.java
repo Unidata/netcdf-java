@@ -18,7 +18,6 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
 
 public class TestNcmlReadOverride {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

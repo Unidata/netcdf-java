@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.io.RandomAccessFile;
@@ -43,18 +42,18 @@ public class TestOffAggExistingSSTA {
     List<String> openfiles = RandomAccessFile.getOpenFiles();
     int count = openfiles.size();
     System.out.println("count files at start=" + count);
+    int count1 = 0;
 
     NetcdfDatasets.disableNetcdfFileCache();
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
-    System.out.println(" TestNcmlAggExisting.open " + filename);
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
+      System.out.println(" TestNcmlAggExisting.open " + filename);
 
-    Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
-    System.out.printf("array size=%d%n", ATssta.getSize());
+      Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
+      System.out.printf("array size=%d%n", ATssta.getSize());
 
-    int count1 = RandomAccessFile.getOpenFiles().size();
-    System.out.println("count files after open=" + count1);
-
-    ncfile.close();
+      count1 = RandomAccessFile.getOpenFiles().size();
+      System.out.println("count files after open=" + count1);
+    }
 
     int count2 = RandomAccessFile.getOpenFiles().size();
     System.out.println("count files after close=" + count2);

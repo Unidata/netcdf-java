@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 
 /** Test promoteGlobalAttribute */
 public class TestAggPromote {
@@ -32,7 +32,7 @@ public class TestAggPromote {
 
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting1.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(xml), null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), null, null);
     System.out.println(" TestNcmlAggExisting.open " + filename);
 
     Variable times = ncfile.findVariable("times");

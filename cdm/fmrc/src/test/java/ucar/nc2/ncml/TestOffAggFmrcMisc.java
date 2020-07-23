@@ -65,17 +65,17 @@ public class TestOffAggFmrcMisc {
         + "  <aggregation dimName='runtime' type='forecastModelRunCollection' timeUnitsChange='true'>\n"
         + "    <scan location='" + location + "' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />"
         + "  </aggregation>\n" + "</netcdf>";
-   try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), location, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), location, null)) {
 
-     // make sure that scaling is applied
-     VariableDS vs = (VariableDS) ncfile.findVariable("hs");
-     Array data = vs.read("0,1,:,:)");
-     while (data.hasNext()) {
-       float val = data.nextFloat();
-       if (!vs.isMissing(val))
-         assert (val < 10.0) : val;
-     }
-   }
+      // make sure that scaling is applied
+      VariableDS vs = (VariableDS) ncfile.findVariable("hs");
+      Array data = vs.read("0,1,:,:)");
+      while (data.hasNext()) {
+        float val = data.nextFloat();
+        if (!vs.isMissing(val))
+          assert (val < 10.0) : val;
+      }
+    }
   }
 
   @Test

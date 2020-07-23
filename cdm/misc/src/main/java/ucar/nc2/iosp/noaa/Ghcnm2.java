@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.ncml.NcmlConstructor;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
@@ -561,10 +560,10 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       dataRaf = RandomAccessFile.acquire(base + DAT_EXT);
     }
 
-    NcmlConstructor ncmlc = new NcmlConstructor();
-    if (!ncmlc.populateFromResource("resources/nj22/iosp/ghcnm.ncml", ncfile)) {
-      throw new IllegalStateException(ncmlc.getErrlog().toString());
-    }
+    // LOOK disabled
+    // if (!ncmlc.populateFromResource("resources/nj22/iosp/ghcnm.ncml", ncfile)) {
+    // throw new IllegalStateException(ncmlc.getErrlog().toString());
+    // }
     ncfile.finish();
 
     dataVinfo = setVinfo(dataRaf, ncfile, dataPattern, "all_data");

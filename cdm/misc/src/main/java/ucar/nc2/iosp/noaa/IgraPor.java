@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.ncml.NcmlConstructor;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
@@ -173,10 +172,11 @@ public class IgraPor extends AbstractIOServiceProvider {
       dataDir = new File(file.getParentFile(), DAT_DIR);
     }
 
-    NcmlConstructor ncmlc = new NcmlConstructor();
-    if (!ncmlc.populateFromResource("resources/nj22/iosp/igra-por.ncml", ncfile)) {
-      throw new IllegalStateException(ncmlc.getErrlog().toString());
-    }
+    // LOOK disabled
+    // NcmlConstructor ncmlc = new NcmlConstructor();
+    // if (!ncmlc.populateFromResource("resources/nj22/iosp/igra-por.ncml", ncfile)) {
+    // throw new IllegalStateException(ncmlc.getErrlog().toString());
+    // }
     ncfile.finish();
 
     // dataVinfo = setVinfo(dataRaf, ncfile, dataPattern, "all_data");

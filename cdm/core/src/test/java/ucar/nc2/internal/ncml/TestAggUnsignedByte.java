@@ -20,7 +20,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
 
 /** Test AggExisting with Unsigned Byte */
 
