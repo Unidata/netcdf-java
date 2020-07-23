@@ -569,5 +569,4 @@ abstract class WriterCFPointAbstract implements Closeable {
   static String getZisPositive(String zaxisName, String vertCoordUnits) {
     return CF1Convention.getZisPositive(zaxisName, vertCoordUnits);
   }
-
 }

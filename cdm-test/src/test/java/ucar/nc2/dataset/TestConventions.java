@@ -5,6 +5,8 @@
 
 package ucar.nc2.dataset;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,9 +16,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import ucar.ma2.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
@@ -38,6 +43,16 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestConventions {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  @Test
+  public void testProblem() throws IOException {
+    String problem = TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc";
+    System.out.printf("DtCoverageCSBuilder.classify %s%n", problem);
+    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.GRID, problem, null, new Formatter())) {
+      assertThat(fd).isNotNull();
+      assertThat(fd.getFeatureType().isCoverageFeatureType()).isTrue();
+    }
+  }
 
   @Test
   public void testCF() throws IOException {

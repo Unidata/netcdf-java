@@ -67,7 +67,7 @@ public class TestConventionFeatureTypes {
   @Test
   public void testFeatureDatasets() throws IOException {
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
-      logger.debug("Open FeatureDataset {}", f.getPath());
+      System.out.printf("Open FeatureDataset %s%n", f.getPath());
       try (FeatureDataset fd = FeatureDatasetFactoryManager.open(type, f.getPath(), null, new Formatter())) {
         Assert.assertNotNull(f.getPath(), fd);
         if (type == FeatureType.GRID)
@@ -84,7 +84,7 @@ public class TestConventionFeatureTypes {
       return;
     }
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
-      logger.debug("Open CoverageDataset {}", f.getPath());
+      System.out.printf("DtCoverageCSBuilder.classify %s%n", f.getPath());
       try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
         DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, new Formatter());
         Assert.assertNotNull(builder);
