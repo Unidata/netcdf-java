@@ -7,6 +7,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft2.simpgeometry.adapter.SimpleGeometryCS;
 import ucar.nc2.time.CalendarDate;
@@ -55,11 +56,13 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
    * @throws java.io.IOException on read error
    */
   public SimpleGeometryFeatureDataset(NetcdfDataset ncd) throws IOException {
-    this.ncd = ncd;
-    Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || enhance.isEmpty())
+    Set<Enhance> enhance = ncd.getEnhanceMode();
+    if (enhance == null || !enhance.contains(NetcdfDataset.Enhance.CoordSystems)) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
-    ncd.enhance(enhance);
+      this.ncd = NetcdfDatasets.enhance(ncd, enhance, null);
+    } else {
+      this.ncd = ncd;
+    }
   }
 
   @Override

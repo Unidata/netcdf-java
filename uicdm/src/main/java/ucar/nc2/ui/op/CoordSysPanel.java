@@ -6,7 +6,6 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasetInfo;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
@@ -44,22 +43,6 @@ public class CoordSysPanel extends OpPanel {
       detailWindow.show();
     });
     buttPanel.add(summaryButton);
-
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
-    infoButton.addActionListener(e -> {
-      if (ds != null) {
-        try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ds)) {
-          detailTA.appendLine(info.getParseInfo());
-          detailTA.gotoTop();
-        } catch (Exception e1) {
-          StringWriter sw = new StringWriter(5000);
-          e1.printStackTrace(new PrintWriter(sw));
-          detailTA.setText(sw.toString());
-        }
-        detailWindow.show();
-      }
-    });
-    buttPanel.add(infoButton);
 
     JButton dsButton = new JButton("Object dump");
     dsButton.addActionListener(e -> {

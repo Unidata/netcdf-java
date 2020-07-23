@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class TestStructureArray2 {
   @Test
   public void testMA() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
+    NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
     Dimension dim = ncd.findDimension("time");
     assert dim != null;
 

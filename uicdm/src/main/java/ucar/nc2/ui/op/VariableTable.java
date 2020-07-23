@@ -14,6 +14,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -40,44 +41,33 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 
-/**
- *
- */
 public class VariableTable extends JPanel {
 
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private PreferencesExt prefs;
   private FileManager fileChooser; // for exporting
 
-  List col0;
-  Array[] data;
+  private List col0;
+  private Array[] data;
 
-  int col0Dim = -1;
+  private int col0Dim = -1;
   private boolean col0isDate;
 
-  NetcdfFile file;
-  NetcdfDataset fds;
+  private NetcdfFile file;
+  private NetcdfDataset fds;
 
-  String[] columnNames;
+  private String[] columnNames;
 
-  VariableTableModel dataModel = new VariableTableModel();
+  private VariableTableModel dataModel = new VariableTableModel();
 
-  JCheckBox includeGlobals;
+  private JCheckBox includeGlobals;
 
-  /**
-   *
-   */
-  public VariableTable(PreferencesExt prefs) {
-    this.prefs = prefs;
+  VariableTable(PreferencesExt prefs) {
 
     PreferencesExt fcPrefs = (prefs == null) ? null : (PreferencesExt) prefs.node("FileManager");
     fileChooser = new FileManager(null, null, "csv", "comma seperated values", fcPrefs);
   }
 
-  /**
-   * clear the table
-   */
   public void clear() {
     if (dataModel != null) {
       dataModel.clear();
@@ -85,16 +75,10 @@ public class VariableTable extends JPanel {
     col0 = null;
   }
 
-  /**
-   * save state
-   */
   public void saveState() {
     fileChooser.save();
   }
 
-  /**
-   *
-   */
   public void setVariableList(List<Variable> vl) {
     int length;
     int i = 0;
@@ -196,56 +180,42 @@ public class VariableTable extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public void setDataset(NetcdfFile ds) {
     file = ds;
     try {
-      fds = new NetcdfDataset(file);
+      fds = NetcdfDatasets.enhance(file, NetcdfDataset.getDefaultEnhanceMode(), null);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  /**
-   *
-   */
   class VariableTableModel extends AbstractTableModel {
 
-    /**
-     *
-     */
     public void clear() {
       // TODO Auto-generated method stub
     }
 
-    /** */
     @Override
     public int getColumnCount() {
       return data.length + 1;
     }
 
-    /** */
     @Override
     public String getColumnName(int col) {
       return columnNames[col];
     }
 
-    /** */
     @Override
     public Class getColumnClass(int col) {
       return String.class;
     }
 
-    /** */
     @Override
     public int getRowCount() {
       return col0.size();
     }
 
-    /** */
     @Override
     public Object getValueAt(int row, int col) {
       if (col == 0) {
@@ -256,9 +226,6 @@ public class VariableTable extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public void createTable() {
     this.setLayout(new BorderLayout());
 
@@ -289,9 +256,6 @@ public class VariableTable extends JPanel {
     add(holderPanel, BorderLayout.PAGE_END);
   }
 
-  /**
-   *
-   */
   private void export() {
     String filename = fileChooser.chooseFilename();
 
@@ -351,16 +315,10 @@ public class VariableTable extends JPanel {
     fileChooser.save();
   }
 
-  /**
-   *
-   */
   static class DateRenderer extends DefaultTableCellRenderer {
     private CalendarDateFormatter newForm, oldForm;
     private CalendarDate cutoff;
 
-    /**
-     *
-     */
     DateRenderer() {
 
       oldForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
@@ -370,9 +328,6 @@ public class VariableTable extends JPanel {
       cutoff = now.add(-1, CalendarPeriod.Field.Year); // "now" time format within a year
     }
 
-    /**
-     *
-     */
     public void setValue(Object value) {
       if (value == null) {
         setText("");

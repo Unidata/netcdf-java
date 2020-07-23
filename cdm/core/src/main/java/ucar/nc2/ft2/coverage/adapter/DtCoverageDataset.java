@@ -16,6 +16,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -99,13 +100,13 @@ public class DtCoverageDataset implements Closeable {
    * @throws java.io.IOException on read error
    */
   public DtCoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
-    this.ncd = ncd;
-
-    // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
-    Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || enhance.isEmpty())
+    Set<Enhance> enhance = ncd.getEnhanceMode();
+    if (enhance == null || !enhance.contains(NetcdfDataset.Enhance.CoordSystems)) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
-    ncd.enhance(enhance);
+      this.ncd = NetcdfDatasets.enhance(ncd, enhance, null);
+    } else {
+      this.ncd = ncd;
+    }
 
     DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
     if (facc != null)
@@ -363,12 +364,6 @@ public class DtCoverageDataset implements Closeable {
 
   public void getDetailInfo(Formatter buff) {
     getInfo(buff);
-    buff.format("%n%n----------------------------------------------------%n");
-    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ncd)) {
-      buff.format("%s", info.getParseInfo());
-    } catch (IOException e) {
-      buff.format("NetcdfDatasetInfo failed");
-    }
     buff.format("%n%n----------------------------------------------------%n");
     buff.format("%s", ncd.toString());
     buff.format("%n%n----------------------------------------------------%n");

@@ -26,7 +26,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordSysBuilderIF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
@@ -42,6 +41,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -333,10 +333,7 @@ class FmrcDataset {
 
       result.finish();
 
-      // enhance the proto. becomes the template for coordSystems in the derived datasets
-      CoordSysBuilderIF builder = result.enhance();
-      if (debugEnhance)
-        System.out.printf("proto.enhance() parseInfo = %s%n", builder.getParseInfo());
+      result = NetcdfDatasets.enhance(result, NetcdfDataset.getDefaultEnhanceMode(), null);
 
       // turn it into a GridDataset, so we can add standard metadata to result, not dependent on CoordSysBuilder
       // also see ucar.nc2.dt.grid.NetcdfCFWriter - common code could be extracted
@@ -845,11 +842,6 @@ class FmrcDataset {
       }
     }
 
-    if (debugEnhance) {
-      CoordSysBuilderIF builder = result.enhance();
-      System.out.printf("GridDataset1D parseInfo = %s%n", builder.getParseInfo());
-    }
-
     return new ucar.nc2.dt.grid.GridDataset(result);
   }
 
@@ -1085,8 +1077,9 @@ class FmrcDataset {
 
     } else {
       NetcdfFile nc = NetcdfDatasets.acquireFile(DatasetUrl.create(null, location), null);
-      ncd = NcMLReader.mergeNcML(nc, config.innerNcml); // create new dataset
-      ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
+      NetcdfDataset.Builder builder = NcmlReader.mergeNcml(nc, config.innerNcml); // create new dataset
+      builder.setEnhanceMode(NetcdfDataset.getDefaultEnhanceMode());
+      ncd = builder.build();
     }
 
     if (openFiles != null && ncd != null) {

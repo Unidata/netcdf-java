@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasetInfo;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -136,18 +135,6 @@ public class MemoryCounterAgentTest {
     measureSize("rootGroup", root, null, false);
     for (Group g : root.getGroups())
       measureSize(g.getName(), g, null, false);
-  }
-
-  static void testNcd() throws IOException {
-    String filename = "C:/data/test2.nc";
-    try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename)) {
-      measureSize("C:/data/test2.nc", ncfile, null, true);
-
-      NetcdfDatasetInfo info = new NetcdfDatasetInfo(filename);
-      measureSize("info", info, null, true);
-      String pifo = info.getParseInfo();
-      System.out.println("info= " + pifo);
-    }
   }
 
   static void testN3() throws IOException {

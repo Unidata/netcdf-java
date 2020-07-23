@@ -37,10 +37,9 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.Grib;
@@ -59,9 +58,8 @@ public class TestGribEnsembles {
 
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/MOEASURGEENS20100709060002.grib";
     System.out.printf("Open %s%n", filename);
-    try (NetcdfFile datafile = NetcdfFiles.open(filename)) {
-      NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
-      GridDataset gridDataset = new GridDataset(netcdfDataset);
+    try (NetcdfDataset datafile = NetcdfDatasets.openDataset(filename)) {
+      GridDataset gridDataset = new GridDataset(datafile);
 
       String variableName = "VAR_10-3-192_L1";
 
@@ -113,9 +111,8 @@ public class TestGribEnsembles {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB";
     System.out.printf("Open %s%n", filename);
 
-    try (NetcdfFile datafile = NetcdfFiles.open(filename)) {
-      NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
-      GridDataset gridDataset = new GridDataset(netcdfDataset);
+    try (NetcdfDataset datafile = NetcdfDatasets.openDataset(filename)) {
+      GridDataset gridDataset = new GridDataset(datafile);
 
       String requiredName = "Total_precipitation_surface";
       GridDatatype gridDatatype = gridDataset.findGridDatatype(requiredName);
