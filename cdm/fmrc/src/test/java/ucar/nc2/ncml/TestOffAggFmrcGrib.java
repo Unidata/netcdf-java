@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.write.Ncdump;
@@ -60,7 +62,7 @@ public class TestOffAggFmrcGrib {
             4248.0, 4251.0, 4254.0, 4257.0, 4260.0, 4263.0, 4266.0, 4269.0, 4272.0, 4275.0, 4278.0, 4281.0, 4284.0,
             4287.0, 4290.0}};
 
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), location, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), location, null)) {
       logger.debug(showMem("Start "));
 
       testDimensions(ncfile, naggs, "time");
@@ -107,7 +109,7 @@ public class TestOffAggFmrcGrib {
         {18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0,
             72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0, 93.0, 96.0, 99.0, 102.0}};
 
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "AggFmrcGribRunseq.ncml", null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), "AggFmrcGribRunseq.ncml", null)) {
       int naggs = 4;
       String timeVarName = "time";
       String timeDimName = "time";

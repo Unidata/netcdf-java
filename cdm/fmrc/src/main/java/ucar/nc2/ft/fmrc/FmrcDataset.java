@@ -42,7 +42,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
 import ucar.nc2.internal.ncml.NcmlReader;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -411,8 +410,10 @@ class FmrcDataset {
       }
 
       // apply ncml if it exists
-      if (protoConfig.outerNcml != null)
-        NcMLReader.mergeNcMLdirect(result, protoConfig.outerNcml);
+      if (protoConfig.outerNcml != null) {
+        NetcdfDataset.Builder builder = NcmlReader.mergeNcml(result, protoConfig.outerNcml);
+        result = builder.build();
+      }
 
       return result;
 

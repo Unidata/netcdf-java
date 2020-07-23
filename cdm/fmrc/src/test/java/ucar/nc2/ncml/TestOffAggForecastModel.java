@@ -13,6 +13,8 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
@@ -41,15 +43,13 @@ public class TestOffAggForecastModel {
   public void testForecastModel() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestDir.cdmUnitTestDir + "ncml/offsite/aggForecastModel.xml";
     logger.debug(" TestOffAggForecastModel.testForecastModel=\n{}", ncml);
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
-
-    testDimensions(ncfile, nruns);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, nruns);
-    testReadData(ncfile, nruns, nfore);
-    testReadSlice(ncfile);
-
-    ncfile.close();
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
+      testDimensions(ncfile, nruns);
+      testCoordVar(ncfile);
+      testAggCoordVar(ncfile, nruns);
+      testReadData(ncfile, nruns, nfore);
+      testReadSlice(ncfile);
+    }
   }
 
   @Test
@@ -76,7 +76,7 @@ public class TestOffAggForecastModel {
     }
 
     logger.debug(" TestOffAggForecastModel.testForecastModel=\n{}", ncml);
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       logger.debug(" TestAggForecastModel.open {}", filename);
 
       testDimensions(ncfile, nruns - 1);
@@ -91,7 +91,7 @@ public class TestOffAggForecastModel {
     if (!ok)
       throw new IOException("cant rename file");
 
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       logger.debug(" TestAggForecastModel.open {}", filename);
 
       testDimensions(ncfile, nruns);

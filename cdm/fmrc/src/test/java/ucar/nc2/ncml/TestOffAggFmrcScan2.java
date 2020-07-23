@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.StringReader;
@@ -35,13 +36,11 @@ public class TestOffAggFmrcScan2 {
         + "  </aggregation>\n" + "</netcdf>";
 
     String filename = "fake:TestOffAggFmrcScan2/aggFmrcScan2.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
-    System.out.println(" TestAggForecastModel.open " + filename);
-    System.out.println("file=" + ncfile);
-
-    TestDir.readAllData(ncfile);
-
-    ncfile.close();
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
+      System.out.println(" TestAggForecastModel.open " + filename);
+      System.out.println("file=" + ncfile);
+      TestDir.readAllData(ncfile);
+    }
   }
 
   @Ignore("Cant use Fmrc on GRIB")
@@ -56,13 +55,11 @@ public class TestOffAggFmrcScan2 {
         + "  </aggregation>\n" + "</netcdf>";
 
     String filename = "fake:TestOffAggFmrcScan2/aggFmrcNomads.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
-    System.out.println(" TestAggForecastModel.open " + filename);
-    System.out.println("file=" + ncfile);
-
-    TestDir.readAllData(ncfile);
-
-    ncfile.close();
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
+      System.out.println(" TestAggForecastModel.open " + filename);
+      System.out.println("file=" + ncfile);
+      TestDir.readAllData(ncfile);
+    }
   }
 
 }

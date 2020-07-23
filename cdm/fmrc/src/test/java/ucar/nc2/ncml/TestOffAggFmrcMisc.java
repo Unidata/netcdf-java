@@ -35,7 +35,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.client.catalog.ServiceType;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
@@ -66,37 +65,33 @@ public class TestOffAggFmrcMisc {
         + "  <aggregation dimName='runtime' type='forecastModelRunCollection' timeUnitsChange='true'>\n"
         + "    <scan location='" + location + "' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />"
         + "  </aggregation>\n" + "</netcdf>";
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), location, null);
+   try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), location, null)) {
 
-    // make sure that scaling is applied
-    VariableDS vs = (VariableDS) ncfile.findVariable("hs");
-    Array data = vs.read("0,1,:,:)");
-    while (data.hasNext()) {
-      float val = data.nextFloat();
-      if (!vs.isMissing(val))
-        assert (val < 10.0) : val;
-      // System.out.printf("%f %n",val);
-    }
-
-    ncfile.close();
+     // make sure that scaling is applied
+     VariableDS vs = (VariableDS) ncfile.findVariable("hs");
+     Array data = vs.read("0,1,:,:)");
+     while (data.hasNext()) {
+       float val = data.nextFloat();
+       if (!vs.isMissing(val))
+         assert (val < 10.0) : val;
+     }
+   }
   }
 
   @Test
   public void testScaling2() throws Exception {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location + "fine.ncml");
-    NetcdfFile ncfile = NetcdfDatasets.acquireFile(durl, null);
+    try (NetcdfFile ncfile = NetcdfDatasets.acquireFile(durl, null)) {
+      // make sure that scaling is applied
+      VariableDS vs = (VariableDS) ncfile.findVariable("hs");
+      Array data = vs.read("0,1,:,:)");
+      while (data.hasNext()) {
+        float val = data.nextFloat();
+        if (!vs.isMissing(val))
+          assert (val < 10.0) : val;
+      }
 
-    // make sure that scaling is applied
-    VariableDS vs = (VariableDS) ncfile.findVariable("hs");
-    Array data = vs.read("0,1,:,:)");
-    while (data.hasNext()) {
-      float val = data.nextFloat();
-      if (!vs.isMissing(val))
-        assert (val < 10.0) : val;
-      // System.out.printf("%f %n",val);
     }
-
-    ncfile.close();
   }
 
 }
