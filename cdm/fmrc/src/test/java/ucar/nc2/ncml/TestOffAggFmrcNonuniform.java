@@ -12,6 +12,8 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.write.Ncdump;
@@ -37,14 +39,13 @@ public class TestOffAggFmrcNonuniform extends TestCase {
         + "    <scan location='" + TestDir.cdmUnitTestDir
         + "ncml/nc/ruc_conus40/' suffix='.grib1' enhance='true' dateFormatMark='RUC_CONUS_40km_#yyyyMMdd_HHmm'/>\n"
         + "  </aggregation>\n" + "</netcdf>";
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcNonuniform", null);
 
-    testDimensions(ncfile, 3, 113, 151);
-    testCoordVar(ncfile, 113);
-    testAggCoordVar(ncfile, 3);
-    testTimeCoordVar(ncfile, "time5", 3, 10);
-
-    ncfile.close();
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), "aggFmrcNonuniform", null)) {
+      testDimensions(ncfile, 3, 113, 151);
+      testCoordVar(ncfile, 113);
+      testAggCoordVar(ncfile, 3);
+      testTimeCoordVar(ncfile, "time5", 3, 10);
+    }
   }
 
   private void testDimensions(NetcdfFile ncfile, int nagg, int y, int x) {

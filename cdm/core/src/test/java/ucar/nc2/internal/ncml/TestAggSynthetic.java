@@ -22,7 +22,8 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.Assert2;
 
 /** Test netcdf dataset in the JUnit framework. */
@@ -32,7 +33,7 @@ public class TestAggSynthetic {
   @Test
   public void test1() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynthetic.xml";
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     Variable v = ncfile.findVariable("time");
     assert v != null;
@@ -52,7 +53,7 @@ public class TestAggSynthetic {
   @Test
   public void test2() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynthetic2.xml";
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -66,7 +67,7 @@ public class TestAggSynthetic {
   @Test
   public void test3() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynthetic3.xml";
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -80,7 +81,7 @@ public class TestAggSynthetic {
   @Test
   public void testNoCoord() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynNoCoord.xml";
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -94,7 +95,7 @@ public class TestAggSynthetic {
   @Test
   public void testNoCoordDir() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggSynNoCoordsDir.xml";
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -108,7 +109,7 @@ public class TestAggSynthetic {
   @Test
   public void testJoinNewScalarCoord() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggJoinNewScalarCoord.xml";
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
     Variable v = ncfile.findVariable("time");
     assert v != null;
@@ -137,7 +138,7 @@ public class TestAggSynthetic {
         + "</netcdf>"; // leavit
 
     String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggSynRename.xml";
-    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(xml), null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(xml), null, null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -150,16 +151,18 @@ public class TestAggSynthetic {
   @Test
   public void testScan() throws IOException, InvalidRangeException {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
-        + "  <variable name='time' type='int' shape='time'>\n"
-        + "    <attribute name='long_name' type='string' value='time coordinate' />\n"
-        + "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n"
-        + "    <values start='0' increment='10' />\n" + "  </variable>\n"
-        + "  <aggregation dimName='time' type='joinNew'>\n" + "    <variableAgg name='T'/>\n"
-        + "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" + "  </aggregation>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" //
+        + "  <variable name='time' type='int' shape='time'>\n" //
+        + "    <attribute name='long_name' type='string' value='time coordinate' />\n" //
+        + "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" //
+        + "    <values start='0' increment='10' />\n" //
+        + "  </variable>\n" //
+        + "  <aggregation dimName='time' type='joinNew'>\n" //
+        + "    <variableAgg name='T'/>\n" //
+        + "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" //
+        + "  </aggregation>\n" //
         + "</netcdf>";
 
-    String filename = "file:./" + TestNcmlRead.topDir + "aggSynScan.xml";
     NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(xml), null, null).build();
 
     testDimensions(ncfile);

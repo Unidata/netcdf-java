@@ -25,11 +25,7 @@ import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Test aggregation where timeUnitsChange='true'
- *
- * @author caron
- */
+/** Test aggregation where timeUnitsChange='true' */
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
@@ -44,28 +40,25 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     String location = TestDir.cdmUnitTestDir + "ncml/nc/namExtract/test_agg.ncml";
     logger.debug(" TestOffAggExistingTimeUnitsChange.open {}", location);
 
-    NetcdfFile ncfile = NetcdfDatasets.openFile(location, null);
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(location, null)) {
+      Variable v = ncfile.findVariable("time");
+      assert v != null;
+      assertThat(v.getDataType()).isEqualTo(DataType.DOUBLE);
 
-    Variable v = ncfile.findVariable("time");
+      String units = v.getUnitsString();
+      assert units != null;
+      CalendarDateUnit expectedCalendarDateUnit = CalendarDateUnit.of(null, "hours since 2006-09-25T06:00:00Z");
+      assertThat(units).ignoringCase().isEqualTo(expectedCalendarDateUnit.getUdUnit());
 
-    assert v != null;
-    assertThat(v.getDataType()).isEqualTo(DataType.DOUBLE);
+      int count = 0;
+      Array data = v.read();
+      logger.debug(Ncdump.printArray(data, "time", null));
 
-    String units = v.getUnitsString();
-    assert units != null;
-    CalendarDateUnit expectedCalendarDateUnit = CalendarDateUnit.of(null, "hours since 2006-09-25T06:00:00Z");
-    assertThat(units).ignoringCase().isEqualTo(expectedCalendarDateUnit.getUdUnit());
-
-    int count = 0;
-    Array data = v.read();
-    logger.debug(Ncdump.printArray(data, "time", null));
-
-    while (data.hasNext()) {
-      Assert2.assertNearlyEquals(data.nextInt(), (count + 1) * 3);
-      count++;
+      while (data.hasNext()) {
+        Assert2.assertNearlyEquals(data.nextInt(), (count + 1) * 3);
+        count++;
+      }
     }
-
-    ncfile.close();
   }
 
   public void testNarrGrib() throws IOException {
@@ -78,25 +71,23 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
     String location = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/narr/";
     logger.debug(" TestOffAggExistingTimeUnitsChange.testNarrGrib={}\n{}", location, ncml);
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), location, null)) {
+      Variable v = ncfile.findVariable("time");
+      assert v != null;
+      assert v.getDataType() == DataType.DOUBLE;
 
-    Variable v = ncfile.findVariable("time");
-    assert v != null;
-    assert v.getDataType() == DataType.DOUBLE;
+      String units = v.getUnitsString();
+      assert units != null;
+      assert units.equalsIgnoreCase("Hour since 2007-04-11T00:00:00Z") : units; // Hour since 2007-04-11T00:00:00.000Z
 
-    String units = v.getUnitsString();
-    assert units != null;
-    assert units.equalsIgnoreCase("Hour since 2007-04-11T00:00:00Z") : units; // Hour since 2007-04-11T00:00:00.000Z
+      int count = 0;
+      Array data = v.read();
+      logger.debug(Ncdump.printArray(data, "time", null));
 
-    int count = 0;
-    Array data = v.read();
-    logger.debug(Ncdump.printArray(data, "time", null));
-
-    while (data.hasNext()) {
-      assert data.nextInt() == count * 3;
-      count++;
+      while (data.hasNext()) {
+        assert data.nextInt() == count * 3;
+        count++;
+      }
     }
-
-    ncfile.close();
   }
 }

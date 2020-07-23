@@ -41,6 +41,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -61,7 +62,7 @@ public class TestNcMLStrides extends TestCase {
 
   public void setUp() {
     try {
-      ncfile = NcMLReader.readNcML(location, null);
+      ncfile = NetcdfDatasets.openDataset(location, false, null);
       // System.out.println("ncfile opened = "+location);
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
@@ -89,7 +90,7 @@ public class TestNcMLStrides extends TestCase {
       testStride("0:13:" + i);
   }
 
-  public void testStride(String stride) throws IOException, InvalidRangeException {
+  private void testStride(String stride) throws IOException, InvalidRangeException {
     Variable time = ncfile.findVariable("time");
     ArrayInt all = (ArrayInt) time.read();
 

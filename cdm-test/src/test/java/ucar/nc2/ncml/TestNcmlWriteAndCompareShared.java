@@ -21,11 +21,7 @@ import java.util.List;
 
 /**
  * TestWrite NcML, read back and compare with original.
- *
  * This is identical to TestNcmlWriteAndCompareLocal, except that we're using shared datasets.
- *
- * @author caron
- * @since 11/2/13
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)

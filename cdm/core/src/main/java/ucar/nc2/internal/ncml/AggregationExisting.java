@@ -408,8 +408,4 @@ class AggregationExisting extends AggregationOuter {
     return cacheName;
   }
 
-  //////////////////////////////////////////////////
-  // back door for testing
-  public static int countCacheUse;
-
 }

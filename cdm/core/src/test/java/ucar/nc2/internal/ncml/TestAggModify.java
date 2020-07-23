@@ -10,9 +10,9 @@ import java.lang.invoke.MethodHandles;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.ncml.TestNcmlRead;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 
 /** Test TestNcml - modifications aggregation features. */
 public class TestAggModify {
@@ -30,7 +30,7 @@ public class TestAggModify {
   public void testWithDateFormatMark() throws Exception {
     System.out.printf("ncml=%s%n", ncml);
     String filename = "file:" + TestNcmlRead.topDir + "testAggModify.ncml";
-    NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(ncml), filename, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null);
     System.out.println(" TestNcmlAggExisting.open " + filename + "\n" + ncfile);
 
     Variable v = ncfile.findVariable("T");

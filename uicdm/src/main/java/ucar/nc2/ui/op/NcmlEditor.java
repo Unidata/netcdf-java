@@ -5,19 +5,18 @@
 
 package ucar.nc2.ui.op;
 
-import java.nio.charset.StandardCharsets;
 import org.bounce.text.LineNumberMargin;
 import org.bounce.text.ScrollableEditorPanel;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
 import org.jdom2.Element;
-import ucar.nc2.NetcdfFileWriter.Version;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.write.NcmlWriter;
+import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
@@ -36,7 +35,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -302,17 +300,23 @@ public class NcmlEditor extends JPanel {
   void writeNetcdf(NetcdfOutputChooser.Data data) {
     String text = editor.getText();
 
-    try {
-      ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
-      Version version = NetcdfFormatWriter.convertToNetcdfFileWriterVersion(data.format);
-      NcMLReader.writeNcMLToFile(bis, data.outputFilename, version,
-          Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
-      JOptionPane.showMessageDialog(this, "File successfully written");
+    try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(text), null, null)) {
+      NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.builder().setFormat(data.format)
+          .setChunker(Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle)).setNewFile(true)
+          .setLocation(data.outputFilename);
+
+      NetcdfCopier copier = NetcdfCopier.create(ncd, writer);
+      try (NetcdfFile result = copier.write(null)) {
+        // empty
+      }
 
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(this, "ERROR: " + exc.getMessage());
       exc.printStackTrace();
+      return;
     }
+
+    JOptionPane.showMessageDialog(this, "File successfully written");
   }
 
   /**
@@ -321,7 +325,7 @@ public class NcmlEditor extends JPanel {
    */
   void doTransform(String text) {
     try (StringReader reader = new StringReader(text);
-        NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
+        NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(reader, null, null);
         StringWriter sw = new StringWriter(10000)) {
       ncd.writeNcml(sw, null);
       editor.setText(sw.toString());

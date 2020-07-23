@@ -24,7 +24,7 @@ import ucar.nc2.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/** Compare old and new NcmlReaders on specific problem datasets. */
+/** Compare NetcdfDatasets.openDataset with NcmlReader.readNcml on specific problem datasets. */
 @Category(NeedsCdmUnitTest.class)
 public class TestNcmlReaderProblems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -43,7 +43,7 @@ public class TestNcmlReaderProblems {
   private void compare(String ncmlLocation) throws IOException {
     System.out.printf("Compare NcMLReader.readNcML %s%n", ncmlLocation);
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
-    try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
+    try (NetcdfDataset org = NetcdfDatasets.openDataset(ncmlLocation, false, null)) {
       System.out.printf("NcMLReader == %s%n", org);
       try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
         System.out.printf("NcMLReaderNew == %s%n", withBuilder);
@@ -59,7 +59,7 @@ public class TestNcmlReaderProblems {
   private void compareVarData(String ncmlLocation, String varName) throws IOException {
     System.out.printf("Compare NcMLReader.readNcML %s%n", ncmlLocation);
     logger.info("TestNcmlReaders on {}%n", ncmlLocation);
-    try (NetcdfDataset org = NcMLReader.readNcML(ncmlLocation, null)) {
+    try (NetcdfDataset org = NetcdfDatasets.openDataset(ncmlLocation, false, null)) {
       Variable v = org.findVariable(varName);
       assert v != null;
       try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {

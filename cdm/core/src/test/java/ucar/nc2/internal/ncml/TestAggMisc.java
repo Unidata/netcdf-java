@@ -15,8 +15,8 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ncml.TestNcmlRead;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 
@@ -46,7 +46,7 @@ public class TestAggMisc {
 
     String location = "testNestedValues.ncml";
 
-    try (NetcdfFile ncfile = NcmlReader.readNcml(new StringReader(ncml), location, null).build()) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), location, null)) {
       TestDir.readAllData(ncfile);
 
       Variable v = ncfile.findVariable("time");

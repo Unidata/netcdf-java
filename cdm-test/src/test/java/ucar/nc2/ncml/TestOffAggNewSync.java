@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
@@ -40,34 +41,38 @@ public class TestOffAggNewSync {
     if (!TestOffAggUpdating.move(fname))
       System.out.printf("Move failed on %s%n", fname);
     System.out.printf("%s%n", aggExistingSync);
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, ntimes - 1);
-    ncfile.close();
+    try (NetcdfDataset ncfile =
+        NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null)) {
+      testAggCoordVar(ncfile, ntimes - 1);
+    }
 
     if (!TestOffAggUpdating.moveBack(fname))
       System.out.printf("Move back failed on %s%n", fname);
 
-    ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, ntimes);
-    ncfile.close();
+    try (NetcdfDataset ncfile =
+        NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null)) {
+      testAggCoordVar(ncfile, ntimes);
+    }
     System.out.printf("ok testMove%n");
   }
 
   @Test
   @Ignore("file in use - testing artifact")
   public void testRemove() throws IOException, InterruptedException {
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, ntimes);
-    System.out.println("");
-    ncfile.close();
+    try (NetcdfDataset ncfile =
+        NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null)) {
+      testAggCoordVar(ncfile, ntimes);
+      System.out.println("");
+    }
 
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     boolean ok = TestOffAggUpdating.move(fname);
     int nfiles = ok ? ntimes - 1 : ntimes; // sometimes fails
 
-    ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, nfiles);
-    ncfile.close();
+    try (NetcdfFile ncfile =
+        NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null)) {
+      testAggCoordVar(ncfile, nfiles);
+    }
 
     TestOffAggUpdating.moveBack(fname);
     System.out.printf("ok testRemove%n");
@@ -80,7 +85,7 @@ public class TestOffAggNewSync {
     if (!TestOffAggUpdating.move(fname))
       System.out.printf("Move failed on %s%n", fname);
 
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, ntimes - 1);
 
     if (!TestOffAggUpdating.moveBack(fname))
@@ -97,7 +102,7 @@ public class TestOffAggNewSync {
   @Test
   @Ignore("file in use - testing artifact")
   public void testSyncRemove() throws IOException, InterruptedException {
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
+    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, ntimes);
     System.out.println("");
 
@@ -117,7 +122,7 @@ public class TestOffAggNewSync {
       System.out.printf("ok testSyncRemove %n");
   }
 
-  public void testAggCoordVar(NetcdfFile ncfile, int n) throws IOException {
+  private void testAggCoordVar(NetcdfFile ncfile, int n) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
     assert time.getShortName().equals("time");

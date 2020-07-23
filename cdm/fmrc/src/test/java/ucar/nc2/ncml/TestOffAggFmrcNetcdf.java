@@ -28,20 +28,18 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   public void testNUWGdatasets() throws IOException, InvalidRangeException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/ncmodels/aggFmrcNetcdf.xml";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    logger.debug(" TestAggForecastModel.open: {}", filename);
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
+      logger.debug(" TestAggForecastModel.open: {}", filename);
 
-    int nagg = 15;
+      int nagg = 15;
 
-    testDimensions(ncfile, nagg);
-    testYCoordVar(ncfile);
-    testRunCoordVar(ncfile, nagg);
-    testTimeCoordVar(ncfile, nagg, 11);
-    testReadData(ncfile, nagg);
-    testReadSlice(ncfile);
-
-    ncfile.close();
-
+      testDimensions(ncfile, nagg);
+      testYCoordVar(ncfile);
+      testRunCoordVar(ncfile, nagg);
+      testTimeCoordVar(ncfile, nagg, 11);
+      testReadData(ncfile, nagg);
+      testReadSlice(ncfile);
+    }
   }
 
   private void testDimensions(NetcdfFile ncfile, int nagg) {

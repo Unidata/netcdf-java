@@ -15,8 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -26,12 +28,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Test aggregation cache is getting used
- *
- * @author caron
- * @since 5/21/2015
- */
+/** Test aggregation cache is getting used */
 @Category(NeedsCdmUnitTest.class)
 public class TestAggExistingCache {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -63,32 +60,32 @@ public class TestAggExistingCache {
     assert new File(cache.getRootDirectory()).exists();
 
     Aggregation.setPersistenceCache(cache);
-    AggregationExisting.countCacheUse = 0;
+    Aggregation.countCacheUse = 0;
 
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       System.out.println(" TestNcmlAggExisting.open " + filename);
       Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
       Assert.assertEquals(4, ATssta.getSize());
     }
-    Assert.assertEquals(0, AggregationExisting.countCacheUse);
-    AggregationExisting.countCacheUse = 0;
+    Assert.assertEquals(0, Aggregation.countCacheUse);
+    Aggregation.countCacheUse = 0;
 
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       System.out.println(" TestNcmlAggExisting.open " + filename);
       Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
       Assert.assertEquals(4, ATssta.getSize());
     }
-    Assert.assertEquals(8, AggregationExisting.countCacheUse);
+    Assert.assertEquals(8, Aggregation.countCacheUse);
   }
 
-  String ncml2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
+  private String ncml2 = "<?xml version='1.0' encoding='UTF-8'?>\n"
       + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
       + "    <aggregation dimName='time' type='joinExisting' timeUnitsChange='true'>\n"
       + "      <scan location='B:/CM2.1R' suffix='.nc' />\n" + "    </aggregation>\n" + "</netcdf>";
 
   @Ignore("files not available")
   @Test
-  public void testCacheTiming() throws IOException, InvalidRangeException {
+  public void testCacheTiming() throws IOException {
     String filename = "file:testCacheTiming.xml";
     System.out.printf("%s%n", filename);
 
@@ -104,31 +101,31 @@ public class TestAggExistingCache {
     assert new File(cache.getRootDirectory()).exists();
 
     Aggregation.setPersistenceCache(cache);
-    AggregationExisting.countCacheUse = 0;
+    Aggregation.countCacheUse = 0;
 
     long start = System.currentTimeMillis();
 
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml2), filename, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml2), filename, null)) {
       System.out.printf("%nTestNcmlAggExisting.open %s%n", filename);
       Variable time = ncfile.findVariable("time");
       System.out.printf(" Variable %s%n", time.getNameAndDimensions());
       time.read();
     }
-    System.out.printf(" countCacheUse = %d%n", AggregationExisting.countCacheUse);
+    System.out.printf(" countCacheUse = %d%n", Aggregation.countCacheUse);
 
     long took = System.currentTimeMillis() - start;
     System.out.printf(" first took %d msecs%n", took);
 
-    AggregationExisting.countCacheUse = 0;
+    Aggregation.countCacheUse = 0;
     start = System.currentTimeMillis();
 
-    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml2), filename, null)) {
+    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml2), filename, null)) {
       System.out.printf("%nTestNcmlAggExisting.open %s%n", filename);
       Variable time = ncfile.findVariable("time");
       System.out.printf(" Variable %s%n", time.getNameAndDimensions());
       time.read();
     }
-    System.out.printf(" countCacheUse = %d%n", AggregationExisting.countCacheUse);
+    System.out.printf(" countCacheUse = %d%n", Aggregation.countCacheUse);
     took = System.currentTimeMillis() - start;
     System.out.printf(" second took %d msecs%n", took);
   }

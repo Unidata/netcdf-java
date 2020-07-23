@@ -95,7 +95,7 @@ public class TestNcmlValues {
   @Test
   public void testIntVals() throws IOException {
     // build list of variables to test
-    List<Variable> varList = new ArrayList<Variable>();
+    List<Variable> varList = new ArrayList<>();
 
     for (String varName : intVarNames) {
       varList.add(ncfile.findVariable(varName));
@@ -105,7 +105,6 @@ public class TestNcmlValues {
       System.out.println("  " + var.getDescription());
       ArrayInt values = (ArrayInt) var.read();
 
-      assert null != var;
       assertArrayEquals(expectedIntShape, values.getShape());
       assert expectedIntLength == values.getSize();
       assertArrayEquals((int[]) values.get1DJavaArray(Integer.class),

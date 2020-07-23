@@ -23,7 +23,6 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Builder;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ncml.TestNcmlRead;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -39,7 +38,7 @@ public class TestAggExistingNew {
   public void testNcmlDirect() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggExisting.xml";
 
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
@@ -259,9 +258,9 @@ public class TestAggExistingNew {
   public void testNcmlAggExistingNoLeapCal() throws IOException {
     // with calendar = noleap, each year should have 365 days, even in a leap years
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingNoLeapCal.xml";
-
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
+
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
     int[] shape = timeVar.getShape();
@@ -287,9 +286,9 @@ public class TestAggExistingNew {
   public void testNcmlAggExistingAllLeapCal() throws IOException {
     // with calendar = all_leap, each year should have 366 days, even in non-leap years
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingAllLeapCal.xml";
-
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
+
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
     int[] shape = timeVar.getShape();
@@ -328,8 +327,9 @@ public class TestAggExistingNew {
   }
 
   private void testNcmlAggExisting30DayCals(String filename) throws IOException {
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
+
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
     int[] shape = timeVar.getShape();
@@ -356,9 +356,9 @@ public class TestAggExistingNew {
     // with calendar = Julian, 4 October 1582 was followed by 5 October 1582 (unlike gregorian, where 4 October
     // was followed by 15 October).
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingJulienCal.xml";
-
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
+
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
     int[] shape = timeVar.getShape();
@@ -415,8 +415,8 @@ public class TestAggExistingNew {
   public void testNcmlAggExistingGregorianCal() throws IOException {
     // with calendar = gregorian, 4 October 1582 was followed by 15 October 1582
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingGregorianCal.xml";
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
 
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
     logger.debug(" TestNcmlAggExisting.open {}", filename);
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
@@ -481,9 +481,9 @@ public class TestAggExistingNew {
     // with calendar = proleptic_gregorian, 1582 and 1583 should each have 365 days
     // (for a gregorian calendar, 1852 would only have 355
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingProlepticGregorianCal.xml";
-
-    NetcdfFile ncfile = NcmlReader.readNcml(filename, null, null).build();
+    NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename, false, null);
     logger.debug(" TestNcmlAggExisting.open {}", filename);
+
     Variable timeVar = ncfile.findVariable("time");
     assert timeVar != null;
     int[] shape = timeVar.getShape();
