@@ -305,7 +305,7 @@ public abstract class Aggregation implements AggregationIF {
     if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the coordinate
                                                                                    // systems
       ncDataset.clearCoordinateSystems();
-      ncDataset.enhance(ncDataset.getEnhanceMode());
+      // ncDataset.enhance(ncDataset.getEnhanceMode());
       ncDataset.finish();
     }
 
@@ -628,12 +628,12 @@ public abstract class Aggregation implements AggregationIF {
       }
 
       // must enhance
-      NetcdfDataset ds;
+      NetcdfDataset ds = null;
       if (ncfile instanceof NetcdfDataset) {
         ds = (NetcdfDataset) ncfile;
-        ds.enhance(enhance); // enhance "in place", ie modify the NetcdfDataset
+        // ds.enhance(enhance); // enhance "in place", ie modify the NetcdfDataset
       } else {
-        ds = new NetcdfDataset(ncfile, enhance); // enhance when wrapping
+        // ds = new NetcdfDataset(ncfile, enhance); // enhance when wrapping
       }
 
       if (debugOpenFile)

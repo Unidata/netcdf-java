@@ -290,7 +290,7 @@ public class NetcdfFiles {
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if read error
-   * @throws ClassNotFoundException cannat find iospClassName in thye class path
+   * @throws ClassNotFoundException cannat find iospClassName in the class path
    * @throws InstantiationException if class cannot be instantiated
    * @throws IllegalAccessException if class is not accessible
    */

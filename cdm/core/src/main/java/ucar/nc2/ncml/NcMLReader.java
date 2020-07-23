@@ -171,7 +171,7 @@ public class NcMLReader {
    * @throws IOException on read error
    */
   public static NetcdfDataset mergeNcML(NetcdfFile ref, Element parentElem) throws IOException {
-    NetcdfDataset targetDS = new NetcdfDataset(ref, null); // no enhance
+    NetcdfDataset targetDS = null; // new NetcdfDataset(ref, null); // no enhance
 
     NcMLReader reader = new NcMLReader();
     reader.readGroup(targetDS, targetDS, null, null, parentElem);
@@ -450,7 +450,7 @@ public class NcMLReader {
         } catch (Exception e) {
           throw new IOException(e);
         }
-        refds = new NetcdfDataset(ncfile, false);
+        // refds = new NetcdfDataset(ncfile, false);
       } else {
         refds = NetcdfDatasets.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
         // refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been
@@ -549,7 +549,7 @@ public class NcMLReader {
     Set<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     // if (mode == null)
     // mode = NetcdfDataset.getEnhanceDefault();
-    targetDS.enhance(mode);
+    // targetDS.enhance(mode);
 
     // optionally add record structure to netcdf-3
     String addRecords = netcdfElem.getAttributeValue("addRecords");

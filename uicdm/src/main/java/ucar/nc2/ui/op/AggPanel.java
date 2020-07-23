@@ -44,7 +44,7 @@ public class AggPanel extends OpPanel {
               return;
             }
             try {
-              NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+              NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
               ToolsUI.getToolsUI().openCoordSystems(ncd);
             } catch (IOException e1) {
               e1.printStackTrace();
@@ -56,7 +56,7 @@ public class AggPanel extends OpPanel {
             if (ncfile == null)
               return;
             try {
-              NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+              NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
               ToolsUI.getToolsUI().openGridDataset(ncd);
             } catch (IOException e1) {
               e1.printStackTrace();

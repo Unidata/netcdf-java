@@ -16,6 +16,7 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
 
@@ -37,7 +38,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    return new NetcdfDataset(ncfile);
+    return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
   }
 
   @Override
@@ -46,7 +47,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
 
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
+    NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
     return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 

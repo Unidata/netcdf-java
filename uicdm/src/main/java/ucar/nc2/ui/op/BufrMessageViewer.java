@@ -13,6 +13,7 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
@@ -636,7 +637,7 @@ public class BufrMessageViewer extends JPanel {
     iosp.open(raf, ncfile, m);
 
     // Wrap in a NetcdfDataset so that we can get "*DS" objects. But don't enhance.
-    return new NetcdfDataset(ncfile, false);
+    return NetcdfDatasets.enhance(ncfile, null, null);
   }
 
   private NetcdfFile makeBufrDataset() throws IOException {

@@ -14,6 +14,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib;
@@ -785,7 +786,7 @@ public class Grib1ReportPanel extends ReportPanel {
   private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
     try (NetcdfFile ncfile = NetcdfFiles.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
-      NetcdfDataset ncd = new NetcdfDataset(ncfile);
+      NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
       GridDataset grid = new GridDataset(ncd);
       for (GridDatatype dt : grid.getGrids()) {
         GridMatch gm = new GridMatch(grid, dt, false);
