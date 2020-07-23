@@ -16,6 +16,7 @@ import ucar.ma2.Array
 import ucar.ma2.DataType
 import ucar.nc2.*
 import ucar.nc2.dataset.NetcdfDataset
+import ucar.nc2.dataset.NetcdfDatasets
 import ucar.nc2.write.NcmlWriter
 
 import java.util.function.Predicate
@@ -265,7 +266,7 @@ recordsGroup/recordsStruct = UNREADABLE
         outFile.text == expectedNcmlResult
 
         when: "read in NcML file and create a NetcdfDataset"
-        NetcdfDataset readerDataset = NcMLReader.readNcML(outFile.toURI().toURL().toString(), null)
+        NetcdfDataset readerDataset = NetcdfDatasets.openDataset(outFile.toURI().toURL().toString(), false, null)
 
         and: "get the NcML representation of the dataset"
         readerDataset.setLocation(null)  // Leaving this non-null would screw up our comparison.
