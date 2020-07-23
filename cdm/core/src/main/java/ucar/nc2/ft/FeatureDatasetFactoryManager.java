@@ -230,8 +230,8 @@ public class FeatureDatasetFactoryManager {
    * @throws java.io.IOException on io error
    */
   @Nullable
-  public static FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task,
-      Formatter errlog) throws IOException {
+  public static FeatureDataset open(@Nullable FeatureType wantFeatureType, String location,
+      ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
 
     // special processing for thredds: datasets
     if (location.startsWith(DataFactory.SCHEME)) {
@@ -268,6 +268,9 @@ public class FeatureDatasetFactoryManager {
 
     // otherwise open as NetcdfDataset and run it through the FeatureDatasetFactories
     NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, task); // Open with enhancements
+    if (wantFeatureType != null && wantFeatureType.isPointFeatureType()) {
+      ncd = NetcdfDatasets.addNetcdf3RecordStructure(ncd);
+    }
     FeatureDataset fd = wrap(wantFeatureType, ncd, task, errlog);
     if (fd == null)
       ncd.close();
@@ -285,8 +288,8 @@ public class FeatureDatasetFactoryManager {
    * @return a subclass of FeatureDataset, or null if no suitable factory was found
    * @throws java.io.IOException on io error
    */
-  public static FeatureDataset wrap(FeatureType wantFeatureType, NetcdfDataset ncd, ucar.nc2.util.CancelTask task,
-      Formatter errlog) throws IOException {
+  public static FeatureDataset wrap(@Nullable FeatureType wantFeatureType, NetcdfDataset ncd,
+      ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     if (debug)
       System.out.println("wrap " + ncd.getLocation() + " want = " + wantFeatureType);
 

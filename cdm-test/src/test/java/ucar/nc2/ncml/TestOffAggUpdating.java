@@ -67,19 +67,24 @@ import java.nio.file.StandardCopyOption;
 public class TestOffAggUpdating {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  String dir = TestDir.cdmUnitTestDir + "agg/updating";
-  String location = dir + "agg/updating.ncml";
-  File dirFile = new File(dir);
-  String extraFile = dir + "/extra.nc";
+  private final String dir = TestDir.cdmUnitTestDir + "agg/updating";
+  private final String location = dir + "agg/updating.ncml";
+  private final File dirFile = new File(dir);
+  private final String extraFile = dir + "/extra.nc";
 
   String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"
-      + "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" + "         <scan location='"
-      + dir + "' suffix='*.nc' />\n" + "         <variable name='depth'>\n"
-      + "           <attribute name='coordinates' value='lon lat'/>\n" + "         </variable>\n"
-      + "         <variable name='wvh'>\n" + "           <attribute name='coordinates' value='lon lat'/>\n"
-      + "         </variable>\n" + "       </aggregation>\n"
-      + "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n" + "</netcdf>";
+      + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" //
+      + "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" //
+      + "         <scan location='" + dir + "' suffix='*.nc' />\n" //
+      + "         <variable name='depth'>\n" //
+      + "           <attribute name='coordinates' value='lon lat'/>\n" //
+      + "         </variable>\n" //
+      + "         <variable name='wvh'>\n" //
+      + "           <attribute name='coordinates' value='lon lat'/>\n" //
+      + "         </variable>\n" //
+      + "       </aggregation>\n" //
+      + "       <attribute name='Conventions' type='String' value='CF-1.0'/>\n" //
+      + "</netcdf>";
 
   @Before
   public void setup() {

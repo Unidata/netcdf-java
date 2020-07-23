@@ -2081,6 +2081,14 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       getDimensionNames().forEach(result::add);
     }
 
+    public boolean isUnlimited() {
+      for (Dimension d : dimensions) {
+        if (d.isUnlimited())
+          return true;
+      }
+      return false;
+    }
+
     public T setIsScalar() {
       this.dimensions = new ArrayList<>();
       return self();

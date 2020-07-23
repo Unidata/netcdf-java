@@ -7,11 +7,15 @@ import java.util.EnumSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import javax.annotation.Nullable;
+import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
+import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
@@ -203,6 +207,62 @@ public class NetcdfDatasets {
       DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
       return enhancer.enhance().build();
     }
+    return builder.build();
+  }
+
+  public static NetcdfDataset addNetcdf3RecordStructure(NetcdfDataset ncd) throws IOException {
+    if (ncd.getReferencedFile() == null) {
+      return ncd;
+    }
+    NetcdfFile orgFile = ncd.getReferencedFile();
+
+    // Is it a netcdf3 file?
+    if (orgFile.getIosp() == null || !(orgFile.getIosp() instanceof N3iospNew)) {
+      return ncd;
+    }
+
+    // Does it have an unlimited dimension ?
+    if (ncd.getUnlimitedDimension() == null) {
+      return ncd;
+    }
+
+    // Does it already have a record variable ?
+    if (ncd.findVariable("record") != null) {
+      return ncd;
+    }
+
+    // reopen the file adding the record Structure
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(orgFile.getLocation());
+    // LOOK we dont know if it was acquired or opened
+    // LOOK we dont know what the buffer size was
+    NetcdfFile ncfile = NetcdfDatasets.openFile(durl, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    NetcdfDataset.Builder builder = ncd.toBuilder().setOrgFile(ncfile);
+    ncd.close();
+
+    // does the following code need to go in NetcdfDataset.Builder?
+    Structure orgStructure = (Structure) ncfile.getRootGroup().findVariableLocal("record");
+    Dimension udim = ncfile.getUnlimitedDimension();
+    StructureDS.Builder<?> newStructure = StructureDS.builder().setName("record")
+        .setParentGroupBuilder(builder.rootGroup).setDimensionsByName(udim.getShortName());
+    newStructure.setOriginalVariable(orgStructure);
+
+    for (Variable.Builder vb : builder.rootGroup.vbuilders) {
+      vb.setNcfile(null);
+
+      Variable orgVar = ncfile.findVariable(vb.shortName);
+      VariableDS.Builder vdb = (VariableDS.Builder) vb;
+      vdb.setOriginalVariable(orgVar);
+      vdb.setProxyReader(null);
+
+      if (!vb.isUnlimited()) {
+        continue;
+      }
+      // set unlimited dimension to 0
+      VariableDS.Builder memberV = (VariableDS.Builder) vb.makeSliceBuilder(0, 0);
+      newStructure.addMemberVariable(memberV);
+    }
+    builder.rootGroup.addVariable(newStructure);
+
     return builder.build();
   }
 

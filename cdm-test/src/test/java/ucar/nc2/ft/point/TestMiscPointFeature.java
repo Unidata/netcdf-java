@@ -293,7 +293,6 @@ public class TestMiscPointFeature {
 
 
   // make sure that try/with tolerates a null return from FeatureDatasetFactoryManager
-
   @Test
   public void testTryWith() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "testWrite.nc";
