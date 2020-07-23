@@ -13,6 +13,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import ucar.nc2.dataset.NetcdfDatasets;
 
 /**
  * Test nc2 dods in the JUnit framework.
@@ -311,7 +312,7 @@ public class TestDODSStructureScalars {
   @Test
   public void testDODSwithDataset() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
-    NetcdfDataset ds = new NetcdfDataset(dodsfile, false);
+    NetcdfDataset ds = NetcdfDatasets.enhance(dodsfile, null, null);
 
     // bug in forming dods name
     Variable v = null;

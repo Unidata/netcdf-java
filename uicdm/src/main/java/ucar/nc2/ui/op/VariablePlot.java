@@ -41,6 +41,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.time.CalendarDate;
 import ucar.util.prefs.PreferencesExt;
@@ -202,8 +203,7 @@ public class VariablePlot extends JPanel {
     if (vUnit != null)
       p.getRangeAxis(ax).setLabel(vUnit.getStringValue());
 
-    NetcdfDataset fds = new NetcdfDataset(file);
-
+    NetcdfDataset fds = NetcdfDatasets.enhance(file, NetcdfDataset.getDefaultEnhanceMode(), null);
     CoordinateAxis1DTime tm;
     List<CalendarDate> dates = null;
     Array varXarray = null;

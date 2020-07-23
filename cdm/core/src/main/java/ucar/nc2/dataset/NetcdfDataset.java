@@ -14,7 +14,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -309,95 +308,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return missingDataIsMissing;
   }
 
-  /**
-   * Make NetcdfFile into NetcdfDataset with given enhance mode
-   *
-   * @param ncfile wrap this
-   * @param mode using this enhance mode (may be null, meaning no enhance)
-   * @return NetcdfDataset wrapping the given ncfile
-   * @throws IOException on io error
-   * @deprecated use NetcdfDatasets.wrap
-   */
-  @Deprecated
-  public static NetcdfDataset wrap(NetcdfFile ncfile, Set<Enhance> mode) throws IOException {
-    if (ncfile instanceof NetcdfDataset) {
-      NetcdfDataset ncd = (NetcdfDataset) ncfile;
-      if (!ncd.enhanceNeeded(mode))
-        return (NetcdfDataset) ncfile;
-    }
-
-    // enhancement requires wrappping, to not modify underlying dataset, eg if cached
-    // perhaps need a method variant that allows the ncfile to be modified
-    return new NetcdfDataset(ncfile, mode);
-  }
-
-  /**
-   * Enhancement use cases
-   * 1. open NetcdfDataset(enhance).
-   * 2. NcML - must create the NetcdfDataset, and enhance when its done.
-   *
-   * Enhance mode is set when
-   * 1) the NetcdfDataset is opened
-   * 2) enhance(EnumSet<Enhance> mode) is called.
-   *
-   * Possible remove all direct access to Variable.enhance
-   * 
-   * @deprecated use {@link NetcdfDatasets#enhance}
-   */
-  @Deprecated
-  private static CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask)
-      throws IOException {
-    if (mode == null) {
-      mode = EnumSet.noneOf(Enhance.class);
-    }
-
-    // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
-    CoordSysBuilderIF builder = null;
-    if (mode.contains(Enhance.CoordSystems) && !ds.enhanceMode.contains(Enhance.CoordSystems)) {
-      builder = ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-      builder.augmentDataset(ds, cancelTask);
-      ds.convUsed = builder.getConventionUsed();
-    }
-
-    // now enhance enum/scale/offset/unsigned, using augmented dataset
-    if ((mode.contains(Enhance.ConvertEnums) && !ds.enhanceMode.contains(Enhance.ConvertEnums))
-        || (mode.contains(Enhance.ConvertUnsigned) && !ds.enhanceMode.contains(Enhance.ConvertUnsigned))
-        || (mode.contains(Enhance.ApplyScaleOffset) && !ds.enhanceMode.contains(Enhance.ApplyScaleOffset))
-        || (mode.contains(Enhance.ConvertMissing) && !ds.enhanceMode.contains(Enhance.ConvertMissing))) {
-      for (Variable v : ds.getVariables()) {
-        VariableEnhanced ve = (VariableEnhanced) v;
-        ve.enhance(mode);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-      }
-    }
-
-    // now find coord systems which may change some Variables to axes, etc
-    if (builder != null) {
-      // temporarily set enhanceMode if incomplete coordinate systems are allowed
-      if (mode.contains(Enhance.IncompleteCoordSystems)) {
-        ds.addEnhanceMode(Enhance.IncompleteCoordSystems);
-        builder.buildCoordinateSystems(ds);
-        ds.removeEnhanceMode(Enhance.IncompleteCoordSystems);
-      } else {
-        builder.buildCoordinateSystems(ds);
-      }
-    }
-
-    /*
-     * timeTaxis must be CoordinateAxis1DTime
-     * for (CoordinateSystem cs : ds.getCoordinateSystems()) {
-     * cs.makeTimeAxis();
-     * }
-     */
-
-
-    ds.finish(); // recalc the global lists
-    ds.addEnhanceModes(mode);
-
-    return builder;
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -645,55 +555,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Transform a NetcdfFile into a NetcdfDataset, with default enhancement.
-   * You must not use the underlying NetcdfFile after this call, because it gets modified.
-   * Therefore you should not use this with a cached file.
-   *
-   * @param ncfile NetcdfFile to transform.
-   * @throws java.io.IOException on read error
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public NetcdfDataset(NetcdfFile ncfile) throws IOException {
-    this(ncfile, defaultEnhanceMode);
-  }
-
-  /**
-   * Transform a NetcdfFile into a NetcdfDataset, optionally enhance it.
-   * You must not use the original NetcdfFile after this call.
-   *
-   * @param ncfile NetcdfFile to transform, do not use independently after this.
-   * @param enhance if true, enhance with defaultEnhanceMode
-   * @throws java.io.IOException on read error
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public NetcdfDataset(NetcdfFile ncfile, boolean enhance) throws IOException {
-    this(ncfile, enhance ? defaultEnhanceMode : null);
-  }
-
-  /**
-   * Transform a NetcdfFile into a NetcdfDataset, optionally enhance it.
-   * You must not use the original NetcdfFile after this call.
-   *
-   * @param ncfile NetcdfFile to transform, do not use independently after this.
-   * @param mode set of enhance modes. If null, then none
-   * @throws java.io.IOException on read error
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public NetcdfDataset(NetcdfFile ncfile, Set<Enhance> mode) throws IOException {
-    super(ncfile);
-
-    this.orgFile = ncfile;
-    this.iosp = null; // has a orgFile, not an iosp
-    convertGroup(getRootGroup(), ncfile.getRootGroup());
-    finish(); // build global lists
-
-    enhance(this, mode, null);
-  }
-
   private void convertGroup(Group g, Group from) {
     for (EnumTypedef et : from.getEnumTypedefs())
       g.addEnumeration(et);
@@ -912,30 +773,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (!(v instanceof VariableDS) && !(v instanceof StructureDS))
       throw new IllegalArgumentException("NetcdfDataset variables must be VariableEnhanced objects");
     return super.addVariable(g, v);
-  }
-
-  /**
-   * recalc enhancement info - use default enhance mode
-   *
-   * @return the CoordSysBuilder used, for debugging. do not modify or retain a reference
-   * @throws java.io.IOException on error
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public CoordSysBuilderIF enhance() throws IOException {
-    return enhance(this, defaultEnhanceMode, null);
-  }
-
-  /**
-   * recalc enhancement info
-   *
-   * @param mode how to enhance
-   * @throws java.io.IOException on error
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void enhance(Set<Enhance> mode) throws IOException {
-    enhance(this, mode, null);
   }
 
   /**

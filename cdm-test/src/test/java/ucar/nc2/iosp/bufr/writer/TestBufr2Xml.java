@@ -6,6 +6,7 @@ import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.unidata.io.RandomAccessFile;
@@ -30,7 +31,7 @@ public class TestBufr2Xml {
           continue;
         byte[] mbytes = scan.getMessageBytesFromLast(message);
         NetcdfFile ncfile = NetcdfFiles.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
-        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+        NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
         new Bufr2Xml(message, ncd, out, true);
         out.close();
         count++;

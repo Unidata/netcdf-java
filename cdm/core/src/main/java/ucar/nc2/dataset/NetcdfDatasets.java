@@ -183,9 +183,9 @@ public class NetcdfDatasets {
   /**
    * Make NetcdfFile into NetcdfDataset and enhance if needed
    *
-   * @param ncfile wrap this
+   * @param ncfile wrap this NetcdfFile or NetcdfDataset.
    * @param mode using this enhance mode (may be null, meaning no enhance)
-   * @return NetcdfDataset.Builder wrapping the given ncfile
+   * @return a new NetcdfDataset that wraps the given NetcdfFile or NetcdfDataset.
    * @throws IOException on io error
    */
   public static NetcdfDataset enhance(NetcdfFile ncfile, @Nullable Set<Enhance> mode, @Nullable CancelTask cancelTask)

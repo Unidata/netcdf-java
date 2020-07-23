@@ -21,7 +21,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -86,8 +86,9 @@ public class GridDatasetInv {
 
         } else {
           NetcdfFile nc = NetcdfDatasets.acquireFile(DatasetUrl.create(null, mfile.getPath()), null);
-          NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
-          ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
+          NetcdfDataset.Builder builder = NcmlReader.mergeNcml(nc, ncml); // create new dataset
+          builder.setEnhanceMode(NetcdfDataset.getDefaultEnhanceMode());
+          NetcdfDataset ncd = builder.build();
           gds = new GridDataset(ncd);
         }
 

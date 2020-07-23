@@ -104,12 +104,13 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
    * @throws java.io.IOException on read error
    */
   public GridDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
-    this.ncd = ncd;
-    // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
     Set<Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || enhance.isEmpty())
+    if (enhance == null || !enhance.contains(NetcdfDataset.Enhance.CoordSystems)) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
-    ncd.enhance(enhance);
+      this.ncd = NetcdfDatasets.enhance(ncd, enhance, null);
+    } else {
+      this.ncd = ncd;
+    }
 
     // look for geoGrids
     if (parseInfo != null)
@@ -403,14 +404,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   public void getDetailInfo(Formatter buff) {
     getInfo(buff);
-    buff.format("%n%n----------------------------------------------------%n");
-    try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ncd)) {
-      buff.format("%s%n", info.writeXML());
-      buff.format("------------------------------------------");
-      buff.format("%s", info.getParseInfo());
-    } catch (IOException e) {
-      buff.format("NetcdfDatasetInfo failed");
-    }
     buff.format("%n%n----------------------------------------------------%n");
     buff.format("%s", ncd.toString());
     buff.format("%n%n----------------------------------------------------%n");
