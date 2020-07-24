@@ -25,7 +25,7 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.iosp.hdf4.HdfEos;
+import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.Sinusoidal;

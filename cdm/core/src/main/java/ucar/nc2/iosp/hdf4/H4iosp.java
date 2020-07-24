@@ -5,6 +5,7 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.internal.iosp.hdf4.TagEnum;
 import ucar.nc2.iosp.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;

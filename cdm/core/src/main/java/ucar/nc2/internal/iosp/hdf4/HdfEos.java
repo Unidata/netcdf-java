@@ -18,7 +18,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
@@ -27,7 +26,6 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.iosp.hdf4.ODLparser;
 
 /**
  * Parse structural metadata from HDF-EOS.

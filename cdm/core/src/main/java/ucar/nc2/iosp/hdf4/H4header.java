@@ -6,6 +6,8 @@ package ucar.nc2.iosp.hdf4;
 
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.iosp.hdf4.H4type;
+import ucar.nc2.internal.iosp.hdf4.TagEnum;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;

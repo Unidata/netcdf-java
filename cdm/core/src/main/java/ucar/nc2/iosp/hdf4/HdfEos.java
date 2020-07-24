@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Formatter;
 import org.jdom2.Element;
+import ucar.nc2.internal.iosp.hdf4.ODLparser;
 
 /**
  * Parse structural metadata from HDF-EOS.
