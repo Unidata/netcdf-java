@@ -53,7 +53,7 @@ public class TestNc4Misc {
 
   @Test
   public void testUnlimitedDimension() throws IOException, InvalidRangeException {
-    String location = "C:/temp/testUnlimitedDimension.nc4"; // tempFolder.newFile().getAbsolutePath();
+    String location = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, location, null);
     System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());

@@ -26,13 +26,11 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
- * Test that the CDM Index Creation works
- *
- * @author caron
- * @since 11/14/2014
+ * Test that the CDM Index Creation works.
+ * Jenkins seems to recreate indices, and so needs this to be on?
  */
 @Category(NeedsCdmUnitTest.class)
-@Ignore("too long")
+// @Ignore("too long")
 public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
