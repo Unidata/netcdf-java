@@ -97,7 +97,7 @@ public class TestNc4JniReadCompare {
   }
 
   private NetcdfFile openJni(String location) throws IOException {
-    Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
+    Nc4Iosp iosp = new Nc4Iosp();
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");
     iosp.open(raf, ncfile, null);

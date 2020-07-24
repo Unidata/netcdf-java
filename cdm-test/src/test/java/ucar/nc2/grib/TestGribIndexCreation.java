@@ -32,7 +32,7 @@ import java.util.Formatter;
  * @since 11/14/2014
  */
 @Category(NeedsCdmUnitTest.class)
-// @Ignore("too long")
+@Ignore("too long")
 public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
