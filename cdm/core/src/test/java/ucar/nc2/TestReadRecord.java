@@ -154,7 +154,7 @@ public class TestReadRecord {
   @Test
   public void testNC3ReadRecordStridedOld() throws InvalidRangeException, IOException {
     // record variable
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       Variable record = ncfile.findVariable("record");
       assert record instanceof Structure;

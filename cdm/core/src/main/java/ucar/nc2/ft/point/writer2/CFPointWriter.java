@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -312,9 +311,14 @@ public class CFPointWriter {
     @Parameter(names = {"-o", "--output"}, description = "Output file.", required = true)
     File outputFile;
 
+    @Parameter(names = {"-v", "--version"},
+        description = "Output file format (deprecated: use --format). Allowed values = "
+            + "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
+    public String version = null;
+
     @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = "
-        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
-    public NetcdfFileWriter.Version format = NetcdfFileWriter.Version.netcdf3;
+        + "[NETCDF3, NETCDF3_64BIT_OFFSET, NETCDF4, NETCDF4_CLASSIC, NETCDF3_64BIT_DATA, NCSTREAM]")
+    public NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
 
     @Parameter(names = {"-st", "--strategy"},
         description = "Chunking strategy. Only used in NetCDF 4. " + "Allowed values = [standard, grib, none]")
@@ -330,7 +334,6 @@ public class CFPointWriter {
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
     public boolean help;
-
 
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
       // Display parameters in this order in the usage information.
@@ -368,8 +371,14 @@ public class CFPointWriter {
     }
 
     public CFPointWriterConfig getCFPointWriterConfig() {
-      return CFPointWriterConfig.builder().setFormat(NetcdfFormatWriter.convertToNetcdfFileFormat(format))
-          .setChunking(getNc4Chunking()).build();
+
+      if (version != null) {
+        NetcdfFileFormat f = NetcdfFileFormat.convertVersionToFormat(version);
+        if (f != null) {
+          format = f;
+        }
+      }
+      return CFPointWriterConfig.builder().setFormat(format).setChunking(getNc4Chunking()).build();
     }
   }
 

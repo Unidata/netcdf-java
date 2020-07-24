@@ -12,8 +12,10 @@ import ucar.ma2.DataType
 import ucar.nc2.Attribute
 import ucar.nc2.Dimension
 import ucar.nc2.NetcdfFile
-import ucar.nc2.NetcdfFileWriter
+import ucar.nc2.NetcdfFiles
 import ucar.nc2.Variable
+import ucar.nc2.write.NetcdfFileFormat
+import ucar.nc2.write.NetcdfFormatWriter
 
 /**
  * Tests miscellaneous aspects of Nc4Iosp.
@@ -38,7 +40,7 @@ class Nc4IospMiscSpec extends Specification {
         assert file.exists()
         
         and: "open it as a NetcdfFile using Nc4Iosp"
-        NetcdfFile ncFile = NetcdfFile.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
+        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
         
         and: "grab the Nc4Iosp instance within so that we can test Nc4Iosp.readDataSection()"
         Nc4Iosp nc4Iosp = ncFile.iosp as Nc4Iosp
@@ -75,7 +77,7 @@ class Nc4IospMiscSpec extends Specification {
         assert file.exists()
     
         and: "open it as a NetcdfFile using Nc4Iosp"
-        NetcdfFile ncFile = NetcdfFile.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
+        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
     
         and: "find unlimited dimensions"
         Dimension primary1Dim = ncFile.findDimension("/group1/primary")
@@ -95,24 +97,26 @@ class Nc4IospMiscSpec extends Specification {
         setup: "create temp file that will be deleted after test by TemporaryFolder @Rule"
         File tempFile = new File(tempFolder.root, "Nc4IospMiscSpec.nc4")
 
-        and: "open a NetcdfFileWriter that will write NetCDF-4 to tempFile"
-        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, tempFile.absolutePath)
+        and: "open a NetcdfFormatWriter that will write NetCDF-4 to tempFile"
+        NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, tempFile.absolutePath, null);
 
         and: "add an unlimited dimension and create the file on disk"
-        Dimension dimBefore = ncWriter.addDimension(null, "dim", 3, true, false)
-        ncWriter.create()
+        Dimension dimBefore = Dimension.builder( "dim", 3).setIsUnlimited(true).build();
+        writerb.addDimension( dimBefore);
+
+        NetcdfFormatWriter writer = writerb.build();
 
         and: "close the file for writing and reopen it for reading"
-        ncWriter.close()
-        NetcdfFile ncFile = NetcdfFile.open(tempFile.absolutePath)
+        writer.close()
+        NetcdfFile ncFile = NetcdfFiles.open(tempFile.absolutePath)
 
         expect: "the dimension is the same after the write/read round-trip"
-        Dimension dimAfter = ncFile.findDimension(dimBefore.fullName)
+        Dimension dimAfter = ncFile.findDimension(dimBefore.getShortName())
         // Failed prior to fix, because dimAfter was not unlimited.
         dimBefore.equals dimAfter
 
         cleanup: "close writer and reader"
-        ncWriter?.close()  // Under normal circumstances, this will already be closed. Luckily method is idempotent.
+        writer?.close()  // Under normal circumstances, this will already be closed. Luckily method is idempotent.
         ncFile?.close()
     }
 
@@ -120,31 +124,31 @@ class Nc4IospMiscSpec extends Specification {
         setup: "create temp file that will be deleted after test by TemporaryFolder @Rule"
         File tempFile = new File(tempFolder.root, "Nc4IospMiscSpec.nc4")
 
-        and: "open a NetcdfFileWriter that will write NetCDF-4 to tempFile"
-        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, tempFile.absolutePath)
+        and: "open a NetcdfFormatWriter that will write NetCDF-4 to tempFile"
+        NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, tempFile.absolutePath, null);
 
         and: "add a numerical valued attribute with a null value"
-        Attribute attrNum = new Attribute("nullvalnum", DataType.INT)
-        Attribute attrNumBefore = ncWriter.addGlobalAttribute(attrNum)
+        Attribute attrNumBefore = new Attribute("nullvalnum", DataType.INT)
+        writerb.addAttribute(attrNumBefore)
 
         and: "add a string valued attribute with a null value"
-        Attribute attrStr = new Attribute("nullvalstr", DataType.STRING)
-        Attribute attrStrBefore = ncWriter.addGlobalAttribute(attrStr)
+        Attribute attrStrBefore = new Attribute("nullvalstr", DataType.STRING)
+        writerb.addAttribute(attrStrBefore)
 
         and: "add a character valued attribute with a null value"
-        Attribute attrChar = new Attribute("nullvalchar", DataType.CHAR)
-        Attribute attrCharBefore = ncWriter.addGlobalAttribute(attrChar)
+        Attribute attrCharBefore = new Attribute("nullvalchar", DataType.CHAR)
+        writerb.addAttribute(attrCharBefore)
 
         and: "add a character valued attribute with a specific null char value"
-        Attribute attrNullChar = new Attribute("nullcharvalchar", DataType.CHAR)
         Array attrNullCharValue = ArrayChar.makeFromString("\0", 1);
-        attrNullChar.setValues(attrNullCharValue)
-        Attribute attrNullCharBefore = ncWriter.addGlobalAttribute(attrNullChar)
-        ncWriter.create()
+        Attribute attrNullCharBefore = Attribute.builder("nullcharvalchar").setDataType(DataType.CHAR).setValues(attrNullCharValue).build();
+        writerb.addAttribute(attrNullCharBefore)
+
+        NetcdfFormatWriter writer = writerb.build();
 
         and: "close the file for writing and reopen it for reading"
-        ncWriter.close()
-        NetcdfFile ncFile = NetcdfFile.open(tempFile.absolutePath)
+        writer.close()
+        NetcdfFile ncFile = NetcdfFiles.open(tempFile.absolutePath)
 
         expect: "the value of the attributes are null"
         Attribute attrNumAfter = ncFile.findGlobalAttribute(attrNumBefore.fullName)
@@ -166,7 +170,7 @@ class Nc4IospMiscSpec extends Specification {
         attrNullCharBefore.equals(attrNullCharAfter)
 
         cleanup: "close writer and reader"
-        ncWriter?.close()  // Under normal circumstances, this will already be closed. Luckily method is idempotent.
+        writer?.close()  // Under normal circumstances, this will already be closed. Luckily method is idempotent.
         ncFile?.close()
     }
 }

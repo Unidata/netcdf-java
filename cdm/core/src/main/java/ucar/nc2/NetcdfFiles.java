@@ -310,7 +310,8 @@ public class NetcdfFiles {
     ucar.unidata.io.RandomAccessFile raf =
         ucar.unidata.io.RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
 
-    NetcdfFile result = build(spi, raf, location, cancelTask);
+    NetcdfFile result =
+        spi.isBuilder() ? build(spi, raf, location, cancelTask) : new NetcdfFile(spi, raf, location, cancelTask);
 
     // send after iosp is opened
     if (iospMessage != null)
@@ -690,7 +691,7 @@ public class NetcdfFiles {
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
 
-    return build(spi, raf, name, null);
+    return spi.isBuilder() ? build(spi, raf, name, null) : new NetcdfFile(spi, raf, name, null);
   }
 
   /**
@@ -870,7 +871,7 @@ public class NetcdfFiles {
    * @param vname the name
    * @return escaped version of it
    */
-  private static String makeValidPathName(String vname) {
+  public static String makeValidPathName(String vname) {
     return EscapeStrings.backslashEscape(vname, reservedFullName);
   }
 

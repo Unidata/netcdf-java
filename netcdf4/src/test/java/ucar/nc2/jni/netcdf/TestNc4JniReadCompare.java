@@ -75,7 +75,7 @@ public class TestNc4JniReadCompare {
   @Test
   public void compareDatasets() throws IOException {
 
-    try (NetcdfFile ncfile = NetcdfFile.open(filename); NetcdfFile jni = openJni(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfFile jni = openJni(filename)) {
       jni.setLocation(filename + " (jni)");
       System.err.println("Test input: " + ncfile.getLocation());
       System.err.println("Baseline: " + jni.getLocation());
@@ -97,7 +97,7 @@ public class TestNc4JniReadCompare {
   }
 
   private NetcdfFile openJni(String location) throws IOException {
-    Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
+    Nc4Iosp iosp = new Nc4Iosp();
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");
     iosp.open(raf, ncfile, null);

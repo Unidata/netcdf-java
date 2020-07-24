@@ -9,7 +9,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants.FeatureType;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class RuntimeConfigParser {
           String className = elem.getAttributeValue("class");
 
           try {
-            NetcdfFile.registerIOProvider(className);
+            NetcdfFiles.registerIOProvider(className);
           } catch (ClassNotFoundException e) {
             errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
           } catch (Exception e) {
@@ -292,7 +292,7 @@ public class RuntimeConfigParser {
             try {
               // Registers Nc4Iosp in front of all the other IOSPs already registered in NetcdfFile.<clinit>().
               // Crucially, this means that we'll try to open a file with Nc4Iosp before we try it with H5iosp.
-              NetcdfFile.registerIOProvider(nc4IospClassName);
+              NetcdfFiles.registerIOProvider(nc4IospClassName);
             } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
               errlog.append(String.format("Could not register IOSP '%s': %s%n", nc4IospClassName, e.getMessage()));
             }

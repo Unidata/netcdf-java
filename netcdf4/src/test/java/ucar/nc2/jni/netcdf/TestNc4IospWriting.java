@@ -16,6 +16,9 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.NetcdfCopier;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.*;
@@ -23,10 +26,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
- * Test copying files to netcdf4 with FileWriter2.
- * Compare original.
+ * Test copying files to netcdf4 with NetcdfCopier. Compare original.
  */
 public class TestNc4IospWriting {
+
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
@@ -48,8 +51,8 @@ public class TestNc4IospWriting {
     File fin = new File(TestDir.cdmUnitTestDir + "formats/netcdf3/longOffset.nc");
     String datasetOut = tempFolder.newFile().getAbsolutePath();
 
-    copyFile(fin.getAbsolutePath(), datasetOut, NetcdfFileWriter.Version.netcdf3);
-    copyFile(fin.getAbsolutePath(), datasetOut, NetcdfFileWriter.Version.netcdf4);
+    copyFile(fin.getAbsolutePath(), datasetOut, NetcdfFileFormat.NETCDF3);
+    copyFile(fin.getAbsolutePath(), datasetOut, NetcdfFileFormat.NETCDF4);
   }
 
   @Test
@@ -121,33 +124,40 @@ public class TestNc4IospWriting {
   }
 
   private class MyAct implements TestDir.Act {
+
     public int doAct(String datasetIn) throws IOException {
       String datasetOut = tempFolder.newFile().getAbsolutePath();
 
-      if (!copyFile(datasetIn, datasetOut, NetcdfFileWriter.Version.netcdf4))
+      if (!copyFile(datasetIn, datasetOut, NetcdfFileFormat.NETCDF4)) {
         countNotOK++;
+      }
       return 1;
     }
   }
 
   private class MyFileFilter implements FileFilter {
+
     @Override
     public boolean accept(File pathname) {
-      if (pathname.getName().equals("tst_opaque_data.nc4"))
+      if (pathname.getName().equals("tst_opaque_data.nc4")) {
         return false;
-      if (pathname.getName().equals("tst_opaques.nc4"))
+      }
+      if (pathname.getName().equals("tst_opaques.nc4")) {
         return false;
-      if (pathname.getName().endsWith(".ncml"))
+      }
+      if (pathname.getName().endsWith(".ncml")) {
         return false;
+      }
       return true;
     }
   }
 
-  private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileWriter.Version version) throws IOException {
+  private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileFormat format) throws IOException {
     System.out.printf("TestNc4IospWriting copy %s to %s%n", datasetIn, datasetOut);
     try (NetcdfFile ncfileIn = ucar.nc2.NetcdfFiles.open(datasetIn, null)) {
-      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
-      try (NetcdfFile ncfileOut = writer2.write()) {
+      NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.builder().setLocation(datasetOut).setFormat(format);
+      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, writer);
+      try (NetcdfFile ncfileOut = copier.write(null)) {
         compare(ncfileIn, ncfileOut, false, false, true);
       }
     }
@@ -160,11 +170,11 @@ public class TestNc4IospWriting {
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
     boolean ok = tc.compare(nc1, nc2, new CompareNetcdf2.Netcdf4ObjectFilter());
     System.out.printf(" %s compare %s to %s ok = %s%n", ok ? "" : "***", nc1.getLocation(), nc2.getLocation(), ok);
-    if (!ok)
+    if (!ok) {
       System.out.printf(" %s%n", f);
+    }
     return ok;
   }
-
 
   /////////////////////////////////////////////////
 
@@ -172,27 +182,22 @@ public class TestNc4IospWriting {
   @Test
   public void writeSubset() throws IOException, InvalidRangeException {
     String fname = tempFolder.newFile().getAbsolutePath();
-    try (NetcdfFileWriter ncFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fname)) {
-      // Create shared, unlimited Dimension
-      ncFile.addDimension(null, "x", 5);
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, fname, null);
 
-      // Create a float Variable
-      Variable arr = ncFile.addVariable(null, "arr", DataType.FLOAT, "x");
+    writerb.addDimension(new Dimension("x", 5));
+    writerb.addVariable("arr", DataType.FLOAT, "x");
 
-      // Create file and exit redefine
-      ncFile.create();
-
-      // Create an array of data and subset
+    try (NetcdfFormatWriter writer = writerb.build()) {
       float[] data = new float[] {1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f};
       Array arrData = Array.factory(DataType.FLOAT, new int[] {10}, data);
       Array subArr = arrData.sectionNoReduce(new int[] {1}, new int[] {5}, new int[] {2});
 
-      // Write data to file
-      ncFile.write(arr, subArr);
+      // Write subsetted array
+      writer.write("arr", subArr);
     }
 
     // Make sure file has what we expect
-    try (NetcdfFile ncFile = NetcdfFile.open(fname)) {
+    try (NetcdfFile ncFile = NetcdfFiles.open(fname)) {
       Variable arr = ncFile.getRootGroup().findVariableLocal("arr");
       Assert.assertEquals(5, arr.getSize());
       Array arrData = arr.read();

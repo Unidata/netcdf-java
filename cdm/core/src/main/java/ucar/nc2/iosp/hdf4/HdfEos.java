@@ -168,7 +168,7 @@ public class HdfEos {
           log.warn("No SwathName element in {} {} ", elemSwath.getName(), ncfile.getLocation());
           continue;
         }
-        String swathName = NetcdfFile.makeValidCdmObjectName(swathNameElem.getText().trim());
+        String swathName = NetcdfFiles.makeValidCdmObjectName(swathNameElem.getText().trim());
         Group swathGroup = findGroupNested(rootg, swathName);
         // if (swathGroup == null)
         // swathGroup = findGroupNested(rootg, H4header.createValidObjectName(swathName));
@@ -191,7 +191,7 @@ public class HdfEos {
           log.warn("No GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
           continue;
         }
-        String gridName = NetcdfFile.makeValidCdmObjectName(gridNameElem.getText().trim());
+        String gridName = NetcdfFiles.makeValidCdmObjectName(gridNameElem.getText().trim());
         Group gridGroup = findGroupNested(rootg, gridName);
         // if (gridGroup == null)
         // gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
@@ -247,7 +247,7 @@ public class HdfEos {
     List<Element> dims = d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText().trim();
-      name = NetcdfFile.makeValidCdmObjectName(name);
+      name = NetcdfFiles.makeValidCdmObjectName(name);
 
       if (name.equalsIgnoreCase("scalar")) {
         continue;
@@ -283,9 +283,9 @@ public class HdfEos {
     List<Element> dimMaps = dmap.getChildren();
     for (Element elem : dimMaps) {
       String geoDimName = elem.getChild("GeoDimension").getText().trim();
-      geoDimName = NetcdfFile.makeValidCdmObjectName(geoDimName);
+      geoDimName = NetcdfFiles.makeValidCdmObjectName(geoDimName);
       String dataDimName = elem.getChild("DataDimension").getText().trim();
-      dataDimName = NetcdfFile.makeValidCdmObjectName(dataDimName);
+      dataDimName = NetcdfFiles.makeValidCdmObjectName(dataDimName);
 
       String offsetS = elem.getChild("Offset").getText().trim();
       String incrS = elem.getChild("Increment").getText().trim();
@@ -380,7 +380,7 @@ public class HdfEos {
         if (dataFieldNameElem == null) {
           continue;
         }
-        String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
+        String varname = NetcdfFiles.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
         Variable v = dataG.findVariableLocal(varname);
         // if (v == null)
         // v = dataG.findVariable( H4header.createValidObjectName(varname));
@@ -494,7 +494,7 @@ public class HdfEos {
     List<Element> dims = d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText().trim();
-      name = NetcdfFile.makeValidCdmObjectName(name);
+      name = NetcdfFiles.makeValidCdmObjectName(name);
       if (name.equalsIgnoreCase("scalar")) {
         continue;
       }
@@ -551,7 +551,7 @@ public class HdfEos {
       List<Element> vars = f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText().trim();
-        varname = NetcdfFile.makeValidCdmObjectName(varname);
+        varname = NetcdfFiles.makeValidCdmObjectName(varname);
         Variable v = dataG.findVariableLocal(varname);
         // if (v == null)
         // v = dataG.findVariable( H4header.createValidObjectName(varname));
@@ -643,7 +643,7 @@ public class HdfEos {
     for (int i = 0; i < values.size(); i++) {
       Element value = values.get(i);
       String dimName = value.getText().trim();
-      dimName = NetcdfFile.makeValidCdmObjectName(dimName);
+      dimName = NetcdfFiles.makeValidCdmObjectName(dimName);
 
       Dimension dim = group.findDimension(dimName);
       Dimension oldDim = oldDims.get(i);

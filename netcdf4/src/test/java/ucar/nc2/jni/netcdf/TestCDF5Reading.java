@@ -18,11 +18,11 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -82,7 +82,7 @@ public class TestCDF5Reading extends UnitTestCommon {
   }
 
   private NetcdfFile openJni(String location) throws IOException {
-    Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
+    Nc4Iosp iosp = new Nc4Iosp();
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");
     iosp.open(raf, ncfile, null);

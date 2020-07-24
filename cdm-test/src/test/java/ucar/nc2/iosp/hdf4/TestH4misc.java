@@ -13,6 +13,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -34,7 +35,7 @@ public class TestH4misc {
   @Test
   public void testUnsigned() throws IOException, InvalidRangeException {
     String filename = testDir + "MOD021KM.A2004328.1735.004.2004329164007.hdf";
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       String vname = "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB";
       Variable v = ncfile.findVariable(vname);
       assert v != null : filename + " " + vname;

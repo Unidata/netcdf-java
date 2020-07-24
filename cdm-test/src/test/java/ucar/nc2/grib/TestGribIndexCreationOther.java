@@ -22,12 +22,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
- * Test that the CDM Index Creation works
- *
- * @author caron
- * @since 11/14/2014
+ * Test that the CDM Index Creation works on other Grib collections.
+ * TODO: add other colelctions to unit tests as needed.
  */
-// @Ignore("too long")
+@Ignore("too long")
 public class TestGribIndexCreationOther {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

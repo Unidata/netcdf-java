@@ -27,6 +27,7 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -129,7 +130,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // Instance Variables
 
   private Nc4prototypes nc4;
-  private NetcdfFileWriter.Version version; // can use c library to create these different version files
+  private NetcdfFileFormat version; // can use c library to create these different version files
   private boolean fill = true;
   private int ncid = -1; // file id
   private int format; // from nc_inq_format
@@ -146,14 +147,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // Constructor(s)
 
   public Nc4Iosp() {
-    this(NetcdfFileWriter.Version.netcdf4); // ensure the version always has a value
+    this(NetcdfFileFormat.NETCDF4); // ensure the version always has a value
   }
 
-  public Nc4Iosp(NetcdfFileWriter.Version version) {
+  public Nc4Iosp(NetcdfFileFormat version) {
     this.version = version;
   }
 
-  // called by reflection from NetcdfFileWriter
+  // called by reflection from NetcdfFormatWriter
   public void setChunker(Nc4Chunking chunker) {
     if (chunker != null)
       this.chunker = chunker;
@@ -2385,10 +2386,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private int createMode() {
     int ret = NC_CLOBBER;
     switch (version) {
-      case netcdf4:
+      case NETCDF4:
         ret |= NC_NETCDF4;
         break;
-      case netcdf4_classic:
+      case NETCDF4_CLASSIC:
         ret |= NC_NETCDF4 | NC_CLASSIC_MODEL;
         break;
     }
@@ -2404,13 +2405,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   private int defineFormat() {
     switch (version) {
-      case netcdf4:
+      case NETCDF4:
         return Nc4prototypes.NC_FORMAT_NETCDF4;
-      case netcdf4_classic:
+      case NETCDF4_CLASSIC:
         return Nc4prototypes.NC_FORMAT_NETCDF4_CLASSIC;
-      case netcdf3c:
+      case NETCDF3:
         return Nc4prototypes.NC_FORMAT_CLASSIC;
-      case netcdf3c64:
+      case NETCDF3_64BIT_OFFSET:
         return Nc4prototypes.NC_FORMAT_64BIT;
     }
     throw new IllegalStateException("version = " + version);
@@ -2873,7 +2874,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             svalb = new byte[] {0};
           ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);
         } else { // String valued attribute
-          if (this.version != NetcdfFileWriter.Version.netcdf4) {
+          if (!this.version.isExtendedModel()) {
             // Must write it as character typed attribute
             StringBuilder text = new StringBuilder();
             // Concatenate all the attribute strings

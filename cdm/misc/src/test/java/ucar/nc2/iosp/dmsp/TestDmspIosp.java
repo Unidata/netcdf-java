@@ -393,7 +393,7 @@ public class TestDmspIosp extends TestCase {
   private void setupReadDmspAsNetcdf(String testFilePath, String testDataFileName) {
     // Register the DMSP IOServiceProvider.
     try {
-      NetcdfFile.registerIOProvider(DMSPiosp.class);
+      NetcdfFiles.registerIOProvider(DMSPiosp.class);
     } catch (IllegalAccessException e) {
       assertTrue("Unexpected IllegalAccessException registering DMSPiosp: " + e.getMessage(), false);
     } catch (InstantiationException e) {

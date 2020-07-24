@@ -7,6 +7,7 @@ package ucar.nc2.ft.coverage;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -16,8 +17,10 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
-import java.util.Optional;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter.Result;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -63,9 +66,11 @@ public class TestCoverageMisc {
   }
 
   @Test
-  public void TestCFWriterCoverageSize() throws IOException, InvalidRangeException {
+  public void TestCFGridCoverageWriterSize() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     logger.info("open {}", endpoint);
+
+    // CFGridCoverageWriter2 adds another (dependent) time coordinate, so we need to test this case
 
     Formatter errLog = new Formatter();
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
@@ -75,12 +80,13 @@ public class TestCoverageMisc {
       Assert.assertNotNull(endpoint, gds);
       Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
 
-      // CFGridCoverageWriter2 adds another (dependent) time coordinate, so we need to test this case
-      java.util.Optional<Long> opt = CFGridCoverageWriter2.getSizeOfOutput(gds,
-          Lists.newArrayList("Temperature_isobaric"), new SubsetParams(), false, errLog);
-      Assert.assertTrue(opt.isPresent());
+      NetcdfFormatWriter.Builder writer =
+          NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, "location", null);
+      Result result = CFGridCoverageWriter.write(gds, Lists.newArrayList("Temperature_isobaric"), new SubsetParams(),
+          false, writer, 1);
+      Assert.assertFalse(result.wasWritten());
 
-      long size = opt.get();
+      long size = result.sizeToBeWritten();
       Assert.assertEquals(25245084, size); // Includes sizes of non-coverage variables.
     }
   }

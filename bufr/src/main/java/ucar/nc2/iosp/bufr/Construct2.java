@@ -370,7 +370,7 @@ class Construct2 {
     if (want == null)
       return def + tempNo++;
 
-    String vwant = NetcdfFile.makeValidCdmObjectName(want);
+    String vwant = NetcdfFiles.makeValidCdmObjectName(want);
     Variable oldV = struct.findVariable(vwant);
     if (oldV == null)
       return vwant;
@@ -393,7 +393,7 @@ class Construct2 {
     if (want == null)
       return def + tempNo++;
 
-    String vwant = NetcdfFile.makeValidCdmObjectName(want);
+    String vwant = NetcdfFiles.makeValidCdmObjectName(want);
     Integer have = names.get(vwant);
     if (have == null) {
       names.put(vwant, 1);

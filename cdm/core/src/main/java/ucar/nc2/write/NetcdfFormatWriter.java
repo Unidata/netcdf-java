@@ -11,6 +11,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
@@ -25,10 +26,11 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.internal.iosp.hdf5.H5iospNew;
+import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
@@ -52,17 +54,22 @@ public class NetcdfFormatWriter implements Closeable {
       EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT, DataType.DOUBLE, DataType.FLOAT);
 
   /**
-   * Open an existing Netcdf file for writing data.
+   * Open an existing Netcdf format file for writing data.
    * Cannot add new objects, you can only read/write data to existing Variables.
+   * TODO: allow changes to Netcdf-4 format.
    *
-   * @param location name of existing file to open.
+   * @param location name of existing NetCDF file to open.
    * @return existing file that can be written to
-   * @throws IOException on I/O error
    */
   public static NetcdfFormatWriter.Builder openExisting(String location) throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(location)) {
+      IOServiceProvider iosp = ncfile.getIosp();
+      Preconditions.checkArgument(iosp instanceof N3iospNew || iosp instanceof H5iospNew,
+          "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();
-      return builder().setRootGroup(root).setLocation(location).setIosp(ncfile.getIosp());
+      // TODO dont ignore variants formats, eg NETCDF3_64BIT_OFFSET
+      NetcdfFileFormat format = iosp instanceof N3iospNew ? NetcdfFileFormat.NETCDF3 : NetcdfFileFormat.NETCDF4;
+      return builder().setRootGroup(root).setLocation(location).setFormat(format).setIosp(iosp);
     }
   }
 
@@ -85,7 +92,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @return new NetcdfFormatWriter
    */
   public static NetcdfFormatWriter.Builder createNewNetcdf4(NetcdfFileFormat format, String location,
-      Nc4Chunking chunker) {
+      @Nullable Nc4Chunking chunker) {
     return builder().setNewFile(true).setFormat(format).setLocation(location).setChunker(chunker);
   }
 
@@ -173,7 +180,10 @@ public class NetcdfFormatWriter implements Closeable {
       return this;
     }
 
-    /** Set if you want to use JNA / netcdf c library to do the writing. Default is false. */
+    /**
+     * Set if you want to use JNA / netcdf c library to do the writing. Default is false.
+     * JNA must be used for Netcdf-4. This is used to write to Netcdf-3 format.
+     */
     public Builder setUseJna(boolean useJna) {
       this.useJna = useJna;
       return this;
@@ -235,7 +245,7 @@ public class NetcdfFormatWriter implements Closeable {
     }
 
     /** Add a Variable to the root group. */
-    public Variable.Builder addVariable(String shortName, DataType dataType, List<Dimension> dims) {
+    public Variable.Builder<?> addVariable(String shortName, DataType dataType, List<Dimension> dims) {
       if (!isNewFile && !useJna) {
         throw new UnsupportedOperationException("Cant add variable to existing netcdf-3 files");
       }
@@ -246,7 +256,7 @@ public class NetcdfFormatWriter implements Closeable {
     }
 
     /** Add a Structure to the root group. */
-    public Structure.Builder addStructure(String shortName, String dimString) {
+    public Structure.Builder<?> addStructure(String shortName, String dimString) {
       if (!isNewFile && !useJna) {
         throw new UnsupportedOperationException("Cant add structure to existing netcdf-3 files");
       }
@@ -254,6 +264,17 @@ public class NetcdfFormatWriter implements Closeable {
           Structure.builder().setName(shortName).setParentGroupBuilder(rootGroup).setDimensionsByName(dimString);
       rootGroup.addVariable(vb);
       return vb;
+    }
+
+    // TODO doesnt work yet
+    public Optional<Variable.Builder<?>> renameVariable(String oldName, String newName) {
+      Optional<Variable.Builder<?>> vbOpt = rootGroup.findVariableLocal(oldName);
+      vbOpt.ifPresent(vb -> {
+        rootGroup.removeVariable(oldName);
+        vb.setName(newName);
+        rootGroup.addVariable(vb);
+      });
+      return vbOpt;
     }
 
     /** Once this is called, do not use the Builder again. */
@@ -309,9 +330,8 @@ public class NetcdfFormatWriter implements Closeable {
       IOServiceProviderWriter spi;
       try {
         Class iospClass = this.getClass().getClassLoader().loadClass(className);
-        NetcdfFileWriter.Version version = convertToNetcdfFileWriterVersion(format);
-        Constructor<IOServiceProviderWriter> ctor = iospClass.getConstructor(version.getClass());
-        spi = ctor.newInstance(version);
+        Constructor<IOServiceProviderWriter> ctor = iospClass.getConstructor(format.getClass());
+        spi = ctor.newInstance(format);
 
         Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
         method.invoke(spi, chunker);
@@ -334,37 +354,6 @@ public class NetcdfFormatWriter implements Closeable {
     } catch (Throwable t) {
       spiw.close();
       throw t;
-    }
-  }
-
-  // Temporary bridge to NetcdfFileWriter.Version
-  public static NetcdfFileWriter.Version convertToNetcdfFileWriterVersion(NetcdfFileFormat format) {
-    switch (format) {
-      case NETCDF3:
-        return NetcdfFileWriter.Version.netcdf3;
-      case NETCDF4:
-        return NetcdfFileWriter.Version.netcdf4;
-      case NETCDF4_CLASSIC:
-        return NetcdfFileWriter.Version.netcdf4_classic;
-      case NETCDF3_64BIT_OFFSET:
-        return NetcdfFileWriter.Version.netcdf3c64;
-      default:
-        throw new IllegalStateException("Unsupported format: " + format);
-    }
-  }
-
-  public static NetcdfFileFormat convertToNetcdfFileFormat(NetcdfFileWriter.Version version) {
-    switch (version) {
-      case netcdf3:
-        return NetcdfFileFormat.NETCDF3;
-      case netcdf4:
-        return NetcdfFileFormat.NETCDF4;
-      case netcdf4_classic:
-        return NetcdfFileFormat.NETCDF4_CLASSIC;
-      case netcdf3c64:
-        return NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
-      default:
-        throw new IllegalStateException("Unsupported version: " + version);
     }
   }
 

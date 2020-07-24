@@ -87,7 +87,7 @@ public class TestH5compressed {
 
   @org.junit.Test
   public void testEndian() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestN4reading.testDir + "endianTest.nc4")) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestN4reading.testDir + "endianTest.nc4")) {
       Variable v = ncfile.findVariable("TMP");
       assert v != null;
       assert v.getDataType() == DataType.FLOAT;

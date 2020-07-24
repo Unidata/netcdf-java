@@ -101,7 +101,7 @@ public class TestH4readAndCount {
 
   @Test
   public void test() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Counter c = new Counter();
       c.count(ncfile.getRootGroup());
 
@@ -146,7 +146,7 @@ public class TestH4readAndCount {
 
   private void read(String filename, int ndims, int nvars, int ngatts, int natts, int nstructFields, int ngroups)
       throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     Counter c = new Counter();
     c.count(ncfile.getRootGroup());
 

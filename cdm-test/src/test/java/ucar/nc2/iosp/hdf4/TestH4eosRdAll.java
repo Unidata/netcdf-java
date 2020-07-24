@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -63,7 +64,7 @@ public class TestH4eosRdAll {
   @Test
   public void testForStructMetadata() throws IOException {
     System.out.printf("TestH4eosReadAll %s%n", filename);
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Group root = ncfile.getRootGroup();
       Group g = root.findGroupLocal("HDFEOS INFORMATION");
       if (g == null)

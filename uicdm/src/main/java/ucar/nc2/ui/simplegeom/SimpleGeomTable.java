@@ -5,21 +5,15 @@
 
 package ucar.nc2.ui.simplegeom;
 
-// import thredds.wcs.Request;
-// import thredds.wcs.v1_0_0_1.*;
 import ucar.nc2.*;
-import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
-import ucar.nc2.write.NetcdfFileFormat;
-import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.unidata.geoloc.Projection;
@@ -64,7 +58,7 @@ public class SimpleGeomTable extends JPanel {
         infoTA.clear();
         if (v == null)
           infoTA.appendLine(
-              "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFile.makeValidPathName(vb.getName()) + ")");
+              "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
         else {
           infoTA.appendLine("Variable " + v.getFullName() + " :");
           infoTA.appendLine(v.toString());
@@ -157,7 +151,7 @@ public class SimpleGeomTable extends JPanel {
           outChooser = new NetcdfOutputChooser((Frame) null);
           outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
-              writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+              // writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
             }
           });
         }
@@ -204,21 +198,6 @@ public class SimpleGeomTable extends JPanel {
   private void showCoordinates(GeoGridBean vb, Formatter f) {
     GridCoordSystem gcs = vb.geogrid.getCoordinateSystem();
     gcs.show(f, true);
-  }
-
-  private void writeNetcdf(NetcdfOutputChooser.Data data) {
-    if (data.format == NetcdfFileFormat.NCSTREAM)
-      return;
-
-    try {
-      Version version = NetcdfFormatWriter.convertToNetcdfFileWriterVersion(data.format);
-      NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, data.outputFilename, null);
-      CFGridWriter2.writeFile(gridDataset, getSelectedGrids(), null, null, 1, null, null, 1, false, writer);
-      JOptionPane.showMessageDialog(this, "File successfully written");
-    } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      ioe.printStackTrace();
-    }
   }
 
   public PreferencesExt getPrefs() {

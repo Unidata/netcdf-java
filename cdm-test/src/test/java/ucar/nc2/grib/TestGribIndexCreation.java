@@ -13,6 +13,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.DiskCache2;
@@ -26,10 +27,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
- * Test that the CDM Index Creation works
- *
- * @author caron
- * @since 11/14/2014
+ * Test that the CDM Index Creation works.
+ * Jenkins seems to recreate indices, and so needs this to be on?
  */
 @Category(NeedsCdmUnitTest.class)
 // @Ignore("too long")
@@ -98,9 +97,9 @@ public class TestGribIndexCreation {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
+    String location = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
     // LOOK add check that records were combined
-    try (NetcdfFile ncfile = NetcdfFile
-        .open(TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4", null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(location, null)) {
       Group root = ncfile.getRootGroup();
       Assert.assertEquals(2, root.getGroups().size());
     }

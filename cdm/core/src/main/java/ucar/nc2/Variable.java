@@ -951,7 +951,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     useFullName = useFullName && !strict;
     String name = useFullName ? getFullName() : getShortName();
     if (strict)
-      name = NetcdfFile.makeValidCDLName(getShortName());
+      name = NetcdfFiles.makeValidCDLName(getShortName());
     buf.format("%s", name);
 
     if (shape != null) {
@@ -961,7 +961,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
         Dimension myd = dimensions.get(i);
         String dimName = myd.getShortName();
         if ((dimName != null) && strict)
-          dimName = NetcdfFile.makeValidCDLName(dimName);
+          dimName = NetcdfFiles.makeValidCDLName(dimName);
         if (i != 0)
           buf.format(", ");
         if (myd.isVariableLength()) {
@@ -1012,7 +1012,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       if (enumTypedef == null)
         buf.format("enum UNKNOWN");
       else
-        buf.format("enum %s", NetcdfFile.makeValidCDLName(enumTypedef.getShortName()));
+        buf.format("enum %s", NetcdfFiles.makeValidCDLName(enumTypedef.getShortName()));
     } else
       buf.format("%s", dataType.toString());
 

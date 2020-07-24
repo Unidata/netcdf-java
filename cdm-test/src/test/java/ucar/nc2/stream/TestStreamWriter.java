@@ -62,14 +62,14 @@ public class TestStreamWriter {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
     long start = System.currentTimeMillis();
     // LOOK fails if NetcdfFiles.open
-    NetcdfFile fileIn = NetcdfFile.open(endpoint);
+    NetcdfFile fileIn = NetcdfFiles.open(endpoint);
 
     String fileOut = tempFolder.newFile().getAbsolutePath();
     N3outputStreamWriter.writeFromFile(fileIn, fileOut);
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFile.open(fileOut);
+    NetcdfFile file2 = NetcdfFiles.open(fileOut);
     assert CompareNetcdf2.compareFiles(fileIn, file2, new Formatter(), true, false, false);
 
     fileIn.close();
@@ -79,7 +79,7 @@ public class TestStreamWriter {
   @Test
   public void testN3channelWriter() throws IOException, InvalidRangeException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
-    NetcdfFile fileIn = NetcdfFile.open(endpoint);
+    NetcdfFile fileIn = NetcdfFiles.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();
@@ -87,7 +87,7 @@ public class TestStreamWriter {
     long took = System.currentTimeMillis() - start;
     System.out.println("N3channelWriter took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFile.open(fileOut);
+    NetcdfFile file2 = NetcdfFiles.open(fileOut);
     assert CompareNetcdf2.compareFiles(fileIn, file2, new Formatter(), true, false, false);
 
     fileIn.close();
@@ -97,7 +97,7 @@ public class TestStreamWriter {
   @Test
   public void testFormatWriter() throws IOException {
     System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
-    NetcdfFile fileIn = NetcdfFile.open(endpoint);
+    NetcdfFile fileIn = NetcdfFiles.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = tempFolder.newFile().getAbsolutePath();

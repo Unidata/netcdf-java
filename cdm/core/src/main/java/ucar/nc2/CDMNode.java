@@ -99,7 +99,7 @@ public abstract class CDMNode {
   @Deprecated
   public void setShortName(String name) {
     if (!immutable)
-      this.shortName = NetcdfFile.makeValidCdmObjectName(name);
+      this.shortName = NetcdfFiles.makeValidCdmObjectName(name);
   }
 
   /**
@@ -230,7 +230,13 @@ public abstract class CDMNode {
    */
   @Deprecated
   public String getFullName() {
-    return NetcdfFile.makeFullName(this);
+    if (this instanceof Group) {
+      return NetcdfFiles.makeFullName((Group) this);
+    } else if (this instanceof Variable) {
+      return NetcdfFiles.makeFullName((Variable) this);
+    } else {
+      return this.getShortName();
+    }
   }
 
   /**

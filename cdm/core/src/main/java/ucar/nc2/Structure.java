@@ -706,6 +706,14 @@ public class Structure extends Variable {
       return self();
     }
 
+    /** Add a Variable to the root group. */
+    public T addMemberVariable(String shortName, DataType dataType, String dimString) {
+      Variable.Builder vb = Variable.builder().setName(shortName).setDataType(dataType)
+          .setParentGroupBuilder(this.parentBuilder).setDimensionsByName(dimString);
+      addMemberVariable(vb);
+      return self();
+    }
+
     /** Remove memeber variable, if present. Return whether it was present */
     public boolean removeMemberVariable(String memberName) {
       Optional<Variable.Builder<?>> want = vbuilders.stream().filter(v -> v.shortName.equals(memberName)).findFirst();

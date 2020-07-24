@@ -12,7 +12,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
@@ -181,100 +180,6 @@ public class CoverageTable extends JPanel {
     });
 
   }
-
-  /*
-   * public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
-   * 
-   * AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
-   * infoButton.addActionListener(new ActionListener() {
-   * public void actionPerformed(ActionEvent e) {
-   * if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
-   * ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
-   * infoTA.clear();
-   * infoTA.appendLine(gdsImpl.getDetailInfo());
-   * infoTA.gotoTop();
-   * infoWindow.show();
-   * }
-   * }
-   * });
-   * buttPanel.add(infoButton);
-   * 
-   * /*
-   * 
-   * /* AbstractAction netcdfAction = new AbstractAction() {
-   * public void actionPerformed(ActionEvent e) {
-   * if (gridDataset == null) return;
-   * List<String> gridList = getSelectedGrids();
-   * if (gridList.size() == 0) {
-   * JOptionPane.showMessageDialog(CoverageTable.this, "No Grids are selected");
-   * return;
-   * }
-   * 
-   * if (outChooser == null) {
-   * outChooser = new NetcdfOutputChooser((Frame) null);
-   * outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
-   * public void propertyChange(PropertyChangeEvent evt) {
-   * writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
-   * }
-   * });
-   * }
-   * outChooser.setOutputFilename(gridDataset.getLocation());
-   * outChooser.setVisible(true);
-   * }
-   * };
-   * BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
-   * BAMutil.addActionToContainer(buttPanel, netcdfAction);
-   */
-
-  /*
-   * AbstractAction writeAction = new AbstractAction() {
-   * public void actionPerformed(ActionEvent e) {
-   * if (gridDataset == null) return;
-   * List<String> gridList = getSelectedGrids();
-   * if (gridList.size() == 0) {
-   * JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
-   * return;
-   * }
-   * String location = gridDataset.getLocationURI();
-   * if (location == null) location = "test";
-   * String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
-   * int pos = location.lastIndexOf(".");
-   * if (pos > 0)
-   * location = location.substring(0, pos);
-   * 
-   * String filename = fileChooser.chooseFilenameToSave(location + suffix);
-   * if (filename == null) return;
-   * 
-   * try {
-   * NetcdfCFWriter.makeFileVersioned(filename, gridDataset, gridList, null, null);
-   * JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
-   * } catch (Exception ioe) {
-   * JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
-   * ioe.printStackTrace();
-   * }
-   * }
-   * };
-   * BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
-   * BAMutil.addActionToContainer(buttPanel, writeAction);
-   * //; }
-   * 
-   * private void showCoordinates(CoverageBean vb, Formatter f) {
-   * CoverageCS gcs = vb.geogrid.getCoordinateSystem();
-   * gcs.show(f, true);
-   * }
-   * 
-   * /* private void writeNetcdf(NetcdfOutputChooser.Data data) {
-   * if (data.version == NetcdfFileWriter.Version.ncstream) return;
-   * 
-   * try {
-   * NetcdfCFWriter.makeFileVersioned(data.outputFilename, gridDataset, getSelectedGrids(), null, null, data.version);
-   * JOptionPane.showMessageDialog(this, "File successfully written");
-   * } catch (Exception ioe) {
-   * JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-   * ioe.printStackTrace();
-   * }
-   * }
-   */
 
   public void clear() {
     dsTable.clearBeans();

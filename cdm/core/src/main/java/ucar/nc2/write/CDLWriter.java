@@ -275,7 +275,7 @@ public class CDLWriter {
       if (0 < count++)
         out.format(", ");
       if (strict)
-        out.format("%s = %s", NetcdfFile.makeValidCDLName(s), key);
+        out.format("%s = %s", NetcdfFiles.makeValidCDLName(s), key);
       else
         out.format("'%s' = %s", s, key);
     }
@@ -291,7 +291,7 @@ public class CDLWriter {
       if (v.getEnumTypedef() == null)
         out.format("enum UNKNOWN");
       else
-        out.format("enum %s", NetcdfFile.makeValidCDLName(v.getEnumTypedef().getShortName()));
+        out.format("enum %s", NetcdfFiles.makeValidCDLName(v.getEnumTypedef().getShortName()));
     } else
       out.format("%s", dataType.toString());
 
