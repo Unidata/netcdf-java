@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.write;
+package ucar.nc2.iosp;
 
 import java.io.IOException;
 import javax.annotation.Nullable;
@@ -161,7 +161,6 @@ public enum NetcdfFileFormat {
     return this == NETCDF4 || this == NCSTREAM;
   }
 
-
   // this converts old NetcdfFileWriter.Version string.
   @Nullable
   public static NetcdfFileFormat convertVersionToFormat(String netcdfFileWriterVersion) {
@@ -236,7 +235,7 @@ public enum NetcdfFileFormat {
     return format == null ? INVALID : format;
   }
 
-  public static boolean memequal(byte[] b1, byte[] b2, int len) {
+  private static boolean memequal(byte[] b1, byte[] b2, int len) {
     if (b1 == b2)
       return true;
     if (b1 == null || b2 == null)
@@ -248,105 +247,5 @@ public enum NetcdfFileFormat {
         return false;
     }
     return true;
-  }
-
-  /**
-   * Determine if the given name can be used for a NetCDF object, i.e. a Dimension, Attribute, or Variable.
-   * The allowed name syntax (in RE form) is:
-   *
-   * <pre>
-   * ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
-   * </pre>
-   *
-   * where UTF8 represents a multi-byte UTF-8 encoding. Also, no trailing spaces are permitted in names. We do not
-   * allow '/' because HDF5 does not permit slashes in names as slash is used as a group separator. If UTF-8 is
-   * supported, then a multi-byte UTF-8 character can occur anywhere within an identifier.
-   *
-   * @param name the name to validate.
-   * @return {@code true} if the name is valid.
-   */
-  // Implements "int NC_check_name(const char *name)" from NetCDF-C:
-  // https://github.com/Unidata/netcdf-c/blob/v4.3.3.1/libdispatch/dstring.c#L169
-  // Should match makeValidNetcdfObjectName()
-  public static boolean isValidNetcdfObjectName(String name) {
-    if (name == null || name.isEmpty()) { // Null and empty names disallowed
-      return false;
-    }
-
-    int cp = name.codePointAt(0);
-
-    // First char must be [a-z][A-Z][0-9]_ | UTF8
-    if (cp <= 0x7f) {
-      if (!('A' <= cp && cp <= 'Z') && !('a' <= cp && cp <= 'z') && !('0' <= cp && cp <= '9') && cp != '_') {
-        return false;
-      }
-    }
-
-    for (int i = 1; i < name.length(); ++i) {
-      cp = name.codePointAt(i);
-
-      // handle simple 0x00-0x7f characters here
-      if (cp <= 0x7f) {
-        if (cp < ' ' || cp > 0x7E || cp == '/') { // control char, DEL, or forward-slash
-          return false;
-        }
-      }
-    }
-
-    // trailing spaces disallowed
-    return cp > 0x7f || !Character.isWhitespace(cp);
-
-  }
-
-  /**
-   * Convert a name to a legal netcdf-3 name.
-   *
-   * @param name the name to convert.
-   * @return the converted name.
-   * @see #isValidNetcdfObjectName(String)
-   */
-  public static String makeValidNetcdfObjectName(String name) {
-    StringBuilder sb = new StringBuilder(name);
-
-    while (sb.length() > 0) {
-      int cp = sb.codePointAt(0);
-
-      // First char must be [a-z][A-Z][0-9]_ | UTF8
-      if (cp <= 0x7f) {
-        if (!('A' <= cp && cp <= 'Z') && !('a' <= cp && cp <= 'z') && !('0' <= cp && cp <= '9') && cp != '_') {
-          sb.deleteCharAt(0);
-          continue;
-        }
-      }
-      break;
-    }
-
-    for (int pos = 1; pos < sb.length(); ++pos) {
-      int cp = sb.codePointAt(pos);
-
-      // handle simple 0x00-0x7F characters here
-      if (cp <= 0x7F) {
-        if (cp < ' ' || cp > 0x7E || cp == '/') { // control char, DEL, or forward-slash
-          sb.deleteCharAt(pos);
-          --pos;
-        }
-      }
-    }
-
-    while (sb.length() > 0) {
-      int cp = sb.codePointAt(sb.length() - 1);
-
-      if (cp <= 0x7f && Character.isWhitespace(cp)) {
-        sb.deleteCharAt(sb.length() - 1);
-      } else {
-        break;
-      }
-    }
-
-    if (sb.length() == 0) {
-      throw new IllegalArgumentException(String.format("Illegal NetCDF object name: '%s'", name));
-    }
-
-    return sb.toString();
   }
 }

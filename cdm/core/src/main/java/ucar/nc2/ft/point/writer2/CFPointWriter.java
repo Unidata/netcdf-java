@@ -35,8 +35,7 @@ import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
-import ucar.nc2.write.NetcdfFileFormat;
-import ucar.nc2.write.NetcdfFormatWriter;
+import ucar.nc2.iosp.NetcdfFileFormat;
 
 /** Static methods to write Point Feature Collections into netcdf3/4 files in CF 1.6 point obs conventions. */
 public class CFPointWriter {

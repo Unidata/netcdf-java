@@ -21,7 +21,7 @@ import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.nc2.write.Nc4ChunkingStrategy;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;

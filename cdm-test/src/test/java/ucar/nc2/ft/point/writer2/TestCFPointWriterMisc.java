@@ -37,7 +37,7 @@ import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.ProfileFeatureCollection;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 

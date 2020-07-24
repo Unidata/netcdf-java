@@ -19,7 +19,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.NetcdfCopier;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;

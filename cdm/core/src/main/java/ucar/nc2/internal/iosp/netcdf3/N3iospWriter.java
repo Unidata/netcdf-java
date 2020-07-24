@@ -29,20 +29,13 @@ import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 /** IOServiceProviderWriter for Netcdf3 files. */
 public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
-  // Default fill values, used unless _FillValue variable attribute is set.
-  private static final byte NC_FILL_BYTE = -127;
-  private static final char NC_FILL_CHAR = (char) 0;
-  private static final short NC_FILL_SHORT = (short) -32767;
-  private static final int NC_FILL_INT = -2147483647;
-  private static final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
-  private static final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
   private boolean fill = true;
   private IOServiceProvider iosp = null;
 
@@ -51,14 +44,13 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   }
 
   @Override
-  public void openForWriting(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    // Cant call superclass open, do some duplicate code here
+  public void openForWriting(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) {
+    // Cant call superclass open, so some duplicate code here
     this.raf = raf;
     this.location = (raf != null) ? raf.getLocation() : null;
     this.ncfile = ncfile;
 
-    String location = raf.getLocation();
-    if (!location.startsWith("http:")) {
+    if (location != null && !location.startsWith("http:")) {
       File file = new File(location);
       if (file.exists())
         lastModified = file.lastModified();
@@ -364,32 +356,33 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     Object storage = null;
     if (classType == double.class) {
       double[] storageP = new double[1];
-      storageP[0] = (att == null) ? NC_FILL_DOUBLE : att.getNumericValue().doubleValue();
+      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_DOUBLE : att.getNumericValue().doubleValue();
       storage = storageP;
 
     } else if (classType == float.class) {
       float[] storageP = new float[1];
-      storageP[0] = (att == null) ? NC_FILL_FLOAT : att.getNumericValue().floatValue();
+      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_FLOAT : att.getNumericValue().floatValue();
       storage = storageP;
 
     } else if (classType == int.class) {
       int[] storageP = new int[1];
-      storageP[0] = (att == null) ? NC_FILL_INT : att.getNumericValue().intValue();
+      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_INT : att.getNumericValue().intValue();
       storage = storageP;
 
     } else if (classType == short.class) {
       short[] storageP = new short[1];
-      storageP[0] = (att == null) ? NC_FILL_SHORT : att.getNumericValue().shortValue();
+      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_SHORT : att.getNumericValue().shortValue();
       storage = storageP;
 
     } else if (classType == byte.class) {
       byte[] storageP = new byte[1];
-      storageP[0] = (att == null) ? NC_FILL_BYTE : att.getNumericValue().byteValue();
+      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_BYTE : att.getNumericValue().byteValue();
       storage = storageP;
 
     } else if (classType == char.class) {
       char[] storageP = new char[1];
-      storageP[0] = (att != null) && (!att.getStringValue().isEmpty()) ? att.getStringValue().charAt(0) : NC_FILL_CHAR;
+      storageP[0] = (att != null) && (!att.getStringValue().isEmpty()) ? att.getStringValue().charAt(0)
+          : NetcdfFormatUtils.NC_FILL_CHAR;
       storage = storageP;
     }
 

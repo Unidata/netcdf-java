@@ -34,6 +34,7 @@ import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
+import ucar.nc2.iosp.NetcdfFileFormat;
 
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
@@ -67,9 +68,7 @@ public class NetcdfFormatWriter implements Closeable {
       Preconditions.checkArgument(iosp instanceof N3iospNew || iosp instanceof H5iospNew,
           "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();
-      // TODO dont ignore variants formats, eg NETCDF3_64BIT_OFFSET
-      NetcdfFileFormat format = iosp instanceof N3iospNew ? NetcdfFileFormat.NETCDF3 : NetcdfFileFormat.NETCDF4;
-      return builder().setRootGroup(root).setLocation(location).setFormat(format).setIosp(iosp);
+      return builder().setRootGroup(root).setLocation(location).setIosp(iosp);
     }
   }
 
@@ -379,23 +378,6 @@ public class NetcdfFormatWriter implements Closeable {
   @Nullable
   public Attribute findGlobalAttribute(String attName) {
     return this.ncout.getRootGroup().findAttribute(attName);
-  }
-
-  private String makeValidObjectName(String name) {
-    if (!isValidObjectName(name)) {
-      String nname = createValidObjectName(name);
-      log.warn("illegal object name= " + name + " change to " + name);
-      return nname;
-    }
-    return name;
-  }
-
-  private boolean isValidObjectName(String name) {
-    return NetcdfFileFormat.isValidNetcdfObjectName(name);
-  }
-
-  private String createValidObjectName(String name) {
-    return NetcdfFileFormat.makeValidNetcdfObjectName(name);
   }
 
   /*

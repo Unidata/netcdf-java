@@ -19,7 +19,7 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
 
 @Deprecated
@@ -171,7 +171,7 @@ public class VariableEnhancer implements EnhanceScaleMissingUnsigned {
           || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
 
       if (isNetcdfIosp && unsignedConversionType.isNumeric()) {
-        fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+        fillValue = applyScaleOffset(NetcdfFormatUtils.getFillValueDefault(unsignedConversionType));
         hasFillValue = true;
       }
     }

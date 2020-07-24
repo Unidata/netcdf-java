@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
@@ -60,7 +60,7 @@ public class TestN4reading {
     int count = 0;
     while (data.hasNext()) {
       float val = data.nextFloat();
-      if (val == N3iosp.NC_FILL_FLOAT) {
+      if (val == NetcdfFormatUtils.NC_FILL_FLOAT) {
         count++;
       }
     }

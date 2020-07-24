@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import java.util.*;
 import java.io.IOException;

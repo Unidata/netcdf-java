@@ -29,7 +29,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.TestCFPointDatasets;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.util.test.CheckPointFeatureDataset;
 
 /**

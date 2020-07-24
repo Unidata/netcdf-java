@@ -22,6 +22,7 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
 
 /**

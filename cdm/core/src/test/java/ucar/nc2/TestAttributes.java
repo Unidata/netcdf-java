@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -122,10 +122,10 @@ public class TestAttributes {
   // Demonstrates GitHub issue #715: https://github.com/Unidata/thredds/issues/715
   @Test
   public void testLargeLongValue() {
-    Attribute att = new Attribute("name", N3iosp.NC_FILL_INT64); // which is -9223372036854775806L
+    Attribute att = new Attribute("name", NetcdfFormatUtils.NC_FILL_INT64); // which is -9223372036854775806L
     long result = att.getNumericValue().longValue(); // returned -9223372036854775808L, before bug fix.
 
-    Assert.assertEquals(N3iosp.NC_FILL_INT64, result);
+    Assert.assertEquals(NetcdfFormatUtils.NC_FILL_INT64, result);
   }
 
   @Test
