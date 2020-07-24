@@ -20,11 +20,11 @@ import javax.swing.JOptionPane;
 
 public class Hdf5DataPanel extends OpPanel {
   private RandomAccessFile raf;
-  private Hdf5DataTable hdf5Table;
+  private Hdf5NewDataTable hdf5Table;
 
   public Hdf5DataPanel(PreferencesExt p, boolean useBuilders) {
     super(p, "file:", true, false);
-    hdf5Table = useBuilders ? new Hdf5NewDataTable(prefs, buttPanel) : new Hdf5DataTable(prefs, buttPanel);
+    hdf5Table = new Hdf5NewDataTable(prefs, buttPanel);
     add(hdf5Table, BorderLayout.CENTER);
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);

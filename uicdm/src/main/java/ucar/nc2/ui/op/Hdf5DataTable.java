@@ -9,9 +9,9 @@ import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.hdf5.H5diag;
-import ucar.nc2.iosp.hdf5.H5header;
-import ucar.nc2.iosp.hdf5.H5iosp;
+import ucar.nc2.internal.iosp.hdf5.H5diagNew;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
+import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
@@ -45,7 +45,7 @@ public class Hdf5DataTable extends JPanel {
 
   private TextHistoryPane infoTA;
 
-  private H5iosp iosp;
+  private H5iospNew iosp;
   private String location;
 
   public Hdf5DataTable(PreferencesExt prefs, JPanel buttPanel) {
@@ -145,9 +145,6 @@ public class Hdf5DataTable extends JPanel {
     prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {
     if (iosp != null) {
       iosp.close();
@@ -161,7 +158,7 @@ public class Hdf5DataTable extends JPanel {
     this.location = raf.getLocation();
     List<VarBean> beanList = new ArrayList<>();
 
-    iosp = new H5iosp();
+    iosp = new H5iospNew();
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
@@ -176,14 +173,6 @@ public class Hdf5DataTable extends JPanel {
     }
 
     objectTable.setBeans(beanList);
-  }
-
-  public void showInfo(Formatter f) throws IOException {
-    if (iosp == null) {
-      return;
-    }
-    H5diag header = new H5diag(iosp);
-    header.showCompress(f);
   }
 
   public void calcStorage() {
@@ -221,14 +210,7 @@ public class Hdf5DataTable extends JPanel {
     infoTA.setText(f.toString());
   }
 
-  private void deflate(Formatter f, VarBean bean) {
-    H5diag header = new H5diag(iosp);
-    try {
-      header.showCompress(f);
-    } catch (IOException e) {
-      e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
-    }
-  }
+  void deflate(Formatter f, VarBean bean) {}
 
   private void showStorage(Formatter f, VarBean bean) {
     try {
@@ -265,14 +247,14 @@ public class Hdf5DataTable extends JPanel {
 
   public class VarBean {
     Variable v;
-    H5header.Vinfo vinfo;
+    H5headerNew.Vinfo vinfo;
     long[] countResult;
 
     public VarBean() {}
 
     public VarBean(Variable v) {
       this.v = v;
-      this.vinfo = (H5header.Vinfo) v.getSPobject();
+      this.vinfo = (H5headerNew.Vinfo) v.getSPobject();
     }
 
     public String getName() {

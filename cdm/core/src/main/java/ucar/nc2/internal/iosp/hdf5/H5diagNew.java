@@ -6,7 +6,6 @@ import ucar.nc2.Variable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
-import ucar.nc2.iosp.hdf5.DataBTree;
 
 /**
  * HDF5 diagnostic helper

@@ -12,7 +12,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5diagNew;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.internal.iosp.hdf5.H5iospNew;
-import ucar.nc2.iosp.hdf5.H5diag;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
@@ -167,6 +166,15 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     header.showCompress(f);
   }
 
+  void deflate(Formatter f, VarBean bean) {
+    H5diagNew diag = new H5diagNew(ncfile, iosp);
+    try {
+      diag.showCompress(f);
+    } catch (IOException e) {
+      e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+    }
+  }
+
   public void calcStorage() {
     if (iosp == null) {
       return;
@@ -200,15 +208,6 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     f.format("   # data chunks     = %d%n", totalCount);
 
     infoTA.setText(f.toString());
-  }
-
-  private void deflate(Formatter f, VarBean bean) {
-    H5diagNew diag = new H5diagNew(ncfile, iosp);
-    try {
-      diag.showCompress(f);
-    } catch (IOException e) {
-      e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
-    }
   }
 
   private void showStorage(Formatter f, VarBean bean) {

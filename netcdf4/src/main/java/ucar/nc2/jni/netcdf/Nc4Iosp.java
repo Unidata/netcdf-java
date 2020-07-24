@@ -19,8 +19,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NCheader;
-import ucar.nc2.internal.iosp.hdf4.HdfEos;
-import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
@@ -2840,13 +2839,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     // dont propagate these - handled internally
-    if (att.getShortName().equals(H5header.HDF5_CLASS))
+    if (att.getShortName().equals(H5headerNew.HDF5_CLASS))
       return;
-    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST))
+    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_LIST))
       return;
-    if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE))
+    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_SCALE))
       return;
-    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS))
+    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_LABELS))
       return;
     if (att.getShortName().equals(CDM.CHUNK_SIZES))
       return;
