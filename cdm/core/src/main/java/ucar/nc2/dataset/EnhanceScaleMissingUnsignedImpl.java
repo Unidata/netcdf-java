@@ -12,7 +12,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
 import javax.annotation.Nonnull;
 import java.lang.invoke.MethodHandles;
@@ -174,7 +174,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
 
       if (isNetcdfIosp) {
         if (unsignedConversionType.isNumeric()) {
-          fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+          fillValue = applyScaleOffset(NetcdfFormatUtils.getFillValueDefault(unsignedConversionType));
           hasFillValue = true;
         }
       }

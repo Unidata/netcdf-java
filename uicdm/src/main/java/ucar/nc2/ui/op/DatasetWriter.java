@@ -21,7 +21,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;

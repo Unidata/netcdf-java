@@ -14,7 +14,7 @@ import ucar.nc2.Dimension
 import ucar.nc2.NetcdfFile
 import ucar.nc2.NetcdfFiles
 import ucar.nc2.Variable
-import ucar.nc2.write.NetcdfFileFormat
+import ucar.nc2.iosp.NetcdfFileFormat
 import ucar.nc2.write.NetcdfFormatWriter
 
 /**

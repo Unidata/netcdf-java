@@ -62,14 +62,14 @@ import ucar.nc2.internal.iosp.hdf5.H5objects.MessageFillValueOld;
 import ucar.nc2.internal.iosp.hdf5.H5objects.MessageFilter;
 import ucar.nc2.internal.iosp.hdf5.H5objects.MessageType;
 import ucar.nc2.internal.iosp.hdf5.H5objects.StructureMember;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.iosp.hdf5.DataBTree;
 import ucar.nc2.iosp.hdf5.H5headerIF;
 import ucar.nc2.iosp.hdf5.MemTracker;
-import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -78,12 +78,12 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5headerNew.class);
 
   // special attribute names in HDF5
-  public static final String HDF5_CLASS = "CLASS";
-  public static final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
-  public static final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
-  public static final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
-  public static final String HDF5_DIMENSION_NAME = "NAME";
-  public static final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
+  private static final String HDF5_CLASS = "CLASS";
+  private static final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
+  private static final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
+  private static final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
+  private static final String HDF5_DIMENSION_NAME = "NAME";
+  private static final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
 
   // debugging
   private static boolean debugEnum, debugVlen;
@@ -121,21 +121,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   private static final boolean transformReference = true;
 
   public static boolean isValidFile(RandomAccessFile raf) throws IOException {
-    // For HDF5, we need to search forward
-    long filePos = 0;
-    long size = raf.length();
-    while ((filePos < size - 8) && (filePos < maxHeaderPos)) {
-      byte[] buff = new byte[magic.length];
-      raf.seek(filePos);
-      if (raf.read(buff) < magic.length)
-        return false;
-      if (NetcdfFileFormat.memequal(buff, magic, magic.length)) {
-        return true;
-      }
-      // The offsets that the header can be at
-      filePos = (filePos == 0) ? 512 : 2 * filePos;
-    }
-    return false;
+    NetcdfFileFormat format = NetcdfFileFormat.findNetcdfFormatType(raf);
+    return format != null && format.isNetdf4format();
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -1276,7 +1263,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
       Object fillValue = vinfo.getFillValueNonDefault();
       if (fillValue != null) {
-        Object defFillValue = N3iosp.getFillValueDefault(vinfo.typeInfo.dataType);
+        Object defFillValue = NetcdfFormatUtils.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
           fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
       }
@@ -1864,7 +1851,7 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
      * @return wrapped primitive (Byte, Short, Integer, Double, Float, Long), or null if none
      */
     Object getFillValue() {
-      return (fillValue == null) ? N3iosp.getFillValueDefault(typeInfo.dataType) : getFillValueNonDefault();
+      return (fillValue == null) ? NetcdfFormatUtils.getFillValueDefault(typeInfo.dataType) : getFillValueNonDefault();
     }
 
     Object getFillValueNonDefault() {

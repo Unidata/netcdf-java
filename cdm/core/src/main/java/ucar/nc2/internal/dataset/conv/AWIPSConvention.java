@@ -33,7 +33,7 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -597,7 +597,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     } catch (IOException ioe) {
       return null;
     }
-    if (refValue == N3iosp.NC_FILL_DOUBLE) // why?
+    if (refValue == NetcdfFormatUtils.NC_FILL_DOUBLE) // why?
       return null;
 
     // construct the values array - make it a double to be safe

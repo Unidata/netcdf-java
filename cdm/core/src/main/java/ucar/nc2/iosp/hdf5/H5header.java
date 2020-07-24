@@ -8,11 +8,10 @@ package ucar.nc2.iosp.hdf5;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
-import ucar.nc2.util.Misc;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.nc2.iosp.netcdf4.Nc4;
-import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.ma2.*;
@@ -1421,7 +1420,7 @@ public class H5header extends NCheader implements H5headerIF {
 
       Object fillValue = vinfo.getFillValueNonDefault();
       if (fillValue != null) {
-        Object defFillValue = N3iosp.getFillValueDefault(vinfo.typeInfo.dataType);
+        Object defFillValue = NetcdfFormatUtils.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
           fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
       }
@@ -2056,7 +2055,7 @@ public class H5header extends NCheader implements H5headerIF {
      * @return wrapped primitive (Byte, Short, Integer, Double, Float, Long), or null if none
      */
     Object getFillValue() {
-      return (fillValue == null) ? N3iosp.getFillValueDefault(typeInfo.dataType) : getFillValueNonDefault();
+      return (fillValue == null) ? NetcdfFormatUtils.getFillValueDefault(typeInfo.dataType) : getFillValueNonDefault();
     }
 
     Object getFillValueNonDefault() {

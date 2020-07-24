@@ -27,7 +27,7 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.nio.ByteBuffer;
