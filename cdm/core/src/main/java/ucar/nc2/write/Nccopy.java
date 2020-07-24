@@ -10,6 +10,7 @@ import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import java.util.Optional;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
 import java.io.File;
 import java.util.Arrays;

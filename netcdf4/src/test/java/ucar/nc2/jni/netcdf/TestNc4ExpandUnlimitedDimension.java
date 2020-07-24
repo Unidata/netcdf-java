@@ -26,7 +26,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 
 /** Test writing multiple unlimited dimensions to netcdf4. */

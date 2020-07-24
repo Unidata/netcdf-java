@@ -34,6 +34,7 @@ import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
+import ucar.nc2.iosp.NetcdfFileFormat;
 
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
@@ -67,9 +68,7 @@ public class NetcdfFormatWriter implements Closeable {
       Preconditions.checkArgument(iosp instanceof N3iospNew || iosp instanceof H5iospNew,
           "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();
-      // TODO dont ignore variants formats, eg NETCDF3_64BIT_OFFSET
-      NetcdfFileFormat format = iosp instanceof N3iospNew ? NetcdfFileFormat.NETCDF3 : NetcdfFileFormat.NETCDF4;
-      return builder().setRootGroup(root).setLocation(location).setFormat(format).setIosp(iosp);
+      return builder().setRootGroup(root).setLocation(location).setIosp(iosp).setNewFile(false).setFormat(null);
     }
   }
 
@@ -302,29 +301,25 @@ public class NetcdfFormatWriter implements Closeable {
 
   private NetcdfFormatWriter(Builder builder) throws IOException {
     this.location = builder.location;
-    this.format = builder.format;
     this.isNewFile = builder.isNewFile;
     this.fill = builder.fill;
     this.extraHeaderBytes = builder.extraHeaderBytes;
     this.preallocateSize = builder.preallocateSize;
     this.chunker = builder.chunker;
-    this.useJna = builder.useJna || format.isNetdf4format();
 
-    this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).build();
+    this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location).build();
     this.rootGroup = this.ncout.getRootGroup();
 
+    // read existing file to get the format
     if (!isNewFile) {
       existingRaf = new ucar.unidata.io.RandomAccessFile(location, "rw");
-      NetcdfFileFormat existingVersion = NetcdfFileFormat.findNetcdfFormatType(existingRaf);
-      if (format != null && format != existingVersion) {
-        existingRaf.close();
-        throw new IllegalArgumentException("Existing file at location" + location + " (" + existingVersion
-            + ") does not match requested version " + format);
-      }
+      this.format = NetcdfFileFormat.findNetcdfFormatType(existingRaf);
     } else {
       existingRaf = null;
+      this.format = builder.format;
     }
 
+    this.useJna = builder.useJna || format.isNetdf4format();
     if (useJna) {
       String className = "ucar.nc2.jni.netcdf.Nc4Iosp";
       IOServiceProviderWriter spi;
@@ -379,23 +374,6 @@ public class NetcdfFormatWriter implements Closeable {
   @Nullable
   public Attribute findGlobalAttribute(String attName) {
     return this.ncout.getRootGroup().findAttribute(attName);
-  }
-
-  private String makeValidObjectName(String name) {
-    if (!isValidObjectName(name)) {
-      String nname = createValidObjectName(name);
-      log.warn("illegal object name= " + name + " change to " + name);
-      return nname;
-    }
-    return name;
-  }
-
-  private boolean isValidObjectName(String name) {
-    return NetcdfFileFormat.isValidNetcdfObjectName(name);
-  }
-
-  private String createValidObjectName(String name) {
-    return NetcdfFileFormat.makeValidNetcdfObjectName(name);
   }
 
   /*

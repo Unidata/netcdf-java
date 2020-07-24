@@ -22,7 +22,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.write.Ncdump;
-import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;

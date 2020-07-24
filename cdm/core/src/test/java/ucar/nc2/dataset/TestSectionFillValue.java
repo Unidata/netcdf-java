@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.unidata.util.test.TestDir;
 
 /**
@@ -89,7 +89,7 @@ public class TestSectionFillValue {
         } else {
           Assert.assertNull(v.findAttribute("_FillValue"));
           Assert.assertTrue(ve.hasFillValue());
-          Number fillValue = N3iosp.getFillValueDefault(v.getDataType());
+          Number fillValue = NetcdfFormatUtils.getFillValueDefault(v.getDataType());
           Assert.assertNotNull(v.getDataType().toString(), fillValue);
 
           Array data = v.read();

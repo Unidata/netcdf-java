@@ -7,13 +7,9 @@ package ucar.nc2.jni.netcdf;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
-import com.google.common.io.Resources;
-import com.google.common.truth.Truth;
-import java.io.File;
+
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assume;
@@ -29,15 +25,11 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
-import ucar.nc2.write.Ncdump;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
-import ucar.unidata.util.test.UnitTestCommon;
 
 /** Test copying files with enums to netcdf4. */
 public class TestNc4EnumWriting {

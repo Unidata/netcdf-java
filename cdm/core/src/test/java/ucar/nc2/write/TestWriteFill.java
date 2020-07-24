@@ -15,7 +15,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -126,7 +126,7 @@ public class TestWriteFill {
       Array data = v.read();
       IndexIterator ii = data.getIndexIterator();
       while (ii.hasNext()) {
-        assert ii.getDoubleNext() == N3iosp.NC_FILL_DOUBLE;
+        assert ii.getDoubleNext() == NetcdfFormatUtils.NC_FILL_DOUBLE;
       }
 
       v = ncfile.findVariable("lon");
@@ -134,7 +134,7 @@ public class TestWriteFill {
       data = v.read();
       ii = data.getIndexIterator();
       while (ii.hasNext()) {
-        assert ii.getFloatNext() == N3iosp.NC_FILL_FLOAT;
+        assert ii.getFloatNext() == NetcdfFormatUtils.NC_FILL_FLOAT;
       }
 
       v = ncfile.findVariable("shorty");
@@ -142,7 +142,7 @@ public class TestWriteFill {
       data = v.read();
       ii = data.getIndexIterator();
       while (ii.hasNext()) {
-        assert ii.getShortNext() == N3iosp.NC_FILL_SHORT;
+        assert ii.getShortNext() == NetcdfFormatUtils.NC_FILL_SHORT;
       }
 
       v = ncfile.findVariable("rdefault");
@@ -150,7 +150,7 @@ public class TestWriteFill {
       data = v.read();
       ii = data.getIndexIterator();
       while (ii.hasNext()) {
-        assert ii.getIntNext() == N3iosp.NC_FILL_INT;
+        assert ii.getIntNext() == NetcdfFormatUtils.NC_FILL_INT;
       }
     }
   }

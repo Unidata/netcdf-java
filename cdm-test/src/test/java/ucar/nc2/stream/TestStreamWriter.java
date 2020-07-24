@@ -20,7 +20,7 @@ import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.NetcdfCopier;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;

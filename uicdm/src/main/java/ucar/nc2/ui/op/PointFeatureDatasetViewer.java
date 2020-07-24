@@ -20,7 +20,7 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.write.Ncdump;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.ui.util.Resource;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentDialog;

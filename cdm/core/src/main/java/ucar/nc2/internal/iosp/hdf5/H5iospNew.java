@@ -31,21 +31,17 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutRegular;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
-/**
- * HDF5 I/O
- *
- * @author caron
- */
+/** HDF5 I/O */
 public class H5iospNew extends AbstractIOServiceProvider {
   public static final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
 
-  public static final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
+  private static final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
 
   static boolean debug;
   static boolean debugPos;
@@ -145,7 +141,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
    * 
    * @return {@link Charset value charset} if it was defined.
    */
-  protected Optional<Charset> getValueCharset() {
+  Optional<Charset> getValueCharset() {
     return Optional.ofNullable(valueCharset);
   }
 
@@ -154,7 +150,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
    * 
    * @param charset may be null.
    */
-  protected void setValueCharset(@Nullable Charset charset) {
+  private void setValueCharset(@Nullable Charset charset) {
     this.valueCharset = charset;
   }
 
@@ -232,13 +228,13 @@ public class H5iospNew extends AbstractIOServiceProvider {
       if (vinfo.typeInfo.hdfType == 2) { // time
         readDtype = vinfo.mdt.timeType;
         elemSize = readDtype.getSize();
-        fillValue = N3iosp.getFillValueDefault(readDtype);
+        fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
 
       } else if (vinfo.typeInfo.hdfType == 8) { // enum
         H5headerNew.TypeInfo baseInfo = vinfo.typeInfo.base;
         readDtype = baseInfo.dataType;
         elemSize = readDtype.getSize();
-        fillValue = N3iosp.getFillValueDefault(readDtype);
+        fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
         endian = baseInfo.endian;
 
       } else if (vinfo.typeInfo.hdfType == 9) { // vlen
