@@ -34,8 +34,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
 
   /**
    * Open existing file and allow writing. Netcdf-4 writing is general. Netcdf-3 writing is restricted to writing data
-   * into
-   * existing variables.
+   * into existing variables.
    *
    * @param raf the file to work on.
    * @param ncfile add objects to this empty NetcdfFile

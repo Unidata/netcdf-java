@@ -68,7 +68,7 @@ public class NetcdfFormatWriter implements Closeable {
       Preconditions.checkArgument(iosp instanceof N3iospNew || iosp instanceof H5iospNew,
           "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();
-      return builder().setRootGroup(root).setLocation(location).setIosp(iosp);
+      return builder().setRootGroup(root).setLocation(location).setIosp(iosp).setNewFile(false).setFormat(null);
     }
   }
 
@@ -301,29 +301,25 @@ public class NetcdfFormatWriter implements Closeable {
 
   private NetcdfFormatWriter(Builder builder) throws IOException {
     this.location = builder.location;
-    this.format = builder.format;
     this.isNewFile = builder.isNewFile;
     this.fill = builder.fill;
     this.extraHeaderBytes = builder.extraHeaderBytes;
     this.preallocateSize = builder.preallocateSize;
     this.chunker = builder.chunker;
-    this.useJna = builder.useJna || format.isNetdf4format();
 
-    this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).build();
+    this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location).build();
     this.rootGroup = this.ncout.getRootGroup();
 
+    // read existing file to get the format
     if (!isNewFile) {
       existingRaf = new ucar.unidata.io.RandomAccessFile(location, "rw");
-      NetcdfFileFormat existingVersion = NetcdfFileFormat.findNetcdfFormatType(existingRaf);
-      if (format != null && format != existingVersion) {
-        existingRaf.close();
-        throw new IllegalArgumentException("Existing file at location" + location + " (" + existingVersion
-            + ") does not match requested version " + format);
-      }
+      this.format = NetcdfFileFormat.findNetcdfFormatType(existingRaf);
     } else {
       existingRaf = null;
+      this.format = builder.format;
     }
 
+    this.useJna = builder.useJna || format.isNetdf4format();
     if (useJna) {
       String className = "ucar.nc2.jni.netcdf.Nc4Iosp";
       IOServiceProviderWriter spi;

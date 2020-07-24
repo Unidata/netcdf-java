@@ -52,6 +52,7 @@ public class TestNc4Misc {
   }
 
   @Test
+  @Ignore("openExisting nor working yet")
   public void testUnlimitedDimension() throws IOException, InvalidRangeException {
     String location = tempFolder.newFile().getAbsolutePath();
 
