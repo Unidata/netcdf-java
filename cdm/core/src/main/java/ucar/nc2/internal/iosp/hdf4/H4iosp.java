@@ -32,7 +32,6 @@ import ucar.nc2.iosp.LayoutBBTiled;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutSegmented;
 import ucar.nc2.iosp.LayoutTiled;
-import ucar.nc2.iosp.hdf4.TagEnum;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.PositioningDataInputStream;

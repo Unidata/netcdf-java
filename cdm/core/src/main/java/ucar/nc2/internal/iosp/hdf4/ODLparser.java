@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.iosp.hdf4;
+package ucar.nc2.internal.iosp.hdf4;
 
 import java.nio.charset.StandardCharsets;
 import org.jdom2.Document;

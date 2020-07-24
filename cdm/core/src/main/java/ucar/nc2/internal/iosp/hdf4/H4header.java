@@ -37,8 +37,6 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.hdf4.H4type;
-import ucar.nc2.iosp.hdf4.TagEnum;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;

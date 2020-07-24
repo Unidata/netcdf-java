@@ -19,7 +19,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NCheader;
-import ucar.nc2.iosp.hdf4.HdfEos;
+import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
@@ -266,11 +266,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // read root group
     makeGroup(new Group4(ncid, ncfile.getRootGroup(), null));
 
-    // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
-    if (eosInfo != null && useHdfEos) {
-      isEos = HdfEos.amendFromODL(ncfile, eosInfo);
-    }
+    // TODO: check if its an HDF5-EOS file; we dont have an HdfHeaderIF, because we opened with JNA
+    // Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
+    // if (eosInfo != null && useHdfEos) {
+    // isEos = HdfEos.amendFromODL(ncfile, eosInfo);
+    // }
 
     ncfile.finish();
   }

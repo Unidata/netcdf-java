@@ -7,8 +7,8 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.iosp.hdf4.H4header;
-import ucar.nc2.iosp.hdf4.H4iosp;
+import ucar.nc2.internal.iosp.hdf4.H4header;
+import ucar.nc2.internal.iosp.hdf4.H4iosp;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
