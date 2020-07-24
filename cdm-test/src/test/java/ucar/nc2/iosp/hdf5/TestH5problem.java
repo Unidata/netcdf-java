@@ -33,7 +33,7 @@ public class TestH5problem {
   @Test
   public void problemStringsWithFilter() throws IOException, InvalidRangeException {
     String filename = TestH5.testDir + "StringsWFilter.h5";
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");
       assert v != null;
       int[] shape = v.getShape();
@@ -49,7 +49,7 @@ public class TestH5problem {
   @Test
   public void sectionStringsWithFilter() throws IOException, InvalidRangeException {
     String filename = TestH5.testDir + "StringsWFilter.h5";
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");
       assert v != null;
       int[] shape = v.getShape();
@@ -68,7 +68,7 @@ public class TestH5problem {
   public void problemHugeHeapId() throws IOException {
     // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = TestH5.testDir + "SMAP_L4_SM_aup_20140115T030000_V05007_001.h5";
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Group g = ncfile.findGroup("Metadata");
       assert g != null;
       Attribute att = g.findAttribute("iso_19139_dataset_xml");

@@ -375,7 +375,7 @@ public class HdfEos {
         if (dataFieldNameElem == null) {
           continue;
         }
-        String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
+        String varname = NetcdfFiles.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
         Variable.Builder v = dataG.findVariableLocal(varname).orElse(null);
         if (v == null) {
           log.error("Cant find variable {} {}", varname, location);

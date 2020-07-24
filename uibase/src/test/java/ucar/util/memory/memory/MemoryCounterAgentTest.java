@@ -69,14 +69,14 @@ public class MemoryCounterAgentTest {
 
   static void testHDF4() throws IOException {
     String filename = "C:/data/hdf4/MI1B2T_B54_O003734_AN_05.hdf";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     measureSize(filename, ncfile, null, true);
     ncfile.close();
   }
 
   static void testHDF5() throws IOException {
     String filename = "C:/data/hdf5/HIRDLS2-Aura12h_b033_2000d275.he5";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     // measureSize(filename, ncfile, null, true);
 
     Variable vv = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Geolocation Fields/SpacecraftAltitude");
@@ -88,7 +88,7 @@ public class MemoryCounterAgentTest {
 
   static void testBufr() throws IOException {
     String filename = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     measureSize(filename, ncfile, null, true);
 
     // Variable vv = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Geolocation Fields/SpacecraftAltitude");
@@ -100,7 +100,7 @@ public class MemoryCounterAgentTest {
 
   static void testGrib1() throws IOException {
     String filename = "D:\\data\\grib\\nam\\conus80/NAM_CONUS_80km_20060811_0000.grib1";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     measureSize(filename, ncfile, null, false);
 
     Variable vv = ncfile.findVariable("Absolute_vorticity");
@@ -111,7 +111,7 @@ public class MemoryCounterAgentTest {
 
   static void testGrib2() throws IOException {
     String filename = "D:/datasets/ncep/gfs/global0p5/GFS_Global_0p5deg_20060824_0000.grib2";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     measureSize(filename, ncfile, null, true);
 
     ncfile.close();

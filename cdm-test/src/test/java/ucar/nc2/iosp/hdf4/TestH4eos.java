@@ -13,6 +13,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
@@ -47,7 +48,7 @@ public class TestH4eos {
   }
 
   private void testGridExists(String filename, String vname) throws IOException, InvalidRangeException {
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable(vname);
       assert v != null : filename + " " + vname;
     }
@@ -62,7 +63,7 @@ public class TestH4eos {
 
   @Test
   public void testSpecificVariableSection() throws InvalidRangeException, IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/hdf4/96108_08.hdf")) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/hdf4/96108_08.hdf")) {
 
       Variable v = ncfile.findVariable("CalibratedData");
       assert (null != v);

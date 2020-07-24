@@ -41,7 +41,7 @@ public class TestNids extends TestCase {
     NetcdfFile ncfile = null;
     try {
       System.out.println("**** Open " + basereflectFile);
-      ncfile = NetcdfFile.open(basereflectFile);
+      ncfile = NetcdfFiles.open(basereflectFile);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -58,7 +58,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + basereflect1File);
-      ncfile = NetcdfFile.open(basereflect1File);
+      ncfile = NetcdfFiles.open(basereflect1File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -73,7 +73,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + basereflect2File);
-      ncfile = NetcdfFile.open(basereflect2File);
+      ncfile = NetcdfFiles.open(basereflect2File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -88,7 +88,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + basereflect3File);
-      ncfile = NetcdfFile.open(basereflect3File);
+      ncfile = NetcdfFiles.open(basereflect3File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -103,7 +103,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + basereflect248File);
-      ncfile = NetcdfFile.open(basereflect248File);
+      ncfile = NetcdfFiles.open(basereflect248File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -119,7 +119,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + StormRelMeanVel0File);
-      ncfile = NetcdfFile.open(StormRelMeanVel0File);
+      ncfile = NetcdfFiles.open(StormRelMeanVel0File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -135,7 +135,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + StormRelMeanVel1File);
-      ncfile = NetcdfFile.open(StormRelMeanVel1File);
+      ncfile = NetcdfFiles.open(StormRelMeanVel1File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -150,7 +150,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + StormRelMeanVel2File);
-      ncfile = NetcdfFile.open(StormRelMeanVel2File);
+      ncfile = NetcdfFiles.open(StormRelMeanVel2File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -165,7 +165,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + StormRelMeanVel3File);
-      ncfile = NetcdfFile.open(StormRelMeanVel3File);
+      ncfile = NetcdfFiles.open(StormRelMeanVel3File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -180,7 +180,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + radialVelocityFile);
-      ncfile = NetcdfFile.open(radialVelocityFile);
+      ncfile = NetcdfFiles.open(radialVelocityFile);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -196,7 +196,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + radialVelocity1File);
-      ncfile = NetcdfFile.open(radialVelocity1File);
+      ncfile = NetcdfFiles.open(radialVelocity1File);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -214,7 +214,7 @@ public class TestNids extends TestCase {
     NetcdfFile ncfile = null;
     try {
       System.out.println("**** Open " + oneHourPrecipFile);
-      ncfile = NetcdfFile.open(oneHourPrecipFile);
+      ncfile = NetcdfFiles.open(oneHourPrecipFile);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -230,7 +230,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + totalPrecipFile);
-      ncfile = NetcdfFile.open(totalPrecipFile);
+      ncfile = NetcdfFiles.open(totalPrecipFile);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -249,7 +249,7 @@ public class TestNids extends TestCase {
     NetcdfFile ncfile = null;
     try {
       System.out.println("**** Open " + echotopFile);
-      ncfile = NetcdfFile.open(echotopFile);
+      ncfile = NetcdfFiles.open(echotopFile);
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
       e.printStackTrace();
@@ -263,7 +263,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + vertIntegLiquidFile);
-      ncfile = NetcdfFile.open(vertIntegLiquidFile);
+      ncfile = NetcdfFiles.open(vertIntegLiquidFile);
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
       e.printStackTrace();
@@ -282,7 +282,7 @@ public class TestNids extends TestCase {
     ncfile.close();
     try {
       System.out.println("**** Open " + basereflectCFile);
-      ncfile = NetcdfFile.open(basereflectCFile);
+      ncfile = NetcdfFiles.open(basereflectCFile);
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
@@ -304,7 +304,7 @@ public class TestNids extends TestCase {
     Array a = null;
     try {
       System.out.println("**** Open " + vadWindProfileFile);
-      ncfile = NetcdfFile.open(vadWindProfileFile);
+      ncfile = NetcdfFiles.open(vadWindProfileFile);
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
       e.printStackTrace();
@@ -331,7 +331,7 @@ public class TestNids extends TestCase {
     Array a = null;
     try {
       System.out.println("**** Open " + digitPrecipArrayFile);
-      ncfile = NetcdfFile.open(digitPrecipArrayFile);
+      ncfile = NetcdfFiles.open(digitPrecipArrayFile);
     } catch (java.io.IOException e) {
       System.out.println(" fail = " + e);
       e.printStackTrace();

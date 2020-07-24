@@ -33,7 +33,7 @@ import ucar.nc2.Dimensions;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
@@ -432,7 +432,7 @@ public class NcmlReader {
     }
 
     // they can specify the iosp to use - but must be file based
-    String iospS = netcdfElem.getAttributeValue("iosp");
+    String iospClassName = netcdfElem.getAttributeValue("iosp");
     Object iospParam = netcdfElem.getAttributeValue("iospParam");
     if (iospParam == null) {
       // can pass iosp a JDOM tree
@@ -448,9 +448,9 @@ public class NcmlReader {
     // Doesnt have to have a referenced dataset, Ncml can be self-contained.
     // If it exists, open the referenced dataset - do NOT use acquire, and dont enhance.
     if (referencedDatasetUri != null) {
-      if (iospS != null) {
+      if (iospClassName != null) {
         try {
-          this.refFile = new NetcdfFileSubclass(iospS, iospParam, referencedDatasetUri, buffer_size, cancelTask);
+          this.refFile = NetcdfFiles.open(referencedDatasetUri, iospClassName, buffer_size, cancelTask, iospParam);
         } catch (Exception e) {
           throw new IOException(e);
         }

@@ -806,7 +806,7 @@ public class H4header extends NCheader {
       if (tag.code == 1965) {
         TagVGroup vg = (TagVGroup) tag;
         if (vg.className.startsWith("Dim") || vg.className.startsWith("UDim")) {
-          String dimName = NetcdfFile.makeValidCdmObjectName(vg.name);
+          String dimName = NetcdfFiles.makeValidCdmObjectName(vg.name);
           Dimension d = ncfile.getRootGroup().findDimension(dimName);
           if (d == null)
             throw new IllegalStateException();

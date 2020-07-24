@@ -122,7 +122,7 @@ public class EnumTypedef extends CDMNode {
   /** @deprecated use CDLWriter */
   @Deprecated
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
-    String name = strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName();
+    String name = strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName();
     String basetype = "";
     switch (this.basetype) {
       case ENUM1:
@@ -147,7 +147,7 @@ public class EnumTypedef extends CDMNode {
       if (0 < count++)
         out.format(", ");
       if (strict)
-        out.format("%s = %s", NetcdfFile.makeValidCDLName(s), key);
+        out.format("%s = %s", NetcdfFiles.makeValidCDLName(s), key);
       else
         out.format("'%s' = %s", s, key);
     }

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -35,7 +36,7 @@ public class TestH5 {
   public static NetcdfFile open(String filename) {
     try {
       System.out.println("**** Open " + filename);
-      NetcdfFile ncfile = NetcdfFile.open(filename);
+      NetcdfFile ncfile = NetcdfFiles.open(filename);
       if (TestH5.dumpFile)
         System.out.println("open " + ncfile);
       return ncfile;
@@ -51,7 +52,7 @@ public class TestH5 {
   public static NetcdfFile openH5(String filename) {
     try {
       System.out.println("**** Open " + testDir + filename);
-      NetcdfFile ncfile = NetcdfFile.open(testDir + filename);
+      NetcdfFile ncfile = NetcdfFiles.open(testDir + filename);
       if (TestH5.dumpFile)
         System.out.println("open H5 " + ncfile);
       return ncfile;

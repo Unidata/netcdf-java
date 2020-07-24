@@ -22,6 +22,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
@@ -124,7 +125,7 @@ public class TestNc4ExpandUnlimitedDimension {
      * }
      */
 
-    try (NetcdfFile ncFile = NetcdfFile.open(outFile.getAbsolutePath())) {
+    try (NetcdfFile ncFile = NetcdfFiles.open(outFile.getAbsolutePath())) {
       Variable v = ncFile.getRootGroup().findVariableLocal("table");
       Array actualVals = v.read();
 

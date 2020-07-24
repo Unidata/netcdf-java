@@ -20,8 +20,6 @@ import java.util.List;
 import javax.swing.*;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.StructureTable;
 import org.jdom2.Element;
 import ucar.ma2.Array;
@@ -239,7 +237,7 @@ public class DatasetViewer extends JPanel {
     if (ds == null)
       return;
     String fileLocation = ds.getLocation();
-    try (NetcdfFile org = NetcdfFile.open(fileLocation)) {
+    try (NetcdfFile org = NetcdfFiles.open(fileLocation)) {
       try (NetcdfFile withBuilder = NetcdfFiles.open(fileLocation)) {
         Formatter f = new Formatter();
         CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);

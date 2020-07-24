@@ -58,7 +58,7 @@ public class GeoGridTable extends JPanel {
         infoTA.clear();
         if (v == null)
           infoTA.appendLine(
-              "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFile.makeValidPathName(vb.getName()) + ")");
+              "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
         else {
           infoTA.appendLine("Variable " + v.getFullName() + " :");
           infoTA.appendLine(v.toString());

@@ -25,7 +25,7 @@ public class TestStructureArray {
 
   @Before
   public void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testStructures.nc", -1, null,
+    ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testStructures.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
 

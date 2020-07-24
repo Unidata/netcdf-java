@@ -209,7 +209,7 @@ public class TestStructure {
   }
 
   private void readBothWays(String filename) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     // System.out.println(ncfile);
     ncfile.close();

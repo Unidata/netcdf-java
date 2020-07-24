@@ -40,7 +40,7 @@ class Nc4IospMiscSpec extends Specification {
         assert file.exists()
         
         and: "open it as a NetcdfFile using Nc4Iosp"
-        NetcdfFile ncFile = NetcdfFile.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
+        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
         
         and: "grab the Nc4Iosp instance within so that we can test Nc4Iosp.readDataSection()"
         Nc4Iosp nc4Iosp = ncFile.iosp as Nc4Iosp
@@ -77,7 +77,7 @@ class Nc4IospMiscSpec extends Specification {
         assert file.exists()
     
         and: "open it as a NetcdfFile using Nc4Iosp"
-        NetcdfFile ncFile = NetcdfFile.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
+        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
     
         and: "find unlimited dimensions"
         Dimension primary1Dim = ncFile.findDimension("/group1/primary")

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -43,7 +44,7 @@ public class TestN4problems {
   public void testTiling2() throws IOException, InvalidRangeException {
     // java.lang.AssertionError: shape[2] (385) >= pt[2] (390)
     String filename = TestN4reading.testDir + "UpperDeschutes_t4p10_swemelt.nc";
-    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.getRootGroup().findVariableLocal("UpperDeschutes_t4p10_swemelt");
       Array data = v.read("8087, 150:155, 150:155");
       assert data != null;
@@ -70,7 +71,7 @@ public class TestN4problems {
   public void utestEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = TestN4reading.testDir + "nc4/tst_enum_data.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFiles.open(filename);
     Variable v = ncfile.findVariable("primary_cloud");
     Array data = v.read();
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);

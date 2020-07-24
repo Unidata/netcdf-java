@@ -846,7 +846,7 @@ public class Group extends CDMNode implements AttributeContainer {
     for (String name : pieces) {
       if (name == null)
         continue;
-      String clearname = NetcdfFile.makeNameUnescaped(name); // ??
+      String clearname = NetcdfFiles.makeNameUnescaped(name); // ??
       Group next = current.findGroupLocal(clearname);
       if (next == null) {
         next = new Group(ncf, current, clearname);
