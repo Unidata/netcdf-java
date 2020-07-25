@@ -31,7 +31,7 @@ import java.util.Formatter;
  * Jenkins seems to recreate indices, and so needs this to be on?
  */
 @Category(NeedsCdmUnitTest.class)
-// @Ignore("too long")
+@Ignore("too long")
 public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

@@ -235,6 +235,9 @@ public abstract class CDMNode {
     } else if (this instanceof Variable) {
       return NetcdfFiles.makeFullName((Variable) this);
     } else {
+      if (this instanceof Dimension) {
+        System.out.printf("HEY Dimension.getFullName%n");
+      }
       return this.getShortName();
     }
   }

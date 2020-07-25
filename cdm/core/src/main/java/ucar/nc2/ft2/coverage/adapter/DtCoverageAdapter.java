@@ -26,7 +26,7 @@ import java.util.*;
  * @since 5/1/2015
  */
 public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
-  private static boolean debug;
+  private static boolean debug = false;
 
   public static FeatureDatasetCoverage factory(DtCoverageDataset proxy, Formatter errlog) {
     DtCoverageAdapter reader = new DtCoverageAdapter(proxy);
@@ -77,7 +77,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         if (covAxesMap.get(dep) == null) {
           // assume its an "index" coord var from a dimension
           Dimension dim = proxy.findDimension(dep);
-          CoverageCoordAxis dimAxis = makeCoordAxisFromDimension(dim);
+          CoverageCoordAxis dimAxis = makeCoordAxisFromDimension(dim, dep);
           covAxes.add(dimAxis);
           covAxesMap.put(dimAxis.getName(), dimAxis);
         }
@@ -136,9 +136,9 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     return new CoverageTransform(dt.getName(), atts, dt.getTransformType() == TransformType.Projection);
   }
 
-  private static CoverageCoordAxis makeCoordAxisFromDimension(Dimension dim) {
+  private static CoverageCoordAxis makeCoordAxisFromDimension(Dimension dim, String name) {
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
-    builder.name = dim.getFullName();
+    builder.name = name;
     builder.dataType = DataType.INT;
     builder.axisType = AxisType.Dimension;
     builder.dependenceType = CoverageCoordAxis.DependenceType.dimension;
@@ -176,8 +176,9 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     else if (dtCoordAxis instanceof CoordinateAxis2D) {
       dependenceType = CoverageCoordAxis.DependenceType.twoD;
       Formatter f = new Formatter();
-      for (Dimension d : dtCoordAxis.getDimensions()) // LOOK axes may not exist
-        f.format("%s ", d.getFullName());
+      for (Dimension d : dtCoordAxis.getDimensions()) {// LOOK axes may not exist
+        f.format("%s ", d.makeFullName(dtCoordAxis));
+      }
       dependsOn = f.toString().trim();
 
     } else {
@@ -190,8 +191,9 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
        */
       dependenceType = CoverageCoordAxis.DependenceType.dependent;
       Formatter f = new Formatter();
-      for (Dimension d : dtCoordAxis.getDimensions()) // LOOK axes may not exist
-        f.format("%s ", d.getFullName());
+      for (Dimension d : dtCoordAxis.getDimensions()) {// LOOK axes may not exist
+        f.format("%s ", d.makeFullName(dtCoordAxis));
+      }
       dependsOn = f.toString().trim();
       // }
     }
@@ -327,7 +329,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     // Fmrc Time
     if (axisType == AxisType.Time) {
       if (ftype == FeatureType.FMRC) {
-        builder.setDependsOn(dtCoordAxis.getDimension(0).getFullName()); // only the first dimension
+        builder.setDependsOn(dtCoordAxis.getDimension(0).makeFullName(dtCoordAxis)); // only the first dimension
         return Optional.of(new TimeAxis2DFmrc(builder));
 
       } else if (ftype == FeatureType.SWATH) {

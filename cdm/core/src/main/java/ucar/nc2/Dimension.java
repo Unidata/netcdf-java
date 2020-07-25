@@ -249,10 +249,30 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return getParentGroup();
   }
 
-  /** @deprecated Do not use. */
+  /** @deprecated Use makeFullName(Variable) */
   @Deprecated
   public String makeFullName() {
     return super.getFullName();
+  }
+
+  /**
+   * Make the full name by searching for the containing group starting from the Variable's parent group.
+   * 
+   * @throws IllegalStateException if not found in one of the Variable's parent groups.
+   */
+  public String makeFullName(Variable v) {
+    if (!isShared) {
+      return this.shortName; // ?
+    }
+    Group parent = v.getParentGroup();
+    while (parent != null) {
+      if (parent.findDimensionLocal(this.shortName) != null) {
+        return NetcdfFiles.makeFullNameWithString(parent, this.shortName);
+      }
+      parent = parent.getParentGroup();
+    }
+    throw new IllegalStateException(
+        String.format("Dimension %s not found starting from variable %s' group", this.shortName, v.getFullName()));
   }
 
   @Override
