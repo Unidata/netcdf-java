@@ -12,10 +12,10 @@ import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -256,7 +256,7 @@ public class TestGribCollectionProblem {
     System.out.printf("NOT OK name=%s '%s' '%s'%n", name, result, oldResult.result);
   }
 
-  private static Map<String, Result> oldResults = new HashMap<>();
+  private static Map<String, Result> oldResults = new TreeMap<>();
 
   private static void readOldOutput() throws IOException {
     try (BufferedReader dataIS = new BufferedReader(new StringReader(oldOutput))) {
@@ -269,7 +269,7 @@ public class TestGribCollectionProblem {
         Iterator<String> tokens = Splitter.on("==").trimResults().omitEmptyStrings().split(line).iterator();
         String name = tokens.next();
         String result = tokens.next();
-        System.out.printf("%s = %s%n", name, result);
+        // System.out.printf("%s = %s%n", name, result);
         oldResults.put(name, new Result(name, result));
       }
       System.out.printf("done%n");
