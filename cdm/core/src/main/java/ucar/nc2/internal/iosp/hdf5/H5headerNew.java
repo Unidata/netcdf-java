@@ -67,7 +67,6 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.NetcdfFormatUtils;
-import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.unidata.io.RandomAccessFile;
 
 /** Read all of the metadata of an HD5 file. */
@@ -876,8 +875,8 @@ public class H5headerNew implements HdfHeaderIF {
   private List<MessageAttribute> filterAttributes(List<MessageAttribute> attList) {
     List<MessageAttribute> result = new ArrayList<>(attList.size());
     for (MessageAttribute matt : attList) {
-      if (matt.name.equals(Nc4.NETCDF4_COORDINATES) || matt.name.equals(Nc4.NETCDF4_DIMID)
-          || matt.name.equals(Nc4.NETCDF4_STRICT)) {
+      if (matt.name.equals(NetcdfFormatUtils.NETCDF4_COORDINATES) || matt.name.equals(NetcdfFormatUtils.NETCDF4_DIMID)
+          || matt.name.equals(NetcdfFormatUtils.NETCDF4_STRICT)) {
         isNetcdf4 = true;
       } else {
         result.add(matt);
@@ -1291,8 +1290,8 @@ public class H5headerNew implements HdfHeaderIF {
 
     } else {
       String vname = facade.name;
-      if (vname.startsWith(Nc4.NETCDF4_NON_COORD))
-        vname = vname.substring(Nc4.NETCDF4_NON_COORD.length()); // skip prefix
+      if (vname.startsWith(NetcdfFormatUtils.NETCDF4_NON_COORD))
+        vname = vname.substring(NetcdfFormatUtils.NETCDF4_NON_COORD.length()); // skip prefix
       vb = Variable.builder().setName(vname);
       vb.setParentGroupBuilder(parentGroup);
       if (!makeVariableShapeAndType(parentGroup, vb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))

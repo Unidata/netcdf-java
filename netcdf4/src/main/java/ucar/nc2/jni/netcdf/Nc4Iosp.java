@@ -16,9 +16,8 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.IOServiceProviderWriter;
+import ucar.nc2.internal.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.iosp.NCheader;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
@@ -170,11 +169,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    int format = NCheader.checkFileType(raf);
+    NetcdfFileFormat format = NetcdfFileFormat.findNetcdfFormatType(raf);
     boolean valid = false;
     switch (format) {
-      case NCheader.NC_FORMAT_NETCDF4:
-      case NCheader.NC_FORMAT_64BIT_DATA:
+      case NETCDF4:
+      case NETCDF4_CLASSIC:
+      case NETCDF3_64BIT_DATA:
         valid = true;
         break;
       default:

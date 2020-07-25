@@ -13,12 +13,12 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
 import ucar.ma2.*;
-import ucar.nc2.iosp.netcdf4.Nc4;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Formatter;
 import java.util.ArrayList;
+import ucar.nc2.iosp.NetcdfFormatUtils;
 
 /**
  * Compare two NetcdfFile.
@@ -71,11 +71,11 @@ public class CompareNetcdf2 {
         return false;
 
       // hidden by nc4
-      if (name.equals(Nc4.NETCDF4_DIMID))
+      if (name.equals(NetcdfFormatUtils.NETCDF4_DIMID))
         return false; // preserve the order of the dimensions
-      if (name.equals(Nc4.NETCDF4_COORDINATES))
+      if (name.equals(NetcdfFormatUtils.NETCDF4_COORDINATES))
         return false; // ??
-      if (name.equals(Nc4.NETCDF4_STRICT))
+      if (name.equals(NetcdfFormatUtils.NETCDF4_STRICT))
         return false;
 
       return !name.startsWith("_");

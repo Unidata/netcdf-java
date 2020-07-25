@@ -6,7 +6,7 @@ package ucar.nc2.iosp;
 
 import ucar.ma2.DataType;
 
-/** Utilities for the Netcdf file format (Netcdf-3 and Netcdf-4) */
+/** Utilities and Constants specific to the Netcdf file format (Netcdf-3 and Netcdf-4) */
 public class NetcdfFormatUtils {
   // Default fill values, used unless _FillValue variable attribute is set.
   public static final byte NC_FILL_BYTE = -127;
@@ -27,6 +27,23 @@ public class NetcdfFormatUtils {
   public static final long NC_FILL_UINT64 = 0xfffffffffffffffeL;
 
   public static final String NC_FILL_STRING = "";
+
+  //// Special netcdf-4 specific stuff. used by both Java (H5header) and JNA interface (Nc4Iosp)
+  // @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_4_spec.html"
+
+  // only on the multi-dimensional coordinate variables of the netCDF model (2D chars).
+  // appears to hold the dimension ids of the 2 dimensions.
+  public static final String NETCDF4_COORDINATES = "_Netcdf4Coordinates";
+
+  // on dimension scales, holds a scalar H5T_NATIVE_INT,
+  // which is the (zero-based) dimension ID for this dimension. used to maintain creation order
+  public static final String NETCDF4_DIMID = "_Netcdf4Dimid";
+
+  // global - when using classic model
+  public static final String NETCDF4_STRICT = "_nc3_strict";
+
+  // appended to variable when it conflicts with dimension scale
+  public static final String NETCDF4_NON_COORD = "_nc4_non_coord_";
 
   public static Number getFillValueDefault(DataType dtype) {
     if ((dtype == DataType.BYTE) || (dtype == DataType.ENUM1))
@@ -99,7 +116,6 @@ public class NetcdfFormatUtils {
 
     // trailing spaces disallowed
     return cp > 0x7f || !Character.isWhitespace(cp);
-
   }
 
   /**

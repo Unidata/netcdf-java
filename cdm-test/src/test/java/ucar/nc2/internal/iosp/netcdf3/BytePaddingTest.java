@@ -1,4 +1,9 @@
-package ucar.nc2.iosp.netcdf3;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.internal.iosp.netcdf3;
 
 import org.junit.Rule;
 import org.junit.Test;

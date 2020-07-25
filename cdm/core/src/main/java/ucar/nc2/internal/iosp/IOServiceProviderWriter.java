@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.iosp;
+package ucar.nc2.internal.iosp;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -10,13 +10,9 @@ import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import java.io.IOException;
+import ucar.nc2.iosp.IOServiceProvider;
 
-/**
- * This is an interface to Netcdf-3 and Netcdf-4 file writing.
- * 
- * @deprecated This will be internal in ver6.
- */
-@Deprecated
+/** This is an interface to Netcdf-3 and Netcdf-4 file writing. */
 public interface IOServiceProviderWriter extends IOServiceProvider {
   /**
    * Create new file, populate it from the objects in ncfile.
