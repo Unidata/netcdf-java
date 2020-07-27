@@ -18,7 +18,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutBBTiled;
-import ucar.nc2.iosp.hdf5.DataBTree;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 

@@ -99,7 +99,7 @@ public class TestGridSubsetCoordinateSystem {
       List<Dimension> dims = axis.getDimensions();
       for (Dimension d : dims)
         if (!domain.contains(d)) {
-          System.err.printf("    %s: illegal dimension '%s' in axis %s%n", which, d.getFullName(),
+          System.err.printf("    %s: illegal dimension '%s' in axis %s%n", which, d.getShortName(),
               axis.getNameAndDimensions());
           assert false;
         }

@@ -17,10 +17,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
-import ucar.nc2.iosp.hdf5.BTree2;
-import ucar.nc2.iosp.hdf5.FractalHeap;
-import ucar.nc2.iosp.hdf5.MemTracker;
-import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
 /** The low-level HDF5 data objects. */

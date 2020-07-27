@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.util.DebugFlagsImpl;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -41,7 +41,7 @@ public class TestDODSArrayOfStructure {
   @After
   public void after() throws IOException {
     dodsfile.close();
-    H5header.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
+    H5headerNew.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 
   @Before

@@ -5,12 +5,15 @@
 package ucar.nc2.ft.coverage;
 
 import com.google.common.collect.Lists;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Optional;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -38,6 +41,9 @@ import java.lang.invoke.MethodHandles;
 @Category(NeedsCdmUnitTest.class)
 public class TestCoverageMisc {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  @Rule
+  public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
   public void TestCoverageSize() throws IOException {
@@ -71,8 +77,6 @@ public class TestCoverageMisc {
     logger.info("open {}", endpoint);
 
     // CFGridCoverageWriter2 adds another (dependent) time coordinate, so we need to test this case
-
-    Formatter errLog = new Formatter();
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
       Assert.assertEquals(1, cc.getCoverageCollections().size());
@@ -80,8 +84,10 @@ public class TestCoverageMisc {
       Assert.assertNotNull(endpoint, gds);
       Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
 
+      File tempFile = tempFolder.newFile();
+
       NetcdfFormatWriter.Builder writer =
-          NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, "location", null);
+          NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, tempFile.getAbsolutePath(), null);
       Result result = CFGridCoverageWriter.write(gds, Lists.newArrayList("Temperature_isobaric"), new SubsetParams(),
           false, writer, 1);
       Assert.assertFalse(result.wasWritten());

@@ -16,11 +16,9 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.IOServiceProviderWriter;
+import ucar.nc2.internal.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.iosp.NCheader;
-import ucar.nc2.iosp.hdf4.HdfEos;
-import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
@@ -171,11 +169,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    int format = NCheader.checkFileType(raf);
+    NetcdfFileFormat format = NetcdfFileFormat.findNetcdfFormatType(raf);
     boolean valid = false;
     switch (format) {
-      case NCheader.NC_FORMAT_NETCDF4:
-      case NCheader.NC_FORMAT_64BIT_DATA:
+      case NETCDF4:
+      case NETCDF4_CLASSIC:
+      case NETCDF3_64BIT_DATA:
         valid = true;
         break;
       default:
@@ -266,11 +265,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // read root group
     makeGroup(new Group4(ncid, ncfile.getRootGroup(), null));
 
-    // check if its an HDF5-EOS file
-    Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
-    if (eosInfo != null && useHdfEos) {
-      isEos = HdfEos.amendFromODL(ncfile, eosInfo);
-    }
+    // TODO: check if its an HDF5-EOS file; we dont have an HdfHeaderIF, because we opened with JNA
+    // Group eosInfo = ncfile.getRootGroup().findGroupLocal(HdfEos.HDF5_GROUP);
+    // if (eosInfo != null && useHdfEos) {
+    // isEos = HdfEos.amendFromODL(ncfile, eosInfo);
+    // }
 
     ncfile.finish();
   }
@@ -2840,13 +2839,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     // dont propagate these - handled internally
-    if (att.getShortName().equals(H5header.HDF5_CLASS))
+    if (att.getShortName().equals(H5headerNew.HDF5_CLASS))
       return;
-    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST))
+    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_LIST))
       return;
-    if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE))
+    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_SCALE))
       return;
-    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS))
+    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_LABELS))
       return;
     if (att.getShortName().equals(CDM.CHUNK_SIZES))
       return;

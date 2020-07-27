@@ -597,7 +597,6 @@ public class Group extends CDMNode implements AttributeContainer {
           "Dimension name (" + dim.getShortName() + ") must be unique within Group " + getShortName());
 
     dimensions.add(dim);
-    dim.setGroup(this);
   }
 
   /**
@@ -624,7 +623,6 @@ public class Group extends CDMNode implements AttributeContainer {
       return false;
 
     dimensions.add(dim);
-    dim.setGroup(this);
     return true;
   }
 
@@ -872,7 +870,6 @@ public class Group extends CDMNode implements AttributeContainer {
     this.group = parent;
     this.ncfile = builder.ncfile;
 
-    builder.dimensions.forEach(d -> d.setGroup(this)); // LOOK remove in 6
     this.dimensions = new ArrayList<>(builder.dimensions);
     this.enumTypedefs = new ArrayList<>(builder.enumTypedefs);
 
@@ -894,7 +891,6 @@ public class Group extends CDMNode implements AttributeContainer {
     this.attributes = builder.attributes;
 
     // This needs to go away in 6.
-    this.dimensions.forEach(d -> d.setParentGroup(this));
     this.enumTypedefs.forEach(e -> e.setParentGroup(this));
   }
 
@@ -955,8 +951,8 @@ public class Group extends CDMNode implements AttributeContainer {
     /** Add Dimension with error if it already exists */
     public Builder addDimension(Dimension dim) {
       Preconditions.checkNotNull(dim);
-      findDimensionLocal(dim.shortName).ifPresent(d -> {
-        throw new IllegalArgumentException("Dimension '" + d.shortName + "' already exists");
+      findDimensionLocal(dim.getShortName()).ifPresent(d -> {
+        throw new IllegalArgumentException("Dimension '" + d.getShortName() + "' already exists");
       });
       dimensions.add(dim);
       return this;
@@ -965,7 +961,7 @@ public class Group extends CDMNode implements AttributeContainer {
     /** Add Dimension if it doesnt already exist */
     public boolean addDimensionIfNotExists(Dimension dim) {
       Preconditions.checkNotNull(dim);
-      if (!findDimensionLocal(dim.shortName).isPresent()) {
+      if (!findDimensionLocal(dim.getShortName()).isPresent()) {
         dimensions.add(dim);
         return true;
       }
@@ -985,7 +981,7 @@ public class Group extends CDMNode implements AttributeContainer {
      * @return true if there was an existing dimension of that name
      */
     public boolean replaceDimension(Dimension dim) {
-      Optional<Dimension> want = findDimensionLocal(dim.shortName);
+      Optional<Dimension> want = findDimensionLocal(dim.getShortName());
       want.ifPresent(d -> dimensions.remove(d));
       addDimension(dim);
       return want.isPresent();
@@ -1004,7 +1000,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
     /** Find Dimension local to this Group */
     public Optional<Dimension> findDimensionLocal(String name) {
-      return dimensions.stream().filter(d -> d.shortName.equals(name)).findFirst();
+      return dimensions.stream().filter(d -> d.getShortName().equals(name)).findFirst();
     }
 
     /** Find Dimension in this Group or a parent Group */

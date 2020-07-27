@@ -67,23 +67,19 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.NetcdfFormatUtils;
-import ucar.nc2.iosp.hdf5.DataBTree;
-import ucar.nc2.iosp.hdf5.H5headerIF;
-import ucar.nc2.iosp.hdf5.MemTracker;
-import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.unidata.io.RandomAccessFile;
 
 /** Read all of the metadata of an HD5 file. */
-public class H5headerNew implements H5headerIF, HdfHeaderIF {
+public class H5headerNew implements HdfHeaderIF {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5headerNew.class);
 
   // special attribute names in HDF5
-  private static final String HDF5_CLASS = "CLASS";
-  private static final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
-  private static final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
-  private static final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
-  private static final String HDF5_DIMENSION_NAME = "NAME";
-  private static final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
+  public static final String HDF5_CLASS = "CLASS";
+  public static final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
+  public static final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
+  public static final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
+  public static final String HDF5_DIMENSION_NAME = "NAME";
+  public static final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
 
   // debugging
   private static boolean debugEnum, debugVlen;
@@ -879,8 +875,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   private List<MessageAttribute> filterAttributes(List<MessageAttribute> attList) {
     List<MessageAttribute> result = new ArrayList<>(attList.size());
     for (MessageAttribute matt : attList) {
-      if (matt.name.equals(Nc4.NETCDF4_COORDINATES) || matt.name.equals(Nc4.NETCDF4_DIMID)
-          || matt.name.equals(Nc4.NETCDF4_STRICT)) {
+      if (matt.name.equals(NetcdfFormatUtils.NETCDF4_COORDINATES) || matt.name.equals(NetcdfFormatUtils.NETCDF4_DIMID)
+          || matt.name.equals(NetcdfFormatUtils.NETCDF4_STRICT)) {
         isNetcdf4 = true;
       } else {
         result.add(matt);
@@ -1294,8 +1290,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     } else {
       String vname = facade.name;
-      if (vname.startsWith(Nc4.NETCDF4_NON_COORD))
-        vname = vname.substring(Nc4.NETCDF4_NON_COORD.length()); // skip prefix
+      if (vname.startsWith(NetcdfFormatUtils.NETCDF4_NON_COORD))
+        vname = vname.substring(NetcdfFormatUtils.NETCDF4_NON_COORD.length()); // skip prefix
       vb = Variable.builder().setName(vname);
       vb.setParentGroupBuilder(parentGroup);
       if (!makeVariableShapeAndType(parentGroup, vb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
@@ -2186,7 +2182,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   //////////////////////////////////////////////////////////////
   // utilities
 
-  @Override
   public int makeIntFromBytes(byte[] bb, int start, int n) {
     int result = 0;
     for (int i = start + n - 1; i >= start; i--) {
@@ -2197,33 +2192,27 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     return result;
   }
 
-  @Override
   public boolean isOffsetLong() {
     return isOffsetLong;
   }
 
-  @Override
   public long readLength() throws IOException {
     return isLengthLong ? raf.readLong() : (long) raf.readInt();
   }
 
-  @Override
   public long readOffset() throws IOException {
     return isOffsetLong ? raf.readLong() : (long) raf.readInt();
   }
 
-  @Override
   public long readAddress() throws IOException {
     return getFileOffset(readOffset());
   }
 
-  @Override
   public byte getSizeLengths() {
     return sizeLengths;
   }
 
   // size of data depends on "maximum possible number"
-  @Override
   public int getNumBytesFromMax(long maxNumber) {
     int size = 0;
     while (maxNumber != 0) {
@@ -2233,7 +2222,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     return size;
   }
 
-  @Override
   public long readVariableSizeUnsigned(int size) throws IOException {
     long vv;
     if (size == 1) {
@@ -2269,17 +2257,14 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     return result;
   }
 
-  @Override
   public RandomAccessFile getRandomAccessFile() {
     return raf;
   }
 
-  @Override
   public long getFileOffset(long address) {
     return baseAddress + address;
   }
 
-  @Override
   public byte getSizeOffsets() {
     return sizeOffsets;
   }

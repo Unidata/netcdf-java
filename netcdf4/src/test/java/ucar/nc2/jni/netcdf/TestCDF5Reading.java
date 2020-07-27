@@ -20,7 +20,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.iosp.NCheader;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
@@ -57,8 +57,8 @@ public class TestCDF5Reading extends UnitTestCommon {
     String location = canonjoin(TestDir.cdmTestDataDir, "thredds/public/testdata/nc_test_cdf5.nc");
     try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
       // Verify that this is a netcdf-5 file
-      int format = NCheader.checkFileType(raf);
-      Assert.assertTrue("Fail: file format is not CDF-5", format == NCheader.NC_FORMAT_64BIT_DATA);
+      NetcdfFileFormat format = NetcdfFileFormat.findNetcdfFormatType(raf);
+      Assert.assertTrue("Fail: file format is not CDF-5", format == NetcdfFileFormat.NETCDF3_64BIT_DATA);
     }
     try (NetcdfFile jni = openJni(location)) {
       jni.setLocation(location + " (jni)");

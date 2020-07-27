@@ -284,7 +284,9 @@ public abstract class Table {
           this.dim = ds.findDimension(config.dimName);
           assert dim != null;
           String name = config.structName == null ? "anon" : config.structName;
-          struct = new StructurePseudoDS(ds, dim.getGroup(), name, config.vars, this.dim);
+          // TODO
+          // struct = new StructurePseudoDS(ds, dim.getGroup(), name, config.vars, this.dim);
+          struct = new StructurePseudoDS(ds, null, name, config.vars, this.dim);
           break;
 
         case PsuedoStructure2D:
@@ -292,7 +294,9 @@ public abstract class Table {
           this.outer = ds.findDimension(config.outerName);
           assert dim != null;
           assert config.outerName != null;
-          struct = new StructurePseudo2Dim(ds, dim.getGroup(), config.structName, config.vars, this.dim, this.outer);
+          // TODO
+          // struct = new StructurePseudo2Dim(ds, dim.getGroup(), config.structName, config.vars, this.dim, this.outer);
+          struct = new StructurePseudo2Dim(ds, null, config.structName, config.vars, this.dim, this.outer);
           break;
       }
 

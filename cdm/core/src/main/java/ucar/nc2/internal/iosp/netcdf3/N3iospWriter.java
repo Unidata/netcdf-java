@@ -25,7 +25,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.IOServiceProviderWriter;
+import ucar.nc2.internal.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
