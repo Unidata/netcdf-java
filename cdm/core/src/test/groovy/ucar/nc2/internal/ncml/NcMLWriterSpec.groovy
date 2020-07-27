@@ -230,7 +230,7 @@ recordsGroup/recordsStruct = UNREADABLE
         NcmlWriter ncmlWriterO = new NcmlWriter(null, null, compoundPred);
 
         for (Variable v : ncFile.variables) {
-            printf "%s == %s isCoord = %s%n", v.getName(), compoundPred.test(v), NcmlWriter.writeCoordinateVariablesPredicate.test(v)
+            printf "%s == %s isCoord = %s%n", v.getShortName(), compoundPred.test(v), NcmlWriter.writeCoordinateVariablesPredicate.test(v)
         }
 
         expect: "getter returns instance just set"
