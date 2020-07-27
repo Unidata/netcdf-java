@@ -76,11 +76,6 @@ public class Dimension implements Comparable<Dimension> {
     return length;
   }
 
-  /** Get the name of the Dimension. Same as getShortName. */
-  public String getName() {
-    return this.shortName;
-  }
-
   /** Get the name of the Dimension. */
   public String getShortName() {
     return this.shortName;
@@ -171,20 +166,6 @@ public class Dimension implements Comparable<Dimension> {
   public int compareTo(Dimension odim) {
     String name = getShortName();
     return name.compareTo(odim.getShortName());
-  }
-
-  /**
-   * CDL representation.
-   *
-   * @param strict if true, write in strict adherence to CDL definition.
-   * @return CDL representation.
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public String writeCDL(boolean strict) {
-    Formatter f = new Formatter();
-    writeCDL(f, new Indent(2), strict);
-    return f.toString();
   }
 
   /** @deprecated use CDLWriter */

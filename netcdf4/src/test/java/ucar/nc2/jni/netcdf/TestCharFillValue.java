@@ -61,7 +61,7 @@ public class TestCharFillValue extends UnitTestCommon {
     String filename = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filename, null);
     Dimension charDim = writerb.addDimension("charDim", 3);
-    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getName());
+    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
     // this works
     Array charArray = ArrayChar.makeFromString(charFillValue, 1);
     charVar.addAttribute(new Attribute("charAttrName", charArray));
@@ -106,7 +106,7 @@ public class TestCharFillValue extends UnitTestCommon {
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filename, null);
 
     Dimension charDim = writerb.addDimension("charDim", 3);
-    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getName());
+    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
     Array charArrayFillValue = ArrayChar.makeFromString(charNullFillValue, 1);
     Attribute charAttrFillValue;
     charAttrFillValue = new Attribute("_FillValue", charArrayFillValue);

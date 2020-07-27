@@ -119,7 +119,7 @@ public class MemoryCounterAgentTest {
 
   static void showAll(NetcdfFile ncfile) {
     for (Dimension dim : ncfile.getDimensions())
-      measureSize(dim.getName(), dim, Group.class, false);
+      measureSize(dim.getShortName(), dim, Group.class, false);
 
     for (Variable v : ncfile.getVariables()) {
       measureSize(v.getFullName(), v, Group.class, false);
