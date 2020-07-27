@@ -151,19 +151,19 @@ class Nc4IospMiscSpec extends Specification {
         NetcdfFile ncFile = NetcdfFiles.open(tempFile.absolutePath)
 
         expect: "the value of the attributes are null"
-        Attribute attrNumAfter = ncFile.findGlobalAttribute(attrNumBefore.fullName)
+        Attribute attrNumAfter = ncFile.findGlobalAttribute(attrNumBefore.getShortName())
         attrNumBefore.getValues().equals attrNumAfter.getValues()
         attrNumBefore.getValues() == null
 
-        Attribute attrStrAfter = ncFile.findGlobalAttribute(attrStrBefore.fullName)
+        Attribute attrStrAfter = ncFile.findGlobalAttribute(attrStrBefore.getShortName())
         attrStrBefore.getValues().equals attrStrAfter.getValues()
         attrStrBefore.getValues() == null
 
-        Attribute attrCharAfter = ncFile.findGlobalAttribute(attrCharBefore.fullName)
+        Attribute attrCharAfter = ncFile.findGlobalAttribute(attrCharBefore.getShortName())
         attrCharBefore.getValues().equals attrCharAfter.getValues()
         attrCharBefore.getValues() == null
 
-        Attribute attrNullCharAfter = ncFile.findGlobalAttribute(attrNullCharBefore.fullName)
+        Attribute attrNullCharAfter = ncFile.findGlobalAttribute(attrNullCharBefore.getShortName())
         attrNullCharBefore.getValues().getSize() == attrNullCharAfter.getValues().getSize()
         attrNullCharBefore.getValues().getSize() == 1
         attrNullCharBefore.getValue(0).equals(attrNullCharAfter.getValue(0))

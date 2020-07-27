@@ -11,6 +11,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -2488,7 +2489,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     } else if (v.getDataType().isEnum()) {
       EnumTypedef en = v.getEnumTypedef();
-      UserType ut = (UserType) en.annotation(UserType.class);
+      UserType ut = (UserType) annotation(en, UserType.class);
       typid = ut.typeid;
       vinfo = new Vinfo(g4, -1, typid);
     } else if (v.getDataType() == DataType.OPAQUE) {
@@ -2596,7 +2597,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // keep track of the User Defined types
     UserType ut = new UserType(g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
     userTypes.put(typeid, ut);
-    en.annotate(UserType.class, ut); // dont know the varid yet
+    annotate(en, UserType.class, ut); // dont know the varid yet
   }
 
   /////////////////////////////////////
@@ -3415,6 +3416,45 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           } // else ignore
         } // else ignore
       }
+    }
+    return null;
+  }
+
+  private class Annotation {
+    Object key;
+    Object value;
+
+    public Annotation(Object key, Object value) {
+      this.key = key;
+      this.value = value;
+    }
+  }
+
+  private HashMap<Object, List<Annotation>> annotations = new HashMap<>();
+
+  private void annotate(Object elem, Object key, Object value) {
+    List<Annotation> list = annotations.computeIfAbsent(elem, k -> new ArrayList<>());
+    int index = -1;
+    Iterator<Annotation> iter = list.iterator();
+    while (iter.hasNext()) {
+      Annotation ann = iter.next();
+      if (ann.key.equals(key)) {
+        iter.remove();
+        break;
+      }
+    }
+    list.add(new Annotation(key, value));
+  }
+
+  @Nullable
+  private Object annotation(Object elem, Object key) {
+    List<Annotation> list = annotations.get(elem);
+    if (list == null) {
+      return null;
+    }
+    for (Annotation ann : list) {
+      if (ann.key.equals(key))
+        return ann.value;
     }
     return null;
   }

@@ -657,7 +657,7 @@ public class Group extends CDMNode implements AttributeContainer {
       throw new IllegalStateException("Cant modify");
     if (e == null)
       return;
-    e.setParentGroup(this);
+    // e.setParentGroup(this);
     enumTypedefs.add(e);
   }
 
@@ -891,7 +891,7 @@ public class Group extends CDMNode implements AttributeContainer {
     this.attributes = builder.attributes;
 
     // This needs to go away in 6.
-    this.enumTypedefs.forEach(e -> e.setParentGroup(this));
+    // this.enumTypedefs.forEach(e -> e.setParentGroup(this));
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
@@ -1124,7 +1124,7 @@ public class Group extends CDMNode implements AttributeContainer {
     }
 
     public Optional<EnumTypedef> findEnumTypedef(String name) {
-      return this.enumTypedefs.stream().filter(e -> e.shortName.equals(name)).findFirst();
+      return this.enumTypedefs.stream().filter(e -> e.getShortName().equals(name)).findFirst();
     }
 
     /** Add a Variable, throw error if one of the same name if it exists. */

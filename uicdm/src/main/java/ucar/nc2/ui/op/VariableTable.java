@@ -274,7 +274,7 @@ public class VariableTable extends JPanel {
       if (includeGlobals.isSelected()) {
         List<Attribute> gAtts = fds.getGlobalAttributes();
         for (Attribute a : gAtts) {
-          pw.println("; " + a.toString(false));
+          pw.println("; " + a.toString());
         }
       }
 

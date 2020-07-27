@@ -75,7 +75,7 @@ public class TestH5problem {
       assert att != null;
       assert att.isString();
       String val = att.getStringValue();
-      System.out.printf(" len of %s is %d%n", att.getFullName(), val.length());
+      System.out.printf(" len of %s is %d%n", att.getName(), val.length());
       assert val.length() > 200 * 1000; // silly rabbit
     }
   }

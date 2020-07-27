@@ -83,7 +83,6 @@ public class DODSAttribute extends ucar.nc2.Attribute {
       }
     }
     setValues(data);
-    setImmutable();
   }
 
   protected DODSAttribute(String dodsName, String val) {
@@ -102,16 +101,19 @@ public class DODSAttribute extends ucar.nc2.Attribute {
   // DODSNode Interface
   String dodsName = null;
 
-  public String getDODSName() {
-    return dodsName;
-  }
-
   public void setDODSName(String name) {
     this.dodsName = name;
   }
 
   public void resetShortName(String name) {
-    setShortName(name);
+    setName(name);
+  }
+
+  public String getDODSName() {
+    if (dodsName == null)
+      return getShortName();
+    else
+      return this.dodsName;
   }
 
 }
