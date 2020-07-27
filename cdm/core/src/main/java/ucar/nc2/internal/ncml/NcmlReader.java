@@ -598,9 +598,10 @@ public class NcmlReader {
     }
 
     // look for attributes
+    AttributeContainer atts = refGroup == null ? null : refGroup.attributes();
     java.util.List<Element> attList = groupElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
-      readAtt(groupBuilder.getAttributeContainer(), refGroup.attributes(), attElem);
+      readAtt(groupBuilder.getAttributeContainer(), atts, attElem);
     }
 
     // look for enumTypedef
