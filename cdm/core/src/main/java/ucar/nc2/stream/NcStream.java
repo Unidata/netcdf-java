@@ -31,6 +31,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -197,7 +198,7 @@ public class NcStream {
   static NcStreamProto.Data encodeDataProto(Variable var, Section section, NcStreamProto.Compress compressionType,
       ByteOrder bo, int uncompressedLength) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
-    builder.setVarName(var.getFullNameEscaped());
+    builder.setVarName(NetcdfFiles.makeFullName(var));
     builder.setDataType(convertDataType(var.getDataType()));
     builder.setSection(encodeSection(section));
     builder.setCompress(compressionType);

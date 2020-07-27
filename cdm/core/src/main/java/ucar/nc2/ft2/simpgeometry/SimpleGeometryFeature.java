@@ -6,6 +6,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft2.simpgeometry.adapter.SimpleGeometryCS;
@@ -85,7 +86,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
 
       // Set up x Axis
       for (CoordinateAxis xAx : coordSys.getSimpleGeometryX()) {
-        if (axesStrActualList.contains(xAx.getFullNameEscaped())) {
+        if (axesStrActualList.contains(NetcdfFiles.makeFullName(xAx))) {
           xAxis = xAx;
           shapeLength++;
         }
@@ -93,7 +94,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
 
       // Set up y Axis
       for (CoordinateAxis yAx : coordSys.getSimpleGeometryY()) {
-        if (axesStrActualList.contains(yAx.getFullNameEscaped())) {
+        if (axesStrActualList.contains(NetcdfFiles.makeFullName(yAx))) {
           yAxis = yAx;
           shapeLength++;
         }
@@ -101,7 +102,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
 
       // Set up z Axis
       for (CoordinateAxis zAx : coordSys.getSimpleGeometryZ()) {
-        if (axesStrActualList.contains(zAx.getFullNameEscaped())) {
+        if (axesStrActualList.contains(NetcdfFiles.makeFullName(zAx))) {
           zAxis = zAx;
           shapeLength++;
         }
@@ -109,7 +110,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
 
       // Set up ID axis
       for (CoordinateAxis idAx : coordSys.getSimpleGeometryID()) {
-        if (axesStrActualList.contains(idAx.getFullNameEscaped())) {
+        if (axesStrActualList.contains(NetcdfFiles.makeFullName(idAx))) {
           IDAxis = idAx;
           shapeLength++;
         }

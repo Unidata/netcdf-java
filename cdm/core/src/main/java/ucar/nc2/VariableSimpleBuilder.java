@@ -81,7 +81,6 @@ public class VariableSimpleBuilder {
       this.dims = builder.dims;
     }
 
-    @Override
     public String getName() {
       return name;
     }

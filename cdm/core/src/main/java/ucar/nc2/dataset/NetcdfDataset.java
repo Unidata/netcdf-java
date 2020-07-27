@@ -721,7 +721,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (v.isMemberOfStructure()) {
       Structure parentOrg = v.getParentStructure(); // gotta be careful to get the wrapping parent
-      Structure parent = (Structure) findVariable(parentOrg.getFullNameEscaped());
+      Structure parent = (Structure) findVariable(NetcdfFiles.makeFullName(parentOrg));
       parent.replaceMemberVariable(ca);
 
     } else {

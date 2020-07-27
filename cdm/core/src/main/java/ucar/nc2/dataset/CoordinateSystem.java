@@ -68,7 +68,7 @@ public class CoordinateSystem {
       CoordinateAxis axis = axesSorted.get(i);
       if (i > 0)
         buff.append(" ");
-      buff.append(axis.getFullNameEscaped());
+      buff.append(NetcdfFiles.makeFullName(axis));
     }
     return buff.toString();
   }

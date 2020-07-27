@@ -18,6 +18,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.ProxyReader;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -368,7 +369,7 @@ class FmrcDataset {
 
         // LOOK is this needed ?
         for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
-          Variable coordV = result.findVariable(axis.getFullNameEscaped());
+          Variable coordV = result.findVariable(NetcdfFiles.makeFullName(axis));
           if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure)
               || (axis.getAxisType() == AxisType.GeoZ)) {
             if (null != axis.getPositive())
@@ -647,7 +648,7 @@ class FmrcDataset {
 
     List<CoordinateAxis> axes = new ArrayList<>();
     for (CoordinateAxis axis : protoCs.getCoordinateAxes()) {
-      CoordinateAxis ra = result.findCoordinateAxis(axis.getFullNameEscaped());
+      CoordinateAxis ra = result.findCoordinateAxis(NetcdfFiles.makeFullName(axis));
       axes.add(ra);
     }
 
@@ -835,7 +836,7 @@ class FmrcDataset {
 
     // these are the non-agg variables - get data or ProxyReader from proto
     for (Variable v : nonAggVars) {
-      VariableDS protoV = (VariableDS) proto.findVariable(v.getFullNameEscaped());
+      VariableDS protoV = (VariableDS) proto.findVariable(NetcdfFiles.makeFullName(v));
       if (protoV.hasCachedDataRecurse()) {
         v.setCachedData(protoV.read()); // read from original
       } else {
@@ -1006,7 +1007,7 @@ class FmrcDataset {
           } else if (timeInv.getDatasetLocation() != null) {
             if (debugRead)
               System.out.printf("HIT %s%n", timeInv);
-            result = read(timeInv, mainv.getFullNameEscaped(), innerSection, openFilesRead); // may return null
+            result = read(timeInv, NetcdfFiles.makeFullName(mainv), innerSection, openFilesRead); // may return null
             result = MAMath.convert(result, dtype); // just in case it need to be converted
           }
 
@@ -1128,7 +1129,7 @@ class FmrcDataset {
   }
 
   protected Variable findVariable(NetcdfFile ncfile, Variable client) {
-    Variable v = ncfile.findVariable(client.getFullNameEscaped());
+    Variable v = ncfile.findVariable(NetcdfFiles.makeFullName(client));
     if (v == null) { // might be renamed
       VariableEnhanced ve = (VariableEnhanced) client;
       v = ncfile.findVariable(ve.getOriginalName());

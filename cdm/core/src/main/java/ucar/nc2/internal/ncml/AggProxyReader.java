@@ -7,6 +7,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.ProxyReader;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableEnhanced;
@@ -58,7 +59,7 @@ public class AggProxyReader implements ProxyReader {
 
 
   protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
-    Variable v = ncfile.findVariable(mainV.getFullNameEscaped());
+    Variable v = ncfile.findVariable(NetcdfFiles.makeFullName(mainV));
     if (v == null) { // might be renamed
       VariableEnhanced ve = (VariableEnhanced) mainV;
       v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped

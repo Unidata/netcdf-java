@@ -7,7 +7,6 @@ package ucar.nc2;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
@@ -170,11 +169,9 @@ public class Structure extends Variable {
    */
   @Deprecated
   public Variable addMemberVariable(Variable v) {
-    if (isImmutable())
-      throw new IllegalStateException("Cant modify");
     members.add(v);
     memberHash.put(v.getShortName(), v);
-    v.setParentStructure(this);
+    v.parentStructure = this;
     return v;
   }
 
@@ -186,8 +183,6 @@ public class Structure extends Variable {
    */
   @Deprecated
   public void setMemberVariables(List<Variable> vars) {
-    if (isImmutable())
-      throw new IllegalStateException("Cant modify");
     members = new ArrayList<>();
     memberHash = new HashMap<>(2 * vars.size());
     for (Variable v : vars) {
@@ -204,8 +199,6 @@ public class Structure extends Variable {
    */
   @Deprecated
   public boolean removeMemberVariable(Variable v) {
-    if (isImmutable())
-      throw new IllegalStateException("Cant modify");
     if (v == null)
       return false;
     // smembers = null;
@@ -231,8 +224,6 @@ public class Structure extends Variable {
    */
   @Deprecated
   public boolean replaceMemberVariable(Variable newVar) {
-    if (isImmutable())
-      throw new IllegalStateException("Cant modify");
     // smembers = null;
     boolean found = false;
     for (int i = 0; i < members.size(); i++) {
@@ -258,26 +249,12 @@ public class Structure extends Variable {
   @Deprecated
   @Override
   public void setParentGroup(Group group) {
-    if (isImmutable())
-      throw new IllegalStateException("Cant modify");
     super.setParentGroup(group);
     if (members != null) {
       for (Variable v : members) {
         v.setParentGroup(group);
       }
     }
-  }
-
-  /** @deprecated Use Structure.builder() */
-  @Deprecated
-  @Override
-  public Variable setImmutable() {
-    members = Collections.unmodifiableList(members);
-    for (Variable m : members)
-      m.setImmutable();
-
-    super.setImmutable();
-    return this;
   }
 
   /** Get the variables contained directly in this Structure. */

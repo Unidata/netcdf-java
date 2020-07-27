@@ -504,7 +504,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           }
         }
 
-        gribCollection.addVariableAttributes(v, vindex);
+        gribCollection.addVariableAttributes(v.attributes(), vindex);
         v.setSPobject(vindex);
       }
     }

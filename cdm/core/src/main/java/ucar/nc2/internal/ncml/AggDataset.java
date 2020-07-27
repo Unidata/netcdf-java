@@ -16,6 +16,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -187,7 +188,7 @@ public class AggDataset implements Comparable<AggDataset> {
   }
 
   protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
-    Variable v = ncfile.findVariable(mainV.getFullNameEscaped());
+    Variable v = ncfile.findVariable(NetcdfFiles.makeFullName(mainV));
     if (v == null && mainV instanceof VariableDS) { // might be renamed
       VariableDS ve = (VariableDS) mainV;
       v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped

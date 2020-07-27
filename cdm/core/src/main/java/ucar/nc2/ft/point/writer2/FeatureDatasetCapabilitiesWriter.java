@@ -333,7 +333,6 @@ public class FeatureDatasetCapabilitiesWriter {
       }
     }
 
-    @Override
     public String getName() {
       return name;
     }

@@ -9,6 +9,7 @@ import com.google.common.net.UrlEscapers;
 import java.util.Optional;
 import ucar.httpservices.*;
 import ucar.ma2.*;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
@@ -136,7 +137,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (compress)
       f.format("&deflate=5");
     // f.format("&var=%s", v.getShortName());
-    f.format("&var=%s", v.getFullNameEscaped());
+    f.format("&var=%s", NetcdfFiles.makeFullName(v));
     if ((section != null) && (section.computeSize() != v.getSize()) && (v.getDataType() != DataType.SEQUENCE)) {
       f.format("(%s)", section.toString());
     }
@@ -177,7 +178,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       NcStreamReader reader = new NcStreamReader();
       NcStreamReader.DataResult result = reader.readData(is, this, remoteURI);
 
-      assert v.getFullNameEscaped().equals(result.varNameFullEsc);
+      assert NetcdfFiles.makeFullName(v).equals(result.varNameFullEsc);
       return result.data;
     }
   }
@@ -191,7 +192,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     try {
-      InputStream is = sendQuery(httpClient, remoteURI, s.getFullNameEscaped());
+      InputStream is = sendQuery(httpClient, remoteURI, NetcdfFiles.makeFullName(s));
       NcStreamReader reader = new NcStreamReader();
       return reader.getStructureIterator(is, this);
 

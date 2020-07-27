@@ -1070,7 +1070,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       v.setEnumTypedef(enumTypedef);
     } else if (dtype == DataType.OPAQUE) {
       if (this.markreserved) {
-        v.annotate(UCARTAGOPAQUE, utype.size);
+        annotate(v, UCARTAGOPAQUE, utype.size);
       }
     }
 

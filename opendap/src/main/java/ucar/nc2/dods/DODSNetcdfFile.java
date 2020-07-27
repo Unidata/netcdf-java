@@ -838,7 +838,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (parentStructure != null)
         parentStructure.addMemberVariable(v);
       else {
-        parentGroup = computeGroup(v.getDODSName(), v, parentGroup);
+        parentGroup = computeGroup(v, parentGroup);
         parentGroup.addVariable(v);
       }
       dodsV.isDone = true;
@@ -846,7 +846,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return v;
   }
 
-  Group computeGroup(String path, Variable v, Group parentGroup/* Ostensibly */) {
+  Group computeGroup(Variable v, Group parentGroup/* Ostensibly */) {
     if (parentGroup == null)
       parentGroup = getRootGroup();
     if (RC.getUseGroups()) {
@@ -856,7 +856,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (v.getParentStructure() == null) {
         // HACK: Since only the grid array is used in converting
         // to netcdf-3, we look for group info on the array.
-        String dodsname = v.getDODSName();
+        String dodsname = ((DODSNode) v).getDODSName();
         int sindex = dodsname.indexOf('/');
         if (sindex >= 0) {
           assert (parentGroup != null);
@@ -1296,7 +1296,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @return The name in a form suitable for use in a cE
    */
   public static String getDODSConstraintName(Variable var) {
-    String vname = var.getDODSName();
+    String vname = ((DODSNode) var).getDODSName();
     // The vname is backslash escaped, so we need to
     // modify to use DAP %xx escapes.
     return EscapeStrings.backslashToDAP(vname);

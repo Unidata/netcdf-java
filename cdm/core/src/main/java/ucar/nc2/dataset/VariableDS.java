@@ -179,7 +179,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Override
   public NetcdfFile getNetcdfFile() {
     // TODO can group really be null? Variable says no.
-    return group == null ? null : group.getNetcdfFile();
+    return getParentGroup() == null ? null : getParentGroup().getNetcdfFile();
   }
 
   // for section and slice
@@ -388,7 +388,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Override
   public String setName(String newName) {
     this.orgName = getShortName();
-    super.setShortName(newName);
+    super.setName(newName);
     return newName;
   }
 

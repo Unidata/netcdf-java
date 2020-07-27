@@ -995,7 +995,7 @@ public class NcmlReader {
 
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
-      readAtt(vb.getAttributeContainer(), refv, attElem);
+      readAtt(vb.getAttributeContainer(), refv.attributes(), attElem);
     }
 
     // deal with legacy use of attribute with Unsigned = true
@@ -1132,7 +1132,7 @@ public class NcmlReader {
 
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
-      readAtt(structBuilder.getAttributeContainer(), refStructure, attElem);
+      readAtt(structBuilder.getAttributeContainer(), refStructure.attributes(), attElem);
     }
 
     java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
