@@ -53,8 +53,6 @@ public abstract class CDMNode {
       setSort(CDMSort.SEQUENCE);
     else if (this instanceof Structure)
       setSort(CDMSort.STRUCTURE);
-    else if (this instanceof Group)
-      setSort(CDMSort.GROUP);
     else if (this instanceof Variable) // Only case left is atomic var
       setSort(CDMSort.VARIABLE);
   }
@@ -224,9 +222,7 @@ public abstract class CDMNode {
    */
   @Deprecated
   public String getFullName() {
-    if (this instanceof Group) {
-      return NetcdfFiles.makeFullName((Group) this);
-    } else if (this instanceof Variable) {
+    if (this instanceof Variable) {
       return NetcdfFiles.makeFullName((Variable) this);
     } else {
       return this.getShortName();

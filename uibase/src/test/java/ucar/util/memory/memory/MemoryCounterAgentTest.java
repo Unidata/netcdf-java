@@ -134,7 +134,7 @@ public class MemoryCounterAgentTest {
     Group root = ncfile.getRootGroup();
     measureSize("rootGroup", root, null, false);
     for (Group g : root.getGroups())
-      measureSize(g.getName(), g, null, false);
+      measureSize(g.getFullName(), g, null, false);
   }
 
   static void testN3() throws IOException {

@@ -600,7 +600,7 @@ public class NcmlReader {
     // look for attributes
     java.util.List<Element> attList = groupElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
-      readAtt(groupBuilder.getAttributeContainer(), refGroup, attElem);
+      readAtt(groupBuilder.getAttributeContainer(), refGroup.attributes(), attElem);
     }
 
     // look for enumTypedef
