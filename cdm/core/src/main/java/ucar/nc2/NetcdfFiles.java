@@ -930,7 +930,7 @@ public class NetcdfFiles {
   }
 
   /**
-   * Given a CDMNode, create its full name with
+   * Given a Variable, create its full name with
    * appropriate backslash escaping of the specified characters.
    *
    * @param node the cdm node
