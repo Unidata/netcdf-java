@@ -25,7 +25,7 @@ public interface AttributeContainer extends Iterable<Attribute> {
    */
   static AttributeContainer filter(AttributeContainer atts, String... remove) {
     List<Attribute> result = new ArrayList<>();
-    for (Attribute att : atts.getAttributes()) {
+    for (Attribute att : atts) {
       boolean ok = true;
       for (String s : remove) {
         if (att.getShortName().startsWith(s)) {
@@ -37,7 +37,7 @@ public interface AttributeContainer extends Iterable<Attribute> {
         result.add(att);
       }
     }
-    return new AttributeContainerHelper(atts.getName(), result);
+    return new AttributeContainerMutable(atts.getName(), result).toImmutable();
   }
 
   /** Find an Attribute by exact match on name. */
@@ -88,70 +88,5 @@ public interface AttributeContainer extends Iterable<Attribute> {
 
   /** An unordered iterator over the contained attributes. */
   @Override
-  default Iterator<Attribute> iterator() {
-    return getAttributes().iterator();
-  }
-
-  /** @deprecated use findAttributeString(). */
-  @Deprecated
-  default String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return findAttributeString(attName, defaultValue);
-  }
-
-  ///// will be removed in version 6 to make AttributeContainer immutable
-  /**
-   * Returns immutable list of attributes.
-   *
-   * @deprecated use Iterable<Attribute>
-   */
-  @Deprecated
-  java.util.List<Attribute> getAttributes();
-
-  /**
-   * Add all; replace old if has same name
-   *
-   * @deprecated will be removed in version 6.
-   */
-  @Deprecated
-  void addAll(Iterable<Attribute> atts);
-
-  /**
-   * Add new or replace old if has same name
-   *
-   * @param att add this Attribute
-   * @return the added attribute
-   * @deprecated will be removed in version 6.
-   */
-  @Deprecated
-  Attribute addAttribute(Attribute att);
-
-  /**
-   * Remove an Attribute : uses the attribute hashCode to find it.
-   *
-   * @param a remove this attribute
-   * @return true if was found and removed
-   * @deprecated will be removed in version 6.
-   */
-  @Deprecated
-  boolean remove(Attribute a);
-
-  /**
-   * Remove an Attribute by name.
-   *
-   * @param attName if exists, remove this attribute
-   * @return true if was found and removed
-   * @deprecated will be removed in version 6.
-   */
-  @Deprecated
-  boolean removeAttribute(String attName);
-
-  /**
-   * Remove an Attribute by name, ignoring case
-   *
-   * @param attName if exists, remove this attribute
-   * @return true if was found and removed
-   * @deprecated will be removed in version 6.
-   */
-  @Deprecated
-  boolean removeAttributeIgnoreCase(String attName);
+  Iterator<Attribute> iterator();
 }

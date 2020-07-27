@@ -87,7 +87,7 @@ public class CdmrfWriter {
     if (gridDataset.getProjBoundingBox() != null)
       builder.setProjRect(encodeRectangle(gridDataset.getProjBoundingBox()));
 
-    for (Attribute att : gridDataset.getGlobalAttributes())
+    for (Attribute att : gridDataset.attributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
     for (CoverageCoordSys gcs : gridDataset.getCoordSys())
@@ -250,7 +250,7 @@ public class CdmrfWriter {
         builder.addShape(shape);
     }
 
-    for (Attribute att : axis.getAttributes())
+    for (Attribute att : axis.attributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
     builder.setSpacing(convertSpacing(axis.getSpacing()));

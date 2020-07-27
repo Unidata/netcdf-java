@@ -15,9 +15,9 @@ import java.util.*;
  * @author caron
  * @since 7/12/2015
  */
-public class CoverageSubsetter2 {
+class CoverageSubsetter2 {
 
-  public static java.util.Optional<CoverageCollection> makeCoverageDatasetSubset(CoverageCollection org,
+  static java.util.Optional<CoverageCollection> makeCoverageDatasetSubset(CoverageCollection org,
       List<String> gridsWanted, SubsetParams params, Formatter errlog) {
 
     // Get subset of original objects that are needed by the requested grids
@@ -78,8 +78,8 @@ public class CoverageSubsetter2 {
 
     // put it all together
     return java.util.Optional.of(new CoverageCollection(org.getName(), org.getCoverageType(),
-        new AttributeContainerMutable(org.getName(), org.getGlobalAttributes()), null, null, null, coordSys,
-        coordTransforms, coordAxes, coverages, org.getReader())); // use org.reader -> subset always in coord space !
+        new AttributeContainerMutable(org.getName(), org.attributes()), null, null, null, coordSys, coordTransforms,
+        coordAxes, coverages, org.getReader())); // use org.reader -> subset always in coord space !
   }
 
   CoverageCoordAxis1D findIndependentAxis(String want, List<CoverageCoordAxis> axes) {

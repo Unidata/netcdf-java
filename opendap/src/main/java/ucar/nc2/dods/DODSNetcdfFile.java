@@ -567,8 +567,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           searchname = pieces.prefix + '/' + searchname;
         Variable v = findVariable(searchname);
         if (v != null) {
+          // TODO WRONG
           // move attribute
-          rootgroup.remove(ncatt);
+          // rootgroup.remove(ncatt);
           v.addAttribute(ncatt);
           // change attribute name to remove var.
           String newname = pieces.name;
@@ -578,7 +579,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         // We have a true group global name to move to proper group
         // convert prefix to an actual group
         Group g = rootgroup.makeRelativeGroup(this, dodsname, true);
-        rootgroup.remove(ncatt);
+        // TODO WRONG
+        // rootgroup.remove(ncatt);
         g.addAttribute(ncatt);
         if (OLDGROUPCODE) {
           ncatt.setName(pieces.name);
@@ -657,7 +659,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         if (newvar != null) {// if not found leave the attribute as is
           // otherwise, move the attribute and rename
           newvar.addAttribute(ncatt);
-          v.remove(ncatt);
+          // TODO WRONG
+          // v.remove(ncatt);
           ncatt.setName(pieces.name);
         }
       }

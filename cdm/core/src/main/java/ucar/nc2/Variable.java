@@ -257,24 +257,24 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    */
   public String getDescription() {
     String desc = null;
-    Attribute att = findAttributeIgnoreCase(CDM.LONG_NAME);
+    Attribute att = attributes.findAttributeIgnoreCase(CDM.LONG_NAME);
     if ((att != null) && att.isString())
       desc = att.getStringValue();
 
     if (desc == null) {
-      att = findAttributeIgnoreCase("description");
+      att = attributes.findAttributeIgnoreCase("description");
       if ((att != null) && att.isString())
         desc = att.getStringValue();
     }
 
     if (desc == null) {
-      att = findAttributeIgnoreCase(CDM.TITLE);
+      att = attributes.findAttributeIgnoreCase(CDM.TITLE);
       if ((att != null) && att.isString())
         desc = att.getStringValue();
     }
 
     if (desc == null) {
-      att = findAttributeIgnoreCase(CF.STANDARD_NAME);
+      att = attributes.findAttributeIgnoreCase(CF.STANDARD_NAME);
       if ((att != null) && att.isString())
         desc = att.getStringValue();
     }
@@ -1292,63 +1292,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return attributes.findAttributeString(attName, defaultValue);
   }
 
-  /** @deprecated Use attributes() */
-  public boolean isEmpty() {
-    return attributes.isEmpty();
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public java.util.List<Attribute> getAttributes() {
-    return attributes.getAttributes();
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public Attribute findAttributeIgnoreCase(String name) {
-    return attributes.findAttributeIgnoreCase(name);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public double findAttributeDouble(String attName, double defaultValue) {
-    return attributes.findAttributeDouble(attName, defaultValue);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public int findAttributeInteger(String attName, int defaultValue) {
-    return attributes.findAttributeInteger(attName, defaultValue);
-  }
-
   /** @deprecated Use Variable.builder() */
   @Deprecated
   public Attribute addAttribute(Attribute att) {
     return attributes.addAttribute(att);
-  }
-
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public void addAll(Iterable<Attribute> atts) {
-    attributes.addAll(atts);
-  }
-
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public boolean remove(Attribute a) {
-    return attributes.remove(a);
-  }
-
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public boolean removeAttribute(String attName) {
-    return attributes.removeAttribute(attName);
-  }
-
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public boolean removeAttributeIgnoreCase(String attName) {
-    return attributes.removeAttributeIgnoreCase(attName);
   }
 
   ////////////////////////////////////////////////////////////////////////

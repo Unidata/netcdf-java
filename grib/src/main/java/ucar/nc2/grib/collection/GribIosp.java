@@ -504,7 +504,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           }
         }
 
-        gribCollection.addVariableAttributes(v.attributes(), vindex);
+        // TODO KLUDGE, must remove cast to AttributeContainerMutable
+        gribCollection.addVariableAttributes((AttributeContainerMutable) v.attributes(), vindex);
         v.setSPobject(vindex);
       }
     }

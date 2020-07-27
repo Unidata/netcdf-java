@@ -271,16 +271,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   }
 
   @Override
-  public List<Attribute> getGlobalAttributes() {
-    return ncd.getGlobalAttributes();
-  }
-
-  @Override
-  public Attribute findGlobalAttributeIgnoreCase(String name) {
-    return ncd.findGlobalAttributeIgnoreCase(name);
-  }
-
-  @Override
   public List<VariableSimpleIF> getDataVariables() {
     List<VariableSimpleIF> result = new ArrayList<>(grids.size());
     for (GridDatatype grid : getGrids()) {
@@ -386,7 +376,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   public GeoGrid findGridDatatypeByAttribute(String attName, String attValue) {
     for (GeoGrid ggi : grids) {
-      for (Attribute att : ggi.getAttributes())
+      for (Attribute att : ggi.attributes())
         if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return ggi;
     }

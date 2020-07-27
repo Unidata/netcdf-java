@@ -25,6 +25,8 @@ import java.util.List;
  * TODO Attributes will be immutable in 6.
  */
 public class Attribute {
+  // TODO: see TestSpecialAttributes when this gets moved to Nc4Iosp
+
   /** @deprecated move to jni.Nc4Iosp */
   @Deprecated
   private static final String SPECIALPREFIX = "_";

@@ -595,7 +595,8 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       if (att != null) {
         vf.hasScale = true;
         vf.scale = att.getNumericValue().floatValue();
-        v.remove(att);
+        // LOOK ??
+        // v.remove(att);
       }
       m.setDataObject(vf);
     }

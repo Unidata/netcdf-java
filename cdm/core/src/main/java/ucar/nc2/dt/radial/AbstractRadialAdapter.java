@@ -402,11 +402,6 @@ public abstract class AbstractRadialAdapter implements RadialDatasetSweep, Featu
       return null;
     }
 
-    @Deprecated
-    public List<Attribute> getAttributes() {
-      return attributes.getAttributes();
-    }
-
     public ucar.nc2.Attribute findAttributeIgnoreCase(String attName) {
       return attributes.findAttributeIgnoreCase(attName);
     }

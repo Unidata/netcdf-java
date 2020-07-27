@@ -57,7 +57,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
   }
 
   @Override
-  public void addGlobalAttributes(AttributeContainer result) {
+  public void addGlobalAttributes(AttributeContainerMutable result) {
     String val = cust.getGeneratingProcessName(getGenProcessId());
     if (val != null)
       result.addAttribute(new Attribute(GribUtils.GEN_PROCESS, val));
@@ -65,7 +65,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
   }
 
   @Override
-  public void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex) {
+  public void addVariableAttributes(AttributeContainerMutable v, GribCollectionImmutable.VariableIndex vindex) {
     Grib1Collection.addVariableAttributes(v, vindex, this);
   }
 

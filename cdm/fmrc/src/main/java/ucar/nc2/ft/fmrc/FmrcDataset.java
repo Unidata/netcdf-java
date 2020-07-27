@@ -311,7 +311,8 @@ class FmrcDataset {
       root.addAttribute(new Attribute("location", "Proto " + fmrcInv.getName()));
 
       // remove some attributes that can cause trouble
-      root.remove(root.findAttribute(_Coordinate.ModelRunDate));
+      // TODO WRONG
+      // root.remove(root.findAttribute(_Coordinate.ModelRunDate));
 
       // protoList = new ArrayList<String>();
       // these are the non-agg variables - store data or ProxyReader in proto
@@ -398,17 +399,20 @@ class FmrcDataset {
       }
 
       // more troublesome attributes, use pure CF
-      for (Variable v : result.getVariables()) {
-        Attribute att;
-        if (null != (att = v.findAttribute(_Coordinate.Axes)))
-          v.remove(att);
-        if (null != (att = v.findAttribute(_Coordinate.Systems)))
-          v.remove(att);
-        if (null != (att = v.findAttribute(_Coordinate.SystemFor)))
-          v.remove(att);
-        if (null != (att = v.findAttribute(_Coordinate.Transforms)))
-          v.remove(att);
-      }
+      // TODO WRONG
+      /*
+       * for (Variable v : result.getVariables()) {
+       * Attribute att;
+       * if (null != (att = v.findAttribute(_Coordinate.Axes)))
+       * v.remove(att);
+       * if (null != (att = v.findAttribute(_Coordinate.Systems)))
+       * v.remove(att);
+       * if (null != (att = v.findAttribute(_Coordinate.SystemFor)))
+       * v.remove(att);
+       * if (null != (att = v.findAttribute(_Coordinate.Transforms)))
+       * v.remove(att);
+       * }
+       */
 
       // apply ncml if it exists
       if (protoConfig.outerNcml != null) {
@@ -626,7 +630,8 @@ class FmrcDataset {
 
         // we need to explicitly list the coordinate axes, because time coord is now 2D
         String coords = makeCoordinateList(aggVar, gridset.gridsetName, true);
-        aggVar.removeAttribute(_Coordinate.Axes);
+        // TODO WRONG
+        // aggVar.removeAttribute(_Coordinate.Axes);
         aggVar.addAttribute(new Attribute(CF.COORDINATES, coords));
       }
     }
@@ -825,7 +830,8 @@ class FmrcDataset {
 
         // we need to explicitly list the coordinate axes
         String coords = makeCoordinateList(aggVar, timeDimName, false);
-        aggVar.removeAttribute(_Coordinate.Axes);
+        // TODO WRONG
+        // aggVar.removeAttribute(_Coordinate.Axes);
         aggVar.addAttribute(new Attribute(CF.COORDINATES, coords)); // CF
 
         // if (logger.isDebugEnabled()) logger.debug("FmrcDataset: added grid " + aggVar.getName());

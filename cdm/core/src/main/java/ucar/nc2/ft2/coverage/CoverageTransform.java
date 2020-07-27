@@ -20,7 +20,7 @@ import java.util.Formatter;
  * @since 7/11/2015
  */
 @Immutable
-public class CoverageTransform implements AttributeContainer {
+public class CoverageTransform {
 
   private final String name;
   private final AttributeContainer attributes;
@@ -46,6 +46,10 @@ public class CoverageTransform implements AttributeContainer {
     }
   }
 
+  public String getName() {
+    return name;
+  }
+
   @Override
   public String toString() {
     Formatter f = new Formatter();
@@ -67,84 +71,9 @@ public class CoverageTransform implements AttributeContainer {
     indent.decr();
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // Attribute
-
   /** The attributes contained by this CoverageTransform. */
   public AttributeContainer attributes() {
     return attributes;
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public java.util.List<Attribute> getAttributes() {
-    return attributes.getAttributes();
-  }
-
-  /** @deprecated Use attributes() */
-  public boolean isEmpty() {
-    return attributes.isEmpty();
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public Attribute findAttribute(String name) {
-    return attributes.findAttribute(name);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public Attribute findAttributeIgnoreCase(String name) {
-    return attributes.findAttributeIgnoreCase(name);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public String findAttributeString(String attName, String defaultValue) {
-    return attributes.findAttributeString(attName, defaultValue);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public double findAttributeDouble(String attName, double defaultValue) {
-    return attributes.findAttributeDouble(attName, defaultValue);
-  }
-
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public int findAttributeInteger(String attName, int defaultValue) {
-    return attributes.findAttributeInteger(attName, defaultValue);
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public boolean remove(Attribute a) {
-    return false;
-  }
-
-  @Override
-  public boolean removeAttribute(String attName) {
-    return false;
-  }
-
-  @Override
-  public boolean removeAttributeIgnoreCase(String attName) {
-    return false;
-  }
-
-
-  @Override
-  public void addAll(Iterable<Attribute> atts) {
-    // NOOP
-  }
-
-  @Override
-  public Attribute addAttribute(Attribute att) {
-    return null;
   }
 
 }

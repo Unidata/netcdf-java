@@ -150,24 +150,6 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     return attributes;
   }
 
-  /** @deprecated use attributes() */
-  @Deprecated
-  public List<Attribute> getAttributes() {
-    return attributes.getAttributes();
-  }
-
-  /** @deprecated use attributes() */
-  @Deprecated
-  public Attribute findAttribute(String attName) {
-    return attributes.findAttribute(attName);
-  }
-
-  /** @deprecated use attributes() */
-  @Deprecated
-  public AttributeContainer getAttributeContainer() {
-    return attributes;
-  }
-
   public int getNcoords() {
     return ncoords;
   }

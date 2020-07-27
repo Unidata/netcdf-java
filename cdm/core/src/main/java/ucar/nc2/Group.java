@@ -309,65 +309,6 @@ public class Group {
     return attributes.findAttributeString(attName, defaultValue);
   }
 
-  /** @deprecated Use attributes() */
-  @Deprecated
-  public java.util.List<Attribute> getAttributes() {
-    return AttributeContainer.filter(attributes, Attribute.SPECIALS).getAttributes();
-  }
-
-  /** @deprecated Use attributes() */
-  public boolean isEmpty() {
-    return attributes.isEmpty();
-  }
-
-  /** @deprecated Use findAttributeString() */
-  @Deprecated
-  public Attribute findAttributeIgnoreCase(String name) {
-    return attributes.findAttributeIgnoreCase(name);
-  }
-
-  /** @deprecated Use attributes().findAttributeDouble() */
-  @Deprecated
-  public double findAttributeDouble(String attName, double defaultValue) {
-    return attributes.findAttributeDouble(attName, defaultValue);
-  }
-
-  /** @deprecated Use attributes().findAttributeInteger() */
-  @Deprecated
-  public int findAttributeInteger(String attName, int defaultValue) {
-    return attributes.findAttributeInteger(attName, defaultValue);
-  }
-
-  /** @deprecated Use Group.builder() */
-  @Deprecated
-  public Attribute addAttribute(Attribute att) {
-    return attributes.addAttribute(att);
-  }
-
-  /** @deprecated Use Group.builder() */
-  @Deprecated
-  public void addAll(Iterable<Attribute> atts) {
-    attributes.addAll(atts);
-  }
-
-  /** @deprecated Use Group.builder() */
-  @Deprecated
-  public boolean remove(Attribute a) {
-    return attributes.remove(a);
-  }
-
-  /** @deprecated Use Group.builder() */
-  @Deprecated
-  public boolean removeAttribute(String attName) {
-    return attributes.removeAttribute(attName);
-  }
-
-  /** @deprecated Use Group.builder() */
-  @Deprecated
-  public boolean removeAttributeIgnoreCase(String attName) {
-    return attributes.removeAttributeIgnoreCase(attName);
-  }
-
   ////////////////////////////////////////////////////////////////////////
 
   /** Find a Enumeration in this or a parent Group, using its short name. */
@@ -563,6 +504,12 @@ public class Group {
   public String setName(String shortName) {
     this.shortName = shortName;
     return getShortName();
+  }
+
+  /** @deprecated Use Group.builder() */
+  @Deprecated
+  public Attribute addAttribute(Attribute att) {
+    return attributes.addAttribute(att);
   }
 
   /**
@@ -812,7 +759,7 @@ public class Group {
   protected List<Variable> variables = new ArrayList<>();
   protected List<Dimension> dimensions = new ArrayList<>();
   protected List<Group> groups = new ArrayList<>();
-  protected AttributeContainer attributes;
+  protected AttributeContainerMutable attributes;
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
   private String shortName;
   private Group parentGroup;
