@@ -49,11 +49,7 @@ public abstract class CDMNode {
 
   protected CDMNode() {
     // Use Instanceof to figure out the sort
-    if (this instanceof Attribute)
-      setSort(CDMSort.ATTRIBUTE);
-    else if (this instanceof EnumTypedef)
-      setSort(CDMSort.ENUMERATION);
-    else if (this instanceof Sequence)
+    if (this instanceof Sequence)
       setSort(CDMSort.SEQUENCE);
     else if (this instanceof Structure)
       setSort(CDMSort.STRUCTURE);

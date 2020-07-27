@@ -5,8 +5,8 @@
 
 package ucar.nc2;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import javax.annotation.Nullable;
@@ -19,17 +19,14 @@ import java.util.*;
  * A named map from integers to Strings; a user-defined Enum used as a Variable's data type.
  * For ENUM1, ENUM2, ENUM4 enumeration types.
  * Immutable.
- *
- * TODO EnumTypedef will not extend CDMNode in 6.
- * TODO EnumTypedef will not have a reference to its owning Group in 6.
- * TODO EnumTypedef.getFullName() will not exist in 6.
  */
 @Immutable
-public class EnumTypedef extends CDMNode {
+public class EnumTypedef {
   // Constants for the unsigned max values for enum(1,2,4)
   private static final int UBYTE_MAX = 255;
   private static final int USHORT_MAX = 65535;
 
+  private final String name;
   private final ImmutableMap<Integer, String> map;
   private final ImmutableList<String> enumStrings;
   private final DataType basetype;
@@ -41,7 +38,7 @@ public class EnumTypedef extends CDMNode {
 
   /** Make an EnumTypedef setting the base type (must be ENUM1, ENUM2, ENUM4). */
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
-    super(name);
+    this.name = name;
     Preconditions.checkArgument(validateMap(map, basetype));
     this.map = ImmutableMap.copyOf(map);
 
@@ -49,6 +46,10 @@ public class EnumTypedef extends CDMNode {
 
     assert basetype == DataType.ENUM1 || basetype == DataType.ENUM2 || basetype == DataType.ENUM4;
     this.basetype = basetype;
+  }
+
+  public String getShortName() {
+    return name;
   }
 
   /** @deprecated use getMap() */
@@ -105,24 +106,10 @@ public class EnumTypedef extends CDMNode {
     return null;
   }
 
-  /**
-   * CDL string representation.
-   *
-   * @param strict if true, write in strict adherence to CDL definition.
-   * @return CDL representation.
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public String writeCDL(boolean strict) {
-    Formatter out = new Formatter();
-    writeCDL(out, new Indent(2), strict);
-    return out.toString();
-  }
-
   /** @deprecated use CDLWriter */
   @Deprecated
-  protected void writeCDL(Formatter out, Indent indent, boolean strict) {
-    String name = strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName();
+  void writeCDL(Formatter out, Indent indent, boolean strict) {
+    String name = strict ? NetcdfFiles.makeValidCDLName(this.name) : this.name;
     String basetype = "";
     switch (this.basetype) {
       case ENUM1:
@@ -156,40 +143,24 @@ public class EnumTypedef extends CDMNode {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
+    if (this == o) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
-
+    }
     EnumTypedef that = (EnumTypedef) o;
-
-    if (map == that.map)
-      return true;
-    if (map == null)
-      return false;
-    if (!map.equals(that.map))
-      return false;
-    String name = getShortName();
-    String thatname = that.getShortName();
-    return Objects.equals(name, thatname);
-
+    return com.google.common.base.Objects.equal(name, that.name) && com.google.common.base.Objects.equal(map, that.map)
+        && basetype == that.basetype;
   }
 
   @Override
   public int hashCode() {
-    String name = getShortName();
-    int result = name != null ? name.hashCode() : 0;
-    result = 31 * result + (map != null ? map.hashCode() : 0);
-    return result;
+    return com.google.common.base.Objects.hashCode(name, map, basetype);
   }
 
   @Override
   public String toString() {
-    Formatter f = new Formatter();
-    f.format("EnumTypedef %s: ", getShortName());
-    for (int key : map.keySet()) {
-      f.format("%d=%s,", key, map.get(key));
-    }
-    return f.toString();
+    return MoreObjects.toStringHelper(this).add("name", name).add("map", map).add("basetype", basetype).toString();
   }
 }

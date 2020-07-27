@@ -16,22 +16,15 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An Attribute is a name and a value, used for associating arbitrary metadata with another object.
  * The value can be a one dimensional array of Strings or numeric values.
  * <p/>
  * TODO Attributes will be immutable in 6.
- * TODO Attribute will not extend CDMNode in 6.
- * TODO Attribute will not know who it belongs to in 6 (Group or Variable).
- * TODO Attribute.getFullName() will not exist in 6.
- *
- * @author caron
  */
-public class Attribute extends CDMNode {
+public class Attribute {
   /** @deprecated move to jni.Nc4Iosp */
   @Deprecated
   private static final String SPECIALPREFIX = "_";
@@ -41,23 +34,6 @@ public class Attribute extends CDMNode {
   static final String[] SPECIALS =
       {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
 
-  /**
-   * Turn a list into a map
-   *
-   * @param atts list of attributes
-   * @return map of attributes by name
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static Map<String, Attribute> makeMap(List<Attribute> atts) {
-    int size = (atts == null) ? 1 : atts.size();
-    Map<String, Attribute> result = new HashMap<>(size);
-    if (atts == null)
-      return result;
-    for (Attribute att : atts)
-      result.put(att.getShortName(), att);
-    return result;
-  }
 
   /** @deprecated move to jni.Nc4Iosp */
   @Deprecated
@@ -75,13 +51,14 @@ public class Attribute extends CDMNode {
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Get the Attribute name.
-   * Not deprecated in version 5 for Attribute.
-   */
-  @SuppressWarnings("deprecated")
+  /** Get the Attribute name. */
   public String getName() {
-    return shortName;
+    return name;
+  }
+
+  /** Get the Attribute name. */
+  public String getShortName() {
+    return name;
   }
 
   /** Get the data type of the Attribute value. */
@@ -356,15 +333,14 @@ public class Attribute extends CDMNode {
    */
   @Deprecated
   public Attribute(String name, Attribute from) {
-    super(name);
     if (name == null)
       throw new IllegalArgumentException("Trying to set name to null on " + this);
+    this.name = name;
     setDataType(from.dataType);
     setEnumType(from.enumtype);
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
-    setImmutable();
   }
 
   /**
@@ -374,12 +350,11 @@ public class Attribute extends CDMNode {
    * @param val value of Attribute
    */
   public Attribute(String name, String val) {
-    super(name);
     if (name == null)
       throw new IllegalArgumentException("Trying to set name to null on " + this);
+    this.name = name;
     this.dataType = DataType.STRING;
     setStringValue(val);
-    setImmutable();
   }
 
   /**
@@ -400,10 +375,10 @@ public class Attribute extends CDMNode {
    * @param isUnsigned if value is unsigned, used only for integer types.
    */
   public Attribute(String name, Number val, boolean isUnsigned) {
-    super(name);
     if (name == null)
       throw new IllegalArgumentException("Trying to set name to null on " + this);
 
+    this.name = name;
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass(), isUnsigned);
@@ -412,7 +387,6 @@ public class Attribute extends CDMNode {
     Index ima = vala.getIndex();
     vala.setObject(ima.set0(0), val);
     setValues(vala); // make private
-    setImmutable();
   }
 
   /**
@@ -424,7 +398,6 @@ public class Attribute extends CDMNode {
   public Attribute(String name, Array values) {
     this(name, values.getDataType());
     setValues(values); // make private
-    setImmutable();
   }
 
   /**
@@ -453,13 +426,12 @@ public class Attribute extends CDMNode {
    * @param isUnsigned if the data type is unsigned.
    */
   public Attribute(String name, List values, boolean isUnsigned) {
-    this(name);
+    this.name = name;
     if (values == null || values.isEmpty())
       throw new IllegalArgumentException("Cannot determine attribute's type");
     Class c = values.get(0).getClass();
     this.dataType = DataType.getType(c, isUnsigned);
     setValues(values); // make private
-    setImmutable();
   }
 
   /**
@@ -469,7 +441,7 @@ public class Attribute extends CDMNode {
    * @param param copy info from here.
    */
   public Attribute(Parameter param) {
-    this(param.getName());
+    this.name = param.getName();
 
     if (param.isString()) {
       setStringValue(param.getStringValue());
@@ -480,7 +452,6 @@ public class Attribute extends CDMNode {
       Array vala = Array.factory(DataType.DOUBLE, new int[] {n}, values);
       setValues(vala); // make private
     }
-    setImmutable();
   }
 
   /**
@@ -516,9 +487,9 @@ public class Attribute extends CDMNode {
    */
   @Deprecated
   protected Attribute(String name) {
-    super(name);
     if (name == null)
       throw new IllegalArgumentException("Trying to set name to null on " + this);
+    this.name = name;
   }
 
   /**
@@ -584,9 +555,6 @@ public class Attribute extends CDMNode {
    */
   @Deprecated
   public void setValues(Array arr) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-
     if (arr == null) {
       dataType = DataType.STRING;
       return;
@@ -643,10 +611,10 @@ public class Attribute extends CDMNode {
    */
   @Deprecated
   public synchronized void setName(String name) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    setShortName(name);
+    this.name = name;
   }
+
+
 
   /**
    * Instances which have same content are equal.
@@ -707,6 +675,7 @@ public class Attribute extends CDMNode {
   ///////////////////////////////////////////////////////////////////////////////
 
   // TODO make these final in 6.
+  private String name; // optimization for common case of single String valued attribute
   private String svalue; // optimization for common case of single String valued attribute
   private DataType dataType;
   private EnumTypedef enumtype;
@@ -714,7 +683,7 @@ public class Attribute extends CDMNode {
   private Array values; // can this be made immutable?? Otherwise return a copy.
 
   private Attribute(Builder builder) {
-    super(builder.name);
+    this.name = builder.name;
     this.svalue = builder.svalue;
     this.dataType = builder.dataType;
     this.enumtype = builder.enumtype;
@@ -725,7 +694,7 @@ public class Attribute extends CDMNode {
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder toBuilder() {
-    Builder b = builder().setName(this.shortName).setDataType(this.dataType).setEnumType(this.enumtype);
+    Builder b = builder().setName(this.name).setDataType(this.dataType).setEnumType(this.enumtype);
     if (this.svalue != null) {
       b.setStringValue(this.svalue);
     } else if (this.values != null) {

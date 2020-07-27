@@ -555,7 +555,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     // An issue to be addressed is that some attributes that should be attached
     // to variables, instead get made global with name var.att.
     for (Attribute ncatt : rootgroup.attributes()) {
-      String dodsname = ncatt.getDODSName();
+      DODSAttribute dodsatt = (DODSAttribute) ncatt;
+      String dodsname = dodsatt.getDODSName();
       NamePieces pieces = parseName(dodsname);
       if (pieces.var != null) {
         // Figure out which variable to which this attribute should be moved.
@@ -633,12 +634,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     String vname = v.getShortName();
     Group vgroup = v.getParentGroupOrRoot();
     for (Attribute ncatt : v.attributes()) {
-      String adodsname = ncatt.getDODSName();
-      NamePieces pieces = parseName(adodsname);
+      DODSAttribute dodsatt = (DODSAttribute) ncatt;
+      String dodsname = dodsatt.getDODSName();
+      NamePieces pieces = parseName(dodsname);
       Group agroup = null;
       if (pieces.prefix != null) {
         // convert prefix to an actual group
-        agroup = rootgroup.makeRelativeGroup(this, adodsname, true);
+        agroup = rootgroup.makeRelativeGroup(this, dodsname, true);
       } else
         agroup = vgroup;
 
@@ -656,7 +658,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           // otherwise, move the attribute and rename
           newvar.addAttribute(ncatt);
           v.remove(ncatt);
-          ncatt.setShortName(pieces.name);
+          ncatt.setName(pieces.name);
         }
       }
       if (OLDGROUPCODE) {
