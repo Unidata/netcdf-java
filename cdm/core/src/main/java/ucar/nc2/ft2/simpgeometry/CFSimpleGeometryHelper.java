@@ -45,7 +45,7 @@ public class CFSimpleGeometryHelper {
         continue;
 
       // If not CF Time then select only that ID
-      if (!CF.TIME.equalsIgnoreCase(dim.getShortName()) && !CF.TIME.equalsIgnoreCase(dim.getFullNameEscaped())) {
+      if (!CF.TIME.equalsIgnoreCase(dim.getShortName())) {
         subStr += id;
       }
 

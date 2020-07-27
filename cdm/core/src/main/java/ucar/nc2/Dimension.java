@@ -4,11 +4,11 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import ucar.nc2.util.Indent;
 import java.util.Formatter;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * A Dimension is used to define the array shape of a Variable.
@@ -21,175 +21,54 @@ import java.util.StringTokenizer;
  * Dimension which has a length known only when the variable is read.
  * <p/>
  * <p>
- * Immutable if setImmutable() was called, except for an Unlimited Dimension, whose size can change.
- * <p>
  * Note: this class has a natural ordering that is inconsistent with equals.
  *
  * TODO Dimension will be immutable in 6.
- * TODO Dimension will not extend CDMNode in 6.
- * TODO Dimension will not have a reference to its owning Group in 6.
- * TODO Dimension.getFullName() will not exist in 6.
- *
- * @author caron
  */
-public class Dimension extends CDMNode implements Comparable<Dimension> {
+public class Dimension implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
-  public static final Dimension VLEN =
-      Dimension.builder().setName("*").setIsVariableLength(true).build().setImmutable();
+  public static final Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build();
 
   /**
-   * Make a space-delineated String from a list of Dimension names.
-   * Inverse of makeDimensionsList().
+   * Default Constructor, shared, not unlimited, not variable length.
    *
-   * @return space-delineated String of Dimension names.
-   * @deprecated use Dimensions.makeDimensionsString()
+   * @param name name must be unique within group
+   * @param length length of Dimension
    */
-  @Deprecated
-  public static String makeDimensionsString(List<Dimension> dimensions) {
-    if (dimensions == null)
-      return "";
-
-    Formatter buf = new Formatter();
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension myd = dimensions.get(i);
-      String dimName = myd.getShortName();
-
-      if (i != 0)
-        buf.format(" ");
-
-      if (myd.isVariableLength()) {
-        buf.format("*");
-      } else if (myd.isShared()) {
-        buf.format("%s", dimName);
-      } else {
-        // if (dimName != null) // LOOK losing anon dim name
-        // buf.format("%s=", dimName);
-        buf.format("%d", myd.getLength());
-      }
-    }
-    return buf.toString();
+  public Dimension(String name, int length) {
+    this(name, length, true, false, false);
   }
 
   /**
-   * Create a dimension list using the dimensions names. The dimension is searched for recursively in the parent groups,
-   * so it must already have been added.
-   * Inverse of makeDimensionsString().
+   * General Constructor.
    *
-   * @param parentGroup containing group, may not be null
-   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
-   *        dimension. null or empty String is a scalar.
-   * @return list of dimensions
-   * @throws IllegalArgumentException if cant find dimension or parse error.
-   * @deprecated use Group.makeDimensionsList()
+   * @param name name must be unique within group. Can be null/empty only if not shared.
+   * @param length length, ignored if isVariableLength, >= 0 if unlimited, else > 0.
+   * @param isShared whether its shared or local to Variable.
+   * @param isUnlimited whether the length can grow.
+   * @param isVariableLength whether the length is unknown until the data is read.
    */
-  @Deprecated
-  public static List<Dimension> makeDimensionsList(Group parentGroup, String dimString)
-      throws IllegalArgumentException {
-    List<Dimension> newDimensions = new ArrayList<>();
-    if (dimString == null) // scalar
-      return newDimensions; // empty list
-    dimString = dimString.trim();
-    if (dimString.isEmpty()) // scalar
-      return newDimensions; // empty list
+  public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
+    Preconditions.checkArgument((name != null && !name.trim().isEmpty()) || !isShared,
+        "Dimension name can only be null/empty if not shared");
+    Preconditions.checkArgument(!isVariableLength || !isUnlimited, "variable length dimension cannot be unlimited");
+    Preconditions.checkArgument(!isVariableLength || !isShared, "variable length dimension cannot be shared");
 
-    StringTokenizer stoke = new StringTokenizer(dimString);
-    while (stoke.hasMoreTokens()) {
-      String dimName = stoke.nextToken();
-      Dimension d;
-      if (dimName.equals("*"))
-        d = Dimension.VLEN;
-      else
-        d = parentGroup.findDimension(dimName);
-      if (d == null) {
-        // if numeric - then its anonymous dimension
-        try {
-          int len = Integer.parseInt(dimName);
-          d = Dimension.builder().setLength(len).setIsShared(false).build();
-        } catch (Exception e) {
-          throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
-        }
-      }
-      newDimensions.add(d);
+    this.shortName = name == null ? null : name.trim();
+    this.isShared = isShared;
+    this.isUnlimited = isUnlimited;
+    this.isVariableLength = isVariableLength;
+
+    if (isVariableLength) {
+      length = -1;
+    } else if (isUnlimited) {
+      if (length < 0)
+        throw new IllegalArgumentException("Unlimited Dimension length =" + length + " must >= 0");
+    } else {
+      if (length < 1)
+        throw new IllegalArgumentException("Dimension length =" + length + " must be > 0");
     }
-
-    return newDimensions;
-  }
-
-  /**
-   * Create a dimension list using the dimensions names.
-   * Inverse of makeDimensionsString().
-   *
-   * @param dimensions list of possible dimensions, may not be null
-   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
-   *        dimension. null or empty String is a scalar.
-   * @return list of dimensions
-   * @throws IllegalArgumentException if cant find dimension or parse error.
-   * @deprecated use Dimensions.makeDimensionsList()
-   */
-  @Deprecated
-  public static List<Dimension> makeDimensionsList(List<Dimension> dimensions, String dimString) {
-    List<Dimension> newDimensions = new ArrayList<>();
-    if (dimString == null) // scalar
-      return newDimensions; // empty list
-    dimString = dimString.trim();
-    if (dimString.isEmpty()) // scalar
-      return newDimensions; // empty list
-
-    StringTokenizer stoke = new StringTokenizer(dimString);
-    while (stoke.hasMoreTokens()) {
-      String dimName = stoke.nextToken();
-      Dimension dim;
-      if (dimName.equals("*"))
-        dim = Dimension.VLEN;
-      else
-        dim = dimensions.stream().filter(d -> d.getShortName().equals(dimName)).findFirst().orElse(null);
-      if (dim == null) {
-        // if numeric - then its anonymous dimension
-        try {
-          int len = Integer.parseInt(dimName);
-          dim = Dimension.builder().setLength(len).setIsShared(false).build();
-        } catch (Exception e) {
-          throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
-        }
-      }
-      newDimensions.add(dim);
-    }
-    return newDimensions;
-  }
-
-  /** @deprecated use Dimensions.makeDimensionsAnon() */
-  @Deprecated
-  public static List<Dimension> makeDimensionsAnon(int[] shape) {
-    List<Dimension> newDimensions = new ArrayList<>();
-    if ((shape == null) || (shape.length == 0)) { // scalar
-      return newDimensions;
-    }
-    for (int len : shape)
-      newDimensions.add(Dimension.builder().setLength(len).setIsShared(false).build());
-    return newDimensions;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // TODO make these final in 6.
-  private boolean isUnlimited;
-  private boolean isVariableLength;
-  private boolean isShared; // shared means its in a group dimension list.
-  private int length;
-
-  private Dimension(Builder builder) {
-    super(builder.shortName);
-    setParentGroup(builder.parent);
-    this.isShared = builder.isShared;
-    this.isVariableLength = builder.isVariableLength;
-    this.isUnlimited = builder.isUnlimited;
-    this.length = builder.length;
-  }
-
-  /** Turn into a mutable Builder, use toBuilder().build() to make a copy. */
-  public Builder toBuilder() {
-    return builder().setName(this.shortName).setGroup(this.getGroup()).setIsUnlimited(this.isUnlimited)
-        .setIsVariableLength(this.isVariableLength).setIsShared(this.isShared).setLength(this.length);
+    this.length = length;
   }
 
   /** Get the length of the Dimension. */
@@ -197,14 +76,14 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return length;
   }
 
-  /** Get the name of the Dimension. Same as getShortName. Not deprecated. */
+  /** Get the name of the Dimension. Same as getShortName. */
   public String getName() {
     return this.shortName;
   }
 
   /** Get the name of the Dimension. */
   public String getShortName() {
-    return this.getName();
+    return this.shortName;
   }
 
   /**
@@ -239,23 +118,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   }
 
   /**
-   * Get the Group that owns this Dimension.
-   *
-   * @return owning group or null if !isShared
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  public Group getGroup() {
-    return getParentGroup();
-  }
-
-  /** @deprecated Use makeFullName(Variable) */
-  @Deprecated
-  public String makeFullName() {
-    return super.getFullName();
-  }
-
-  /**
    * Make the full name by searching for the containing group starting from the Variable's parent group.
    * 
    * @throws IllegalStateException if not found in one of the Variable's parent groups.
@@ -276,48 +138,32 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
   }
 
   @Override
-  public boolean equals(Object oo) {
-    if (this == oo)
+  public boolean equals(Object o) {
+    if (this == o) {
       return true;
-    if (!(oo instanceof Dimension))
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
-    Dimension other = (Dimension) oo;
-    Group g = getGroup();
-    if ((g != null) && !g.equals(other.getGroup())) // TODO remove group in 6
-      return false;
-    if ((getShortName() == null) && (other.getShortName() != null))
-      return false;
-    if ((getShortName() != null) && !getShortName().equals(other.getShortName()))
-      return false;
-    return (getLength() == other.getLength()) && (isUnlimited() == other.isUnlimited())
-        && (isVariableLength() == other.isVariableLength()) && (isShared() == other.isShared());
+    }
+    Dimension dimension = (Dimension) o;
+    return isUnlimited == dimension.isUnlimited && isVariableLength == dimension.isVariableLength
+        && isShared == dimension.isShared && length == dimension.length
+        && Objects.equal(shortName, dimension.shortName);
   }
 
-  /**
-   * Override Object.hashCode() to implement equals.
-   */
   @Override
   public int hashCode() {
-    int result = 17;
-    Group g = getGroup(); // TODO remove group in 6
-    if (g != null)
-      result += 37 * result + g.hashCode();
-    if (null != getShortName())
-      result += 37 * result + getShortName().hashCode();
-    result += 37 * result + getLength();
-    result += 37 * result + (isUnlimited() ? 0 : 1);
-    result += 37 * result + (isVariableLength() ? 0 : 1);
-    result += 37 * result + (isShared() ? 0 : 1);
-    return result;
+    return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared, length);
   }
 
   @Override
   public String toString() {
-    return writeCDL(false);
+    return MoreObjects.toStringHelper(this).add("shortName", shortName).add("isUnlimited", isUnlimited)
+        .add("isVariableLength", isVariableLength).add("isShared", isShared).add("length", length).toString();
   }
 
   /**
-   * Dimensions with the same name are equal. This method is inconsistent with equals()!
+   * Dimensions are compared by name. This method is inconsistent with equals()!
    *
    * @param odim compare to this Dimension
    * @return 0, 1, or -1
@@ -354,65 +200,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
       out.format(" = %d;", getLength());
   }
 
-  /**
-   * Constructor
-   *
-   * @param name name must be unique within group
-   * @param length length of Dimension
-   */
-  public Dimension(String name, int length) {
-    this(name, length, true, false, false);
-  }
-
-  /**
-   * Constructor
-   *
-   * @param name name must be unique within group
-   * @param length length, or UNLIMITED.length or UNKNOWN.length
-   * @param isShared whether its shared or local to Variable.
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public Dimension(String name, int length, boolean isShared) {
-    this(name, length, isShared, false, false);
-  }
-
-  /**
-   * Constructor
-   *
-   * @param name name must be unique within group. Can be null only if not shared.
-   * @param length length, or UNLIMITED.length or UNKNOWN.length
-   * @param isShared whether its shared or local to Variable.
-   * @param isUnlimited whether the length can grow.
-   * @param isVariableLength whether the length is unknown until the data is read.
-   */
-  public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
-    super(name);
-    this.isShared = isShared;
-    this.isUnlimited = isUnlimited;
-    this.isVariableLength = isVariableLength;
-    if (isVariableLength && (isUnlimited || isShared))
-      throw new IllegalArgumentException("variable length dimension cannot be shared or unlimited");
-    setLength(length);
-    assert (name != null) || !this.isShared;
-  }
-
-  /**
-   * Copy Constructor. used to make global dimensions
-   *
-   * @param name name must be unique within group. Can be null only if not shared.
-   * @param from copy all other fields from here.
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public Dimension(String name, Dimension from) {
-    super(name);
-    this.length = from.length;
-    this.isUnlimited = from.isUnlimited;
-    this.isVariableLength = from.isVariableLength;
-    this.isShared = from.isShared;
-  }
-
   ///////////////////////////////////////////////////////////
   // the following make this mutable
 
@@ -424,8 +211,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    */
   @Deprecated
   public void setUnlimited(boolean b) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.isUnlimited = b;
     setLength(this.length); // check legal
   }
@@ -438,8 +223,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    */
   @Deprecated
   public void setVariableLength(boolean b) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.isVariableLength = b;
     if (b) {
       this.isShared = false;
@@ -456,8 +239,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    */
   @Deprecated
   public void setShared(boolean b) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.isShared = b;
   }
 
@@ -469,8 +250,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
    */
   @Deprecated
   public void setLength(int n) {
-    if (immutable && !isUnlimited)
-      throw new IllegalStateException("Cant modify");
     if (isVariableLength) {
       if (n != -1)
         throw new IllegalArgumentException("VariableLength Dimension length =" + n + " must be -1");
@@ -484,48 +263,23 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     this.length = n;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Set the name, converting to valid CDM object name if needed.
-   *
-   * @param name set to this value
-   * @return valid CDM object name
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public String setName(String name) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (name.isEmpty())
-      name = null;
-    setShortName(name);
-    return getShortName();
+  // TODO make these final in 6.
+  private String shortName;
+  private boolean isUnlimited;
+  private boolean isVariableLength;
+  private boolean isShared; // shared means its in a group dimension list.
+  private int length;
+
+  private Dimension(Builder builder) {
+    this(builder.shortName, builder.length, builder.isShared, builder.isUnlimited, builder.isVariableLength);
   }
 
-  /**
-   * Set the group
-   *
-   * @param g parent group
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public void setGroup(Group g) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    setParentGroup(g);
-  }
-
-
-  /**
-   * Make this immutable.
-   *
-   * @return this
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public Dimension setImmutable() {
-    super.setImmutable();
-    return this;
+  /** Turn into a mutable Builder, use toBuilder().build() to make a copy. */
+  public Builder toBuilder() {
+    return builder().setName(this.shortName).setIsUnlimited(this.isUnlimited).setIsVariableLength(this.isVariableLength)
+        .setIsShared(this.isShared).setLength(this.length);
   }
 
   //////////////////////////////////////////////////////////////
@@ -539,9 +293,8 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
     return new Builder().setName(name).setLength(length);
   }
 
-  /** A builder of Dimensions. */
+  /** A builder of Dimension. */
   public static class Builder {
-    private Group parent;
     private String shortName;
     private boolean isUnlimited;
     private boolean isVariableLength;
@@ -607,17 +360,6 @@ public class Dimension extends CDMNode implements Comparable<Dimension> {
 
     public Builder setName(String shortName) {
       this.shortName = NetcdfFiles.makeValidCdmObjectName(shortName);
-      return this;
-    }
-
-    /**
-     * Set the parent group.
-     * 
-     * @deprecated Will not use in 6.0
-     */
-    @Deprecated
-    public Builder setGroup(Group parent) {
-      this.parent = parent;
       return this;
     }
 

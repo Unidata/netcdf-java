@@ -51,8 +51,6 @@ public abstract class CDMNode {
     // Use Instanceof to figure out the sort
     if (this instanceof Attribute)
       setSort(CDMSort.ATTRIBUTE);
-    else if (this instanceof Dimension)
-      setSort(CDMSort.DIMENSION);
     else if (this instanceof EnumTypedef)
       setSort(CDMSort.ENUMERATION);
     else if (this instanceof Sequence)
@@ -235,9 +233,6 @@ public abstract class CDMNode {
     } else if (this instanceof Variable) {
       return NetcdfFiles.makeFullName((Variable) this);
     } else {
-      if (this instanceof Dimension) {
-        System.out.printf("HEY Dimension.getFullName%n");
-      }
       return this.getShortName();
     }
   }

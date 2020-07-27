@@ -653,8 +653,9 @@ public class HdfEos {
           dim.setUnlimited(true); // allow zero length dimension !!
         }
         dim.setLength(len); // use existing (anon) dimension
-        Group parent = dim.getGroup();
-        parent.addDimensionIfNotExists(dim); // add to the parent
+        // TODO
+        // Group parent = dim.getGroup();
+        // parent.addDimensionIfNotExists(dim); // add to the parent
         unknownDims.remove(dim); // remove from list LOOK is this ok?
         log.warn("unknownDim {} length set to {}{}", wantDim, oldDim.getLength(), location);
         return dim;

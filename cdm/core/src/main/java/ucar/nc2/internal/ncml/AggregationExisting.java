@@ -102,7 +102,8 @@ class AggregationExisting extends AggregationOuter {
         continue;
       }
       // TODO whats with the full name ?
-      String outerName = v.getDimension(0).makeFullName();
+      // String outerName = v.getDimension(0).makeFullName();
+      String outerName = v.getDimension(0).getShortName();
       if (!dimName.equals(outerName)) {
         continue;
       }

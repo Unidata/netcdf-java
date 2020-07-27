@@ -1175,9 +1175,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     for (Variable v : g.variables)
       v.setImmutable();
 
-    for (Dimension d : g.dimensions)
-      d.setImmutable();
-
     for (Group nested : g.getGroups())
       setImmutable(nested);
 

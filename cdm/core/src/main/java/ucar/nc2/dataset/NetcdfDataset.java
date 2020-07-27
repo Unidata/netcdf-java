@@ -553,40 +553,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return false;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  private void convertGroup(Group g, Group from) {
-    for (EnumTypedef et : from.getEnumTypedefs())
-      g.addEnumeration(et);
-
-    for (Dimension d : from.getDimensions())
-      g.addDimension(new Dimension(d.getShortName(), d));
-
-    for (Attribute a : from.attributes())
-      g.addAttribute(a);
-
-    for (Variable v : from.getVariables())
-      g.addVariable(convertVariable(g, v));
-
-    for (Group nested : from.getGroups()) {
-      Group nnested = new Group(this, g, nested.getShortName());
-      g.addGroup(nnested);
-      convertGroup(nnested, nested);
-    }
-  }
-
-  private Variable convertVariable(Group g, Variable v) {
-    Variable newVar;
-    if (v instanceof Sequence) {
-      newVar = new SequenceDS(g, (Sequence) v);
-    } else if (v instanceof Structure) {
-      newVar = new StructureDS(g, (Structure) v);
-    } else {
-      newVar = new VariableDS(g, v, false); // enhancement done later
-    }
-    return newVar;
-  }
-
   //////////////////////////////////////
 
   /** @deprecated Use NetcdfDatasets.open() with IOSP_MESSAGE_ADD_RECORD_STRUCTURE */
