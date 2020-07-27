@@ -3,7 +3,7 @@ package ucar.nc2;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -41,18 +41,11 @@ public class AttributeContainerMutable implements AttributeContainer {
     return name;
   }
 
-  /** @deprecated do not use. */
-  @Deprecated
-  public void setImmutable() {
-    this.atts = Collections.unmodifiableList(atts);
+  @Override
+  public Iterator<Attribute> iterator() {
+    return atts.iterator();
   }
 
-  @Override
-  public List<Attribute> getAttributes() {
-    return atts;
-  }
-
-  @Override
   public Attribute addAttribute(Attribute att) {
     if (att == null)
       return null;
@@ -124,12 +117,13 @@ public class AttributeContainerMutable implements AttributeContainer {
   @Override
   public double findAttributeDouble(String attName, double defaultValue) {
     Attribute att = findAttributeIgnoreCase(attName);
-    if (att == null)
+    if (att == null) {
       return defaultValue;
-    if (att.isString())
+    } else if (att.isString()) {
       return Double.parseDouble(att.getStringValue());
-    else
+    } else {
       return att.getNumericValue().doubleValue();
+    }
   }
 
   @Override
@@ -207,8 +201,8 @@ public class AttributeContainerMutable implements AttributeContainer {
     }
 
     @Override
-    public List<Attribute> getAttributes() {
-      return atts;
+    public Iterator<Attribute> iterator() {
+      return atts.iterator();
     }
 
     @Override
@@ -259,31 +253,6 @@ public class AttributeContainerMutable implements AttributeContainer {
     @Override
     public boolean isEmpty() {
       return atts.isEmpty();
-    }
-
-    @Deprecated
-    public void addAll(Iterable<Attribute> atts) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    public Attribute addAttribute(Attribute att) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    public boolean remove(Attribute a) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    public boolean removeAttribute(String attName) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    public boolean removeAttributeIgnoreCase(String attName) {
-      throw new UnsupportedOperationException();
     }
   }
 }

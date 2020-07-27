@@ -243,9 +243,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return result;
   }
 
-  public abstract void addGlobalAttributes(AttributeContainer result);
+  public abstract void addGlobalAttributes(AttributeContainerMutable result);
 
-  public abstract void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex);
+  public abstract void addVariableAttributes(AttributeContainerMutable v, GribCollectionImmutable.VariableIndex vindex);
 
   protected abstract String makeVariableId(VariableIndex v);
 

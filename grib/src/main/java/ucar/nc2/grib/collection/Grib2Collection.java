@@ -116,7 +116,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public void addGlobalAttributes(AttributeContainer result) {
+  public void addGlobalAttributes(AttributeContainerMutable result) {
     String val = cust.getGeneratingProcessTypeName(getGenProcessType());
     if (val != null)
       result.addAttribute(new Attribute("Type_of_generating_process", val));
@@ -223,11 +223,11 @@ public class Grib2Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex) {
+  public void addVariableAttributes(AttributeContainerMutable v, GribCollectionImmutable.VariableIndex vindex) {
     addVariableAttributes(v, vindex, this);
   }
 
-  static void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex,
+  static void addVariableAttributes(AttributeContainerMutable v, GribCollectionImmutable.VariableIndex vindex,
       GribCollectionImmutable gc) {
     Grib2Tables cust2 = (Grib2Tables) gc.cust;
 

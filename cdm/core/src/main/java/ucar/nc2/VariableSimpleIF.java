@@ -71,23 +71,4 @@ public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
   /** Attributes for the variable. */
   AttributeContainer attributes();
 
-  /**
-   * Attributes for the variable.
-   * 
-   * @return List of type ucar.nc2.Attribute
-   * @deprecated Use attributes()
-   */
-  @Deprecated
-  List<Attribute> getAttributes();
-
-  /**
-   * find the attribute for the variable with the given name, ignoring case.
-   * 
-   * @param name attribute name
-   * @return the attribute for the variable with the given name, or null if not found.
-   * @deprecated Use attributes()
-   */
-  @Deprecated
-  ucar.nc2.Attribute findAttributeIgnoreCase(String name);
-
 }

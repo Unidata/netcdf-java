@@ -138,7 +138,7 @@ public class CoverageDatasetCapabilities {
       varElem.setAttribute("dependsOn", axis.getDependsOn().trim());
 
     // attributes
-    for (Attribute att : axis.getAttributes()) {
+    for (Attribute att : axis.attributes()) {
       varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 

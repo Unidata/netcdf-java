@@ -227,7 +227,7 @@ public class TestAggExisting {
     testTimeDelta(timeVar, new TimeDelta(1, Field.Day));
 
     // If anyone ever decides to change the default calendar, this should give them pause
-    Attribute calAttr = timeVar.findAttributeIgnoreCase(CF.CALENDAR);
+    Attribute calAttr = timeVar.attributes().findAttributeIgnoreCase(CF.CALENDAR);
     assertThat(calAttr).isNotNull();
     String calName = calAttr.getStringValue();
     assertThat(calName).ignoringCase().isEqualTo("proleptic_gregorian");
@@ -501,7 +501,7 @@ public class TestAggExisting {
   }
 
   private CalendarDateUnit getCalendarDateUnit(Variable timeVar) {
-    Attribute calAttr = timeVar.findAttributeIgnoreCase(CF.CALENDAR);
+    Attribute calAttr = timeVar.attributes().findAttributeIgnoreCase(CF.CALENDAR);
     assertThat(calAttr).isNotNull();
     Calendar cal = Calendar.get(calAttr.getStringValue());
     return CalendarDateUnit.withCalendar(cal, timeVar.getUnitsString());

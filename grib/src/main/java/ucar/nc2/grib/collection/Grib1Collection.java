@@ -111,7 +111,7 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public void addGlobalAttributes(AttributeContainer result) {
+  public void addGlobalAttributes(AttributeContainerMutable result) {
     String val = cust.getGeneratingProcessName(getGenProcessId());
     if (val != null)
       result.addAttribute(new Attribute(GribUtils.GEN_PROCESS, val));
@@ -153,11 +153,11 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex) {
+  public void addVariableAttributes(AttributeContainerMutable v, GribCollectionImmutable.VariableIndex vindex) {
     addVariableAttributes(v, vindex, this);
   }
 
-  static void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex,
+  static void addVariableAttributes(AttributeContainerMutable v, GribCollectionImmutable.VariableIndex vindex,
       GribCollectionImmutable gc) {
     Grib1Customizer cust1 = (Grib1Customizer) gc.cust;
 

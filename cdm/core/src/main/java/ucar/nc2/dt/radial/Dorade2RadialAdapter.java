@@ -173,11 +173,6 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
     parseInfo.append("*** Time Units not Found\n");
   }
 
-
-  public List getAttributes() {
-    return ncd.getRootGroup().getAttributes();
-  }
-
   public ucar.nc2.units.DateUnit getTimeUnits() {
     return dateUnits;
   }

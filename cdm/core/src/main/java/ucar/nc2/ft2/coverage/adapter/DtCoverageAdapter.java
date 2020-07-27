@@ -97,7 +97,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   }
 
   private static Coverage makeCoverage(DtCoverage dt, DtCoverageAdapter reader) {
-    return new Coverage(dt.getName(), dt.getDataType(), dt.getAttributes(), dt.getCoordinateSystem().getName(),
+    return new Coverage(dt.getName(), dt.getDataType(), dt.attributes(), dt.getCoordinateSystem().getName(),
         dt.getUnitsString(), dt.getDescription(), reader, dt);
   }
 

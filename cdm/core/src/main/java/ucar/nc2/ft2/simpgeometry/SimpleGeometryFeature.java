@@ -153,16 +153,6 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
   }
 
   @Override
-  public List<Attribute> getAttributes() {
-    return atts.getAttributes();
-  }
-
-  @Override
-  public Attribute findAttributeIgnoreCase(String name) {
-    return atts.findAttributeIgnoreCase(name);
-  }
-
-  @Override
   public String getUnitsString() {
     return units;
   }
@@ -201,7 +191,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
     f.format("%n%s  %s %s(%s) desc='%s' units='%s' geometry='%s'%n", indent, dataType, name, coordSysName, description,
         units, this.getGeometryDescription());
     f.format("%s    attributes:%n", indent);
-    for (Attribute att : atts.getAttributes())
+    for (Attribute att : atts)
       f.format("%s     %s%n", indent, att);
     indent.decr();
   }

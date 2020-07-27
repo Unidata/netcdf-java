@@ -2,6 +2,8 @@ package ucar.nc2;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
+
+import com.google.common.collect.Iterables;
 import java.util.Optional;
 import org.junit.Test;
 import ucar.ma2.DataType;
@@ -132,8 +134,8 @@ public class TestGroupBuilder {
     Group.Builder builder = Group.builder().setName("name").addAttribute(att1).addAttribute(att2);
 
     AttributeContainer atts = builder.getAttributeContainer();
-    assertThat(atts.getAttributes()).isNotEmpty();
-    assertThat(atts.getAttributes()).hasSize(2);
+    assertThat(Iterables.isEmpty(atts)).isFalse();
+    assertThat(Iterables.size(atts)).isEqualTo(2);
     assertThat(atts.findAttribute("attName")).isEqualTo(att1);
     assertThat(atts.findAttributeString("attName", null)).isEqualTo("value");
     assertThat(atts.findAttributeString("attName2", null)).isEqualTo("value2");

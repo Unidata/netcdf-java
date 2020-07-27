@@ -1457,7 +1457,7 @@ public class H5headerNew implements HdfHeaderIF {
     }
   }
 
-  private void processSystemAttributes(List<HeaderMessage> messages, AttributeContainer attContainer) {
+  private void processSystemAttributes(List<HeaderMessage> messages, AttributeContainerMutable attContainer) {
     for (HeaderMessage mess : messages) {
       if (mess.mtype == MessageType.Comment) {
         MessageComment m = (MessageComment) mess.messData;

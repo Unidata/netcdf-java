@@ -181,7 +181,7 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, latAxis.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, latAxis.getDependenceType());
 
-      Attribute att = latAxis.findAttribute(CDM.GAUSSIAN);
+      Attribute att = latAxis.attributes().findAttribute(CDM.GAUSSIAN);
       Assert.assertNotNull(att);
       Assert.assertEquals("true", att.getStringValue());
     }
@@ -199,7 +199,7 @@ public class TestGribCoverageBuilding {
       CoverageTransform covTransform = covColl.getCoordTransforms().get(0);
       Assert.assertTrue(covTransform.getProjection() instanceof LatLonProjection);
 
-      Attribute gridMappingNameAttrib = covTransform.findAttribute("grid_mapping_name");
+      Attribute gridMappingNameAttrib = covTransform.attributes().findAttribute("grid_mapping_name");
       Assert.assertNotNull("CoverageTransform didn't contain 'grid_mapping_name' attribute.", gridMappingNameAttrib);
       Assert.assertEquals("latitude_longitude", gridMappingNameAttrib.getStringValue());
     }

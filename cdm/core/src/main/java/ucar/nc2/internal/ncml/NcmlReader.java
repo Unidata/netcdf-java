@@ -28,6 +28,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.EnumTypedef;
@@ -643,7 +644,7 @@ public class NcmlReader {
    * @param ref Group or Variable in reference dataset, may be null
    * @param attElem ncml attribute element
    */
-  private void readAtt(AttributeContainer dest, @Nullable AttributeContainer ref, Element attElem) {
+  private void readAtt(AttributeContainerMutable dest, @Nullable AttributeContainer ref, Element attElem) {
     String refName = ref == null ? "no reference object" : ref.getName();
     String name = attElem.getAttributeValue("name");
     if (name == null) {

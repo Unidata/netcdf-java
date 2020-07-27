@@ -378,20 +378,6 @@ public class FeatureDatasetCapabilitiesWriter {
     }
 
     @Override
-    public List<Attribute> getAttributes() {
-      return atts;
-    }
-
-    @Override
-    public Attribute findAttributeIgnoreCase(String name) {
-      for (Attribute att : atts) {
-        if (att.getShortName().equalsIgnoreCase(name))
-          return att;
-      }
-      return null;
-    }
-
-    @Override
     public AttributeContainer attributes() {
       return new AttributeContainerMutable(name, atts).toImmutable();
     }

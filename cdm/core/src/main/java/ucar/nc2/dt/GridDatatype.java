@@ -5,6 +5,7 @@
 package ucar.nc2.dt;
 
 import ucar.ma2.*;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.VariableDS;
@@ -81,7 +82,7 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * 
    * @return a List of Attribute
    */
-  List<Attribute> getAttributes();
+  AttributeContainer attributes();
 
   /**
    * Convenience function; lookup Attribute by name.
