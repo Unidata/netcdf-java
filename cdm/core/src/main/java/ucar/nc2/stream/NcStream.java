@@ -483,13 +483,13 @@ public class NcStream {
         Array data = Array.factory(dtUse, new int[] {lenp});
         for (int i = 0; i < lenp; i++)
           data.setObject(i, attp.getSdata(i));
-        return new Attribute(attp.getName(), data);
+        return Attribute.fromArray(attp.getName(), data);
       }
     } else {
       ByteString bs = attp.getData();
       ByteBuffer bb = ByteBuffer.wrap(bs.toByteArray());
       // if null, then use int[]{bb.limit()}
-      return new Attribute(attp.getName(), Array.factory(dtUse, (int[]) null, bb));
+      return Attribute.fromArray(attp.getName(), Array.factory(dtUse, (int[]) null, bb));
     }
   }
 

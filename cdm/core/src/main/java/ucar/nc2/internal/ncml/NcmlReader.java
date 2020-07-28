@@ -668,7 +668,7 @@ public class NcmlReader {
       }
       try {
         ucar.ma2.Array values = readAttributeValues(attElem);
-        dest.addAttribute(new Attribute(name, values));
+        dest.addAttribute(Attribute.fromArray(name, values));
       } catch (RuntimeException e) {
         errlog.format("NcML new Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, refName);
       }
@@ -682,7 +682,7 @@ public class NcmlReader {
       if (hasValue) { // has a new value
         try {
           ucar.ma2.Array values = readAttributeValues(attElem); // Handles "isUnsigned".
-          dest.addAttribute(new Attribute(name, values));
+          dest.addAttribute(Attribute.fromArray(name, values));
         } catch (RuntimeException e) {
           errlog.format("NcML existing Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, refName);
           return;

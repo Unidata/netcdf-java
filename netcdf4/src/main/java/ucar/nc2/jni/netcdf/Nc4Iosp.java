@@ -504,48 +504,48 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         Attribute att;
         switch (type) {
           case Nc4prototypes.NC_BYTE:
-            att = new Attribute(attname, DataType.BYTE);
+            att = Attribute.emptyValued(attname, DataType.BYTE);
             break;
           case Nc4prototypes.NC_UBYTE:
-            att = new Attribute(attname, DataType.UBYTE);
+            att = Attribute.emptyValued(attname, DataType.UBYTE);
             break;
           case Nc4prototypes.NC_CHAR:
             // From what I can tell, the way we should treat char attrs depends on
             // the netCDF format used (3 vs. 4)
             if ((format == NC_FORMAT_NETCDF4_CLASSIC) || (format == NC_FORMAT_NETCDF4)) {
               // if netcdf4, make null char attrs null string attrs
-              att = new Attribute(attname, DataType.STRING);
+              att = Attribute.emptyValued(attname, DataType.STRING);
             } else {
               // all others, treat null char attrs as empty string attrs
               att = new Attribute(attname, "");
             }
             break;
           case Nc4prototypes.NC_DOUBLE:
-            att = new Attribute(attname, DataType.DOUBLE);
+            att = Attribute.emptyValued(attname, DataType.DOUBLE);
             break;
           case Nc4prototypes.NC_FLOAT:
-            att = new Attribute(attname, DataType.FLOAT);
+            att = Attribute.emptyValued(attname, DataType.FLOAT);
             break;
           case Nc4prototypes.NC_INT:
-            att = new Attribute(attname, DataType.INT);
+            att = Attribute.emptyValued(attname, DataType.INT);
             break;
           case Nc4prototypes.NC_UINT:
-            att = new Attribute(attname, DataType.UINT);
+            att = Attribute.emptyValued(attname, DataType.UINT);
             break;
           case Nc4prototypes.NC_UINT64:
-            att = new Attribute(attname, DataType.ULONG);
+            att = Attribute.emptyValued(attname, DataType.ULONG);
             break;
           case Nc4prototypes.NC_INT64:
-            att = new Attribute(attname, DataType.LONG);
+            att = Attribute.emptyValued(attname, DataType.LONG);
             break;
           case Nc4prototypes.NC_USHORT:
-            att = new Attribute(attname, DataType.USHORT);
+            att = Attribute.emptyValued(attname, DataType.USHORT);
             break;
           case Nc4prototypes.NC_SHORT:
-            att = new Attribute(attname, DataType.SHORT);
+            att = Attribute.emptyValued(attname, DataType.SHORT);
             break;
           case Nc4prototypes.NC_STRING:
-            att = new Attribute(attname, DataType.STRING);
+            att = Attribute.emptyValued(attname, DataType.STRING);
             break;
           default:
             log.warn("Unsupported attribute data type == " + type);
@@ -682,7 +682,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           }
       }
       if (values != null) {
-        Attribute att = new Attribute(attname, values);
+        Attribute att = Attribute.fromArray(attname, values);
         result.add(att);
       }
     }
@@ -775,9 +775,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
       data = Array.factory(DataType.STRING, new int[] {len}, econsts);
     }
-    Attribute a = new Attribute(attname, data);
-    a.setEnumType(userType.e);
-    return a;
+    return Attribute.builder(attname).setValues(data).setEnumType(userType.e).build();
   }
 
   private Array convertByteBuffer(ByteBuffer bb, int baseType, int[] shape) throws IOException {
@@ -813,7 +811,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int ret = nc4.nc_get_att(grpid, varid, attname, bb);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    return new Attribute(attname, Array.factory(DataType.BYTE, new int[] {total}, bb));
+    return Attribute.fromArray(attname, Array.factory(DataType.BYTE, new int[] {total}, bb));
   }
 
   private void readCompoundAttValues(int grpid, int varid, String attname, int len, UserType userType,
@@ -834,13 +832,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       for (Field fld : userType.flds) {
         Variable mv = s.findVariable(fld.name);
         if (mv != null)
-          mv.addAttribute(new Attribute(attname, fld.data));
+          mv.addAttribute(Attribute.fromArray(attname, fld.data));
         else
-          result.add(new Attribute(attname + "." + fld.name, fld.data));
+          result.add(Attribute.fromArray(attname + "." + fld.name, fld.data));
       }
     } else {
       for (Field fld : userType.flds)
-        result.add(new Attribute(attname + "." + fld.name, fld.data));
+        result.add(Attribute.fromArray(attname + "." + fld.name, fld.data));
     }
   }
 

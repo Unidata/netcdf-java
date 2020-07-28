@@ -1361,7 +1361,7 @@ class Nidsheader {
       List params = projection.getProjectionParameters();
       for (Object param : params) {
         Parameter p = (Parameter) param;
-        ct.addAttribute(new Attribute(p));
+        ct.addAttribute(Attribute.fromParameter(p));
       }
       ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
       ct.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
@@ -1514,7 +1514,7 @@ class Nidsheader {
     List params = projection.getProjectionParameters();
     for (Object param : params) {
       Parameter p = (Parameter) param;
-      ct.addAttribute(new Attribute(p));
+      ct.addAttribute(Attribute.fromParameter(p));
     }
     ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
     ct.addAttribute(new Attribute(_Coordinate.Axes, "x y"));

@@ -78,7 +78,7 @@ recordsGroup/recordsStruct = UNREADABLE
         and: "create Variable of type dessertType and add it"
         Variable dessert = new Variable(ncFile, null, null, "dessert", DataType.ENUM2, "time")
         dessert.enumTypedef = dessertType
-        dessert.addAttribute(new Attribute("zero", DataType.ULONG))  // unsigned, zero-length, LONG attribute
+        dessert.addAttribute(Attribute.emptyValued("zero", DataType.ULONG))  // unsigned, zero-length, LONG attribute
         short[] dessertStorage = [18, 268, 3284] as short[]
         dessert.setCachedData(Array.factory(DataType.SHORT, [3] as int[], dessertStorage), true)  // Irregularly-spaced values
         ncFile.addVariable(null, dessert)
@@ -119,11 +119,11 @@ recordsGroup/recordsStruct = UNREADABLE
         recordsStruct.addMemberVariable(recordsVar)
 
         and: "create group attribute containing multiple string values"
-        Attribute stoogesAttrib = new Attribute("stooges", ['Moe Howard', 'Larry Fine', 'Curly Howard'])
+        Attribute stoogesAttrib = Attribute.builder("stooges").setValues( ['Moe Howard', 'Larry Fine', 'Curly Howard'], false).build()
         recordsGroup.addAttribute(stoogesAttrib)
 
         and: "create global attribute with multiple unsigned integer values"
-        Attribute primesAttrib = new Attribute("primes", [2, 3, 5, 7, 11], true)
+        Attribute primesAttrib = Attribute.builder("primes").setValues([2, 3, 5, 7, 11], true).build();
         ncFile.addAttribute(null, primesAttrib)
 
         and: "finish"

@@ -50,7 +50,7 @@ public class TestNetcdfFormatWriter {
 
     writerb.addVariable("time", DataType.BYTE, "time").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
         .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10.0))
-        .addAttribute(new Attribute(CDM.VALID_RANGE, ImmutableList.of(10, 240), false));
+        .addAttribute(Attribute.builder(CDM.VALID_RANGE).setValues(ImmutableList.of(10, 240), false).build());
 
     /*
      * byte Band1(y, x);
@@ -66,8 +66,8 @@ public class TestNetcdfFormatWriter {
      * > Band2:valid_range = 0s, 254s; // short
      */
     writerb.addVariable("Band2", DataType.BYTE, "time").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
-        .addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0))
-        .addAttribute(new Attribute(CDM.VALID_RANGE, ImmutableList.of((short) 0, (short) 254)));
+        .addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0)).addAttribute(
+            Attribute.builder(CDM.VALID_RANGE).setValues(ImmutableList.of((short) 0, (short) 254), false).build());
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       Array timeData = Array.factory(DataType.BYTE, new int[] {1});
@@ -194,7 +194,7 @@ public class TestNetcdfFormatWriter {
     // public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
     writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
         .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10.0))
-        .addAttribute(new Attribute(CDM.VALID_RANGE, ImmutableList.of(10, 240)));
+        .addAttribute(Attribute.builder(CDM.VALID_RANGE).setValues(ImmutableList.of(10, 240), false).build());
 
     // write
     try (NetcdfFormatWriter writer = writerb.build()) {

@@ -18,20 +18,12 @@ import ucar.unidata.util.StringUtil2;
  */
 
 // Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
-public class DODSAttribute extends ucar.nc2.Attribute {
+class DODSAttribute extends ucar.nc2.Attribute {
 
-  /**
-   * constructor: adapter around dods.dap.Attribute
-   *
-   * @param dodsName the attribute name
-   * @param att the dods attribute
-   */
-  public DODSAttribute(String dodsName, opendap.dap.Attribute att) {
-    super(DODSNetcdfFile.makeShortName(dodsName));
-    setDODSName(DODSNetcdfFile.makeDODSName(dodsName));
+  static DODSAttribute create(String rawName, opendap.dap.Attribute att) {
 
-    DataType ncType = DODSNetcdfFile.convertToNCType(att.getType(), false); // LOOK dont know if attribute is unsigned
-                                                                            // byte
+    // LOOK dont know if attribute is unsigned byte
+    DataType ncType = DODSNetcdfFile.convertToNCType(att.getType(), false);
 
     // count number
     int nvals = 0;
@@ -40,23 +32,6 @@ public class DODSAttribute extends ucar.nc2.Attribute {
       iter.next();
       nvals++;
     }
-
-    // DAS parser is now assumed to handle escaping and remove "" from strings
-    /*
-     * String[] vals = new String[nvals];
-     * iter = att.getValuesIterator();
-     * int count = 0;
-     * while(iter.hasNext()) {
-     * String val = (String) iter.next();
-     * if (val.charAt(0) == '"')
-     * val = val.substring(1);
-     * int n = val.length();
-     * if ((n > 0) && (val.charAt(n-1) == '"'))
-     * val = val.substring(0, n-1);
-     * 
-     * vals[count++] = unescapeAttributeStringValues( val);
-     * }
-     */
 
     // need String[]
     String[] vals = new String[nvals];
@@ -79,13 +54,22 @@ public class DODSAttribute extends ucar.nc2.Attribute {
           data.setDouble(ima.set(i), dval);
         }
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Illegal Numeric Value for Attribute Value for " + dodsName);
+        throw new IllegalArgumentException("Illegal Numeric Value for Attribute Value for " + rawName);
       }
     }
-    setValues(data);
+
+    String name = DODSNetcdfFile.makeShortName(rawName);
+    String dodsName = DODSNetcdfFile.makeDODSName(rawName);
+    return new DODSAttribute(name, data, dodsName);
   }
 
-  protected DODSAttribute(String dodsName, String val) {
+  private DODSAttribute(String name, Array values, String dodsName) {
+    // super(name, values); // TODO should be
+    super(name, "values"); // fake
+    setDODSName(dodsName);
+  }
+
+  DODSAttribute(String dodsName, String val) {
     super(DODSNetcdfFile.makeShortName(dodsName), val);
     setDODSName(DODSNetcdfFile.makeDODSName(dodsName));
   }
@@ -103,10 +87,6 @@ public class DODSAttribute extends ucar.nc2.Attribute {
 
   public void setDODSName(String name) {
     this.dodsName = name;
-  }
-
-  public void resetShortName(String name) {
-    setName(name);
   }
 
   public String getDODSName() {
