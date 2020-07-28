@@ -14,7 +14,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+// import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
@@ -219,10 +219,13 @@ public class DatasetWriter extends JPanel {
     }
 
     if (data.format.isNetdf4format()) {
-      if (!NetcdfClibrary.isLibraryPresent()) {
-        JOptionPane.showMessageDialog(this, "NetCDF-4 C library is not loaded");
-        return;
-      }
+      return;
+      /*
+       * if (!NetcdfClibrary.isLibraryPresent()) {
+       * JOptionPane.showMessageDialog(this, "NetCDF-4 C library is not loaded");
+       * return;
+       * }
+       */
     }
 
     WriterTask task = new WriterTask(data);

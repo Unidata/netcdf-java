@@ -7,7 +7,7 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+// import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
@@ -79,14 +79,16 @@ public class DatasetViewerPanel extends OpPanel {
     }
 
     try {
-      if (jni) {
-        Nc4Iosp iosp = new Nc4Iosp();
-        ncnew = new NetcdfFileSubclass(iosp, location);
-        RandomAccessFile raf = new RandomAccessFile(location, "r");
-        iosp.open(raf, ncnew, null);
-      } else {
-        ncnew = ToolsUI.getToolsUI().openFile(location, useCoords, null);
-      }
+      /*
+       * if (jni) {
+       * Nc4Iosp iosp = new Nc4Iosp();
+       * ncnew = new NetcdfFileSubclass(iosp, location);
+       * RandomAccessFile raf = new RandomAccessFile(location, "r");
+       * iosp.open(raf, ncnew, null);
+       * } else {
+       */
+      ncnew = ToolsUI.getToolsUI().openFile(location, useCoords, null);
+      // }
       if (ncnew != null) {
         setDataset(ncnew);
       }

@@ -116,10 +116,10 @@ ext {
 gradle.projectsEvaluated {
   publicProjects = publishedProjects - internalProjects - platformProjects - project.rootProject
   // Need to make sure to add in netcdf4 project's unloadedTests sourceSet as well
-  publicProjectSourceDirs = files(publicProjects*.sourceSets*.main*.allSource*.srcDirs +
-      project(':netcdf4').sourceSets.unloadedTest*.allSource*.srcDirs.flatten())
-  publicProjectClassDirs =
-      files(publicProjects*.sourceSets*.main*.output + project(':netcdf4').sourceSets.unloadedTest*.output)
+//  publicProjectSourceDirs = files(publicProjects*.sourceSets*.main*.allSource*.srcDirs +
+//      project(':netcdf4').sourceSets.unloadedTest*.allSource*.srcDirs.flatten())
+//  publicProjectClassDirs =
+//      files(publicProjects*.sourceSets*.main*.output + project(':netcdf4').sourceSets.unloadedTest*.output)
 }
 
 // Set up properties needed for all testing, adds "testAll" task to root

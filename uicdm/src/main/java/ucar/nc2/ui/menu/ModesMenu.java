@@ -13,7 +13,7 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
 import ucar.nc2.internal.iosp.hdf4.H4header;
 import ucar.nc2.internal.iosp.hdf5.H5iospNew;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+// import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
 import java.awt.event.ActionEvent;
@@ -146,16 +146,19 @@ public class ModesMenu extends JMenu {
     BAMutil.setActionProperties(a, null, "Use HDF-EOS StructMetadata to augment HDF4", true, '4', -1);
     BAMutil.addActionToMenu(subMenu, a);
 
-    a = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        boolean state = (Boolean) getValue(BAMutil.STATE);
-        Nc4Iosp.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "Use HDF-EOS StructMetadata to augment netcdf4 (JNI)", true, 'N', -1);
-    BAMutil.addActionToMenu(subMenu, a);
+    /*
+     * a = new AbstractAction() {
+     * 
+     * @Override
+     * public void actionPerformed(ActionEvent e) {
+     * boolean state = (Boolean) getValue(BAMutil.STATE);
+     * Nc4Iosp.useHdfEos(state);
+     * }
+     * };
+     * a.putValue(BAMutil.STATE, true);
+     * BAMutil.setActionProperties(a, null, "Use HDF-EOS StructMetadata to augment netcdf4 (JNI)", true, 'N', -1);
+     * BAMutil.addActionToMenu(subMenu, a);
+     */
 
     // Add the submenu
     add(subMenu);

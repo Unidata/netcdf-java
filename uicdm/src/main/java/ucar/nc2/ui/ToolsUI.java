@@ -23,7 +23,7 @@ import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+// import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.grib.*;
@@ -116,7 +116,6 @@ public class ToolsUI extends JPanel {
   private DatasetWriterPanel writerPanel;
   private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanOpPanel ftPanel;
-  private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
   private GribCodePanel gribCodePanel;
@@ -552,10 +551,12 @@ public class ToolsUI extends JPanel {
         c = imagePanel;
         break;
 
-      case "Fmrc":
-        fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
-        c = fmrcPanel;
-        break;
+      /*
+       * case "Fmrc":
+       * fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
+       * c = fmrcPanel;
+       * break;
+       */
 
       case "NCDump":
         ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
@@ -671,7 +672,7 @@ public class ToolsUI extends JPanel {
     NcmlReader.setDebugFlags(debugFlags);
     // DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
-    Nc4Iosp.setDebugFlags(debugFlags);
+    // Nc4Iosp.setDebugFlags(debugFlags);
     DataFactory.setDebugFlags(debugFlags);
 
     NetcdfCopier.setDebugFlags(debugFlags);
@@ -750,9 +751,11 @@ public class ToolsUI extends JPanel {
     if (ftPanel != null) {
       ftPanel.save();
     }
-    if (fmrcPanel != null) {
-      fmrcPanel.save();
-    }
+    /*
+     * if (fmrcPanel != null) {
+     * fmrcPanel.save();
+     * }
+     */
     if (geotiffPanel != null) {
       geotiffPanel.save();
     }
