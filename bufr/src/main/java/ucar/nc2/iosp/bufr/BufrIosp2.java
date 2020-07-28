@@ -60,11 +60,6 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   }
 
   @Override
-  public boolean isBuilder() {
-    return true;
-  }
-
-  @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 

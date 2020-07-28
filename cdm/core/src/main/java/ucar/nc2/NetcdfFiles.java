@@ -310,8 +310,7 @@ public class NetcdfFiles {
     ucar.unidata.io.RandomAccessFile raf =
         ucar.unidata.io.RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
 
-    NetcdfFile result =
-        spi.isBuilder() ? build(spi, raf, location, cancelTask) : new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile result = build(spi, raf, location, cancelTask);
 
     // send after iosp is opened
     if (iospMessage != null)
@@ -691,7 +690,7 @@ public class NetcdfFiles {
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
 
-    return spi.isBuilder() ? build(spi, raf, name, null) : new NetcdfFile(spi, raf, name, null);
+    return build(spi, raf, name, null);
   }
 
   /**
@@ -720,8 +719,7 @@ public class NetcdfFiles {
     if (log.isDebugEnabled())
       log.debug("Using IOSP {}", spi.getClass().getName());
 
-    NetcdfFile ncfile =
-        spi.isBuilder() ? build(spi, raf, location, cancelTask) : new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile ncfile = build(spi, raf, location, cancelTask);
     spi.buildFinish(ncfile);
 
     // send iospMessage after iosp is opened

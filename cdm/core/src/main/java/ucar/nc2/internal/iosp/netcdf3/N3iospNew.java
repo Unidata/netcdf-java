@@ -108,32 +108,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   //////////////////////////////////////////////////////////////////////////////////////
   // read existing file
 
-  @Deprecated
-  @Override
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    super.open(raf, ncfile, cancelTask);
-
-    String location = raf.getLocation();
-    if (!location.startsWith("http:")) {
-      File file = new File(location);
-      if (file.exists())
-        lastModified = file.lastModified();
-    }
-
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = createHeader();
-
-    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
-    header.read(raf, rootGroup, null);
-    ncfile.setRootGroup(rootGroup.build());
-    ncfile.finish();
-  }
-
-  @Override
-  public boolean isBuilder() {
-    return true;
-  }
-
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
@@ -175,22 +149,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
     Object data = readData(layout, dataType);
     return Array.factory(dataType, section.getShape(), data);
-  }
-
-  @Override
-  public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    if (v2 instanceof Structure)
-      return readRecordData((Structure) v2, section, channel);
-
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    DataType dataType = v2.getDataType();
-
-    Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
-        : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
-
-    return readData(layout, dataType, channel);
   }
 
   // TODO

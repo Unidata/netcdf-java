@@ -448,14 +448,16 @@ public class DatasetViewer extends JPanel {
           dumpData(table);
         }
       });
-      csPopup.addAction("Write binary Data to file", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
-          if (binaryFilePath != null) {
-            writeData(table, new File(binaryFilePath));
-          }
-        }
-      });
+      /*
+       * csPopup.addAction("Write binary Data to file", new AbstractAction() {
+       * public void actionPerformed(ActionEvent e) {
+       * String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
+       * if (binaryFilePath != null) {
+       * writeData(table, new File(binaryFilePath));
+       * }
+       * }
+       * });
+       */
       if (level == 0) {
         csPopup.addAction("Data Table", new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
@@ -633,21 +635,23 @@ public class DatasetViewer extends JPanel {
     dumpWindow.show();
   }
 
-  private void writeData(BeanTable from, File name) {
-    Variable v = getCurrentVariable(from);
-    if (v == null || name == null)
-      return;
-
-    try (FileOutputStream stream = new FileOutputStream(name)) {
-      WritableByteChannel channel = stream.getChannel();
-      v.readToByteChannel(v.getShapeAsSection(), channel);
-      System.out.printf("Write ok to %s%n", name);
-
-    } catch (InvalidRangeException | IOException e) {
-      e.printStackTrace();
-    }
-
-  }
+  /*
+   * private void writeData(BeanTable from, File name) {
+   * Variable v = getCurrentVariable(from);
+   * if (v == null || name == null)
+   * return;
+   * 
+   * try (FileOutputStream stream = new FileOutputStream(name)) {
+   * WritableByteChannel channel = stream.getChannel();
+   * v.readToByteChannel(v.getShapeAsSection(), channel);
+   * System.out.printf("Write ok to %s%n", name);
+   * 
+   * } catch (InvalidRangeException | IOException e) {
+   * e.printStackTrace();
+   * }
+   * 
+   * }
+   */
 
   /*
    * private void showMissingData(BeanTable from) {

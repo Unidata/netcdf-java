@@ -705,7 +705,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
       log.info("NetcdfFile uses iosp = {}", spi.getClass().getName());
 
     try {
-      spi.open(raf, this, cancelTask);
+      // spi.open(raf, this, cancelTask);
+      spi.build(raf, Group.builder(), cancelTask);
 
     } catch (IOException | RuntimeException e) {
       try {
@@ -1230,33 +1231,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     else
       // allow iosp to optimize
       return iosp.readSection(cer);
-  }
-
-
-  /**
-   * Read data from a top level Variable and send data to a WritableByteChannel. Experimental.
-   *
-   * @param v a top-level Variable
-   * @param section the section of data to read.
-   *        There must be a Range for each Dimension in the variable, in order.
-   *        Note: no nulls allowed. IOSP may not modify.
-   * @param wbc write data to this WritableByteChannel
-   * @return the number of bytes written to the channel
-   * @throws IOException if read error
-   * @throws InvalidRangeException if invalid section
-   * @deprecated do not use
-   */
-  @Deprecated
-  protected long readToByteChannel(Variable v, Section section, WritableByteChannel wbc)
-      throws IOException, InvalidRangeException {
-
-    // if (unlocked)
-    // throw new IllegalStateException("File is unlocked - cannot use");
-
-    if ((iosp == null) || v.hasCachedData())
-      return IospHelper.copyToByteChannel(v.read(section), wbc);
-
-    return iosp.readToByteChannel(v, section, wbc);
   }
 
   protected long readToOutputStream(Variable v, Section section, OutputStream out)

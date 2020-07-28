@@ -6,7 +6,6 @@ package ucar.nc2.iosp;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.channels.WritableByteChannel;
 import javax.annotation.Nullable;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
@@ -48,26 +47,6 @@ public interface IOServiceProvider {
   boolean isValidFile(RandomAccessFile raf) throws IOException;
 
   /**
-   * Open existing file, and populate ncfile with it. This method is only called by the
-   * NetcdfFile constructor on itself. The provided NetcdfFile object will be empty
-   * except for the location String and the IOServiceProvider associated with this
-   * NetcdfFile object.
-   *
-   * @param raf the file to work on, it has already passed the isValidFile() test.
-   * @param ncfile add objects to this empty NetcdfFile
-   * @param cancelTask used to monitor user cancellation; may be null.
-   * @throws IOException if read error
-   * @deprecated Use build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask)
-   */
-  @Deprecated
-  void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;
-
-  /**
-   * If this iosp implements build().
-   */
-  boolean isBuilder();
-
-  /**
    * Open existing file, and populate it. Note that you cannot reference the NetcdfFile within this routine.
    * This is the bridge to immutable objects that will be used exclusively in version 6.
    *
@@ -96,29 +75,6 @@ public interface IOServiceProvider {
    * @see ucar.ma2.Range
    */
   ucar.ma2.Array readData(Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-
-  /**
-   * Read data from a top level Variable and send data to a WritableByteChannel.
-   * Must be in big-endian order.
-   *
-   * @param v2 a top-level Variable
-   * @param section the section of data to read.
-   *        There must be a Range for each Dimension in the variable, in order.
-   *        Note: no nulls allowed. IOSP may not modify.
-   * @param channel write data to this WritableByteChannel
-   * @return the number of bytes written to the channel
-   * @throws java.io.IOException if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
-   * @deprecated do not use
-   */
-  @Deprecated
-  long readToByteChannel(Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException;
-
-  /** @deprecated do not use */
-  @Deprecated
-  long streamToByteChannel(Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
    * Read data from a top level Variable and send data to a OutputStream.
