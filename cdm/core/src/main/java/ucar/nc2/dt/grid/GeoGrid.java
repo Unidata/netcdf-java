@@ -782,10 +782,11 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     // subset the variable
     VariableDS v_section = (VariableDS) vs.section(new Section(rangesList));
-    List<Dimension> dims = v_section.getDimensions();
-    for (Dimension dim : dims) {
-      dim.setShared(true); // make them shared (section will make them unshared)
-    }
+    // TODO does this work without setting shared??
+    // List<Dimension> dims = v_section.getDimensions();
+    // for (Dimension dim : dims) {
+    // dim.setShared(true); // make them shared (section will make them unshared)
+    // }
 
     // subset the axes in the GridCoordSys
     GridCoordSys gcs_section = new GridCoordSys(gcs, rt_range, e_range, t_range, z_range, y_range, x_range);

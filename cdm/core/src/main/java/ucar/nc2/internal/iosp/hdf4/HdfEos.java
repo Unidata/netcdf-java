@@ -441,8 +441,8 @@ public class HdfEos {
     return null;
   }
 
-
-  private FeatureType amendGrid(Element gridElem, Group.Builder parent, String location) {
+  // Use the ODL to amend the netcdf file
+  private FeatureType amendGrid(Element gridElem, Group.Builder parentGroupBuilder, String location) {
     List<Dimension> unknownDims = new ArrayList<>();
 
     // always has x and y dimension
@@ -450,8 +450,8 @@ public class HdfEos {
     String ydimSizeS = gridElem.getChild("YDim").getText().trim();
     int xdimSize = Integer.parseInt(xdimSizeS);
     int ydimSize = Integer.parseInt(ydimSizeS);
-    parent.addDimensionIfNotExists(new Dimension("XDim", xdimSize));
-    parent.addDimensionIfNotExists(new Dimension("YDim", ydimSize));
+    parentGroupBuilder.addDimensionIfNotExists(new Dimension("XDim", xdimSize));
+    parentGroupBuilder.addDimensionIfNotExists(new Dimension("YDim", ydimSize));
 
     /*
      * see HdfEosModisConvention
@@ -467,7 +467,7 @@ public class HdfEos {
       crs.setDataType(DataType.SHORT);
       crs.setIsScalar();
       crs.setAutoGen(0, 0); // fake data
-      parent.addVariable(crs);
+      parentGroupBuilder.addVariable(crs);
 
       addAttributeIfExists(gridElem, HDFEOS_CRS_Projection, crs, false);
       addAttributeIfExists(gridElem, HDFEOS_CRS_UpperLeft, crs, true);
@@ -488,11 +488,11 @@ public class HdfEos {
 
       String sizeS = elem.getChild("Size").getText().trim();
       int length = Integer.parseInt(sizeS);
-      Dimension old = parent.findDimension(name).orElse(null);
+      Dimension old = parentGroupBuilder.findDimension(name).orElse(null);
       if ((old == null) || (old.getLength() != length)) {
         if (length > 0) {
           Dimension dim = new Dimension(name, length);
-          if (parent.addDimensionIfNotExists(dim) && showWork) {
+          if (parentGroupBuilder.addDimensionIfNotExists(dim) && showWork) {
             log.debug(" Add dimension {}", dim);
           }
         } else {
@@ -500,15 +500,15 @@ public class HdfEos {
           Dimension udim = new Dimension(name, 1);
           unknownDims.add(udim);
           if (showWork) {
-            log.debug(" Add dimension {}", udim);
+            log.debug(" Add unknown dimension {}", udim);
           }
         }
       }
     }
 
     // Geolocation Variables
-    Group.Builder geoFieldsG =
-        parent.findGroupLocal(GEOLOC_FIELDS).orElse(parent.findGroupLocal(GEOLOC_FIELDS2).orElse(null));
+    Group.Builder geoFieldsG = parentGroupBuilder.findGroupLocal(GEOLOC_FIELDS)
+        .orElse(parentGroupBuilder.findGroupLocal(GEOLOC_FIELDS2).orElse(null));
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
       List<Element> varsLoc = floc.getChildren();
@@ -523,7 +523,8 @@ public class HdfEos {
     }
 
     // Data Variables
-    Group.Builder dataG = parent.findGroupLocal(DATA_FIELDS).orElse(parent.findGroupLocal(DATA_FIELDS2).orElse(null));
+    Group.Builder dataG = parentGroupBuilder.findGroupLocal(DATA_FIELDS)
+        .orElse(parentGroupBuilder.findGroupLocal(DATA_FIELDS2).orElse(null));
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
       List<Element> vars = f.getChildren();
@@ -649,16 +650,13 @@ public class HdfEos {
     for (Dimension dim : unknownDims) {
       if (dim.getShortName().equals(wantDim)) {
         int len = oldDim.getLength();
-        if (len == 0) {
-          dim.setUnlimited(true); // allow zero length dimension !!
-        }
-        dim.setLength(len); // use existing (anon) dimension
+        Dimension newDim = oldDim.toBuilder().setIsUnlimited(len == 0).setLength(len).build();
         // TODO
         // Group parent = dim.getGroup();
-        // parent.addDimensionIfNotExists(dim); // add to the parent
+        // parent.addDimensionIfNotExists(newDim); // add to the parent
         unknownDims.remove(dim); // remove from list LOOK is this ok?
-        log.warn("unknownDim {} length set to {}{}", wantDim, oldDim.getLength(), location);
-        return dim;
+        log.warn("unknownDim {} length set to {} {}", wantDim, oldDim.getLength(), location);
+        return newDim;
       }
     }
     return null;
