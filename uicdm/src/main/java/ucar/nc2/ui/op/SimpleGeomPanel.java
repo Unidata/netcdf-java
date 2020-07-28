@@ -13,7 +13,7 @@ import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-import ucar.nc2.ui.image.ImageViewPanel;
+// import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.simplegeom.SimpleGeomTable;
 import ucar.nc2.ui.simplegeom.SimpleGeomUI;
 import ucar.ui.widget.BAMutil;
@@ -43,7 +43,7 @@ public class SimpleGeomPanel extends OpPanel {
   private JSplitPane split;
   private IndependentWindow viewerWindow, imageWindow;
   private SimpleGeomUI sgUI;
-  private ImageViewPanel imageViewer;
+  // private ImageViewPanel imageViewer;
 
   private NetcdfDataset ds;
 
@@ -78,7 +78,7 @@ public class SimpleGeomPanel extends OpPanel {
         if (imageWindow == null) {
           makeImageWindow();
         }
-        imageViewer.setImageFromGrid(grid);
+        // imageViewer.setImageFromGrid(grid);
         imageWindow.show();
       }
     });
@@ -116,8 +116,8 @@ public class SimpleGeomPanel extends OpPanel {
    */
   private void makeImageWindow() {
     imageWindow = new IndependentWindow("Simple Geometry Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
-    imageViewer = new ImageViewPanel(null);
-    imageWindow.setComponent(imageViewer);
+    // imageViewer = new ImageViewPanel(null);
+    // imageWindow.setComponent(imageViewer);
     imageWindow
         .setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
   }

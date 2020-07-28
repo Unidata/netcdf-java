@@ -10,9 +10,9 @@ dependencies {
   // todo: a lot of these could probably be runtimeOnly
   compile project(':cdm:cdm-core')
   // compile project(':cdm:cdm-fmrc')
-  compile project(':cdm:cdm-image')    // things that depend on java.awt
-  compile project(':cdm:cdm-misc')     // misc iosps
-  compile project(':cdm:cdm-radial')   // radial data
+  // compile project(':cdm:cdm-image')    // things that depend on java.awt
+  // compile project(':cdm:cdm-misc')     // misc iosps
+  // compile project(':cdm:cdm-radial')   // radial data
   compile project(':bufr')
   // compile project(':dap4:d4cdm')
   compile project(':grib')
@@ -20,7 +20,7 @@ dependencies {
   // compile project(':netcdf4')
   // compile project(':opendap')
   compile project(':uibase')
-  compile project(':visad:cdm-mcidas') // For Gempak IOSPs.
+  // compile project(':visad:cdm-mcidas') // For Gempak IOSPs.
   compile project(':waterml')
 
   // constrained by netcdf-java-platform

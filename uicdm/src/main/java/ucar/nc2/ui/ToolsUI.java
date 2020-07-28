@@ -117,7 +117,7 @@ public class ToolsUI extends JPanel {
   private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanOpPanel ftPanel;
   private GeoGridPanel gridPanel;
-  private GeotiffPanel geotiffPanel;
+  // private GeotiffPanel geotiffPanel;
   private GribCodePanel gribCodePanel;
   private GribFilesOpPanel gribFilesPanel;
   private GribIndexOpPanel gribIdxPanel;
@@ -134,7 +134,7 @@ public class ToolsUI extends JPanel {
   private Hdf5ObjectPanel hdf5ObjectPanel;
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
-  private ImagePanel imagePanel;
+  // private ImagePanel imagePanel;
   private NcStreamOpPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
@@ -506,10 +506,12 @@ public class ToolsUI extends JPanel {
         c = ftPanel;
         break;
 
-      case "GeoTiff":
-        geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
-        c = geotiffPanel;
-        break;
+      /*
+       * case "GeoTiff":
+       * geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
+       * c = geotiffPanel;
+       * break;
+       */
 
       case "Grids":
         gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
@@ -546,10 +548,12 @@ public class ToolsUI extends JPanel {
         c = hdf4Panel;
         break;
 
-      case "Images":
-        imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
-        c = imagePanel;
-        break;
+      /*
+       * case "Images":
+       * imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
+       * c = imagePanel;
+       * break;
+       */
 
       /*
        * case "Fmrc":
@@ -756,9 +760,11 @@ public class ToolsUI extends JPanel {
      * fmrcPanel.save();
      * }
      */
-    if (geotiffPanel != null) {
-      geotiffPanel.save();
-    }
+    /*
+     * if (geotiffPanel != null) {
+     * geotiffPanel.save();
+     * }
+     */
     if (gribFilesPanel != null) {
       gribFilesPanel.save();
     }
@@ -810,9 +816,11 @@ public class ToolsUI extends JPanel {
     if (hdf4Panel != null) {
       hdf4Panel.save();
     }
-    if (imagePanel != null) {
-      imagePanel.save();
-    }
+    /*
+     * if (imagePanel != null) {
+     * imagePanel.save();
+     * }
+     */
     if (ncdumpPanel != null) {
       ncdumpPanel.save();
     }
@@ -1174,12 +1182,14 @@ public class ToolsUI extends JPanel {
         tabbedPane.setSelectedComponent(ftTabPane);
         ftTabPane.setSelectedComponent(gridPanel);
       }
-    } else if (threddsData.featureType == FeatureType.IMAGE) {
-      makeComponent(ftTabPane, "Images");
-      imagePanel.setImageLocation(threddsData.imageURL);
-      tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(imagePanel);
-    } else if (threddsData.featureType == FeatureType.RADIAL) {
+    } /*
+       * else if (threddsData.featureType == FeatureType.IMAGE) {
+       * makeComponent(ftTabPane, "Images");
+       * imagePanel.setImageLocation(threddsData.imageURL);
+       * tabbedPane.setSelectedComponent(ftTabPane);
+       * ftTabPane.setSelectedComponent(imagePanel);
+       * }
+       */ else if (threddsData.featureType == FeatureType.RADIAL) {
       makeComponent(ftTabPane, "Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
