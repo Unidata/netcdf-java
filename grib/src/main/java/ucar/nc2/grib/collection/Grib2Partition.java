@@ -11,6 +11,7 @@ import java.util.Formatter;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
@@ -60,7 +61,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
   }
 
   @Override
-  public void addGlobalAttributes(AttributeContainer result) {
+  public void addGlobalAttributes(AttributeContainerMutable result) {
     String val = cust.getGeneratingProcessTypeName(getGenProcessType());
     if (val != null)
       result.addAttribute(new Attribute("Type_of_generating_process", val));
@@ -75,7 +76,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
   }
 
   @Override
-  public void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex) {
+  public void addVariableAttributes(AttributeContainerMutable v, GribCollectionImmutable.VariableIndex vindex) {
     Grib2Collection.addVariableAttributes(v, vindex, this);
   }
 

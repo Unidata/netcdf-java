@@ -87,24 +87,24 @@ class EnhancementsImpl implements Enhancements {
    */
   public String getDescription() {
     if ((desc == null) && (forVar != null)) {
-      Attribute att = forVar.findAttributeIgnoreCase(CDM.LONG_NAME);
+      Attribute att = forVar.attributes().findAttributeIgnoreCase(CDM.LONG_NAME);
       if ((att != null) && att.isString())
         desc = att.getStringValue();
 
       if (desc == null) {
-        att = forVar.findAttributeIgnoreCase("description");
+        att = forVar.attributes().findAttributeIgnoreCase("description");
         if ((att != null) && att.isString())
           desc = att.getStringValue();
       }
 
       if (desc == null) {
-        att = forVar.findAttributeIgnoreCase(CDM.TITLE);
+        att = forVar.attributes().findAttributeIgnoreCase(CDM.TITLE);
         if ((att != null) && att.isString())
           desc = att.getStringValue();
       }
 
       if (desc == null) {
-        att = forVar.findAttributeIgnoreCase(CF.STANDARD_NAME);
+        att = forVar.attributes().findAttributeIgnoreCase(CF.STANDARD_NAME);
         if ((att != null) && att.isString())
           desc = att.getStringValue();
       }
@@ -133,7 +133,7 @@ class EnhancementsImpl implements Enhancements {
   public String getUnitsString() {
     String result = null;
     if (forVar != null) {
-      Attribute att = forVar.findAttributeIgnoreCase(CDM.UNITS);
+      Attribute att = forVar.attributes().findAttributeIgnoreCase(CDM.UNITS);
       if ((att != null) && att.isString())
         result = att.getStringValue();
     }

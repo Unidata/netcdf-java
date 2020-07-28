@@ -13,7 +13,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dods.DODSNetcdfFile;
+// import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.point.PointDatasetImpl;
@@ -669,7 +669,7 @@ public class ToolsUI extends JPanel {
     NetcdfFile.setDebugFlags(debugFlags);
     H5iospNew.setDebugFlags(debugFlags);
     NcmlReader.setDebugFlags(debugFlags);
-    DODSNetcdfFile.setDebugFlags(debugFlags);
+    // DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
     Nc4Iosp.setDebugFlags(debugFlags);
     DataFactory.setDebugFlags(debugFlags);
@@ -1544,8 +1544,8 @@ public class ToolsUI extends JPanel {
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
     // open dap initializations
-    DODSNetcdfFile.setAllowCompression(true);
-    DODSNetcdfFile.setAllowSessions(true);
+    // DODSNetcdfFile.setAllowCompression(true);
+    // DODSNetcdfFile.setAllowSessions(true);
 
     // caching
     RandomAccessFile.enableDefaultGlobalFileCache();

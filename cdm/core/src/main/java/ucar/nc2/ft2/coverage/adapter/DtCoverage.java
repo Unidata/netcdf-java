@@ -277,12 +277,6 @@ public class DtCoverage implements IsMissingEvaluator {
     return vs.attributes();
   }
 
-  /** @deprecated use attributes() */
-  @Deprecated
-  public List<Attribute> getAttributes() {
-    return vs.getAttributes();
-  }
-
   public VariableDS getVariable() {
     return vs;
   }

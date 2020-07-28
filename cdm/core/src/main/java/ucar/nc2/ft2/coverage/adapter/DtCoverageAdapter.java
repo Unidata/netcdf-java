@@ -97,7 +97,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   }
 
   private static Coverage makeCoverage(DtCoverage dt, DtCoverageAdapter reader) {
-    return new Coverage(dt.getName(), dt.getDataType(), dt.getAttributes(), dt.getCoordinateSystem().getName(),
+    return new Coverage(dt.getName(), dt.getDataType(), dt.attributes(), dt.getCoordinateSystem().getName(),
         dt.getUnitsString(), dt.getDescription(), reader, dt);
   }
 
@@ -132,7 +132,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   private static CoverageTransform makeTransform(ucar.nc2.dataset.CoordinateTransform dt) {
     AttributeContainerMutable atts = new AttributeContainerMutable(dt.getName());
     for (Parameter p : dt.getParameters())
-      atts.addAttribute(new Attribute(p));
+      atts.addAttribute(Attribute.fromParameter(p));
     return new CoverageTransform(dt.getName(), atts, dt.getTransformType() == TransformType.Projection);
   }
 

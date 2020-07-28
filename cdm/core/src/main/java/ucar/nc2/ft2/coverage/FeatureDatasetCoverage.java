@@ -39,7 +39,7 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
 
   public FeatureDatasetCoverage(String location, Closeable closer, CoverageCollection covCollection) {
     this.location = location;
-    this.gatts = new AttributeContainerMutable(location, covCollection.getGlobalAttributes()).toImmutable();
+    this.gatts = new AttributeContainerMutable(location, covCollection.attributes()).toImmutable();
     this.closer = closer;
     this.covCollections = Lists.newArrayList(covCollection);
     this.featureType = covCollection.getCoverageType();
@@ -143,16 +143,6 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   @Override
   public AttributeContainer attributes() {
     return gatts;
-  }
-
-  @Override
-  public List<Attribute> getGlobalAttributes() {
-    return gatts.getAttributes();
-  }
-
-  @Override
-  public Attribute findGlobalAttributeIgnoreCase(String name) {
-    return gatts.findAttributeIgnoreCase(name);
   }
 
   @Override

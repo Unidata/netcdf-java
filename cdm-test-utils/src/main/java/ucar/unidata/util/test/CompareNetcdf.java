@@ -7,6 +7,7 @@
 
 package ucar.unidata.util.test;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.*;
@@ -131,7 +132,7 @@ public class CompareNetcdf {
     ok &= checkAll(org.getDimensions(), copy.getDimensions(), null, f);
 
     // attributes
-    ok &= checkAll(org.getAttributes(), copy.getAttributes(), null, f);
+    ok &= checkAll(ImmutableList.copyOf(org.attributes()), ImmutableList.copyOf(copy.attributes()), null, f);
 
     // variables
     // cant use object equality, just match on short name
@@ -184,7 +185,7 @@ public class CompareNetcdf {
     ok &= checkAll(org.getDimensions(), copy.getDimensions(), null, f);
 
     // attributes
-    ok &= checkAll(org.getAttributes(), copy.getAttributes(), null, f);
+    ok &= checkAll(ImmutableList.copyOf(org.attributes()), ImmutableList.copyOf(copy.attributes()), null, f);
 
     // coord sys
     if ((org instanceof VariableEnhanced) && (copy instanceof VariableEnhanced)) {

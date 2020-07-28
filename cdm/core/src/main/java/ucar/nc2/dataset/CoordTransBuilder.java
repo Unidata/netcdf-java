@@ -256,7 +256,7 @@ public class CoordTransBuilder {
       else {
         double[] data = p.getNumericValues();
         Array dataA = Array.factory(DataType.DOUBLE, new int[] {data.length}, data);
-        v.addAttribute(new Attribute(p.getName(), dataA));
+        v.addAttribute(Attribute.builder(p.getName()).setValues(dataA).build());
       }
     }
     v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
@@ -277,7 +277,7 @@ public class CoordTransBuilder {
    */
   public static Projection makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
-    String transform_name = gct.findAttributeString(CF.GRID_MAPPING_NAME, null);
+    String transform_name = gct.attributes().findAttributeString(CF.GRID_MAPPING_NAME, null);
 
     if (null == transform_name) {
       errInfo.format("**Failed to find Coordinate Transform name from GridCoordTransform= %s%n", gct);
@@ -313,9 +313,9 @@ public class CoordTransBuilder {
       return null;
     }
 
-    String units = gct.findAttributeString(CDM.UNITS, null);
+    String units = gct.attributes().findAttributeString(CDM.UNITS, null);
     builder.setErrorBuffer(errInfo);
-    ProjectionCT ct = builder.makeCoordinateTransform(gct, units);
+    ProjectionCT ct = builder.makeCoordinateTransform(gct.attributes(), units);
     assert ct != null;
 
     return ct.getProjection();

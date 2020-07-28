@@ -5,6 +5,9 @@
 
 package ucar.nc2;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
@@ -25,6 +28,8 @@ import java.util.List;
  * TODO Attributes will be immutable in 6.
  */
 public class Attribute {
+  // TODO: see TestSpecialAttributes when this gets moved to Nc4Iosp
+
   /** @deprecated move to jni.Nc4Iosp */
   @Deprecated
   private static final String SPECIALPREFIX = "_";
@@ -49,7 +54,85 @@ public class Attribute {
     return false; /* is not special */
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////
+
+  /** Create an Attribute from a ucar.unidata.util.Parameter. */
+  public static Attribute fromParameter(Parameter param) {
+    Preconditions.checkNotNull(param);
+    Builder b = builder(param.getName());
+
+    if (param.isString()) {
+      b.setStringValue(param.getStringValue());
+    } else {
+      double[] values = param.getNumericValues();
+      assert values != null;
+      int n = values.length;
+      Array vala = Array.factory(DataType.DOUBLE, new int[] {n}, values);
+      b.setValues(vala); // make private
+    }
+    return b.build();
+  }
+
+  /** Create an Attribute from an Array. See {@link Builder#setValues(Array)} */
+  public static Attribute fromArray(String name, Array values) {
+    return builder(name).setValues(values).build();
+  }
+
+  /** Create an Attribute with a datatype but no value. */
+  public static Attribute emptyValued(String name, DataType dtype) {
+    return builder(name).setDataType(dtype).build();
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Create a String-valued Attribute.
+   *
+   * @param name name of Attribute
+   * @param val value of Attribute
+   */
+  public Attribute(String name, String val) {
+    Preconditions.checkNotNull(Strings.emptyToNull(name), "Attribute name cannot be empty or null");
+    Preconditions.checkNotNull(val, "Attribute value cannot be null");
+    this.name = name;
+    this.dataType = DataType.STRING;
+
+    // get rid of trailing nul characters
+    int len = val.length();
+    while ((len > 0) && (val.charAt(len - 1) == 0)) {
+      len--;
+    }
+    if (len != val.length()) {
+      val = val.substring(0, len);
+    }
+
+    this.nelems = 1;
+    this.svalue = val;
+    this.enumtype = null;
+    this.values = null;
+  }
+
+  /**
+   * Create a scalar, signed, numeric-valued Attribute.
+   *
+   * @param name name of Attribute
+   * @param val value of Attribute
+   */
+  public Attribute(String name, Number val) {
+    Preconditions.checkNotNull(Strings.emptyToNull(name), "Attribute name cannot be empty or null");
+    Preconditions.checkNotNull(val, "Attribute value cannot be null");
+    this.name = name;
+    DataType dt = DataType.getType(val.getClass(), false);
+    this.dataType = dt;
+
+    Array vala = Array.factory(dt, new int[] {1});
+    vala.setObject(vala.getIndex().set0(0), val);
+
+    this.enumtype = null;
+    this.svalue = null;
+    this.values = vala;
+    this.nelems = 1;
+  }
 
   /** Get the Attribute name. */
   public String getName() {
@@ -66,62 +149,37 @@ public class Attribute {
     return dataType;
   }
 
-  /** @deprecated Use Attribute.builder() */
-  @Deprecated
-  public void setDataType(DataType dt) {
-    this.dataType = dt;
-  }
-
   /** Get the EnumTypedef of the Attribute value, if DataType is an ENUM. */
   @Nullable
   public EnumTypedef getEnumType() {
     return this.enumtype;
   }
 
-  /** @deprecated Use Attribute.builder() */
-  @Deprecated
-  public void setEnumType(EnumTypedef en) {
-    this.enumtype = en;
-  }
-
-  /**
-   * True if value is an array (getLength() > 1)
-   *
-   * @return if its an array.
-   */
+  /** True if value is an array (getLength() > 1) */
   public boolean isArray() {
     return (getLength() > 1);
   }
 
-  /**
-   * Get the length of the array of values
-   *
-   * @return number of elements in the array.
-   */
+  /** Get the length of the array of values */
   public int getLength() {
     return nelems;
   }
 
-  /**
-   * Get the value as an Array.
-   *
-   * @return Array of values.
-   */
+  /** Get the value as an Array. */
   @Nullable
   public Array getValues() {
     if (values == null && svalue != null) {
-      values = Array.factory(DataType.STRING, new int[] {1});
+      Array values = Array.factory(DataType.STRING, new int[] {1});
       values.setObject(values.getIndex(), svalue);
       return values;
     }
-
     return values == null ? null : values.copy();
   }
 
   /**
    * Get the value as an Object.
    *
-   * @param index which index
+   * @param index index into value Array.
    * @return ith value as an Object.
    */
   @Nullable
@@ -131,21 +189,12 @@ public class Attribute {
     return getNumericValue(index);
   }
 
-  /**
-   * True if value is of type String and not null.
-   *
-   * @return if its a String and not null.
-   */
+  /** True if value is of type String and not null. */
   public boolean isString() {
     return (dataType == DataType.STRING) && null != getStringValue();
   }
 
-  /**
-   * Retrieve String value; only call if isString() is true.
-   *
-   * @return String if this is a String valued attribute, else null.
-   * @see Attribute#isString
-   */
+  /** Retrieve first String value if this is a String valued attribute, else null. */
   @Nullable
   public String getStringValue() {
     if (dataType != DataType.STRING)
@@ -158,7 +207,6 @@ public class Attribute {
    *
    * @param index which index
    * @return ith String value (if this is a String valued attribute and index in range), else null.
-   * @see Attribute#isString
    */
   @Nullable
   public String getStringValue(int index) {
@@ -175,17 +223,11 @@ public class Attribute {
     return (String) values.getObject(index);
   }
 
-  /**
-   * Retrieve numeric value. Equivalent to <code>getNumericValue(0)</code>
-   *
-   * @return the first element of the value array, or null if its a String that cant be converted.
-   */
+  /** Retrieve first numeric value. Equivalent to <code>getNumericValue(0)</code> */
   @Nullable
   public Number getNumericValue() {
     return getNumericValue(0);
   }
-
-  /// these deal with array-valued attributes
 
   /**
    * Retrieve a numeric value by index. If it's a String, it will try to parse it as a double.
@@ -324,301 +366,6 @@ public class Attribute {
     return StringUtil2.replace(s, org, replace);
   }
 
-  /**
-   * Copy constructor
-   *
-   * @param name name of new Attribute
-   * @param from copy value from here.
-   * @deprecated Use Attribute.toBuilder().build();
-   */
-  @Deprecated
-  public Attribute(String name, Attribute from) {
-    if (name == null)
-      throw new IllegalArgumentException("Trying to set name to null on " + this);
-    this.name = name;
-    setDataType(from.dataType);
-    setEnumType(from.enumtype);
-    this.nelems = from.nelems;
-    this.svalue = from.svalue;
-    this.values = from.values;
-  }
-
-  /**
-   * Create a String-valued Attribute.
-   *
-   * @param name name of Attribute
-   * @param val value of Attribute
-   */
-  public Attribute(String name, String val) {
-    if (name == null)
-      throw new IllegalArgumentException("Trying to set name to null on " + this);
-    this.name = name;
-    this.dataType = DataType.STRING;
-    setStringValue(val);
-  }
-
-  /**
-   * Create a scalar, signed, numeric-valued Attribute.
-   *
-   * @param name name of Attribute
-   * @param val value of Attribute
-   */
-  public Attribute(String name, Number val) {
-    this(name, val, false);
-  }
-
-  /**
-   * Create a scalar numeric-valued Attribute, possibly unsigned.
-   *
-   * @param name name of Attribute
-   * @param val value of Attribute
-   * @param isUnsigned if value is unsigned, used only for integer types.
-   */
-  public Attribute(String name, Number val, boolean isUnsigned) {
-    if (name == null)
-      throw new IllegalArgumentException("Trying to set name to null on " + this);
-
-    this.name = name;
-    int[] shape = new int[1];
-    shape[0] = 1;
-    DataType dt = DataType.getType(val.getClass(), isUnsigned);
-    this.dataType = dt;
-    Array vala = Array.factory(dt, shape);
-    Index ima = vala.getIndex();
-    vala.setObject(ima.set0(0), val);
-    setValues(vala); // make private
-  }
-
-  /**
-   * Construct attribute with Array of values.
-   *
-   * @param name name of attribute
-   * @param values array of values.
-   */
-  public Attribute(String name, Array values) {
-    this(name, values.getDataType());
-    setValues(values); // make private
-  }
-
-  /**
-   * Construct an empty attribute with no values
-   * 
-   * @deprecated Use Attribute.builder()
-   */
-  @Deprecated
-  public Attribute(String name, DataType dataType) {
-    this(name);
-    setDataType(dataType);
-  }
-
-  /** @deprecated Use Attribute.builder() */
-  @Deprecated
-  public Attribute(String name, List values) {
-    this(name, values, false);
-  }
-
-  /**
-   * Construct attribute with list of String or Number values.
-   * The list determines the attribute type
-   * 
-   * @param name name of attribute
-   * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
-   * @param isUnsigned if the data type is unsigned.
-   */
-  public Attribute(String name, List values, boolean isUnsigned) {
-    this.name = name;
-    if (values == null || values.isEmpty())
-      throw new IllegalArgumentException("Cannot determine attribute's type");
-    Class c = values.get(0).getClass();
-    this.dataType = DataType.getType(c, isUnsigned);
-    setValues(values); // make private
-  }
-
-  /**
-   * A copy constructor using a ucar.unidata.util.Parameter.
-   * Need to do this so ucar.unidata.geoloc package doesnt depend on ucar.nc2 library
-   *
-   * @param param copy info from here.
-   */
-  public Attribute(Parameter param) {
-    this.name = param.getName();
-
-    if (param.isString()) {
-      setStringValue(param.getStringValue());
-
-    } else {
-      double[] values = param.getNumericValues();
-      int n = values.length;
-      Array vala = Array.factory(DataType.DOUBLE, new int[] {n}, values);
-      setValues(vala); // make private
-    }
-  }
-
-  /**
-   * Set the value as a String, trimming trailing zeros
-   * 
-   * @param val value of Attribute
-   */
-  private void setStringValue(String val) {
-    if (val == null)
-      throw new IllegalArgumentException("Attribute value cannot be null");
-
-    // get rid of trailing nul characters
-    int len = val.length();
-    while ((len > 0) && (val.charAt(len - 1) == 0))
-      len--;
-    if (len != val.length())
-      val = val.substring(0, len);
-
-    this.svalue = val;
-    this.nelems = 1;
-    this.dataType = DataType.STRING;
-  }
-
-  //////////////////////////////////////////
-  // the following make this mutable, but its restricted to subclasses, namely DODSAttribute
-
-
-  /**
-   * Constructor. Must also set value
-   *
-   * @param name name of Attribute
-   * @deprecated Use Attribute.builder()
-   */
-  @Deprecated
-  protected Attribute(String name) {
-    if (name == null)
-      throw new IllegalArgumentException("Trying to set name to null on " + this);
-    this.name = name;
-  }
-
-  /**
-   * Set the values from a list
-   * 
-   * @deprecated Use Attribute.builder()
-   */
-  @Deprecated
-  public void setValues(List values) {
-    if (values == null || values.isEmpty())
-      throw new IllegalArgumentException("Cannot determine attribute's type");
-    int n = values.size();
-    Class c = values.get(0).getClass();
-    Object pa;
-
-    if (c == String.class) {
-      String[] va = new String[n];
-      pa = va;
-      for (int i = 0; i < n; i++)
-        va[i] = (String) values.get(i);
-    } else if (c == Integer.class) {
-      int[] va = new int[n];
-      pa = va;
-      for (int i = 0; i < n; i++)
-        va[i] = (Integer) values.get(i);
-    } else if (c == Double.class) {
-      double[] va = new double[n];
-      pa = va;
-      for (int i = 0; i < n; i++)
-        va[i] = (Double) values.get(i);
-    } else if (c == Float.class) {
-      float[] va = new float[n];
-      pa = va;
-      for (int i = 0; i < n; i++)
-        va[i] = (Float) values.get(i);
-    } else if (c == Short.class) {
-      short[] va = new short[n];
-      pa = va;
-      for (int i = 0; i < n; i++)
-        va[i] = (Short) values.get(i);
-    } else if (c == Byte.class) {
-      byte[] va = new byte[n];
-      pa = va;
-      for (int i = 0; i < n; i++)
-        va[i] = (Byte) values.get(i);
-    } else if (c == Long.class) {
-      long[] va = new long[n];
-      pa = va;
-      for (int i = 0; i < n; i++)
-        va[i] = (Long) values.get(i);
-    } else {
-      throw new IllegalArgumentException("Unknown type for Attribute = " + c.getName());
-    }
-    setValues(Array.factory(this.dataType, new int[] {n}, pa));
-  }
-
-
-  /**
-   * Set the values from an Array
-   *
-   * @param arr value of Attribute
-   * @deprecated Use Attribute.builder()
-   */
-  @Deprecated
-  public void setValues(Array arr) {
-    if (arr == null) {
-      dataType = DataType.STRING;
-      return;
-    }
-
-    if (arr.getElementType() == char.class) { // turn CHAR into STRING
-      ArrayChar carr = (ArrayChar) arr;
-      if (carr.getRank() == 1) { // common case
-        svalue = carr.getString();
-        this.nelems = 1;
-        this.dataType = DataType.STRING;
-        return;
-      }
-      // otherwise its an array of Strings
-      arr = carr.make1DStringArray();
-    }
-
-    // this should be a utility somewhere
-    if (arr.getElementType() == ByteBuffer.class) { // turn OPAQUE into BYTE
-      int totalLen = 0;
-      arr.resetLocalIterator();
-      while (arr.hasNext()) {
-        ByteBuffer bb = (ByteBuffer) arr.next();
-        totalLen += bb.limit();
-      }
-      byte[] ba = new byte[totalLen];
-      int pos = 0;
-      arr.resetLocalIterator();
-      while (arr.hasNext()) {
-        ByteBuffer bb = (ByteBuffer) arr.next();
-        System.arraycopy(bb.array(), 0, ba, pos, bb.limit());
-        pos += bb.limit();
-      }
-      arr = Array.factory(DataType.BYTE, new int[] {totalLen}, ba);
-    }
-
-    if (DataType.getType(arr) == DataType.OBJECT)
-      throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
-
-    if (arr.getRank() > 1)
-      arr = arr.reshape(new int[] {(int) arr.getSize()}); // make sure 1D
-
-    this.values = arr;
-    this.nelems = (int) arr.getSize();
-    this.dataType = DataType.getType(arr);
-  }
-
-  /**
-   * Set the name of this Attribute.
-   * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
-   *
-   * @param name name of attribute
-   * @deprecated Use Attribute.builder()
-   */
-  @Deprecated
-  public synchronized void setName(String name) {
-    this.name = name;
-  }
-
-
-
-  /**
-   * Instances which have same content are equal.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -640,6 +387,7 @@ public class Attribute {
       return att.getStringValue().equals(getStringValue());
     }
 
+    // TODO Array doesnt have equals() !
     if (values != null) {
       for (int i = 0; i < getLength(); i++) {
         int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
@@ -652,9 +400,6 @@ public class Attribute {
     return true;
   }
 
-  /**
-   * Override Object.hashCode() to implement equals.
-   */
   @Override
   public int hashCode() {
     int result = 17;
@@ -674,22 +419,26 @@ public class Attribute {
 
   ///////////////////////////////////////////////////////////////////////////////
 
-  // TODO make these final in 6.
-  private String name; // optimization for common case of single String valued attribute
-  private String svalue; // optimization for common case of single String valued attribute
-  private DataType dataType;
-  private EnumTypedef enumtype;
-  private int nelems; // can be 0 or greater
-  private Array values; // can this be made immutable?? Otherwise return a copy.
+  private final String name;
+  private final DataType dataType;
+  private final @Nullable String svalue; // optimization for common case of single String valued attribute
+  private final @Nullable EnumTypedef enumtype;
+  private final @Nullable Array values; // can this be made immutable?? Otherwise return a copy.
+  private final int nelems; // can be 0 or greater
 
   private Attribute(Builder builder) {
     this.name = builder.name;
     this.svalue = builder.svalue;
     this.dataType = builder.dataType;
     this.enumtype = builder.enumtype;
-    this.nelems = builder.nelems;
     this.values = builder.values;
-    this.nelems = (svalue != null) ? 1 : (this.values != null) ? (int) this.values.getSize() : 0;
+    if (svalue != null) {
+      nelems = 1;
+    } else if (this.values != null) {
+      nelems = (int) this.values.getSize();
+    } else {
+      nelems = builder.nelems;
+    }
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
@@ -726,6 +475,7 @@ public class Attribute {
     private Builder() {}
 
     public Builder setName(String name) {
+      Preconditions.checkNotNull(Strings.emptyToNull(name), "Attribute name cannot be empty or null");
       this.name = NetcdfFiles.makeValidCdmObjectName(name);
       return this;
     }

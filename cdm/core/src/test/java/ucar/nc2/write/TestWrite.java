@@ -47,7 +47,7 @@ public class TestWrite {
     writerb.addVariable("temperature", DataType.DOUBLE, dims).addAttribute(new Attribute("units", "K")) // add a 1D
                                                                                                         // attribute of
                                                                                                         // length 3
-        .addAttribute(new Attribute("scale", Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3})));
+        .addAttribute(Attribute.fromArray("scale", Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3})));
 
     // add a string-valued variable: char svar(80)
     Dimension svar_len = writerb.addDimension("svar_len", 80);
@@ -76,7 +76,7 @@ public class TestWrite {
     // test some errors
     try {
       Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[] {1}, null);
-      writerb.addAttribute(new Attribute("versionB", bad));
+      writerb.addAttribute(Attribute.fromArray("versionB", bad));
       assert (false);
     } catch (IllegalArgumentException e) {
       assert (true);

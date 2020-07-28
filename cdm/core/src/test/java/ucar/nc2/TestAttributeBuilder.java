@@ -88,13 +88,13 @@ public class TestAttributeBuilder {
   public void testArrayConstructor() {
     Array data = Array.makeArray(DataType.FLOAT, ImmutableList.of("3.14", ".0015"));
     Attribute att = Attribute.builder().setName("name").setValues(data).build();
-    assertThat(att).isEqualTo(new Attribute("name", data));
+    assertThat(att).isEqualTo(Attribute.fromArray("name", data));
   }
 
   @Test
   public void testNumericConstructor() {
     Attribute att = Attribute.builder().setName("name").setNumericValue(123, true).build();
-    assertThat(att).isEqualTo(new Attribute("name", 123, true));
+    assertThat(att.getDataType().isUnsigned()).isTrue();
   }
 
   @Test

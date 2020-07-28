@@ -66,7 +66,7 @@ public class TestDefaultCalendars {
 
     // look for the calendar attached to the time variable...if there isn't one,
     // then a default was not set and the assert will fail.
-    Calendar cal = Calendar.get(tca.findAttributeIgnoreCase(CF.CALENDAR).getStringValue());
+    Calendar cal = Calendar.get(tca.attributes().findAttributeIgnoreCase(CF.CALENDAR).getStringValue());
     expected = defaultCFCalendar.toString();
     found = cal.toString();
     testCond = found.equals(expected);
@@ -76,7 +76,7 @@ public class TestDefaultCalendars {
 
     // convert the time value to a CalendarDate
     CoordinateAxisTimeHelper coordAxisTimeHelper =
-        new CoordinateAxisTimeHelper(cal, tca.findAttributeIgnoreCase("units").getStringValue());
+        new CoordinateAxisTimeHelper(cal, tca.attributes().findAttributeIgnoreCase("units").getStringValue());
     CalendarDate date = coordAxisTimeHelper.makeCalendarDateFromOffset(times.getInt(0));
 
     // create the correct date as requested from NCSS
@@ -124,7 +124,7 @@ public class TestDefaultCalendars {
 
     // look for the calendar attached to the time variable...if there isn't one,
     // then a default was not set and the assert will fail.
-    Calendar cal = Calendar.get(tca.findAttributeIgnoreCase(CF.CALENDAR).getStringValue());
+    Calendar cal = Calendar.get(tca.attributes().findAttributeIgnoreCase(CF.CALENDAR).getStringValue());
     found = cal.toString();
     expected = defaultCoardsCalendar.toString();
     testCond = found.equals(expected);
@@ -134,11 +134,12 @@ public class TestDefaultCalendars {
 
     // convert the time value to a CalendarDate
     CoordinateAxisTimeHelper coordAxisTimeHelper =
-        new CoordinateAxisTimeHelper(cal, tca.findAttributeIgnoreCase("units").getStringValue());
+        new CoordinateAxisTimeHelper(cal, tca.attributes().findAttributeIgnoreCase("units").getStringValue());
     CalendarDate date = coordAxisTimeHelper.makeCalendarDateFromOffset(times.getInt(0));
 
     // read the correct date from the time attribute and turn it into a CalendarDate
-    String correctIsoDateTimeString = tca.findAttributeIgnoreCase("correct_iso_time_value_str").getStringValue();
+    String correctIsoDateTimeString =
+        tca.attributes().findAttributeIgnoreCase("correct_iso_time_value_str").getStringValue();
     CalendarDate correctDate = CalendarDate.parseISOformat(defaultCoardsCalendar.toString(), correctIsoDateTimeString);
 
     // If everything is correct, then the date and correct date should be the same

@@ -158,7 +158,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     AttributeContainerMutable projAtts = new AttributeContainerMutable(group.horizCoordSys.getId());
     for (Parameter p : group.getGdsHorizCoordSys().proj.getProjectionParameters())
-      projAtts.addAttribute(new Attribute(p));
+      projAtts.addAttribute(Attribute.fromParameter(p));
     CoverageTransform projTransform = new CoverageTransform(group.horizCoordSys.getId(), projAtts, true);
 
     transforms.add(projTransform);

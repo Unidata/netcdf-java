@@ -550,7 +550,7 @@ class Giniheader {
     ct.setDataType(DataType.CHAR);
     ct.setDimensions("");
     for (Parameter p : projection.getProjectionParameters()) {
-      ct.addAttribute(new Attribute(p));
+      ct.addAttribute(Attribute.fromParameter(p));
     }
     ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
     ct.addAttribute(new Attribute(_Coordinate.Axes, "x y "));

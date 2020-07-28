@@ -42,7 +42,7 @@ public class TestWriteMiscProblems {
     ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
     for (int i = 0; i < len; i++)
       arrayCharD1.set(i, '1');
-    writerb.addAttribute(new Attribute("tooLongChar", arrayCharD1));
+    writerb.addAttribute(Attribute.fromArray("tooLongChar", arrayCharD1));
 
     char[] carray = new char[len];
     for (int i = 0; i < len; i++)

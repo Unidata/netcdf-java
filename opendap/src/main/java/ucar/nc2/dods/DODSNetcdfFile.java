@@ -518,7 +518,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           String attName = (String) attNames.nextElement();
           if (attName.equals("Unlimited_Dimension")) {
             opendap.dap.Attribute att = attTable.getAttribute(attName);
-            DODSAttribute ncatt = new DODSAttribute(attName, att);
+            DODSAttribute ncatt = DODSAttribute.create(attName, att);
             setUnlimited(ncatt.getStringValue());
           } else
             logger.warn(" Unknown DODS_EXTRA attribute = " + attName + " " + location);
@@ -529,7 +529,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         while (attNames.hasMoreElements()) {
           String attName = (String) attNames.nextElement();
           opendap.dap.Attribute att = attTable.getAttribute(attName);
-          DODSAttribute ncatt = new DODSAttribute(attName, att);
+          DODSAttribute ncatt = DODSAttribute.create(attName, att);
           int length = ncatt.getNumericValue().intValue();
           Dimension extraDim = new Dimension(attName, length);
           addDimension(null, extraDim);
@@ -567,21 +567,24 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           searchname = pieces.prefix + '/' + searchname;
         Variable v = findVariable(searchname);
         if (v != null) {
-          // move attribute
-          rootgroup.remove(ncatt);
-          v.addAttribute(ncatt);
+          // TODO WRONG MUST REMOVE
+          // rootgroup.remove(ncatt);
           // change attribute name to remove var.
-          String newname = pieces.name;
-          ncatt.setName(newname);
+          Attribute renameAtt = ncatt.toBuilder().setName(pieces.name).build();
+          v.addAttribute(renameAtt);
         }
       } else if (pieces.prefix != null) {
         // We have a true group global name to move to proper group
         // convert prefix to an actual group
         Group g = rootgroup.makeRelativeGroup(this, dodsname, true);
-        rootgroup.remove(ncatt);
+        // TODO WRONG MUST REMOVE
+        // rootgroup.remove(ncatt);
         g.addAttribute(ncatt);
         if (OLDGROUPCODE) {
-          ncatt.setName(pieces.name);
+          Attribute renameAtt = ncatt.toBuilder().setName(pieces.name).build();
+          g.addAttribute(renameAtt);
+        } else {
+          g.addAttribute(ncatt);
         }
       }
     }
@@ -653,18 +656,22 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (pieces.var != null && !pieces.var.equals(vname)) {
         // move the attribute to the correct variable
         // (presumably in the same group)
-        Variable newvar = (Variable) agroup.findVariableLocal(pieces.var);
+        Variable newvar = agroup.findVariableLocal(pieces.var);
         if (newvar != null) {// if not found leave the attribute as is
           // otherwise, move the attribute and rename
-          newvar.addAttribute(ncatt);
-          v.remove(ncatt);
-          ncatt.setName(pieces.name);
+          // TODO WRONG MUST REMOVE
+          // v.remove(ncatt);
+          Attribute renameAtt = ncatt.toBuilder().setName(pieces.name).build();
+          v.addAttribute(renameAtt);
         }
       }
       if (OLDGROUPCODE) {
         if (pieces.prefix != null) {// rename the attribute
           // Rename the attribute to its shortname
-          ncatt.setName(pieces.name);
+          // TODO WRONG MUST REMOVE
+          // v.remove(ncatt);
+          Attribute renameAtt = ncatt.toBuilder().setName(pieces.name).build();
+          v.addAttribute(renameAtt);
         }
       }
     }

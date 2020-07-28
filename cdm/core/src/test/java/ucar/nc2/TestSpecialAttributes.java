@@ -6,6 +6,7 @@
 package ucar.nc2;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +20,11 @@ public class TestSpecialAttributes {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
+  @Ignore("see Attribute.isspecial()")
   public void testReadAll() throws IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("testSpecialAttributes.nc4");
     // Iterate over all top-level attributes and see if it is special
-    for (Attribute a : ncfile.getRootGroup().getAttributes()) {
+    for (Attribute a : ncfile.getRootGroup().attributes()) {
       Assert.assertFalse("Attribute iteration found special attribute: " + a.getShortName(), Attribute.isspecial(a));
     }
     ncfile.close();

@@ -35,7 +35,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -906,7 +905,7 @@ public class H5headerNew implements HdfHeaderIF {
         // flatten and add to list
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
           Array memberData = attData.extractMemberArray(sm);
-          attContainer.addAttribute(new Attribute(matt.name + "." + sm.getName(), memberData));
+          attContainer.addAttribute(Attribute.fromArray(matt.name + "." + sm.getName(), memberData));
         }
 
       } else if (matt.name.equals(CDM.FIELD_ATTS)) {
@@ -920,7 +919,7 @@ public class H5headerNew implements HdfHeaderIF {
           String attName = memberName.substring(pos + 1);
           Array memberData = attData.extractMemberArray(sm);
           sb.findMemberVariable(fldName)
-              .ifPresent(vb -> vb.getAttributeContainer().addAttribute(new Attribute(attName, memberData)));
+              .ifPresent(vb -> vb.getAttributeContainer().addAttribute(Attribute.fromArray(attName, memberData)));
         }
 
       } else { // assign separate attribute for each member
@@ -931,7 +930,7 @@ public class H5headerNew implements HdfHeaderIF {
           if (null != sm) {
             // if so, add the att to the member variable, using the name of the compound attribute
             Array memberData = attData.extractMemberArray(sm);
-            v.addAttribute(new Attribute(matt.name, memberData)); // LOOK check for missing values
+            v.addAttribute(Attribute.fromArray(matt.name, memberData)); // LOOK check for missing values
           }
         }
 
@@ -940,7 +939,7 @@ public class H5headerNew implements HdfHeaderIF {
           Variable.Builder vb = sb.findMemberVariable(sm.getName()).orElse(null);
           if (vb == null) {
             Array memberData = attData.extractMemberArray(sm);
-            attContainer.addAttribute(new Attribute(matt.name + "." + sm.getName(), memberData));
+            attContainer.addAttribute(Attribute.fromArray(matt.name + "." + sm.getName(), memberData));
           }
         }
       }
@@ -964,9 +963,10 @@ public class H5headerNew implements HdfHeaderIF {
     // check for empty attribute case
     if (matt.mds.type == 2) {
       if (dtype == DataType.CHAR)
-        return new Attribute(matt.name, DataType.STRING); // empty char considered to be a null string attr
+        return Attribute.builder(matt.name).setDataType(DataType.STRING).build(); // empty char considered to be a null
+                                                                                  // string attr
       else
-        return new Attribute(matt.name, dtype);
+        return Attribute.builder(matt.name).setDataType(dtype).build();
     }
 
     Array attData;
@@ -986,10 +986,10 @@ public class H5headerNew implements HdfHeaderIF {
         while (nested.hasNext())
           dataList.add(nested.next());
       }
-      result = new Attribute(matt.name, dataList, matt.mdt.unsigned);
+      result = Attribute.builder(matt.name).setValues(dataList, matt.mdt.unsigned).build();
 
     } else {
-      result = new Attribute(matt.name, attData);
+      result = Attribute.fromArray(matt.name, attData);
     }
 
     raf.order(RandomAccessFile.LITTLE_ENDIAN);
@@ -1261,7 +1261,8 @@ public class H5headerNew implements HdfHeaderIF {
       if (fillValue != null) {
         Object defFillValue = NetcdfFormatUtils.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
-          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
+          fillAttribute =
+              Attribute.builder(CDM.FILL_VALUE).setNumericValue((Number) fillValue, vinfo.typeInfo.unsigned).build();
       }
     }
 
@@ -1457,7 +1458,7 @@ public class H5headerNew implements HdfHeaderIF {
     }
   }
 
-  private void processSystemAttributes(List<HeaderMessage> messages, AttributeContainer attContainer) {
+  private void processSystemAttributes(List<HeaderMessage> messages, AttributeContainerMutable attContainer) {
     for (HeaderMessage mess : messages) {
       if (mess.mtype == MessageType.Comment) {
         MessageComment m = (MessageComment) mess.messData;

@@ -128,15 +128,15 @@ class Nc4IospMiscSpec extends Specification {
         NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, tempFile.absolutePath, null);
 
         and: "add a numerical valued attribute with a null value"
-        Attribute attrNumBefore = new Attribute("nullvalnum", DataType.INT)
+        Attribute attrNumBefore = Attribute.emptyValued("nullvalnum", DataType.INT)
         writerb.addAttribute(attrNumBefore)
 
         and: "add a string valued attribute with a null value"
-        Attribute attrStrBefore = new Attribute("nullvalstr", DataType.STRING)
+        Attribute attrStrBefore = Attribute.emptyValued("nullvalstr", DataType.STRING)
         writerb.addAttribute(attrStrBefore)
 
         and: "add a character valued attribute with a null value"
-        Attribute attrCharBefore = new Attribute("nullvalchar", DataType.CHAR)
+        Attribute attrCharBefore = Attribute.emptyValued("nullvalchar", DataType.CHAR)
         writerb.addAttribute(attrCharBefore)
 
         and: "add a character valued attribute with a specific null char value"

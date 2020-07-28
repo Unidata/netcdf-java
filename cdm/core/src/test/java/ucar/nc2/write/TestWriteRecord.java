@@ -97,8 +97,8 @@ public class TestWriteRecord {
 
     writerb.addVariable("rh", DataType.INT, "time lat lon")
         .addAttribute(new Attribute(CDM.LONG_NAME, "relative humidity")).addAttribute(new Attribute("units", "percent"))
-        .addAttribute(new Attribute("range", valid_range))
-        .addAttribute(new Attribute(CDM.VALID_RANGE, Array.makeFromJavaArray(new double[] {0d, 100d}, false)));
+        .addAttribute(Attribute.fromArray("range", valid_range))
+        .addAttribute(Attribute.fromArray(CDM.VALID_RANGE, Array.makeFromJavaArray(new double[] {0d, 100d}, false)));
 
     // double T(time, lat, lon) ;
     // T:long_name="surface temperature" ;

@@ -89,25 +89,6 @@ public interface FeatureDataset extends FileCacheable, Closeable {
   AttributeContainer attributes();
 
   /**
-   * List of global attributes.
-   *
-   * @return List of type ucar.nc2.Attribute, may be empty but not null
-   * @deprecated use attributes()
-   */
-  @Deprecated
-  List<ucar.nc2.Attribute> getGlobalAttributes();
-
-  /**
-   * Return the global attribute with the given name, ignoring case.
-   *
-   * @param name attribute name
-   * @return the global attribute, or null
-   * @deprecated use attributes()
-   */
-  @Deprecated
-  ucar.nc2.Attribute findGlobalAttributeIgnoreCase(String name);
-
-  /**
    * The data Variables available in this dataset.
    * Should just be data variables others might be searching for, not metadata or coordinate
    * system variables, etc.

@@ -352,7 +352,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
      * Add meta-data according to the IOAPI conventions
      * http://www.baronams.com/products/ioapi
      */
-    ncfile.addAttribute(null, new Attribute("VGLVLS", sigma_arr));
+    ncfile.addAttribute(null, Attribute.fromArray("VGLVLS", sigma_arr));
     ncfile.addAttribute(null, new Attribute("SDATE", bdate));
     ncfile.addAttribute(null, new Attribute("STIME", btimei));
     ncfile.addAttribute(null, new Attribute("TSTEP", 10000));

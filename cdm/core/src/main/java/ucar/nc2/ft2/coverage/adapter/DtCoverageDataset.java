@@ -346,7 +346,7 @@ public class DtCoverageDataset implements Closeable {
 
   public DtCoverage findGridDatatypeByAttribute(String attName, String attValue) {
     for (DtCoverage ggi : grids) {
-      for (Attribute att : ggi.getAttributes())
+      for (Attribute att : ggi.attributes())
         if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return ggi;
     }

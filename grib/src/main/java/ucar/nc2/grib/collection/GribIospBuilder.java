@@ -88,7 +88,7 @@ class GribIospBuilder {
       g.addVariable(hcsV);
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
       for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(new Attribute(p));
+        hcsV.addAttribute(Attribute.fromParameter(p));
       }
       horizDims = "rlat rlon";
       g.addDimension(new Dimension("rlat", hcs.ny));
@@ -118,7 +118,7 @@ class GribIospBuilder {
       g.addVariable(hcsV);
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
       for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(new Attribute(p));
+        hcsV.addAttribute(Attribute.fromParameter(p));
       }
 
       horizDims = "lat lon";
@@ -148,7 +148,7 @@ class GribIospBuilder {
       g.addVariable(hcsV);
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
       for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(new Attribute(p));
+        hcsV.addAttribute(Attribute.fromParameter(p));
       }
 
       horizDims = "y x";

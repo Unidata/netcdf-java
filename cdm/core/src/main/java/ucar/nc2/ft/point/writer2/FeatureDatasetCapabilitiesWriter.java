@@ -318,7 +318,7 @@ public class FeatureDatasetCapabilitiesWriter {
       for (Element attElem : attElems) {
         String attName = attElem.getAttributeValue("name");
         ucar.ma2.Array values = NcmlReader.readAttributeValues(attElem);
-        atts.add(new Attribute(attName, values));
+        atts.add(Attribute.fromArray(attName, values));
       }
 
       for (Attribute att : atts) {
@@ -375,20 +375,6 @@ public class FeatureDatasetCapabilitiesWriter {
     @Override
     public DataType getDataType() {
       return dt;
-    }
-
-    @Override
-    public List<Attribute> getAttributes() {
-      return atts;
-    }
-
-    @Override
-    public Attribute findAttributeIgnoreCase(String name) {
-      for (Attribute att : atts) {
-        if (att.getShortName().equalsIgnoreCase(name))
-          return att;
-      }
-      return null;
     }
 
     @Override

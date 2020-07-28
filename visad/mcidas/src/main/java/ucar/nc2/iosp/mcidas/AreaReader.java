@@ -221,7 +221,7 @@ public class AreaReader {
     imageVar.setDimensions(image);
     setCalTypeAttributes(imageVar, getCalType(calName));
     imageVar.addAttribute(new Attribute(getADDescription(AreaFile.AD_CALTYPE), calName));
-    imageVar.addAttribute(new Attribute("bands", bandArray));
+    imageVar.addAttribute(Attribute.fromArray("bands", bandArray));
     imageVar.addAttribute(new Attribute("grid_mapping", "AREAnav"));
     ncfile.addVariable(null, imageVar);
 
@@ -256,7 +256,7 @@ public class AreaReader {
     proj.setDimensions("");
 
     for (Parameter p : projection.getProjectionParameters()) {
-      proj.addAttribute(new Attribute(p));
+      proj.addAttribute(Attribute.fromParameter(p));
     }
 
     // For now, we have to overwrite the parameter versions of thes

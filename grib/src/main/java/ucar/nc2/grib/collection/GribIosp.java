@@ -262,7 +262,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, grid_mapping, DataType.INT, ""));
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(new Attribute(p));
+        hcsV.addAttribute(Attribute.fromParameter(p));
       }
       horizDims = "rlat rlon";
       ncfile.addDimension(g, new Dimension("rlat", hcs.ny));
@@ -287,7 +287,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, grid_mapping, DataType.INT, ""));
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(new Attribute(p));
+        hcsV.addAttribute(Attribute.fromParameter(p));
       }
 
       horizDims = "lat lon";
@@ -312,7 +312,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, grid_mapping, DataType.INT, ""));
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(new Attribute(p));
+        hcsV.addAttribute(Attribute.fromParameter(p));
       }
 
       horizDims = "y x";
@@ -504,7 +504,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           }
         }
 
-        gribCollection.addVariableAttributes(v.attributes(), vindex);
+        // TODO KLUDGE, must remove cast to AttributeContainerMutable
+        gribCollection.addVariableAttributes((AttributeContainerMutable) v.attributes(), vindex);
         v.setSPobject(vindex);
       }
     }

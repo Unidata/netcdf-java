@@ -562,61 +562,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return v.findAttribute(attName);
   }
 
-  /**
-   * Find a String-valued global or variable Attribute by
-   * Attribute name (ignore case), return the Value of the Attribute.
-   * If not found return defaultValue
-   *
-   * @param v the variable or null to look in the root group.
-   * @param attName the (full) name of the attribute, case insensitive
-   * @param defaultValue return this if attribute not found
-   * @return the attribute value, or defaultValue if not found
-   * @deprecated use getRootGroup() or Variable attributes().findAttributeString().
-   */
-  @Deprecated
-  public String findAttValueIgnoreCase(Variable v, String attName, String defaultValue) {
-    if (v == null)
-      return rootGroup.attributes().findAttributeString(attName, defaultValue);
-    else
-      return v.attributes().findAttributeString(attName, defaultValue);
-  }
-
-  /** @deprecated use use getRootGroup() or Variable attributes().findAttributeDouble */
-  @Deprecated
-  public double readAttributeDouble(Variable v, String attName, double defValue) {
-    Attribute att;
-
-    if (v == null)
-      att = rootGroup.findAttributeIgnoreCase(attName);
-    else
-      att = v.findAttributeIgnoreCase(attName);
-
-    if (att == null)
-      return defValue;
-    if (att.isString())
-      return Double.parseDouble(att.getStringValue());
-    else
-      return att.getNumericValue().doubleValue();
-  }
-
-  /** @deprecated use use getRootGroup() or Variable attributes().findAttributeInteger */
-  @Deprecated
-  public int readAttributeInteger(Variable v, String attName, int defValue) {
-    Attribute att;
-
-    if (v == null)
-      att = rootGroup.findAttributeIgnoreCase(attName);
-    else
-      att = v.findAttributeIgnoreCase(attName);
-
-    if (att == null)
-      return defValue;
-    if (att.isString())
-      return Integer.parseInt(att.getStringValue());
-    else
-      return att.getNumericValue().intValue();
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////
 
   /** CDL representation of Netcdf header info, non strict */
@@ -1034,19 +979,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     if (g == null)
       g = rootGroup;
     return g.removeVariable(varName);
-  }
-
-  /**
-   * Add a variable attribute.
-   *
-   * @param v add to this Variable.
-   * @param att add this attribute
-   * @return the added Attribute
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Attribute addVariableAttribute(Variable v, Attribute att) {
-    return v.addAttribute(att);
   }
 
   /**

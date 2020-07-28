@@ -83,16 +83,6 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   }
 
   @Override
-  public List<Attribute> getAttributes() {
-    return atts.getAttributes();
-  }
-
-  @Override
-  public Attribute findAttributeIgnoreCase(String name) {
-    return atts.findAttributeIgnoreCase(name);
-  }
-
-  @Override
   public String getUnitsString() {
     return units;
   }
