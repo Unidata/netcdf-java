@@ -270,7 +270,7 @@ public class NetcdfCopier {
     }
     Array orgValues = org.getValues();
     Array nc3Values = Array.makeFromJavaArray(orgValues.getStorage(), false);
-    return new Attribute(org.getShortName(), nc3Values);
+    return Attribute.fromArray(org.getShortName(), nc3Values);
   }
 
   private static class Count {

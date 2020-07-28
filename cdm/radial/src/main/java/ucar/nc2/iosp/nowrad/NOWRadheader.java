@@ -479,7 +479,7 @@ public class NOWRadheader {
     List<Parameter> params = projection.getProjectionParameters();
 
     for (Parameter p : params) {
-      ct.addAttribute(new Attribute(p));
+      ct.addAttribute(Attribute.fromParameter(p));
     }
 
     ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));

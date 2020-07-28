@@ -302,7 +302,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     else if (isCC20 && shortName.contains("RadialVelocity"))
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, -128));
     else
-      v.addAttribute(new Attribute(CDM.MISSING_VALUE, missingArray));
+      v.addAttribute(Attribute.fromArray(CDM.MISSING_VALUE, missingArray));
     // v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute(new Attribute("signal_below_threshold", Cinrad2Record.BELOW_THRESHOLD));
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, Cinrad2Record.getDatatypeScaleFactor(datatype)));
@@ -433,14 +433,14 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     if (isCC)
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -32768));
     else
-      v.addAttribute(new Attribute(CDM.MISSING_VALUE, missingArray));
+      v.addAttribute(Attribute.fromArray(CDM.MISSING_VALUE, missingArray));
     v.addAttribute(new Attribute("signal_below_threshold", Cinrad2Record.BELOW_THRESHOLD));
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, Cinrad2Record.getDatatypeScaleFactor(datatype)));
     v.addAttribute(new Attribute(CDM.ADD_OFFSET, Cinrad2Record.getDatatypeAddOffset(datatype)));
     // v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
-    v.addAttribute(new Attribute(_Coordinate.Axes, fromAtt));
+    v.addAttribute(fromAtt.toBuilder().setName(_Coordinate.Axes).build());
 
     Vgroup vgFrom = (Vgroup) from.getSPobject();
     Vgroup vg = new Vgroup(datatype, vgFrom.map);

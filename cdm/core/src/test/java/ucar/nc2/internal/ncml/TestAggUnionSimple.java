@@ -301,7 +301,12 @@ public class TestAggUnionSimple {
   public void testScan() throws IOException {
     String filename = "file:./" + TestNcmlRead.topDir + "aggUnionScan.xml";
     try (NetcdfDataset scanFile = NetcdfDatasets.openDataset(filename, false, null)) {
-      Assert.assertTrue(CompareNetcdf2.compareFiles(ncfile, scanFile, new Formatter(), true, false, false));
+      Formatter errlog = new Formatter();
+      boolean ok = CompareNetcdf2.compareFiles(ncfile, scanFile, errlog, true, false, false);
+      if (!ok) {
+        System.out.printf("%s%n", errlog);
+      }
+      Assert.assertTrue(ok);
     }
   }
 

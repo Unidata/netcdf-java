@@ -256,7 +256,7 @@ public class CoordTransBuilder {
       else {
         double[] data = p.getNumericValues();
         Array dataA = Array.factory(DataType.DOUBLE, new int[] {data.length}, data);
-        v.addAttribute(new Attribute(p.getName(), dataA));
+        v.addAttribute(Attribute.builder(p.getName()).setValues(dataA).build());
       }
     }
     v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));

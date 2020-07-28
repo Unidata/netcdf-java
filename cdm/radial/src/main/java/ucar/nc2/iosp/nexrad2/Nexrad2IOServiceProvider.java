@@ -301,7 +301,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     b[1] = BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
 
-    v.addAttribute(new Attribute(CDM.MISSING_VALUE, missingArray));
+    v.addAttribute(Attribute.fromArray(CDM.MISSING_VALUE, missingArray));
     v.addAttribute(new Attribute("signal_below_threshold", BELOW_THRESHOLD));
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, firstRecord.getDatatypeScaleFactor(datatype)));
     v.addAttribute(new Attribute(CDM.ADD_OFFSET, firstRecord.getDatatypeAddOffset(datatype)));
@@ -433,7 +433,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     b[0] = MISSING_DATA;
     b[1] = BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
-    v.addAttribute(new Attribute(CDM.MISSING_VALUE, missingArray));
+    v.addAttribute(Attribute.fromArray(CDM.MISSING_VALUE, missingArray));
     v.addAttribute(new Attribute("signal_below_threshold", BELOW_THRESHOLD));
     v.addAttribute(new Attribute(CDM.SCALE_FACTOR, record.getDatatypeScaleFactor(datatype)));
     v.addAttribute(new Attribute(CDM.ADD_OFFSET, record.getDatatypeAddOffset(datatype)));
@@ -444,7 +444,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute("range_folding_threshold", record.getDatatypeRangeFoldingThreshhold(datatype)));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
-    v.addAttribute(new Attribute(_Coordinate.Axes, fromAtt));
+    v.addAttribute(fromAtt.toBuilder().setName(_Coordinate.Axes).build());
 
     Vgroup vgFrom = (Vgroup) from.getSPobject();
     Vgroup vg = new Vgroup(datatype, vgFrom.map);

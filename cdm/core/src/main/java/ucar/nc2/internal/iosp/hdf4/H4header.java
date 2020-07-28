@@ -466,7 +466,7 @@ public class H4header implements HdfHeaderIF {
           String[] vals = new String[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readStringMax(size, valueCharset);
-          att = new Attribute(name, Array.factory(DataType.STRING, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Array.factory(DataType.STRING, new int[] {nelems}, vals));
         }
         break;
       case 5:
@@ -476,7 +476,7 @@ public class H4header implements HdfHeaderIF {
           float[] vals = new float[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readFloat();
-          att = new Attribute(name, Array.factory(DataType.FLOAT, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Array.factory(DataType.FLOAT, new int[] {nelems}, vals));
         }
         break;
       case 6:
@@ -486,7 +486,7 @@ public class H4header implements HdfHeaderIF {
           double[] vals = new double[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readDouble();
-          att = new Attribute(name, Array.factory(DataType.DOUBLE, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Array.factory(DataType.DOUBLE, new int[] {nelems}, vals));
         }
         break;
       case 20:
@@ -497,7 +497,7 @@ public class H4header implements HdfHeaderIF {
           byte[] vals = new byte[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readByte();
-          att = new Attribute(name, Array.factory(DataType.BYTE, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Array.factory(DataType.BYTE, new int[] {nelems}, vals));
         }
         break;
       case 22:
@@ -508,7 +508,7 @@ public class H4header implements HdfHeaderIF {
           short[] vals = new short[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readShort();
-          att = new Attribute(name, Array.factory(DataType.SHORT, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Array.factory(DataType.SHORT, new int[] {nelems}, vals));
         }
         break;
       case 24:
@@ -519,7 +519,7 @@ public class H4header implements HdfHeaderIF {
           int[] vals = new int[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readInt();
-          att = new Attribute(name, Array.factory(DataType.INT, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Array.factory(DataType.INT, new int[] {nelems}, vals));
         }
         break;
       case 26:
@@ -530,7 +530,7 @@ public class H4header implements HdfHeaderIF {
           long[] vals = new long[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readLong();
-          att = new Attribute(name, Array.factory(DataType.LONG, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Array.factory(DataType.LONG, new int[] {nelems}, vals));
         }
         break;
     }

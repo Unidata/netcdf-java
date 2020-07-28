@@ -667,7 +667,8 @@ public class GridHorizCoordSys {
       attributes.add(new Attribute(GridCF.STANDARD_PARALLEL, gds.getDouble(GridDefRecord.LATIN1)));
     } else {
       double[] data = {gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LATIN2)};
-      attributes.add(new Attribute(GridCF.STANDARD_PARALLEL, Array.factory(DataType.DOUBLE, new int[] {2}, data)));
+      attributes
+          .add(Attribute.fromArray(GridCF.STANDARD_PARALLEL, Array.factory(DataType.DOUBLE, new int[] {2}, data)));
     }
     // attributes.add(new Attribute("longitude_of_central_meridian",
     attributes.add(new Attribute(GridCF.LONGITUDE_OF_CENTRAL_MERIDIAN, gds.getDouble(GridDefRecord.LOV)));

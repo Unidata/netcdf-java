@@ -440,7 +440,7 @@ class DodsV implements Comparable {
     fullName = fullName + "." + att.getEncodedName();
 
     if (!att.isContainer()) {
-      DODSAttribute ncatt = new DODSAttribute(match ? att.getEncodedName() : fullName, att);
+      DODSAttribute ncatt = DODSAttribute.create(match ? att.getEncodedName() : fullName, att);
       dodsV.addAttribute(ncatt);
       if (debugAttributes)
         System.out.println(" addAttribute " + ncatt.getShortName() + " to " + dodsV.getFullName());

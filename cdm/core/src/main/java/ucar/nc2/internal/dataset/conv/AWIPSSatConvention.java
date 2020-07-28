@@ -117,7 +117,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     ArrayByte.D1 missing_values = new ArrayByte.D1(2, true);
     missing_values.set(0, (byte) 0);
     missing_values.set(1, (byte) -127);
-    datav.addAttribute(new Attribute(CDM.MISSING_VALUE, missing_values));
+    datav.addAttribute(Attribute.fromArray(CDM.MISSING_VALUE, missing_values));
 
     if (projCT != null) {
       VariableDS.Builder v = makeCoordinateTransformVariable(projCT);

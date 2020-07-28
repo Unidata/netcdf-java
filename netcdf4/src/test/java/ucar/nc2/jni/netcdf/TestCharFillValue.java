@@ -64,12 +64,12 @@ public class TestCharFillValue extends UnitTestCommon {
     Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
     // this works
     Array charArray = ArrayChar.makeFromString(charFillValue, 1);
-    charVar.addAttribute(new Attribute("charAttrName", charArray));
+    charVar.addAttribute(Attribute.fromArray("charAttrName", charArray));
     Array charArrayFillValue = ArrayChar.makeFromString(charFillValue, 1);
     Attribute charAttrFillValue;
     // Try to do _FillValue two ways
     if (true) {
-      charAttrFillValue = new Attribute("_FillValue", charArrayFillValue);
+      charAttrFillValue = Attribute.fromArray("_FillValue", charArrayFillValue);
     } else {
       charAttrFillValue =
           Attribute.builder().setName("_FillValue").setDataType(DataType.CHAR).setValues(charArrayFillValue).build();
@@ -109,7 +109,7 @@ public class TestCharFillValue extends UnitTestCommon {
     Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
     Array charArrayFillValue = ArrayChar.makeFromString(charNullFillValue, 1);
     Attribute charAttrFillValue;
-    charAttrFillValue = new Attribute("_FillValue", charArrayFillValue);
+    charAttrFillValue = Attribute.fromArray("_FillValue", charArrayFillValue);
     charVar.addAttribute(charAttrFillValue);
 
     try (NetcdfFormatWriter writer = writerb.build()) {
