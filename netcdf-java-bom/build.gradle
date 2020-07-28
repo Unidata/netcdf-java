@@ -16,7 +16,7 @@ dependencies {
   constraints {
     api project(':bufr')
     api project(':cdm:cdm-core')
-    api project(':cdm:cdm-fmrc')
+//    api project(':cdm:cdm-fmrc')
     api project(':cdm:cdm-image')
     api project(':cdm:cdm-misc')
     api project(':cdm:cdm-radial')
@@ -27,7 +27,7 @@ dependencies {
 //    api project(':dap4:d4cdm')
     api project(':grib')
     api project(':httpservices')
-    api project(':netcdf4')
+//    api project(':netcdf4')
 //    api project(':opendap')
     api project(':udunits')
     api project(':uibase')

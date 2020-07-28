@@ -12,7 +12,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
-import ucar.nc2.ft.fmrc.GridDatasetInv;
+// import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
@@ -182,20 +182,22 @@ public class GeoGridTable extends JPanel {
      * buttPanel.add(wcsButton);
      */
 
-    JButton invButton = new JButton("GridInv");
-    invButton.addActionListener(e -> {
-      if (gridDataset == null)
-        return;
-      GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
-      try {
-        infoTA.setText(inv.writeXML(new Date()));
-        infoTA.gotoTop();
-        infoWindow.show();
-      } catch (Exception e1) {
-        e1.printStackTrace();
-      }
-    });
-    buttPanel.add(invButton);
+    /*
+     * JButton invButton = new JButton("GridInv");
+     * invButton.addActionListener(e -> {
+     * if (gridDataset == null)
+     * return;
+     * GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
+     * try {
+     * infoTA.setText(inv.writeXML(new Date()));
+     * infoTA.gotoTop();
+     * infoWindow.show();
+     * } catch (Exception e1) {
+     * e1.printStackTrace();
+     * }
+     * });
+     * buttPanel.add(invButton);
+     */
 
     AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

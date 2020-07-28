@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -16,7 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+// import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.iosp.NetcdfFileFormat;
@@ -31,6 +32,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
  * @since 5/12/14
  */
 @Category(NeedsCdmUnitTest.class)
+@Ignore("needs netcdf4")
 public class TestNc4Structures {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -42,7 +44,7 @@ public class TestNc4Structures {
     // Ignore this class's tests if NetCDF-4 isn't present.
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
-    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
+    // Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
   @Test

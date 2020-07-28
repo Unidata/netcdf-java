@@ -36,7 +36,7 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.ProfileFeatureCollection;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+// import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -133,10 +133,10 @@ public class TestCFPointWriterMisc {
   }
 
 
-  @Test
+  // @Test
   public void testAltUnits() throws Exception {
     // Ignore this test if NetCDF-4 isn't present.
-    Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
+    // Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
 
     String file = TestDir.cdmLocalFromTestDataDir + "point/stationRaggedContig.ncml";
     Formatter buf = new Formatter();

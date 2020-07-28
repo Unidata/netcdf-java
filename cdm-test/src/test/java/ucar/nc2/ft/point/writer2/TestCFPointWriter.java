@@ -27,7 +27,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.TestCFPointDatasets;
-import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+// import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.util.test.CheckPointFeatureDataset;
@@ -86,32 +86,35 @@ public class TestCFPointWriter {
     assert count == countExpected : "count =" + count + " expected " + countExpected;
   }
 
-  @Test
-  public void testWrite4classic() throws IOException {
-    // Ignore this test if NetCDF-4 isn't present.
-    if (!NetcdfClibrary.isLibraryPresent()) {
-      return;
-    }
-
-    CFPointWriterConfig config = CFPointWriterConfig.builder().setFormat(NetcdfFileFormat.NETCDF4).build();
-    int count = writeDataset(location, ftype, config, show, tempFolder.newFile());
-    System.out.printf("%s netcdf4_classic count=%d%n", location, count);
-    assert count == countExpected : "count =" + count + " expected " + countExpected;
-  }
-
-  // @Test
-  @Ignore("doesnt work: coordinate axes that are members of nc4 structures")
-  public void testWrite4() throws IOException {
-    // Ignore this test if NetCDF-4 isn't present.
-    if (!NetcdfClibrary.isLibraryPresent()) {
-      return;
-    }
-
-    CFPointWriterConfig config = CFPointWriterConfig.builder().setFormat(NetcdfFileFormat.NETCDF4).build();
-    int count = writeDataset(location, ftype, config, show, tempFolder.newFile());
-    System.out.printf("%s netcdf4 count=%d%n", location, count);
-    assert count == countExpected : "count =" + count + " expected " + countExpected;
-  }
+  /*
+   * @Test
+   * public void testWrite4classic() throws IOException {
+   * // Ignore this test if NetCDF-4 isn't present.
+   * if (!NetcdfClibrary.isLibraryPresent()) {
+   * return;
+   * }
+   * 
+   * CFPointWriterConfig config = CFPointWriterConfig.builder().setFormat(NetcdfFileFormat.NETCDF4).build();
+   * int count = writeDataset(location, ftype, config, show, tempFolder.newFile());
+   * System.out.printf("%s netcdf4_classic count=%d%n", location, count);
+   * assert count == countExpected : "count =" + count + " expected " + countExpected;
+   * }
+   * 
+   * // @Test
+   * 
+   * @Ignore("doesnt work: coordinate axes that are members of nc4 structures")
+   * public void testWrite4() throws IOException {
+   * // Ignore this test if NetCDF-4 isn't present.
+   * if (!NetcdfClibrary.isLibraryPresent()) {
+   * return;
+   * }
+   * 
+   * CFPointWriterConfig config = CFPointWriterConfig.builder().setFormat(NetcdfFileFormat.NETCDF4).build();
+   * int count = writeDataset(location, ftype, config, show, tempFolder.newFile());
+   * System.out.printf("%s netcdf4 count=%d%n", location, count);
+   * assert count == countExpected : "count =" + count + " expected " + countExpected;
+   * }
+   */
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

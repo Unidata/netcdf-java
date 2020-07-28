@@ -18,7 +18,7 @@ dependencies {
   compile 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
-  testImplementation project(':netcdf4')
+//  testImplementation project(':netcdf4')
 
   testImplementation 'org.codehaus.groovy:groovy-all' // for spock
   testImplementation 'org.spockframework:spock-core'
