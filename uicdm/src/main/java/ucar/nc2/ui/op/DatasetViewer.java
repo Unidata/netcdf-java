@@ -283,7 +283,7 @@ public class DatasetViewer extends JPanel {
         Variable org = getCurrentVariable(nested.table);
         if (org == null)
           return;
-        Variable ov = compareFile.findVariable(org.getFullNameEscaped());
+        Variable ov = compareFile.findVariable(NetcdfFiles.makeFullName(org));
         if (ov != null)
           cn.compareVariable(org, ov, IDENTITY_FILTER);
       }

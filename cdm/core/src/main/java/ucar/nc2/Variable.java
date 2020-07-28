@@ -31,14 +31,12 @@ import java.nio.channels.WritableByteChannel;
  * <p>
  * Immutable if setImmutable() was called.
  * TODO Variable will be immutable in 6.
- * TODO Variable will not implement AttributeContainer in 6, use Variable.attributes().
- * TODO Variable will not extend CDMNode in 6.
  *
  * @author caron
  * @see ucar.ma2.Array
  * @see ucar.ma2.DataType
  */
-public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, AttributeContainer {
+public class Variable implements VariableSimpleIF, ProxyReader {
   /**
    * Globally permit or prohibit caching. For use during testing and debugging.
    * <p>
@@ -496,8 +494,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setEnumTypedef(EnumTypedef enumTypedef) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     if (!dataType.isEnum())
       throw new UnsupportedOperationException("Can only call Variable.setEnumTypedef() on enum types");
     this.enumTypedef = enumTypedef;
@@ -837,45 +833,42 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
 
   /**
    * Get its containing Group.
-   * Not deprecated.
    * LOOK if you relied on Group being set during construction, use getParentGroupOrRoot().
    */
   @SuppressWarnings("deprecated")
   public Group getParentGroup() {
-    return this.group;
+    return this.parentGroup;
   }
 
   /**
    * Get its parent structure, or null if not in structure
-   * Not deprecated.
-   * 
+   *
    * @return parent structure
    */
-  @SuppressWarnings("deprecated")
   @Nullable
   public Structure getParentStructure() {
-    return this.parentstruct;
+    return this.parentStructure;
   }
 
   /**
    * Test for presence of parent Structure.
-   * Not deprecated.
    */
-  @SuppressWarnings("deprecated")
   public boolean isMemberOfStructure() {
-    return this.parentstruct != null;
+    return this.parentStructure != null;
   }
 
   /**
    * Get the full name of this Variable.
    * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Variable))
-   * Not deprecated.
-   * 
+   *
    * @return full name with backslash escapes
    */
-  @SuppressWarnings("deprecated")
   public String getFullName() {
     return NetcdfFiles.makeFullName(this);
+  }
+
+  public String getShortName() {
+    return this.shortName;
   }
 
   /**
@@ -1145,12 +1138,13 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-    super(shortName);
+    this.shortName = shortName;
     this.ncfile = ncfile;
-    if (parent == null)
+    if (parent == null) {
       setParentGroup((group == null) ? ncfile.getRootGroup() : group);
-    else
-      setParentStructure(parent);
+    } else {
+      this.parentStructure = parent;
+    }
     attributes = new AttributeContainerMutable(shortName);
   }
 
@@ -1205,15 +1199,15 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public Variable(Variable from) {
-    super(from.getShortName());
+    this.shortName = from.getShortName();
     this.attributes = new AttributeContainerMutable(from.getShortName(), from.attributes());
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
     setDataType(from.getDataType());
     this.dimensions = new ArrayList<>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
     this.enumTypedef = from.enumTypedef;
-    setParentGroup(from.group);
-    setParentStructure(from.getParentStructure());
+    setParentGroup(from.parentGroup);
+    this.parentStructure = from.getParentStructure();
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.shape = from.getShape();
@@ -1229,8 +1223,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setDataType(DataType dataType) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.dataType = dataType;
     this.elementSize = getDataType().getSize();
   }
@@ -1244,9 +1236,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public String setName(String shortName) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    setShortName(shortName);
+    this.shortName = shortName;
     return getShortName();
   }
 
@@ -1258,9 +1248,12 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setParentGroup(Group group) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    super.setParentGroup(group);
+    this.parentGroup = group;
+  }
+
+  @Deprecated
+  public void setParentStructure(Structure struct) {
+    this.parentStructure = struct;
   }
 
   /**
@@ -1272,8 +1265,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setElementSize(int elementSize) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.elementSize = elementSize;
   }
 
@@ -1287,7 +1278,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   }
 
   /** Find the attribute by name, return null if not exist */
-  @Override
   @Nullable
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
@@ -1298,7 +1288,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    *
    * @return the attribute value, or defaultValue if not found
    */
-  @Override
   public String findAttributeString(String attName, String defaultValue) {
     return attributes.findAttributeString(attName, defaultValue);
   }
@@ -1375,8 +1364,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setDimensions(List<Dimension> dims) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.dimensions = (dims == null) ? new ArrayList<>() : new ArrayList<>(dims);
     resetShape();
   }
@@ -1416,8 +1403,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setDimensions(String dimString) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     try {
       setDimensions(Dimensions.makeDimensionsList(getParentGroupOrRoot()::findDimension, dimString));
       resetShape();
@@ -1435,8 +1420,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void resetDimensions() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     ArrayList<Dimension> newDimensions = new ArrayList<>();
 
     for (Dimension dim : dimensions) {
@@ -1463,8 +1446,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.dimensions = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if ((shape[i] < 1) && (shape[i] != -1))
@@ -1489,8 +1470,6 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setIsScalar() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.dimensions = new ArrayList<>();
     resetShape();
   }
@@ -1504,35 +1483,8 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
    */
   @Deprecated
   public void setDimension(int idx, Dimension dim) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     dimensions.set(idx, dim);
     resetShape();
-  }
-
-  /**
-   * Make this immutable.
-   *
-   * @return this
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public Variable setImmutable() {
-    super.setImmutable();
-    dimensions = Collections.unmodifiableList(dimensions);
-    attributes.setImmutable();
-    return this;
-  }
-
-  /**
-   * Is this Variable immutable
-   *
-   * @return if immutable
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public boolean isImmutable() {
-    return immutable;
   }
 
   /** Get immutable service provider opaque object. */
@@ -1787,6 +1739,9 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   /////////////////////////////////////////////////////////////////////////////////////
   // TODO make private final and Immutable in release 6.
   // Physical container for this Variable where the I/O happens. may be null if Variable is self contained.
+  private String shortName;
+  private Group parentGroup;
+  protected Structure parentStructure;
   protected NetcdfFile ncfile;
   protected DataType dataType;
   private EnumTypedef enumTypedef;
@@ -1807,7 +1762,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
   protected int sizeToCache = -1; // bytes
 
   protected Variable(Builder<?> builder, Group parentGroup) {
-    super(builder.shortName);
+    this.shortName = builder.shortName;
 
     if (parentGroup == null) {
       throw new IllegalStateException(String.format("Parent Group must be set for Variable %s", builder.shortName));
@@ -1821,9 +1776,9 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       throw new IllegalStateException("Name must be set for Variable");
     }
 
-    this.group = parentGroup;
+    this.parentGroup = parentGroup;
     this.ncfile = builder.ncfile;
-    this.parentstruct = builder.parentStruct;
+    this.parentStructure = builder.parentStruct;
     this.dataType = builder.dataType;
     this.attributes = builder.attributes;
     this.proxyReader = builder.proxyReader == null ? this : builder.proxyReader;
@@ -1831,7 +1786,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     this.cache = builder.cache;
 
     if (this.dataType.isEnum()) {
-      this.enumTypedef = this.group.findEnumeration(builder.enumTypeName);
+      this.enumTypedef = this.parentGroup.findEnumeration(builder.enumTypeName);
       if (this.enumTypedef == null) {
         throw new IllegalStateException(
             String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
@@ -1843,7 +1798,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
     List<Dimension> dims = new ArrayList<>();
     for (Dimension dim : builder.dimensions) {
       if (dim.isShared()) {
-        Dimension sharedDim = this.group.findDimension(dim.getShortName());
+        Dimension sharedDim = this.parentGroup.findDimension(dim.getShortName());
         if (sharedDim == null) {
           throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
         } else {
@@ -2230,7 +2185,7 @@ public class Variable extends CDMNode implements VariableSimpleIF, ProxyReader, 
       }
       setSPobject(orgVar.getSPobject());
       addDimensions(orgVar.getDimensions());
-      addAttributes(orgVar); // copy
+      addAttributes(orgVar.attributes()); // copy
 
       return self();
     }

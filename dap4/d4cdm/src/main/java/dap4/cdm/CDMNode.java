@@ -1,11 +1,9 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ *  See LICENSE for license information.
  */
-package ucar.nc2;
+package dap4.cdm;
 
-import ucar.nc2.dataset.StructureDS;
-import ucar.nc2.dataset.VariableDS;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,17 +45,7 @@ public abstract class CDMNode {
   //////////////////////////////////////////////////
   // Constructors
 
-  protected CDMNode() {
-    // Use Instanceof to figure out the sort
-    if (this instanceof Sequence)
-      setSort(CDMSort.SEQUENCE);
-    else if (this instanceof Structure)
-      setSort(CDMSort.STRUCTURE);
-    else if (this instanceof Group)
-      setSort(CDMSort.GROUP);
-    else if (this instanceof Variable) // Only case left is atomic var
-      setSort(CDMSort.VARIABLE);
-  }
+  protected CDMNode() {}
 
   public CDMNode(String name) {
     this();
@@ -224,13 +212,7 @@ public abstract class CDMNode {
    */
   @Deprecated
   public String getFullName() {
-    if (this instanceof Group) {
-      return NetcdfFiles.makeFullName((Group) this);
-    } else if (this instanceof Variable) {
-      return NetcdfFiles.makeFullName((Variable) this);
-    } else {
-      return this.getShortName();
-    }
+    return this.getShortName();
   }
 
   /**
@@ -242,7 +224,6 @@ public abstract class CDMNode {
   public String getFullNameEscaped() {
     return getFullName();
   }
-
 
   /**
    * getName is deprecated because, as the code below shows,
@@ -279,41 +260,44 @@ public abstract class CDMNode {
     return super.hashCode();
   }
 
-  /**
+  /*
    * NetcdfDataset can end up wrapping a variable
    * in multiple wrapping classes (e.g. VariableDS).
    * Goal of this procedure is to get down to the
    * lowest level Variable instance
    *
    * @param node possibly wrapped ode
+   * 
    * @return the lowest level node instance
+   * 
    * @deprecated Do not use.
+   *
+   * @Deprecated
+   * public static CDMNode unwrap(CDMNode node) {
+   * if (!(node instanceof Variable))
+   * return node;
+   * Variable inner = (Variable) node;
+   * for (;;) {
+   * if (inner instanceof VariableDS) {
+   * VariableDS vds = (VariableDS) inner;
+   * inner = vds.getOriginalVariable();
+   * if (inner == null) {
+   * inner = vds;
+   * break;
+   * }
+   * } else if (inner instanceof StructureDS) {
+   * StructureDS sds = (StructureDS) inner;
+   * inner = sds.getOriginalVariable();
+   * if (inner == null) {
+   * inner = sds;
+   * break;
+   * }
+   * } else
+   * break; // base case we have straight Variable or Stucture
+   * }
+   * return inner;
+   * }
    */
-  @Deprecated
-  public static CDMNode unwrap(CDMNode node) {
-    if (!(node instanceof Variable))
-      return node;
-    Variable inner = (Variable) node;
-    for (;;) {
-      if (inner instanceof VariableDS) {
-        VariableDS vds = (VariableDS) inner;
-        inner = vds.getOriginalVariable();
-        if (inner == null) {
-          inner = vds;
-          break;
-        }
-      } else if (inner instanceof StructureDS) {
-        StructureDS sds = (StructureDS) inner;
-        inner = sds.getOriginalVariable();
-        if (inner == null) {
-          inner = sds;
-          break;
-        }
-      } else
-        break; // base case we have straight Variable or Stucture
-    }
-    return inner;
-  }
 
   /** @deprecated do not use */
   @Deprecated

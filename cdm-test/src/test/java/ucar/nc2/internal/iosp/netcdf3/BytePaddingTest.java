@@ -101,7 +101,7 @@ public class BytePaddingTest {
       assert var != null;
 
       Array dataArray = Array.factory(DataType.BYTE, new int[] {data.length}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -136,7 +136,7 @@ public class BytePaddingTest {
       assert var2 != null;
 
       Array dataArray = Array.factory(DataType.BYTE, new int[] {data.length}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -173,7 +173,7 @@ public class BytePaddingTest {
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
       Array dataArray = Array.factory(DataType.BYTE, new int[] {4, 3}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -206,7 +206,7 @@ public class BytePaddingTest {
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
       Array dataArray = Array.factory(DataType.BYTE, new int[] {4, 3}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -240,7 +240,7 @@ public class BytePaddingTest {
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
       Array dataArray = Array.factory(DataType.CHAR, new int[] {data.length}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -274,7 +274,7 @@ public class BytePaddingTest {
       Variable var = ncfWriteable.findVariable("v");
 
       Array dataArray = Array.factory(DataType.CHAR, new int[] {4, 3}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -308,7 +308,7 @@ public class BytePaddingTest {
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
       Array dataArray = Array.factory(DataType.SHORT, new int[] {data.length}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -341,7 +341,7 @@ public class BytePaddingTest {
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("v");
       Array dataArray = Array.factory(DataType.SHORT, new int[] {4, 3}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), dataArray);
+      ncfWriteable.write(var.getFullName(), dataArray);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {
@@ -379,7 +379,7 @@ public class BytePaddingTest {
     try (NetcdfFormatWriter ncfWriteable = writerb.build()) {
       Variable var = ncfWriteable.findVariable("V");
       Array arr = Array.factory(DataType.BYTE, new int[] {data.length}, data);
-      ncfWriteable.write(var.getFullNameEscaped(), arr);
+      ncfWriteable.write(var.getFullName(), arr);
     }
 
     try (NetcdfFile ncf = NetcdfFiles.open(testFile.getPath())) {

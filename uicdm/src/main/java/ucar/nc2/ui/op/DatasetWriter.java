@@ -10,6 +10,7 @@ import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -332,7 +333,7 @@ public class DatasetWriter extends JPanel {
         if (org == null) {
           return;
         }
-        Variable ov = compareFile.findVariable(org.getFullNameEscaped());
+        Variable ov = compareFile.findVariable(NetcdfFiles.makeFullName(org));
         if (ov != null) {
           cn.compareVariable(org, ov, IDENTITY_FILTER);
         }

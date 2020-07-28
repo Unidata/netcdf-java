@@ -260,7 +260,7 @@ public class Nexrad2RadialAdapter extends AbstractRadialAdapter {
       nsweepsHR = 0;
       sweeps = new ArrayList<>();
       if (isHighResolution(nds)) {
-        String vname = v0.getFullNameEscaped();
+        String vname = NetcdfFiles.makeFullName(v0);
         Variable vehr = nds.findVariable(vname + "_HI");
 
         int[] shape1;

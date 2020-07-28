@@ -23,7 +23,6 @@ import ucar.nc2.util.Indent;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Collections;
 
 /**
  * A logical collection of Variables, Attributes, and Dimensions.
@@ -33,12 +32,8 @@ import java.util.Collections;
  * Immutable if setImmutable() was called.
  *
  * TODO Group will be immutable in 6.
- * TODO Group will not implement AttributeContainer in 6, use Group.attributes().
- * TODO Group will not extend CDMNode in 6.
- *
- * @author caron
  */
-public class Group extends CDMNode implements AttributeContainer {
+public class Group {
 
   @Deprecated
   static List<Group> collectPath(Group g) {
@@ -137,22 +132,23 @@ public class Group extends CDMNode implements AttributeContainer {
 
   /**
    * Get the parent Group, or null if its the root group.
-   * Not deprecated.
    */
-  @SuppressWarnings("deprecated")
   @Nullable
   public Group getParentGroup() {
-    return this.group;
+    return this.parentGroup;
+  }
+
+  /** Get the short name of the Group. */
+  public String getShortName() {
+    return shortName;
   }
 
   /**
    * Get the full name of this object.
    * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Group))
-   * Not deprecated.
-   * 
+   *
    * @return full name with backslash escapes
    */
-  @SuppressWarnings("deprecated")
   public String getFullName() {
     return NetcdfFiles.makeFullName(this);
   }
@@ -539,7 +535,7 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
-    super(shortName);
+    this.shortName = shortName;
     this.ncfile = ncfile;
     this.attributes = new AttributeContainerMutable(shortName);
     setParentGroup(parent == null ? ncfile.getRootGroup() : parent);
@@ -553,11 +549,8 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public void setParentGroup(Group parent) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    super.setParentGroup(parent == null ? ncfile.getRootGroup() : parent);
+    this.parentGroup = parent == null ? ncfile.getRootGroup() : parent;
   }
-
 
   /**
    * Set the short name, converting to valid CDM object name if needed.
@@ -568,9 +561,7 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public String setName(String shortName) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    setShortName(shortName);
+    this.shortName = shortName;
     return getShortName();
   }
 
@@ -578,16 +569,12 @@ public class Group extends CDMNode implements AttributeContainer {
    * Adds the specified shared dimension to this group.
    *
    * @param dim the dimension to add.
-   * @throws IllegalStateException if this dimension is {@link #setImmutable() immutable}.
    * @throws IllegalArgumentException if {@code dim} isn't shared or a dimension with {@code dim}'s name already
    *         exists within the group.
    * @deprecated Use Group.builder()
    */
   @Deprecated
   public void addDimension(Dimension dim) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-
     if (!dim.isShared()) {
       throw new IllegalArgumentException("Dimensions added to a group must be shared.");
     }
@@ -606,15 +593,11 @@ public class Group extends CDMNode implements AttributeContainer {
    * @param dim the dimension to add.
    * @return {@code true} if {@code dim} was successfully added to the group. Otherwise, {@code false} will be returned,
    *         meaning that a dimension with {@code dim}'s name already exists within the group.
-   * @throws IllegalStateException if this dimension is {@link #setImmutable() immutable}.
    * @throws IllegalArgumentException if {@code dim} isn't shared.
    * @deprecated Use Group.builder()
    */
   @Deprecated
   public boolean addDimensionIfNotExists(Dimension dim) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-
     if (!dim.isShared()) {
       throw new IllegalArgumentException("Dimensions added to a group must be shared.");
     }
@@ -634,9 +617,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public void addGroup(Group g) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-
     if (findGroupLocal(g.getShortName()) != null)
       throw new IllegalArgumentException(
           "Group name (" + g.getShortName() + ") must be unique within Group " + getShortName());
@@ -653,8 +633,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public void addEnumeration(EnumTypedef e) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     if (e == null)
       return;
     // e.setParentGroup(this);
@@ -669,8 +647,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public void addVariable(Variable v) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     if (v == null)
       return;
 
@@ -693,8 +669,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public boolean remove(Dimension d) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     return d != null && dimensions.remove(d);
   }
 
@@ -707,8 +681,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public boolean remove(Group g) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     return g != null && groups.remove(g);
   }
 
@@ -721,8 +693,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public boolean remove(Variable v) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     return v != null && variables.remove(v);
   }
 
@@ -735,8 +705,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public boolean removeDimension(String dimName) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension d = dimensions.get(i);
       if (dimName.equals(d.getShortName())) {
@@ -756,8 +724,6 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   @Deprecated
   public boolean removeVariable(String shortName) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     for (int i = 0; i < variables.size(); i++) {
       Variable v = variables.get(i);
       if (shortName.equals(v.getShortName())) {
@@ -766,21 +732,6 @@ public class Group extends CDMNode implements AttributeContainer {
       }
     }
     return false;
-  }
-
-  /**
-   * Make this immutable.
-   *
-   * @return this
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public Group setImmutable() {
-    super.setImmutable();
-    variables = Collections.unmodifiableList(variables);
-    dimensions = Collections.unmodifiableList(dimensions);
-    groups = Collections.unmodifiableList(groups);
-    return this;
   }
 
   @Override
@@ -863,11 +814,13 @@ public class Group extends CDMNode implements AttributeContainer {
   protected List<Group> groups = new ArrayList<>();
   protected AttributeContainer attributes;
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
+  private String shortName;
+  private Group parentGroup;
   private int hashCode;
 
   private Group(Builder builder, @Nullable Group parent) {
-    super(builder.shortName);
-    this.group = parent;
+    this.shortName = builder.shortName;
+    this.parentGroup = parent;
     this.ncfile = builder.ncfile;
 
     this.dimensions = new ArrayList<>(builder.dimensions);

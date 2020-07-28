@@ -46,7 +46,7 @@ class BuilderHelper {
     boolean unlimitedOK = true; // LOOK why not allowed?
 
     // group attributes
-    transferAttributes(src, targetGroup.getAttributeContainer());
+    transferAttributes(src.attributes(), targetGroup.getAttributeContainer());
 
     // dimensions
     for (Dimension d : src.getDimensions()) {

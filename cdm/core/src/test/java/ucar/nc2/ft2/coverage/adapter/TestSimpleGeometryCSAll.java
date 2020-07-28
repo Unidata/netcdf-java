@@ -33,14 +33,14 @@ public class TestSimpleGeometryCSAll {
     Variable hru_test = data.findVariable("hru_soil_moist");
 
     SimpleGeometryFeature sgc =
-        new SimpleGeometryFeature(hru_test.getFullNameEscaped(), hru_test.getDataType(), hru_test.attributes(),
+        new SimpleGeometryFeature(hru_test.getFullName(), hru_test.getDataType(), hru_test.attributes(),
             csl.get(0).getName(), hru_test.getUnitsString(), hru_test.getDescription(), null, GeometryType.POLYGON);
     sgc.setCoordSys(builder.makeCoordSys());
 
     // Test retrieval of axis
-    Assert.assertEquals("catchments_x", sgc.getXAxis().getFullNameEscaped());
-    Assert.assertEquals("catchments_y", sgc.getYAxis().getFullNameEscaped());
-    Assert.assertEquals("hruid", sgc.getIDAxis().getFullNameEscaped());
+    Assert.assertEquals("catchments_x", sgc.getXAxis().getFullName());
+    Assert.assertEquals("catchments_y", sgc.getYAxis().getFullName());
+    Assert.assertEquals("hruid", sgc.getIDAxis().getFullName());
     Assert.assertEquals(null, sgc.getZAxis());
 
     // Now test reading a geometry.

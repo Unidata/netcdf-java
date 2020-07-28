@@ -5,6 +5,7 @@
 package ucar.nc2.ft2.simpgeometry.adapter;
 
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -95,7 +96,7 @@ public class SimpleGeometryCSBuilder {
     for (Variable var : ds.getVariables()) {
       if (!var.findAttributeString(CF.GEOMETRY, "").equals("")) {
 
-        geometrySeriesVarNames.add(var.getFullNameEscaped());
+        geometrySeriesVarNames.add(NetcdfFiles.makeFullName(var));
         String varName = var.findAttributeString(CF.GEOMETRY, "");
 
         // Using the Geometry Container name, add this variable as a reference to that container
@@ -114,7 +115,7 @@ public class SimpleGeometryCSBuilder {
           }
 
           // Then add this variable as a reference.
-          geometryContainersAssoc.get(var.findAttributeString(CF.GEOMETRY, "")).add(var.getFullNameEscaped());
+          geometryContainersAssoc.get(var.findAttributeString(CF.GEOMETRY, "")).add(NetcdfFiles.makeFullName(var));
         }
       }
     }
