@@ -80,7 +80,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   protected N3headerNew header;
   protected long lastModified; // used by sync
   private boolean debugRecord = false;
-
   private Charset valueCharset;
 
   @Override

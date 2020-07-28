@@ -8,24 +8,27 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import java.io.IOException;
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.util.CancelTask;
+import ucar.unidata.io.RandomAccessFile;
 
 /** This is an interface to Netcdf-3 and Netcdf-4 file writing. */
 public interface IOServiceProviderWriter extends IOServiceProvider {
   /**
-   * Create new file, populate it from the objects in ncfile.
+   * Create new file, populate it from the objects in ncfileb.
    *
    * @param filename name of file to create.
-   * @param ncfile get everything but data from here
+   * @param ncfileb has the metadata of the file to be created
    * @param extra if > 0, pad header with extra bytes
    * @param preallocateSize if > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous
    *        storage.
    * @param largeFile if want large file format
    * @throws java.io.IOException if I/O error
    */
-  void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile)
+  void create(String filename, ucar.nc2.NetcdfFile.Builder ncfileb, int extra, long preallocateSize, boolean largeFile)
       throws IOException;
 
   /**
@@ -33,12 +36,15 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * into existing variables.
    *
    * @param raf the file to work on.
-   * @param ncfile add objects to this empty NetcdfFile
+   * @param ncfileb has the metadata of the file to be written to.
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if I/O error
    */
-  void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException;
+  void openForWriting(RandomAccessFile raf, ucar.nc2.NetcdfFile.Builder ncfileb, CancelTask cancelTask)
+      throws IOException;
+
+  /** Get the output file being written to. */
+  NetcdfFile getOutputFile();
 
   /**
    * Set the fill flag.

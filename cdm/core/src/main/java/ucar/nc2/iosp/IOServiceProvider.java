@@ -78,7 +78,7 @@ public interface IOServiceProvider {
    */
   void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
 
-  /** Sometimes the builder needs access to the finished objects. This is called after ncfile.build() */
+  /** Sometimes the builder needs access to the finished objects. This is called when ncfile is finished being built. */
   void buildFinish(NetcdfFile ncfile);
 
   /**

@@ -39,40 +39,12 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   private IOServiceProvider iosp;
 
   public N3iospWriter(IOServiceProvider iosp) {
-    this.iosp = iosp;
+    this.iosp = iosp; // WTF ?
   }
 
   @Override
-  public void openForWriting(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) {
-    // Cant call superclass open, so some duplicate code here
-    this.raf = raf;
-    this.location = (raf != null) ? raf.getLocation() : null;
-    this.ncfile = ncfile;
-
-    if (location != null && !location.startsWith("http:")) {
-      File file = new File(location);
-      if (file.exists())
-        lastModified = file.lastModified();
-    }
-
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    N3headerWriter headerw = new N3headerWriter(this, raf, ncfile);
-    headerw.initFromExisting((N3iospNew) this.iosp); // hack-a-whack
-    this.header = headerw;
-  }
-
-  @Override
-  public void setFill(boolean fill) {
-    this.fill = fill;
-  }
-
-  @Override
-  public void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile)
+  public void create(String filename, NetcdfFile.Builder ncfileb, int extra, long preallocateSize, boolean largeFile)
       throws IOException {
-    this.ncfile = ncfile;
-
-    // finish any structures
-    ncfile.finish();
 
     raf = new ucar.unidata.io.RandomAccessFile(filename, "rw");
     raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -82,7 +54,11 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       myRaf.setLength(preallocateSize);
     }
 
-    N3headerWriter headerw = new N3headerWriter(this, raf, ncfile);
+    this.ncfile = ncfileb.build();
+    this.ncfile.finish();
+
+    N3headerWriter headerw = new N3headerWriter(this, raf);
+    headerw.setNcfile(this.ncfile);
     headerw.create(extra, largeFile, null);
     this.header = headerw;
 
@@ -90,6 +66,38 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       fillNonRecordVariables();
     // else
     // raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
+  }
+
+  @Override
+  public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder ncfileb, CancelTask cancelTask) {
+    // Cant call superclass open, so some duplicate code here
+    this.raf = raf;
+    this.location = (raf != null) ? raf.getLocation() : null;
+
+    if (location != null && !location.startsWith("http:")) {
+      File file = new File(location);
+      if (file.exists())
+        lastModified = file.lastModified();
+    }
+
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    N3headerWriter headerw = new N3headerWriter(this, raf);
+    headerw.initFromExisting((N3iospNew) this.iosp, ncfileb.rootGroup); // hack-a-whack
+    this.header = headerw;
+
+    this.ncfile = ncfileb.build();
+    this.ncfile.finish();
+    headerw.setNcfile(this.ncfile);
+  }
+
+  @Override
+  public NetcdfFile getOutputFile() {
+    return this.ncfile;
+  }
+
+  @Override
+  public void setFill(boolean fill) {
+    this.fill = fill;
   }
 
   @Override
