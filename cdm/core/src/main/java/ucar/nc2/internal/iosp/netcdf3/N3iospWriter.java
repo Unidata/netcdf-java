@@ -35,9 +35,8 @@ import ucar.unidata.io.RandomAccessFile;
 
 /** IOServiceProviderWriter for Netcdf3 files. */
 public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
-
   private boolean fill = true;
-  private IOServiceProvider iosp = null;
+  private IOServiceProvider iosp;
 
   public N3iospWriter(IOServiceProvider iosp) {
     this.iosp = iosp;
@@ -263,18 +262,9 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       return;
     int startRec = header.numrecs;
 
-    // fileUsed = recStart + recsize * n;
     ((N3headerWriter) header).setNumrecs(n);
-    // this.numrecs = n;
 
-    // TODO udim.setLength : need UnlimitedDimension extends Dimension?
-    // need to let unlimited dimension know of new shape
-    for (Dimension dim : ncfile.getRootGroup().getDimensions()) {
-      if (dim.isUnlimited())
-        dim.setLength(n);
-    }
-
-    // need to let all unlimited variables know of new shape TODO immutable??
+    // need to let all unlimited variables know of new shape
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) {
         v.resetShape();
@@ -389,12 +379,4 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     return Array.factoryConstant(v.getDataType(), v.getShape(), storage);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  @Override
-  public boolean syncExtend() throws IOException {
-    boolean result = ((N3headerWriter) header).synchNumrecs();
-    if (result && log.isDebugEnabled())
-      log.debug(" N3iosp syncExtend " + raf.getLocation() + " numrecs =" + header.numrecs);
-    return result;
-  }
 }

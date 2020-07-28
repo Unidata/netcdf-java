@@ -676,22 +676,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     indent.decr();
   }
 
-  /**
-   * Extend the file if needed, in a way that is compatible with the current metadata, that is,
-   * does not invalidate structural metadata held by the application.
-   * For example, ok if dimension lengths, data has changed.
-   * All previous object references (variables, dimensions, etc) remain valid.
-   *
-   * @return true if file was extended.
-   * @throws IOException if error
-   * @deprecated do not use
-   */
-  @Deprecated
-  public boolean syncExtend() throws IOException {
-    // unlocked = false;
-    return (iosp != null) && iosp.syncExtend();
-  }
-
   /** @deprecated */
   @Deprecated
   @Override

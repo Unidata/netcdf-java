@@ -392,7 +392,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       // TODO udim.setLength : need UnlimitedDimension extends Dimension?
       int len = lenp.getValue().intValue();
       if (len != d.getLength()) {
-        d.setLength(len);
+        // TODO d.setLength(len);
         // must update all variables that use this dimension
         for (Variable var : g.getVariables()) {
           if (contains(var.getDimensions(), d)) {

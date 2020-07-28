@@ -147,11 +147,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return null;
   }
 
-  @Override
-  public boolean syncExtend() throws IOException {
-    return false;
-  }
-
   /**
    * Returns the time that the underlying file(s) were last modified. If they've changed since they were stored in the
    * cache, they will be closed and reopened with {@link ucar.nc2.util.cache.FileFactory}.

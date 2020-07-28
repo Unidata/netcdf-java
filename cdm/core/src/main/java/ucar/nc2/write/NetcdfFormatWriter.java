@@ -199,12 +199,7 @@ public class NetcdfFormatWriter implements Closeable {
 
     /** Add a dimension to the root group. */
     public Dimension addDimension(String dimName, int length) {
-      if (!isNewFile && !useJna) {
-        throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
-      }
-      Dimension dim = new Dimension(dimName, length);
-      rootGroup.addDimension(dim);
-      return dim;
+      return addDimension(new Dimension(dimName, length));
     }
 
     /** Add a dimension to the root group. */
@@ -212,13 +207,17 @@ public class NetcdfFormatWriter implements Closeable {
       if (!isNewFile && !useJna) {
         throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
       }
-      rootGroup.addDimension(dim);
-      return dim;
+      Dimension useDim = dim;
+      if (dim.isUnlimited() && !(dim instanceof UnlimitedDimension)) {
+        useDim = new UnlimitedDimension(dim.getShortName(), dim.getLength());
+      }
+      rootGroup.addDimension(useDim);
+      return useDim;
     }
 
     /** Add an unlimited dimension to the root group. */
     public Dimension addUnlimitedDimension(String dimName) {
-      return addDimension(Dimension.builder().setName(dimName).setIsUnlimited(true).build());
+      return addDimension(new UnlimitedDimension(dimName, 0));
     }
 
     /** Get the root group */

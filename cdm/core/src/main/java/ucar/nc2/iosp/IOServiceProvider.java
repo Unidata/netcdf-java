@@ -169,18 +169,6 @@ public interface IOServiceProvider {
   void close() throws IOException;
 
   /**
-   * Extend the NetcdfFile if the underlying dataset has changed
-   * in a way that is compatible with the current metadata.
-   * For example, if the unlimited dimension has grown.
-   *
-   * @return true if the NetcdfFile was extended.
-   * @throws IOException if a read error occured when accessing the underlying dataset.
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  boolean syncExtend() throws IOException;
-
-  /**
    * Release any system resources like file handles.
    * Optional, implement only if you are able to reacquire.
    * Used when object is made inactive in cache.

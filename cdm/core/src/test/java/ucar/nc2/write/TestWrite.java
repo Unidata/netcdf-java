@@ -44,9 +44,8 @@ public class TestWrite {
     List<Dimension> dims = new ArrayList<>();
     dims.add(latDim);
     dims.add(lonDim);
-    writerb.addVariable("temperature", DataType.DOUBLE, dims).addAttribute(new Attribute("units", "K")) // add a 1D
-                                                                                                        // attribute of
-                                                                                                        // length 3
+    // add a 1D attribute of length 3
+    writerb.addVariable("temperature", DataType.DOUBLE, dims).addAttribute(new Attribute("units", "K"))
         .addAttribute(Attribute.fromArray("scale", Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3})));
 
     // add a string-valued variable: char svar(80)
@@ -617,7 +616,7 @@ public class TestWrite {
     Array timeDataAll = Array.factory(DataType.INT, new int[] {size});
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
-    writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());
+    writerb.addUnlimitedDimension("time");
     writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute("units", "hours since 1990-01-01"));
 
     try (NetcdfFormatWriter writer = writerb.build()) {

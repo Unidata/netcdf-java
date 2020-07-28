@@ -17,6 +17,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.write.UnlimitedDimension;
 import ucar.unidata.io.RandomAccessFile;
 
 /** Class to write a netcdf3 header. */
@@ -26,6 +27,7 @@ class N3headerWriter extends N3headerNew {
   private NetcdfFile ncfile;
   private ImmutableList<Variable> uvars; // vars that have the unlimited dimension
   private long globalAttsPos; // global attributes start here - used for update
+  private UnlimitedDimension unlimitedDim; // the unlimited dimension
 
   /**
    * Constructor.
@@ -97,8 +99,10 @@ class N3headerWriter extends N3headerNew {
         fout.format("  dim %d pos %d%n", i, raf.getFilePointer());
       writeString(dim.getShortName());
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
-      if (dim.isUnlimited())
-        udim = dim;
+      if (dim.isUnlimited()) {
+        udim = dim; // needed?
+        unlimitedDim = (UnlimitedDimension) dim;
+      }
     }
 
     // global attributes
@@ -449,11 +453,16 @@ class N3headerWriter extends N3headerNew {
     this.recsize = existingHeader.recsize;
     this.recStart = existingHeader.recStart;
     this.useLongOffset = existingHeader.useLongOffset;
-    this.udim = existingHeader.udim;
+    if (existingHeader.udim != null) {
+      this.unlimitedDim = new UnlimitedDimension(existingHeader.udim.getShortName(), existingHeader.udim.getLength());
+    }
+
+    // TODO replace Variable's dimensions with unlimitedDim
   }
 
   void setNumrecs(int n) {
     this.numrecs = n;
+    this.unlimitedDim.setLength(n);
   }
 
   // TODO udim.setLength : need UnlimitedDimension extends Dimension?
@@ -470,7 +479,7 @@ class N3headerWriter extends N3headerNew {
     this.numrecs = n;
 
     // set it in the unlimited dimension
-    udim.setLength(this.numrecs);
+    unlimitedDim.setLength(this.numrecs);
 
     // set it in all of the record variables
     for (Variable uvar : uvars) {
