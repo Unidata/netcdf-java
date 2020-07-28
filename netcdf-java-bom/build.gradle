@@ -28,7 +28,7 @@ dependencies {
     api project(':grib')
     api project(':httpservices')
     api project(':netcdf4')
-    api project(':opendap')
+//    api project(':opendap')
     api project(':udunits')
     api project(':uibase')
 //    api project(':uicdm')
