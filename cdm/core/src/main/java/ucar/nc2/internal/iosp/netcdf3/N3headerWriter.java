@@ -49,23 +49,24 @@ class N3headerWriter extends N3headerNew {
     this.recsize = existingHeader.recsize;
     this.recStart = existingHeader.recStart;
     this.useLongOffset = existingHeader.useLongOffset;
+
     if (existingHeader.udim != null) {
       this.unlimitedDim = new UnlimitedDimension(existingHeader.udim.getShortName(), existingHeader.udim.getLength());
       this.udim = this.unlimitedDim;
-    }
-
-    // replace Group's dimensions with unlimitedDim
-    if (!rootb.replaceDimension(this.unlimitedDim)) {
-      throw new IllegalStateException();
-    }
-    // replace Variable's dimensions with unlimitedDim
-    for (Variable.Builder vb : rootb.vbuilders) {
-      if (vb.isUnlimited()) {
-        if (!vb.replaceDimensionByName(this.unlimitedDim)) {
-          throw new IllegalStateException();
+      // replace Group's dimensions with unlimitedDim
+      if (!rootb.replaceDimension(this.unlimitedDim)) {
+        throw new IllegalStateException();
+      }
+      // replace Variable's dimensions with unlimitedDim
+      for (Variable.Builder vb : rootb.vbuilders) {
+        if (vb.isUnlimited()) {
+          if (!vb.replaceDimensionByName(this.unlimitedDim)) {
+            throw new IllegalStateException();
+          }
         }
       }
     }
+
   }
 
   public void setNcfile(NetcdfFile ncfile) {
