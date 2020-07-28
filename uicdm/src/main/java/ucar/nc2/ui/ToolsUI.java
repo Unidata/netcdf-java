@@ -140,7 +140,7 @@ public class ToolsUI extends JPanel {
   private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
   private SimpleGeomPanel simpleGeomPanel;
-  private StationRadialPanel stationRadialPanel;
+  // private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
   private ThreddsUI threddsUI;
   private UnitsPanel unitsPanel;
@@ -582,10 +582,12 @@ public class ToolsUI extends JPanel {
         c = radialPanel;
         break;
 
-      case "StationRadial":
-        stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
-        c = stationRadialPanel;
-        break;
+      /*
+       * case "StationRadial":
+       * stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
+       * c = stationRadialPanel;
+       * break;
+       */
 
       case "THREDDS":
         threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
@@ -841,9 +843,12 @@ public class ToolsUI extends JPanel {
       radialPanel.save();
     }
     // if (stationObsPanel != null) stationObsPanel.save();
-    if (stationRadialPanel != null) {
-      stationRadialPanel.save();
-    }
+    /*
+     * if (stationRadialPanel != null) {
+     * stationRadialPanel.save();
+     * }
+     */
+
     // if (trajTablePanel != null) trajTablePanel.save();
     if (threddsUI != null) {
       threddsUI.storePersistentData();
@@ -1199,12 +1204,14 @@ public class ToolsUI extends JPanel {
       pointFeaturePanel.setPointFeatureDataset((PointDatasetImpl) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(pointFeaturePanel);
-    } else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
-      makeComponent(ftTabPane, "StationRadial");
-      stationRadialPanel.setStationRadialDataset(threddsData.featureDataset);
-      tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(stationRadialPanel);
-    }
+    } /*
+       * else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
+       * makeComponent(ftTabPane, "StationRadial");
+       * stationRadialPanel.setStationRadialDataset(threddsData.featureDataset);
+       * tabbedPane.setSelectedComponent(ftTabPane);
+       * ftTabPane.setSelectedComponent(stationRadialPanel);
+       * }
+       */
   }
 
   public NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {

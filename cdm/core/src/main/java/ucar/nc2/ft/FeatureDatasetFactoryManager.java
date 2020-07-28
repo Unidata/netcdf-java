@@ -5,8 +5,6 @@
 
 package ucar.nc2.ft;
 
-import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE;
-
 import javax.annotation.Nullable;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.inventory.MFileCollectionManager;
@@ -18,7 +16,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
-import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
+// import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory.GribCoverageOpenAttempt;
@@ -67,8 +65,8 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.FMRC, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.CURVILINEAR, GridDatasetStandardFactory.class);
 
-    registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
-    registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
+    // registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
+    // registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
     registerFactory(FeatureType.UGRID, "ucar.nc2.ft.ugrid.UGridDatasetStandardFactory");
     registerFactory(FeatureType.SIMPLE_GEOMETRY, SimpleGeometryStandardFactory.class);
