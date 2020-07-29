@@ -26,6 +26,7 @@ public class TestStructure {
   public void setUp() throws Exception {
     ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    System.out.printf("TestStructure %s%n", ncfile.getLocation());
   }
 
   @After

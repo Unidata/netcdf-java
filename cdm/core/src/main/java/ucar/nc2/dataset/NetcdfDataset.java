@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
@@ -522,53 +521,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     convUsed = null;
   }
 
-  //////////////////////////////////////
-
-  /** @deprecated Use NetcdfDatasets.open() with IOSP_MESSAGE_ADD_RECORD_STRUCTURE */
-  @Deprecated
-  @Override
-  protected boolean makeRecordStructure() {
-    if (this.orgFile == null)
-      return false;
-
-    Boolean hasRecord = (Boolean) this.orgFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    if ((hasRecord == null) || !hasRecord)
-      return false;
-
-    Variable orgV = this.orgFile.getRootGroup().findVariableLocal("record");
-    if (!(orgV instanceof Structure))
-      return false;
-    Structure orgStructure = (Structure) orgV;
-
-    Dimension udim = getUnlimitedDimension();
-    if (udim == null)
-      return false;
-
-    Group root = getRootGroup();
-    StructureDS newStructure = new StructureDS(this, root, null, "record", udim.getShortName(), null, null);
-    newStructure.setOriginalVariable(orgStructure);
-
-    for (Variable v : getVariables()) {
-      if (!v.isUnlimited())
-        continue;
-      VariableDS memberV;
-
-      try {
-        memberV = (VariableDS) v.slice(0, 0); // set unlimited dimension to 0
-      } catch (InvalidRangeException e) {
-        log.error("Cant slice variable " + v);
-        return false;
-      }
-      memberV.setParentStructure(newStructure); // reparent
-      newStructure.addMemberVariable(memberV);
-    }
-
-    root.addVariable(newStructure);
-    finish();
-
-    return true;
-  }
-
   /**
    * Sort Variables, CoordAxes by name.
    * 
@@ -667,47 +619,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public void addCoordinateTransform(CoordinateTransform ct) {
     if (!coordTransforms.contains(ct))
       coordTransforms.add(ct);
-  }
-
-  /**
-   * Add a CoordinateAxis to the dataset, by turning the VariableDS into a CoordinateAxis (if needed).
-   * Also adds it to the list of variables. Replaces any existing Variable and CoordinateAxis with the same name.
-   *
-   * @param v make this VariableDS into a CoordinateAxis
-   * @return the CoordinateAxis
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public CoordinateAxis addCoordinateAxis(VariableDS v) {
-    if (v == null)
-      return null;
-    CoordinateAxis oldVar = findCoordinateAxis(v.getFullName());
-    if (oldVar != null)
-      coordAxes.remove(oldVar);
-
-    CoordinateAxis ca = (v instanceof CoordinateAxis) ? (CoordinateAxis) v : CoordinateAxis.factory(this, v);
-    coordAxes.add(ca);
-
-    if (v.isMemberOfStructure()) {
-      Structure parentOrg = v.getParentStructure(); // gotta be careful to get the wrapping parent
-      Structure parent = (Structure) findVariable(NetcdfFiles.makeFullName(parentOrg));
-      parent.replaceMemberVariable(ca);
-
-    } else {
-      removeVariable(v.getParentGroup(), v.getShortName()); // remove by short name if it exists
-      addVariable(ca.getParentGroup(), ca);
-    }
-
-    return ca;
-  }
-
-  /** @deprecated Use NetcdfDataset.builder() */
-  @Deprecated
-  @Override
-  public Variable addVariable(Group g, Variable v) {
-    if (!(v instanceof VariableDS) && !(v instanceof StructureDS))
-      throw new IllegalArgumentException("NetcdfDataset variables must be VariableEnhanced objects");
-    return super.addVariable(g, v);
   }
 
   /**

@@ -132,6 +132,17 @@ public class Dimension implements Comparable<Dimension> {
         String.format("Dimension %s not found starting from variable %s' group", this.shortName, v.getFullName()));
   }
 
+  public String makeFullName(Group parent) {
+    while (parent != null) {
+      if (parent.findDimensionLocal(this.shortName) != null) {
+        return NetcdfFiles.makeFullNameWithString(parent, this.shortName);
+      }
+      parent = parent.getParentGroup();
+    }
+    throw new IllegalStateException(
+        String.format("Dimension %s not found starting from group '%s'", this.shortName, parent.getFullName()));
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

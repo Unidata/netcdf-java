@@ -12,10 +12,8 @@ import java.util.List;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Property;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.builder.CatalogBuilder;
-import ucar.nc2.Attribute;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
@@ -509,7 +507,7 @@ public class DataFactory {
     result.accessUsed = access;
     ncd.setId(datasetId);
     ncd.setTitle(title);
-    annotate(ds, ncd);
+    // TODO annotate(ds, ncd);
 
     /*
      * see if there's NcML metadata LOOK whats this
@@ -610,52 +608,22 @@ public class DataFactory {
     return null;
   }
 
-  /**
-   * Add information from the Dataset to the NetcdfDataset.
-   *
-   * @param ds get info from here
-   * @param ncDataset add to here
+  /*
+   * private static void annotate(Dataset ds, NetcdfDataset ncDataset) {
+   * ncDataset.setTitle(ds.getName());
+   * ncDataset.setId(ds.getId());
+   * 
+   * // add properties as global attributes
+   * for (Property p : ds.getProperties()) {
+   * String name = p.getName();
+   * if (null == ncDataset.findGlobalAttribute(name)) {
+   * ncDataset.addAttribute(null, new Attribute(name, p.getValue()));
+   * }
+   * }
+   * 
+   * ncDataset.finish();
+   * }
    */
-  public static void annotate(Dataset ds, NetcdfDataset ncDataset) {
-    ncDataset.setTitle(ds.getName());
-    ncDataset.setId(ds.getId());
-
-    // add properties as global attributes
-    for (Property p : ds.getProperties()) {
-      String name = p.getName();
-      if (null == ncDataset.findGlobalAttribute(name)) {
-        ncDataset.addAttribute(null, new Attribute(name, p.getValue()));
-      }
-    }
-
-    /*
-     * ThreddsMetadata.GeospatialCoverage geoCoverage = ds.getGeospatialCoverage();
-     * if (geoCoverage != null) {
-     * if ( null != geoCoverage.getNorthSouthRange()) {
-     * ncDataset.addAttribute(null, new Attribute("geospatial_lat_min", new Double(geoCoverage.getLatSouth())));
-     * ncDataset.addAttribute(null, new Attribute("geospatial_lat_max", new Double(geoCoverage.getLatNorth())));
-     * }
-     * if ( null != geoCoverage.getEastWestRange()) {
-     * ncDataset.addAttribute(null, new Attribute("geospatial_lon_min", new Double(geoCoverage.getLonWest())));
-     * ncDataset.addAttribute(null, new Attribute("geospatial_lon_max", new Double(geoCoverage.getLonEast())));
-     * }
-     * if ( null != geoCoverage.getUpDownRange()) {
-     * ncDataset.addAttribute(null, new Attribute("geospatial_vertical_min", new Double(geoCoverage.getHeightStart())));
-     * ncDataset.addAttribute(null, new Attribute("geospatial_vertical_max", new Double(geoCoverage.getHeightStart() +
-     * geoCoverage.getHeightExtent())));
-     * }
-     * }
-     * 
-     * DateRange timeCoverage = ds.getTimeCoverage();
-     * if (timeCoverage != null) {
-     * ncDataset.addAttribute(null, new Attribute("time_coverage_start",
-     * timeCoverage.getStart().toDateTimeStringISO()));
-     * ncDataset.addAttribute(null, new Attribute("time_coverage_end", timeCoverage.getEnd().toDateTimeStringISO()));
-     * }
-     */
-
-    ncDataset.finish();
-  }
 
   //////////////////////////////////////////////////////////////////////////////////
   // image

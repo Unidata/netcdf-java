@@ -13,8 +13,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
@@ -29,59 +29,25 @@ import java.util.List;
  * The Groups in a Dataset form a hierarchical tree, like directories on a disk.
  * A Group has a name and optionally a set of Attributes.
  * There is always at least one Group in a dataset, the root Group, whose name is the empty string.
- * Immutable if setImmutable() was called.
- *
- * TODO Group will be immutable in 6.
  */
+@Immutable
 public class Group {
 
-  @Deprecated
-  static List<Group> collectPath(Group g) {
-    List<Group> list = new ArrayList<>();
-    while (g != null) {
-      list.add(0, g);
-      g = g.getParentGroup();
-    }
-    return list;
-  }
-
-  /**
-   * Is this the root group?
-   *
-   * @return true if root group
-   */
+  /** Is this the root group? */
   public boolean isRoot() {
     return getParentGroup() == null;
   }
 
-  /**
-   * Get the Variables contained directly in this group.
-   *
-   * @return List of type Variable; may be empty, not null.
-   *         TODO return ImmutableList
-   */
-  public List<Variable> getVariables() {
+  /** Get the Variables contained directly in this group. */
+  public ImmutableList<Variable> getVariables() {
     return variables;
   }
 
-  /** @deprecated use findVariableLocal() */
-  @Deprecated
-  @Nullable
-  public Variable findVariable(String varShortName) {
-    return findVariableLocal(varShortName);
-  }
-
-  /**
-   * Find the Variable with the specified (short) name in this group.
-   *
-   * @param varShortName short name of Variable within this group.
-   * @return the Variable, or null if not found
-   */
+  /** Find the Variable with the specified (short) name in this group, or null if not found */
   @Nullable
   public Variable findVariableLocal(String varShortName) {
     if (varShortName == null)
       return null;
-
     for (Variable v : variables) {
       if (varShortName.equals(v.getShortName()))
         return v;
@@ -89,12 +55,7 @@ public class Group {
     return null;
   }
 
-  /**
-   * Find the Variable with the specified (short) name in this group or a parent group.
-   *
-   * @param varShortName short name of Variable.
-   * @return the Variable, or null if not found
-   */
+  /** Find the Variable with the specified (short) name in this group or a parent group, or null if not found */
   @Nullable
   public Variable findVariableOrInParent(String varShortName) {
     if (varShortName == null)
@@ -130,9 +91,7 @@ public class Group {
     return null;
   }
 
-  /**
-   * Get the parent Group, or null if its the root group.
-   */
+  /** Get the parent Group, or null if its the root group. */
   @Nullable
   public Group getParentGroup() {
     return this.parentGroup;
@@ -144,8 +103,8 @@ public class Group {
   }
 
   /**
-   * Get the full name of this object.
-   * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Group))
+   * Get the full name of this Group.
+   * Certain characters are backslash escaped (see NetcdfFiles.makeFullName(Group))
    *
    * @return full name with backslash escapes
    */
@@ -153,22 +112,18 @@ public class Group {
     return NetcdfFiles.makeFullName(this);
   }
 
-  /**
-   * Get the Groups contained directly in this Group.
-   *
-   * @return List of type Group; may be empty, not null.
-   */
+  /** Get the Groups contained directly in this Group. */
   public ImmutableList<Group> getGroups() {
     return ImmutableList.copyOf(groups);
   }
 
-  /** Get the owning NetcdfFile */
+  /** Get the NetcdfFile that owns this Group. */
   public NetcdfFile getNetcdfFile() {
     return ncfile;
   }
 
   /**
-   * Retrieve the Group with the specified (short) name.
+   * Retrieve the nested Group with the specified (short) name.
    *
    * @param groupShortName short name of the nested group you are looking for.
    * @return the Group, or null if not found
@@ -177,7 +132,6 @@ public class Group {
   public Group findGroupLocal(String groupShortName) {
     if (groupShortName == null)
       return null;
-    // groupShortName = NetcdfFile.makeNameUnescaped(groupShortName);
 
     for (Group group : groups) {
       if (groupShortName.equals(group.getShortName()))
@@ -187,19 +141,8 @@ public class Group {
     return null;
   }
 
-  /** @deprecated use findGroupLocal() */
-  @Deprecated
-  public Group findGroup(String groupShortName) {
-    return findGroupLocal(groupShortName);
-  }
-
-  /**
-   * Get the shared Dimensions contained directly in this group.
-   *
-   * @return List of type Dimension; may be empty, not null.
-   *         TODO return ImmutableList
-   */
-  public List<Dimension> getDimensions() {
+  /** Get the shared Dimensions contained directly in this group. */
+  public ImmutableList<Dimension> getDimensions() {
     return dimensions;
   }
 
@@ -215,21 +158,12 @@ public class Group {
     return Dimensions.makeDimensionsList(this::findDimension, dimString);
   }
 
-  /**
-   * Get the enumerations contained directly in this group.
-   *
-   * @return List of type EnumTypedef; may be empty, not null.
-   */
+  /** Get the enumerations contained directly in this group. */
   public ImmutableList<EnumTypedef> getEnumTypedefs() {
     return ImmutableList.copyOf(enumTypedefs);
   }
 
-  /**
-   * Find a Dimension in this or a parent Group, matching on short name.
-   *
-   * @param name Dimension name.
-   * @return the Dimension, or null if not found
-   */
+  /** Find a Dimension in this or a parent Group, matching on short name, or null if not found */
   @Nullable
   public Dimension findDimension(String name) {
     if (name == null)
@@ -245,12 +179,7 @@ public class Group {
     return null;
   }
 
-  /**
-   * Find a Dimension in this or a parent Group, using equals.
-   *
-   * @param dim Dimension .
-   * @return the Dimension, or null if not found
-   */
+  /** Find a Dimension in this or a parent Group, using equals, or null if not found */
   @Nullable
   public Dimension findDimension(Dimension dim) {
     if (dim == null) {
@@ -268,12 +197,7 @@ public class Group {
     return null;
   }
 
-  /**
-   * Find a Dimension using its (short) name, in this group only
-   *
-   * @param shortName Dimension name.
-   * @return the Dimension, or null if not found
-   */
+  /** Find a Dimension using its (short) name, in this group only, or null if not found */
   @Nullable
   public Dimension findDimensionLocal(String shortName) {
     if (shortName == null)
@@ -286,15 +210,12 @@ public class Group {
     return null;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // Attributes
-
   /** The attributes contained by this Group. */
   public AttributeContainer attributes() {
     return attributes;
   }
 
-  /** Find the attribute by name, return null if not exist */
+  /** Find the attribute by name, or null if not exist */
   @Nullable
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
@@ -302,21 +223,18 @@ public class Group {
 
   /**
    * Find a String-valued Attribute by name (ignore case), return the String value of the Attribute.
-   *
+   * 
    * @return the attribute value, or defaultValue if not found
    */
   public String findAttributeString(String attName, String defaultValue) {
     return attributes.findAttributeString(attName, defaultValue);
   }
 
-  ////////////////////////////////////////////////////////////////////////
-
   /** Find a Enumeration in this or a parent Group, using its short name. */
   @Nullable
   public EnumTypedef findEnumeration(String name) {
     if (name == null)
       return null;
-    // name = NetcdfFile.makeNameUnescaped(name);
     for (EnumTypedef d : enumTypedefs) {
       if (name.equals(d.getShortName()))
         return d;
@@ -464,231 +382,11 @@ public class Group {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Constructor
-   *
-   * @param ncfile NetcdfFile owns this Group
-   * @param parent parent of Group. If null, this is the root Group.
-   * @param shortName short name of Group.
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public Group(NetcdfFile ncfile, Group parent, String shortName) {
-    this.shortName = shortName;
-    this.ncfile = ncfile;
-    this.attributes = new AttributeContainerMutable(shortName);
-    setParentGroup(parent == null ? ncfile.getRootGroup() : parent);
-  }
-
-  /**
-   * Set the Group's parent Group
-   *
-   * @param parent parent group.
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public void setParentGroup(Group parent) {
-    this.parentGroup = parent == null ? ncfile.getRootGroup() : parent;
-  }
-
-  /**
-   * Set the short name, converting to valid CDM object name if needed.
-   *
-   * @param shortName set to this value
-   * @return valid CDM object name
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public String setName(String shortName) {
-    this.shortName = shortName;
-    return getShortName();
-  }
-
-  /** @deprecated Use Group.builder() */
-  @Deprecated
-  public Attribute addAttribute(Attribute att) {
-    return attributes.addAttribute(att);
-  }
-
-  /**
-   * Adds the specified shared dimension to this group.
-   *
-   * @param dim the dimension to add.
-   * @throws IllegalArgumentException if {@code dim} isn't shared or a dimension with {@code dim}'s name already
-   *         exists within the group.
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public void addDimension(Dimension dim) {
-    if (!dim.isShared()) {
-      throw new IllegalArgumentException("Dimensions added to a group must be shared.");
-    }
-
-    if (findDimensionLocal(dim.getShortName()) != null)
-      throw new IllegalArgumentException(
-          "Dimension name (" + dim.getShortName() + ") must be unique within Group " + getShortName());
-
-    dimensions.add(dim);
-  }
-
-  /**
-   * Adds the specified shared dimension to this group, but only if another dimension with the same name doesn't
-   * already exist.
-   *
-   * @param dim the dimension to add.
-   * @return {@code true} if {@code dim} was successfully added to the group. Otherwise, {@code false} will be returned,
-   *         meaning that a dimension with {@code dim}'s name already exists within the group.
-   * @throws IllegalArgumentException if {@code dim} isn't shared.
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public boolean addDimensionIfNotExists(Dimension dim) {
-    if (!dim.isShared()) {
-      throw new IllegalArgumentException("Dimensions added to a group must be shared.");
-    }
-
-    if (findDimensionLocal(dim.getShortName()) != null)
-      return false;
-
-    dimensions.add(dim);
-    return true;
-  }
-
-  /**
-   * Add a nested Group
-   *
-   * @param g add this Group.
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public void addGroup(Group g) {
-    if (findGroupLocal(g.getShortName()) != null)
-      throw new IllegalArgumentException(
-          "Group name (" + g.getShortName() + ") must be unique within Group " + getShortName());
-
-    groups.add(g);
-    g.setParentGroup(this); // groups are a tree - only one parent
-  }
-
-  /**
-   * Add an Enumeration
-   *
-   * @param e add this Enumeration.
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public void addEnumeration(EnumTypedef e) {
-    if (e == null)
-      return;
-    // e.setParentGroup(this);
-    enumTypedefs.add(e);
-  }
-
-  /**
-   * Add a Variable
-   *
-   * @param v add this Variable.
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public void addVariable(Variable v) {
-    if (v == null)
-      return;
-
-    if (findVariableLocal(v.getShortName()) != null) {
-      // Variable other = findVariable(v.getShortName()); // debug
-      throw new IllegalArgumentException(
-          "Variable name (" + v.getShortName() + ") must be unique within Group " + getShortName());
-    }
-
-    variables.add(v);
-    v.setParentGroup(this); // variable can only be in one group
-  }
-
-  /**
-   * Remove an Dimension : uses the dimension hashCode to find it.
-   *
-   * @param d remove this Dimension.
-   * @return true if was found and removed
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public boolean remove(Dimension d) {
-    return d != null && dimensions.remove(d);
-  }
-
-  /**
-   * Remove an Attribute : uses the Group hashCode to find it.
-   *
-   * @param g remove this Group.
-   * @return true if was found and removed
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public boolean remove(Group g) {
-    return g != null && groups.remove(g);
-  }
-
-  /**
-   * Remove a Variable : uses the variable hashCode to find it.
-   *
-   * @param v remove this Variable.
-   * @return true if was found and removed
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public boolean remove(Variable v) {
-    return v != null && variables.remove(v);
-  }
-
-  /**
-   * remove a Dimension using its name, in this group only
-   *
-   * @param dimName Dimension name.
-   * @return true if dimension found and removed
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public boolean removeDimension(String dimName) {
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension d = dimensions.get(i);
-      if (dimName.equals(d.getShortName())) {
-        dimensions.remove(d);
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * remove a Variable using its (short) name, in this group only
-   *
-   * @param shortName Variable name.
-   * @return true if Variable found and removed
-   * @deprecated Use Group.builder()
-   */
-  @Deprecated
-  public boolean removeVariable(String shortName) {
-    for (int i = 0; i < variables.size(); i++) {
-      Variable v = variables.get(i);
-      if (shortName.equals(v.getShortName())) {
-        variables.remove(v);
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Override
   public String toString() {
     return writeCDL(false);
   }
 
-  /**
-   * Instances which have same name and parent are equal.
-   */
   @Override
   public boolean equals(Object oo) {
     if (this == oo)
@@ -701,81 +399,36 @@ public class Group {
     return !((getParentGroup() != null) && !getParentGroup().equals(og.getParentGroup()));
   }
 
-  /**
-   * Override Object.hashCode() to implement equals.
-   */
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      result = 37 * result + getShortName().hashCode();
-      if (getParentGroup() != null)
-        result = 37 * result + getParentGroup().hashCode();
-      hashCode = result;
-    }
-    return hashCode;
-  }
-
-  /**
-   * Create groups to ensure path is defined
-   *
-   * @param ncf the containing netcdf file object
-   * @param path the path to the desired group
-   * @param ignorelast true => ignore last element in the path
-   * @return the Group, or null if not found
-   * @deprecated will move to dap2 in ver6
-   */
-  @Deprecated
-  public Group makeRelativeGroup(NetcdfFile ncf, String path, boolean ignorelast) {
-    path = path.trim();
-    path = path.replace("//", "/");
-    boolean isabsolute = (path.charAt(0) == '/');
-    if (isabsolute)
-      path = path.substring(1);
-
-    // iteratively create path
-    String[] pieces = path.split("/");
-    if (ignorelast)
-      pieces[pieces.length - 1] = null;
-
-    Group current = (isabsolute ? ncfile.getRootGroup() : this);
-    for (String name : pieces) {
-      if (name == null)
-        continue;
-      String clearname = NetcdfFiles.makeNameUnescaped(name); // ??
-      Group next = current.findGroupLocal(clearname);
-      if (next == null) {
-        next = new Group(ncf, current, clearname);
-        current.addGroup(next);
-      }
-      current = next;
-    }
-    return current;
+    int result = 17;
+    result = 37 * result + getShortName().hashCode();
+    if (getParentGroup() != null)
+      result = 37 * result + getParentGroup().hashCode();
+    return result;
   }
 
   ////////////////////////////////////////////////////////////////
-  // TODO make private final and immutable in 6
-  protected NetcdfFile ncfile;
-  protected List<Variable> variables = new ArrayList<>();
-  protected List<Dimension> dimensions = new ArrayList<>();
-  protected List<Group> groups = new ArrayList<>();
-  protected AttributeContainerMutable attributes;
-  protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
-  private String shortName;
-  private Group parentGroup;
-  private int hashCode;
+  private final NetcdfFile ncfile;
+  private final ImmutableList<Variable> variables;
+  private final ImmutableList<Dimension> dimensions;
+  private final ImmutableList<Group> groups;
+  private final AttributeContainer attributes;
+  private final ImmutableList<EnumTypedef> enumTypedefs;
+  private final String shortName;
+  private final Group parentGroup;
 
   private Group(Builder builder, @Nullable Group parent) {
     this.shortName = builder.shortName;
     this.parentGroup = parent;
     this.ncfile = builder.ncfile;
 
-    this.dimensions = new ArrayList<>(builder.dimensions);
-    this.enumTypedefs = new ArrayList<>(builder.enumTypedefs);
+    this.dimensions = ImmutableList.copyOf(builder.dimensions);
+    this.enumTypedefs = ImmutableList.copyOf(builder.enumTypedefs);
 
     // only the root group build() should be called, the rest get called recursively
-    this.groups =
-        builder.gbuilders.stream().map(g -> g.setNcfile(this.ncfile).build(this)).collect(Collectors.toList());
+    this.groups = builder.gbuilders.stream().map(g -> g.setNcfile(this.ncfile).build(this))
+        .collect(ImmutableList.toImmutableList());
 
     builder.vbuilders.forEach(vb -> {
       // dont override ncfile if its been set.
@@ -783,15 +436,14 @@ public class Group {
         vb.setNcfile(this.ncfile);
       }
     });
+    ImmutableList.Builder<Variable> vlistb = ImmutableList.builder();
     for (Variable.Builder<?> vb : builder.vbuilders) {
       Variable var = vb.build(this);
-      this.variables.add(var);
+      vlistb.add(var);
     }
+    this.variables = vlistb.build();
 
-    this.attributes = builder.attributes;
-
-    // This needs to go away in 6.
-    // this.enumTypedefs.forEach(e -> e.setParentGroup(this));
+    this.attributes = builder.attributes.toImmutable();
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */

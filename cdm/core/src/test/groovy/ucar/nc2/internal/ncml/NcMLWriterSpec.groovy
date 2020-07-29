@@ -65,57 +65,61 @@ recordsGroup/recordsStruct = UNREADABLE
      */
     def setupSpec() {
         setup: "NetcdfFile's 0-arg constructor is protected, so must use NetcdfFileSubclass"
-        ncFile = new NetcdfFileSubclass()
+        Group.Builder root = Group.builder();
 
         and: "create shared, unlimited Dimension"
         Dimension timeDim = new Dimension("time", 3, true, true, false)
-        ncFile.addDimension(null, timeDim)
+        root.addDimension(timeDim)
 
         and: "create EnumTypedef and add it to root group"
         EnumTypedef dessertType = new EnumTypedef("dessertType", [18: 'pie', 268: 'donut', 3284: 'cake'], DataType.ENUM2)
-        ncFile.getRootGroup().addEnumeration(dessertType)
+        root.addEnumTypedef(dessertType)
 
         and: "create Variable of type dessertType and add it"
-        Variable dessert = new Variable(ncFile, null, null, "dessert", DataType.ENUM2, "time")
-        dessert.enumTypedef = dessertType
-        dessert.addAttribute(Attribute.emptyValued("zero", DataType.ULONG))  // unsigned, zero-length, LONG attribute
+        Variable.Builder dessert = Variable.builder().setName("dessert").setDataType(DataType.ENUM2)
+            .setParentGroupBuilder(root).setDimensionsByName("time").setEnumTypeName("dessertType")
+            .addAttribute(Attribute.emptyValued("zero", DataType.ULONG)) ; // unsigned, zero-length, LONG attribute
         short[] dessertStorage = [18, 268, 3284] as short[]
         dessert.setCachedData(Array.factory(DataType.SHORT, [3] as int[], dessertStorage), true)  // Irregularly-spaced values
-        ncFile.addVariable(null, dessert)
+        root.addVariable(dessert)
 
         and: "create 'time' coordinate Variable"
-        Variable time = new Variable(ncFile, null, null, "time", DataType.SHORT, "time")
+        Variable.Builder time = Variable.builder().setName("time").setDataType(DataType.SHORT)
+                .setParentGroupBuilder(root).setDimensionsByName("time");
         short[] timeStorage = [4, 5, 6] as short[]
         time.setCachedData(Array.factory(DataType.SHORT, [3] as int[], timeStorage), false)
-        ncFile.addVariable(null, time)
+        root.addVariable(time)
 
         and: "create char-valued Variable with anonymous Dimension"
-        Variable charVar = new Variable(ncFile, null, null, "charVar", DataType.CHAR, "5")
+        Variable.Builder charVar = Variable.builder().setName("charVar").setDataType(DataType.CHAR)
+                .setParentGroupBuilder(root).setDimensionsByName("5");
         char[] charStorage = ['a', 'b', 'c', 'd', 'e'] as char[]
         charVar.setCachedData(Array.factory(DataType.CHAR, [5] as int[], charStorage), true)
-        ncFile.addVariable(null, charVar)
+        root.addVariable(charVar)
 
         and: "create string-valued Variable"
-        Variable stringVar = new Variable(ncFile, null, null, "stringVar", DataType.STRING, "4")
+        Variable.Builder stringVar = Variable.builder().setName("stringVar").setDataType(DataType.STRING)
+                .setParentGroupBuilder(root).setDimensionsByName("4");
         String[] stringStorage = ['Frodo Baggins', 'Samwise Gamgee', 'Meriadoc Brandybuck', 'Peregrin Took'] as String[]
         stringVar.setCachedData(Array.factory(DataType.STRING, [4] as int[], stringStorage), true)
-        ncFile.addVariable(null, stringVar)
+        root.addVariable(stringVar)
 
         and: "create Group for records"
-        Group recordsGroup = new Group(ncFile, null, "recordsGroup")
-        ncFile.addGroup(null, recordsGroup)
+        Group.Builder recordsGroup = Group.builder().setName("recordsGroup");
+        root.addGroup(recordsGroup)
 
         and: "create unreadable Structure with variable-length dimension and add it to recordsGroup"
         // recordsStruct will be unreadable because we don't cache any data for it. In fact, it's not even possible
         // to cache data for Structures because ArrayStructure.copy() is unsupported, and caching needs that.
         // Besides, there's no sensible way to represent a n>1-dimensional Structure's values in NcML anyway.
-        Structure recordsStruct = new Structure(ncFile, null, null, "recordsStruct")
+        Structure.Builder recordsStruct = Structure.builder().setName("recordsStruct");
         Dimension numRecords = new Dimension("numRecords", -1, false, false, true)  // Variable-length dim
         recordsStruct.setDimensions([numRecords])
         recordsGroup.addVariable(recordsStruct)
 
         and: "create record Variable and add it to the records Structure"
-        Variable recordsVar = new Variable(ncFile, recordsGroup, recordsStruct, "recordsVar", DataType.INT, "3")
+        Variable.Builder recordsVar = Variable.builder().setName("recordsVar").setDataType(DataType.INT)
+                .setParentGroupBuilder(recordsGroup).setDimensionsByName("3");
         recordsStruct.addMemberVariable(recordsVar)
 
         and: "create group attribute containing multiple string values"
@@ -124,10 +128,13 @@ recordsGroup/recordsStruct = UNREADABLE
 
         and: "create global attribute with multiple unsigned integer values"
         Attribute primesAttrib = Attribute.builder("primes").setValues([2, 3, 5, 7, 11], true).build();
-        ncFile.addAttribute(null, primesAttrib)
+        root.addAttribute(primesAttrib)
 
         and: "finish"
-        ncFile.finish()
+        ncFile = NetcdfFile.builder().setRootGroup(root).build();
+        ncFile.finish();
+
+        printf "CDL %s%n", ncFile
     }
 
     @Shared String expectedNcmlResult = '''\

@@ -15,22 +15,26 @@ public class TestFindDimensionInGroup {
 
   @Test
   public void findDim() {
-    NetcdfFile ncFile = new NetcdfFileSubclass();
 
-    Group subGroup = new Group(ncFile, ncFile.getRootGroup(), "subGroup");
-    ncFile.getRootGroup().addGroup(subGroup);
+    Group.Builder rootGroup = Group.builder().setName("");
 
-    Group subSubGroup = new Group(ncFile, subGroup, "subSubGroup");
+    Group.Builder subGroup = Group.builder().setName("subGroup");
+    rootGroup.addGroup(subGroup);
+
+    Group.Builder subSubGroup = Group.builder().setName("subsubGroup");
     subGroup.addGroup(subSubGroup);
 
     Dimension dim = new Dimension("dim", 12);
-    ncFile.getRootGroup().addDimension(dim);
+    rootGroup.addDimension(dim);
 
     Dimension subDim = new Dimension("subDim", 7);
     subGroup.addDimension(subDim);
 
     Dimension subSubDim = new Dimension("subSubDim", 3);
     subSubGroup.addDimension(subSubDim);
+
+    NetcdfFile ncFile = NetcdfFile.builder().setRootGroup(rootGroup).build();
+    ncFile.finish();
 
     /*
      * ncFile looks like:
@@ -49,13 +53,16 @@ public class TestFindDimensionInGroup {
      * }
      * }
      */
-    ncFile.finish();
+
+    System.out.printf("%s%n", ncFile);
 
     Assert.assertSame(dim, ncFile.findDimension("dim"));
     Assert.assertSame(dim, ncFile.findDimension("/dim"));
     Assert.assertSame(subDim, ncFile.findDimension("subGroup/subDim"));
     Assert.assertSame(subDim, ncFile.findDimension("/subGroup/subDim"));
-    Assert.assertSame(subSubDim, ncFile.findDimension("subGroup/subSubGroup/subSubDim"));
+    Group ssg = ncFile.findGroup("subGroup/subsubGroup/");
+    Assert.assertNotNull(ssg);
+    Assert.assertSame(subSubDim.makeFullName(ssg), subSubDim, ncFile.findDimension("subGroup/subsubGroup/subSubDim"));
 
     Assert.assertNull(ncFile.findDimension("subGroup/nonExistentDim"));
     Assert.assertNull(ncFile.findDimension("/subGroup/subDim/"));

@@ -632,8 +632,7 @@ public class BufrMessageViewer extends JPanel {
 
   private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
-    NetcdfFileSubclass ncfile = new NetcdfFileSubclass(iosp, raf.getLocation());
-    iosp.open(raf, ncfile, m);
+    NetcdfFile ncfile = iosp.open(raf, m);
 
     // Wrap in a NetcdfDataset so that we can get "*DS" objects. But don't enhance.
     return NetcdfDatasets.enhance(ncfile, null, null);

@@ -51,33 +51,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected static boolean debugCaching;
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
 
-  /** @deprecated Will be moved to opendap package in 6. */
-  @Deprecated
-  public static String getDAPName(String name, Variable context) {
-    if (RC.getUseGroups()) {
-      // leave off leading '/' for root entries
-      Group xg = context.getParentGroupOrRoot();
-      if (!xg.isRoot()) {
-        // Get the list of parent groups
-        List<Group> path = Group.collectPath(xg);
-        Formatter dapname = new Formatter();
-        for (int i = 1; i < path.size(); i++) { // start at 1 to skip root group
-          Group g = path.get(i);
-          dapname.format("/%s", g.getShortName());
-        }
-        dapname.format("/%s", name);
-        name = dapname.toString();
-      }
-    }
-    return name;
-  }
-
-  /** @deprecated Will be moved to opendap package in 6. */
-  @Deprecated
-  public static String getDAPName(Variable v) {
-    return Variable.getDAPName(v.getShortName(), v);
-  }
-
   /**
    * Get the data type of the Variable.
    */
@@ -1747,15 +1720,15 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       }
     }
 
+    // LOOK cant use findVariableLocal because variables not set built.
     // possible slice of another variable
     if (builder.slicer != null) {
       int dim = builder.slicer.dim;
       int index = builder.slicer.index;
       Section slice = Dimensions.makeSectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
-      Variable orgClient = parentGroup.findVariableLocal(builder.slicer.orgName);
-      setProxyReader(new SliceReader(orgClient, dim, slice));
+      setProxyReader(new SliceReader(parentGroup, builder.slicer.orgName, dim, slice));
       setCaching(false); // dont cache
-      // remove that dimension - reduce rank
+      // remove that dimension in this variable
       dims.remove(dim);
     }
 
