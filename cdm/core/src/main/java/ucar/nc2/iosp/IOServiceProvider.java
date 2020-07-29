@@ -78,7 +78,7 @@ public interface IOServiceProvider {
    */
   void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
 
-  /** Sometimes the builder needs access to the finished objects. This is called after ncfile.build() */
+  /** Sometimes the builder needs access to the finished objects. This is called when ncfile is finished being built. */
   void buildFinish(NetcdfFile ncfile);
 
   /**
@@ -167,18 +167,6 @@ public interface IOServiceProvider {
    * @throws IOException if read error
    */
   void close() throws IOException;
-
-  /**
-   * Extend the NetcdfFile if the underlying dataset has changed
-   * in a way that is compatible with the current metadata.
-   * For example, if the unlimited dimension has grown.
-   *
-   * @return true if the NetcdfFile was extended.
-   * @throws IOException if a read error occured when accessing the underlying dataset.
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  boolean syncExtend() throws IOException;
 
   /**
    * Release any system resources like file handles.

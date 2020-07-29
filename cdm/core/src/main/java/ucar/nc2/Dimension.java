@@ -7,6 +7,7 @@ package ucar.nc2;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.util.Indent;
 import java.util.Formatter;
 
@@ -22,9 +23,8 @@ import java.util.Formatter;
  * <p/>
  * <p>
  * Note: this class has a natural ordering that is inconsistent with equals.
- *
- * TODO Dimension will be immutable in 6.
  */
+@Immutable
 public class Dimension implements Comparable<Dimension> {
   /** A variable-length dimension: the length is not known until the data is read. */
   public static final Dimension VLEN = Dimension.builder().setName("*").setIsVariableLength(true).build();
@@ -142,19 +142,19 @@ public class Dimension implements Comparable<Dimension> {
     }
     Dimension dimension = (Dimension) o;
     return isUnlimited == dimension.isUnlimited && isVariableLength == dimension.isVariableLength
-        && isShared == dimension.isShared && length == dimension.length
+        && isShared == dimension.isShared && getLength() == dimension.getLength()
         && Objects.equal(shortName, dimension.shortName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared, length);
+    return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared, getLength());
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this).add("shortName", shortName).add("isUnlimited", isUnlimited)
-        .add("isVariableLength", isVariableLength).add("isShared", isShared).add("length", length).toString();
+        .add("isVariableLength", isVariableLength).add("isShared", isShared).add("length", getLength()).toString();
   }
 
   /**
@@ -181,77 +181,13 @@ public class Dimension implements Comparable<Dimension> {
       out.format(" = %d;", getLength());
   }
 
-  ///////////////////////////////////////////////////////////
-  // the following make this mutable
-
-  /**
-   * Set whether this is unlimited, meaning length can increase.
-   *
-   * @param b true if unlimited
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public void setUnlimited(boolean b) {
-    this.isUnlimited = b;
-    setLength(this.length); // check legal
-  }
-
-  /**
-   * Set whether the length is variable.
-   *
-   * @param b true if variable length
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public void setVariableLength(boolean b) {
-    this.isVariableLength = b;
-    if (b) {
-      this.isShared = false;
-      this.isUnlimited = false;
-    }
-    setLength(this.length); // check legal
-  }
-
-  /**
-   * Set whether this is shared.
-   *
-   * @param b true if shared
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public void setShared(boolean b) {
-    this.isShared = b;
-  }
-
-  /**
-   * Set the Dimension length.
-   *
-   * @param n length of Dimension
-   * @deprecated Use Dimension.builder()
-   */
-  @Deprecated
-  public void setLength(int n) {
-    if (isVariableLength) {
-      if (n != -1)
-        throw new IllegalArgumentException("VariableLength Dimension length =" + n + " must be -1");
-    } else if (isUnlimited) {
-      if (n < 0)
-        throw new IllegalArgumentException("Unlimited Dimension length =" + n + " must >= 0");
-    } else {
-      if (n < 1)
-        throw new IllegalArgumentException("Dimension length =" + n + " must be > 0");
-    }
-    this.length = n;
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // TODO make these final in 6.
-  private String shortName;
-  private boolean isUnlimited;
-  private boolean isVariableLength;
-  private boolean isShared; // shared means its in a group dimension list.
-  private int length;
+  private final String shortName;
+  private final boolean isUnlimited;
+  private final boolean isVariableLength;
+  private final boolean isShared; // shared means its in a group dimension list.
+  private final int length;
 
   private Dimension(Builder builder) {
     this(builder.shortName, builder.length, builder.isShared, builder.isUnlimited, builder.isVariableLength);
@@ -260,7 +196,7 @@ public class Dimension implements Comparable<Dimension> {
   /** Turn into a mutable Builder, use toBuilder().build() to make a copy. */
   public Builder toBuilder() {
     return builder().setName(this.shortName).setIsUnlimited(this.isUnlimited).setIsVariableLength(this.isVariableLength)
-        .setIsShared(this.isShared).setLength(this.length);
+        .setIsShared(this.isShared).setLength(getLength());
   }
 
   //////////////////////////////////////////////////////////////

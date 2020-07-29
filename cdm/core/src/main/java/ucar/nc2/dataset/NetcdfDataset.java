@@ -522,37 +522,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     convUsed = null;
   }
 
-  /** @deprecated do not use */
-  @Deprecated
-  public boolean syncExtend() throws IOException {
-    // unlocked = false;
-
-    if (agg != null)
-      return agg.syncExtend();
-
-    // synch orgFile if it has an unlimited dimension
-    if (orgFile != null) {
-      boolean wasExtended = orgFile.syncExtend();
-
-      // propagate changes. LOOK rather ad-hoc
-      if (wasExtended) {
-        Dimension ndim = orgFile.getUnlimitedDimension();
-        int newLength = ndim.getLength();
-
-        Dimension udim = getUnlimitedDimension();
-        udim.setLength(newLength);
-
-        for (Variable v : getVariables()) {
-          if (v.isUnlimited()) // set it in all of the record variables
-            v.setDimensions(v.getDimensions());
-        }
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   //////////////////////////////////////
 
   /** @deprecated Use NetcdfDatasets.open() with IOSP_MESSAGE_ADD_RECORD_STRUCTURE */

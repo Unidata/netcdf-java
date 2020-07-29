@@ -721,9 +721,6 @@ public class DatasetWriter extends JPanel {
       return ds.isUnlimited();
     }
 
-    public void setUnlimited(boolean unlimited) {
-      ds.setUnlimited(unlimited);
-    }
   }
 
   public class VariableBean {

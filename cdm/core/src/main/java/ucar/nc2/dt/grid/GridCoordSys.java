@@ -554,7 +554,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     for (CoordinateAxis axis : coordAxes) {
       List<Dimension> dims = axis.getDimensionsAll();
       for (Dimension dim : dims) {
-        dim.setShared(true); // make them shared (section will make them unshared)
+        // TODO dim.setShared(true); // make them shared (section will make them unshared)
         domain.add(dim);
       }
     }

@@ -8,13 +8,13 @@ package ucar.nc2.ui.op;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.ui.image.ImageViewPanel;
+// import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.dt.image.ImageArrayAdapter;
+// import ucar.nc2.dt.image.ImageArrayAdapter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import java.awt.BorderLayout;
@@ -332,7 +332,7 @@ public class RadialDatasetTable extends JPanel {
   // show image
   private static final String ImageViewer_WindowSize = "RadialImageViewer_WindowSize";
   private IndependentWindow imageWindow;
-  private ImageViewPanel imageView;
+  // private ImageViewPanel imageView;
 
   private void showImage(SweepBean bean) {
     if (bean == null)
@@ -340,8 +340,8 @@ public class RadialDatasetTable extends JPanel {
 
     if (imageWindow == null) {
       imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
-      imageView = new ImageViewPanel(null);
-      imageWindow.setComponent(new JScrollPane(imageView));
+      // imageView = new ImageViewPanel(null);
+      // imageWindow.setComponent(new JScrollPane(imageView));
       // imageWindow.setComponent( imageView);
       Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
       // System.out.println("bounds in = "+b);
@@ -354,7 +354,7 @@ public class RadialDatasetTable extends JPanel {
       int[] shape = {bean.getNumRadial(), bean.getNumGates()};
       Array arrData = Array.factory(DataType.FLOAT, shape, data);
 
-      imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(arrData, null));
+      // imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(arrData, null));
       imageWindow.show();
 
     } catch (IOException e) {

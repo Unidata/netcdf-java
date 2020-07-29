@@ -109,8 +109,7 @@ public class NetcdfFormatWriter implements Closeable {
     private long preallocateSize;
     private Nc4Chunking chunker;
     private boolean useJna;
-    private IOServiceProvider iosp;
-
+    private IOServiceProvider iosp; // existing only
     private Group.Builder rootGroup = Group.builder().setName("");
 
     /** The file locatipn */
@@ -199,12 +198,7 @@ public class NetcdfFormatWriter implements Closeable {
 
     /** Add a dimension to the root group. */
     public Dimension addDimension(String dimName, int length) {
-      if (!isNewFile && !useJna) {
-        throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
-      }
-      Dimension dim = new Dimension(dimName, length);
-      rootGroup.addDimension(dim);
-      return dim;
+      return addDimension(new Dimension(dimName, length));
     }
 
     /** Add a dimension to the root group. */
@@ -212,13 +206,17 @@ public class NetcdfFormatWriter implements Closeable {
       if (!isNewFile && !useJna) {
         throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
       }
-      rootGroup.addDimension(dim);
-      return dim;
+      Dimension useDim = dim;
+      if (dim.isUnlimited() && !(dim instanceof UnlimitedDimension)) {
+        useDim = new UnlimitedDimension(dim.getShortName(), dim.getLength());
+      }
+      rootGroup.addDimension(useDim);
+      return useDim;
     }
 
     /** Add an unlimited dimension to the root group. */
     public Dimension addUnlimitedDimension(String dimName) {
-      return addDimension(Dimension.builder().setName(dimName).setIsUnlimited(true).build());
+      return addDimension(new UnlimitedDimension(dimName, 0));
     }
 
     /** Get the root group */
@@ -226,7 +224,10 @@ public class NetcdfFormatWriter implements Closeable {
       return rootGroup;
     }
 
-    /** Set the root group. This allows all metadata to be built externally. */
+    /**
+     * Set the root group. This allows all metadata to be built externally.
+     * Also this is the rootGroup from an openExistong() file.
+     */
     public Builder setRootGroup(Group.Builder rootGroup) {
       this.rootGroup = rootGroup;
       return this;
@@ -307,8 +308,8 @@ public class NetcdfFormatWriter implements Closeable {
     this.preallocateSize = builder.preallocateSize;
     this.chunker = builder.chunker;
 
-    this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location).build();
-    this.rootGroup = this.ncout.getRootGroup();
+    // This is what we want the file to look like. Once we call build(), it is complete.
+    NetcdfFile.Builder ncfileb = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location);
 
     // read existing file to get the format
     if (!isNewFile) {
@@ -341,15 +342,22 @@ public class NetcdfFormatWriter implements Closeable {
     // If anything fails, make sure that resources are closed.
     try {
       if (!isNewFile) {
-        spiw.openForWriting(existingRaf, this.ncout, null);
+        // ncfileb has the metadata of the file to be written to. NC3 doesnt allow additions, NC4 should. So this is
+        // messed up here.
+        // NC3 can only write to existing variables and extend along the record dimension.
+        spiw.openForWriting(existingRaf, ncfileb, null);
       } else {
-        spiw.create(location, this.ncout, extraHeaderBytes, preallocateSize, testIfLargeFile());
+        // ncfileb has the metadata of the file to be created.
+        spiw.create(location, ncfileb, extraHeaderBytes, preallocateSize, false);
       }
       spiw.setFill(fill);
     } catch (Throwable t) {
       spiw.close();
       throw t;
     }
+
+    this.ncout = spiw.getOutputFile();
+    this.rootGroup = this.ncout.getRootGroup();
   }
 
   // TODO should not be used to read data, close and reopen

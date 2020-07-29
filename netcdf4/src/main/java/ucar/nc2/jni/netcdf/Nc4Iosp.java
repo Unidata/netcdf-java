@@ -227,10 +227,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   @Override
-  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
+  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, NetcdfFile.Builder ncfileb,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    this.ncfile = ncfile;
-    _open(raf, ncfile, false);
+    this.ncfile = ncfileb.build();
+    _open(raf, this.ncfile, false);
+  }
+
+  @Override
+  public NetcdfFile getOutputFile() {
+    return this.ncfile;
   }
 
   private void _open(RandomAccessFile raf, NetcdfFile ncfile, boolean readOnly) throws IOException {
@@ -392,7 +397,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       // TODO udim.setLength : need UnlimitedDimension extends Dimension?
       int len = lenp.getValue().intValue();
       if (len != d.getLength()) {
-        d.setLength(len);
+        // TODO d.setLength(len);
         // must update all variables that use this dimension
         for (Variable var : g.getVariables()) {
           if (contains(var.getDimensions(), d)) {
@@ -2328,17 +2333,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // writing data
 
   @Override
-  public void create(String filename, NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile)
+  public void create(String filename, NetcdfFile.Builder ncfileb, int extra, long preallocateSize, boolean largeFile)
       throws IOException {
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
     this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
-    this.ncfile = ncfile;
-
-    // finish any structures
-    ncfile.finish();
+    this.ncfile = ncfileb.build();
 
     // create new file
     log.debug("create {}", ncfile.getLocation());

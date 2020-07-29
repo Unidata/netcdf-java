@@ -93,22 +93,6 @@ public class TestOffAggUpdating {
   }
 
   @Test
-  public void testUpdateSync() throws IOException, InvalidRangeException, InterruptedException {
-    // make sure that the extra file is not in the agg
-    move(extraFile);
-
-    // open the agg
-    try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), location, null)) {
-      check(ncfile, 12);
-      // now make sure that the extra file is in the agg
-      moveBack(extraFile);
-      // reread
-      ncfile.syncExtend();
-      check(ncfile, 18);
-    }
-  }
-
-  @Test
   public void testUpdateLastModified() throws IOException, InvalidRangeException, InterruptedException {
     // make sure that the extra file is not in the agg
     move(extraFile);
@@ -128,23 +112,6 @@ public class TestOffAggUpdating {
       long end2 = ncfile.getLastModified();
       assert (end == end2);
 
-    }
-  }
-
-  @Test
-  public void testUpdateCache() throws IOException, InvalidRangeException, InterruptedException {
-    // make sure that the extra file is not in the agg
-    move(extraFile);
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-
-    // open the agg
-    try (NetcdfFile ncfile = NetcdfDatasets.acquireDataset(new NcmlStringFileFactory(), durl, null, -1, null, null)) {
-      check(ncfile, 12);
-      // now make sure that the extra file is in the agg
-      moveBack(extraFile);
-      // reread
-      ncfile.syncExtend();
-      check(ncfile, 18);
     }
   }
 

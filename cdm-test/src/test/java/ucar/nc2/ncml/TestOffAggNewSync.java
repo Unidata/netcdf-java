@@ -78,50 +78,6 @@ public class TestOffAggNewSync {
     System.out.printf("ok testRemove%n");
   }
 
-  @Test
-  @Ignore("file in use - testing artifact")
-  public void testSync() throws IOException, InterruptedException {
-    String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
-    if (!TestOffAggUpdating.move(fname))
-      System.out.printf("Move failed on %s%n", fname);
-
-    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, ntimes - 1);
-
-    if (!TestOffAggUpdating.moveBack(fname))
-      System.out.printf("Move back failed on %s%n", fname);
-
-    Thread.sleep(2000);
-
-    ncfile.syncExtend();
-    testAggCoordVar(ncfile, ntimes);
-    ncfile.close();
-    System.out.printf("ok testSync%n");
-  }
-
-  @Test
-  @Ignore("file in use - testing artifact")
-  public void testSyncRemove() throws IOException, InterruptedException {
-    NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, ntimes);
-    System.out.println("");
-
-    String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
-    boolean ok = TestOffAggUpdating.move(fname);
-    int nfiles = ok ? ntimes - 1 : ntimes; // sometimes fails
-    Thread.sleep(2000);
-
-    ncfile.syncExtend();
-    testAggCoordVar(ncfile, nfiles);
-    ncfile.close();
-
-    // if (!moveBack(dataDir + fname ))
-    if (!TestOffAggUpdating.moveBack(fname))
-      System.out.printf("Move back failed on %s%n", fname);
-    else
-      System.out.printf("ok testSyncRemove %n");
-  }
-
   private void testAggCoordVar(NetcdfFile ncfile, int n) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;

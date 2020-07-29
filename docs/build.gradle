@@ -21,15 +21,15 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
     source cdmCoreSourceSet.allJava
 
-    SourceSet cdmImageSourceSet = rootProject.project(':cdm:cdm-image').sourceSets.main
-    source cdmImageSourceSet.allJava
+//    SourceSet cdmImageSourceSet = rootProject.project(':cdm:cdm-image').sourceSets.main
+//    source cdmImageSourceSet.allJava
 
-    SourceSet cdmRadialSourceSet = rootProject.project(':cdm:cdm-radial').sourceSets.main
-    source cdmRadialSourceSet.allJava
+//    SourceSet cdmRadialSourceSet = rootProject.project(':cdm:cdm-radial').sourceSets.main
+//    source cdmRadialSourceSet.allJava
 
-    classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output,
-                       cdmImageSourceSet.compileClasspath, cdmImageSourceSet.output,
-                       cdmRadialSourceSet.compileClasspath, cdmRadialSourceSet.output])
+    classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
+//                       cdmImageSourceSet.compileClasspath, cdmImageSourceSet.output,
+//                       cdmRadialSourceSet.compileClasspath, cdmRadialSourceSet.output])
 
     // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
     include 'thredds/client/catalog/*.java'

@@ -11,8 +11,8 @@ import ucar.ma2.IsMissingEvaluator;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
-import ucar.nc2.dt.image.ImageArrayAdapter;
-import ucar.nc2.ui.image.ImageViewPanel;
+// import ucar.nc2.dt.image.ImageArrayAdapter;
+// import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
@@ -53,7 +53,7 @@ public class NCdumpPane extends TextHistoryPane {
   private NetcdfFile ds;
 
   private IndependentWindow imageWindow;
-  private ImageViewPanel imageView;
+  // private ImageViewPanel imageView;
 
   public NCdumpPane(PreferencesExt prefs) {
     super(true);
@@ -135,7 +135,7 @@ public class NCdumpPane extends TextHistoryPane {
     }
 
     if (imageWindow == null) {
-      makeImageViewer();
+      // makeImageViewer();
     }
 
     task = new GetContentsTask(command);
@@ -169,15 +169,17 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  private void makeImageViewer() {
-    imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
-    imageView = new ImageViewPanel(null);
-    imageWindow.setComponent(new JScrollPane(imageView));
-    // imageWindow.setComponent( imageView);
-    Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
-    // logger.debu("bounds in = {}", b);
-    imageWindow.setBounds(b);
-  }
+  /*
+   * private void makeImageViewer() {
+   * imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
+   * imageView = new ImageViewPanel(null);
+   * imageWindow.setComponent(new JScrollPane(imageView));
+   * // imageWindow.setComponent( imageView);
+   * Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
+   * // logger.debu("bounds in = {}", b);
+   * imageWindow.setBounds(b);
+   * }
+   */
 
   public void save() {
     cb.save();
@@ -241,7 +243,7 @@ public class NCdumpPane extends TextHistoryPane {
         data = ds.readSection(command);
 
         if (data != null) {
-          imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(task.data, eval));
+          // imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(task.data, eval));
           imageWindow.show();
         }
       } catch (Exception e) {

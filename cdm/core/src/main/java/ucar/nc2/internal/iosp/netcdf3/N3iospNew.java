@@ -80,7 +80,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   protected N3headerNew header;
   protected long lastModified; // used by sync
   private boolean debugRecord = false;
-
   private Charset valueCharset;
 
   @Override
@@ -233,13 +232,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
-  @Override
-  public boolean syncExtend() throws IOException {
-    // boolean result = header.synchNumrecs();
-    // if (result && log.isDebugEnabled())
-    // log.debug(" N3iosp syncExtend " + raf.getLocation() + " numrecs =" + header.numrecs);
-    return true;
-  }
 
   public void flush() throws java.io.IOException {
     if (raf != null) {

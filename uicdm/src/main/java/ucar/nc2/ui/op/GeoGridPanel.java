@@ -15,7 +15,7 @@ import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
-import ucar.nc2.ui.image.ImageViewPanel;
+// import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.util.prefs.PreferencesExt;
@@ -40,7 +40,7 @@ public class GeoGridPanel extends OpPanel {
   private JSplitPane split;
   private IndependentWindow viewerWindow, imageWindow;
   private GridUI gridUI;
-  private ImageViewPanel imageViewer;
+  // private ImageViewPanel imageViewer;
 
   private NetcdfDataset ds;
 
@@ -70,9 +70,9 @@ public class GeoGridPanel extends OpPanel {
           return;
         }
         if (imageWindow == null) {
-          makeImageWindow();
+          // makeImageWindow();
         }
-        imageViewer.setImageFromGrid(grid);
+        // imageViewer.setImageFromGrid(grid);
         imageWindow.show();
       }
     });
@@ -102,13 +102,15 @@ public class GeoGridPanel extends OpPanel {
     viewerWindow.setBounds(bounds);
   }
 
-  private void makeImageWindow() {
-    imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
-    imageViewer = new ImageViewPanel(null);
-    imageWindow.setComponent(imageViewer);
-    imageWindow
-        .setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
-  }
+  /*
+   * private void makeImageWindow() {
+   * imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
+   * imageViewer = new ImageViewPanel(null);
+   * imageWindow.setComponent(imageViewer);
+   * imageWindow
+   * .setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
+   * }
+   */
 
   @Override
   public boolean process(Object o) {
