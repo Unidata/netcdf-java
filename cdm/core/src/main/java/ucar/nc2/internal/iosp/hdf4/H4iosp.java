@@ -64,15 +64,6 @@ public class H4iosp extends AbstractIOServiceProvider {
     return "Hierarchical Data Format, version 4";
   }
 
-  @Override
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    super.open(raf, ncfile, cancelTask);
-    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
-    getHeader().read(raf, rootGroup, null);
-    ncfile.setRootGroup(rootGroup.build());
-    ncfile.finish();
-  }
-
   /**
    * Return header for reading netcdf file.
    * Create it if it's not already created.
@@ -84,11 +75,6 @@ public class H4iosp extends AbstractIOServiceProvider {
       header = new H4header(this);
     }
     return header;
-  }
-
-  @Override
-  public boolean isBuilder() {
-    return true;
   }
 
   @Override

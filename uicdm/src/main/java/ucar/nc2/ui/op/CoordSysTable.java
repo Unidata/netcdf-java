@@ -17,7 +17,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.dt.radial.RadialCoordSys;
+// import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.time.*;
 import ucar.nc2.write.Ncdump;
@@ -785,9 +785,11 @@ public class CoordSysTable extends JPanel {
         addDataType("grid");
       }
 
-      if (RadialCoordSys.isRadialCoordSys(parseInfo, cs)) {
-        addDataType("radial");
-      }
+      /*
+       * if (RadialCoordSys.isRadialCoordSys(parseInfo, cs)) {
+       * addDataType("radial");
+       * }
+       */
 
       StringBuilder buff = new StringBuilder();
       List ctList = cs.getCoordinateTransforms();

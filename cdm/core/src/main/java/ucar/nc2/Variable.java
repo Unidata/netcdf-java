@@ -814,15 +814,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return ncfile.readData(this, section);
   }
 
-  /** @deprecated do not use */
-  @Deprecated
-  public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
-    if ((ncfile == null) || hasCachedData())
-      return IospHelper.copyToByteChannel(read(section), wbc);
-
-    return ncfile.readToByteChannel(this, section, wbc);
-  }
-
   /** Read variable data to a stream. Support for NcStreamWriter. */
   public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())

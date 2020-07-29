@@ -21,7 +21,6 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
@@ -94,11 +93,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
     useHdfEos = val;
   }
 
-  @Override
-  public boolean isBuilder() {
-    return true;
-  }
-
   //////////////////////////////////////////////////////////////////////////////////
 
   private H5headerNew header;
@@ -152,28 +146,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
    */
   private void setValueCharset(@Nullable Charset charset) {
     this.valueCharset = charset;
-  }
-
-  @Override
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    super.open(raf, ncfile, cancelTask);
-    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
-    header = new H5headerNew(raf, rootGroup, this);
-    header.read(null);
-    ncfile.setRootGroup(rootGroup.build());
-
-    // check if its an HDF5-EOS file
-    if (useHdfEos) {
-      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
-        try {
-          isEos = HdfEos.amendFromODL(raf.getLocation(), header, eosGroup);
-        } catch (IOException e) {
-          log.warn(" HdfEos.amendFromODL failed");
-        }
-      });
-    }
-
-    ncfile.finish();
   }
 
   public H5headerNew getHeader() {

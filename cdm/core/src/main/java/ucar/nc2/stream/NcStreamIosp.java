@@ -63,18 +63,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     return version;
   }
 
-  @Override
-  public boolean isBuilder() {
-    return true;
-  }
-
   //////////////////////////////////////////////////////////////////////
   private int version;
-
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    super.open(raf, ncfile, cancelTask);
-    openDebug(raf, ncfile, null);
-  }
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {

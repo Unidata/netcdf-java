@@ -12,7 +12,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;

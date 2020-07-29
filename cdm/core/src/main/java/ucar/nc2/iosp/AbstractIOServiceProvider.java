@@ -20,7 +20,6 @@ import ucar.unidata.util.Format;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
 
 /**
@@ -53,7 +52,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   // That argues for open() changing to a builder.
   protected NetcdfFile ncfile;
 
-  @Override
+  // TODO this is misused, probably should be a pro
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.location = (raf != null) ? raf.getLocation() : null;
@@ -63,11 +62,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   // TODO: Is there an alternative to making this method public? Maybe in 6?
   public void setNetcdfFile(NetcdfFile ncfile) {
     this.ncfile = ncfile;
-  }
-
-  @Override
-  public boolean isBuilder() {
-    return false;
   }
 
   @Override
@@ -101,31 +95,12 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     this.raf.order(rafOrder);
   }
 
-  // default implementation, reads into an Array, then writes to WritableByteChannel
-  // subclasses should override if possible
-  // LOOK DataOutputStream uses big-endian
-  @Override
-  public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    Array data = readData(v2, section);
-    return IospHelper.copyToByteChannel(data, channel);
-  }
-
   @Override
   public long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array data = readData(v2, section);
     return IospHelper.copyToOutputStream(data, out);
-  }
-
-  @Override
-  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    Array data = readData(v2, section);
-    return IospHelper.copyToByteChannel(data, channel);
   }
 
   @Override

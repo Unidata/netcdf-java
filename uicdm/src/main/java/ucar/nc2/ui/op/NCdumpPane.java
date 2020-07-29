@@ -6,7 +6,6 @@
 package ucar.nc2.ui.op;
 
 import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -19,24 +18,14 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Rectangle;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
-import java.nio.channels.WritableByteChannel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
-/**
- * dump data using NetcdfFile.readSection()
- *
- * @author caron
- */
+/** Dump data using NetcdfFile.readSection() */
 public class NCdumpPane extends TextHistoryPane {
 
   private static final org.slf4j.Logger logger =
@@ -70,14 +59,16 @@ public class NCdumpPane extends TextHistoryPane {
     imageButton.setToolTipText("view selected data as Image");
     imageButton.addActionListener(e -> showImage((String) cb.getSelectedItem()));
 
-    JButton binButton = new JButton("Write");
-    binButton.setToolTipText("write binary data to file");
-    binButton.addActionListener(e -> {
-      String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
-      if (binaryFilePath != null) {
-        writeBinaryData((String) cb.getSelectedItem(), new File(binaryFilePath));
-      }
-    });
+    /*
+     * JButton binButton = new JButton("Write");
+     * binButton.setToolTipText("write binary data to file");
+     * binButton.addActionListener(e -> {
+     * String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
+     * if (binaryFilePath != null) {
+     * writeBinaryData((String) cb.getSelectedItem(), new File(binaryFilePath));
+     * }
+     * });
+     */
 
     stopButton = new StopButton("stop NCdump");
     stopButton.addActionListener(e -> {
@@ -94,7 +85,7 @@ public class NCdumpPane extends TextHistoryPane {
     JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     buttPanel.add(getButton);
     buttPanel.add(imageButton);
-    buttPanel.add(binButton);
+    // buttPanel.add(binButton);
     buttPanel.add(stopButton);
 
     JPanel topPanel = new JPanel(new BorderLayout());
@@ -144,30 +135,32 @@ public class NCdumpPane extends TextHistoryPane {
     }
   }
 
-  private void writeBinaryData(String variableSection, File name) {
-    ParsedSectionSpec cer;
-    try {
-      cer = ParsedSectionSpec.parseVariableSection(ds, variableSection);
-      if (cer.child != null) {
-        return;
-      }
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      return;
-    }
-
-    if (name == null) {
-      return;
-    }
-
-    try (FileOutputStream stream = new FileOutputStream(name)) {
-      WritableByteChannel channel = stream.getChannel();
-      cer.v.readToByteChannel(cer.section, channel);
-      System.out.printf("Write ok to %s%n", name);
-    } catch (InvalidRangeException | IOException e) {
-      e.printStackTrace();
-    }
-  }
+  /*
+   * private void writeBinaryData(String variableSection, File name) {
+   * ParsedSectionSpec cer;
+   * try {
+   * cer = ParsedSectionSpec.parseVariableSection(ds, variableSection);
+   * if (cer.child != null) {
+   * return;
+   * }
+   * } catch (InvalidRangeException e) {
+   * e.printStackTrace();
+   * return;
+   * }
+   * 
+   * if (name == null) {
+   * return;
+   * }
+   * 
+   * try (FileOutputStream stream = new FileOutputStream(name)) {
+   * WritableByteChannel channel = stream.getChannel();
+   * cer.v.readToByteChannel(cer.section, channel);
+   * System.out.printf("Write ok to %s%n", name);
+   * } catch (InvalidRangeException | IOException e) {
+   * e.printStackTrace();
+   * }
+   * }
+   */
 
   /*
    * private void makeImageViewer() {
