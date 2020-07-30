@@ -631,26 +631,6 @@ public class CoordinateSystem {
     return false;
   }
 
-  /** @deprecated Use CoordinateSystem.builder() */
-  @Deprecated
-  void makeTimeAxis() {
-
-    if ((tAxis != null) && (tAxis instanceof CoordinateAxis1D) && !(tAxis instanceof CoordinateAxis1DTime)) {
-
-      Formatter err = new Formatter();
-      try {
-        CoordinateAxis1DTime timeAxis = CoordinateAxis1DTime.factory(ds, tAxis, err);
-        coordAxes.remove(tAxis);
-        coordAxes.add(timeAxis);
-        tAxis = timeAxis;
-        ds.addCoordinateAxis(timeAxis); // will remove old one
-
-      } catch (Exception e) {
-        log.error(tAxis.getDatasetLocation() + ": Error reading time coord= " + err, e);
-      }
-    }
-  }
-
 
   ////////////////////////////////////////////////////////////////////////////
   /**

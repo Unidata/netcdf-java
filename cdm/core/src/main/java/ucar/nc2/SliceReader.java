@@ -20,19 +20,34 @@ class SliceReader implements ProxyReader {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SliceReader.class);
 
   private final Variable orgClient;
+  private final Group parentGroup;
+  private final String orgName;
   private final int sliceDim; // dimension index into original
   private final Section slice; // section of the original
 
+  // LOOK could do check that slice is compatible with client
   SliceReader(Variable orgClient, int dim, Section slice) {
-    // LOOK could do check that slice is compatible with client
-
     this.orgClient = orgClient;
     this.sliceDim = dim;
     this.slice = slice;
+
+    this.orgName = orgClient.getShortName();
+    this.parentGroup = orgClient.getParentGroup();
+  }
+
+  // This is used from Builder when we dont yet have all variables built.
+  SliceReader(Group parentGroup, String orgName, int dim, Section slice) {
+    this.parentGroup = parentGroup;
+    this.orgName = orgName;
+    this.sliceDim = dim;
+    this.slice = slice;
+
+    this.orgClient = null;
   }
 
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    Variable orgClient = this.orgClient != null ? this.orgClient : parentGroup.findVariableLocal(orgName);
     Array data;
     try {
       data = orgClient._read(slice);
@@ -47,6 +62,7 @@ class SliceReader implements ProxyReader {
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
+    Variable orgClient = parentGroup.findVariableLocal(orgName);
     Section.Builder orgSection = Section.builder().appendRanges(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
     Array data = orgClient._read(orgSection.build());

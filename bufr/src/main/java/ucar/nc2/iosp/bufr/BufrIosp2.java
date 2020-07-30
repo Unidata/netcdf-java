@@ -46,7 +46,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     debugIter = debugFlag.isSet("Bufr/iter");
   }
 
-  private Structure obsStructure;
+  private Sequence obsStructure;
   private Message protoMessage; // prototypical message: all messages in the file must be the same.
   private MessageScanner scanner;
   private HashSet<Integer> messHash;
@@ -80,7 +80,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
 
   @Override
   public void buildFinish(NetcdfFile ncfile) {
-    obsStructure = (Structure) ncfile.findVariable(obsRecordName);
+    obsStructure = (Sequence) ncfile.findVariable(obsRecordName);
     // The proto DataDescriptor must have a link to the Sequence object to read nested Sequences.
     connectSequences(obsStructure.getVariables(), protoMessage.getRootDataDescriptor().getSubKeys());
   }
@@ -106,29 +106,8 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     }
   }
 
-  @Override
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    super.open(raf, ncfile, cancelTask);
-
-    scanner = new MessageScanner(raf);
-    protoMessage = scanner.getFirstDataMessage();
-    if (protoMessage == null)
-      throw new IOException("No data messages in the file= " + ncfile.getLocation());
-    if (!protoMessage.isTablesComplete())
-      throw new IllegalStateException("BUFR file has incomplete tables");
-
-    // just get the fields
-    config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
-
-    // this fills the netcdf object
-    Construct2 construct = new Construct2(protoMessage, config, ncfile);
-    obsStructure = construct.getObsStructure();
-    ncfile.finish();
-    isSingle = false;
-  }
-
   // for BufrMessageViewer
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, Message single) throws IOException {
+  public NetcdfFile open(RandomAccessFile raf, Message single) throws IOException {
     this.raf = raf;
 
     protoMessage = single;
@@ -139,12 +118,11 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage, null);
 
     // this fills the netcdf object
-    Construct2 construct = new Construct2(protoMessage, config, ncfile);
-    obsStructure = construct.getObsStructure();
-    isSingle = true;
-
-    ncfile.finish();
-    this.ncfile = ncfile;
+    Construct2 construct = new Construct2(protoMessage, config, raf.getLocation());
+    this.ncfile = construct.getNetcdfFile();
+    this.obsStructure = construct.getObsStructure();
+    this.isSingle = true;
+    return this.ncfile;
   }
 
   @Override
@@ -181,7 +159,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   }
 
   private void findRootSequence() {
-    this.obsStructure = (Structure) this.ncfile.findVariable(BufrIosp2.obsRecordName);
+    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp2.obsRecordName);
   }
 
   private class SeqIter implements StructureDataIterator {

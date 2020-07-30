@@ -92,28 +92,6 @@ public class TestWriteMiscProblems {
     }
   }
 
-  @Test
-  public void testRemove() throws IOException, InvalidRangeException {
-    String inName = TestDir.cdmLocalTestDataDir + "testWrite.nc";
-    String outName = tempFolder.newFile().getAbsolutePath();
-
-    DatasetUrl durl = DatasetUrl.create(null, inName);
-    try (NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, true, null)) {
-      assert ncd.removeVariable(null, "temperature");
-      ncd.finish();
-      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(outName);
-      NetcdfCopier copier = NetcdfCopier.create(ncd, builder);
-      try (NetcdfFile ncdnew = copier.write(null)) {
-        // ok empty
-      }
-    }
-
-    DatasetUrl durl2 = DatasetUrl.create(null, outName);
-    try (NetcdfDataset ncdnew2 = NetcdfDatasets.acquireDataset(durl2, true, null)) {
-      assert ncdnew2.findVariable("temperature") == null;
-    }
-  }
-
   @Test(expected = IllegalArgumentException.class)
   public void testFileHandleReleaseAfterHeaderWriteFailure() throws IOException {
     String filename = tempFolder.newFile().getAbsolutePath();

@@ -23,7 +23,6 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
@@ -780,64 +779,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Add an attribute to a group.
-   *
-   * @param parent add to this group. If group is null, use root group
-   * @param att add this attribute
-   * @return the attribute that was added
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Attribute addAttribute(Group parent, Attribute att) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (parent == null)
-      parent = rootGroup;
-    parent.addAttribute(att);
-    return att;
-  }
-
-  /**
-   * Add optional String attribute to a group.
-   *
-   * @param parent add to this group. If group is null, use root group
-   * @param name attribute name, may not be null
-   * @param value attribute value, may be null, in which case, do not addd
-   * @return the attribute that was added
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Attribute addAttribute(Group parent, String name, String value) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (value == null)
-      return null;
-    if (parent == null)
-      parent = rootGroup;
-    Attribute att = new Attribute(name, value);
-    parent.addAttribute(att);
-    return att;
-  }
-
-  /**
-   * Add a group to the parent group.
-   *
-   * @param parent add to this group. If group is null, use root group
-   * @param g add this group
-   * @return the group that was added
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Group addGroup(Group parent, Group g) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (parent == null)
-      parent = rootGroup;
-    parent.addGroup(g);
-    return g;
-  }
-
-  /**
    * Public by accident.
    *
    * @deprecated Use NetcdfFile.builder()
@@ -845,125 +786,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   @Deprecated
   public void setRootGroup(Group rootGroup) {
     this.rootGroup = rootGroup;
-  }
-
-  /**
-   * Add a shared Dimension to a Group.
-   *
-   * @param parent add to this group. If group is null, use root group
-   * @param d add this Dimension
-   * @return the dimension that was added
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Dimension addDimension(Group parent, Dimension d) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (parent == null)
-      parent = rootGroup;
-    parent.addDimension(d);
-    return d;
-  }
-
-  /**
-   * Remove a shared Dimension from a Group by name.
-   *
-   * @param g remove from this group. If group is null, use root group
-   * @param dimName name of Dimension to remove.
-   * @return true if found and removed.
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public boolean removeDimension(Group g, String dimName) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (g == null)
-      g = rootGroup;
-    return g.removeDimension(dimName);
-  }
-
-  /**
-   * Add a Variable to the given group.
-   *
-   * @param g add to this group. If group is null, use root group
-   * @param v add this Variable
-   * @return the variable that was added
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Variable addVariable(Group g, Variable v) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (g == null)
-      g = rootGroup;
-    if (v != null)
-      g.addVariable(v);
-    return v;
-  }
-
-  /**
-   * Create a new Variable, and add to the given group.
-   *
-   * @param g add to this group. If group is null, use root group
-   * @param shortName short name of the Variable
-   * @param dtype data type of the Variable
-   * @param dims list of dimension names
-   * @return the new Variable
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Variable addVariable(Group g, String shortName, DataType dtype, String dims) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (g == null)
-      g = rootGroup;
-    Variable v = new Variable(this, g, null, shortName);
-    v.setDataType(dtype);
-    v.setDimensions(dims);
-    g.addVariable(v);
-    return v;
-  }
-
-  /**
-   * Create a new Variable of type Datatype.CHAR, and add to the given group.
-   *
-   * @param g add to this group. If group is null, use root group
-   * @param shortName short name of the Variable
-   * @param dims list of dimension names
-   * @param strlen dimension length of the inner (fastest changing) dimension
-   * @return the new Variable
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public Variable addStringVariable(Group g, String shortName, String dims, int strlen) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (g == null)
-      g = rootGroup;
-    String dimName = shortName + "_strlen";
-    addDimension(g, new Dimension(dimName, strlen));
-    Variable v = new Variable(this, g, null, shortName);
-    v.setDataType(DataType.CHAR);
-    v.setDimensions(dims + " " + dimName);
-    g.addVariable(v);
-    return v;
-  }
-
-  /**
-   * Remove a Variable from the given group by name.
-   *
-   * @param g remove from this group. If group is null, use root group
-   * @param varName name of variable to remove.
-   * @return true is variable found and removed
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public boolean removeVariable(Group g, String varName) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (g == null)
-      g = rootGroup;
-    return g.removeVariable(varName);
   }
 
   /**
@@ -988,7 +810,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       Variable v = rootGroup.findVariableLocal("record");
       boolean gotit = (v instanceof Structure);
       if (gotit) {
-        rootGroup.remove(v);
+        // TODO rootGroup.remove(v);
         variables.remove(v);
         removeRecordStructure();
       }
@@ -1132,7 +954,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   private void finishGroup(Group g) {
-    variables.addAll(g.variables);
+    variables.addAll(g.getVariables());
 
     // LOOK should group atts be promoted to global atts?
     for (Attribute oldAtt : g.attributes()) {
@@ -1145,7 +967,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     }
 
     // LOOK this wont match the variables' dimensions if there are groups: what happens if we remove this ??
-    for (Dimension oldDim : g.dimensions) {
+    for (Dimension oldDim : g.getDimensions()) {
       if (oldDim.isShared()) {
         if (g == rootGroup) {
           dimensions.add(oldDim);
