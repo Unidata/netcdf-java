@@ -88,7 +88,7 @@ public class TestWriteMiscProblems {
     }
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = RuntimeException.class)
   public void testFileHandleReleaseAfterHeaderWriteFailure() throws IOException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
@@ -98,7 +98,7 @@ public class TestWriteMiscProblems {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       // this call *should* trigger a runtime exception (IllegalArgumentException)
-    } catch (NullPointerException iae) {
+    } catch (RuntimeException iae) {
       // if we throw a runtime error during writerb.build(), we ended up in a state
       // where the underlying RAF was not closed because the code would encounter the same issue and
       // throw another runtime error. If a user was trying to handle the runtime error, this could end
