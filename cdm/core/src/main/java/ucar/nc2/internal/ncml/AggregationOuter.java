@@ -179,7 +179,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
               "readTimeCoordinates: variable = " + timeAxis.shortName + " not found in file " + dataset.getLocation());
           return;
         }
-        VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS(null, v, true);
+        VariableDS vds =
+            (v instanceof VariableDS) ? (VariableDS) v : VariableDS.fromVar(ncfile.getRootGroup(), v, true);
         // LOOK was CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
         CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(null, vds, null);
         dateList.addAll(timeCoordVar.getCalendarDates());
@@ -255,7 +256,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         ii.setDoubleNext(val);
       }
     }
-    // must set isMetadata rture so that data is transferred on a copy
+    // must set isMetadata true so that data is transferred on a copy
     timeAxis.setCachedData(timeCoordVals, true);
   }
 

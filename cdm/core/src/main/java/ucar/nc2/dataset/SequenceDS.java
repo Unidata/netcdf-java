@@ -26,10 +26,6 @@ import ucar.nc2.constants.CDM;
  */
 @Deprecated
 public class SequenceDS extends StructureDS {
-  public SequenceDS(Group g, ucar.nc2.Sequence orgSeq) {
-    super(g, orgSeq);
-    this.orgSeq = orgSeq;
-  }
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     return new StructureDataConverter(this, orgSeq.getStructureIterator(bufferSize));

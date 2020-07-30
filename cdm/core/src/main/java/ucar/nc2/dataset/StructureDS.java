@@ -11,143 +11,9 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
-/**
- * An "enhanced" Structure.
- *
- * @author john caron
- * @see NetcdfDataset
- */
+/** An "enhanced" Structure. */
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
-
-  /** @deprecated Use StructureDS.builder() */
-  @Deprecated
-  protected StructureDS(NetcdfFile ncfile, Group group, String shortName) {
-    super(ncfile, group, null, shortName);
-    this.proxy = new EnhancementsImpl(this);
-  }
-
-  /**
-   * Constructor when theres no underlying variable. You better set the values too!
-   *
-   * @param ds the containing NetcdfDataset.
-   * @param group the containing group; if null, use rootGroup
-   * @param parentStructure parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param dims list of dimension names, space delimited
-   * @param units unit string (may be null)
-   * @param desc description (may be null)
-   * @deprecated Use StructureDS.builder()
-   */
-  @Deprecated
-  public StructureDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName, String dims,
-      String units, String desc) {
-
-    super(ds, group, parentStructure, shortName);
-    setDimensions(dims);
-    this.proxy = new EnhancementsImpl(this, units, desc);
-
-    if (units != null)
-      addAttribute(new Attribute(CDM.UNITS, units));
-    if (desc != null)
-      addAttribute(new Attribute(CDM.LONG_NAME, desc));
-  }
-
-  /**
-   * Create a StructureDS that wraps a Structure
-   *
-   * @param g parent group
-   * @param orgVar original Structure
-   * @deprecated Use StructureDS.builder()
-   */
-  @Deprecated
-  public StructureDS(Group g, ucar.nc2.Structure orgVar) {
-    super(orgVar);
-    setParentGroup(g);
-    this.orgVar = orgVar;
-    this.proxy = new EnhancementsImpl(this);
-
-    // dont share cache, iosp : all IO is delegated
-    this.ncfile = null;
-    this.spiObject = null;
-    createNewCache();
-
-    if (orgVar instanceof StructureDS)
-      return;
-
-    // all member variables must be wrapped, reparented
-    List<Variable> newList = new ArrayList<>(members.size());
-    for (Variable v : members) {
-      Variable newVar = convertVariable(g, v);
-      newVar.setParentStructure(this);
-      newList.add(newVar);
-    }
-    setMemberVariables(newList);
-  }
-
-  private Variable convertVariable(Group g, Variable v) {
-    Variable newVar;
-    if (v instanceof Sequence) {
-      newVar = new SequenceDS(g, (Sequence) v);
-    } else if (v instanceof Structure) {
-      newVar = new StructureDS(g, (Structure) v);
-    } else {
-      newVar = new VariableDS(g, v, false); // enhancement done later
-    }
-    return newVar;
-  }
-
-  /**
-   * Wrap the given Structure, making it into a StructureDS.
-   * Delegate data reading to the original variable.
-   * Does not share cache, iosp.
-   * This is for NcML explicit mode
-   *
-   * @param ds the containing NetcdfDataset.
-   * @param group the containing group; may not be null
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param orgVar the original Structure to wrap.
-   * @deprecated Use StructureDS.builder()
-   */
-  @Deprecated
-  public StructureDS(NetcdfDataset ds, Group group, Structure parent, String shortName, Structure orgVar) {
-    super(ds, group, parent, shortName);
-
-    // dont share cache, iosp : all IO is delegated
-    // this.ncfile = null;
-    this.spiObject = null;
-    createNewCache();
-
-    this.orgVar = orgVar;
-    this.proxy = new EnhancementsImpl(this);
-  }
-
-  // for section and slice and select
-
-  @Override
-  protected StructureDS copy() {
-    return new StructureDS(getParentGroupOrRoot(), this);
-  }
-
-  // copy() doesnt work because convert gets called twice
-
-  @Override
-  public Structure select(List<String> memberNames) {
-    StructureDS result = new StructureDS(getParentGroupOrRoot(), orgVar);
-    List<Variable> members = new ArrayList<>();
-    for (String name : memberNames) {
-      Variable m = findVariable(name);
-      if (null != m)
-        members.add(m);
-    }
-    result.setMemberVariables(members);
-    result.isSubset = true;
-    return result;
-  }
 
   /**
    * A StructureDS may wrap another Structure.
@@ -187,12 +53,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    */
   public String getOriginalName() {
     return orgName;
-  }
-
-  @Override
-  public String setName(String newName) {
-    this.orgName = getShortName();
-    return super.setName(newName);
   }
 
   // regular Variables.
@@ -557,38 +417,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   ///////////////////////////////////////////////////////////
-
-  /**
-   * DO NOT USE DIRECTLY. public by accident.
-   * recalc any enhancement info
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  public void enhance(Set<NetcdfDataset.Enhance> mode) {
-    for (Variable v : getVariables()) {
-      VariableEnhanced ve = (VariableEnhanced) v;
-      ve.enhance(mode);
-    }
-  }
-
-  /** @deprecated Use StructureDS.builder() */
-  @Deprecated
-  public void clearCoordinateSystems() {
-    this.proxy = new EnhancementsImpl(this, getUnitsString(), getDescription());
-  }
-
-  /** @deprecated Use StructureDS.builder() */
-  @Deprecated
-  public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
-    proxy.addCoordinateSystem(p0);
-  }
-
-  /** @deprecated Use StructureDS.builder() */
-  @Deprecated
-  public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
-    proxy.removeCoordinateSystem(p0);
-  }
 
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return proxy.getCoordinateSystems();

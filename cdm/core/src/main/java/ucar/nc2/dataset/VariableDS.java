@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import ucar.ma2.*;
@@ -25,223 +26,28 @@ import java.util.*;
  * <li>Container for coordinate system information</li>
  * <li>NcML modifications to underlying Variable</li>
  * </ol>
- *
- * @author caron
- * @see NetcdfDataset
  */
 public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned {
 
-  /**
-   * Constructor when there's no underlying variable.
-   * You must also set the values by doing one of:
-   * <ol>
-   * <li>set the values with setCachedData()</li>
-   * <li>set a proxy reader with setProxyReader()</li>
-   * </ol>
-   * Otherwise, it is assumed to have constant values (using the fill value)
-   *
-   * @param ds the containing dataset
-   * @param group the containing group
-   * @param parentStructure the containing Structure (may be null)
-   * @param shortName the (short) name
-   * @param dataType the data type
-   * @param dims list of dimension names, these must already exist in the Group; empty String = scalar
-   * @param units String value of units, may be null
-   * @param desc String value of description, may be null
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName, DataType dataType,
-      String dims, String units, String desc) {
-    super(ds, group, parentStructure, shortName);
-    setDataType(dataType);
-    setDimensions(dims);
-    this.orgDataType = dataType;
-
-    if (dataType == DataType.STRUCTURE)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + shortName);
-
-    if (units != null)
-      addAttribute(new Attribute(CDM.UNITS, units.trim()));
-    if (desc != null)
-      addAttribute(new Attribute(CDM.LONG_NAME, desc));
-
-    this.enhanceProxy = new EnhancementsImpl(this, units, desc);
-  }
-
-  /**
-   * Make a new VariableDS, delegate data reading to the original variable, but otherwise
-   * dont take any info from it. This is used by NcML explicit mode.
-   *
-   * @param group the containing group; may not be null
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param orgVar the original Variable to wrap. The original Variable is not modified.
-   *        Must not be a Structure, use StructureDS instead.
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public VariableDS(Group group, Structure parent, String shortName, Variable orgVar) {
-    super(null, group, parent, shortName);
-    setDimensions(getDimensionsString()); // reset the dimensions
-
-    if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
-
-    // dont share cache, iosp : all IO is delegated
-    this.ncfile = null;
-    this.spiObject = null;
-    createNewCache();
-
-    this.orgVar = orgVar;
-    this.orgDataType = orgVar.getDataType();
-
-    this.enhanceProxy = new EnhancementsImpl(this);
-  }
-
-  /**
-   * Wrap the given Variable, making it into a VariableDS.
-   * Delegate data reading to the original variable.
-   * Take all metadata from original variable.
-   * Does not share cache, iosp.
-   *
-   * @param g logical container, if null use orgVar's group
-   * @param orgVar the original Variable to wrap. The original Variable is not modified.
-   *        Must not be a Structure, use StructureDS instead.
-   * @param enhance if true, use NetcdfDataset.defaultEnhanceMode to define what enhancements are made.
-   *        Note that this can change DataType and data values.
-   *        You can also call enhance() later. If orgVar is VariableDS, then enhance is inherited from there,
-   *        and this parameter is ignored.
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public VariableDS(Group g, Variable orgVar, boolean enhance) {
-    super(orgVar);
-    if (g != null)
-      setParentGroup(g); // otherwise super() sets group; this affects the long name and the dimensions.
-    setDimensions(getDimensionsString()); // reset the dimensions
-
-    if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
-
-    // dont share cache, iosp : all IO is delegated
-    this.ncfile = null;
-    this.spiObject = null;
-    createNewCache();
-
-    this.orgVar = orgVar;
-    this.orgDataType = orgVar.getDataType();
-    this.orgFileTypeId = orgVar.getFileTypeId();
-
-    this.enhanceProxy = new EnhancementsImpl(this);
+  public static VariableDS fromVar(Group group, Variable orgVar, boolean enhance) {
+    Preconditions.checkArgument(!(orgVar instanceof Structure),
+        "VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
+    VariableDS.Builder builder = VariableDS.builder().copyFrom(orgVar);
     if (enhance) {
-      enhance(NetcdfDataset.getDefaultEnhanceMode());
+      builder.setEnhanceMode(NetcdfDataset.getDefaultEnhanceMode());
     }
-
     // Add this so that old VariableDS units agrees with new VariableDS units.
     String units = orgVar.getUnitsString();
     if (units != null) {
-      setUnitsString(units.trim());
+      builder.setUnits(units.trim());
     }
-  }
-
-  /**
-   * Copy constructor, for subclasses.
-   * Used by copy() and CoordinateAxis
-   * Share everything except the coord systems.
-   *
-   * @param vds copy from here.
-   * @param isCopy called from copy()
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  protected VariableDS(VariableDS vds, boolean isCopy) {
-    super(vds);
-
-    this.orgVar = vds;
-    this.orgDataType = vds.orgDataType;
-    this.orgName = vds.orgName;
-
-    this.enhanceProxy = new EnhancementsImpl(this); // decouple coordinate systems
-    this.scaleMissingUnsignedProxy = vds.scaleMissingUnsignedProxy;
-
-    // Add this so that old VariableDS units agrees with new VariableDS units.
-    String units = vds.getUnitsString();
-    if (units != null) {
-      setUnitsString(units.trim());
-    }
-
-    if (!isCopy) {
-      createNewCache(); // dont share cache unless its a copy
-    }
+    return builder.build(group);
   }
 
   @Override
   public NetcdfFile getNetcdfFile() {
     // TODO can group really be null? Variable says no.
     return getParentGroup() == null ? null : getParentGroup().getNetcdfFile();
-  }
-
-  // for section and slice
-  @Override
-  protected VariableDS copy() {
-    return new VariableDS(this, true);
-  }
-
-  /**
-   * Remove coordinate system info.
-   * 
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  @Override
-  public void clearCoordinateSystems() {
-    this.enhanceProxy = new EnhancementsImpl(this, getUnitsString(), getDescription());
-  }
-
-  /**
-   * Calculate scale/offset/missing/enum/unsigned value info. This may change the DataType.
-   * 
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  @Override
-  public void enhance(Set<Enhance> enhancements) {
-    this.enhanceMode = EnumSet.copyOf(enhancements);
-
-    // this.enhanceMode will only contain enhancements not already applied to orgVar.
-    if (orgVar instanceof VariableDS) {
-      for (Enhance orgVarEnhancement : ((VariableDS) orgVar).getEnhanceMode()) {
-        this.enhanceMode.remove(orgVarEnhancement);
-      }
-    }
-
-    // enhance() may have been called previously, with a different enhancement set.
-    // So, we need to reset to default before we process this new set.
-    // LOOK this seems bogus
-    if (orgDataType != null) {
-      setDataType(orgDataType);
-    }
-
-    // Initialize EnhanceScaleMissingUnsignedImpl. We can't do this in the constructors because this object may not
-    // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is
-    // constructed first, and then Attributes are added to it later.
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
-
-    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
-      setDataType(DataType.STRING); // LOOK promote data type to STRING ????
-      return; // We can return here, because the other conversions don't apply to STRING.
-    }
-
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
-      // We may need a larger data type to hold the results of the unsigned conversion.
-      setDataType(scaleMissingUnsignedProxy.getUnsignedConversionType());
-    }
-
-    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)
-        && scaleMissingUnsignedProxy.hasScaleOffset()) {
-      setDataType(scaleMissingUnsignedProxy.getScaledOffsetType());
-    }
   }
 
   boolean needConvert() {
@@ -300,40 +106,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   /**
-   * Add {@code enhancement} to this variable. It may result in a change of data type.
-   *
-   * @param enhancement the enhancement to add.
-   * @return {@code true} if the set of enhancements changed as a result of the call.
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public boolean addEnhancement(Enhance enhancement) {
-    if (enhanceMode.add(enhancement)) {
-      enhance(enhanceMode);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * Remove {@code enhancement} from this variable. It may result in a change of data type.
-   *
-   * @param enhancement the enhancement to remove.
-   * @return {@code true} if the set of enhancements changed as a result of the call.
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public boolean removeEnhancement(Enhance enhancement) {
-    if (enhanceMode.remove(enhancement)) {
-      enhance(enhanceMode);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /**
    * A VariableDS usually wraps another Variable.
    *
    * @return original Variable or null
@@ -341,20 +113,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   @Override
   public Variable getOriginalVariable() {
     return orgVar;
-  }
-
-  /**
-   * Set the Variable to wrap. Used by NcML explicit mode.
-   *
-   * @param orgVar original Variable, must not be a Structure
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  @Override
-  public void setOriginalVariable(Variable orgVar) {
-    if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
-    this.orgVar = orgVar;
   }
 
   /**
@@ -381,15 +139,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     if (dataType.isEnum())
       return super.lookupEnumString(val);
     return orgVar.lookupEnumString(val);
-  }
-
-  /** @deprecated Use NetcdfDataset.builder() */
-  @Deprecated
-  @Override
-  public String setName(String newName) {
-    this.orgName = getShortName();
-    super.setName(newName);
-    return newName;
   }
 
   @Override
@@ -575,30 +324,9 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return enhanceProxy.getUnitsString();
   }
 
-  /** @deprecated Use NetcdfDataset.builder() */
-  @Deprecated
-  @Override
-  public void setUnitsString(String units) {
-    enhanceProxy.setUnitsString(units);
-  }
-
   @Override
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return enhanceProxy.getCoordinateSystems();
-  }
-
-  /** @deprecated Use VariableDS.builder() */
-  @Deprecated
-  @Override
-  public void addCoordinateSystem(CoordinateSystem cs) {
-    enhanceProxy.addCoordinateSystem(cs);
-  }
-
-  /** @deprecated Use VariableDS.builder() */
-  @Deprecated
-  @Override
-  public void removeCoordinateSystem(CoordinateSystem cs) {
-    enhanceProxy.removeCoordinateSystem(cs);
   }
 
   //////////////////////////////////////////// EnhanceScaleMissingUnsigned ////////////////////////////////////////////
@@ -678,27 +406,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return scaleMissingUnsignedProxy.isMissingValue(val);
   }
 
-  /** @deprecated Use NetcdfDataset.builder() */
-  @Deprecated
-  @Override
-  public void setFillValueIsMissing(boolean b) {
-    scaleMissingUnsignedProxy.setFillValueIsMissing(b);
-  }
-
-  /** @deprecated Use NetcdfDataset.builder() */
-  @Deprecated
-  @Override
-  public void setInvalidDataIsMissing(boolean b) {
-    scaleMissingUnsignedProxy.setInvalidDataIsMissing(b);
-  }
-
-  /** @deprecated Use NetcdfDataset.builder() */
-  @Deprecated
-  @Override
-  public void setMissingDataIsMissing(boolean b) {
-    scaleMissingUnsignedProxy.setMissingDataIsMissing(b);
-  }
-
   @Nullable
   @Override
   public DataType getScaledOffsetType() {
@@ -755,19 +462,18 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   private EnhancementsImpl enhanceProxy;
   private List<String> coordSysNames;
 
-  // TODO make these final and immutable in 6.
-  private EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl();
-  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // The set of enhancements that were made.
+  private final EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
+  private final Set<Enhance> enhanceMode; // The set of enhancements that were made.
 
-  protected Variable orgVar; // wrap this Variable : use it for the I/O
-  protected DataType orgDataType; // keep separate for the case where there is no orgVar.
-  protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
-  String orgFileTypeId; // the original fileTypeId.
+  protected final Variable orgVar; // wrap this Variable : use it for the I/O
+  protected final DataType orgDataType; // keep separate for the case where there is no orgVar.
+  protected final String orgName; // in case Variable was renamed, and we need to keep track of the original name
+  final String orgFileTypeId; // the original fileTypeId.
 
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
 
-    this.enhanceMode = builder.enhanceMode;
+    this.enhanceMode = builder.enhanceMode != null ? builder.enhanceMode : EnumSet.noneOf(Enhance.class);
     this.orgVar = builder.orgVar;
     this.orgDataType = builder.orgDataType;
     this.orgName = builder.orgName;
@@ -843,6 +549,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     }
   }
 
+  // Implement VariableSimpleIF in order to use EnhanceScaleMissingUnsignedImpl in order to set dataType in build()
+  // Maybe theres an easier way?
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
     public Variable orgVar; // wrap this Variable : use it for the I/O

@@ -211,7 +211,7 @@ public class VariablePlot extends JPanel {
     if (hasXdim) {
       varXarray = varXdim.read();
       if (xIsTime) {
-        tm = CoordinateAxis1DTime.factory(fds, new VariableDS(null, varXdim, true), null);
+        tm = CoordinateAxis1DTime.factory(fds, VariableDS.fromVar(v.getParentGroup(), varXdim, true), null);
         dates = tm.getCalendarDates();
       }
     }

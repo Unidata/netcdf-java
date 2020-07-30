@@ -123,7 +123,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
       obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
 
-      StructureDS stns = new StructurePseudoDS(ds, null, "stationPsuedoStructure", null, stationDim);
+      StructureDS stns = StructurePseudoDS.fromVars(ds.getRootGroup(), "stationPsuedoStructure", null, stationDim);
       obsTable.addJoin(new JoinParentIndex(stns, parentIndexVar));
 
       return obsTable;

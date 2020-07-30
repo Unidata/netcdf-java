@@ -120,7 +120,22 @@ public class NetcdfDatasets {
    */
   public static NetcdfDataset openDataset(String location, boolean enhance, @Nullable CancelTask cancelTask)
       throws IOException {
-    return openDataset(location, enhance, -1, cancelTask, null);
+    return openDataset(location, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null, cancelTask);
+  }
+
+  /**
+   * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
+   *
+   * @param location location of file
+   * @param enhanceMode set of enhancements. If null, then none
+   * @param cancelTask allow task to be cancelled; may be null.
+   * @return NetcdfDataset object
+   * @throws java.io.IOException on read error
+   */
+  public static NetcdfDataset openDataset(String location, @Nullable Set<Enhance> enhanceMode,
+      @Nullable CancelTask cancelTask) throws IOException {
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+    return openDataset(durl, enhanceMode, -1, cancelTask, null);
   }
 
   /**
@@ -128,17 +143,15 @@ public class NetcdfDatasets {
    *
    * @param location location of file
    * @param enhance if true, use defaultEnhanceMode, else no enhancements
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  public static NetcdfDataset openDataset(String location, boolean enhance, int buffer_size,
-      @Nullable CancelTask cancelTask, @Nullable Object iospMessage) throws IOException {
+  public static NetcdfDataset openDataset(String location, boolean enhance, @Nullable CancelTask cancelTask,
+      @Nullable Object iospMessage) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-    return openDataset(durl, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null, buffer_size, cancelTask,
-        iospMessage);
+    return openDataset(durl, enhance ? NetcdfDataset.getDefaultEnhanceMode() : null, -1, cancelTask, iospMessage);
   }
 
   /**

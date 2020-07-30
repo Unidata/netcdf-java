@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -421,7 +420,7 @@ public class H4header implements HdfHeaderIF {
         TagVH vh = (TagVH) tag;
         if (vh.className.startsWith("Att")) {
           String lowername = vh.name.toLowerCase();
-          if ((vh.nfields == 1) && (H4type.setDataType(vh.fld_type[0], null) == DataType.CHAR)
+          if ((vh.nfields == 1) && (H4type.getDataType(vh.fld_type[0]) == DataType.CHAR)
               && ((vh.fld_isize[0] > 4000) || lowername.startsWith("archivemetadata")
                   || lowername.startsWith("coremetadata") || lowername.startsWith("productmetadata")
                   || lowername.startsWith("structmetadata"))) {
@@ -689,7 +688,7 @@ public class H4header implements HdfHeaderIF {
     }
 
     Variable.Builder vb = Variable.builder().setName("Image-" + group.refno);
-    vb.setDataType(H4type.setDataType(ntag.type, null));
+    vb.setDataType(H4type.getDataType(ntag.type));
     vb.addDimensions(dimTag.dims);
     vinfo.setVariable(vb);
 
@@ -700,6 +699,7 @@ public class H4header implements HdfHeaderIF {
     return Dimension.builder(dimName, len).setIsShared(false).build();
   }
 
+  // TODO test this
   private Structure makeChunkVariable(NetcdfFile ncfile, TagVH vh) {
     Vinfo vinfo = new Vinfo(vh.refno);
     vinfo.tags.add(vh);
@@ -718,37 +718,31 @@ public class H4header implements HdfHeaderIF {
     if (vh.nfields < 1)
       throw new IllegalStateException();
 
-    try {
-      Structure.Builder sb = Structure.builder().setName(vh.name);
-      vinfo.setVariable(sb);
-      Structure s = new Structure(ncfile, null, null, vh.name); // LOOK cheating
-      s.setSPobject(vinfo);
+    Structure.Builder<?> sb = Structure.builder().setName(vh.name);
+    vinfo.setVariable(sb);
+    sb.setSPobject(vinfo);
 
-      if (vh.nvert > 1)
-        s.setDimensionsAnonymous(new int[] {vh.nvert});
+    if (vh.nvert > 1)
+      sb.setDimensionsAnonymous(new int[] {vh.nvert});
+    else
+      sb.setIsScalar();
+
+    for (int fld = 0; fld < vh.nfields; fld++) {
+      Variable.Builder m = Variable.builder().setName(vh.fld_name[fld]);
+      short type = vh.fld_type[fld];
+      short nelems = vh.fld_order[fld];
+      m.setDataType(H4type.getDataType(type));
+      if (nelems > 1)
+        m.setDimensionsAnonymous(new int[] {nelems});
       else
-        s.setIsScalar();
+        m.setIsScalar();
 
-      for (int fld = 0; fld < vh.nfields; fld++) {
-        Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
-        short type = vh.fld_type[fld];
-        short nelems = vh.fld_order[fld];
-        H4type.setDataType(type, m);
-        if (nelems > 1)
-          m.setDimensionsAnonymous(new int[] {nelems});
-        else
-          m.setIsScalar();
-
-        m.setSPobject(new Minfo(vh.fld_offset[fld]));
-        s.addMemberVariable(m);
-      }
-
-      vinfo.setData(data, vh.ivsize);
-      return s;
-
-    } catch (InvalidRangeException e) {
-      throw new IllegalStateException(e.getMessage());
+      m.setSPobject(new Minfo(vh.fld_offset[fld]));
+      sb.addMemberVariable(m);
     }
+
+    vinfo.setData(data, vh.ivsize);
+    return sb.build(ncfile.getRootGroup());
   }
 
   @Nullable
@@ -775,7 +769,7 @@ public class H4header implements HdfHeaderIF {
       // String name = createValidObjectName(vh.name);
       vb = Variable.builder().setName(vh.name);
       vinfo.setVariable(vb);
-      vb.setDataType(H4type.setDataType(vh.fld_type[0], null));
+      vb.setDataType(H4type.getDataType(vh.fld_type[0]));
 
       if (vh.nvert > 1) {
 
@@ -813,7 +807,7 @@ public class H4header implements HdfHeaderIF {
         Variable.Builder m = Variable.builder().setName(vh.fld_name[fld]);
         short type = vh.fld_type[fld];
         short nelems = vh.fld_order[fld];
-        m.setDataType(H4type.setDataType(type, null));
+        m.setDataType(H4type.getDataType(type));
         if (nelems > 1)
           m.setDimensionsAnonymous(new int[] {nelems});
         else
@@ -911,7 +905,7 @@ public class H4header implements HdfHeaderIF {
     }
     Variable.Builder<?> vb = Variable.builder().setName(group.name);
     vb.addDimensions(dims);
-    vb.setDataType(H4type.setDataType(ntag.type, null));
+    vb.setDataType(H4type.getDataType(ntag.type));
 
     vinfo.setVariable(vb);
     vinfo.setData(data, vb.dataType.getSize());
@@ -979,7 +973,7 @@ public class H4header implements HdfHeaderIF {
 
     Variable.Builder vb = Variable.builder().setName("SDS-" + group.refno);
     vb.setDimensionsAnonymous(dim.shape);
-    DataType dataType = H4type.setDataType(nt.type, null);
+    DataType dataType = H4type.getDataType(nt.type);
     vb.setDataType(dataType);
 
     vinfo.setVariable(vb);
@@ -1746,7 +1740,7 @@ public class H4header implements HdfHeaderIF {
     }
 
     public String toString() {
-      return super.toString() + " type=" + H4type.setDataType(type, null) + " nbits=" + nbits;
+      return super.toString() + " type=" + H4type.getDataType(type) + " nbits=" + nbits;
     }
 
   }

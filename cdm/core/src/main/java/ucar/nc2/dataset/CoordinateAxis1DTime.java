@@ -5,13 +5,16 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Group;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Dimension;
-import ucar.nc2.Attribute;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.ma2.*;
@@ -31,38 +34,103 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   private static final Logger logger = LoggerFactory.getLogger(CoordinateAxis1DTime.class);
 
-  public static CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages)
+  public static CoordinateAxis1DTime factory(@Nullable NetcdfDataset ncd, VariableDS org, Formatter errMessages)
       throws IOException {
-    if (org instanceof CoordinateAxis1DTime)
+    if (org instanceof CoordinateAxis1DTime) {
       return (CoordinateAxis1DTime) org;
+    }
 
-    if (org.getDataType() == DataType.CHAR)
-      return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimension(0).getShortName());
+    if (org.getDataType() == DataType.CHAR) {
+      return fromStringVarDS(ncd, org, ImmutableList.of(org.getDimension(0)));
+    }
 
-    else if (org.getDataType() == DataType.STRING)
-      return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimensionsString());
+    if (org.getDataType() == DataType.STRING) {
+      return fromStringVarDS(ncd, org, org.getDimensions());
+    }
 
-    else
-      return new CoordinateAxis1DTime(ncd, org, errMessages);
+    return fromVarDS(ncd, org, errMessages);
   }
 
+  /**
+   * Constructor for CHAR or STRING variables.
+   * Must contain ISO dates.
+   *
+   * @param ncd the containing dataset
+   * @param org the underlying Variable
+   * @param dims list of dimensions
+   * @throws IOException on read error
+   * @throws IllegalArgumentException if cant convert coordinate values to a Date
+   */
+  private static CoordinateAxis1DTime fromStringVarDS(@Nullable NetcdfDataset ncd, VariableDS org,
+      List<Dimension> dims) {
+    CoordinateAxis1DTime.Builder<?> builder = CoordinateAxis1DTime.builder().setName(org.getShortName())
+        .setDataType(DataType.STRING).setUnits(org.getUnitsString()).setDesc(org.getDescription()).setDimensions(dims);
+    builder.setOriginalVariable(org).setOriginalName(org.getOriginalName());
+
+    builder.setTimeHelper(new CoordinateAxisTimeHelper(getCalendarFromAttribute(ncd, org.attributes()), null));
+    builder.addAttributes(org.attributes());
+    return builder.build(org.getParentGroupOrRoot());
+  }
+
+  /**
+   * Constructor for numeric values - must have units
+   *
+   * @param ncd the containing dataset
+   * @param org the underlying Variable
+   * @throws IOException on read error
+   */
+  private static CoordinateAxis1DTime fromVarDS(@Nullable NetcdfDataset ncd, VariableDS org, Formatter errMessages)
+      throws IOException {
+    CoordinateAxis1DTime.Builder<?> builder = CoordinateAxis1DTime.builder().setName(org.getShortName())
+        .setDataType(org.getDataType()).setUnits(org.getUnitsString()).setDesc(org.getDescription());
+    builder.setOriginalVariable(org).setOriginalName(org.getOriginalName());
+
+    CoordinateAxisTimeHelper helper =
+        new CoordinateAxisTimeHelper(getCalendarFromAttribute(ncd, org.attributes()), org.getUnitsString());
+    builder.setTimeHelper(helper);
+
+    // make the coordinates
+    int ncoords = (int) org.getSize();
+    List<CalendarDate> result = new ArrayList<>(ncoords);
+    Array data = org.read();
+
+    int count = 0;
+    IndexIterator ii = data.getIndexIterator();
+    for (int i = 0; i < ncoords; i++) {
+      double val = ii.getDoubleNext();
+      if (Double.isNaN(val))
+        continue; // WTF ??
+      result.add(helper.makeCalendarDateFromOffset(val));
+      count++;
+    }
+
+    // if we encountered NaNs, shorten it up
+    ArrayList<Dimension> dims = new ArrayList<>(org.getDimensions());
+    if (count != ncoords) {
+      Dimension localDim = Dimension.builder(org.getShortName(), count).setIsShared(false).build();
+      dims.set(0, localDim);
+
+      // set the shortened values
+      Array shortData = Array.factory(data.getDataType(), new int[] {count});
+      Index ima = shortData.getIndex();
+      int count2 = 0;
+      ii = data.getIndexIterator();
+      for (int i = 0; i < ncoords; i++) {
+        double val = ii.getDoubleNext();
+        if (Double.isNaN(val))
+          continue;
+        shortData.setDouble(ima.set0(count2), val);
+        count2++;
+      }
+    }
+    builder.setCalendarDates(result);
+    builder.setDimensions(dims);
+    builder.addAttributes(org.attributes());
+
+    return builder.build(org.getParentGroupOrRoot());
+  }
 
   ////////////////////////////////////////////////////////////////
-
-  // for section and slice
-  @Override
-  protected CoordinateAxis1DTime copy() {
-    return new CoordinateAxis1DTime(this.ncd, this);
-  }
-
-  /** @deprecated Use CoordinateAxis1DTime.toBuilder() */
-  @Deprecated
-  // copy constructor
-  private CoordinateAxis1DTime(NetcdfDataset ncd, CoordinateAxis1DTime org) {
-    super(ncd, org);
-    helper = org.helper;
-    this.cdates = org.cdates;
-  }
 
   @Override
   public CoordinateAxis1DTime section(Range r) throws InvalidRangeException {
@@ -186,40 +254,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   ////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Constructor for CHAR or STRING variables.
-   * Must be ISO dates.
-   *
-   * @param ncd the containing dataset
-   * @param org the underlying Variable
-   * @param errMessages put error messages here; may be null
-   * @param dims list of dimensions
-   * @throws IOException on read error
-   * @throws IllegalArgumentException if cant convert coordinate values to a Date
-   * @deprecated Use CoordinateAxis1DTime.builder()
-   */
-  @Deprecated
-  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims)
-      throws IOException {
-    super(ncd, org.getParentGroupOrRoot(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(),
-        org.getDescription());
-
-    // Gotta set the original var. Otherwise it would be unable to read the values
-    this.orgVar = org;
-
-    this.orgName = org.orgName;
-    this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), null);
-
-    if (org.getDataType() == DataType.CHAR)
-      cdates = makeTimesFromChar(org, errMessages);
-    else
-      cdates = makeTimesFromStrings(org, errMessages);
-
-    for (Attribute att : org.attributes()) {
-      addAttribute(att);
-    }
-  }
-
   private List<CalendarDate> makeTimesFromChar(VariableDS org, Formatter errMessages) throws IOException {
     int ncoords = (int) org.getSize();
     int rank = org.getRank();
@@ -243,7 +277,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   private List<CalendarDate> makeTimesFromStrings(VariableDS org, Formatter errMessages) throws IOException {
-
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<>(ncoords);
 
@@ -268,62 +301,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       throw new IllegalArgumentException();
     }
     return cd;
-  }
-
-
-  /**
-   * Constructor for numeric values - must have units
-   * 
-   * @param ncd the containing dataset
-   * @param org the underlying Variable
-   * @throws IOException on read error
-   * @deprecated Use CoordinateAxis1DTime.builder()
-   */
-  @Deprecated
-  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
-    super(ncd, org);
-    this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
-
-    // make the coordinates
-    int ncoords = (int) org.getSize();
-    List<CalendarDate> result = new ArrayList<>(ncoords);
-
-    Array data = org.read();
-
-    int count = 0;
-    IndexIterator ii = data.getIndexIterator();
-    for (int i = 0; i < ncoords; i++) {
-      double val = ii.getDoubleNext();
-      if (Double.isNaN(val))
-        continue; // WTF ??
-      result.add(helper.makeCalendarDateFromOffset(val));
-      count++;
-    }
-
-    // if we encountered NaNs, shorten it up
-    if (count != ncoords) {
-      Dimension localDim = Dimension.builder(getShortName(), count).setIsShared(false).build();
-      setDimension(0, localDim);
-
-      // set the shortened values
-      Array shortData = Array.factory(data.getDataType(), new int[] {count});
-      Index ima = shortData.getIndex();
-      int count2 = 0;
-      ii = data.getIndexIterator();
-      for (int i = 0; i < ncoords; i++) {
-        double val = ii.getDoubleNext();
-        if (Double.isNaN(val))
-          continue;
-        shortData.setDouble(ima.set0(count2), val);
-        count2++;
-      }
-
-      // we have to decouple from the original variable
-      cache.reset();
-      setCachedData(shortData, true);
-    }
-
-    cdates = result;
   }
 
   ///////////////////////////////////////////////////////
@@ -390,6 +367,20 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   protected CoordinateAxis1DTime(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
+    this.helper = builder.helper;
+
+    try {
+      Formatter errMessages = new Formatter();
+      if (getDataType() == DataType.CHAR) {
+        cdates = makeTimesFromChar((VariableDS) builder.orgVar, errMessages);
+      } else if (getDataType() == DataType.STRING) {
+        cdates = makeTimesFromStrings((VariableDS) builder.orgVar, errMessages);
+      } else {
+        cdates = builder.cdates;
+      }
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
   }
 
   public Builder<?> toBuilder() {
@@ -419,8 +410,20 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   public static abstract class Builder<T extends Builder<T>> extends CoordinateAxis1D.Builder<T> {
     private boolean built;
+    private CoordinateAxisTimeHelper helper;
+    private List<CalendarDate> cdates;
 
     protected abstract T self();
+
+    public T setTimeHelper(CoordinateAxisTimeHelper helper) {
+      this.helper = helper;
+      return self();
+    }
+
+    public T setCalendarDates(List<CalendarDate> cdates) {
+      this.cdates = cdates;
+      return self();
+    }
 
     public CoordinateAxis1DTime build(Group parentGroup) {
       if (built)

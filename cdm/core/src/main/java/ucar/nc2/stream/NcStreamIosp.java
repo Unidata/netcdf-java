@@ -291,7 +291,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         storage = (List<DataStorage>) v.getSPobject(); // LOOK could be an in memory Rtree using section
         if (storage == null) {
           storage = new ArrayList<>();
-          v.setSPobject(storage);
+          // TODO LOOK BAD
+          // v.setSPobject(storage);
         }
       } else
         storage = new ArrayList<>(); // barf

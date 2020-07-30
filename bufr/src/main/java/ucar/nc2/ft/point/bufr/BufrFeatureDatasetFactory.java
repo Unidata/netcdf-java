@@ -97,22 +97,6 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
     }
   }
 
-  private void processSeq(Structure struct, Element parent) {
-    if (parent == null || struct == null)
-      return;
-    List<Variable> vars = struct.getVariables();
-    for (Element child : parent.getChildren("fld", Catalog.ncmlNS)) {
-      String idxS = child.getAttributeValue("idx");
-      int idx = Integer.parseInt(idxS);
-      if (idx < 0 || idx >= vars.size()) {
-        log.error("Bad index = {}", child);
-        continue;
-      }
-      Variable want = vars.get(idx);
-      struct.removeMemberVariable(want);
-    }
-  }
-
   private static class BufrStationDataset extends PointDatasetImpl {
     private Munge munger;
     private BufrCdmIndex index;

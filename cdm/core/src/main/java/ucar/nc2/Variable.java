@@ -16,11 +16,9 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.rc.RC;
 import java.io.OutputStream;
 import java.util.*;
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
 
 /**
  * A Variable is a logical container for data. It has a dataType, a set of Dimensions that define its array shape,
@@ -29,13 +27,8 @@ import java.nio.channels.WritableByteChannel;
  * The data is a multidimensional array of primitive types, Strings, or Structures.
  * Data access is done through the read() methods, which return a memory resident Array.
  * <p>
- * Immutable if setImmutable() was called.
- * TODO Variable will be immutable in 6.
- *
- * @author caron
- * @see ucar.ma2.Array
- * @see ucar.ma2.DataType
  */
+@Immutable
 public class Variable implements VariableSimpleIF, ProxyReader {
   /**
    * Globally permit or prohibit caching. For use during testing and debugging.
@@ -43,40 +36,26 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * A {@code true} value for this field does not indicate whether a Variable
    * {@link #isCaching() is caching}, only that it's <i>permitted</i> to cache.
    */
-  public static boolean permitCaching = true;
-
-  public static int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
-  public static int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
-                                                          // defaultSizeToCache
-  protected static boolean debugCaching;
+  public static boolean permitCaching = true; // TODO
+  private static int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
+  private static int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
+                                                           // defaultSizeToCache
+  private static boolean debugCaching;
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
 
-  /**
-   * Get the data type of the Variable.
-   */
+  /** Get the data type of the Variable. */
   public DataType getDataType() {
     return dataType;
   }
 
-  /**
-   * Get the shape: length of Variable in each dimension.
-   * A scalar (rank 0) will have an int[0] shape.
-   *
-   * @return int array whose length is the rank of this Variable
-   *         and whose values equal the length of that Dimension.
-   */
+  /** Get the shape: length of Variable in each dimension. A scalar (rank 0) will have an int[0] shape. */
   public int[] getShape() {
     int[] result = new int[shape.length]; // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
     return result;
   }
 
-  /**
-   * Get the size of the ith dimension
-   *
-   * @param index which dimension
-   * @return size of the ith dimension
-   */
+  /** Get the size of the ith dimension */
   public int getShape(int index) {
     return shape[index];
   }
@@ -296,18 +275,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return shapeAsSection;
   }
 
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public ProxyReader getProxyReader() {
-    return proxyReader;
-  }
-
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public void setProxyReader(ProxyReader proxyReader) {
-    this.proxyReader = proxyReader;
-  }
-
   /**
    * Create a new Variable that is a logical subsection of this Variable.
    * No data is read until a read method is called on it.
@@ -334,19 +301,16 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @throws InvalidRangeException if section not compatible with shape
    */
   public Variable section(Section subsection) throws InvalidRangeException {
-
     subsection = Section.fill(subsection, shape);
 
     // create a copy of this variable with a proxy reader
-    Variable sectionV = copy(); // subclasses must override
+    Variable.Builder sectionV = this.toBuilder(); // subclasses override toBuilder()
     sectionV.setProxyReader(new SectionReader(this, subsection));
-    sectionV.shape = subsection.getShape();
-    sectionV.createNewCache(); // dont share the cache
     sectionV.setCaching(false); // dont cache
 
     // replace dimensions if needed !! LOOK not shared
     int[] shape = subsection.getShape();
-    List<Dimension> dimensions = new ArrayList<>();
+    ArrayList<Dimension> dimensions = new ArrayList<>();
     for (int i = 0; i < getRank(); i++) {
       Dimension oldD = getDimension(i);
       Dimension newD = (oldD.getLength() == shape[i]) ? oldD
@@ -355,7 +319,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       dimensions.add(newD);
     }
     sectionV.dimensions = dimensions;
-    return sectionV;
+    return sectionV.build(getParentGroupOrRoot());
   }
 
   /**
@@ -426,12 +390,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return sliceV.build(getParentGroupOrRoot());
   }
 
-  /** @deprecated Use Variable.toBuilder() */
-  @Deprecated
-  protected Variable copy() {
-    return new Variable(this);
-  }
-
   /** Get the NetcdfFile that this variable is contained in. May be null. */
   @Nullable
   public NetcdfFile getNetcdfFile() {
@@ -459,24 +417,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return enumTypedef.lookupEnumString(val);
   }
 
-  /**
-   * Public by accident.
-   *
-   * @param enumTypedef set the EnumTypedef, only use if getDataType.isEnum()
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setEnumTypedef(EnumTypedef enumTypedef) {
-    if (!dataType.isEnum())
-      throw new UnsupportedOperationException("Can only call Variable.setEnumTypedef() on enum types");
-    this.enumTypedef = enumTypedef;
-  }
-
-  /**
-   * Get the EnumTypedef, only use if getDataType.isEnum()
-   *
-   * @return enumTypedef or null if !getDataType.isEnum()
-   */
+  /** Get the EnumTypedef, only use if getDataType.isEnum() */
+  @Nullable
   public EnumTypedef getEnumTypedef() {
     return enumTypedef;
   }
@@ -1087,139 +1029,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  protected Variable() {}
-
-  /**
-   * Create a Variable. Also must call setDataType() and setDimensions()
-   *
-   * @param ncfile the containing NetcdfFile.
-   * @param group the containing group; if null, use rootGroup
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-    this.shortName = shortName;
-    this.ncfile = ncfile;
-    if (parent == null) {
-      setParentGroup((group == null) ? ncfile.getRootGroup() : group);
-    } else {
-      this.parentStructure = parent;
-    }
-    attributes = new AttributeContainerMutable(shortName);
-  }
-
-  /**
-   * Create a Variable. Also must call setDataType() and setDimensions()
-   *
-   * @param ncfile the containing NetcdfFile.
-   * @param group the containing group; if null, use rootGroup
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param dtype the Variable's DataType
-   * @param dims space delimited list of dimension names. may be null or "" for scalars.
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
-    this(ncfile, group, parent, shortName, dtype, (List<Dimension>) null);
-    if (group == null)
-      group = ncfile.getRootGroup();
-    setDimensions(Dimensions.makeDimensionsList(group::findDimension, dims));
-  }
-
-  /**
-   * Create a Variable. Also must call setDataType() and setDimensions()
-   *
-   * @param ncfile the containing NetcdfFile.
-   * @param group the containing group; if null, use rootGroup
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param dtype the Variable's DataType
-   * @param dims dimension names.
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype,
-      List<Dimension> dims) {
-    this(ncfile, group, parent, shortName);
-    setDataType(dtype);
-    setDimensions(dims);
-  }
-
-
-  /**
-   * Copy constructor.
-   * The returned Variable is mutable.
-   * It shares the cache object and the iosp Object, attributes and dimensions with the original.
-   * Does not share the proxyReader.
-   * Use for section, slice, "logical views" of original variable.
-   *
-   * @param from copy from this Variable.
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public Variable(Variable from) {
-    this.shortName = from.getShortName();
-    this.attributes = new AttributeContainerMutable(from.getShortName(), from.attributes());
-    this.cache = from.cache; // caller should do createNewCache() if dont want to share
-    setDataType(from.getDataType());
-    this.dimensions = new ArrayList<>(from.dimensions); // dimensions are shared
-    this.elementSize = from.getElementSize();
-    this.enumTypedef = from.enumTypedef;
-    setParentGroup(from.parentGroup);
-    this.parentStructure = from.getParentStructure();
-    this.isVariableLength = from.isVariableLength;
-    this.ncfile = from.ncfile;
-    this.shape = from.getShape();
-    this.sizeToCache = from.sizeToCache;
-    this.spiObject = from.spiObject;
-  }
-
-  /**
-   * Set the data type
-   *
-   * @param dataType set to this value
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
-    this.elementSize = getDataType().getSize();
-  }
-
-  /**
-   * Set the short name, converting to valid CDM object name if needed.
-   *
-   * @param shortName set to this value
-   * @return valid CDM object name
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public String setName(String shortName) {
-    this.shortName = shortName;
-    return getShortName();
-  }
-
-  /**
-   * Set the parent group.
-   *
-   * @param group set to this value
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setParentGroup(Group group) {
-    this.parentGroup = group;
-  }
-
-  @Deprecated
-  public void setParentStructure(Structure struct) {
-    this.parentStructure = struct;
-  }
-
   /**
    * Set the element size. Usually elementSize is determined by the dataType,
    * use this only for exceptional cases.
@@ -1256,29 +1065,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return attributes.findAttributeString(attName, defaultValue);
   }
 
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public Attribute addAttribute(Attribute att) {
-    return attributes.addAttribute(att);
-  }
-
-  ////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Set the shape with a list of Dimensions. The Dimensions may be shared or not.
-   * Dimensions are in order, slowest varying first. Send a null for a scalar.
-   * Technically you can use Dimensions from any group; pragmatically you should only use
-   * Dimensions contained in the Variable's parent groups.
-   *
-   * @param dims list of type ucar.nc2.Dimension
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setDimensions(List<Dimension> dims) {
-    this.dimensions = (dims == null) ? new ArrayList<>() : new ArrayList<>(dims);
-    resetShape();
-  }
-
 
   /**
    * Use when dimensions have changed, to recalculate the shape.
@@ -1305,108 +1091,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     this.shapeAsSection = null; // recalc next time its asked for
   }
 
-  /**
-   * Set the dimensions using the dimensions names. The dimension is searched for recursively in the parent groups.
-   *
-   * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
-   *        dimension. null or empty String is a scalar.
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setDimensions(String dimString) {
-    try {
-      setDimensions(Dimensions.makeDimensionsList(getParentGroupOrRoot()::findDimension, dimString));
-      resetShape();
-    } catch (IllegalStateException e) {
-      throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = '" + dimString + "' FAILED: "
-          + e.getMessage() + " file = " + getDatasetLocation());
-    }
-  }
-
-  /**
-   * Reset the dimension array. Anonymous dimensions are left alone.
-   * Shared dimensions are searched for recursively in the parent groups.
-   * 
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void resetDimensions() {
-    ArrayList<Dimension> newDimensions = new ArrayList<>();
-
-    for (Dimension dim : dimensions) {
-      if (dim.isShared()) {
-        Dimension newD = getParentGroupOrRoot().findDimension(dim.getShortName());
-        if (newD == null)
-          throw new IllegalArgumentException(
-              "Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
-        newDimensions.add(newD);
-      } else {
-        newDimensions.add(dim);
-      }
-    }
-    this.dimensions = newDimensions;
-    resetShape();
-  }
-
-  /**
-   * Set the dimensions using all anonymous (unshared) dimensions
-   *
-   * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
-   * @throws ucar.ma2.InvalidRangeException if any shape < 1
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
-    this.dimensions = new ArrayList<>();
-    for (int i = 0; i < shape.length; i++) {
-      if ((shape[i] < 1) && (shape[i] != -1))
-        throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
-      Dimension anon;
-      if (shape[i] == -1) {
-        anon = Dimension.VLEN;
-        isVariableLength = true;
-      } else {
-        anon = new Dimension(null, shape[i], false, false, false);
-      }
-
-      dimensions.add(anon);
-    }
-    resetShape();
-  }
-
-  /**
-   * Set this Variable to be a scalar
-   * 
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setIsScalar() {
-    this.dimensions = new ArrayList<>();
-    resetShape();
-  }
-
-  /**
-   * Replace a dimension with an equivalent one.
-   *
-   * @param idx index into dimension array
-   * @param dim to set
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setDimension(int idx, Dimension dim) {
-    dimensions.set(idx, dim);
-    resetShape();
-  }
-
   /** Get immutable service provider opaque object. */
   public Object getSPobject() {
     return spiObject;
-  }
-
-  /** @deprecated Do not use. */
-  @Deprecated
-  public void setSPobject(Object spiObject) {
-    this.spiObject = spiObject;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -1524,7 +1211,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   // this indirection allows us to share the cache among the variable's sections and copies
-  protected static class Cache {
+  private static class Cache {
     private Array data;
     protected boolean isCaching;
     protected boolean cachingSet;
@@ -1648,18 +1335,17 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
-  // TODO make private final and Immutable in release 6.
-  // Physical container for this Variable where the I/O happens. may be null if Variable is self contained.
-  private String shortName;
-  private Group parentGroup;
-  protected Structure parentStructure;
-  protected NetcdfFile ncfile;
-  protected DataType dataType;
-  private EnumTypedef enumTypedef;
-  protected List<Dimension> dimensions = new ArrayList<>(5); // TODO immutable in ver 6
-  protected AttributeContainerMutable attributes; // TODO immutable in ver 6
-  protected ProxyReader proxyReader = this;
-  protected Object spiObject;
+  private final String shortName;
+  private final Group parentGroup;
+  private final Structure parentStructure;
+  protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens. may be null if
+                                     // Variable is self contained.
+  protected DataType dataType; // TODO not final, so VartiableDS can override, is there a better solution?
+  private final EnumTypedef enumTypedef;
+  protected final ImmutableList<Dimension> dimensions;
+  protected final AttributeContainer attributes;
+  protected final ProxyReader proxyReader;
+  protected final Object spiObject;
 
   // computed
   private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
@@ -1692,7 +1378,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     this.parentStructure = builder.parentStruct;
     this.dataType = builder.dataType;
     this.attributes = builder.attributes;
-    this.proxyReader = builder.proxyReader == null ? this : builder.proxyReader;
+    ProxyReader useProxyReader = builder.proxyReader == null ? this : builder.proxyReader;
     this.spiObject = builder.spiObject;
     this.cache = builder.cache;
 
@@ -1702,6 +1388,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
         throw new IllegalStateException(
             String.format("EnumTypedef '%s' does not exist in a parent Group", builder.enumTypeName));
       }
+    } else {
+      this.enumTypedef = null;
     }
 
     // Convert dimension to shared dimensions that live in a parent group.
@@ -1720,19 +1408,20 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       }
     }
 
-    // LOOK cant use findVariableLocal because variables not set built.
+    // LOOK cant use findVariableLocal because variables not yet built.
     // possible slice of another variable
     if (builder.slicer != null) {
       int dim = builder.slicer.dim;
       int index = builder.slicer.index;
       Section slice = Dimensions.makeSectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
-      setProxyReader(new SliceReader(parentGroup, builder.slicer.orgName, dim, slice));
+      useProxyReader = new SliceReader(parentGroup, builder.slicer.orgName, dim, slice);
       setCaching(false); // dont cache
       // remove that dimension in this variable
       dims.remove(dim);
     }
+    this.proxyReader = useProxyReader;
 
-    this.dimensions = dims;
+    this.dimensions = ImmutableList.copyOf(dims);
     if (builder.autoGen != null) {
       this.cache.data = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
       this.cache.isMetadata = true; // So it gets copied

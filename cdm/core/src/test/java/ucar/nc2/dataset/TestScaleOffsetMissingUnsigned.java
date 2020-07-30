@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import java.util.HashSet;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -82,10 +83,11 @@ public class TestScaleOffsetMissingUnsigned {
 
     Array readEnhanced;
 
-    // read the packed form, enhance using scale/offset, compare to original
-    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
+    // read the packed form, enhance using scale/offset (but not missing), compare to original
+    Set<Enhance> enhance = new HashSet<>(NetcdfDataset.getDefaultEnhanceMode());
+    enhance.remove(Enhance.ConvertMissing);
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename, enhance, null)) {
       VariableDS vs = (VariableDS) ncd.findVariable("packed");
-      vs.removeEnhancement(Enhance.ConvertMissing);
       readEnhanced = vs.read();
 
       nearlyEquals(packed, unpacked, readEnhanced, 1.0 / so.scale);
@@ -147,17 +149,6 @@ public class TestScaleOffsetMissingUnsigned {
       // Scale factor of "1.e-05" has been applied to original "99999".
       Assert2.assertNearlyEquals(expectedFillValue, actualFillValue);
 
-      fooVar.removeEnhancement(Enhance.ConvertMissing);
-      double fooValWithoutNaNs = fooVar.read().getDouble(0);
-
-      // "foo" value is equals to fill value. Scale factor has been applied to both.
-      Assert2.assertNearlyEquals(actualFillValue, fooValWithoutNaNs);
-
-      // "foo" value is considered a fill.
-      Assert.assertTrue(fooVar.isFillValue(fooValWithoutNaNs));
-
-
-      fooVar.addEnhancement(Enhance.ConvertMissing);
       double fooValWithNaNs = fooVar.read().getDouble(0);
 
       // "foo" value was converted to NaN because it was equal to _FillValue.
@@ -167,6 +158,20 @@ public class TestScaleOffsetMissingUnsigned {
       // See the EnhanceScaleMissingUnsigned Javadoc.
       Assert.assertTrue(fooVar.isMissing(fooValWithNaNs));
     }
+
+    Set<Enhance> enhance = new HashSet<>(NetcdfDataset.getDefaultEnhanceMode());
+    enhance.remove(Enhance.ConvertMissing);
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), enhance, null)) {
+      VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
+      double fooValWithoutNaNs = fooVar.read().getDouble(0);
+
+      // "foo" value is equals to fill value. Scale factor has been applied to both.
+      double actualFillValue = fooVar.getFillValue();
+      Assert2.assertNearlyEquals(actualFillValue, fooValWithoutNaNs);
+
+      // "foo" value is considered a fill.
+      Assert.assertTrue(fooVar.isFillValue(fooValWithoutNaNs));
+    }
   }
 
   // Asserts that EnhanceScaleMissingUnsignedImpl compares floating-point values in a "fuzzy" manner.
@@ -175,10 +180,57 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaleMissingFloatingPointComparisons() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
 
-    // LOOK removeEnhancement does not work in new
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
-      fooVar.removeEnhancement(Enhance.ConvertMissing);
+
+      // Values have been multiplied by scale_factor == 0.01f. scale_factor is a float, meaning that we can't compare
+      // its products with nearlyEquals() using the default Misc.defaultMaxRelativeDiffDouble.
+      Assert2.assertNearlyEquals(0, fooVar.getValidMin(), Misc.defaultMaxRelativeDiffFloat);
+      Assert2.assertNearlyEquals(1, fooVar.getValidMax(), Misc.defaultMaxRelativeDiffFloat);
+
+      // Argument is a double, which has higher precision that our scaled _FillValue (float).
+      // This assertion failed before the bug was fixed.
+      Assert.assertTrue(fooVar.isFillValue(-0.01));
+
+      Array fooVals = fooVar.read();
+      Assert.assertEquals(4, fooVals.getSize());
+
+      // foo[0] == -1 (raw); Double.NaN (scaled). It is equal to fill value and outside of valid_range.
+      Assert2.assertNearlyEquals(Double.NaN, fooVals.getDouble(0), Misc.defaultMaxRelativeDiffFloat);
+      Assert.assertTrue(fooVar.isFillValue(-0.01));
+      Assert.assertTrue(fooVar.isMissingValue(-0.01));
+      Assert.assertTrue(fooVar.isInvalidData(-0.01));
+      Assert.assertTrue(fooVar.isMissing(-0.01));
+
+      // foo[1] == 0 (raw); 0.00 (scaled). It is within valid_range.
+      Assert2.assertNearlyEquals(0.00, fooVals.getDouble(1), Misc.defaultMaxRelativeDiffFloat);
+      Assert.assertFalse(fooVar.isInvalidData(0.00));
+      Assert.assertFalse(fooVar.isMissing(0.00));
+
+      // foo[2] == 100 (raw); 1.00 (scaled). It is within valid_range.
+      Assert2.assertNearlyEquals(1.00, fooVals.getDouble(2), Misc.defaultMaxRelativeDiffFloat);
+      // These assertions failed before the bug was fixed.
+      Assert.assertFalse(fooVar.isInvalidData(1.00));
+      Assert.assertFalse(fooVar.isMissing(1.00));
+
+      // foo[3] == 101 (raw); Double.NaN, (scaled). It is outside of valid_range.
+      Assert2.assertNearlyEquals(Double.NaN, fooVals.getDouble(3), Misc.defaultMaxRelativeDiffFloat);
+      Assert.assertTrue(fooVar.isMissingValue(1.01));
+      Assert.assertTrue(fooVar.isInvalidData(1.01));
+      Assert.assertTrue(fooVar.isMissing(1.01));
+    }
+  }
+
+  // Asserts that EnhanceScaleMissingUnsignedImpl compares floating-point values in a "fuzzy" manner.
+  // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1068.
+  @Test
+  public void testScaleMissingFloatingPointComparisonsNoConvertMissing() throws IOException, URISyntaxException {
+    File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
+
+    Set<Enhance> enhance = new HashSet<>(NetcdfDataset.getDefaultEnhanceMode());
+    enhance.remove(Enhance.ConvertMissing);
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), enhance, null)) {
+      VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
 
       // Values have been multiplied by scale_factor == 0.01f. scale_factor is a float, meaning that we can't compare
       // its products with nearlyEquals() using the default Misc.defaultMaxRelativeDiffDouble.
@@ -289,7 +341,7 @@ public class TestScaleOffsetMissingUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleValidRange");
-      var.addEnhancement(Enhance.ConvertMissing);
+      // var.addEnhancement(Enhance.ConvertMissing);
 
       Assert2.assertNearlyEquals(9.9f, (float) var.getValidMin());
       Assert2.assertNearlyEquals(10.1f, (float) var.getValidMax());

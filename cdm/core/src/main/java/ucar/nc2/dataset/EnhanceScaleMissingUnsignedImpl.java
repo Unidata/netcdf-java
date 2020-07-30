@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
@@ -61,7 +60,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    *
    * @param forVar the Variable to decorate.
    */
-  EnhanceScaleMissingUnsignedImpl(VariableDS forVar, Set<Enhance> enhancements) {
+  EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements) {
     this(forVar, enhancements, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
         NetcdfDataset.missingDataIsMissing);
   }
@@ -75,7 +74,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  EnhanceScaleMissingUnsignedImpl(VariableDS forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
+  EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
       boolean invalidDataIsMissing, boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
@@ -109,7 +108,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     DataType scaleType = null, offsetType = null, validType = null;
     logger.debug("{} for Variable = {}", getClass().getSimpleName(), forVar.getShortName());
 
-    Attribute scaleAtt = forVar.findAttribute(CDM.SCALE_FACTOR);
+    Attribute scaleAtt = forVar.attributes().findAttribute(CDM.SCALE_FACTOR);
     if (scaleAtt != null && !scaleAtt.isString()) {
       scaleType = getAttributeDataType(scaleAtt);
       scale = convertUnsigned(scaleAtt.getNumericValue(), scaleType).doubleValue();
@@ -117,7 +116,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       logger.debug("scale = {}  type = {}", scale, scaleType);
     }
 
-    Attribute offsetAtt = forVar.findAttribute(CDM.ADD_OFFSET);
+    Attribute offsetAtt = forVar.attributes().findAttribute(CDM.ADD_OFFSET);
     if (offsetAtt != null && !offsetAtt.isString()) {
       offsetType = getAttributeDataType(offsetAtt);
       offset = convertUnsigned(offsetAtt.getNumericValue(), offsetType).doubleValue();
@@ -126,7 +125,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
 
     ////// missing data : valid_range. assume here its in units of unpacked data. correct this below
-    Attribute validRangeAtt = forVar.findAttribute(CDM.VALID_RANGE);
+    Attribute validRangeAtt = forVar.attributes().findAttribute(CDM.VALID_RANGE);
     if (validRangeAtt != null && !validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
       validType = getAttributeDataType(validRangeAtt);
       validMin = convertUnsigned(validRangeAtt.getNumericValue(0), validType).doubleValue();
@@ -135,8 +134,8 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       logger.debug("valid_range = {}  {}", validMin, validMax);
     }
 
-    Attribute validMinAtt = forVar.findAttribute(CDM.VALID_MIN);
-    Attribute validMaxAtt = forVar.findAttribute(CDM.VALID_MAX);
+    Attribute validMinAtt = forVar.attributes().findAttribute(CDM.VALID_MIN);
+    Attribute validMaxAtt = forVar.attributes().findAttribute(CDM.VALID_MAX);
 
     // Only process the valid_min and valid_max attributes if valid_range isn't present.
     if (!hasValidRange) {
@@ -160,28 +159,22 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     }
 
     /// _FillValue
-    Attribute fillValueAtt = forVar.findAttribute(CDM.FILL_VALUE);
+    Attribute fillValueAtt = forVar.attributes().findAttribute(CDM.FILL_VALUE);
     if (fillValueAtt != null && !fillValueAtt.isString()) {
       DataType fillType = getAttributeDataType(fillValueAtt);
       fillValue = convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
       fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
       hasFillValue = true;
     } else {
-      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
-      String fileTypeId = forVar.orgFileTypeId;
-      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId)
-          || DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
-
-      if (isNetcdfIosp) {
-        if (unsignedConversionType.isNumeric()) {
-          fillValue = applyScaleOffset(NetcdfFormatUtils.getFillValueDefault(unsignedConversionType));
-          hasFillValue = true;
-        }
+      // No _FillValue attribute found. Instead, use NetCDF default fill value.
+      if (unsignedConversionType.isNumeric()) {
+        fillValue = applyScaleOffset(NetcdfFormatUtils.getFillValueDefault(unsignedConversionType));
+        hasFillValue = true;
       }
     }
 
     /// missing_value
-    Attribute missingValueAtt = forVar.findAttribute(CDM.MISSING_VALUE);
+    Attribute missingValueAtt = forVar.attributes().findAttribute(CDM.MISSING_VALUE);
     if (missingValueAtt != null) {
       if (missingValueAtt.isString()) {
         String svalue = missingValueAtt.getStringValue();
@@ -494,17 +487,14 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
     return missingValue;
   }
 
-  @Override
   public void setFillValueIsMissing(boolean b) {
     this.fillValueIsMissing = b;
   }
 
-  @Override
   public void setInvalidDataIsMissing(boolean b) {
     this.invalidDataIsMissing = b;
   }
 
-  @Override
   public void setMissingDataIsMissing(boolean b) {
     this.missingDataIsMissing = b;
   }

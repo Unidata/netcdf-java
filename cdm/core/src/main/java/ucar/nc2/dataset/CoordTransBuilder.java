@@ -248,24 +248,24 @@ public class CoordTransBuilder {
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
   public static VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
-    VariableDS v = new VariableDS(ds, null, null, ct.getName(), DataType.CHAR, "", null, null);
+    VariableDS.Builder vb = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
     List<Parameter> params = ct.getParameters();
     for (Parameter p : params) {
       if (p.isString())
-        v.addAttribute(new Attribute(p.getName(), p.getStringValue()));
+        vb.addAttribute(new Attribute(p.getName(), p.getStringValue()));
       else {
         double[] data = p.getNumericValues();
         Array dataA = Array.factory(DataType.DOUBLE, new int[] {data.length}, data);
-        v.addAttribute(Attribute.builder(p.getName()).setValues(dataA).build());
+        vb.addAttribute(Attribute.builder(p.getName()).setValues(dataA).build());
       }
     }
-    v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
+    vb.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data
     Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
-    v.setCachedData(data, true);
+    vb.setCachedData(data, true);
 
-    return v;
+    return vb.build(ds.getRootGroup());
   }
 
   /**
