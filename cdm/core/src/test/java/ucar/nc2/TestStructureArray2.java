@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.dataset.StructurePseudoDS;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class TestStructureArray2 {
     Dimension dim = ncd.findDimension("time");
     assert dim != null;
 
-    Structure p = new ucar.nc2.dataset.StructurePseudoDS(ncd, null, "Psuedo", null, dim);
+    Structure p = StructurePseudoDS.fromVars(ncd.getRootGroup(), "Psuedo", null, dim);
 
     assert (p.getDataType() == DataType.STRUCTURE);
 

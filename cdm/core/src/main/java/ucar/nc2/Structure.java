@@ -11,7 +11,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -45,71 +44,21 @@ public class Structure extends Variable {
   private static final int defaultBufferSize = 500 * 1000; // 500K bytes
 
   /**
-   * Create a Structure "from scratch". Also must call setDimensions().
-   *
-   * @param ncfile the containing NetcdfFile.
-   * @param group the containing group; if null, use rootGroup
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  public Structure(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-    super(ncfile, group, parent, shortName);
-    setDataType(DataType.STRUCTURE);
-    this.elementSize = -1; // gotta wait before calculating
-    members = new ArrayList<>();
-    memberHash = new HashMap<>();
-  }
-
-  /**
-   * Create a Structure "from scratch".
-   * 
-   * @param ncfile the containing NetcdfFile.
-   * @param group the containing group; if null, use rootGroup
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param dimList list of Dimensions
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  public Structure(NetcdfFile ncfile, Group group, Structure parent, String shortName, List<Dimension> dimList) {
-    this(ncfile, group, parent, shortName);
-    setDimensions(dimList);
-  }
-
-  /**
-   * Copy constructor.
-   * 
-   * @param from copy from this
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  protected Structure(Structure from) { // , boolean reparent) {
-    super(from);
-
-    members = new ArrayList<>(from.members);
-    memberHash = new HashMap<>(from.memberHash);
-    isSubset = from.isSubset();
-  }
-
-  /**
    * Create a subset of the Structure consisting only of the given member variables
    * 
    * @param memberNames list of Variable names, already a member
    * @return Structure containing just those members
    */
   public Structure select(List<String> memberNames) {
-    Structure result = copy();
-    List<Variable> members = new ArrayList<>();
+    Structure.Builder<?> result = this.toBuilder();
     for (String name : memberNames) {
       Variable m = findVariable(name);
-      if (null != m)
-        members.add(m);
+      if (null != m) {
+        result.addMemberVariable(m.toBuilder());
+      }
     }
-    result.setMemberVariables(members);
     result.isSubset = true;
-    return result;
+    return result.build(getParentGroupOrRoot());
   }
 
   /**
@@ -133,12 +82,6 @@ public class Structure extends Variable {
     return isSubset;
   }
 
-  // for section and slice
-  @Override
-  protected Structure copy() {
-    return new Structure(this);
-  }
-
   protected int calcStructureSize() {
     int structureSize = 0;
     for (Variable member : members) {
@@ -156,105 +99,7 @@ public class Structure extends Variable {
   /** Caching is not allowed */
   @Override
   public void setCaching(boolean caching) {
-    this.cache.isCaching = false;
-    this.cache.cachingSet = true;
-  }
-
-  /**
-   * Add a member variable
-   * 
-   * @param v add this variable as a member of this structure
-   * @return the added variable
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  public Variable addMemberVariable(Variable v) {
-    members.add(v);
-    memberHash.put(v.getShortName(), v);
-    v.parentStructure = this;
-    return v;
-  }
-
-  /**
-   * Set the list of member variables.
-   * 
-   * @param vars this is the list of member variables
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  public void setMemberVariables(List<Variable> vars) {
-    members = new ArrayList<>();
-    memberHash = new HashMap<>(2 * vars.size());
-    for (Variable v : vars) {
-      addMemberVariable(v);
-    }
-  }
-
-  /**
-   * Remove a Variable : uses the Variable name to find it.
-   * 
-   * @param v remove this variable as a member of this structure
-   * @return true if was found and removed
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  public boolean removeMemberVariable(Variable v) {
-    if (v == null)
-      return false;
-    // smembers = null;
-    java.util.Iterator<Variable> iter = members.iterator();
-    while (iter.hasNext()) {
-      Variable mv = iter.next();
-      if (mv.getShortName().equals(v.getShortName())) {
-        iter.remove();
-        memberHash.remove(v.getShortName());
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Replace a Variable with another that has the same name : uses the variable name to find it.
-   * If old Var is not found, just add the new one
-   * 
-   * @param newVar add this variable as a member of this structure
-   * @return true if was found and replaced
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  public boolean replaceMemberVariable(Variable newVar) {
-    // smembers = null;
-    boolean found = false;
-    for (int i = 0; i < members.size(); i++) {
-      Variable v = members.get(i);
-      if (v.getShortName() == null)
-        log.warn("BAD null short name"); // E:/work/ghansham/iasi_20110513_045057_metopa_23676_eps_o.l1_bufr
-      if (v.getShortName().equals(newVar.getShortName())) {
-        members.set(i, newVar);
-        found = true;
-      }
-    }
-
-    if (!found)
-      members.add(newVar);
-    return found;
-  }
-
-  /**
-   * Set the parent group of this Structure, and all member variables.
-   * 
-   * @deprecated Use Structure.builder()
-   */
-  @Deprecated
-  @Override
-  public void setParentGroup(Group group) {
-    super.setParentGroup(group);
-    if (members != null) {
-      for (Variable v : members) {
-        v.setParentGroup(group);
-      }
-    }
+    super.setCaching(false);
   }
 
   /** Get the variables contained directly in this Structure. */
@@ -623,20 +468,20 @@ public class Structure extends Variable {
   }
 
   ////////////////////////////////////////////////////////
-  // TODO make private final and Immutable in release 6.
-  protected List<Variable> members;
-  private HashMap<String, Variable> memberHash;
-  protected boolean isSubset;
+  protected final ImmutableList<Variable> members;
+  private final HashMap<String, Variable> memberHash;
+  protected final boolean isSubset;
 
   protected Structure(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
     builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile));
-    this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(Collectors.toList());
+    this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(ImmutableList.toImmutableList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
     if (elementSize <= 0) {
       calcElementSize();
     }
+    this.isSubset = builder.isSubset;
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
@@ -670,6 +515,7 @@ public class Structure extends Variable {
   /** A builder of Structures. */
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
+    private boolean isSubset;
     private boolean built;
 
     public T addMemberVariable(Variable.Builder<?> v) {

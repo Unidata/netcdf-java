@@ -24,6 +24,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.internal.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.Layout;
@@ -37,6 +38,7 @@ import ucar.unidata.io.RandomAccessFile;
 public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   private boolean fill = true;
   private IOServiceProvider iosp;
+  private N3headerWriter headerw;
 
   public N3iospWriter(IOServiceProvider iosp) {
     this.iosp = iosp; // WTF ?
@@ -57,7 +59,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     this.ncfile = ncfileb.build();
     this.ncfile.finish();
 
-    N3headerWriter headerw = new N3headerWriter(this, raf);
+    this.headerw = new N3headerWriter(this, raf);
     headerw.setNcfile(this.ncfile);
     headerw.create(extra, largeFile, null);
     this.header = headerw;
@@ -81,13 +83,17 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     }
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    N3headerWriter headerw = new N3headerWriter(this, raf);
+    this.headerw = new N3headerWriter(this, raf);
     headerw.initFromExisting((N3iospNew) this.iosp, ncfileb.rootGroup); // hack-a-whack
     this.header = headerw;
 
     this.ncfile = ncfileb.build();
     this.ncfile.finish();
     headerw.setNcfile(this.ncfile);
+
+    for (Variable v : this.ncfile.getVariables()) {
+      headerw.vinfoMap.put(v, (Vinfo) v.getSPobject());
+    }
   }
 
   @Override
@@ -110,7 +116,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
 
   @Override
   public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
-    N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) v2.getSPobject();
+    N3headerNew.Vinfo vinfo = headerw.vinfoMap.get(v2);
     DataType dataType = v2.getDataType();
 
     if (v2.isUnlimited()) {
@@ -176,7 +182,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       }
 
       // layout of the destination
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) vm.getSPobject();
+      N3headerNew.Vinfo vinfo = headerw.vinfoMap.get(vm);
       long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
       Section memberSection = vm.getShapeAsSection();
       Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);

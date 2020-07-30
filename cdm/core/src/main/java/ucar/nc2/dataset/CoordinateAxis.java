@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import javax.annotation.Nullable;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -48,24 +49,6 @@ public class CoordinateAxis extends VariableDS {
   private static int axisSizeToCache = 100 * 1000; // bytes
 
   /**
-   * Create a coordinate axis from an existing Variable.
-   *
-   * @param ncd the containing dataset
-   * @param vds an existing Variable in dataset.
-   * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
-   * @deprecated Use CoordinateAxis.fromVariableDS()
-   */
-  @Deprecated
-  public static CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
-    if ((vds.getRank() == 0) || (vds.getRank() == 1) || (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR)) {
-      return new CoordinateAxis1D(ncd, vds);
-    } else if (vds.getRank() == 2)
-      return new CoordinateAxis2D(ncd, vds);
-    else
-      return new CoordinateAxis(ncd, vds);
-  }
-
-  /**
    * Create a coordinate axis from an existing VariableDS.Builder.
    *
    * @param vdsBuilder an existing Variable in dataset.
@@ -83,92 +66,13 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
-   * Create a coordinate axis from an existing Variable.
-   * General case.
-   *
-   * @param ncd the containing dataset
-   * @param vds an existing Variable
-   * @deprecated Use CoordinateAxis.builder()
-   */
-  @Deprecated
-  protected CoordinateAxis(NetcdfDataset ncd, VariableDS vds) {
-    super(vds, false);
-    this.ncd = ncd;
-
-    if (vds instanceof CoordinateAxis) {
-      CoordinateAxis axis = (CoordinateAxis) vds;
-      this.axisType = axis.axisType;
-      this.boundaryRef = axis.boundaryRef;
-      this.isContiguous = axis.isContiguous;
-      this.positive = axis.positive;
-    }
-    setSizeToCache(axisSizeToCache);
-  }
-
-  /**
-   * Constructor when theres no underlying variable. You better set the values too!
-   *
-   * @param ds the containing dataset.
-   * @param group the containing group; if null, use rootGroup
-   * @param shortName axis name.
-   * @param dataType data type
-   * @param dims list of dimension names
-   * @param units units of coordinates, preferably udunit compatible.
-   * @param desc long name.
-   * @deprecated Use CoordinateAxis.builder()
-   */
-  @Deprecated
-  public CoordinateAxis(NetcdfDataset ds, Group group, String shortName, DataType dataType, String dims, String units,
-      String desc) {
-    super(ds, group, null, shortName, dataType, dims, units, desc);
-    this.ncd = ds;
-    setSizeToCache(axisSizeToCache);
-  }
-
-  /**
-   * Make a copy, with an independent cache.
-   *
-   * @return copy of this CoordinateAxis
-   */
-  public CoordinateAxis copyNoCache() {
-    CoordinateAxis axis = new CoordinateAxis(ncd, getParentGroupOrRoot(), getShortName(), getDataType(),
-        getDimensionsString(), getUnitsString(), getDescription());
-
-    // other state
-    axis.axisType = this.axisType;
-    axis.boundaryRef = this.boundaryRef;
-    axis.isContiguous = this.isContiguous;
-    axis.positive = this.positive;
-
-    axis.cache.reset(); // decouple cache
-    return axis;
-  }
-
-  // for section and slice
-
-  @Override
-  protected CoordinateAxis copy() {
-    return new CoordinateAxis(this.ncd, this);
-  }
-
-  /**
    * Get type of axis
    *
    * @return type of axis, or null if none.
    */
+  @Nullable
   public AxisType getAxisType() {
     return axisType;
-  }
-
-  /**
-   * Set type of axis, or null if none. Default is none.
-   *
-   * @param axisType set to this value
-   * @deprecated Use CoordinateAxis.builder()
-   */
-  @Deprecated
-  public void setAxisType(AxisType axisType) {
-    this.axisType = axisType;
   }
 
   @Override
@@ -215,16 +119,6 @@ public class CoordinateAxis extends VariableDS {
     return attributes.hasAttribute(_Coordinate.AliasForDimension);
   }
 
-  /*
-   * Set if the edges are contiguous or disjoint.
-   *
-   * @param isContiguous true if the adjacent edges touch
-   *
-   * protected void setContiguous(boolean isContiguous) {
-   * this.isContiguous = isContiguous;
-   * }
-   */
-
   /**
    * Get the direction of increasing values, used only for vertical Axes.
    *
@@ -235,34 +129,12 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
-   * Set the direction of increasing values, used only for vertical Axes.
-   *
-   * @param positive POSITIVE_UP, POSITIVE_DOWN, or null if you dont know..
-   * @deprecated Use CoordinateAxis.builder()
-   */
-  @Deprecated
-  public void setPositive(String positive) {
-    this.positive = positive;
-  }
-
-  /**
    * The name of this coordinate axis' boundary variable
    *
    * @return the name of this coordinate axis' boundary variable, or null if none.
    */
   public String getBoundaryRef() {
     return boundaryRef;
-  }
-
-  /**
-   * Set a reference to a boundary variable.
-   *
-   * @param boundaryRef the name of a boundary coordinate variable in the same dataset.
-   * @deprecated Use CoordinateAxis.builder()
-   */
-  @Deprecated
-  public void setBoundaryRef(String boundaryRef) {
-    this.boundaryRef = boundaryRef;
   }
 
   ////////////////////////////////
@@ -348,6 +220,10 @@ public class CoordinateAxis extends VariableDS {
   public static class AxisComparator implements java.util.Comparator<CoordinateAxis> {
     public int compare(CoordinateAxis c1, CoordinateAxis c2) {
 
+      if (c1 == null || c2 == null) {
+        System.out.printf("HEY%n");
+      }
+
       AxisType t1 = c1.getAxisType();
       AxisType t2 = c2.getAxisType();
 
@@ -400,6 +276,11 @@ public class CoordinateAxis extends VariableDS {
 
   // needed by time coordinates
   public ucar.nc2.time.Calendar getCalendarFromAttribute() {
+    return getCalendarFromAttribute(ncd, attributes);
+  }
+
+  public static ucar.nc2.time.Calendar getCalendarFromAttribute(@Nullable NetcdfDataset ncd,
+      AttributeContainer attributes) {
     String cal = attributes.findAttributeString(CF.CALENDAR, null);
     if (cal == null) { // default for CF and COARDS
       Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);

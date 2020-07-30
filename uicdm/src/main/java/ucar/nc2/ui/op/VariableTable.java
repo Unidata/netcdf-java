@@ -115,7 +115,7 @@ public class VariableTable extends JPanel {
             // System.out.println("Time AXIS");
             CoordinateAxis1DTime tm;
             try {
-              tm = CoordinateAxis1DTime.factory(fds, new VariableDS(null, dimVar, true), null);
+              tm = CoordinateAxis1DTime.factory(fds, VariableDS.fromVar(v.getParentGroup(), dimVar, true), null);
               col0 = tm.getCalendarDates();
               col0Dim = dimNo;
               col0isDate = true;

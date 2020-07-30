@@ -9,6 +9,7 @@ import com.google.common.collect.Iterables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -29,6 +30,8 @@ class N3headerWriter extends N3headerNew {
   private ImmutableList<Variable> uvars; // vars that have the unlimited dimension
   private long globalAttsPos; // global attributes start here - used for update
   private UnlimitedDimension unlimitedDim; // the unlimited dimension
+  // TODO change back to using Variable.getSPObject()
+  HashMap<Variable, N3headerNew.Vinfo> vinfoMap = new HashMap<>();
 
   /**
    * Constructor.
@@ -81,6 +84,7 @@ class N3headerWriter extends N3headerNew {
    * @param fout debugging output sent to here
    * @throws IOException on write error
    */
+  // TODO need to work with Builder in order to set Variable.getSPObject()
   void create(int extra, boolean largeFile, Formatter fout) throws IOException {
     writeHeader(extra, largeFile, false, fout);
   }
@@ -163,7 +167,7 @@ class N3headerWriter extends N3headerNew {
 
     // non-record variable starting positions
     for (Variable var : vars) {
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) var.getSPobject();
+      N3headerNew.Vinfo vinfo = vinfoMap.get(var);
       if (!vinfo.isRecord) {
         raf.seek(vinfo.begin);
 
@@ -189,7 +193,7 @@ class N3headerWriter extends N3headerNew {
 
     // record variable starting positions
     for (Variable var : vars) {
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) var.getSPobject();
+      N3headerNew.Vinfo vinfo = vinfoMap.get(var);
       if (vinfo.isRecord) {
         raf.seek(vinfo.begin);
 
@@ -436,7 +440,8 @@ class N3headerWriter extends N3headerNew {
           vsize = unpaddedVsize;
         }
       }
-      var.setSPobject(new N3headerNew.Vinfo(var.getShortName(), vsize, pos, var.isUnlimited(), varAttsPos));
+      // TODO change back to using Variable.getSPObject(), need to have a builder here
+      vinfoMap.put(var, new N3headerNew.Vinfo(var.getShortName(), vsize, pos, var.isUnlimited(), varAttsPos));
     }
   }
 
@@ -514,7 +519,7 @@ class N3headerWriter extends N3headerNew {
     if (v2 == null)
       pos = findAtt(globalAttsPos, att.getShortName());
     else {
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) v2.getSPobject();
+      N3headerNew.Vinfo vinfo = vinfoMap.get(v2);
       pos = findAtt(vinfo.attsPos, att.getShortName());
     }
 

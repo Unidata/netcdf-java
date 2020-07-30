@@ -375,25 +375,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Clear Coordinate System metadata, to allow them to be redone
-   * 
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void clearCoordinateSystems() {
-    coordSys = new ArrayList<>();
-    coordAxes = new ArrayList<>();
-    coordTransforms = new ArrayList<>();
-
-    for (Variable v : getVariables()) {
-      VariableEnhanced ve = (VariableEnhanced) v;
-      ve.clearCoordinateSystems(); // ??
-    }
-
-    removeEnhanceMode(Enhance.CoordSystems);
-  }
-
-  /**
    * Retrieve the CoordinateAxis with the specified Axis Type.
    *
    * @param type axis type

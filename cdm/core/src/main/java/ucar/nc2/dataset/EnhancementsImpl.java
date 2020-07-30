@@ -13,12 +13,8 @@ import java.util.*;
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.
  * Factored out so that it can be used as a 'mixin' in VariablesDS and StructureDS.
- * 
- * @author caron
- * @deprecated do not use
  */
-@Deprecated
-class EnhancementsImpl implements Enhancements {
+class EnhancementsImpl {
   private Variable forVar;
   String desc, units;
   private List<CoordinateSystem> coordSys; // dont allocate unless its used
@@ -122,7 +118,7 @@ class EnhancementsImpl implements Enhancements {
       units = units.trim();
     }
     this.units = units;
-    forVar.addAttribute(new Attribute(CDM.UNITS, units));
+    // LOOK forVar.addAttribute(new Attribute(CDM.UNITS, units));
   }
 
   /**

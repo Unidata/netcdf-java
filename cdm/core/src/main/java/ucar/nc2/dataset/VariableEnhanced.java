@@ -4,10 +4,11 @@
  */
 package ucar.nc2.dataset;
 
-import java.util.Set;
+import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 
 /** Interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package. */
-public interface VariableEnhanced extends Enhancements {
+public interface VariableEnhanced {
 
   String getFullName();
 
@@ -17,32 +18,15 @@ public interface VariableEnhanced extends Enhancements {
 
   String getOriginalName();
 
-  /** @deprecated do not use */
-  @Deprecated
-  void setOriginalVariable(ucar.nc2.Variable orgVar);
+  /** Get the description of the Variable, or null if none. */
+  @Nullable
+  String getDescription();
 
-  /**
-   * Set the Unit String for this Variable. Default is to use the CDM.UNITS attribute.
-   * 
-   * @param units unit string
-   * @deprecated do not use
-   */
-  @Deprecated
-  void setUnitsString(String units);
+  /** Get the Unit String for the Variable, or null if none. */
+  @Nullable
+  String getUnitsString();
 
-  /**
-   * Enhance using the given set of NetcdfDataset.Enhance
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  void enhance(Set<NetcdfDataset.Enhance> mode);
+  /** Get the list of Coordinate Systems for this Variable. */
+  ImmutableList<CoordinateSystem> getCoordinateSystems();
 
-  /**
-   * clear previous coordinate systems. if any
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  void clearCoordinateSystems();
 }

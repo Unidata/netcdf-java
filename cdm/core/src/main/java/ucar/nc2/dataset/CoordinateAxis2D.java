@@ -17,33 +17,10 @@ import java.util.List;
 /**
  * A 2-dimensional numeric Coordinate Axis. Must be invertible meaning, roughly, that
  * if you draw lines connecting the points, none would cross.
- *
- * @see CoordinateAxis#factory
- * @author john caron
  */
-
 public class CoordinateAxis2D extends CoordinateAxis {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
   private static final boolean debug = false;
-
-  /**
-   * Create a 2D coordinate axis from an existing VariableDS
-   *
-   * @param ncd the containing dataset
-   * @param vds create it from here
-   * @deprecated Use CoordinateAxis2D.builder()
-   */
-  @Deprecated
-  public CoordinateAxis2D(NetcdfDataset ncd, VariableDS vds) {
-    super(ncd, vds);
-    isContiguous = false;
-  }
-
-  // for section and slice
-  @Override
-  protected CoordinateAxis2D copy() {
-    return new CoordinateAxis2D(this.ncd, this);
-  }
 
   /**
    * Get the coordinate value at the i, j index.
