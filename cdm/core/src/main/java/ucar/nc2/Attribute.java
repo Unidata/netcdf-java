@@ -492,7 +492,7 @@ public class Attribute {
     }
 
     public Builder setNumericValue(Number val, boolean isUnsigned) {
-      Preconditions.checkNotNull(svalue, "Attribute value cannot be null");
+      Preconditions.checkNotNull(val, "Attribute value cannot be null");
       int[] shape = {1};
       DataType dt = DataType.getType(val.getClass(), isUnsigned);
       setDataType(dt);

@@ -17,10 +17,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -92,7 +88,7 @@ public class TestWriteMiscProblems {
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = NullPointerException.class)
   public void testFileHandleReleaseAfterHeaderWriteFailure() throws IOException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
@@ -102,7 +98,7 @@ public class TestWriteMiscProblems {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       // this call *should* trigger a runtime exception (IllegalArgumentException)
-    } catch (IllegalArgumentException iae) {
+    } catch (NullPointerException iae) {
       // if we throw a runtime error during writerb.build(), we ended up in a state
       // where the underlying RAF was not closed because the code would encounter the same issue and
       // throw another runtime error. If a user was trying to handle the runtime error, this could end
