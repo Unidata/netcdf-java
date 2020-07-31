@@ -91,19 +91,20 @@ public class Attribute {
    * @param name name of Attribute
    * @param val value of Attribute
    */
-  public Attribute(String name, String val) {
+  public Attribute(String name, @Nullable String val) {
     Preconditions.checkNotNull(Strings.emptyToNull(name), "Attribute name cannot be empty or null");
-    Preconditions.checkNotNull(val, "Attribute value cannot be null");
     this.name = name;
     this.dataType = DataType.STRING;
 
-    // get rid of trailing nul characters
-    int len = val.length();
-    while ((len > 0) && (val.charAt(len - 1) == 0)) {
-      len--;
-    }
-    if (len != val.length()) {
-      val = val.substring(0, len);
+    if (val != null) {
+      // get rid of trailing nul characters
+      int len = val.length();
+      while ((len > 0) && (val.charAt(len - 1) == 0)) {
+        len--;
+      }
+      if (len != val.length()) {
+        val = val.substring(0, len);
+      }
     }
 
     this.nelems = 1;
@@ -465,7 +466,7 @@ public class Attribute {
   /** A builder for Attributes */
   public static class Builder {
     private String name;
-    private DataType dataType;
+    private DataType dataType = DataType.STRING;
     private String svalue; // optimization for common case of single String valued attribute
     private Array values;
     private int nelems;
@@ -491,6 +492,7 @@ public class Attribute {
     }
 
     public Builder setNumericValue(Number val, boolean isUnsigned) {
+      Preconditions.checkNotNull(val, "Attribute value cannot be null");
       int[] shape = {1};
       DataType dt = DataType.getType(val.getClass(), isUnsigned);
       setDataType(dt);
@@ -504,11 +506,10 @@ public class Attribute {
     /**
      * Set the value as a String, trimming trailing zeros
      * 
-     * @param svalue value of Attribute
+     * @param svalue value of Attribute, may not be null. If you want a null valued Attribute, dont set a value.
      */
     public Builder setStringValue(String svalue) {
-      if (svalue == null)
-        throw new IllegalArgumentException("Attribute value cannot be null");
+      Preconditions.checkNotNull(svalue, "Attribute value cannot be null");
 
       // get rid of trailing nul characters
       int len = svalue.length();
@@ -529,7 +530,7 @@ public class Attribute {
      */
     public Builder setValues(List<Object> values, boolean unsigned) {
       if (values == null || values.isEmpty())
-        throw new IllegalArgumentException("Cannot determine attribute's type");
+        throw new IllegalArgumentException("values may not be null or empty");
       int n = values.size();
       Class c = values.get(0).getClass();
       Object pa;
