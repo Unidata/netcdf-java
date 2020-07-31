@@ -127,7 +127,7 @@ apply from: "$rootDir/gradle/root/testing.gradle"
 // Generates coverage report for testAll and submit to coveralls
 apply from: "$rootDir/gradle/root/coverage.gradle"
 // Attaches fatJar tasks to root project (makes toolsUI, ncIdv, etc.)
-// apply from: "$rootDir/gradle/root/fatJars.gradle"
+apply from: "$rootDir/gradle/root/fatJars.gradle"
 // Creates pubs for artifacts created in fatJars.gradle
 apply from: "$rootDir/gradle/root/publishing.gradle"
 // Adds "sonarqube" task to the root project

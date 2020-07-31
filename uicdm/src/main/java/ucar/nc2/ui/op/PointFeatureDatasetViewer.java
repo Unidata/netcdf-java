@@ -6,6 +6,7 @@
 package ucar.nc2.ui.op;
 
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
@@ -61,8 +62,6 @@ import javax.swing.JSplitPane;
  * If it's a {@code StationObsDataset}, the available {@code Station}s are shown in a {@code
  * BeanTable}. The obs are shown in a {@code StructureTable}.
  * </p>
- *
- * @author caron
  */
 public class PointFeatureDatasetViewer extends JPanel {
 
@@ -199,8 +198,10 @@ public class PointFeatureDatasetViewer extends JPanel {
       try {
         setFeatureCollection(fcb);
       } catch (Exception exc) {
-        JOptionPane.showMessageDialog(null,
-            "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + exc.getMessage());
+        StringWriter sw = new StringWriter(5000);
+        exc.printStackTrace(new PrintWriter(sw));
+        String errMsg = sw.toString();
+        JOptionPane.showMessageDialog(null, "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + errMsg);
         exc.printStackTrace();
       }
     });
@@ -476,7 +477,8 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     stnTable.setBeans(stationBeans);
-    stationMap.setStations(stationBeans);
+    List<Station> stns = stationBeans.stream().map(sb -> sb.stn).collect(Collectors.toList());
+    stationMap.setStations(stns);
     obsTable.clear();
   }
 
@@ -492,7 +494,8 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     stnTable.setBeans(pointBeans);
-    stationMap.setStations(pointBeans);
+    List<Station> stns = pointBeans.stream().map(sb -> sb.stn).collect(Collectors.toList());
+    stationMap.setStations(stns);
     stnTable.clearSelectedCells();
   }
 
@@ -507,7 +510,8 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     stnTable.setBeans(beans);
-    stationMap.setStations(beans);
+    List<Station> stns = beans.stream().map(sb -> sb.stn).collect(Collectors.toList());
+    stationMap.setStations(stns);
     stnTable.clearSelectedCells();
   }
 
@@ -522,7 +526,8 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     stnTable.setBeans(beans);
-    stationMap.setStations(beans);
+    List<Station> stns = beans.stream().map(sb -> sb.stn).collect(Collectors.toList());
+    stationMap.setStations(stns);
     stnTable.clearSelectedCells();
   }
 
@@ -538,7 +543,8 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     stnTable.setBeans(beans);
-    stationMap.setStations(beans);
+    List<Station> stns = beans.stream().map(sb -> sb.stn).collect(Collectors.toList());
+    stationMap.setStations(stns);
     stnTable.clearSelectedCells();
   }
 
@@ -824,7 +830,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   public static class StationBean extends FeatureBean {
     private StationFeature stnFeat;
-    private Station stn;
+    public Station stn;
     private int npts = -1;
 
     public StationBean() {}

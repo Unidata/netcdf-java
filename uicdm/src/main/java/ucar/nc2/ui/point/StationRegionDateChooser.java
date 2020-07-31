@@ -66,7 +66,7 @@ public class StationRegionDateChooser extends NPController {
 
   // region
   private ProjectionRect geoBounds;
-  private ProjectionRect geoSelection;
+  private ProjectionRect geoSelection = new ProjectionRect();
   private boolean geoSelectionMode;
   private Color outlineColor = Color.black;
   private int nfracDig = 3;
@@ -358,7 +358,7 @@ public class StationRegionDateChooser extends NPController {
    *
    * @param stns list of Station
    */
-  public void setStations(java.util.List stns) {
+  public void setStations(java.util.List<Station> stns) {
     stnRender.setStations(stns);
     redraw(true);
   }

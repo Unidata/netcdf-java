@@ -162,12 +162,6 @@ public class Dimension implements Comparable<Dimension> {
     return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared, getLength());
   }
 
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this).add("shortName", shortName).add("isUnlimited", isUnlimited)
-        .add("isVariableLength", isVariableLength).add("isShared", isShared).add("length", getLength()).toString();
-  }
-
   /**
    * Dimensions are compared by name. This method is inconsistent with equals()!
    *
@@ -177,6 +171,13 @@ public class Dimension implements Comparable<Dimension> {
   public int compareTo(Dimension odim) {
     String name = getShortName();
     return name.compareTo(odim.getShortName());
+  }
+
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    writeCDL(f, new Indent(2), false);
+    return f.toString();
   }
 
   /** @deprecated use CDLWriter */
