@@ -98,6 +98,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
       result.names = new_names;
     }
 
+    result.wasRead = true;
+    result.wasBoundsDone = true;
     result.wasCalcRegular = false;
     result.calcIsRegular();
 

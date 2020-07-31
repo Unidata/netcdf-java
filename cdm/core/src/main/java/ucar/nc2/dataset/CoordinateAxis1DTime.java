@@ -429,6 +429,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
+      if (axisType == null) {
+        axisType = AxisType.Time;
+      }
       return new CoordinateAxis1DTime(this, parentGroup);
     }
   }

@@ -84,14 +84,14 @@ public class TestMiscPointFeature {
   public void testProblemStation() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
-    Assert.assertEquals("npoints", 15, checker.check());
+    Assert.assertEquals("npoints", 100, checker.check());
   }
 
   @Test
   public void testProblemStation2() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "point/stationMultidimUnlimited.nc";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
-    Assert.assertEquals("npoints", 100, checker.check());
+    Assert.assertEquals("npoints", 15, checker.check());
   }
 
   @Test

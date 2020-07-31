@@ -1277,7 +1277,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * Get list of Dimensions, including parents if any.
    *
    * @return array of Dimension, rank of v plus all parents.
-   * @deprecated use Dimensions.makeDimensionsAll(Variable);
+   * @deprecated use {@link Dimensions#makeDimensionsAll(Variable)};
    */
   @Deprecated
   public List<Dimension> getDimensionsAll() {
@@ -1340,7 +1340,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   private final Structure parentStructure;
   protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens. may be null if
                                      // Variable is self contained.
-  protected DataType dataType; // TODO not final, so VartiableDS can override, is there a better solution?
+  protected DataType dataType; // TODO not final, so VariableDS can override, is there a better solution?
   private final EnumTypedef enumTypedef;
   protected final ImmutableList<Dimension> dimensions;
   protected final AttributeContainer attributes;
@@ -1354,7 +1354,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected int elementSize;
 
   // TODO do we need these? breaks immutability
-  // TODO maybe caching read data shoul be seperate from "this is the source of the data".
+  // TODO maybe caching read data should be seperate from "this is the source of the data".
   protected Cache cache = new Cache(); // cache cannot be null
   protected int sizeToCache = -1; // bytes
 
