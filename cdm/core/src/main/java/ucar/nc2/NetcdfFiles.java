@@ -27,6 +27,7 @@ import java.util.zip.ZipInputStream;
 import javax.annotation.Nullable;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
+import ucar.nc2.internal.util.StringLocker;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;

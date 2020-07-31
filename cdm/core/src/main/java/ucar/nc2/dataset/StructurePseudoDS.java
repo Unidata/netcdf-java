@@ -5,15 +5,13 @@
 package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Set;
 import java.io.IOException;
-import ucar.nc2.write.Nc4Chunking.Strategy;
 
 /**
  * Make a collection of variables with the same outer dimension into a fake Structure.
@@ -34,11 +32,10 @@ import ucar.nc2.write.Nc4Chunking.Strategy;
  * 
  * @author caron
  */
+@Immutable
 public class StructurePseudoDS extends StructureDS {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudoDS.class);
-  private static boolean debugRecord;
-  protected static final Set<NetcdfDataset.Enhance> enhanceScaleMissing =
-      EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset, NetcdfDataset.Enhance.ConvertMissing);
+  private static boolean debugRecord = false;
 
   /**
    * Make a Structure out of all Variables with the named dimension as their outermost dimension, or from a list

@@ -63,7 +63,7 @@ public class ParsedSectionSpec {
     ParsedSectionSpec current = outerV;
     for (int i = 1; i < tokes.size(); i++) {
       selector = tokes.get(i);
-      current.child = parseVariableSelector(current.v, selector);
+      current.child = parseVariableSelector(current.getVariable(), selector);
       current = current.child;
     }
 
@@ -129,6 +129,7 @@ public class ParsedSectionSpec {
 
   private static List<Range> makeSpec(StringBuilder sb, Variable v, List<Range> orgRanges) {
     if (v.isMemberOfStructure()) {
+      assert v.getParentStructure() != null;
       orgRanges = makeSpec(sb, v.getParentStructure(), orgRanges);
       sb.append('.');
     }
@@ -156,26 +157,29 @@ public class ParsedSectionSpec {
 
   ///////////////////////////////////////////////////////////////////////////
   // Modify to allow setting after creation
-  public Variable v; // the variable
-  public Section section; // section for this variable, filled in from variable if needed
-  public ParsedSectionSpec child; // if not null, v is a Structure, and this is one of its members
+  private final Variable variable; // the variable
+  private final Section section; // section for this variable, filled in from variable if needed
+  private ParsedSectionSpec child; // if not null, variable is a Structure, and this is one of its members
 
-  public ParsedSectionSpec(Variable v, Section section) {
-    this.v = v;
+  public ParsedSectionSpec(Variable variable, Section section) {
+    this.variable = variable;
     this.section = section;
   }
 
-  /**
-   * Public simple constructor
-   */
-  public ParsedSectionSpec() {
-    this.v = null;
-    this.section = null;
-    this.child = null;
+  public Variable getVariable() {
+    return variable;
+  }
+
+  public Section getSection() {
+    return section;
+  }
+
+  public ParsedSectionSpec getChild() {
+    return child;
   }
 
   @Override
   public String toString() {
-    return "ParsedSectionSpec{" + "v=" + v.getFullName() + ", section=" + section + ", child=" + child + '}';
+    return "ParsedSectionSpec{" + "v=" + variable.getFullName() + ", section=" + section + ", child=" + child + '}';
   }
 }

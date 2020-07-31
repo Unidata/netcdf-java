@@ -11,6 +11,7 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -38,7 +39,7 @@ import ucar.nc2.util.Indent;
  *
  * @author caron
  */
-
+@Immutable
 public class Structure extends Variable {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
   private static final int defaultBufferSize = 500 * 1000; // 500K bytes
@@ -163,11 +164,8 @@ public class Structure extends Variable {
   /**
    * Force recalculation of size of one element of this structure - equals the sum of sizes of its members.
    * This is used only by low level classes like IOSPs.
-   * 
-   * @deprecated will be private in ver6, where Structure will be immutable.
    */
-  @Deprecated
-  public void calcElementSize() {
+  private void calcElementSize() {
     int total = 0;
     for (Variable v : members) {
       total += v.getElementSize() * v.getSize();

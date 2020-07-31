@@ -1,4 +1,8 @@
-package ucar.nc2;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+package ucar.nc2.internal.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,11 +12,8 @@ import java.util.List;
  * A list of strings that only allows one thread to use any given value at the same time.
  *
  * @author cmrose
- * @deprecated will move to ucar.nc2.util in ver 6.
  */
-@Deprecated
 public class StringLocker {
-
   private List<String> stringList = Collections.synchronizedList(new ArrayList<>());
   private boolean waiting;
 

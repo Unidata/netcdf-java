@@ -22,12 +22,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * Helper methods for IOSP's for reading data.
- *
- * @author caron
- * @since Jan 3, 2008
- */
+/** Helper methods for IOSP's for reading data. */
 public class IospHelper {
   private static boolean showLayoutTypes = false;
 
@@ -817,9 +812,9 @@ public class IospHelper {
     List<Range> totalRanges = new ArrayList<>();
     ParsedSectionSpec current = cer;
     while (current != null) {
-      totalRanges.addAll(current.section.getRanges());
-      inner = current.v;
-      current = current.child;
+      totalRanges.addAll(current.getSection().getRanges());
+      inner = current.getVariable();
+      current = current.getChild();
     }
     assert inner != null;
 
@@ -827,34 +822,35 @@ public class IospHelper {
     Array result = Array.factory(inner.getDataType(), total.getShape());
 
     // must be a Structure
-    Structure outer = (Structure) cer.v;
-    Structure outerSubset = outer.select(cer.child.v.getShortName()); // allows IOSPs to optimize for this case
-    ArrayStructure outerData = (ArrayStructure) outerSubset.read(cer.section);
-    extractSection(cer.child, outerData, result.getIndexIterator());
+    Structure outer = (Structure) cer.getVariable();
+    Structure outerSubset = outer.select(cer.getChild().getVariable().getShortName()); // allows IOSPs to optimize for
+                                                                                       // this case
+    ArrayStructure outerData = (ArrayStructure) outerSubset.read(cer.getSection());
+    extractSection(cer.getChild(), outerData, result.getIndexIterator());
     return result;
   }
 
   private static void extractSection(ParsedSectionSpec child, ArrayStructure outerData, IndexIterator to)
       throws IOException, InvalidRangeException {
-    long wantNelems = child.section.computeSize();
+    long wantNelems = child.getSection().computeSize();
 
-    StructureMembers.Member m = outerData.findMember(child.v.getShortName());
+    StructureMembers.Member m = outerData.findMember(child.getVariable().getShortName());
     for (int recno = 0; recno < outerData.getSize(); recno++) {
       Array innerData = outerData.getArray(recno, m);
 
-      if (child.child == null) { // inner variable
+      if (child.getChild() == null) { // inner variable
         if (wantNelems != innerData.getSize())
-          innerData = innerData.section(child.section.getRanges());
-        MAMath.copy(child.v.getDataType(), innerData.getIndexIterator(), to);
+          innerData = innerData.section(child.getSection().getRanges());
+        MAMath.copy(child.getVariable().getDataType(), innerData.getIndexIterator(), to);
 
       } else { // not an inner variable - must be an ArrayStructure
 
         if (innerData instanceof ArraySequence)
-          extractSectionFromSequence(child.child, (ArraySequence) innerData, to);
+          extractSectionFromSequence(child.getChild(), (ArraySequence) innerData, to);
         else {
           if (wantNelems != innerData.getSize())
             innerData = sectionArrayStructure(child, (ArrayStructure) innerData, m);
-          extractSection(child.child, (ArrayStructure) innerData, to);
+          extractSection(child.getChild(), (ArrayStructure) innerData, to);
         }
       }
     }
@@ -865,8 +861,8 @@ public class IospHelper {
     try (StructureDataIterator sdataIter = outerData.getStructureDataIterator()) {
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
-        StructureMembers.Member m = outerData.findMember(child.v.getShortName());
-        Array innerData = sdata.getArray(child.v.getShortName());
+        StructureMembers.Member m = outerData.findMember(child.getVariable().getShortName());
+        Array innerData = sdata.getArray(child.getVariable().getShortName());
         MAMath.copy(m.getDataType(), innerData.getIndexIterator(), to);
       }
     }
@@ -876,10 +872,10 @@ public class IospHelper {
   private static ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData,
       StructureMembers.Member m) {
     StructureMembers membersw = m.getStructureMembers().toBuilder(false).build(); // no data arrays get propagated
-    ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());
+    ArrayStructureW result = new ArrayStructureW(membersw, child.getSection().getShape());
 
     int count = 0;
-    Section.Iterator iter = child.section.getIterator(child.v.getShape());
+    Section.Iterator iter = child.getSection().getIterator(child.getVariable().getShape());
     while (iter.hasNext()) {
       int recno = iter.next(null);
       StructureData sd = innerData.getStructureData(recno);

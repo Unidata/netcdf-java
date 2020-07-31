@@ -22,17 +22,17 @@ public class TestParsedSectionSpec extends TestCase {
 
     ParsedSectionSpec spec = ParsedSectionSpec.parseVariableSection(ncfile, "temperature");
     System.out.printf("%s%n", spec);
-    assert spec.section.equals(v.getShapeAsSection());
+    assert spec.getSection().equals(v.getShapeAsSection());
 
     spec = ParsedSectionSpec.parseVariableSection(ncfile, "temperature(1,0:127:2)");
     System.out.printf("%s%n", spec);
     Section s = new Section("1,0:127:2");
-    assert spec.section.equals(s) : spec.section + " != " + s;
+    assert spec.getSection().equals(s) : spec.getSection() + " != " + s;
 
     spec = ParsedSectionSpec.parseVariableSection(ncfile, "temperature(:,0:127:2)");
     System.out.printf("%s%n", spec);
     s = new Section("0:63,0:127:2");
-    assert spec.section.equals(s) : spec.section + " != " + s;
+    assert spec.getSection().equals(s) : spec.getSection() + " != " + s;
 
     ncfile.close();
   }
@@ -45,16 +45,16 @@ public class TestParsedSectionSpec extends TestCase {
 
     ParsedSectionSpec spec = ParsedSectionSpec.parseVariableSection(ncfile, "grp1/data");
     System.out.printf("%s%n", spec);
-    assert spec.section.equals(v.getShapeAsSection());
+    assert spec.getSection().equals(v.getShapeAsSection());
 
     spec = ParsedSectionSpec.parseVariableSection(ncfile, "grp2/data.i1");
     System.out.printf("%s%n", spec);
 
     Variable s = ncfile.findVariable("grp2/data");
-    assert spec.section.equals(s.getShapeAsSection());
+    assert spec.getSection().equals(s.getShapeAsSection());
 
     v = ncfile.findVariable("grp2/data.i1");
-    assert spec.child.section.equals(v.getShapeAsSection());
+    assert spec.getChild().getSection().equals(v.getShapeAsSection());
 
     ncfile.close();
   }
@@ -77,12 +77,12 @@ public class TestParsedSectionSpec extends TestCase {
 
     ParsedSectionSpec spec = ParsedSectionSpec.parseVariableSection(ncfile, "group\\.name/var\\.name");
     System.out.printf("%s%n", spec);
-    assert spec.section.equals(v2.getShapeAsSection());
+    assert spec.getSection().equals(v2.getShapeAsSection());
 
     spec = ParsedSectionSpec.parseVariableSection(ncfile, "group\\.name/var\\.name(1,0:0)");
     System.out.printf("%s%n", spec);
     Section s = new Section("1,0");
-    assert spec.section.equals(s);
+    assert spec.getSection().equals(s);
 
     ncfile.close();
   }
@@ -106,12 +106,12 @@ public class TestParsedSectionSpec extends TestCase {
 
     ParsedSectionSpec spec = ParsedSectionSpec.parseVariableSection(ncfile, "group\\(name/var\\(name");
     System.out.printf("%s%n", spec);
-    assert spec.section.equals(v2.getShapeAsSection());
+    assert spec.getSection().equals(v2.getShapeAsSection());
 
     spec = ParsedSectionSpec.parseVariableSection(ncfile, "group\\(name/var\\(name(1,0:0)");
     System.out.printf("%s%n", spec);
     Section s = new Section("1,0");
-    assert spec.section.equals(s);
+    assert spec.getSection().equals(s);
 
     ncfile.close();
   }

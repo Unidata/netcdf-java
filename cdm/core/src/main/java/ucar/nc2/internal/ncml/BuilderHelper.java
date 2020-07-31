@@ -14,7 +14,6 @@ import ucar.nc2.Group.Builder;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ReplaceVariableCheck;
 import ucar.nc2.dataset.VariableDS;
 
 /**

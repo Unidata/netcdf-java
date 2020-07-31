@@ -6,6 +6,7 @@
 package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
@@ -20,21 +21,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    *
    * @return original Structure or null
    */
-  public ucar.nc2.Variable getOriginalVariable() {
+  @Nullable
+  public Variable getOriginalVariable() {
     return orgVar;
-  }
-
-  /**
-   * Set the Structure to wrap.
-   *
-   * @param orgVar original Variable, must be a Structure
-   * @deprecated Use StructureDS.builder()
-   */
-  @Deprecated
-  public void setOriginalVariable(ucar.nc2.Variable orgVar) {
-    if (!(orgVar instanceof Structure))
-      throw new IllegalArgumentException("StructureDS must wrap a Structure; name=" + orgVar.getFullName());
-    this.orgVar = (Structure) orgVar;
   }
 
   /**
@@ -54,8 +43,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   public String getOriginalName() {
     return orgName;
   }
-
-  // regular Variables.
 
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
@@ -96,8 +83,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     // do any needed conversions (enum/scale/offset/missing/unsigned, etc)
     return convert(result, section);
   }
-
-  ///////////////////////////////////////
 
   // is conversion needed?
 
@@ -416,8 +401,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
   }
 
-  ///////////////////////////////////////////////////////////
-
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return proxy.getCoordinateSystems();
   }
@@ -430,14 +413,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return proxy.getUnitsString();
   }
 
-  /** @deprecated Use StructureDS.builder() */
-  @Deprecated
-  public void setUnitsString(String units) {
-    proxy.setUnitsString(units);
-  }
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  protected EnhancementsImpl proxy; // API relies that this cant be null
+  protected final EnhancementsImpl proxy; // API relies that this cant be null
   protected Structure orgVar; // wrap this Variable
   protected String orgName; // in case Variable was renamed, and we need the original name for aggregation
 
