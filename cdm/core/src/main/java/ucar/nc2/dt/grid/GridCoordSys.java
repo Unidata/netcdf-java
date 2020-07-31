@@ -7,7 +7,15 @@ package ucar.nc2.dt.grid;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.NamedObject;
@@ -596,10 +604,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       while (ii.hasNext())
         ii.setDoubleCurrent(factor * ii.getDoubleNext());
 
-      CoordinateAxis newAxis = axis.copyNoCache();
-      newAxis.setCachedData(data, false);
-      newAxis.setUnitsString("km");
-      return newAxis;
+      CoordinateAxis.Builder newAxisBuilder = axis.toBuilder();
+      newAxisBuilder.setCachedData(data, false);
+      newAxisBuilder.setUnits("km");
+      return newAxisBuilder.build(axis.getParentGroup());
 
     } else { // convert to DOUBLE
       Array newData = Array.factory(DataType.DOUBLE, axis.getShape());
@@ -608,11 +616,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       while (ii.hasNext() && newi.hasNext())
         newi.setDoubleNext(factor * ii.getDoubleNext());
 
-      CoordinateAxis newAxis = axis.copyNoCache();
-      newAxis.setDataType(DataType.DOUBLE);
-      newAxis.setCachedData(newData, false);
-      newAxis.setUnitsString("km");
-      return newAxis;
+      CoordinateAxis.Builder newAxisBuilder = axis.toBuilder();
+      newAxisBuilder.setDataType(DataType.DOUBLE);
+      newAxisBuilder.setCachedData(newData, false);
+      newAxisBuilder.setUnits("km");
+      return newAxisBuilder.build(axis.getParentGroup());
     }
   }
 

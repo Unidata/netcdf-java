@@ -188,30 +188,6 @@ public interface EnhanceScaleMissingUnsigned extends IsMissingEvaluator {
   boolean isMissingValue(double val);
 
   /**
-   * Set if _FillValue is considered isMissing().
-   * 
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  void setFillValueIsMissing(boolean b);
-
-  /**
-   * set if valid_range is considered isMissing(); better set in constructor if possible
-   * 
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  void setInvalidDataIsMissing(boolean b);
-
-  /**
-   * set if missing_data is considered isMissing(); better set in constructor if possible
-   * 
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  void setMissingDataIsMissing(boolean b);
-
-  /**
    * Return the data type for values that have undergone scale/offset conversion. This will be {@code null} if the
    * decorated variable lacks {@code scale_factor} or {@code add_offset} attributes. You can check with
    * {@link #hasScaleOffset()}.

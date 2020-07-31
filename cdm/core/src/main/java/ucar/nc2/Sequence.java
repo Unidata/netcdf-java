@@ -6,7 +6,6 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Sequence is a one-dimensional Structure with indeterminate length.
@@ -17,25 +16,6 @@ import java.util.ArrayList;
  * @since Feb 23, 2008
  */
 public class Sequence extends Structure {
-
-  /**
-   * Sequence Constructor
-   * 
-   * @param ncfile the containing NetcdfFile.
-   * @param group the containing group; if null, use rootGroup
-   * @param parent parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @deprecated use Builder.
-   */
-  @Deprecated
-  public Sequence(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
-    super(ncfile, group, parent, shortName);
-
-    List<Dimension> dims = new ArrayList<>();
-    dims.add(Dimension.VLEN);
-    setDimensions(dims);
-    setDataType(DataType.SEQUENCE);
-  }
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     return ncfile.getStructureIterator(this, bufferSize);

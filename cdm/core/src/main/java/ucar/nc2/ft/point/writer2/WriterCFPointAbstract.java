@@ -201,8 +201,8 @@ abstract class WriterCFPointAbstract implements Closeable {
 
   void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, @Nullable StructureData middleData,
       StructureData obsData, String coordNames) throws IOException {
-    this.recordDim = Dimension.builder().setName(recordDimName).setIsUnlimited(true).build();
-    writerb.addDimension(recordDim);
+    this.recordDim = writerb.addUnlimitedDimension(recordDimName);
+
 
     addExtraVariables();
 

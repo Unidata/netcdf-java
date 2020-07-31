@@ -88,6 +88,13 @@ public class TestMiscPointFeature {
   }
 
   @Test
+  public void testProblemStation2() throws IOException {
+    String location = TestDir.cdmLocalFromTestDataDir + "point/stationMultidimUnlimited.nc";
+    CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
+    Assert.assertEquals("npoints", 15, checker.check());
+  }
+
+  @Test
   @Ignore("Dont support multiple lat/lon coordinates for now")
   public void testProblemStationWithPreciseCoords() throws IOException {
     String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";

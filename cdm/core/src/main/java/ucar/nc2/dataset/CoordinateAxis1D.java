@@ -41,75 +41,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
   /**
-   * Create a 1D coordinate axis from an existing Variable
-   *
-   * @param ncd the containing dataset
-   * @param vds wrap this VariableDS, which is not changed.
-   * @deprecated Use CoordinateAxis1D.builder()
-   */
-  @Deprecated
-  public CoordinateAxis1D(NetcdfDataset ncd, VariableDS vds) {
-    super(ncd, vds);
-    vds.setCaching(true);
-  }
-
-  /**
-   * Copy constructor
-   *
-   * @param ncd ok to reparent
-   * @param org copy from here
-   * @deprecated Use CoordinateAxis1D.toBuilder()
-   */
-  @Deprecated
-  CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
-    super(ncd, org);
-    this.orgName = org.orgName;
-    this.cache.reset(); // decouple cache
-    org.setCaching(true);
-
-    // copy rest of state
-    this.increment = org.getIncrement();
-    this.isAscending = org.isAscending;
-    this.isInterval = org.isInterval();
-    this.isRegular = org.isRegular();
-
-    if (isNumeric()) {
-      this.coords = org.getCoordValues();
-      this.edge = org.getCoordEdges();
-    }
-
-    this.names = org.names;
-
-    if (isInterval) {
-      this.bound1 = org.getBound1();
-      this.bound2 = org.getBound2();
-    }
-
-    this.wasBoundsDone = org.wasBoundsDone;
-    this.wasCalcRegular = org.wasCalcRegular;
-    this.wasRead = org.wasRead;
-  }
-
-  /**
-   * Constructor when theres no underlying variable. You better set the values too!
-   *
-   * @param ds the containing dataset.
-   * @param group the containing group; if null, use rootGroup
-   * @param shortName axis name.
-   * @param dataType data type
-   * @param dims list of dimension names
-   * @param units units of coordinates, preferably udunit compatible.
-   * @param desc long name.
-   * @deprecated Use CoordinateAxis1D.builder()
-   */
-  @Deprecated
-  public CoordinateAxis1D(NetcdfDataset ds, Group group, String shortName, DataType dataType, String dims, String units,
-      String desc) {
-
-    super(ds, group, shortName, dataType, dims, units, desc);
-  }
-
-  /**
    * Create a new CoordinateAxis1D as a section of this CoordinateAxis1D.
    *
    * @param r the section range
@@ -122,6 +53,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int len = r.length();
 
     // deal with the midpoints, bounds
+    doRead();
     if (isNumeric()) {
       double[] new_mids = new double[len];
       for (int idx = 0; idx < len; idx++) {
@@ -146,6 +78,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         result.edge = new_edge;
 
       } else {
+        makeBounds();
         double[] new_edge = new double[len + 1];
         for (int idx = 0; idx < len; idx++) {
           int old_idx = r.element(idx);
@@ -165,32 +98,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
       result.names = new_names;
     }
 
+    result.wasRead = true;
+    result.wasBoundsDone = true;
     result.wasCalcRegular = false;
     result.calcIsRegular();
 
     return result;
-  }
-
-  // for section and slice
-
-  @Override
-  protected CoordinateAxis1D copy() {
-    return new CoordinateAxis1D(this.ncd, this);
-  }
-
-  @Override
-  public CoordinateAxis copyNoCache() {
-    CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroupOrRoot(), getShortName(), getDataType(),
-        getDimensionsString(), getUnitsString(), getDescription());
-
-    // other state
-    axis.axisType = this.axisType;
-    axis.boundaryRef = this.boundaryRef;
-    axis.isContiguous = this.isContiguous;
-    axis.positive = this.positive;
-
-    axis.cache.reset(); // decouple cache
-    return axis;
   }
 
   /**
@@ -217,8 +130,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return the ith coordinate value as a String
    */
   public String getCoordName(int index) {
-    if (!wasRead)
-      doRead();
+    doRead();
     if (isNumeric())
       return Format.d(getCoordValue(index), 5, 8);
     else
@@ -236,8 +148,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getCoordValue(int index) {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead)
-      doRead();
+    doRead();
     return coords[index];
   }
 
@@ -245,8 +156,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getMinValue() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead)
-      doRead();
+    doRead();
 
     return Math.min(coords[0], coords[coords.length - 1]);
   }
@@ -255,8 +165,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getMaxValue() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead)
-      doRead();
+    doRead();
 
     return Math.max(coords[0], coords[coords.length - 1]);
   }
@@ -266,8 +175,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return getMinValue();
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead)
-      doRead();
+    doRead();
 
     return Math.min(edge[0], edge[edge.length - 1]);
   }
@@ -277,8 +185,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return getMaxValue();
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    if (!wasRead)
-      doRead();
+    doRead();
 
     return Math.max(edge[0], edge[edge.length - 1]);
   }
@@ -319,8 +226,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getCoordValues() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValues() on non-numeric");
-    if (!wasRead)
-      doRead();
+    doRead();
     return coords.clone();
   }
 
@@ -719,8 +625,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private void calcIsRegular() {
     if (wasCalcRegular)
       return;
-    if (!wasRead)
-      doRead();
+    doRead();
 
     if (!isNumeric())
       isRegular = false;
@@ -744,10 +649,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
 
   private void doRead() {
+    if (wasRead) {
+      return;
+    }
     if (isNumeric()) {
       readValues();
       wasRead = true;
-
       if (getSize() < 2)
         isAscending = true;
       else
@@ -771,10 +678,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (axisType != AxisType.Lon) {
       return this;
     }
-
-    if (!wasRead) {
-      doRead();
-    }
+    doRead();
 
     boolean monotonic = true;
     for (int i = 0; i < coords.length - 1; i++) {
@@ -866,8 +770,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * Calculate bounds, set isInterval, isContiguous
    */
   private void makeBounds() {
-    if (!wasRead)
-      doRead();
+    doRead();
     if (isNumeric()) {
       if (!makeBoundsFromAux()) {
         makeEdges();
@@ -895,7 +798,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     Array data;
     try {
       // LOOK this seems bogus
-      boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
+      // boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
       data = boundsVar.read();
     } catch (IOException e) {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);

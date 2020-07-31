@@ -15,7 +15,7 @@ public class TestTableAnalyzer {
   static void doit(String filename) throws IOException {
     filename = TestDir.cdmUnitTestDir + filename;
     System.out.println(filename);
-    try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename, true, -1, null,
+    try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename, true, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       TableAnalyzer csa = TableAnalyzer.factory(null, null, ncd);
       csa.getDetailInfo(new Formatter(System.out));

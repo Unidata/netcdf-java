@@ -5,12 +5,8 @@
 package ucar.nc2.internal.iosp.hdf4;
 
 import ucar.ma2.DataType;
-import ucar.nc2.Variable;
 
-/**
- * @author caron
- * @since Dec 20, 2007
- */
+/** Convert HDF4 data type values */
 public class H4type {
 
   // p 110 table 9a : probably the "class" of the number type
@@ -49,7 +45,7 @@ public class H4type {
    * #define DFNT_INT64 26
    * #define DFNT_UINT64 27
    */
-  public static DataType setDataType(short type, Variable v) {
+  public static DataType getDataType(short type) {
     DataType dt;
     switch (type) {
       case 3:
@@ -88,10 +84,6 @@ public class H4type {
         break;
       default:
         throw new IllegalStateException("unknown type= " + type);
-    }
-
-    if (v != null) {
-      v.setDataType(dt);
     }
 
     return dt;

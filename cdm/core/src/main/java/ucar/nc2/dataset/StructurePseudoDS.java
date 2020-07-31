@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
 import java.io.IOException;
+import ucar.nc2.write.Nc4Chunking.Strategy;
 
 /**
  * Make a collection of variables with the same outer dimension into a fake Structure.
@@ -38,32 +40,19 @@ public class StructurePseudoDS extends StructureDS {
   protected static final Set<NetcdfDataset.Enhance> enhanceScaleMissing =
       EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset, NetcdfDataset.Enhance.ConvertMissing);
 
-  /** @deprecated Use StructurePseudoDS.builder() */
-  @Deprecated
-  protected StructurePseudoDS(NetcdfDataset ncfile, Group group, String shortName) {
-    super(ncfile, group, shortName);
-  }
-
   /**
    * Make a Structure out of all Variables with the named dimension as their outermost dimension, or from a list
    * named Variables, each has the same named outermost dimension.
    *
-   * @param ncfile part of this file
    * @param group part of this group
    * @param shortName short name of this Structure
    * @param varNames limited to these variables, all must have dim as outer dimension. If null, use all Variables
    *        with that outer dimension
    * @param outerDim existing, outer dimension
-   * @deprecated Use StructurePseudoDS.builder()
    */
-  @Deprecated
-  public StructurePseudoDS(NetcdfDataset ncfile, Group group, String shortName, List<String> varNames,
-      Dimension outerDim) {
-    super(ncfile, group, shortName); // cant do this for nested structures
-    setDimensions(outerDim.getShortName());
-
-    if (group == null)
-      group = ncfile.getRootGroup();
+  public static StructurePseudoDS fromVars(Group group, String shortName, List<String> varNames, Dimension outerDim) {
+    StructurePseudoDS.Builder<?> builder =
+        StructurePseudoDS.builder().setName(shortName).setDimensions(ImmutableList.of(outerDim));
 
     if (varNames == null) {
       List<Variable> vars = group.getVariables();
@@ -84,58 +73,30 @@ public class StructurePseudoDS extends StructureDS {
         log.warn("StructurePseudoDS cannot find variable " + name);
         continue;
       }
+      if (orgV instanceof Structure) {
+        continue; // no substructures
+      }
 
       Dimension dim0 = orgV.getDimension(0);
       if (!outerDim.equals(dim0))
         throw new IllegalArgumentException(
             "Variable " + orgV.getNameAndDimensions() + " must have outermost dimension=" + outerDim);
 
-      VariableDS memberV = new VariableDS(ncfile, group, this, orgV.getShortName(), orgV.getDataType(), null,
-          orgV.getUnitsString(), orgV.getDescription());
+      VariableDS.Builder<?> memberV = VariableDS.builder().setName(orgV.getShortName()).setDataType(orgV.getDataType())
+          .setUnits(orgV.getUnitsString()).setDesc(orgV.getDescription());
       memberV.setSPobject(orgV.getSPobject()); // ??
-      orgV.attributes().forEach(att -> memberV.addAttribute(att));
+      memberV.addAttributes(orgV.attributes());
 
       List<Dimension> dims = new ArrayList<>(orgV.getDimensions());
       dims.remove(0); // remove outer dimension
       memberV.setDimensions(dims);
 
-      memberV.enhance(enhanceScaleMissing);
+      // memberV.enhance(enhanceScaleMissing); TODO ??
 
-      addMemberVariable(memberV);
-      orgVariables.add(orgV);
+      builder.addMemberVariable(memberV);
+      builder.addOriginalVariable(orgV);
     }
-
-    calcElementSize();
-  }
-
-  @Override
-  protected StructureDS copy() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Structure select(List<String> memberNames) {
-    StructurePseudoDS result = new StructurePseudoDS((NetcdfDataset) ncfile, getParentGroupOrRoot(), getShortName(),
-        memberNames, getDimension(0));
-    result.isSubset = true;
-    return result;
-  }
-
-  /** @deprecated Use StructurePseudoDS.builder() */
-  @Override
-  @Deprecated
-  public boolean removeMemberVariable(Variable v) {
-    if (super.removeMemberVariable(v)) {
-      java.util.Iterator<Variable> iter = orgVariables.iterator();
-      while (iter.hasNext()) {
-        Variable mv = iter.next();
-        if (mv.getShortName().equals(v.getShortName())) {
-          iter.remove();
-          return true;
-        }
-      }
-    }
-    return false;
+    return builder.build(group);
   }
 
   @Override

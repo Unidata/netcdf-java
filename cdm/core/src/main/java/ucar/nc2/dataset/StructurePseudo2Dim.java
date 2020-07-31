@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import java.util.List;
@@ -24,26 +25,16 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
   /**
    * Make a Structure out of named Variables which have var(outer, inner, ...)
    *
-   * @param ncfile the containing file
    * @param group the containing group, if null use root group
    * @param shortName short name of this Structure
    * @param varNames limited to these variables. all must var(outer, inner, ...). If null, then find all such variables.
    * @param outer the outer dimension, may not be null
    * @param inner the inner dimension, may not be null
-   * @deprecated Use StructureDS.builder()
    */
-  @Deprecated
-  public StructurePseudo2Dim(NetcdfDataset ncfile, Group group, String shortName, List<String> varNames,
-      Dimension outer, Dimension inner) {
-    super(ncfile, group, shortName);
-    setDataType(DataType.STRUCTURE);
-    ArrayList<Dimension> dims = new ArrayList<>(2);
-    dims.add(outer);
-    dims.add(inner);
-    setDimensions(dims);
-
-    if (group == null)
-      group = ncfile.getRootGroup();
+  public static StructurePseudo2Dim fromVars(Group group, String shortName, List<String> varNames, Dimension outer,
+      Dimension inner) {
+    StructurePseudo2Dim.Builder<?> builder =
+        StructurePseudo2Dim.builder().setName(shortName).setDimensions(ImmutableList.of(outer, inner));
 
     // find all variables in this group that has this as the outer dimension
     if (varNames == null) {
@@ -63,6 +54,9 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
         log.warn("StructurePseudo2Dim cannot find variable " + name);
         continue;
       }
+      if (orgV instanceof Structure) {
+        continue; // no substructures
+      }
 
       if (!outer.equals(orgV.getDimension(0)))
         throw new IllegalArgumentException(
@@ -71,29 +65,20 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
         throw new IllegalArgumentException(
             "Variable " + orgV.getNameAndDimensions() + " must have 2nd dimension=" + inner);
 
-      VariableDS memberV = new VariableDS(ncfile, group, this, orgV.getShortName(), orgV.getDataType(), null,
-          orgV.getUnitsString(), orgV.getDescription());
-      memberV.setDataType(orgV.getDataType());
+      VariableDS.Builder memberV = VariableDS.builder().setName(orgV.getShortName()).setDataType(orgV.getDataType())
+          .setUnits(orgV.getUnitsString()).setDesc(orgV.getDescription());
       memberV.setSPobject(orgV.getSPobject()); // ??
-      orgV.attributes().forEach(att -> memberV.addAttribute(att));
+      memberV.addAttributes(orgV.attributes());
 
       List<Dimension> dimList = new ArrayList<>(orgV.getDimensions());
       memberV.setDimensions(dimList.subList(2, dimList.size())); // remove first 2 dimensions
-      memberV.enhance(enhanceScaleMissing);
+      // memberV.enhance(enhanceScaleMissing); ??
 
-      addMemberVariable(memberV);
-      orgVariables.add(orgV);
+      builder.addMemberVariable(memberV);
+      builder.addOriginalVariable(orgV);
     }
 
-    calcElementSize();
-  }
-
-  @Override
-  public Structure select(List<String> memberNames) {
-    StructurePseudo2Dim result = new StructurePseudo2Dim((NetcdfDataset) ncfile, getParentGroupOrRoot(), getShortName(),
-        memberNames, getDimension(0), getDimension(1));
-    result.isSubset = true;
-    return result;
+    return builder.build(group);
   }
 
   @Override

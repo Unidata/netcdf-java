@@ -723,7 +723,7 @@ public class CoordSystemBuilder {
    * @param ct based on the CoordinateTransform
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
-  protected VariableDS.Builder makeCoordinateTransformVariable(CoordinateTransform ct) {
+  public VariableDS.Builder makeCoordinateTransformVariable(CoordinateTransform ct) {
     VariableDS.Builder v = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
     List<Parameter> params = ct.getParameters();
     for (Parameter p : params) {

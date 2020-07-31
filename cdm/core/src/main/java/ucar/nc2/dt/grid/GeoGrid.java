@@ -785,7 +785,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     // TODO does this work without setting shared??
     // List<Dimension> dims = v_section.getDimensions();
     // for (Dimension dim : dims) {
-    // dim.setShared(true); // make them shared (section will make them unshared)
+    // dim.isShared = true; // make them shared (section will make them unshared)
     // }
 
     // subset the axes in the GridCoordSys

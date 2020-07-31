@@ -286,7 +286,7 @@ public abstract class Table {
           String name = config.structName == null ? "anon" : config.structName;
           // TODO
           // struct = new StructurePseudoDS(ds, dim.getGroup(), name, config.vars, this.dim);
-          struct = new StructurePseudoDS(ds, null, name, config.vars, this.dim);
+          struct = StructurePseudoDS.fromVars(ds.getRootGroup(), name, config.vars, this.dim);
           break;
 
         case PsuedoStructure2D:
@@ -296,20 +296,15 @@ public abstract class Table {
           assert config.outerName != null;
           // TODO
           // struct = new StructurePseudo2Dim(ds, dim.getGroup(), config.structName, config.vars, this.dim, this.outer);
-          struct = new StructurePseudo2Dim(ds, null, config.structName, config.vars, this.dim, this.outer);
+          struct =
+              StructurePseudo2Dim.fromVars(ds.getRootGroup(), config.structName, config.vars, this.dim, this.outer);
           break;
       }
 
       config.vars = new ArrayList<>();
       for (Variable v : struct.getVariables()) {
-        // remove substructures
-        if (v.getDataType() == DataType.STRUCTURE) {
-          if (config.structureType == TableConfig.StructureType.PsuedoStructure)
-            struct.removeMemberVariable(v);
-        } else {
-          this.cols.put(v.getShortName(), v);
-          config.vars.add(v.getShortName());
-        }
+        this.cols.put(v.getShortName(), v);
+        config.vars.add(v.getShortName());
       }
     }
 

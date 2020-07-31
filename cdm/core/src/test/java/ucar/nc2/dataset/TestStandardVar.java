@@ -13,7 +13,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NetcdfFormatWriter;
-import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -69,7 +68,7 @@ public class TestStandardVar {
       // write
       for (i = 0; i < latDim.getLength(); i++)
         for (j = 0; j < lonDim.getLength(); j++)
-          A.setDouble(ima.set(i, j), (double) (i * 10.0 + j));
+          A.setDouble(ima.set(i, j), (i * 10.0 + j));
       int[] origin = new int[2];
       writer.write("t1", origin, A);
 
@@ -99,7 +98,7 @@ public class TestStandardVar {
       ArrayDouble.D2 Ad = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
       for (i = 0; i < latDim.getLength(); i++)
         for (j = 0; j < lonDim.getLength(); j++)
-          Ad.setDouble(ima.set(i, j), (double) (i * 10.0 + j));
+          Ad.setDouble(ima.set(i, j), (i * 10.0 + j));
       Ad.set(1, 1, -999.99);
       writer.write("m1", new int[2], Ad);
     }
@@ -268,20 +267,6 @@ public class TestStandardVar {
         assert (A.getFloat(ima.set(i, j)) == (i * 10 + j));
       }
     }
-
-    // turn off missing data
-    vs.setMissingDataIsMissing(false);
-    vs.setFillValueIsMissing(false);
-    assert (vs.getDataType() == DataType.SHORT);
-
-    assert (!vs.hasMissing());
-    assert (vs.hasMissingValue());
-    assert (!vs.isMissing((double) ((short) -9999)));
-    assert (vs.isMissingValue((double) ((short) -9999)));
-
-    vs.setMissingDataIsMissing(true);
-    assert (vs.hasMissing());
-    assert (vs.isMissing((double) ((short) -9999)));
   }
 
 
@@ -332,16 +317,6 @@ public class TestStandardVar {
 
     double val = A.getFloat(ima.set(1, 1));
     assert Double.isNaN(val);
-    assert v.isMissing(val);
-
-    // Reread without converting missing values to NaNs.
-    v.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing);
-    v.createNewCache();
-    A = v.read();
-    ima = A.getIndex();
-
-    val = A.getFloat(ima.set(1, 1));
-    Assert2.assertNearlyEquals(val, -999.99);
     assert v.isMissing(val);
   }
 
