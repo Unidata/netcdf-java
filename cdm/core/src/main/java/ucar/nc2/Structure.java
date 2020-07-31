@@ -51,12 +51,12 @@ public class Structure extends Variable {
    */
   public Structure select(List<String> memberNames) {
     Structure.Builder<?> result = this.toBuilder();
+
+    List<Variable.Builder<?>> selected = new ArrayList<>();
     for (String name : memberNames) {
-      Variable m = findVariable(name);
-      if (null != m) {
-        result.addMemberVariable(m.toBuilder());
-      }
+      result.findMemberVariable(name).ifPresent(selected::add);
     }
+    result.vbuilders = selected;
     result.isSubset = true;
     return result.build(getParentGroupOrRoot());
   }
