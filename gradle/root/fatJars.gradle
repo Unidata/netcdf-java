@@ -16,7 +16,7 @@ buildscript {
   }
 }
 
-if (name != 'netcdf-java') {
+if (!name.equals(rootProject.name)) {
   throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
@@ -36,7 +36,7 @@ configurations {
 }
 
 dependencies {
-  ncIdv platform(project(':netcdf-java-platform'))
+  ncIdv enforcedPlatform(project(':netcdf-java-platform'))
   ncIdv project(':cdm:cdm-core')
   ncIdv project(':cdm:cdm-image')
   ncIdv project(':cdm:cdm-radial')
@@ -50,7 +50,7 @@ dependencies {
   ncIdv project(':httpservices')
   ncIdv project(':legacy')
 
-  netcdfAll platform(project(':netcdf-java-platform'))
+  netcdfAll enforcedPlatform(project(':netcdf-java-platform'))
   netcdfAll project(':cdm:cdm-core')
   netcdfAll project(':cdm:cdm-image')
   netcdfAll project(':cdm:cdm-radial')
@@ -62,11 +62,11 @@ dependencies {
   netcdfAll project(':httpservices')
   netcdfAll project(':visad:cdm-mcidas')
 
-  toolsUI platform(project(':netcdf-java-platform'))
+  toolsUI enforcedPlatform(project(':netcdf-java-platform'))
   toolsUI project(':uicdm')
   toolsUI 'ch.qos.logback:logback-classic'
 
-  dap4lib platform(project(':netcdf-java-platform'))
+  dap4lib enforcedPlatform(project(':netcdf-java-platform'))
   dap4lib project(':dap4:d4core')
   dap4lib project(':dap4:d4lib')
   dap4lib 'ch.qos.logback:logback-classic'

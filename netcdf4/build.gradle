@@ -8,7 +8,7 @@ apply plugin: 'groovy'  // For Spock tests.
 apply plugin: 'jacoco'
 
 dependencies {
-  api platform(project(':netcdf-java-platform'))
+  api enforcedPlatform(project(':netcdf-java-platform'))
 
   compile project(':cdm:cdm-core')
   compile 'net.java.dev.jna:jna'
