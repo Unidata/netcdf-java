@@ -292,7 +292,7 @@ public class TestAggExisting {
   }
 
   @Test
-  public void testNcmlAggstingExistingUniform30DayCal() throws IOException {
+  public void testNcmlAggExistingUniform30DayCal() throws IOException {
     // with calendar = uniform30day, each year should have 360 days (12 months, each with 30 days)
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingUniform30DayCal.xml";
     testNcmlAggExisting30DayCals(filename);
