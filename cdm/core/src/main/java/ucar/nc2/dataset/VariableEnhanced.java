@@ -6,8 +6,9 @@ package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
+import ucar.nc2.Group;
 
-/** Interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package. */
+/** Interface to an "enhanced Variable". */
 public interface VariableEnhanced {
 
   String getFullName();
@@ -25,6 +26,9 @@ public interface VariableEnhanced {
   /** Get the Unit String for the Variable, or null if none. */
   @Nullable
   String getUnitsString();
+
+  /** Get the containing Group. */
+  Group getParentGroup();
 
   /** Get the list of Coordinate Systems for this Variable. */
   ImmutableList<CoordinateSystem> getCoordinateSystems();

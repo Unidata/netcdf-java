@@ -11,6 +11,7 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
@@ -118,12 +119,8 @@ public class Structure extends Variable {
     return members.stream().map(m -> m.getShortName()).collect(ImmutableList.toImmutableList());
   }
 
-  /**
-   * Find the Variable member with the specified (short) name.
-   * 
-   * @param shortName name of the member variable.
-   * @return the Variable member with the specified (short) name, or null if not found.
-   */
+  /** Find the Variable member with the specified (short) name, or null if not found. */
+  @Nullable
   public Variable findVariable(String shortName) {
     if (shortName == null)
       return null;

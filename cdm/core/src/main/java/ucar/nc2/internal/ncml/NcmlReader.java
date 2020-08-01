@@ -35,6 +35,7 @@ import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
@@ -45,7 +46,6 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableDS.Builder;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
@@ -57,8 +57,6 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  * Read NcML and create NetcdfDataset.Builder, using builders and immutable objects.
  * <p>
  * This is an internal class, users should usually call {@link NetcdfDatasets#openDataset(String)}
- * </p>
- *
  */
 public class NcmlReader {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlReader.class);
@@ -966,8 +964,8 @@ public class NcmlReader {
     });
   }
 
-  private Optional<Builder> readVariableExisting(Group.Builder groupBuilder,
-      @Nullable StructureDS.Builder<?> parentStructure, DataType dtype, Variable refv, Element varElem) {
+  private Optional<Variable.Builder> readVariableExisting(Group.Builder groupBuilder,
+      @Nullable Structure.Builder<?> parentStructure, DataType dtype, Variable refv, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
@@ -1104,17 +1102,17 @@ public class NcmlReader {
     }
   }
 
-  private Optional<StructureDS.Builder> readStructureExisting(Group.Builder groupBuilder,
-      @Nullable StructureDS.Builder<?> parentStructure, DataType dtype, Structure refStructure, Element varElem) {
+  private Optional<Structure.Builder> readStructureExisting(Group.Builder groupBuilder,
+      @Nullable Structure.Builder<?> parentStructure, DataType dtype, Structure refStructure, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
 
-    StructureDS.Builder<?> structBuilder;
+    Structure.Builder<?> structBuilder;
     if (this.explicit) { // all metadata is in the ncml, do not copy
       if (dtype == DataType.STRUCTURE) {
         structBuilder = StructureDS.builder().setName(name).setOriginalVariable(refStructure);
       } else {
-        structBuilder = SequenceDS.builder().setName(name).setOriginalVariable(refStructure);
+        structBuilder = SequenceDS.builder().setName(name).setOriginalSequence((Sequence) refStructure);
       }
     } else { // modify existing
       if (parentStructure != null) {
@@ -1153,7 +1151,7 @@ public class NcmlReader {
     return (this.explicit) ? Optional.of(structBuilder) : Optional.empty();
   }
 
-  private StructureDS.Builder readStructureNew(Group.Builder groupBuilder, Element varElem) {
+  private Structure.Builder readStructureNew(Group.Builder groupBuilder, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String type = varElem.getAttributeValue("type");
     DataType dtype = DataType.getType(type);
@@ -1165,7 +1163,7 @@ public class NcmlReader {
     }
     List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
 
-    StructureDS.Builder structBuilder;
+    Structure.Builder structBuilder;
     if (dtype == DataType.STRUCTURE) {
       structBuilder = StructureDS.builder().setName(name).addDimensions(varDims);
     } else {
@@ -1186,7 +1184,7 @@ public class NcmlReader {
     return structBuilder;
   }
 
-  private void readMemberVariable(Group.Builder groupBuilder, StructureDS.Builder<?> parentStructure,
+  private void readMemberVariable(Group.Builder groupBuilder, Structure.Builder<?> parentStructure,
       @Nullable Structure refParentStructure, Element varElem) {
     String name = varElem.getAttributeValue("name");
     if (name == null) {

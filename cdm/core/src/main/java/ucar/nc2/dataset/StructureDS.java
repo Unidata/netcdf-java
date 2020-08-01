@@ -14,32 +14,20 @@ import ucar.ma2.*;
 import java.io.IOException;
 
 /** An "enhanced" Structure. */
-public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
+public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced {
 
-  /**
-   * A StructureDS may wrap another Structure.
-   *
-   * @return original Structure or null
-   */
+  /** A StructureDS may wrap another Structure. */
   @Nullable
   public Variable getOriginalVariable() {
     return orgVar;
   }
 
-  /**
-   * When this wraps another Variable, get the original Variable's DataType.
-   *
-   * @return original Variable's DataType
-   */
+  /** When this wraps another Variable, get the original Variable's DataType. */
   public DataType getOriginalDataType() {
     return DataType.STRUCTURE;
   }
 
-  /**
-   * When this wraps another Variable, get the original Variable's DataType.
-   *
-   * @return original Variable's DataType
-   */
+  /** When this wraps another Variable, get the original Variable's name. */
   public String getOriginalName() {
     return orgName;
   }
@@ -58,7 +46,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       // return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
     }
 
-    return convert(result, null);
+    StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
+    return enhancer.enhance((ArrayStructure) result, null);
   }
 
   // section of regular Variable
@@ -81,324 +70,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     // do any needed conversions (enum/scale/offset/missing/unsigned, etc)
-    return convert(result, section);
-  }
-
-  // is conversion needed?
-
-  private boolean convertNeeded(StructureMembers smData) {
-
-    for (Variable v : getVariables()) {
-
-      if (v instanceof VariableDS) {
-        VariableDS vds = (VariableDS) v;
-        if (vds.needConvert())
-          return true;
-      } else if (v instanceof StructureDS) {
-        StructureDS nested = (StructureDS) v;
-        if (nested.convertNeeded(null))
-          return true;
-      }
-
-      // a variable with no data in the underlying smData
-      if ((smData != null) && !varHasData(v, smData))
-        return true;
-    }
-
-    return false;
-  }
-
-  // possible things needed:
-  // 1) enum/scale/offset/missing/unsigned conversion
-  // 2) name, info change
-  // 3) variable with cached data added to StructureDS through NcML
-
-  protected ArrayStructure convert(Array data, Section section) throws IOException {
-    ArrayStructure orgAS = (ArrayStructure) data;
-    if (!convertNeeded(orgAS.getStructureMembers())) {
-      // name, info change only
-      convertMemberInfo(orgAS.getStructureMembers());
-      return orgAS;
-    }
-
-    // LOOK! converting to ArrayStructureMA
-    // do any enum/scale/offset/missing/unsigned conversions
-    ArrayStructure newAS = ArrayStructureMA.factoryMA(orgAS);
-    for (StructureMembers.Member m : newAS.getMembers()) {
-      VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
-      if ((v2 == null) && (orgVar != null)) // these are from orgVar - may have been renamed
-        v2 = findVariableFromOrgName(m.getName());
-      if (v2 == null)
-        continue;
-
-      if (v2 instanceof VariableDS) {
-        VariableDS vds = (VariableDS) v2;
-        if (vds.needConvert()) {
-          Array mdata = newAS.extractMemberArray(m);
-          // mdata has not yet been enhanced, but vds would *think* that it has been if we used the 1-arg version of
-          // VariableDS.convert(). So, we use the 2-arg version to explicitly request enhancement.
-          mdata = vds.convert(mdata, vds.getEnhanceMode());
-          newAS.setMemberArray(m, mdata);
-        }
-
-      } else if (v2 instanceof StructureDS) {
-        StructureDS innerStruct = (StructureDS) v2;
-        if (innerStruct.convertNeeded(null)) {
-
-          if (innerStruct.getDataType() == DataType.SEQUENCE) {
-            ArrayObject.D1 seqArray = (ArrayObject.D1) newAS.extractMemberArray(m);
-            ArrayObject.D1 newSeq =
-                (ArrayObject.D1) Array.factory(DataType.SEQUENCE, new int[] {(int) seqArray.getSize()});
-            m.setDataArray(newSeq); // put back into member array
-
-            // wrap each Sequence
-            for (int i = 0; i < seqArray.getSize(); i++) {
-              ArraySequence innerSeq = (ArraySequence) seqArray.get(i); // get old ArraySequence
-              newSeq.set(i, new SequenceConverter(innerStruct, innerSeq)); // wrap in converter
-            }
-
-            // non-Sequence Structures
-          } else {
-            Array mdata = newAS.extractMemberArray(m);
-            mdata = innerStruct.convert(mdata, null);
-            newAS.setMemberArray(m, mdata);
-          }
-
-        }
-
-        // always convert the inner StructureMembers
-        innerStruct.convertMemberInfo(m.getStructureMembers());
-      }
-    }
-
-    StructureMembers sm = newAS.getStructureMembers();
-    convertMemberInfo(sm);
-
-    // check for variables that have been added by NcML
-    for (Variable v : getVariables()) {
-      if (!varHasData(v, sm)) {
-        try {
-          Variable completeVar = getParentGroupOrRoot().findVariableLocal(v.getShortName()); // LOOK BAD
-          Array mdata = completeVar.read(section);
-          StructureMembers.Member m =
-              sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
-          newAS.setMemberArray(m, mdata);
-        } catch (InvalidRangeException e) {
-          throw new IOException(e.getMessage());
-        }
-      }
-    }
-
-    return newAS;
-  }
-
-  /* convert original structureData to one that conforms to this Structure */
-
-  protected StructureData convert(StructureData orgData, int recno) throws IOException {
-    if (!convertNeeded(orgData.getStructureMembers())) {
-      // name, info change only
-      convertMemberInfo(orgData.getStructureMembers());
-      return orgData;
-    }
-
-    // otherwise we create a new StructureData and convert to it. expensive
-    StructureMembers smResult = orgData.getStructureMembers().toBuilder(false).build();
-    StructureDataW result = new StructureDataW(smResult);
-
-    for (StructureMembers.Member m : orgData.getMembers()) {
-      VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
-      if ((v2 == null) && (orgVar != null)) // why ?
-        v2 = findVariableFromOrgName(m.getName());
-      if (v2 == null) {
-        findVariableFromOrgName(m.getName()); // debug
-        // log.warn("StructureDataDS.convert Cant find member " + m.getName());
-        continue;
-      }
-      StructureMembers.Member mResult = smResult.findMember(m.getName());
-
-      if (v2 instanceof VariableDS) {
-        VariableDS vds = (VariableDS) v2;
-        Array mdata = orgData.getArray(m);
-
-        if (vds.needConvert())
-          // mdata has not yet been enhanced, but vds would *think* that it has been if we used the 1-arg version of
-          // VariableDS.convert(). So, we use the 2-arg version to explicitly request enhancement.
-          mdata = vds.convert(mdata, vds.getEnhanceMode());
-
-        result.setMemberData(mResult, mdata);
-      }
-
-      // recurse into sub-structures
-      if (v2 instanceof StructureDS) {
-        StructureDS innerStruct = (StructureDS) v2;
-        // if (innerStruct.convertNeeded(null)) {
-
-        if (innerStruct.getDataType() == DataType.SEQUENCE) {
-          Array a = orgData.getArray(m);
-
-          if (a instanceof ArrayObject.D1) { // LOOK when does this happen vs ArraySequence?
-            ArrayObject.D1 seqArray = (ArrayObject.D1) a;
-            ArrayObject.D1 newSeq =
-                (ArrayObject.D1) Array.factory(DataType.SEQUENCE, new int[] {(int) seqArray.getSize()});
-            mResult.setDataArray(newSeq); // put into result member array
-
-            for (int i = 0; i < seqArray.getSize(); i++) {
-              ArraySequence innerSeq = (ArraySequence) seqArray.get(i); // get old ArraySequence
-              newSeq.set(i, new SequenceConverter(innerStruct, innerSeq)); // wrap in converter
-            }
-
-          } else {
-            ArraySequence seqArray = (ArraySequence) a;
-            result.setMemberData(mResult, new SequenceConverter(innerStruct, seqArray)); // wrap in converter
-          }
-
-          // non-Sequence Structures
-        } else {
-          Array mdata = orgData.getArray(m);
-          mdata = innerStruct.convert(mdata, null);
-          result.setMemberData(mResult, mdata);
-        }
-        // }
-
-        // always convert the inner StructureMembers
-        innerStruct.convertMemberInfo(mResult.getStructureMembers());
-      }
-    }
-
-    StructureMembers sm = result.getStructureMembers();
-    convertMemberInfo(sm);
-
-    // check for variables that have been added by NcML
-    for (Variable v : getVariables()) {
-      if (!varHasData(v, sm)) {
-        try {
-          Variable completeVar = getParentGroupOrRoot().findVariableLocal(v.getShortName()); // LOOK BAD
-          Array mdata = completeVar.read(Section.builder().appendRange(recno, recno).build());
-          StructureMembers.Member m =
-              sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
-          result.setMemberData(m, mdata);
-        } catch (InvalidRangeException e) {
-          throw new IOException(e.getMessage());
-        }
-      }
-    }
-
-    return result;
-  }
-
-  // the wrapper StructureMembers must be converted to correspond to the wrapper Structure
-  private void convertMemberInfo(StructureMembers wrapperSm) {
-    for (StructureMembers.Member m : wrapperSm.getMembers()) {
-      Variable v = findVariable(m.getName());
-      if ((v == null) && (orgVar != null)) // may have been renamed
-        v = (Variable) findVariableFromOrgName(m.getName());
-
-      if (v != null) { // a section will have missing variables LOOK wrapperSm probably wrong in that case
-        // log.error("Cant find " + m.getName());
-        // else
-        m.setVariableInfo(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType());
-      }
-
-      // nested structures
-      if (v instanceof StructureDS) {
-        StructureDS innerStruct = (StructureDS) v;
-        innerStruct.convertMemberInfo(m.getStructureMembers());
-      }
-
-    }
-  }
-
-  // look for the top variable that has an orgVar with the wanted orgName
-  private VariableEnhanced findVariableFromOrgName(String orgName) {
-    for (Variable vTop : getVariables()) {
-      Variable v = vTop;
-      while (v instanceof VariableEnhanced) {
-        VariableEnhanced ve = (VariableEnhanced) v;
-        if ((ve.getOriginalName() != null) && (ve.getOriginalName().equals(orgName)))
-          return (VariableEnhanced) vTop;
-        v = ve.getOriginalVariable();
-      }
-    }
-    return null;
-  }
-
-  // verify that the variable has data in the data array
-  private boolean varHasData(Variable v, StructureMembers sm) {
-    if (sm.findMember(v.getShortName()) != null)
-      return true;
-    while (v instanceof VariableEnhanced) {
-      VariableEnhanced ve = (VariableEnhanced) v;
-      if (sm.findMember(ve.getOriginalName()) != null)
-        return true;
-      v = ve.getOriginalVariable();
-    }
-    return false;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  private static class SequenceConverter extends ArraySequence {
-    StructureDS orgStruct;
-    ArraySequence orgSeq;
-
-    SequenceConverter(StructureDS orgStruct, ArraySequence orgSeq) {
-      super(orgSeq.getStructureMembers(), orgSeq.getShape());
-      this.orgStruct = orgStruct;
-      this.orgSeq = orgSeq;
-      this.nelems = orgSeq.getStructureDataCount();
-
-      // copy and convert the members
-      members = orgSeq.getStructureMembers().toBuilder(false).build();
-      orgStruct.convertMemberInfo(members);
-    }
-
-    @Override
-    public StructureDataIterator getStructureDataIterator() { // throws java.io.IOException {
-      return new StructureDataConverter(orgStruct, orgSeq.getStructureDataIterator());
-    }
-  }
-
-  private static class StructureDataConverter implements StructureDataIterator {
-    private StructureDataIterator orgIter;
-    private StructureDS newStruct;
-    private int count;
-
-    StructureDataConverter(StructureDS newStruct, StructureDataIterator orgIter) {
-      this.newStruct = newStruct;
-      this.orgIter = orgIter;
-    }
-
-    @Override
-    public boolean hasNext() throws IOException {
-      return orgIter.hasNext();
-    }
-
-    @Override
-    public StructureData next() throws IOException {
-      StructureData sdata = orgIter.next();
-      return newStruct.convert(sdata, count++);
-    }
-
-    @Override
-    public void setBufferSize(int bytes) {
-      orgIter.setBufferSize(bytes);
-    }
-
-    @Override
-    public StructureDataIterator reset() {
-      orgIter = orgIter.reset();
-      return (orgIter == null) ? null : this;
-    }
-
-    @Override
-    public int getCurrentRecno() {
-      return orgIter.getCurrentRecno();
-    }
-
-    @Override
-    public void close() {
-      orgIter.close();
-    }
+    StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
+    return enhancer.enhance((ArrayStructure) result, section);
   }
 
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
@@ -415,8 +88,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   protected final EnhancementsImpl proxy; // API relies that this cant be null
-  protected Structure orgVar; // wrap this Variable
-  protected String orgName; // in case Variable was renamed, and we need the original name for aggregation
+  protected final Structure orgVar; // wrap this Variable
+  protected final String orgName; // in case Variable was renamed, and we need the original name for aggregation
 
   protected StructureDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);

@@ -106,7 +106,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     Group g = this.getParentGroup();
     if (g == null) {
       g = ncfile.getRootGroup();
-      // super.setParentGroup(g); // TODO: WTF?
     }
     return g;
   }
