@@ -1349,7 +1349,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   // computed
   private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
-  protected int[] shape = new int[0];
+  protected int[] shape;
   protected boolean isVariableLength;
   protected int elementSize;
 

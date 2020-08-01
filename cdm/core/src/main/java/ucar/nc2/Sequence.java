@@ -4,6 +4,7 @@
  */
 package ucar.nc2;
 
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import java.util.List;
 
@@ -11,10 +12,8 @@ import java.util.List;
  * Sequence is a one-dimensional Structure with indeterminate length.
  * The only data access is through getStructureIterator().
  * However, read() will read in the entire data and return an in-memory ArraySequence.
- * 
- * @author caron
- * @since Feb 23, 2008
  */
+@Immutable
 public class Sequence extends Structure {
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {

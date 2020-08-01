@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1044,8 +1043,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
      */
 
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-    if (cer.child == null) {
-      return cer.v.read(cer.section);
+    if (cer.getChild() == null) {
+      return cer.getVariable().read(cer.getSection());
     }
 
     if (iosp == null)

@@ -211,8 +211,8 @@ public class NCdumpPane extends TextHistoryPane {
       try {
         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ds, command);
         while (cer != null) { // get inner variable
-          v = cer.v;
-          cer = cer.child;
+          v = cer.getVariable();
+          cer = cer.getChild();
         }
         if (v instanceof IsMissingEvaluator) {
           eval = (IsMissingEvaluator) v;

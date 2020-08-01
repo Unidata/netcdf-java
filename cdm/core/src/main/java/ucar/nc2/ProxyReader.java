@@ -11,11 +11,7 @@ import ucar.ma2.Section;
 import ucar.nc2.util.CancelTask; // ??
 import java.io.IOException;
 
-/**
- * Something that knows how to read the data for a Variable.
- *
- * @author caron
- */
+/** Something that knows how to read the data for a Variable. */
 public interface ProxyReader {
 
   /**
@@ -24,7 +20,6 @@ public interface ProxyReader {
    * @param client the client Variable
    * @param cancelTask user may cancel
    * @return memory resident Array containing the data. Will have same shape as the Variable.
-   * @throws IOException on error
    */
   Array reallyRead(Variable client, CancelTask cancelTask) throws IOException;
 
@@ -36,7 +31,6 @@ public interface ProxyReader {
    * @param cancelTask user may cancel
    *
    * @return memory resident Array containing the data. Will have same shape as the Section.
-   * @throws IOException on error
    * @throws ucar.ma2.InvalidRangeException if section has incorrect rank or illegal shape.
    */
   Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
