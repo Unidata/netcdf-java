@@ -5,73 +5,38 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
+import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import java.io.IOException;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.StructureDataEnhancer.StructureDataIteratorEnhanced;
 
-/**
- * Enhanced sequence
- * 
- * @author caron
- * @since Nov 10, 2009
- * @deprecated SequenceDS will not extend StructureDS in 6.
- */
-@Deprecated
-public class SequenceDS extends StructureDS {
+/** Enhanced sequence */
+public class SequenceDS extends Sequence implements StructureEnhanced {
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    return new StructureDataConverter(this, orgSeq.getStructureIterator(bufferSize));
+    return new StructureDataIteratorEnhanced(this, orgSeq.getStructureIterator(bufferSize));
   }
 
-  private static class StructureDataConverter implements StructureDataIterator {
-    private StructureDataIterator orgIter;
-    private SequenceDS newStruct;
-    private int count;
+  @Override
+  public Variable getOriginalVariable() {
+    return orgSeq;
+  }
 
-    StructureDataConverter(SequenceDS newStruct, StructureDataIterator orgIter) {
-      this.newStruct = newStruct;
-      this.orgIter = orgIter;
-    }
+  @Override
+  public String getOriginalName() {
+    return orgName;
+  }
 
-    @Override
-    public boolean hasNext() throws IOException {
-      return orgIter.hasNext();
-    }
-
-    @Override
-    public StructureData next() throws IOException {
-      StructureData sdata = orgIter.next();
-      return newStruct.convert(sdata, count++);
-    }
-
-    @Override
-    public void setBufferSize(int bytes) {
-      orgIter.setBufferSize(bytes);
-    }
-
-    @Override
-    public StructureDataIterator reset() {
-      orgIter = orgIter.reset();
-      return (orgIter == null) ? null : this;
-    }
-
-    @Override
-    public int getCurrentRecno() {
-      return orgIter.getCurrentRecno();
-    }
-
-    @Override
-    public void close() {
-      orgIter.close();
-    }
+  @Override
+  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
+    return null;
   }
 
   @Override
@@ -82,16 +47,17 @@ public class SequenceDS extends StructureDS {
   @Override
   public Array read() throws IOException {
     Array data = orgSeq.read();
-    return convert(data, null);
+    StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
+    return enhancer.enhance((ArrayStructure) data, null);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private ucar.nc2.Sequence orgSeq;
+  private final ucar.nc2.Sequence orgSeq;
+  private final String orgName; // in case Sequence was renamed, and we need the original name
 
   protected SequenceDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
     this.orgSeq = builder.orgSeq;
-    this.orgVar = builder.orgSeq;
     this.orgName = builder.orgName;
   }
 
@@ -102,8 +68,7 @@ public class SequenceDS extends StructureDS {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    b.setOriginalVariable(this.orgVar).setOriginalName(this.orgName).setUnits(this.proxy.units)
-        .setDesc(this.proxy.desc);
+    b.setOriginalSequence(this.orgSeq).setOriginalName(this.orgName);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
@@ -118,11 +83,12 @@ public class SequenceDS extends StructureDS {
     }
   }
 
-  public static abstract class Builder<T extends Builder<T>> extends StructureDS.Builder<T> {
+  public static abstract class Builder<T extends Builder<T>> extends Sequence.Builder<T> {
     private ucar.nc2.Sequence orgSeq;
+    private String orgName;
     private boolean built;
 
-    public T setOriginalVariable(Sequence orgVar) {
+    public T setOriginalSequence(Sequence orgVar) {
       this.orgSeq = orgVar;
       return self();
     }
@@ -132,27 +98,11 @@ public class SequenceDS extends StructureDS {
       return self();
     }
 
-    public T setUnits(String units) {
-      this.units = units;
-      if (units != null) {
-        addAttribute(new Attribute(CDM.UNITS, units));
-      }
-      return self();
-    }
-
-    public T setDesc(String desc) {
-      this.desc = desc;
-      if (desc != null) {
-        addAttribute(new Attribute(CDM.LONG_NAME, desc));
-      }
-      return self();
-    }
-
     /** Copy metadata from orgVar. */
     public T copyFrom(Sequence orgVar) {
       super.copyFrom(orgVar);
       for (Variable v : orgVar.getVariables()) {
-        Variable.Builder newVar;
+        Variable.Builder<?> newVar;
         if (v instanceof Sequence) {
           newVar = SequenceDS.builder().copyFrom((Sequence) v);
         } else if (v instanceof Structure) {
@@ -162,7 +112,7 @@ public class SequenceDS extends StructureDS {
         }
         addMemberVariable(newVar);
       }
-      setOriginalVariable(orgVar);
+      setOriginalSequence(orgVar);
       setOriginalName(orgVar.getShortName());
       return self();
     }

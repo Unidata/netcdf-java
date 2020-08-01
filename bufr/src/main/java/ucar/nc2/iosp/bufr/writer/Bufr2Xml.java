@@ -157,7 +157,7 @@ public class Bufr2Xml {
 
   // iterate through the observations
 
-  private void writeSequence(StructureDS s, StructureDataIterator sdataIter) throws IOException, XMLStreamException {
+  private void writeSequence(Structure s, StructureDataIterator sdataIter) throws IOException, XMLStreamException {
 
     int count = 0;
     try {
