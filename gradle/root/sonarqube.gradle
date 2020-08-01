@@ -14,7 +14,7 @@ buildscript {
   }
 }
 
-if (name != 'netcdf-java') {
+if (!name.equals(rootProject.name)) {
   throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
