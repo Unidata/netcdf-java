@@ -9,6 +9,7 @@ import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.CancelTask;
@@ -132,10 +133,12 @@ public class DatasetEnhancer {
     for (Variable.Builder vb : group.vbuilders) {
       if (vb instanceof StructureDS.Builder<?>) {
         enhanceStructure((StructureDS.Builder<?>) vb);
+      } else if (vb instanceof SequenceDS.Builder<?>) {
+        enhanceSequence((SequenceDS.Builder<?>) vb);
       } else if (vb instanceof VariableDS.Builder) {
         enhanceVariable((VariableDS.Builder) vb);
       } else {
-        throw new IllegalStateException("Not a VariableDS " + vb.shortName);
+        throw new IllegalStateException("Not a VariableDS " + vb);
       }
     }
 
@@ -148,6 +151,8 @@ public class DatasetEnhancer {
     for (Variable.Builder<?> vb : sdb.vbuilders) {
       if (vb instanceof StructureDS.Builder) {
         enhanceStructure((StructureDS.Builder) vb);
+      } else if (vb instanceof SequenceDS.Builder) {
+        enhanceSequence((SequenceDS.Builder) vb);
       } else if (vb instanceof VariableDS.Builder) {
         enhanceVariable((VariableDS.Builder) vb);
       } else {
@@ -156,24 +161,19 @@ public class DatasetEnhancer {
     }
   }
 
-  /*
-   * private void enhanceVariable(Variable.Builder v) {
-   * if ((wantEnhance.contains(Enhance.ConvertEnums) && !ds.enhanceMode.contains(Enhance.ConvertEnums))
-   * || (wantEnhance.contains(Enhance.ConvertUnsigned) && !ds.enhanceMode.contains(Enhance.ConvertUnsigned))
-   * || (wantEnhance.contains(Enhance.ApplyScaleOffset) && !ds.enhanceMode.contains(Enhance.ApplyScaleOffset))
-   * || (wantEnhance.contains(Enhance.ConvertMissing) && !ds.enhanceMode.contains(Enhance.ConvertMissing))) {
-   * 
-   * Variable newVar;
-   * if (v instanceof Sequence) {
-   * newVar = new SequenceDS(g, (Sequence) v);
-   * } else if (v instanceof Structure) {
-   * newVar = new StructureDS(g, (Structure) v);
-   * } else {
-   * newVar = new VariableDS(g, v, false); // enhancement done later
-   * }
-   * return newVar;
-   * }
-   */
+  private void enhanceSequence(SequenceDS.Builder<?> sdb) {
+    for (Variable.Builder<?> vb : sdb.vbuilders) {
+      if (vb instanceof StructureDS.Builder) {
+        enhanceStructure((StructureDS.Builder) vb);
+      } else if (vb instanceof SequenceDS.Builder) {
+        enhanceSequence((SequenceDS.Builder) vb);
+      } else if (vb instanceof VariableDS.Builder) {
+        enhanceVariable((VariableDS.Builder) vb);
+      } else {
+        throw new IllegalStateException("Not a VariableDS " + vb.shortName);
+      }
+    }
+  }
 
   private void enhanceVariable(VariableDS.Builder vb) {
     Set<Enhance> varEnhance = EnumSet.copyOf(wantEnhance);
