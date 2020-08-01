@@ -8,7 +8,7 @@ apply from: "$rootDir/gradle/any/java-library.gradle"
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
-  api platform(project(':netcdf-java-platform'))
+  api enforcedPlatform(project(':netcdf-java-platform'))
 
   api project(':cdm:cdm-core')
 
