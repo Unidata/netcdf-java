@@ -2,6 +2,7 @@ apply plugin: 'java-library'
 apply from: "$rootDir/gradle/any/javadoc.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 apply from: "$rootDir/gradle/any/spotless.gradle"
 
