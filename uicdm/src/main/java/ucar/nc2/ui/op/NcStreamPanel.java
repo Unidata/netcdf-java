@@ -4,8 +4,8 @@
  */
 package ucar.nc2.ui.op;
 
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.stream.NcStreamIosp;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
@@ -41,12 +41,9 @@ public class NcStreamPanel extends JPanel {
   private IndependentWindow infoWindow2, infoWindow3;
 
   private RandomAccessFile raf;
-  private NetcdfFile ncd;
+  private NetcdfFile ncfile;
   private NcStreamIosp iosp;
 
-  /**
-   *
-   */
   public NcStreamPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
@@ -90,9 +87,6 @@ public class NcStreamPanel extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public void save() {
     messTable.saveState(false);
     // prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
@@ -101,23 +95,17 @@ public class NcStreamPanel extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {
-    if (ncd != null) {
-      ncd.close();
+    if (ncfile != null) {
+      ncfile.close();
     }
-    ncd = null;
+    ncfile = null;
     raf = null;
     iosp = null;
   }
 
-  /**
-   *
-   */
   public void showInfo(Formatter f) {
-    if (ncd == null) {
+    if (ncfile == null) {
       return;
     }
     try {
@@ -127,25 +115,23 @@ public class NcStreamPanel extends JPanel {
     } catch (IOException e) {
       e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
     }
-    f.format("%n%s", ncd.toString()); // CDL
+    f.format("%n%s", ncfile.toString()); // CDL
   }
 
-  /**
-   *
-   */
   public void setNcStreamFile(String filename) throws IOException {
     closeOpenFiles();
 
     List<MessBean> messages = new ArrayList<>();
-    ncd = new NetcdfFileSubclass();
+    Group.Builder root = Group.builder();
     iosp = new NcStreamIosp();
     try {
       raf = new RandomAccessFile(filename, "r");
       List<NcStreamIosp.NcsMess> ncm = new ArrayList<>();
-      iosp.openDebug(raf, ncd, ncm);
+      iosp.openDebugNew(raf, root, ncm);
       for (NcStreamIosp.NcsMess m : ncm) {
         messages.add(new MessBean(m));
       }
+      ncfile = NetcdfFile.builder().setRootGroup(root).setLocation(filename).build();
     } finally {
       if (raf != null) {
         raf.close();
@@ -156,20 +142,11 @@ public class NcStreamPanel extends JPanel {
     // System.out.printf("mess = %d%n", messages.size());
   }
 
-  /**
-   *
-   */
   public static class MessBean {
     private NcStreamIosp.NcsMess m;
 
-    /**
-     *
-     */
     MessBean() {}
 
-    /**
-     *
-     */
     MessBean(NcStreamIosp.NcsMess m) {
       this.m = m;
     }

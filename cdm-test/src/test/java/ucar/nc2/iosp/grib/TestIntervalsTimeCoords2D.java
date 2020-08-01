@@ -102,7 +102,7 @@ public class TestIntervalsTimeCoords2D {
       if (best == null) {
         best = ncf.getRootGroup();
       }
-      Variable var = ncf.findVariableByAttribute(best, Grib.VARIABLE_ID_ATTNAME, parameter);
+      Variable var = best.findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, parameter);
       assert var != null : parameter;
       System.out.printf(" using variable %s%n", var.getFullName());
 

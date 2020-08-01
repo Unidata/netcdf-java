@@ -34,7 +34,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.rc.RC;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
@@ -59,9 +58,6 @@ public class NetcdfFiles {
 
   // load core service providers
   static {
-    // Make sure RC gets loaded
-    RC.initialize();
-
     // IOSPs can be loaded by reflection.
     // Most IOSPs are loaded using the ServiceLoader mechanism. One problem with this is that we no longer
     // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from

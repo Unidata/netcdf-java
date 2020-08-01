@@ -5,7 +5,6 @@
 
 package ucar.nc2.dataset.transform;
 
-import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -51,7 +50,7 @@ public abstract class AbstractTransformBuilder {
         }
       }
       if (units == null) {
-        Variable xvar = ds.findVariableByAttribute(null, _Coordinate.AxisType.toString(), AxisType.GeoX.toString());
+        Variable xvar = ds.getRootGroup().findVariableByAttribute(_Coordinate.AxisType, AxisType.GeoX.toString());
         if (xvar != null) {
           units = xvar.getUnitsString();
         }
@@ -121,7 +120,7 @@ public abstract class AbstractTransformBuilder {
     Attribute att = atts.findAttributeIgnoreCase(attname);
     if (att == null)
       return defValue;
-    if (att.isString())
+    else if (att.isString())
       return Double.parseDouble(att.getStringValue());
     else
       return att.getNumericValue().doubleValue();

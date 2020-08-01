@@ -57,7 +57,6 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     }
 
     this.ncfile = ncfileb.build();
-    this.ncfile.finish();
 
     this.headerw = new N3headerWriter(this, raf);
     headerw.setNcfile(this.ncfile);
@@ -88,7 +87,6 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     this.header = headerw;
 
     this.ncfile = ncfileb.build();
-    this.ncfile.finish();
     headerw.setNcfile(this.ncfile);
 
     for (Variable v : this.ncfile.getVariables()) {
