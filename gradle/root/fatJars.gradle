@@ -16,7 +16,7 @@ buildscript {
   }
 }
 
-if (name != 'netcdf-java') {
+if (!name.equals(rootProject.name)) {
   throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
@@ -36,7 +36,7 @@ configurations {
 }
 
 dependencies {
-  toolsUI platform(project(':netcdf-java-platform'))
+  toolsUI enforcedPlatform(project(':netcdf-java-platform'))
   toolsUI project(':uicdm')
   toolsUI 'ch.qos.logback:logback-classic'
 }

@@ -5,7 +5,7 @@ apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-  compile platform(project(':netcdf-java-platform'))
+  compile enforcedPlatform(project(':netcdf-java-platform'))
 
   // todo: a lot of these could probably be runtimeOnly
   compile project(':cdm:cdm-core')

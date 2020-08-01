@@ -12,7 +12,7 @@ javaPlatform {
 }
 
 dependencies {
-  api platform(project(':netcdf-java-platform'))
+  api enforcedPlatform(project(':netcdf-java-platform'))
   constraints {
     api project(':bufr')
     api project(':cdm:cdm-core')
