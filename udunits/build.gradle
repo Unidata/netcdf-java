@@ -10,7 +10,7 @@ apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
-  api platform(project(':netcdf-java-platform'))
+  api enforcedPlatform(project(':netcdf-java-platform'))
 
   implementation 'com.google.code.findbugs:jsr305'
 

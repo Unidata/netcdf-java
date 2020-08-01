@@ -5,7 +5,7 @@ apply from: "$rootDir/gradle/any/java-library.gradle"
 apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
-  api platform(project(':netcdf-java-platform'))
+  api enforcedPlatform(project(':netcdf-java-platform'))
   api 'com.google.guava:guava'
   api 'org.apache.httpcomponents:httpclient'
   api 'org.apache.httpcomponents:httpcore'
