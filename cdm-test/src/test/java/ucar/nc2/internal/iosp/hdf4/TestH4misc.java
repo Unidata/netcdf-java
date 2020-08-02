@@ -69,5 +69,11 @@ public class TestH4misc {
     }
   }
 
+  @Test
+  public void readProblem() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/hdf4/eos/misr/MISR_AM1_AGP_P040_F01_24.subset.eos";
+    TestDir.readAll(filename);
+  }
+
 
 }

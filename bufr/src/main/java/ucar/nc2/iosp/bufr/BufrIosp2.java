@@ -64,6 +64,9 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
     scanner = new MessageScanner(raf);
+    // TODO We have a problem - we havent finished building but we need to read the first message to use as the
+    // protoMessage.
+    // TODO Possible only trouble when theres an EmbeddedTable?
     protoMessage = scanner.getFirstDataMessage();
     if (protoMessage == null)
       throw new IOException("No data messages in the file= " + raf.getLocation());
@@ -85,10 +88,13 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     connectSequences(obsStructure.getVariables(), protoMessage.getRootDataDescriptor().getSubKeys());
   }
 
-  private void connectSequences(List<Variable> variables, List<DataDescriptor> dataDescriptors) {
+  static void connectSequences(List<Variable> variables, List<DataDescriptor> dataDescriptors) {
     for (Variable v : variables) {
       if (v instanceof Sequence) {
-        findDataDescriptor(dataDescriptors, v.getShortName()).ifPresent(dds -> dds.refersTo = (Sequence) v);
+        findDataDescriptor(dataDescriptors, v.getShortName()).ifPresent(dds -> {
+          dds.refersTo = (Sequence) v;
+          // System.out.printf("connectSequences %s with %s%n", dds, v);
+        });
       }
       if (v instanceof Structure) { // recurse
         findDataDescriptor(dataDescriptors, v.getShortName())
@@ -97,7 +103,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     }
   }
 
-  private Optional<DataDescriptor> findDataDescriptor(List<DataDescriptor> dataDescriptors, String name) {
+  private static Optional<DataDescriptor> findDataDescriptor(List<DataDescriptor> dataDescriptors, String name) {
     Optional<DataDescriptor> ddsOpt = dataDescriptors.stream().filter(d -> name.equals(d.name)).findFirst();
     if (ddsOpt.isPresent()) {
       return ddsOpt;
