@@ -69,6 +69,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     builder.setTimeHelper(new CoordinateAxisTimeHelper(getCalendarFromAttribute(ncd, org.attributes()), null));
     builder.addAttributes(org.attributes());
+    if (org instanceof CoordinateAxis) {
+      builder.setAxisType(((CoordinateAxis) org).axisType);
+    }
     return builder.build(org.getParentGroupOrRoot());
   }
 
@@ -127,6 +130,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     builder.setDimensions(dims);
     builder.addAttributes(org.attributes());
 
+    if (org instanceof CoordinateAxis) {
+      builder.setAxisType(((CoordinateAxis) org).axisType);
+    }
     return builder.build(org.getParentGroupOrRoot());
   }
 

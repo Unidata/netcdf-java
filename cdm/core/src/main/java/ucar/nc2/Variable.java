@@ -1457,14 +1457,18 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   // Add local fields to the passed - in builder.
-  // This makes an exact copy, including ncfile and parent and proxyReader.
-  // build() replaces parent but respects ncfile and proxyReader.
-  // Normally on a copy you want to set proxyReader to null;
+  // This makes an almost exact copy, including ncfile, parentStructure, and parentGroup
+  // proxyReader is set only if its different from this
+  // build() replaces parentGroup always.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
     builder.setName(this.shortName).setNcfile(this.ncfile).setParentStructure(this.getParentStructure())
         .setDataType(this.dataType).setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
-        .addDimensions(this.dimensions).addAttributes(this.attributes).setProxyReader(this.proxyReader)
-        .setSPobject(this.spiObject);
+        .addDimensions(this.dimensions).addAttributes(this.attributes).setSPobject(this.spiObject);
+
+    // Only set ProxyReader if its not this
+    if (this.proxyReader != this) {
+      builder.setProxyReader(this.proxyReader);
+    }
 
     if (this.cache.isMetadata) {
       builder.setCachedData(this.cache.data, true);
@@ -1801,7 +1805,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       this.parentBuilder = builder.parentBuilder;
       setParentStructure(builder.parentStruct);
       setParentStructureBuilder(builder.parentStructureBuilder);
-      setProxyReader(builder.proxyReader);
+      setProxyReader(builder.proxyReader); // ??
       setName(builder.shortName);
       setSPobject(builder.spiObject);
       return self();

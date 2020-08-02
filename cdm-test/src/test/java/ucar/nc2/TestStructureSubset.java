@@ -41,7 +41,7 @@ public class TestStructureSubset {
     Structure record = (Structure) ncfile.findVariable("record");
     assert record != null;
 
-    List<String> vars = new ArrayList<String>();
+    List<String> vars = new ArrayList<>();
     vars.add("wind_speed");
     vars.add("wind_gust");
     vars.add("report");
@@ -64,7 +64,6 @@ public class TestStructureSubset {
 
   @Test
   public void testReadStructureSection() throws IOException, InvalidRangeException {
-
     Structure record = (Structure) ncfile.findVariable("record");
     assert record != null;
 

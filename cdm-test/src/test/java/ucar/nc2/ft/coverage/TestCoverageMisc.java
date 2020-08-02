@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Optional;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -72,6 +73,7 @@ public class TestCoverageMisc {
   }
 
   @Test
+  @Ignore("needs Nc4Iosp")
   public void TestCFGridCoverageWriterSize() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     logger.info("open {}", endpoint);
@@ -174,11 +176,10 @@ public class TestCoverageMisc {
   }
 
   // CFGridCoverageWriter2 adds another (dependent) time coordinate, so test that file
-
   @Test
   public void TestCFWriterCoverageRead() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/test/GFS_CONUS_80km_20120227_0000.grib1.nc4";
-    logger.info("open {}", endpoint);
+    System.out.printf("TestCFWriterCoverageRead %s%n", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
