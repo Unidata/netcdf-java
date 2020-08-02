@@ -1,29 +1,22 @@
 package ucar.nc2.iosp.bufr;
 
-import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Formatter;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
-import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Compare objects in BufrIosp with and without builders.
- */
+/** Read all data in a BUFR file. */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
-public class TestBufrCompareBuilders {
+public class TestBufrReadAllData {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static String testDir = TestDir.cdmUnitTestDir + "/formats/bufr/userExamples";
 
@@ -40,23 +33,14 @@ public class TestBufrCompareBuilders {
 
   private String filename;
 
-  public TestBufrCompareBuilders(String filename) {
+  public TestBufrReadAllData(String filename) {
     this.filename = filename;
   }
 
   @Test
   public void compareWithBuilder() throws IOException {
-    System.out.printf("TestBuilders on %s%n", filename);
-    try (NetcdfFile org = NetcdfFiles.open(filename)) {
-      try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
-        Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        if (!compare.compare(org, withBuilder, null)) {
-          System.out.printf("Compare %s%n%s%n", filename, f);
-          fail();
-        }
-      }
-    }
+    System.out.printf("Test read all variables for  on %s%n", filename);
+    TestDir.readAll(filename);
   }
 }
 

@@ -148,7 +148,6 @@ class Construct2 {
   }
 
   private void addSequence(Structure.Builder<?> parent, BufrConfig.FieldConverter fld) {
-
     DataDescriptor dkey = fld.dds;
     String uname = findUniqueName(parent, fld.getName(), "seq");
     dkey.name = uname; // name may need to be changed for uniqueness
@@ -157,15 +156,22 @@ class Construct2 {
     // String seqName = dataDesc.name != null ? dataDesc.name : "seq" + seqNum++;
 
     Sequence.Builder<?> seq = Sequence.builder().setName(uname);
-
     for (BufrConfig.FieldConverter subKey : fld.flds) {
       addMember(seq, subKey);
     }
-
     parent.addMemberVariable(seq);
     seq.setSPobject(fld);
 
-    // TODO dkey.refersTo = seq;
+    // LOOK EmbeddedTable needs to be able to read the first message with a built Sequence.
+    // SO we create a temporary one as a workaround.
+    Sequence.Builder<?> seqTemp = Sequence.builder().setName(uname);
+    for (BufrConfig.FieldConverter subKey : fld.flds) {
+      addMember(seqTemp, subKey);
+    }
+    seqTemp.setSPobject(fld);
+
+    dkey.refersTo = seqTemp.build(Group.builder().build());
+    dkey.refersToName = seq.shortName;
   }
 
   private void addMember(Structure.Builder<?> parent, BufrConfig.FieldConverter fld) {

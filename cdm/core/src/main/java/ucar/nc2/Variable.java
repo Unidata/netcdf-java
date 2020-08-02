@@ -1338,7 +1338,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   private final Group parentGroup;
   private final Structure parentStructure;
   protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens. may be null if
-                                     // Variable is self contained.
+                                     // Variable is self contained (eg NcML)
   protected DataType dataType; // TODO not final, so VariableDS can override, is there a better solution?
   private final EnumTypedef enumTypedef;
   protected final ImmutableList<Dimension> dimensions;

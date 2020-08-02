@@ -21,11 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Read all hdf4 files in cdmUnitTestDir + "formats/hdf4/"
- *
- * @author caron
- */
+/** Read all hdf4 files in cdmUnitTestDir + "formats/hdf4/" */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestH4readAll {
@@ -66,6 +62,7 @@ public class TestH4readAll {
 
   @Test
   public void readAll() throws IOException {
+    System.out.printf("TestH4readAll %s%n", filename);
     TestDir.readAll(filename);
   }
 

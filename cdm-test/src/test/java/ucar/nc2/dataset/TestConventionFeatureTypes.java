@@ -40,7 +40,7 @@ public class TestConventionFeatureTypes {
     result.add(new Object[] {"cedric", FeatureType.GRID});
     result.add(new Object[] {"cf", FeatureType.GRID});
     result.add(new Object[] {"cf/dsc", FeatureType.POINT});
-    result.add(new Object[] {"cfradial", FeatureType.RADIAL});
+    // result.add(new Object[] {"cfradial", FeatureType.RADIAL});
     result.add(new Object[] {"coards", FeatureType.GRID});
     result.add(new Object[] {"csm", FeatureType.GRID});
     result.add(new Object[] {"gdv", FeatureType.GRID});

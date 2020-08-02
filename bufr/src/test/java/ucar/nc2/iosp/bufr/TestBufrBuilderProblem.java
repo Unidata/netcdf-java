@@ -24,23 +24,15 @@ public class TestBufrBuilderProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "/formats/bufr/userExamples/20120317_1800_JUBE99_EGRR.bufr";
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/gdas1.t18z.osbuv8.tm00.bufr_d";
     // showOrg(filename);
     // showNew(filename);
-    compareWithBuilder(filename);
+    testRead(filename);
   }
 
-  private void compareWithBuilder(String filename) throws IOException {
-    logger.info("TestBuilders on {}%n", filename);
-    try (NetcdfFile org = NetcdfFiles.open(filename)) {
-      try (NetcdfFile withBuilder = NetcdfFiles.open(filename)) {
-        Formatter f = new Formatter();
-        CompareNetcdf2 compare = new CompareNetcdf2(f, false, false, true);
-        boolean ok = compare.compare(org, withBuilder, null);
-        System.out.printf("%s %s%n", ok ? "OK" : "NOT OK", f);
-        assertThat(ok).isTrue();
-      }
-    }
+  private void testRead(String filename) throws IOException {
+    System.out.printf("Test read all variables for  on %s%n", filename);
+    TestDir.readAll(filename);
   }
 
   @Test
