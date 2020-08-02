@@ -1,4 +1,4 @@
-package ucar.nc2.dataset;
+package ucar.nc2.dt.radial;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,9 +15,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
-/**
- * Created by rmay on 3/7/14.
- */
+/** Created by rmay on 3/7/14. */
 @Category(NeedsCdmUnitTest.class)
 public class TestCFRadial {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

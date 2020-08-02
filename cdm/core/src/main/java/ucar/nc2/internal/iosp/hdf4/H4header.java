@@ -721,6 +721,7 @@ public class H4header implements HdfHeaderIF {
     Structure.Builder<?> sb = Structure.builder().setName(vh.name);
     vinfo.setVariable(sb);
     sb.setSPobject(vinfo);
+    sb.setNcfile(ncfile);
 
     if (vh.nvert > 1)
       sb.setDimensionsAnonymous(new int[] {vh.nvert});

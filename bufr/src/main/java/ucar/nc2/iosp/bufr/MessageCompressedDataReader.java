@@ -463,7 +463,7 @@ public class MessageCompressedDataReader {
     StructureMembers members = null;
     HashMap<DataDescriptor, StructureMembers.Member> nmap = null;
     if (req.map != null) {
-      Sequence seq = (Sequence) seqdd.refersTo;
+      Sequence seq = seqdd.refersTo;
       int[] shape = {ndatasets, count}; // seems unlikely this can handle recursion
       ama = ArrayStructureMA.factoryMA(seq, shape);
       setIterators(ama);

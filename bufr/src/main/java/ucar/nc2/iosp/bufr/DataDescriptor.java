@@ -48,6 +48,7 @@ public class DataDescriptor {
 
   AssociatedField assField; // associated field == 02 04 Y, Y number of extra bits
   Sequence refersTo; // needed for nested sequence objects
+  String refersToName; // needed for nested sequence objects
   DataDescriptorTreeConstructor.DataPresentIndicator dpi;
 
   DataDescriptor() {}
