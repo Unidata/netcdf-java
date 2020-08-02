@@ -186,13 +186,16 @@ public class NetcdfCopier {
 
     // dimensions
     for (Dimension oldD : oldGroup.getDimensions()) {
-      Dimension newD = Dimension.builder().setName(oldD.getShortName()).setIsShared(oldD.isShared())
-          .setIsUnlimited(oldD.isUnlimited()).setIsVariableLength(oldD.isVariableLength())
-          .setLength(oldD.isUnlimited() ? 0 : oldD.getLength()) // unlimited already set, 0 allowed
-          .build();
-      newGroup.addDimension(newD);
+      Dimension newDim;
+      if (oldD.isUnlimited()) {
+        newDim = new UnlimitedDimension(oldD.getShortName(), 0);
+      } else {
+        newDim = Dimension.builder().setName(oldD.getShortName()).setIsShared(oldD.isShared())
+            .setIsVariableLength(oldD.isVariableLength()).setLength(oldD.getLength()).build();
+      }
+      newGroup.addDimension(newDim);
       if (debug) {
-        System.out.println("add dim= " + newD);
+        System.out.println("add dim= " + newDim);
       }
     }
 
