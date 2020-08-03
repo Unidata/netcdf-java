@@ -331,7 +331,7 @@ public class NcStreamReader {
     Group.Builder rootBuilder = Group.builder().setNcfile(ncfile).setName("");
     NcStream.readGroup(root, rootBuilder);
     ncfile.setRootGroup(rootBuilder.build());
-    ncfile.finish();
+    // TODO ncfile.finish();
     return ncfile;
   }
 

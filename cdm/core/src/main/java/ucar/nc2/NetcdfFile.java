@@ -183,29 +183,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Public by accident.
-   * Get the name used in the cache, if any.
-   *
-   * @return name in the cache.
-   * @deprecated do not use
-   */
-  @Deprecated
-  public String getCacheName() {
-    return cacheName;
-  }
-
-  /**
-   * Public by accident.
-   *
-   * @param cacheName name in the cache, should be unique for this NetcdfFile. Usually the location.
-   * @deprecated do not use
-   */
-  @Deprecated
-  protected void setCacheName(String cacheName) {
-    this.cacheName = cacheName;
-  }
-
-  /**
    * Get the NetcdfFile location. This is a URL, or a file pathname.
    *
    * @return location URL or file pathname.
@@ -269,22 +246,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   //////////////////////////////////////////////////////////////////////////////////////
   // compatibilty API
-
-  /**
-   * Find a Variable by short name, in the given group.
-   *
-   * @param g A group in this file. Null for root group.
-   * @param shortName short name of the Variable.
-   * @return Variable if found, else null.
-   * @deprecated use g.findVariable(shortName)
-   */
-  @Deprecated
-  @Nullable
-  public Variable findVariable(Group g, String shortName) {
-    if (g == null)
-      return findVariable(shortName);
-    return g.findVariableLocal(shortName);
-  }
 
   /**
    * Find a Variable, with the specified (escaped full) name.
@@ -397,21 +358,21 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Nullable
   public Dimension getUnlimitedDimension() {
-    for (Dimension d : dimensions) {
+    for (Dimension d : allDimensions) {
       if (d.isUnlimited())
         return d;
     }
     return null;
   }
 
-  /** Get the shared Dimensions used in this file. */
+  /** Get all shared Dimensions used in this file. */
   public ImmutableList<Dimension> getDimensions() {
-    return ImmutableList.copyOf(dimensions);
+    return allDimensions;
   }
 
   /** Get all of the variables in the file, in all groups. Alternatively, use groups. */
   public ImmutableList<Variable> getVariables() {
-    return ImmutableList.copyOf(variables);
+    return allVariables;
   }
 
   /**
@@ -419,7 +380,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * with the root group, or any subgroup. Alternatively, use groups.
    */
   public ImmutableList<Attribute> getGlobalAttributes() {
-    return ImmutableList.copyOf(gattributes);
+    return allAttributes;
   }
 
   /**
@@ -430,7 +391,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Nullable
   public Attribute findGlobalAttribute(String attName) {
-    for (Attribute a : gattributes) {
+    for (Attribute a : allAttributes) {
       if (attName.equals(a.getShortName()))
         return a;
     }
@@ -445,7 +406,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Nullable
   public Attribute findGlobalAttributeIgnoreCase(String name) {
-    for (Attribute a : gattributes) {
+    for (Attribute a : allAttributes) {
       if (name.equalsIgnoreCase(a.getShortName()))
         return a;
     }
@@ -655,7 +616,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @param location location of data
    */
   NetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
-
     this.iosp = spi;
     this.location = location;
 
@@ -696,21 +656,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
     if (title == null)
       setTitle(rootGroup.findAttributeString("_Title", null));
 
-    finish();
-  }
-
-  /**
-   * Open an existing netcdf file (read only) , but dont do nuttin else
-   * Use NetcdfFileSubclass to access this constructor
-   *
-   * @param spi use this IOServiceProvider instance
-   * @param location location of data
-   * @deprecated use NetcdfFile.builder()
-   */
-  @Deprecated
-  NetcdfFile(IOServiceProvider spi, String location) {
-    this.iosp = spi;
-    this.location = location;
+    // TODO
+    // finish();
   }
 
   /**
@@ -721,21 +668,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Deprecated
   protected NetcdfFile() {}
-
-  /**
-   * Copy constructor, used by NetcdfDataset.
-   * Shares the iosp.
-   *
-   * @param ncfile copy from here
-   * @deprecated use NetcdfFile.builder()
-   */
-  @Deprecated
-  protected NetcdfFile(NetcdfFile ncfile) {
-    this.location = ncfile.getLocation();
-    this.id = ncfile.getId();
-    this.title = ncfile.getTitle();
-    this.iosp = ncfile.iosp;
-  }
 
   /**
    * Public by accident.
@@ -770,7 +702,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       boolean gotit = (v instanceof Structure);
       if (gotit) {
         // TODO rootGroup.remove(v);
-        variables.remove(v);
+        allVariables.remove(v);
         removeRecordStructure();
       }
       return (gotit);
@@ -790,9 +722,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Deprecated
   protected boolean makeRecordStructure() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-
     Boolean didit = false;
     if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
       didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -802,9 +731,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   @Deprecated
   protected boolean removeRecordStructure() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-
     Boolean didit = false;
     if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
       didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
@@ -820,8 +746,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Deprecated
   public void setId(String id) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.id = id;
   }
 
@@ -833,8 +757,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Deprecated
   public void setTitle(String title) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.title = title;
   }
 
@@ -846,8 +768,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    */
   @Deprecated
   public void setLocation(String location) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     this.location = location;
   }
 
@@ -855,33 +775,16 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return Group.builder().setNcfile(this).setName("").build();
   }
 
-  /**
-   * Finish constructing the object model.
-   * This construsts the "global" variables, attributes and dimensions.
-   * It also looks for coordinate variables.
-   *
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public void finish() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    variables = new ArrayList<>();
-    dimensions = new ArrayList<>();
-    gattributes = new ArrayList<>();
-    finishGroup(rootGroup);
-  }
-
   private void finishGroup(Group g) {
-    variables.addAll(g.getVariables());
+    allVariables.addAll(g.getVariables());
 
     // LOOK should group atts be promoted to global atts?
     for (Attribute oldAtt : g.attributes()) {
       if (g == rootGroup) {
-        gattributes.add(oldAtt);
+        allAttributes.add(oldAtt);
       } else {
         String newName = NetcdfFiles.makeFullNameWithString(g, oldAtt.getShortName()); // LOOK fishy
-        gattributes.add(oldAtt.toBuilder().setName(newName).build());
+        allAttributes.add(oldAtt.toBuilder().setName(newName).build());
       }
     }
 
@@ -889,10 +792,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
     for (Dimension oldDim : g.getDimensions()) {
       if (oldDim.isShared()) {
         if (g == rootGroup) {
-          dimensions.add(oldDim);
+          allDimensions.add(oldDim);
         } else {
           String newName = NetcdfFiles.makeFullNameWithString(g, oldDim.getShortName()); // LOOK fishy
-          dimensions.add(oldDim.toBuilder().setName(newName).build());
+          allDimensions.add(oldDim.toBuilder().setName(newName).build());
 
         }
       }
@@ -1121,7 +1024,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return "N/A";
   }
 
-
   /**
    * Get the version of this file type.
    *
@@ -1141,20 +1043,15 @@ public class NetcdfFile implements FileCacheable, Closeable {
   protected Group rootGroup = makeRootGroup();
   @Nullable
   protected IOServiceProvider iosp;
-  private boolean immutable;
 
   // LOOK can we get rid of internal caching?
-  private String cacheName;
   protected FileCacheIF cache;
 
   // TODO get rid of these in ver 6, or make them private.
   // "global view" over all groups.
-  @Deprecated
-  protected List<Variable> variables;
-  @Deprecated
-  protected List<Dimension> dimensions;
-  @Deprecated
-  protected List<Attribute> gattributes;
+  protected ImmutableList<Variable> allVariables;
+  protected ImmutableList<Dimension> allDimensions;
+  protected ImmutableList<Attribute> allAttributes;
 
   protected NetcdfFile(Builder<?> builder) {
     this.location = builder.location;
@@ -1169,8 +1066,29 @@ public class NetcdfFile implements FileCacheable, Closeable {
       builder.iosp.setNetcdfFile(this);
       this.iosp = builder.iosp;
     }
-    finish(); // LOOK
+
+    // all global attributes, dimensions, variables
+    ImmutableList.Builder<Attribute> alist = ImmutableList.builder();
+    ImmutableList.Builder<Dimension> dlist = ImmutableList.builder();
+    ImmutableList.Builder<Variable> vlist = ImmutableList.builder();
+    finishGroup(rootGroup, alist, dlist, vlist);
+    allAttributes = alist.build();
+    allDimensions = dlist.build();
+    allVariables = vlist.build();
   }
+
+  private void finishGroup(Group group, ImmutableList.Builder<Attribute> alist, ImmutableList.Builder<Dimension> dlist,
+      ImmutableList.Builder<Variable> vlist) {
+
+    alist.addAll(group.attributes());
+    group.getDimensions().stream().filter(Dimension::isShared).forEach(dlist::add);
+    vlist.addAll(group.getVariables());
+
+    for (Group nested : group.getGroups()) {
+      finishGroup(nested, alist, dlist, vlist);
+    }
+  }
+
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder<?> toBuilder() {

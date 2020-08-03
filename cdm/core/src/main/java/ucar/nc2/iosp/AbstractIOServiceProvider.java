@@ -102,7 +102,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     return null;
   }
 

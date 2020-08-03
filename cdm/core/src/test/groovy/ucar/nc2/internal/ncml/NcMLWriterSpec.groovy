@@ -132,7 +132,6 @@ recordsGroup/recordsStruct = UNREADABLE
 
         and: "finish"
         ncFile = NetcdfFile.builder().setRootGroup(root).build();
-        ncFile.finish();
 
         printf "CDL %s%n", ncFile
     }
@@ -180,11 +179,8 @@ recordsGroup/recordsStruct = UNREADABLE
         Format xmlFormat = Format.rawFormat.setOmitDeclaration(true)
         NcmlWriter ncmlWriterO = new NcmlWriter(namespace, xmlFormat, null);
 
-        NetcdfFile emptyNcFile = new NetcdfFileSubclass()
-        emptyNcFile.setLocation("file:SOME_FILE");
-        emptyNcFile.setId("SOME_ID")
-        emptyNcFile.setTitle("NcmlWriter Test")
-        emptyNcFile.finish()
+        NetcdfFile.Builder builder = NetcdfFile.builder().setLocation("file:SOME_FILE").setId("SOME_ID").setTitle("NcmlWriter Test");
+        NetcdfFile emptyNcFile = builder.setRootGroup(Group.builder()).build();
 
         expect:
         Element netcdfElem = ncmlWriterO.makeNetcdfElement(emptyNcFile, null)

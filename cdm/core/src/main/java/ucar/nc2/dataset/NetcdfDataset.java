@@ -379,7 +379,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   @Deprecated
   public void sort() {
-    variables.sort(new VariableComparator());
+    allVariables.sort(new VariableComparator());
     coordAxes.sort(new VariableComparator());
   }
 
@@ -402,14 +402,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////////////////////////////
   // used by NcMLReader for NcML without a referenced dataset
-
-  /**
-   * No-arg Constructor
-   * 
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public NetcdfDataset() {}
 
   /**
    * A NetcdfDataset usually wraps a NetcdfFile, where the actual I/O happens.
@@ -697,15 +689,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // CoordinatesHelper has to wire the coordinate systems together
     // Perhaps a VariableDS uses NetcdfDataset or CoordinatesHelper to manage its CoordinateSystems and Transforms ??
     // So it doesnt need a reference directly to them.
-    for (Variable v : this.variables) {
+    for (Variable v : this.allVariables) {
       // TODO anything needed to do for a StructureDS ??
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;
         vds.setCoordinateSystems(coords);
       }
     }
-
-    finish(); // LOOK
   }
 
   public Builder<?> toBuilder() {
@@ -714,8 +704,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   public NetcdfDataset(NetcdfFile.Builder<?> builder) {
     super(builder);
-    // LOOK this.orgFile = builder.orgFile;
-    finish(); // LOOK
   }
 
   // Add local fields to the passed - in builder.
