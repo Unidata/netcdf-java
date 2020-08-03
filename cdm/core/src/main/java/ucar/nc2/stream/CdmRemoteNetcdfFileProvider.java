@@ -21,7 +21,7 @@ public class CdmRemoteNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-    return new CdmRemote(location);
+    return CdmRemote.builder().setRemoteURI(location).build();
   }
 
 }

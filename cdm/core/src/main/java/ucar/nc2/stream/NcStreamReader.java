@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
 import java.io.ByteArrayInputStream;
@@ -45,18 +44,18 @@ public class NcStreamReader {
     return result;
   }
 
-  public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
+  void readHeader(InputStream is, NetcdfFile.Builder ncfile) throws IOException {
     byte[] b = new byte[4];
     NcStream.readFully(is, b);
 
     // starts with MAGIC_START, MAGIC_HEADER or just MAGIC_HEADER
     if (NcStream.test(b, NcStream.MAGIC_START)) {
       if (!NcStream.readAndTest(is, NcStream.MAGIC_HEADER))
-        throw new IOException("Data corrupted on " + ncfile.getLocation());
+        throw new IOException("Data corrupted on " + ncfile.location);
 
     } else {
       if (!NcStream.test(b, NcStream.MAGIC_HEADER))
-        throw new IOException("Data corrupted on " + ncfile.getLocation());
+        throw new IOException("Data corrupted on " + ncfile.location);
     }
 
     // header
@@ -69,9 +68,10 @@ public class NcStreamReader {
     }
 
     NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
-    ncfile = proto2nc(proto, ncfile);
-    if (debug)
+    proto2nc(proto, ncfile);
+    if (debug) {
       System.out.printf("  proto= %s%n", proto);
+    }
 
     // LOOK why doesnt this work ?
     // CodedInputStream cis = CodedInputStream.newInstance(is);
@@ -84,8 +84,6 @@ public class NcStreamReader {
      * readData(is, ncfile, ncfile.getLocation());
      * }
      */
-
-    return ncfile;
   }
 
   public static class DataResult {
@@ -318,9 +316,7 @@ public class NcStreamReader {
 
   /////////////////////////////////////////////////////////////////////
 
-  private NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) {
-    if (ncfile == null)
-      ncfile = new NetcdfFileSubclass(); // not used i think
+  private void proto2nc(NcStreamProto.Header proto, NetcdfFile.Builder<?> ncfile) {
     ncfile.setLocation(proto.getLocation());
     if (!proto.getId().isEmpty())
       ncfile.setId(proto.getId());
@@ -328,11 +324,9 @@ public class NcStreamReader {
       ncfile.setTitle(proto.getTitle());
 
     NcStreamProto.Group root = proto.getRoot();
-    Group.Builder rootBuilder = Group.builder().setNcfile(ncfile).setName("");
+    Group.Builder rootBuilder = Group.builder();
     NcStream.readGroup(root, rootBuilder);
-    ncfile.setRootGroup(rootBuilder.build());
-    // TODO ncfile.finish();
-    return ncfile;
+    ncfile.setRootGroup(rootBuilder);
   }
 
 }
