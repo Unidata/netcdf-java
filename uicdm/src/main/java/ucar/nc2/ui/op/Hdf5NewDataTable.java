@@ -7,7 +7,7 @@ package ucar.nc2.ui.op;
 
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5diagNew;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
@@ -142,9 +142,8 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     List<VarBean> beanList = new ArrayList<>();
 
     iosp = new H5iospNew();
-    ncfile = new NetcdfFileSubclass(iosp, location);
     try {
-      iosp.open(raf, ncfile, null);
+      ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(20000);
       t.printStackTrace(new PrintWriter(sw));

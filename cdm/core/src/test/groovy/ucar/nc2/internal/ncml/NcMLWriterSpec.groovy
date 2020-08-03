@@ -262,7 +262,7 @@ recordsGroup/recordsStruct = UNREADABLE
         File outFile = File.createTempFile("NcMLWriterSpec", ".ncml")
 
         when: "write NcML to file"
-        Element netcdfElem = ncmlWriterO.makeExplicitNetcdfElement(ncFile, null)
+        Element netcdfElem = ncmlWriterO.makeExplicitNetcdfElement(ncFile, "")
         ncmlWriterO.writeToFile(netcdfElem, outFile)
 
         then: "file's content matches expectedNcmlResult"
@@ -272,8 +272,7 @@ recordsGroup/recordsStruct = UNREADABLE
         NetcdfDataset readerDataset = NetcdfDatasets.openDataset(outFile.toURI().toURL().toString(), false, null)
 
         and: "get the NcML representation of the dataset"
-        readerDataset.setLocation(null)  // Leaving this non-null would screw up our comparison.
-        Element readerNetcdfElem = ncmlWriterO.makeExplicitNetcdfElement(readerDataset, null)
+        Element readerNetcdfElem = ncmlWriterO.makeExplicitNetcdfElement(readerDataset, "")
 
         then: "it matches expectedNcmlResult"
         ncmlWriterO.writeToString(readerNetcdfElem) == expectedNcmlResult

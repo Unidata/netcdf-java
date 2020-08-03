@@ -16,6 +16,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +29,12 @@ import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.write.NcmlWriter;
-import ucar.unidata.io.RandomAccessFile;
 
 /**
  * <p>
@@ -95,6 +94,7 @@ import ucar.unidata.io.RandomAccessFile;
  * </ol>
  * </p>
  */
+@Immutable
 public class NetcdfFile implements FileCacheable, Closeable {
   private static final Logger log = LoggerFactory.getLogger(NetcdfFile.class);
 
@@ -606,79 +606,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Open an existing netcdf file, passing in the iosp and the raf.
-   * Use NetcdfFileSubclass to access this constructor
-   *
-   * @param spi use this IOServiceProvider instance
-   * @param raf read from this RandomAccessFile
-   * @param cancelTask allow user to cancel
-   * @param location location of data
-   */
-  NetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
-    this.iosp = spi;
-    this.location = location;
-
-    if (debugSPI)
-      log.info("NetcdfFile uses iosp = {}", spi.getClass().getName());
-
-    try {
-      // spi.open(raf, this, cancelTask);
-      spi.build(raf, Group.builder(), cancelTask);
-
-    } catch (IOException | RuntimeException e) {
-      try {
-        spi.close();
-      } catch (Throwable t1) {
-      }
-      try {
-        raf.close();
-      } catch (Throwable t2) {
-      }
-      this.iosp = null;
-      throw e;
-
-    } catch (Throwable t) {
-      try {
-        spi.close();
-      } catch (Throwable t1) {
-      }
-      try {
-        raf.close();
-      } catch (Throwable t2) {
-      }
-      this.iosp = null;
-      throw new RuntimeException(t);
-    }
-
-    if (id == null)
-      setId(rootGroup.findAttributeString("_Id", null));
-    if (title == null)
-      setTitle(rootGroup.findAttributeString("_Title", null));
-
-    // TODO
-    // finish();
-  }
-
-  /**
-   * For subclass construction.
-   * Use NetcdfFileSubclass to access this constructor
-   *
-   * @deprecated use NetcdfFile.builder()
-   */
-  @Deprecated
-  protected NetcdfFile() {}
-
-  /**
-   * Public by accident.
-   *
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public void setRootGroup(Group rootGroup) {
-    this.rootGroup = rootGroup;
-  }
-
-  /**
    * Generic way to send a "message" to the underlying IOSP.
    * This message is sent after the file is open. To affect the creation of the file,
    * use a factory method like NetcdfFile.open().
@@ -737,74 +664,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return (didit != null) && didit;
   }
 
-  /**
-   * Set the globally unique dataset identifier.
-   *
-   * @param id the id
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  /**
-   * Set the dataset "human readable" title.
-   *
-   * @param title the title
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  /**
-   * Set the location, a URL or local filename.
-   *
-   * @param location the location
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
   private Group makeRootGroup() {
     return Group.builder().setNcfile(this).setName("").build();
-  }
-
-  private void finishGroup(Group g) {
-    allVariables.addAll(g.getVariables());
-
-    // LOOK should group atts be promoted to global atts?
-    for (Attribute oldAtt : g.attributes()) {
-      if (g == rootGroup) {
-        allAttributes.add(oldAtt);
-      } else {
-        String newName = NetcdfFiles.makeFullNameWithString(g, oldAtt.getShortName()); // LOOK fishy
-        allAttributes.add(oldAtt.toBuilder().setName(newName).build());
-      }
-    }
-
-    // LOOK this wont match the variables' dimensions if there are groups: what happens if we remove this ??
-    for (Dimension oldDim : g.getDimensions()) {
-      if (oldDim.isShared()) {
-        if (g == rootGroup) {
-          allDimensions.add(oldDim);
-        } else {
-          String newName = NetcdfFiles.makeFullNameWithString(g, oldDim.getShortName()); // LOOK fishy
-          allDimensions.add(oldDim.toBuilder().setName(newName).build());
-
-        }
-      }
-    }
-
-    List<Group> groups = g.getGroups();
-    for (Group nested : groups) {
-      finishGroup(nested);
-    }
-
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -1038,33 +899,38 @@ public class NetcdfFile implements FileCacheable, Closeable {
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   // TODO make these final and immutable in 6.
-  protected String location, id, title;
-  protected Group rootGroup = makeRootGroup();
+  private final String location;
+  private final String id;
+  private final String title;
+  private final Group rootGroup;
+
   @Nullable
-  protected IOServiceProvider iosp;
+  private IOServiceProvider iosp;
 
   // LOOK can we get rid of internal caching?
   protected FileCacheIF cache;
 
-  // TODO get rid of these in ver 6, or make them private.
   // "global view" over all groups.
-  protected ImmutableList<Variable> allVariables;
-  protected ImmutableList<Dimension> allDimensions;
-  protected ImmutableList<Attribute> allAttributes;
+  private final ImmutableList<Variable> allVariables;
+  private final ImmutableList<Dimension> allDimensions;
+  private final ImmutableList<Attribute> allAttributes;
 
   protected NetcdfFile(Builder<?> builder) {
     this.location = builder.location;
     this.id = builder.id;
     this.title = builder.title;
-    this.iosp = builder.iosp;
+
     if (builder.rootGroup != null) {
       builder.rootGroup.setNcfile(this);
       this.rootGroup = builder.rootGroup.build();
+    } else {
+      rootGroup = makeRootGroup();
     }
     if (builder.iosp != null) {
       builder.iosp.setNetcdfFile(this);
-      this.iosp = builder.iosp;
+      builder.iosp.setNetcdfFile(this);
     }
+    this.iosp = builder.iosp;
 
     // all global attributes, dimensions, variables
     ImmutableList.Builder<Attribute> alist = ImmutableList.builder();

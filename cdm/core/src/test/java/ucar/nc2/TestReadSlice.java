@@ -106,7 +106,7 @@ public class TestReadSlice extends TestCase {
 
   public void testReadSliceCompose() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");
-    System.out.printf("Open %s%n", ncfile.location);
+    System.out.printf("Open %s%n", ncfile.getLocation());
 
     Variable temp = ncfile.findVariable("temperature");
     assert temp != null;

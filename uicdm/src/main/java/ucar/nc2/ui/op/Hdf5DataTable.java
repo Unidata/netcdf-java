@@ -7,9 +7,8 @@ package ucar.nc2.ui.op;
 
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.internal.iosp.hdf5.H5diagNew;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.ui.widget.BAMutil;
@@ -159,7 +158,7 @@ public class Hdf5DataTable extends JPanel {
     List<VarBean> beanList = new ArrayList<>();
 
     iosp = new H5iospNew();
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
+    NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {

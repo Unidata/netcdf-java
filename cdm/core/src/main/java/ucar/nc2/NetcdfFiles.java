@@ -770,7 +770,7 @@ public class NetcdfFiles {
     return null;
   }
 
-  private static NetcdfFile build(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
+  public static NetcdfFile build(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     NetcdfFile.Builder builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);

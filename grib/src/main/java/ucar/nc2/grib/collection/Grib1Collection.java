@@ -23,6 +23,7 @@ import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import java.io.IOException;
 import java.util.Formatter;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Grib1-specific subclass of GribCollection.
@@ -42,7 +43,8 @@ public class Grib1Collection extends GribCollectionImmutable {
       FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
+      RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
       return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
 
     } else {
@@ -54,7 +56,8 @@ public class Grib1Collection extends GribCollectionImmutable {
           return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
+        RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+        NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
         return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
       }
       return null;
@@ -67,7 +70,8 @@ public class Grib1Collection extends GribCollectionImmutable {
       FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation() + "#" + group.getId(), null);
+      RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation() + "#" + group.getId(), null);
       NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
@@ -80,7 +84,8 @@ public class Grib1Collection extends GribCollectionImmutable {
           return null;
 
         Grib1Iosp iosp = new Grib1Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
+        RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+        NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
         NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
         return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
       }

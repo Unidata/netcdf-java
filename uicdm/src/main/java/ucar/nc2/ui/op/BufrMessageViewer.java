@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -22,7 +22,6 @@ import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.time.CalendarDate;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
-import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
@@ -640,8 +639,7 @@ public class BufrMessageViewer extends JPanel {
 
   private NetcdfFile makeBufrDataset() throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
-    NetcdfFileSubclass ncfile = new NetcdfFileSubclass(iosp, raf.getLocation());
-    iosp.open(raf, ncfile, (CancelTask) null);
+    NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     return ncfile;
   }
 

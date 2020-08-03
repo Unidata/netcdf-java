@@ -372,17 +372,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (orgFile != null) ? orgFile.getLastModified() : 0;
   }
 
-  /**
-   * Sort Variables, CoordAxes by name.
-   * 
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void sort() {
-    allVariables.sort(new VariableComparator());
-    coordAxes.sort(new VariableComparator());
-  }
-
   // sort by coord sys, then name
   private static class VariableComparator implements java.util.Comparator {
     public int compare(Object o1, Object o2) {
@@ -689,7 +678,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // CoordinatesHelper has to wire the coordinate systems together
     // Perhaps a VariableDS uses NetcdfDataset or CoordinatesHelper to manage its CoordinateSystems and Transforms ??
     // So it doesnt need a reference directly to them.
-    for (Variable v : this.allVariables) {
+    for (Variable v : this.getVariables()) {
       // TODO anything needed to do for a StructureDS ??
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;

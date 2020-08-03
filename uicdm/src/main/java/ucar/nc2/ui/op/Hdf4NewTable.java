@@ -2,7 +2,7 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.internal.iosp.hdf4.H4header;
 import ucar.nc2.internal.iosp.hdf4.H4iosp;
 import ucar.ui.widget.TextHistoryPane;
@@ -70,10 +70,9 @@ public class Hdf4NewTable extends Hdf4Table {
     List<TagBean> beanList = new ArrayList<>();
 
     iosp = new H4iosp();
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
 
     try {
-      iosp.open(raf, ncfile, null);
+      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(20000);
       t.printStackTrace(new PrintWriter(sw));
