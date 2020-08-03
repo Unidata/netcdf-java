@@ -16,7 +16,7 @@ public class CdmRemoteNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public boolean isOwnerOf(DatasetUrl url) {
-    return url.serviceType == ServiceType.CdmRemote;
+    return url.getServiceType() == ServiceType.CdmRemote;
   }
 
   @Override

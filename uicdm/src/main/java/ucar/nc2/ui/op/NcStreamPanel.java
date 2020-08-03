@@ -25,28 +25,18 @@ import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-/**
- * Show internal structure of ncstream files.
- *
- * @author caron
- * @since 7/8/12
- */
+/** Show internal structure of ncstream files. */
 public class NcStreamPanel extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable messTable;
-  private JSplitPane split;
+  private final BeanTable messTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane infoTA, infoPopup2, infoPopup3;
-  private IndependentWindow infoWindow2, infoWindow3;
-
+  private TextHistoryPane infoTA;
   private RandomAccessFile raf;
   private NetcdfFile ncd;
   private NcStreamIosp iosp;
 
-  /**
-   *
-   */
   public NcStreamPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
@@ -74,12 +64,14 @@ public class NcStreamPanel extends JPanel {
     // the info windows
     infoTA = new TextHistoryPane();
 
-    infoPopup2 = new TextHistoryPane();
-    infoWindow2 = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup2);
+    TextHistoryPane infoPopup2 = new TextHistoryPane();
+    IndependentWindow infoWindow2 =
+        new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup2);
     infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
 
-    infoPopup3 = new TextHistoryPane();
-    infoWindow3 = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup3);
+    TextHistoryPane infoPopup3 = new TextHistoryPane();
+    IndependentWindow infoWindow3 =
+        new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup3);
     infoWindow3.setBounds((Rectangle) prefs.getBean("InfoWindowBounds3", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());
@@ -90,9 +82,6 @@ public class NcStreamPanel extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public void save() {
     messTable.saveState(false);
     // prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
@@ -101,9 +90,6 @@ public class NcStreamPanel extends JPanel {
     }
   }
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {
     if (ncd != null) {
       ncd.close();
@@ -113,9 +99,6 @@ public class NcStreamPanel extends JPanel {
     iosp = null;
   }
 
-  /**
-   *
-   */
   public void showInfo(Formatter f) {
     if (ncd == null) {
       return;
@@ -130,9 +113,6 @@ public class NcStreamPanel extends JPanel {
     f.format("%n%s", ncd.toString()); // CDL
   }
 
-  /**
-   *
-   */
   public void setNcStreamFile(String filename) throws IOException {
     closeOpenFiles();
 
@@ -156,20 +136,11 @@ public class NcStreamPanel extends JPanel {
     // System.out.printf("mess = %d%n", messages.size());
   }
 
-  /**
-   *
-   */
   public static class MessBean {
     private NcStreamIosp.NcsMess m;
 
-    /**
-     *
-     */
     MessBean() {}
 
-    /**
-     *
-     */
     MessBean(NcStreamIosp.NcsMess m) {
       this.m = m;
     }

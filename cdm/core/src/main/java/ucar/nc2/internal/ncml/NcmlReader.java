@@ -79,67 +79,11 @@ public class NcmlReader {
   }
 
   /**
-   * Retrieve the set of Enhancements that is associated with the given NcML string.
-   * <p/>
-   * <table border="1">
-   * <tr>
-   * <th>String</th>
-   * <th>Enhancements</th>
-   * </tr>
-   * <tr>
-   * <td>All</td>
-   * <td>ConvertEnums, ConvertUnsigned, ApplyScaleOffset, ConvertMissing, CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>None</td>
-   * <td>&lt;empty&gt;</td>
-   * </tr>
-   * <tr>
-   * <td>ConvertEnums</td>
-   * <td>ConvertEnums</td>
-   * </tr>
-   * <tr>
-   * <td>ConvertUnsigned</td>
-   * <td>ConvertUnsigned</td>
-   * </tr>
-   * <tr>
-   * <td>ApplyScaleOffset</td>
-   * <td>ApplyScaleOffset</td>
-   * </tr>
-   * <tr>
-   * <td>ConvertMissing</td>
-   * <td>ConvertMissing</td>
-   * </tr>
-   * <tr>
-   * <td>CoordSystems</td>
-   * <td>CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>IncompleteCoordSystems</td>
-   * <td>CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>true</td>
-   * <td>Alias for "All"</td>
-   * </tr>
-   * <tr>
-   * <td>ScaleMissingDefer</td>
-   * <td>Alias for "None"</td>
-   * </tr>
-   * <tr>
-   * <td>AllDefer</td>
-   * <td>ConvertEnums, CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>ScaleMissing</td>
-   * <td>ConvertUnsigned, ApplyScaleOffset, ConvertMissing</td>
-   * </tr>
-   * </table>
-   *
-   * @param enhanceMode a string from the above table.
-   * @return the set corresponding to {@code enhanceMode}, or {@code null} if there is no correspondence.
+   * Retrieve the set of Enhancements described by the enhanceMode NcML string.
+   * 
+   * @return the set corresponding to {@code enhanceMode}, or {@code null} if enhanceMode is null.
    */
-  public static Set<Enhance> parseEnhanceMode(String enhanceMode) {
+  private static Set<Enhance> parseEnhanceMode(String enhanceMode) {
     if (enhanceMode == null) {
       return null;
     }
@@ -1496,7 +1440,7 @@ public class NcmlReader {
       String olderS = scanElem.getAttributeValue("olderThan");
 
       String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-      Set<NetcdfDataset.Enhance> enhanceMode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
+      Set<NetcdfDataset.Enhance> enhanceMode = parseEnhanceMode(scanElem.getAttributeValue("enhance"));
 
       // possible relative location
       dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);

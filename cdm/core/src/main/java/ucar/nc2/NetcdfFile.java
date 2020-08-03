@@ -13,7 +13,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -344,34 +343,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Look in the given Group and in its nested Groups for a Variable with a String valued Attribute with the given name
-   * and value.
-   *
-   * @param g start with this Group, null for the root Group.
-   * @param attName look for an Attribuite with this name.
-   * @param attValue look for an Attribuite with this value.
-   * @return the first Variable that matches, or null if none match.
-   * @deprecated use g.findVariableByAttribute(String attName, String attValue)
-   */
-  @Deprecated
-  @Nullable
-  public Variable findVariableByAttribute(Group g, String attName, String attValue) {
-    if (g == null)
-      g = getRootGroup();
-    for (Variable v : g.getVariables()) {
-      for (Attribute att : v.attributes())
-        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
-          return v;
-    }
-    for (Group nested : g.getGroups()) {
-      Variable v = findVariableByAttribute(nested, attName, attValue);
-      if (v != null)
-        return v;
-    }
-    return null;
-  }
-
-  /**
    * Finds a Dimension with the specified full name. It may be nested in multiple groups.
    * An embedded "/" is interpreted as a group separator. A leading slash indicates the root group. That slash may be
    * omitted, but the {@code fullName} will be treated as if it were there. In other words, the first name token in
@@ -433,18 +404,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return null;
   }
 
-  /**
-   * Get the shared Dimensions used in this file.
-   * <p>
-   * If the dimensions are in a group, the dimension name will have the
-   * group name, in order to disambiguate the dimensions. This means that
-   * a Variable's dimensions will not match Dimensions in this list.
-   * Therefore it is better to get the shared Dimensions directly from the Groups.
-   * 
-   * @deprecated use ncfile.getRootGroup().getDimensions() for files without nested groups,
-   *             or recurse through nested groups to get dimensions.
-   */
-  @Deprecated
+  /** Get the shared Dimensions used in this file. */
   public ImmutableList<Dimension> getDimensions() {
     return ImmutableList.copyOf(dimensions);
   }
@@ -891,46 +851,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     this.location = location;
   }
 
-  /**
-   * Make this immutable.
-   *
-   * @return this
-   * @deprecated Use NetcdfFile.builder()
-   */
-  @Deprecated
-  public NetcdfFile setImmutable() {
-    if (immutable)
-      return this;
-    immutable = true;
-    setImmutable(rootGroup);
-    variables = Collections.unmodifiableList(variables);
-    dimensions = Collections.unmodifiableList(dimensions);
-    gattributes = Collections.unmodifiableList(gattributes);
-    return this;
-  }
-
-  private void setImmutable(Group g) {
-    for (Group nested : g.getGroups())
-      setImmutable(nested);
-  }
-
-  /**
-   * Completely empty the objects in the netcdf file.
-   * Used for rereading the file on a sync().
-   *
-   * @deprecated
-   */
-  @Deprecated
-  public void empty() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    variables = new ArrayList<>();
-    gattributes = new ArrayList<>();
-    dimensions = new ArrayList<>();
-    rootGroup = makeRootGroup();
-    // addedRecordStructure = false;
-  }
-
   private Group makeRootGroup() {
     return Group.builder().setNcfile(this).setName("").build();
   }
@@ -1071,46 +991,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-
-  // public I/O
-
-  /**
-   * Do a bulk read on a list of Variables and
-   * return a corresponding list of Array that contains the results
-   * of a full read on each Variable.
-   * This is mostly here so DODSNetcdf can override it with one call to the server.
-   *
-   * @param variables List of type Variable
-   * @return List of Array, one for each Variable in the input.
-   * @throws IOException if read error
-   * @deprecated will be moved to DODSNetcdfFile in version 6.
-   */
-  @Deprecated
-  public List<Array> readArrays(List<Variable> variables) throws IOException {
-    List<Array> result = new ArrayList<>();
-    for (Variable variable : variables)
-      result.add(variable.read());
-    return result;
-  }
-
-  /**
-   * Read a variable using the given section specification.
-   *
-   * @param variableSection the constraint expression.
-   * @param flatten MUST BE TRUE
-   * @return Array data read.
-   * @throws IOException if error
-   * @throws InvalidRangeException if variableSection is invalid
-   * @see <a href=
-   *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
-   * @deprecated use readSection(), flatten=false no longer supported
-   */
-  @Deprecated
-  public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
-    if (!flatten)
-      throw new UnsupportedOperationException("NetdfFile.read(String variableSection, boolean flatten=false)");
-    return readSection(variableSection);
-  }
 
   /**
    * Access to iosp debugging info.
@@ -1259,6 +1139,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   // TODO make these final and immutable in 6.
   protected String location, id, title;
   protected Group rootGroup = makeRootGroup();
+  @Nullable
   protected IOServiceProvider iosp;
   private boolean immutable;
 

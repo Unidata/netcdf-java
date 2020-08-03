@@ -51,7 +51,7 @@ public abstract class AbstractTransformBuilder {
         }
       }
       if (units == null) {
-        Variable xvar = ds.findVariableByAttribute(null, _Coordinate.AxisType.toString(), AxisType.GeoX.toString());
+        Variable xvar = ds.getRootGroup().findVariableByAttribute(_Coordinate.AxisType, AxisType.GeoX.toString());
         if (xvar != null) {
           units = xvar.getUnitsString();
         }
