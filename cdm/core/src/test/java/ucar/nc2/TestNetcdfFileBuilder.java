@@ -35,7 +35,8 @@ public class TestNetcdfFileBuilder {
 
     assertThat(group.getDimensions()).isNotEmpty();
     assertThat(group.getDimensions()).hasSize(1);
-    assertThat(group.findDimension("dimName")).isEqualTo(dim);
+    assertThat(group.findDimension("dimName").isPresent()).isTrue();
+    assertThat(group.findDimension("dimName").get()).isEqualTo(dim);
 
     assertThat(group.getGroups()).isNotEmpty();
     assertThat(group.getGroups()).hasSize(1);

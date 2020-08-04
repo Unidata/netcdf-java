@@ -738,7 +738,7 @@ public class NcmlReader {
 
     // LOOK this is wrong, groupBuilder may already have the dimension.
     // see if it already exists
-    Dimension dim = (refGroup == null) ? null : refGroup.findDimension(nameInFile);
+    Dimension dim = (refGroup == null) ? null : refGroup.findDimension(nameInFile).orElse(null);
     if (dim == null) { // nope - create it
       String lengthS = dimElem.getAttributeValue("length");
       if (lengthS == null) {
