@@ -157,14 +157,12 @@ public class CDLWriter {
 
       for (Attribute att : group.attributes()) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-        if (!Attribute.isspecial(att)) {
-          out.format("%s", indent);
-          writeCDL(att, null);
-          out.format(";");
-          if (!strict && (att.getDataType() != DataType.STRING))
-            out.format(" // %s", att.getDataType());
-          out.format("%n");
-        }
+        out.format("%s", indent);
+        writeCDL(att, null);
+        out.format(";");
+        if (!strict && (att.getDataType() != DataType.STRING))
+          out.format(" // %s", att.getDataType());
+        out.format("%n");
       }
     }
   }
@@ -303,8 +301,6 @@ public class CDLWriter {
 
     indent.incr();
     for (Attribute att : v.attributes()) {
-      if (Attribute.isspecial(att))
-        continue;
       out.format("%s", indent);
       writeCDL(att, v.getShortName());
       out.format(";");
@@ -347,8 +343,6 @@ public class CDLWriter {
     out.format(";%n");
 
     for (Attribute att : s.attributes()) {
-      if (Attribute.isspecial(att))
-        continue;
       out.format("%s", indent);
       writeCDL(att, s.getShortName());
       out.format(";");

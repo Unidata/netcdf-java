@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 public interface AttributeContainer extends Iterable<Attribute> {
 
   /**
-   * Create a new AttributeContainer, removing any whose name starts with one in the given list.
+   * Create a new AttributeContainer, removing any whose name starts with one in the remove list.
    *
    * @param atts Start with this set of Attributes.
    * @param remove Remove any whose name starts with one of these.
@@ -79,7 +79,7 @@ public interface AttributeContainer extends Iterable<Attribute> {
    */
   String findAttributeString(String attName, String defaultValue);
 
-  /** True is there are no attributes in the container. */
+  /** True if there are no attributes in the container. */
   boolean isEmpty();
 
   /** Get the (optional) name of the AttributeContainer. */

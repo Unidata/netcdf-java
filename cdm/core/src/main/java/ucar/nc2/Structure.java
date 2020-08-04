@@ -450,8 +450,6 @@ public class Structure extends Variable {
     buf.format(";%s%n", extraInfo());
 
     for (Attribute att : attributes()) {
-      if (Attribute.isspecial(att))
-        continue;
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");

@@ -5,16 +5,15 @@
 
 package ucar.nc2;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.ForbiddenConversionException;
 import ucar.ma2.Index;
-import ucar.nc2.constants.CDM;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 import java.nio.ByteBuffer;
@@ -24,37 +23,9 @@ import java.util.List;
 /**
  * An Attribute is a name and a value, used for associating arbitrary metadata with another object.
  * The value can be a one dimensional array of Strings or numeric values.
- * <p/>
- * TODO Attributes will be immutable in 6.
  */
+@Immutable
 public class Attribute {
-  // TODO: see TestSpecialAttributes when this gets moved to Nc4Iosp
-
-  /** @deprecated move to jni.Nc4Iosp */
-  @Deprecated
-  private static final String SPECIALPREFIX = "_";
-
-  /** @deprecated move to jni.Nc4Iosp */
-  @Deprecated
-  static final String[] SPECIALS =
-      {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
-
-
-  /** @deprecated move to jni.Nc4Iosp */
-  @Deprecated
-  public static boolean isspecial(Attribute a) {
-    String nm = a.getShortName();
-    if (nm.startsWith(SPECIALPREFIX)) {
-      /* Check for selected special attributes */
-      for (String s : SPECIALS) {
-        if (nm.startsWith(s))
-          return true; /* is special */
-      }
-    }
-    return false; /* is not special */
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////
 
   /** Create an Attribute from a ucar.unidata.util.Parameter. */
   public static Attribute fromParameter(Parameter param) {
@@ -135,16 +106,6 @@ public class Attribute {
     this.nelems = 1;
   }
 
-  /** Get the Attribute name. */
-  public String getName() {
-    return name;
-  }
-
-  /** Get the Attribute name. */
-  public String getShortName() {
-    return name;
-  }
-
   /** Get the data type of the Attribute value. */
   public DataType getDataType() {
     return dataType;
@@ -156,43 +117,69 @@ public class Attribute {
     return this.enumtype;
   }
 
-  /** True if value is an array (getLength() > 1) */
-  public boolean isArray() {
-    return (getLength() > 1);
-  }
-
   /** Get the length of the array of values */
   public int getLength() {
     return nelems;
   }
 
-  /** Get the value as an Array. */
+  /** Get the Attribute name. */
+  public String getName() {
+    return name;
+  }
+
+  /** Retrieve first numeric value. Equivalent to <code>getNumericValue(0)</code> */
   @Nullable
-  public Array getValues() {
-    if (values == null && svalue != null) {
-      Array values = Array.factory(DataType.STRING, new int[] {1});
-      values.setObject(values.getIndex(), svalue);
-      return values;
-    }
-    return values == null ? null : values.copy();
+  public Number getNumericValue() {
+    return getNumericValue(0);
   }
 
   /**
-   * Get the value as an Object.
+   * Retrieve a numeric value by index. If it's a String, it will try to parse it as a double.
    *
-   * @param index index into value Array.
-   * @return ith value as an Object.
+   * @param index the index into the value array.
+   * @return Number <code>value[index]</code>, or null if its a non-parseable String or
+   *         the index is out of range.
    */
   @Nullable
-  public Object getValue(int index) {
-    if (isString())
-      return getStringValue(index);
-    return getNumericValue(index);
+  public Number getNumericValue(int index) {
+    if ((index < 0) || (index >= nelems))
+      return null;
+
+    if (dataType == DataType.STRING) {
+      String svalue = Preconditions.checkNotNull(getStringValue(index));
+      try {
+        return new Double(svalue);
+      } catch (NumberFormatException e) {
+        return null;
+      }
+    }
+
+    // LOOK can attributes be enum valued? for now, no
+    Preconditions.checkNotNull(values);
+    switch (dataType) {
+      case BYTE:
+      case UBYTE:
+        return values.getByte(index);
+      case SHORT:
+      case USHORT:
+        return values.getShort(index);
+      case INT:
+      case UINT:
+        return values.getInt(index);
+      case FLOAT:
+        return values.getFloat(index);
+      case DOUBLE:
+        return values.getDouble(index);
+      case LONG:
+      case ULONG:
+        return values.getLong(index);
+    }
+    return null;
   }
 
-  /** True if value is of type String and not null. */
-  public boolean isString() {
-    return (dataType == DataType.STRING) && null != getStringValue();
+  /** Get the Attribute name. */
+  public String getShortName() {
+    return name;
   }
 
   /** Retrieve first String value if this is a String valued attribute, else null. */
@@ -224,68 +211,44 @@ public class Attribute {
     return (String) values.getObject(index);
   }
 
-  /** Retrieve first numeric value. Equivalent to <code>getNumericValue(0)</code> */
-  @Nullable
-  public Number getNumericValue() {
-    return getNumericValue(0);
-  }
-
   /**
-   * Retrieve a numeric value by index. If it's a String, it will try to parse it as a double.
+   * Get the value as an Object (String or Number).
    *
-   * @param index the index into the value array.
-   * @return Number <code>value[index]</code>, or null if its a non-parseable String or
-   *         the index is out of range.
+   * @param index index into value Array.
+   * @return ith value as an Object.
    */
   @Nullable
-  public Number getNumericValue(int index) {
-    if ((index < 0) || (index >= nelems))
-      return null;
+  public Object getValue(int index) {
+    if (isString())
+      return getStringValue(index);
+    return getNumericValue(index);
+  }
 
-    // LOOK can attributes be enum valued? for now, no
-    switch (dataType) {
-      case STRING:
-        try {
-          return new Double(getStringValue(index));
-        } catch (NumberFormatException e) {
-          return null;
-        }
-      case BYTE:
-      case UBYTE:
-        return values.getByte(index);
-      case SHORT:
-      case USHORT:
-        return values.getShort(index);
-      case INT:
-      case UINT:
-        return values.getInt(index);
-      case FLOAT:
-        return values.getFloat(index);
-      case DOUBLE:
-        return values.getDouble(index);
-      case LONG:
-      case ULONG:
-        return values.getLong(index);
+  /** Get the value as an Array. */
+  @Nullable
+  public Array getValues() {
+    if (values == null && svalue != null) {
+      Array values = Array.factory(DataType.STRING, new int[] {1});
+      values.setObject(values.getIndex(), svalue);
+      return values;
     }
-    return null;
+    return values == null ? null : values.copy();
+  }
+
+  /** True if value is an array (getLength() > 1) */
+  public boolean isArray() {
+    return (getLength() > 1);
+  }
+
+  /** True if value is of type String and not null. */
+  public boolean isString() {
+    return (dataType == DataType.STRING) && null != getStringValue();
   }
 
   @Override
   public String toString() {
-    return toString(false);
-  }
-
-  /**
-   * CDL representation, may be strict.
-   * 
-   * @param strict if true, create strict CDL, escaping names
-   * @return CDL representation
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public String toString(boolean strict) {
     Formatter f = new Formatter();
-    writeCDL(f, strict, null);
+    writeCDL(f, false, null);
     return f.toString();
   }
 
@@ -294,43 +257,51 @@ public class Attribute {
    *
    * @param f write into this
    * @param strict if true, create strict CDL, escaping names
-   * @deprecated use CDLWriter
    */
-  @Deprecated
-  protected void writeCDL(Formatter f, boolean strict, String parentname) {
-    if (strict && (isString() || this.getEnumType() != null))
+  void writeCDL(Formatter f, boolean strict, String parentname) {
+    if (strict && (isString() || this.getEnumType() != null)) {
       // Force type explicitly for string.
-      f.format("string "); // note lower case and trailing blank
-    if (strict && parentname != null)
+      f.format("string ");
+    } // note lower case and trailing blank
+
+    if (strict && parentname != null) {
       f.format(NetcdfFiles.makeValidCDLName(parentname));
+    }
     f.format(":");
     f.format("%s", strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName());
+
     if (isString()) {
       f.format(" = ");
       for (int i = 0; i < getLength(); i++) {
-        if (i != 0)
+        if (i != 0) {
           f.format(", ");
+        }
         String val = getStringValue(i);
-        if (val != null)
+        if (val != null) {
           f.format("\"%s\"", encodeString(val));
+        }
       }
     } else if (getEnumType() != null) {
       f.format(" = ");
       for (int i = 0; i < getLength(); i++) {
-        if (i != 0)
+        if (i != 0) {
           f.format(", ");
+        }
         EnumTypedef en = getEnumType();
-        String econst = getStringValue(i);
-        Integer ecint = en.lookupEnumInt(econst);
-        if (ecint == null)
-          throw new ForbiddenConversionException("Illegal enum constant: " + econst);
-        f.format("\"%s\"", encodeString(econst));
+        int value = getValues().getInt(i);
+        String ecname = en.lookupEnumString(value);
+        if (ecname == null) {
+          // TODO What does the C library do ?
+          ecname = Integer.toString(value);
+        }
+        f.format("\"%s\"", encodeString(ecname));
       }
     } else {
       f.format(" = ");
       for (int i = 0; i < getLength(); i++) {
-        if (i != 0)
+        if (i != 0) {
           f.format(", ");
+        }
 
         Number number = getNumericValue(i);
         if (dataType.isUnsigned()) {
@@ -345,7 +316,6 @@ public class Attribute {
         if (dataType.isUnsigned()) {
           f.format("U");
         }
-
         if (dataType == DataType.FLOAT)
           f.format("f");
         else if (dataType == DataType.SHORT || dataType == DataType.USHORT) {
@@ -359,10 +329,9 @@ public class Attribute {
     }
   }
 
-  private static char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
-  private static String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
+  private static final char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
+  private static final String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
 
-  @Deprecated
   private static String encodeString(String s) {
     return StringUtil2.replace(s, org, replace);
   }

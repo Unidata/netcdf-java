@@ -370,14 +370,12 @@ public class Group {
 
       for (Attribute att : attributes) {
         // String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-        if (!Attribute.isspecial(att)) {
-          out.format("%s", indent);
-          att.writeCDL(out, strict, null);
-          out.format(";");
-          if (!strict && (att.getDataType() != DataType.STRING))
-            out.format(" // %s", att.getDataType());
-          out.format("%n");
-        }
+        out.format("%s", indent);
+        att.writeCDL(out, strict, null);
+        out.format(";");
+        if (!strict && (att.getDataType() != DataType.STRING))
+          out.format(" // %s", att.getDataType());
+        out.format("%n");
       }
     }
   }
