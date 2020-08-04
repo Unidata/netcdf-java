@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /** Test reading attributes */
-public class TestAttributes {
+public class TestAttributeReading {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
@@ -117,44 +117,5 @@ public class TestAttributes {
     assert (n != null);
 
     ncfile.close();
-  }
-
-  // Demonstrates GitHub issue #715: https://github.com/Unidata/thredds/issues/715
-  @Test
-  public void testLargeLongValue() {
-    Attribute att = new Attribute("name", NetcdfFormatUtils.NC_FILL_INT64); // which is -9223372036854775806L
-    long result = att.getNumericValue().longValue(); // returned -9223372036854775808L, before bug fix.
-
-    Assert.assertEquals(NetcdfFormatUtils.NC_FILL_INT64, result);
-  }
-
-  @Test
-  public void testStringBuilder() {
-    Attribute att = Attribute.builder().setName("name").setStringValue("svalue").build();
-    assertThat(att).isEqualTo(new Attribute("name", "svalue"));
-    Attribute att2 = att.toBuilder().setName("name2").build();
-    assertThat(att2).isEqualTo(new Attribute("name2", "svalue"));
-  }
-
-  @Test
-  public void testBuilder() {
-    Attribute att = Attribute.builder().setName("name").setValues(ImmutableList.of(1, 2, 3), true).build();
-    assertThat(att.getDataType()).isEqualTo(DataType.UINT);
-
-    Attribute atts = Attribute.builder().setName("name").setValues(ImmutableList.of("1", "2", "3"), false).build();
-    assertThat(atts.getDataType()).isEqualTo(DataType.STRING);
-
-    List<String> vals2 = ImmutableList.of("1", "2", "3");
-    // wont compile
-    // Attribute atts2 = Attribute.builder().setName("name").setValues(vals2).build();
-    // wont compile
-    // Attribute atts21 = Attribute.builder().setName("name").setValues((List<Object>) vals2).build();
-    Attribute atts22 = Attribute.builder().setName("name").setValues((List) vals2, false).build();
-    assertThat(atts22.getDataType()).isEqualTo(DataType.STRING);
-
-    Array array = Array.factory(DataType.SHORT, new int[] {4}, new short[] {1, 2, 3, 4});
-    Attribute att2 = Attribute.builder().setName("name").setValues(array).build();
-    assertThat(att2.getDataType()).isEqualTo(DataType.SHORT);
-    assertThat(MAMath.equals(att2.getValues(), array)).isTrue();
   }
 }

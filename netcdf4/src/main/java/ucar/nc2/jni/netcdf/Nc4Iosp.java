@@ -125,6 +125,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   public static void setDebugFlags(DebugFlags flags) {}
 
+  ///////////////////////////////////////////////
+  // Moved from Attribute
+
+  private static final String SPECIALPREFIX = "_";
+  private static final String[] SPECIALS =
+      {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
+
+  public static boolean isspecial(Attribute a) {
+    String nm = a.getShortName();
+    if (nm.startsWith(SPECIALPREFIX)) {
+      /* Check for selected special attributes */
+      for (String s : SPECIALS) {
+        if (nm.startsWith(s))
+          return true; /* is special */
+      }
+    }
+    return false; /* is not special */
+  }
+
   //////////////////////////////////////////////////
   // Instance Variables
 

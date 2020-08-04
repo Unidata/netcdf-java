@@ -46,6 +46,11 @@ public class AttributeContainerMutable implements AttributeContainer {
     return atts.iterator();
   }
 
+  /**
+   * Add an attribute to the container. If an attrribute of the same name already exists, replace it with this one.
+   * 
+   * @return the added attribute.
+   */
   public Attribute addAttribute(Attribute att) {
     if (att == null)
       return null;
@@ -80,8 +85,9 @@ public class AttributeContainerMutable implements AttributeContainer {
 
   /** Add all; replace old if has same name. */
   public void addAll(Iterable<Attribute> atts) {
-    for (Attribute att : atts)
+    for (Attribute att : atts) {
       addAttribute(att);
+    }
   }
 
   @Override
@@ -89,11 +95,13 @@ public class AttributeContainerMutable implements AttributeContainer {
     String attValue = null;
     Attribute att = findAttributeIgnoreCase(attName);
 
-    if ((att != null) && att.isString())
+    if ((att != null) && att.isString()) {
       attValue = att.getStringValue();
+    }
 
-    if (null == attValue) // not found, use default
+    if (null == attValue) {// not found, use default
       attValue = defaultValue;
+    }
 
     return attValue;
   }
@@ -101,8 +109,9 @@ public class AttributeContainerMutable implements AttributeContainer {
   @Override
   public Attribute findAttribute(String name) {
     for (Attribute a : atts) {
-      if (name.equals(a.getShortName()))
+      if (name.equals(a.getShortName())) {
         return a;
+      }
     }
     return null;
   }
@@ -119,22 +128,21 @@ public class AttributeContainerMutable implements AttributeContainer {
     Attribute att = findAttributeIgnoreCase(attName);
     if (att == null) {
       return defaultValue;
-    } else if (att.isString()) {
-      return Double.parseDouble(att.getStringValue());
-    } else {
-      return att.getNumericValue().doubleValue();
     }
+    return att.getNumericValue().doubleValue();
   }
 
   @Override
   public int findAttributeInteger(String attName, int defaultValue) {
     Attribute att = findAttributeIgnoreCase(attName);
-    if (att == null)
+    if (att == null) {
       return defaultValue;
-    if (att.isString())
+    }
+    if (att.isString()) {
       return Integer.parseInt(att.getStringValue());
-    else
+    } else {
       return att.getNumericValue().intValue();
+    }
   }
 
   /**
@@ -151,11 +159,13 @@ public class AttributeContainerMutable implements AttributeContainer {
    * Replace an Attribute with a different name, same value.
    *
    * @param a remove this attribute
+   * @return true if old attribute exists.
    */
-  public void replace(Attribute a, String newName) {
-    atts.remove(a);
+  public boolean replace(Attribute a, String newName) {
+    boolean ok = atts.remove(a);
     Attribute newAtt = a.toBuilder().setName(newName).build();
     addAttribute(newAtt);
+    return ok;
   }
 
   /**
@@ -207,8 +217,8 @@ public class AttributeContainerMutable implements AttributeContainer {
 
     @Override
     public String findAttributeString(String attName, String defaultValue) {
-      return atts.stream().filter(a -> a.getShortName().equals(attName)).findFirst().map(Attribute::getStringValue)
-          .orElse(defaultValue);
+      return atts.stream().filter(a -> a.getShortName().equalsIgnoreCase(attName)).findFirst()
+          .map(Attribute::getStringValue).orElse(defaultValue);
     }
 
     @Override
@@ -226,12 +236,10 @@ public class AttributeContainerMutable implements AttributeContainer {
     @Override
     public double findAttributeDouble(String attName, double defaultValue) {
       Attribute att = findAttributeIgnoreCase(attName);
-      if (att == null)
+      if (att == null) {
         return defaultValue;
-      if (att.isString())
-        return Double.parseDouble(att.getStringValue());
-      else
-        return att.getNumericValue().doubleValue();
+      }
+      return att.getNumericValue().doubleValue();
     }
 
     @Override

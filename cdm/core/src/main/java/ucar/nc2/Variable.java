@@ -906,8 +906,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     indent.incr();
     for (Attribute att : attributes()) {
-      if (Attribute.isspecial(att))
-        continue;
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
