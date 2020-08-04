@@ -16,12 +16,12 @@ public class CdmRemoteNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public boolean isOwnerOf(DatasetUrl url) {
-    return url.serviceType == ServiceType.CdmRemote;
+    return url.getServiceType() == ServiceType.CdmRemote;
   }
 
   @Override
   public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-    return new CdmRemote(location);
+    return CdmRemote.builder().setRemoteURI(location).build();
   }
 
 }

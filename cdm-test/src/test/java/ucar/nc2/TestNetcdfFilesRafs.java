@@ -44,7 +44,7 @@ public class TestNetcdfFilesRafs {
   @Category(NeedsExternalResource.class)
   public void testHttpRaf() throws IOException {
     try (NetcdfFile ncf = NetcdfFiles.open(httpsLocation)) {
-      Object raf = ncf.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      Object raf = ncf.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(HTTPRandomAccessFile.class);
     }
   }
@@ -54,7 +54,7 @@ public class TestNetcdfFilesRafs {
   public void testRedirectedHttpRaf() throws IOException {
     String httpLocation = "http://" + baseHttpLocation;
     try (NetcdfFile ncf = NetcdfFiles.open(httpLocation)) {
-      Object raf = ncf.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      Object raf = ncf.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(HTTPRandomAccessFile.class);
     }
   }
@@ -63,7 +63,7 @@ public class TestNetcdfFilesRafs {
   @Category(NeedsExternalResource.class)
   public void testInMemoryRaf() throws IOException {
     try (NetcdfFile ncf = NetcdfFiles.open(inMemLocation)) {
-      Object raf = ncf.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      Object raf = ncf.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(InMemoryRandomAccessFile.class);
     }
   }
@@ -83,13 +83,13 @@ public class TestNetcdfFilesRafs {
         NetcdfFile s3 = NetcdfFiles.open(s3uri)) {
 
       // check that expected RAFs are used
-      Object raf = local.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      Object raf = local.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(RandomAccessFile.class);
-      raf = inMem.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      raf = inMem.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(InMemoryRandomAccessFile.class);
-      raf = http.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      raf = http.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(HTTPRandomAccessFile.class);
-      raf = s3.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      raf = s3.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(S3RandomAccessFile.class);
 
       // compare at a NetcdfFile level
@@ -107,7 +107,7 @@ public class TestNetcdfFilesRafs {
   @Category(NeedsExternalResource.class)
   public void testS3Raf() throws IOException {
     try (NetcdfFile ncf = NetcdfFiles.open(s3uri)) {
-      Object raf = ncf.iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      Object raf = ncf.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
       assertThat(raf).isInstanceOf(S3RandomAccessFile.class);
     }
   }

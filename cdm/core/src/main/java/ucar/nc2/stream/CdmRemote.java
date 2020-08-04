@@ -9,6 +9,7 @@ import com.google.common.net.UrlEscapers;
 import java.util.Optional;
 import ucar.httpservices.*;
 import ucar.ma2.*;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -22,15 +23,11 @@ import java.util.Formatter;
  * A remote CDM dataset (extending NetcdfFile), using cdmremote protocol to communicate.
  * Similar to Opendap in that it is a remote access protocol using indexed data access.
  * Supports full CDM / netcdf-4 data model.
- *
- * @author caron
- * @since Feb 7, 2009
  */
 public class CdmRemote extends ucar.nc2.NetcdfFile {
   public static final String PROTOCOL = "cdmremote";
   public static final String SCHEME = PROTOCOL + ":";
 
-  // static private org.slf4SCHEMEj.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   private static boolean showRequest;
   private static boolean compress;
 
@@ -41,7 +38,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   public static void setAllowCompression(boolean b) {
     compress = b;
   }
-
 
   /**
    * Create the canonical form of the URL.
@@ -60,66 +56,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return urlName;
   }
 
-  //////////////////////////////////////////////////////
-
-  private HTTPSession httpClient; // stays open until close is called
-
-  private final String remoteURI;
-
-  public CdmRemote(String _remoteURI) throws IOException {
-    long start = System.currentTimeMillis();
-
-    // get http URL
-    String temp = _remoteURI;
-    try {
-      if (temp.startsWith(SCHEME)) {
-        temp = temp.substring(SCHEME.length());
-      } else if (!(temp.startsWith("http:") | temp.startsWith("https:"))) {
-        temp = "http:" + temp;
-      }
-    } catch (Exception e) {
-      throw new IOException(e);
-    }
-    remoteURI = temp;
-    httpClient = HTTPFactory.newSession(remoteURI);
-    // get the header
-    String url = remoteURI + "?req=header";
-    if (showRequest)
-      System.out.printf(" CdmRemote request %s%n", url);
-    try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
-      method.setFollowRedirects(true);
-      int statusCode = method.execute();
-
-      if (statusCode == 404)
-        throw new FileNotFoundException(getErrorMessage(method));
-
-      if (statusCode >= 300)
-        throw new IOException(getErrorMessage(method));
-
-      InputStream is = method.getResponseAsStream();
-      NcStreamReader reader = new NcStreamReader();
-      reader.readStream(is, this);
-      this.location = SCHEME + remoteURI;
-    }
-
-    long took = System.currentTimeMillis() - start;
-    if (showRequest)
-      System.out.printf(" CdmRemote request %s took %d msecs %n", url, took);
-  }
-
-  // Closes the input stream.
-  public CdmRemote(InputStream is, String location) throws IOException {
-    remoteURI = location;
-
-    try {
-      NcStreamReader reader = new NcStreamReader();
-      reader.readStream(is, this);
-      this.location = SCHEME + remoteURI;
-
-    } finally {
-      is.close();
-    }
-  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException {
@@ -154,7 +91,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       System.out.printf("CdmRemote data request for variable: '%s' section=(%s)%n url='%s'%n esc='%s'%n",
           v.getFullName(), section, url, escapedURI);
 
-    try (HTTPMethod method = HTTPFactory.Get(httpClient, escapedURI.toString())) {
+    try (HTTPMethod method = HTTPFactory.Get(httpSession, escapedURI.toString())) {
       int statusCode = method.execute();
       if (statusCode == 404)
         throw new FileNotFoundException(getErrorMessage(method));
@@ -192,7 +129,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     try {
-      InputStream is = sendQuery(httpClient, remoteURI, NetcdfFiles.makeFullName(s));
+      InputStream is = sendQuery(httpSession, remoteURI, NetcdfFiles.makeFullName(s));
       NcStreamReader reader = new NcStreamReader();
       return reader.getStructureIterator(is, this);
 
@@ -257,7 +194,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       size += 4;
 
       // header
-      try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
+      try (HTTPMethod method = HTTPFactory.Get(httpSession, url)) {
         if (showRequest)
           System.out.printf("CdmRemote request %s %n", url);
         int statusCode = method.execute();
@@ -280,7 +217,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         if (showRequest)
           System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);
 
-        try (HTTPMethod method = HTTPFactory.Get(httpClient, sbuff.toString())) {
+        try (HTTPMethod method = HTTPFactory.Get(httpSession, sbuff.toString())) {
           int statusCode = method.execute();
 
           if (statusCode == 404)
@@ -310,8 +247,112 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   @Override
   public synchronized void close() {
-    if (httpClient != null)
-      httpClient.close();
+    if (httpSession != null)
+      httpSession.close();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  private final HTTPSession httpSession; // stays open until close is called
+  private final String remoteURI;
+
+  private CdmRemote(Builder<?> builder) {
+    super(builder);
+    this.remoteURI = builder.remoteURI;
+    this.httpSession = builder.httpSession;
+  }
+
+  public Builder<?> toBuilder() {
+    return addLocalFieldsToBuilder(builder());
+  }
+
+  private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    b.setRemoteURI(this.remoteURI);
+    return (Builder<?>) super.addLocalFieldsToBuilder(b);
+  }
+
+  /**
+   * Get Builder for this class that allows subclassing.
+   *
+   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+   */
+  public static Builder<?> builder() {
+    return new Builder2();
+  }
+
+  private static class Builder2 extends Builder<Builder2> {
+    @Override
+    protected Builder2 self() {
+      return this;
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
+    private String remoteURI;
+    private HTTPSession httpSession;
+    private boolean built;
+
+    protected abstract T self();
+
+    public T setRemoteURI(String remoteURI) {
+      this.remoteURI = remoteURI;
+      return self();
+    }
+
+    public CdmRemote build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new CdmRemote(this);
+    }
+
+    private void read() {
+      long start = System.currentTimeMillis();
+
+      // get http URL
+      String temp = this.remoteURI;
+      try {
+        if (temp.startsWith(SCHEME)) {
+          temp = temp.substring(SCHEME.length());
+        } else if (!(temp.startsWith("http:") | temp.startsWith("https:"))) {
+          temp = "http:" + temp;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+      this.remoteURI = temp;
+
+      try {
+        httpSession = HTTPFactory.newSession(remoteURI);
+        // get the header
+        String url = remoteURI + "?req=header";
+        if (showRequest)
+          System.out.printf(" CdmRemote request %s%n", url);
+        try (HTTPMethod method = HTTPFactory.Get(httpSession, url)) {
+          method.setFollowRedirects(true);
+          int statusCode = method.execute();
+
+          if (statusCode == 404)
+            throw new RuntimeException(getErrorMessage(method));
+
+          if (statusCode >= 300)
+            throw new RuntimeException(getErrorMessage(method));
+
+          InputStream is = method.getResponseAsStream();
+          NcStreamReader reader = new NcStreamReader();
+          reader.readHeader(is, this);
+          this.location = SCHEME + remoteURI;
+
+          long took = System.currentTimeMillis() - start;
+          if (showRequest)
+            System.out.printf(" CdmRemote request %s took %d msecs %n", url, took);
+        }
+      } catch (Exception e) {
+        httpSession.close();
+        throw new RuntimeException(e);
+      }
+    }
+
   }
 
 }

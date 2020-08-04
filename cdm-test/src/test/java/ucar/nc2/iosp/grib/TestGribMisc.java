@@ -77,7 +77,7 @@ public class TestGribMisc {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
+      Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();
     }
 
@@ -85,8 +85,8 @@ public class TestGribMisc {
     filename = TestDir.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      assert ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // Pressure_Surface
-      assert ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_error_L103") != null; // Temperature_error_height_above_ground
+      assert ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // Pressure_Surface
+      assert ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_error_L103") != null; // Temperature_error_height_above_ground
     }
   }
 
@@ -96,7 +96,7 @@ public class TestGribMisc {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/thinGrid.grib2";
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
+      Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
       assert v != null : ncfile.getLocation();
 
       Array data = v.read();
@@ -116,7 +116,7 @@ public class TestGribMisc {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
     logger.debug("testJPEG2K: {}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1"); // Land_cover_0__sea_1__land_surface
+      Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1"); // Land_cover_0__sea_1__land_surface
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
       Array vals = v.read(origin, shape);
@@ -132,7 +132,7 @@ public class TestGribMisc {
     logger.debug("testNBits0: {}", filename);
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-1-194_L1");
+      Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-1-194_L1");
       assert v != null : ncfile.getLocation();
       Array vals = v.read();
       while (vals.hasNext()) {
@@ -182,7 +182,7 @@ public class TestGribMisc {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/grid174_scanmode_64_example.grb2";
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
-      Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
+      Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();
       ArrayFloat vals = (ArrayFloat) (v.read("0,:,0").reduce()); // read first column - its flipped
       logger.debug("{}: first={} last={}", v.getFullName(), vals.getFloat(0), vals.getFloat((int) vals.getSize() - 1));

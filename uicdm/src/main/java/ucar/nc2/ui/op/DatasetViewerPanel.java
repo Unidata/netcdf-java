@@ -6,12 +6,10 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 // import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

@@ -11,20 +11,15 @@ import java.io.*;
 import java.nio.ByteOrder;
 import ucar.nc2.write.ChunkingIndex;
 
-/**
- * Write a NetcdfFile to an OutputStream using ncstream protocol
- *
- * @author caron
- * @since Feb 7, 2009
- */
+/** Write a NetcdfFile to an OutputStream using ncstream protocol */
 public class NcStreamWriter {
-  private static long maxChunk = 1000 * 1000; // 1 MByte
+  private static final long maxChunk = 1000 * 1000; // 1 MByte
   private static final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
   private static final int currentVersion = 1;
 
-  private NetcdfFile ncfile;
-  private NcStreamProto.Header header;
-  private boolean show;
+  private final NetcdfFile ncfile;
+  private final NcStreamProto.Header header;
+  private boolean show = false;
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
@@ -161,9 +156,8 @@ public class NcStreamWriter {
 
     for (Variable v : ncfile.getVariables()) {
       NcStreamCompression compress;
-      Attribute compressAtt = v.findAttribute(CDM.COMPRESS);
-      if (compressAtt != null && compressAtt.isString()) {
-        String compType = compressAtt.getStringValue();
+      String compType = v.findAttributeString(CDM.COMPRESS, null);
+      if (compType != null) {
         if (compType.equalsIgnoreCase(CDM.COMPRESS_DEFLATE)) {
           compress = NcStreamCompression.deflate();
         } else {

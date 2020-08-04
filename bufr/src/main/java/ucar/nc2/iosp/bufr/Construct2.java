@@ -78,9 +78,7 @@ class Construct2 {
       recordb.addAttribute(new Attribute("coordinates", coordS));
 
     this.ncfile = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(location).build();
-    ncfile.finish();
     this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp2.obsRecordName);
-
   }
 
   NetcdfFile getNetcdfFile() {

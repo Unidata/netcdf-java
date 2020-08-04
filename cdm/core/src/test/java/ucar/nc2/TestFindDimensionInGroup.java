@@ -34,7 +34,6 @@ public class TestFindDimensionInGroup {
     subSubGroup.addDimension(subSubDim);
 
     NetcdfFile ncFile = NetcdfFile.builder().setRootGroup(rootGroup).build();
-    ncFile.finish();
 
     /*
      * ncFile looks like:

@@ -7,7 +7,7 @@ package ucar.nc2.ui.op;
 
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.nc2.internal.iosp.hdf5.H5objects;
@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 /** ToolsUI/Iosp/Hdf5 raw file objects */
@@ -179,11 +178,9 @@ public class Hdf5NewObjectTable extends Hdf5ObjectTable {
     List<ObjectBean> beanList = new ArrayList<>();
 
     iosp = new H5iospNew();
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
-    ncfile.sendIospMessage(H5iospNew.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
-
     try {
-      iosp.open(raf, ncfile, null);
+      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
+      ncfile.sendIospMessage(H5iospNew.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(20000);
       PrintWriter s = new PrintWriter(sw);

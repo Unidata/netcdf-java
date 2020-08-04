@@ -74,8 +74,6 @@ public class GempakCdm extends TableConfigurerImpl {
   }
 
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
-    boolean needFinish = false;
-
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {
@@ -191,15 +189,10 @@ public class GempakCdm extends TableConfigurerImpl {
     if (obsTableType == Table.Type.MultidimInner) {
       obs.dimName = obsDim.getShortName();
     }
-
-    if (needFinish)
-      ds.finish();
     return stnTable;
   }
 
   protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) {
-    boolean needFinish = false;
-
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {
@@ -273,9 +266,6 @@ public class GempakCdm extends TableConfigurerImpl {
     StructureDS s = StructurePseudoDS.fromVars(ds.getRootGroup(), "stnStruct", vars, stationDim);
     obs.addJoin(new JoinMuiltdimStructure(s, obsDim.getLength()));
     obs.addJoin(new JoinArray(time, JoinArray.Type.modulo, obsDim.getLength()));
-
-    if (needFinish)
-      ds.finish();
     return obs;
   }
 

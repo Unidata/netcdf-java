@@ -138,105 +138,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     defaultEnhanceMode = Collections.unmodifiableSet(mode);
   }
 
-  /**
-   * Retrieve the set of Enhancements that is associated with the given string.
-   * <p/>
-   * <table border="1">
-   * <tr>
-   * <th>String</th>
-   * <th>Enhancements</th>
-   * </tr>
-   * <tr>
-   * <td>All</td>
-   * <td>ConvertEnums, ConvertUnsigned, ApplyScaleOffset, ConvertMissing, CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>None</td>
-   * <td>&lt;empty&gt;</td>
-   * </tr>
-   * <tr>
-   * <td>ConvertEnums</td>
-   * <td>ConvertEnums</td>
-   * </tr>
-   * <tr>
-   * <td>ConvertUnsigned</td>
-   * <td>ConvertUnsigned</td>
-   * </tr>
-   * <tr>
-   * <td>ApplyScaleOffset</td>
-   * <td>ApplyScaleOffset</td>
-   * </tr>
-   * <tr>
-   * <td>ConvertMissing</td>
-   * <td>ConvertMissing</td>
-   * </tr>
-   * <tr>
-   * <td>CoordSystems</td>
-   * <td>CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>IncompleteCoordSystems</td>
-   * <td>CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>true</td>
-   * <td>Alias for "All"</td>
-   * </tr>
-   * <tr>
-   * <td>ScaleMissingDefer</td>
-   * <td>Alias for "None"</td>
-   * </tr>
-   * <tr>
-   * <td>AllDefer</td>
-   * <td>ConvertEnums, CoordSystems</td>
-   * </tr>
-   * <tr>
-   * <td>ScaleMissing</td>
-   * <td>ConvertUnsigned, ApplyScaleOffset, ConvertMissing</td>
-   * </tr>
-   * </table>
-   *
-   * @param enhanceMode a string from the above table.
-   * @return the set corresponding to {@code enhanceMode}, or {@code null} if there is no correspondence.
-   * @deprecated this is moving to Ncml package
-   */
-  @Deprecated
-  public static Set<Enhance> parseEnhanceMode(String enhanceMode) {
-    if (enhanceMode == null)
-      return null;
-
-    switch (enhanceMode.toLowerCase()) {
-      case "all":
-        return getEnhanceAll();
-      case "none":
-        return getEnhanceNone();
-      case "convertenums":
-        return EnumSet.of(Enhance.ConvertEnums);
-      case "convertunsigned":
-        return EnumSet.of(Enhance.ConvertUnsigned);
-      case "applyscaleoffset":
-        return EnumSet.of(Enhance.ApplyScaleOffset);
-      case "convertmissing":
-        return EnumSet.of(Enhance.ConvertMissing);
-      case "coordsystems":
-        return EnumSet.of(Enhance.CoordSystems);
-      case "incompletecoordsystems":
-        return EnumSet.of(Enhance.CoordSystems, Enhance.IncompleteCoordSystems);
-      // Legacy strings, retained for backwards compatibility:
-      case "true":
-        return getEnhanceAll();
-      case "scalemissingdefer":
-        return getEnhanceNone();
-      case "alldefer":
-        return EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
-      case "scalemissing":
-        return EnumSet.of(Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing);
-      // Return null by default, since some valid strings actually return an empty set.
-      default:
-        return null;
-    }
-  }
-
   protected static boolean fillValueIsMissing = true;
   protected static boolean invalidDataIsMissing = true;
   protected static boolean missingDataIsMissing = true;
@@ -334,26 +235,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public Set<Enhance> getEnhanceMode() {
     return enhanceMode;
-  }
-
-  private void addEnhanceModes(Set<Enhance> addEnhanceModes) {
-    ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
-    result.addAll(this.enhanceMode);
-    result.addAll(addEnhanceModes);
-    this.enhanceMode = result.build();
-  }
-
-  private void addEnhanceMode(Enhance addEnhanceMode) {
-    ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
-    result.addAll(this.enhanceMode);
-    result.add(addEnhanceMode);
-    this.enhanceMode = result.build();
-  }
-
-  private void removeEnhanceMode(Enhance removeEnhanceMode) {
-    ImmutableSet.Builder<Enhance> result = new ImmutableSet.Builder<>();
-    this.enhanceMode.stream().filter(e -> !e.equals(removeEnhanceMode)).forEach(result::add);
-    this.enhanceMode = result.build();
   }
 
   /**
@@ -491,28 +372,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (orgFile != null) ? orgFile.getLastModified() : 0;
   }
 
-  /** @deprecated Use NetcdfDataset.builder() */
-  @Deprecated
-  @Override
-  public void empty() {
-    super.empty();
-    coordSys = new ArrayList<>();
-    coordAxes = new ArrayList<>();
-    coordTransforms = new ArrayList<>();
-    convUsed = null;
-  }
-
-  /**
-   * Sort Variables, CoordAxes by name.
-   * 
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void sort() {
-    variables.sort(new VariableComparator());
-    coordAxes.sort(new VariableComparator());
-  }
-
   // sort by coord sys, then name
   private static class VariableComparator implements java.util.Comparator {
     public int compare(Object o1, Object o2) {
@@ -532,14 +391,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////////////////////////////
   // used by NcMLReader for NcML without a referenced dataset
-
-  /**
-   * No-arg Constructor
-   * 
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public NetcdfDataset() {}
 
   /**
    * A NetcdfDataset usually wraps a NetcdfFile, where the actual I/O happens.
@@ -827,15 +678,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // CoordinatesHelper has to wire the coordinate systems together
     // Perhaps a VariableDS uses NetcdfDataset or CoordinatesHelper to manage its CoordinateSystems and Transforms ??
     // So it doesnt need a reference directly to them.
-    for (Variable v : this.variables) {
+    for (Variable v : this.getVariables()) {
       // TODO anything needed to do for a StructureDS ??
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;
         vds.setCoordinateSystems(coords);
       }
     }
-
-    finish(); // LOOK
   }
 
   public Builder<?> toBuilder() {
@@ -844,8 +693,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   public NetcdfDataset(NetcdfFile.Builder<?> builder) {
     super(builder);
-    // LOOK this.orgFile = builder.orgFile;
-    finish(); // LOOK
   }
 
   // Add local fields to the passed - in builder.

@@ -132,7 +132,6 @@ recordsGroup/recordsStruct = UNREADABLE
 
         and: "finish"
         ncFile = NetcdfFile.builder().setRootGroup(root).build();
-        ncFile.finish();
 
         printf "CDL %s%n", ncFile
     }
@@ -180,11 +179,8 @@ recordsGroup/recordsStruct = UNREADABLE
         Format xmlFormat = Format.rawFormat.setOmitDeclaration(true)
         NcmlWriter ncmlWriterO = new NcmlWriter(namespace, xmlFormat, null);
 
-        NetcdfFile emptyNcFile = new NetcdfFileSubclass()
-        emptyNcFile.setLocation("file:SOME_FILE");
-        emptyNcFile.setId("SOME_ID")
-        emptyNcFile.setTitle("NcmlWriter Test")
-        emptyNcFile.finish()
+        NetcdfFile.Builder builder = NetcdfFile.builder().setLocation("file:SOME_FILE").setId("SOME_ID").setTitle("NcmlWriter Test");
+        NetcdfFile emptyNcFile = builder.setRootGroup(Group.builder()).build();
 
         expect:
         Element netcdfElem = ncmlWriterO.makeNetcdfElement(emptyNcFile, null)
@@ -266,7 +262,7 @@ recordsGroup/recordsStruct = UNREADABLE
         File outFile = File.createTempFile("NcMLWriterSpec", ".ncml")
 
         when: "write NcML to file"
-        Element netcdfElem = ncmlWriterO.makeExplicitNetcdfElement(ncFile, null)
+        Element netcdfElem = ncmlWriterO.makeExplicitNetcdfElement(ncFile, "")
         ncmlWriterO.writeToFile(netcdfElem, outFile)
 
         then: "file's content matches expectedNcmlResult"
@@ -276,8 +272,7 @@ recordsGroup/recordsStruct = UNREADABLE
         NetcdfDataset readerDataset = NetcdfDatasets.openDataset(outFile.toURI().toURL().toString(), false, null)
 
         and: "get the NcML representation of the dataset"
-        readerDataset.setLocation(null)  // Leaving this non-null would screw up our comparison.
-        Element readerNetcdfElem = ncmlWriterO.makeExplicitNetcdfElement(readerDataset, null)
+        Element readerNetcdfElem = ncmlWriterO.makeExplicitNetcdfElement(readerDataset, "")
 
         then: "it matches expectedNcmlResult"
         ncmlWriterO.writeToString(readerNetcdfElem) == expectedNcmlResult

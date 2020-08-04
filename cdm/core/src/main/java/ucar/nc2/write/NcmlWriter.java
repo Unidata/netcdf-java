@@ -232,6 +232,13 @@ public class NcmlWriter {
     return netcdfElem;
   }
 
+  // Set location to empty to suppress location attribute
+
+  /**
+   * Make the netcdf element for this file.
+   * 
+   * @param location Set to non-empty String to override location attribute.
+   */
   public Element makeNetcdfElement(NetcdfFile ncFile, @Nullable String location) {
     Element rootElem = makeGroupElement(ncFile.getRootGroup());
 
@@ -241,10 +248,11 @@ public class NcmlWriter {
 
     rootElem.addNamespaceDeclaration(namespace);
 
-    if (null == location)
+    if (null == location) {
       location = ncFile.getLocation();
+    }
 
-    if (null != location) {
+    if (null != location && !location.isEmpty()) {
       rootElem.setAttribute("location", URLnaming.canonicalizeWrite(location));
     }
 

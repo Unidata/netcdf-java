@@ -688,12 +688,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     throw new java.lang.UnsupportedOperationException("not a scalar variable =" + this);
   }
 
-  /**
-   * public by accident, do not call directly.
-   *
-   * @return Array
-   * @throws IOException on error
-   */
+  ////// ProxyReader
+
+  /** public by accident, do not call directly. */
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     if (isMemberOfStructure()) { // LOOK should be UnsupportedOperationException ??
@@ -712,12 +709,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
   }
 
-  /**
-   * public by accident, do not call directly.
-   *
-   * @return Array
-   * @throws IOException on error
-   */
+  /** public by accident, do not call directly. */
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
@@ -745,19 +737,13 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return this.parentGroup;
   }
 
-  /**
-   * Get its parent structure, or null if not in structure
-   *
-   * @return parent structure
-   */
+  /** Get its parent structure, or null if not in structure */
   @Nullable
   public Structure getParentStructure() {
     return this.parentStructure;
   }
 
-  /**
-   * Test for presence of parent Structure.
-   */
+  /** Is this a Structure Member? */
   public boolean isMemberOfStructure() {
     return this.parentStructure != null;
   }
@@ -776,11 +762,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return this.shortName;
   }
 
-  /**
-   * Get the display name plus the dimensions, eg 'float name(dim1, dim2)'
-   *
-   * @return display name plus the dimensions
-   */
+  /** Get the display name plus the dimensions, eg 'float name(dim1, dim2)' */
   public String getNameAndDimensions() {
     Formatter buf = new Formatter();
     getNameAndDimensions(buf, true, false);
@@ -1854,14 +1836,4 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
   }
 
-  ///////////////////////////////////////////////////////////////////////
-  // deprecated
-
-  /**
-   * @return isVariableLength()
-   * @deprecated use isVariableLength()
-   */
-  public boolean isUnknownLength() {
-    return isVariableLength;
-  }
 }

@@ -14,7 +14,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.rc.RC;
+import opendap.util.RC;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.ByteArrayOutputStream;
