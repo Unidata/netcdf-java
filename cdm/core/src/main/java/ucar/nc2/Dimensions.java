@@ -4,6 +4,7 @@ package ucar.nc2;
 import com.google.common.collect.ImmutableList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import ucar.ma2.InvalidRangeException;
@@ -23,7 +24,7 @@ public class Dimensions {
   /** A Function that finds a Dimension by name. */
   public interface FindDimensionByName {
     @Nullable
-    Dimension findByName(String dimName);
+    Optional<Dimension> findByName(String dimName);
   }
 
   /** Make a ucar.ma2.Section.Builder from an ordered set of Dimension objects. */
@@ -113,7 +114,7 @@ public class Dimensions {
       if (dimName.equals("*")) {
         d = Dimension.VLEN;
       } else {
-        d = finder.findByName(dimName);
+        d = finder.findByName(dimName).orElse(null);
       }
 
       if (d == null) {

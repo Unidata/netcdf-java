@@ -123,9 +123,9 @@ public class Group {
   }
 
   /**
-   * Retrieve the nested Group with the specified (short) name.
+   * Retrieve the local Group with the specified (short) name. Must be contained in this Group.
    *
-   * @param groupShortName short name of the nested group you are looking for.
+   * @param groupShortName short name of the local group you are looking for.
    * @return the Group, or null if not found
    */
   @Nullable
@@ -139,6 +139,30 @@ public class Group {
     }
 
     return null;
+  }
+
+  /**
+   * Retrieve the nested Group with the specified (short) name. May be any level of nesting.
+   *
+   * @param groupShortName short name of the nested group you are looking for.
+   */
+  public Optional<Group> findGroupNested(String groupShortName) {
+    if (groupShortName == null)
+      return Optional.empty();
+
+    Group local = this.findGroupLocal(groupShortName);
+    if (local != null) {
+      return Optional.of(local);
+    }
+
+    for (Group nested : groups) {
+      Optional<Group> result = nested.findGroupNested(groupShortName);
+      if (result.isPresent()) {
+        return result;
+      }
+    }
+
+    return Optional.empty();
   }
 
   /** Get the shared Dimensions contained directly in this group. */
@@ -163,20 +187,18 @@ public class Group {
     return ImmutableList.copyOf(enumTypedefs);
   }
 
-  /** Find a Dimension in this or a parent Group, matching on short name, or null if not found */
-  @Nullable
-  public Dimension findDimension(String name) {
+  /** Find a Dimension in this or a parent Group, matching on short name */
+  public Optional<Dimension> findDimension(String name) {
     if (name == null)
-      return null;
-    // name = NetcdfFile.makeNameUnescaped(name);
+      return Optional.empty();
     Dimension d = findDimensionLocal(name);
     if (d != null)
-      return d;
+      return Optional.of(d);
     Group parent = getParentGroup();
     if (parent != null)
       return parent.findDimension(name);
 
-    return null;
+    return Optional.empty();
   }
 
   /** Find a Dimension in this or a parent Group, using equals, or null if not found */
@@ -758,7 +780,7 @@ public class Group {
 
     /** Make list of dimensions by looking in this Group or parent groups */
     public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
-      return Dimensions.makeDimensionsList(dimName -> this.findDimension(dimName).orElse(null), dimString);
+      return Dimensions.makeDimensionsList(this::findDimension, dimString);
     }
 
     /**

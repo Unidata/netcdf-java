@@ -21,7 +21,7 @@ import java.util.Formatter;
  * Dimension which has a length known only when the variable is read.
  * <p/>
  * <p>
- * Note: this class has a natural ordering that is inconsistent with equals.
+ * Note: this class has a natural ordering (sort by name) that is inconsistent with equals.
  */
 @Immutable
 public class Dimension implements Comparable<Dimension> {
@@ -117,29 +117,24 @@ public class Dimension implements Comparable<Dimension> {
    * @throws IllegalStateException if not found in one of the Variable's parent groups.
    */
   public String makeFullName(Variable v) {
-    if (!isShared) {
-      return this.shortName; // ?
-    }
-    Group parent = v.getParentGroup();
-    while (parent != null) {
-      if (parent.findDimensionLocal(this.shortName) != null) {
-        return NetcdfFiles.makeFullNameWithString(parent, this.shortName);
-      }
-      parent = parent.getParentGroup();
-    }
-    throw new IllegalStateException(
-        String.format("Dimension %s not found starting from variable %s' group", this.shortName, v.getFullName()));
+    return makeFullName(v.getParentGroup());
   }
 
-  public String makeFullName(Group parent) {
-    while (parent != null) {
-      if (parent.findDimensionLocal(this.shortName) != null) {
-        return NetcdfFiles.makeFullNameWithString(parent, this.shortName);
-      }
-      parent = parent.getParentGroup();
+  /** Make the full name, starting with any group which contains the dimension in itself or a parent group. */
+  public String makeFullName(Group containingGroup) {
+    if (!isShared) {
+      return String.format("%d", getLength()); // LOOK ??
     }
-    throw new IllegalStateException(
-        String.format("Dimension %s not found starting from group '%s'", this.shortName, parent.getFullName()));
+    Preconditions.checkNotNull(containingGroup);
+    Group group = containingGroup;
+    while (group != null) {
+      if (group.findDimensionLocal(this.shortName) != null) {
+        return NetcdfFiles.makeFullNameWithString(group, this.shortName);
+      }
+      group = group.getParentGroup();
+    }
+    throw new IllegalStateException(String.format("Dimension %s not found starting from group '%s'", this.shortName,
+        containingGroup.getFullName()));
   }
 
   @Override
@@ -179,8 +174,6 @@ public class Dimension implements Comparable<Dimension> {
     return f.toString();
   }
 
-  /** @deprecated use CDLWriter */
-  @Deprecated
   void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFiles.makeValidCDLName(getShortName()) : getShortName();
     out.format("%s%s", indent, name);

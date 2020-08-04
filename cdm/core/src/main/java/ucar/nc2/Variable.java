@@ -1376,7 +1376,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     List<Dimension> dims = new ArrayList<>();
     for (Dimension dim : builder.dimensions) {
       if (dim.isShared()) {
-        Dimension sharedDim = this.parentGroup.findDimension(dim.getShortName());
+        Dimension sharedDim = this.parentGroup.findDimension(dim.getShortName()).orElse(null);
         if (sharedDim == null) {
           throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
         } else {
