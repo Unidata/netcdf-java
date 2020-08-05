@@ -5,9 +5,7 @@
 
 package ucar.nc2;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import javax.annotation.Nullable;
 import ucar.ma2.DataType;
@@ -18,7 +16,6 @@ import java.util.*;
 /**
  * A named map from integers to Strings; a user-defined Enum used as a Variable's data type.
  * For ENUM1, ENUM2, ENUM4 enumeration types.
- * Immutable.
  */
 @Immutable
 public class EnumTypedef {
@@ -28,7 +25,6 @@ public class EnumTypedef {
 
   private final String name;
   private final ImmutableMap<Integer, String> map;
-  private final ImmutableList<String> enumStrings;
   private final DataType basetype;
 
   /** Make an EnumTypedef with base type ENUM4. */
@@ -39,27 +35,12 @@ public class EnumTypedef {
   /** Make an EnumTypedef setting the base type (must be ENUM1, ENUM2, ENUM4). */
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
     this.name = name;
+    Preconditions.checkArgument(basetype == DataType.ENUM1 || basetype == DataType.ENUM2 || basetype == DataType.ENUM4);
+    this.basetype = basetype;
+
+    Preconditions.checkNotNull(map);
     Preconditions.checkArgument(validateMap(map, basetype));
     this.map = ImmutableMap.copyOf(map);
-
-    enumStrings = ImmutableList.sortedCopyOf(map.values());
-
-    assert basetype == DataType.ENUM1 || basetype == DataType.ENUM2 || basetype == DataType.ENUM4;
-    this.basetype = basetype;
-  }
-
-  public String getShortName() {
-    return name;
-  }
-
-  /** @deprecated use getMap() */
-  @Deprecated
-  public ImmutableList<String> getEnumStrings() {
-    return enumStrings;
-  }
-
-  public ImmutableMap<Integer, String> getMap() {
-    return map;
   }
 
   /** One of DataType.ENUM1, DataType.ENUM2, or DataType.ENUM4. */
@@ -67,9 +48,15 @@ public class EnumTypedef {
     return this.basetype;
   }
 
+  public String getShortName() {
+    return name;
+  }
+
+  public ImmutableMap<Integer, String> getMap() {
+    return map;
+  }
+
   private boolean validateMap(Map<Integer, String> map, DataType basetype) {
-    if (map == null || basetype == null)
-      return false;
     for (Integer i : map.keySet()) {
       // WARNING, we do not have signed/unsigned info available
       switch (basetype) {
@@ -90,11 +77,6 @@ public class EnumTypedef {
     return true;
   }
 
-  /** Get the name corresponding to the enum value. */
-  @Nullable
-  public String lookupEnumString(int e) {
-    return map.get(e);
-  }
 
   /** Get the enum value corresponding to the name. */
   @Nullable
@@ -106,8 +88,12 @@ public class EnumTypedef {
     return null;
   }
 
-  /** @deprecated use CDLWriter */
-  @Deprecated
+  /** Get the name corresponding to the enum value. */
+  @Nullable
+  public String lookupEnumString(int e) {
+    return map.get(e);
+  }
+
   void writeCDL(Formatter out, Indent indent, boolean strict) {
     String name = strict ? NetcdfFiles.makeValidCDLName(this.name) : this.name;
     String basetype = "";
@@ -161,6 +147,8 @@ public class EnumTypedef {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("name", name).add("map", map).add("basetype", basetype).toString();
+    Formatter f = new Formatter();
+    writeCDL(f, new Indent(0), false);
+    return f.toString();
   }
 }
