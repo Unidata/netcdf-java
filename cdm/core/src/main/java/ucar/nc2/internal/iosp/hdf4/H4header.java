@@ -318,7 +318,7 @@ public class H4header implements HdfHeaderIF {
 
   private void adjustDimensions() {
     Multimap<Dimension, Variable.Builder<?>> dimUsedMap = ArrayListMultimap.create();
-    root.makeDimensionMap(root, dimUsedMap);
+    makeDimensionMap(root, dimUsedMap);
     Set<Dimension> dimUsed = dimUsedMap.keySet();
 
     // remove unused dimensions from root group
@@ -352,6 +352,37 @@ public class H4header implements HdfHeaderIF {
         lowest.addDimensionIfNotExists(dim);
       }
     }
+  }
+
+  /** Make a multimap of Dimensions and all the variables that reference them, in this group and its nested groups. */
+  private void makeDimensionMap(Group.Builder parent, Multimap<Dimension, Variable.Builder<?>> dimUsedMap) {
+    for (Variable.Builder<?> v : parent.vbuilders) {
+      for (Dimension d : getDimensionsFor(parent, v)) {
+        if (d.isShared()) {
+          dimUsedMap.put(d, v);
+        }
+      }
+    }
+    for (Group.Builder g : parent.gbuilders) {
+      makeDimensionMap(g, dimUsedMap);
+    }
+  }
+
+  private List<Dimension> getDimensionsFor(Group.Builder gb, Variable.Builder<?> vb) {
+    List<Dimension> dims = new ArrayList<>();
+    for (Dimension dim : vb.getDimensions()) {
+      if (dim.isShared()) {
+        Dimension sharedDim = gb.findDimension(dim.getShortName()).orElse(null);
+        if (sharedDim == null) {
+          throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
+        } else {
+          dims.add(sharedDim);
+        }
+      } else {
+        dims.add(dim);
+      }
+    }
+    return dims;
   }
 
   private void makeDimension(TagVGroup group) throws IOException {

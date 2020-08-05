@@ -149,11 +149,7 @@ public class TestAggUnion {
     assert org.getShortName().equals("rh");
     assert vds.getOriginalDataType() == org.getDataType();
 
-    assert v.getParentGroup().equals(org.getParentGroup());
-    assert v.getParentGroup() != org.getParentGroup();
-
-    assert v.getParentGroup().equals(org.getParentGroup());
-    assert v.getParentGroup() != org.getParentGroup();
+    assert v.getParentGroup().getFullName().equals(org.getParentGroup().getFullName());
   }
 
   @Test

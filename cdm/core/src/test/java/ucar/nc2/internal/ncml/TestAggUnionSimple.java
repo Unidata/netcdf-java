@@ -154,8 +154,7 @@ public class TestAggUnionSimple {
 
     assert !(org instanceof VariableDS);
 
-    assert v.getParentGroup().equals(org.getParentGroup());
-    assert v.getParentGroup() != org.getParentGroup();
+    assert v.getParentGroup().getFullName().equals(org.getParentGroup().getFullName());
   }
 
   @Test

@@ -36,7 +36,7 @@ public class TestNcmlWriteAndCompareProblem {
   /////////////////////////////////////////////////////////////
   boolean showFiles = true;
   boolean compareData = false;
-  String location = TestDir.cdmUnitTestDir + "/conventions/atd-radar/SPOL_3Volumes.nc";
+  String location = TestDir.cdmUnitTestDir + "/formats/netcdf4/files/tst_grps.nc4";
 
   @Test
   public void compareProblemFile() throws IOException {
@@ -96,7 +96,7 @@ public class TestNcmlWriteAndCompareProblem {
 
     try {
       Formatter f = new Formatter();
-      CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, compareData);
+      CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, compareData);
       boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter());
       if (!ok) {
         System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", durl.trueurl,
