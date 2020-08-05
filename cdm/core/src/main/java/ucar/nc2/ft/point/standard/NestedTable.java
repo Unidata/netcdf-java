@@ -15,6 +15,7 @@ import ucar.ma2.StructureDataFactory;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureDataIteratorLimited;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.Dimensions;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
@@ -130,8 +131,8 @@ public class NestedTable {
 
     // find coordinates that are not part of the extras
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if (!isCoordinate(axis) && !isExtra(axis) && axis.getDimensionsAll().size() <= 1) // Only permit 0-D and 1-D axes
-                                                                                        // as extra variables.
+      // Only permit 0-D and 1-D axes as extra variables.
+      if (!isCoordinate(axis) && !isExtra(axis) && Dimensions.makeDimensionsAll(axis).size() <= 1)
         addExtraVariable(axis);
     }
 

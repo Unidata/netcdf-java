@@ -12,7 +12,7 @@ import java.util.Map;
 import org.junit.Test;
 import ucar.ma2.DataType;
 
-/** Describe {@link ucar.nc2.EnumTypedef} */
+/** Test {@link ucar.nc2.EnumTypedef} */
 public class TestEnumTypedef {
 
   @Test

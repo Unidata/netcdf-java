@@ -510,7 +510,7 @@ public class GeoGridTable extends JPanel {
 
     private String getAxisName(CoordinateAxis axis) {
       if (axis != null)
-        return (axis.isCoordinateVariable()) ? axis.getShortName() : axis.getNameAndDimensions(false);
+        return (axis.isCoordinateVariable()) ? axis.getShortName() : axis.getNameAndDimensions();
       return "";
     }
   }

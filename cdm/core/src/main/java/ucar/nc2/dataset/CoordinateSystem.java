@@ -130,8 +130,7 @@ public class CoordinateSystem {
       }
 
       // collect dimensions
-      List<Dimension> dims = axis.getDimensionsAll();
-      domain.addAll(dims);
+      domain.addAll(Dimensions.makeDimensionsAll(axis));
     }
   }
 
@@ -747,8 +746,7 @@ public class CoordinateSystem {
           elevAxis = lesserRank(elevAxis, axis);
       }
       // collect dimensions
-      List<Dimension> dims = axis.getDimensionsAll();
-      domain.addAll(dims);
+      domain.addAll(Dimensions.makeDimensionsAll(axis));
     }
 
     // Find the named coordinate transforms in allTransforms.

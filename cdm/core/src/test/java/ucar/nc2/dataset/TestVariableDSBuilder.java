@@ -13,6 +13,7 @@ import ucar.ma2.IndexIterator;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
@@ -72,7 +73,7 @@ public class TestVariableDSBuilder {
     assertThat(var.isScalar()).isFalse();
     assertThat(var.isUnlimited()).isTrue();
     assertThat(var.getShape()).isEqualTo(new int[] {7, 27});
-    assertThat(var.getShapeAll()).isEqualTo(new int[] {7, 27});
+    assertThat(Dimensions.makeShapeAll(var)).isEqualTo(new int[] {7, 27});
     assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {7, 27}));
   }
 
@@ -87,7 +88,7 @@ public class TestVariableDSBuilder {
     assertThat(var.isScalar()).isFalse();
     assertThat(var.isUnlimited()).isFalse();
     assertThat(var.getShape()).isEqualTo(new int[] {3, 6, -1});
-    assertThat(var.getShapeAll()).isEqualTo(new int[] {3, 6, -1});
+    assertThat(Dimensions.makeShapeAll(var)).isEqualTo(new int[] {3, 6, -1});
     assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {3, 6, -1}));
   }
 

@@ -6,6 +6,7 @@ package ucar.nc2.ft2.coverage.adapter;
 
 import com.google.common.collect.Lists;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -264,7 +265,7 @@ public class DtCoverageCSBuilder {
     boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
     if (is2Dhoriz) {
       Set<Dimension> xyDomain = CoordinateSystem.makeDomain(Lists.newArrayList(xaxis, yaxis));
-      if (timeAxis != null && CoordinateSystem.isSubset(timeAxis.getDimensionsAll(), xyDomain))
+      if (timeAxis != null && CoordinateSystem.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain))
         return FeatureType.SWATH; // LOOK prob not exactly right
       else
         return FeatureType.CURVILINEAR;

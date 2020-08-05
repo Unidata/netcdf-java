@@ -30,6 +30,8 @@ import java.io.IOException;
  */
 @Immutable
 public class Variable implements VariableSimpleIF, ProxyReader {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
+
   /**
    * Globally permit or prohibit caching. For use during testing and debugging.
    * <p>
@@ -37,152 +39,12 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * {@link #isCaching() is caching}, only that it's <i>permitted</i> to cache.
    */
   public static boolean permitCaching = true; // TODO
+
   private static int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
   private static int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
                                                            // defaultSizeToCache
-  private static boolean debugCaching;
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
-
-  /** Get the data type of the Variable. */
-  public DataType getDataType() {
-    return dataType;
-  }
-
-  /** Get the shape: length of Variable in each dimension. A scalar (rank 0) will have an int[0] shape. */
-  public int[] getShape() {
-    int[] result = new int[shape.length]; // optimization over clone()
-    System.arraycopy(shape, 0, result, 0, shape.length);
-    return result;
-  }
-
-  /** Get the size of the ith dimension */
-  public int getShape(int index) {
-    return shape[index];
-  }
-
-  /**
-   * Get the total number of elements in the Variable.
-   * If this is an unlimited Variable, will use the current number of elements.
-   * If this is a Sequence, will return 1.
-   * If variable length, will skip vlen dimensions
-   *
-   * @return total number of elements in the Variable.
-   */
-  public long getSize() {
-    long size = 1;
-    for (int aShape : shape) {
-      if (aShape >= 0)
-        size *= aShape;
-    }
-    return size;
-  }
-
-  /**
-   * Get the number of bytes for one element of this Variable.
-   * For Variables of primitive type, this is equal to getDataType().getSize().
-   * Variables of String type dont know their size, so what they return is undefined.
-   * Variables of Structure type return the total number of bytes for all the members of
-   * one Structure, plus possibly some extra padding, depending on the underlying format.
-   * Variables of Sequence type return the number of bytes of one element.
-   *
-   * @return total number of bytes for the Variable
-   */
-  public int getElementSize() {
-    return elementSize;
-  }
-
-  /** Get the number of dimensions of the Variable, aka the rank. */
-  public int getRank() {
-    return shape.length;
-  }
-
-  /**
-   * Get the parent group, or if null, the root group.
-   * 
-   * @deprecated Will go away in ver6, shouldnt be needed when builders are used.
-   */
-  @Deprecated
-  public Group getParentGroupOrRoot() {
-    Group g = this.getParentGroup();
-    if (g == null) {
-      g = ncfile.getRootGroup();
-    }
-    return g;
-  }
-
-  /**
-   * Is this variable metadata?. True if its values need to be included explicitly in NcML output.
-   *
-   * @return true if Variable values need to be included in NcML
-   */
-  public boolean isMetadata() {
-    return cache != null && cache.isMetadata;
-  }
-
-  /**
-   * Whether this is a scalar Variable (rank == 0).
-   *
-   * @return true if Variable has rank 0
-   */
-  public boolean isScalar() {
-    return getRank() == 0;
-  }
-
-  /**
-   * Does this variable have a variable length dimension?
-   * If so, it has as one of its dimensions Dimension.VLEN.
-   *
-   * @return true if Variable has a variable length dimension?
-   */
-  public boolean isVariableLength() {
-    return isVariableLength;
-  }
-
-  /**
-   * Can this variable's size grow?.
-   * This is equivalent to saying at least one of its dimensions is unlimited.
-   *
-   * @return boolean true iff this variable can grow
-   */
-  public boolean isUnlimited() {
-    for (Dimension d : dimensions) {
-      if (d.isUnlimited())
-        return true;
-    }
-    return false;
-  }
-
-  /**
-   * Get the list of dimensions used by this variable.
-   * The most slowly varying (leftmost for Java and C programmers) dimension is first.
-   * For scalar variables, the list is empty.
-   *
-   * @return List<Dimension>, will be ImmutableList in ver 6.
-   */
-  public ImmutableList<Dimension> getDimensions() {
-    return ImmutableList.copyOf(dimensions);
-  }
-
-  /**
-   * Get the ith dimension.
-   *
-   * @param i index of the dimension.
-   * @return requested Dimension, or null if i is out of bounds.
-   */
-  public Dimension getDimension(int i) {
-    if ((i < 0) || (i >= getRank()))
-      return null;
-    return dimensions.get(i);
-  }
-
-  /**
-   * Get the list of Dimension names, space delineated.
-   *
-   * @return Dimension names, space delineated
-   */
-  public String getDimensionsString() {
-    return Dimensions.makeDimensionsString(dimensions);
-  }
+  private static boolean debugCaching = false;
+  private static boolean showSize = false;
 
   /**
    * Find the index of the named Dimension in this Variable.
@@ -197,6 +59,18 @@ public class Variable implements VariableSimpleIF, ProxyReader {
         return i;
     }
     return -1;
+  }
+
+  /** The location of the dataset this belongs to. Labeling purposes only. */
+  public String getDatasetLocation() {
+    if (ncfile != null)
+      return ncfile.getLocation();
+    return "N/A";
+  }
+
+  /** Get the data type of the Variable. */
+  public DataType getDataType() {
+    return dataType;
   }
 
   /**
@@ -234,6 +108,147 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /**
+   * Get the list of dimensions used by this variable.
+   * The most slowly varying (leftmost for Java and C programmers) dimension is first.
+   * For scalar variables, the list is empty.
+   *
+   * @return List<Dimension>, will be ImmutableList in ver 6.
+   */
+  public ImmutableList<Dimension> getDimensions() {
+    return ImmutableList.copyOf(dimensions);
+  }
+
+  /**
+   * Get the ith dimension.
+   *
+   * @param i index of the dimension.
+   * @return requested Dimension, or null if i is out of bounds.
+   */
+  public Dimension getDimension(int i) {
+    if ((i < 0) || (i >= getRank()))
+      return null;
+    return dimensions.get(i);
+  }
+
+  /**
+   * Get the list of Dimension names, space delineated.
+   *
+   * @return Dimension names, space delineated
+   */
+  public String getDimensionsString() {
+    return Dimensions.makeDimensionsString(dimensions);
+  }
+
+  /**
+   * Get the number of bytes for one element of this Variable.
+   * For Variables of primitive type, this is equal to getDataType().getSize().
+   * Variables of String type dont know their size, so what they return is undefined.
+   * Variables of Structure type return the total number of bytes for all the members of
+   * one Structure, plus possibly some extra padding, depending on the underlying format.
+   * Variables of Sequence type return the number of bytes of one element.
+   *
+   * @return total number of bytes for the Variable
+   */
+  public int getElementSize() {
+    return elementSize;
+  }
+
+  /** Get the EnumTypedef, only use if getDataType.isEnum() */
+  @Nullable
+  public EnumTypedef getEnumTypedef() {
+    return enumTypedef;
+  }
+
+  @Nullable
+  public String getFileTypeId() {
+    return ncfile == null ? null : ncfile.getFileTypeId();
+  }
+
+  /** Get the full name of this Variable. see {@link NetcdfFiles#makeFullName(Variable)} */
+  public String getFullName() {
+    return NetcdfFiles.makeFullName(this);
+  }
+
+  /** Get the NetcdfFile that this variable is contained in. May be null when the Variable is self contained. */
+  @Nullable
+  public NetcdfFile getNetcdfFile() {
+    return ncfile;
+  }
+
+  /** Get its containing Group, never null */
+  public Group getParentGroup() {
+    return this.parentGroup;
+  }
+
+  /** Get its parent structure, or null if not in structure */
+  @Nullable
+  public Structure getParentStructure() {
+    return this.parentStructure;
+  }
+
+  /**
+   * Get shape as an List of Range objects.
+   * The List is immutable.
+   *
+   * @return List of Ranges, one for each Dimension.
+   */
+  public ImmutableList<Range> getRanges() {
+    // Ok to use Immutable as there are no nulls.
+    return ImmutableList.copyOf(getShapeAsSection().getRanges());
+  }
+
+  /** Get the number of dimensions of the Variable, aka the rank. */
+  public int getRank() {
+    return shape.length;
+  }
+
+  /** Get the shape: length of Variable in each dimension. A scalar (rank 0) will have an int[0] shape. */
+  public int[] getShape() {
+    int[] result = new int[shape.length]; // optimization over clone()
+    System.arraycopy(shape, 0, result, 0, shape.length);
+    return result;
+  }
+
+  /** Get the size of the ith dimension */
+  public int getShape(int index) {
+    return shape[index];
+  }
+
+  /**
+   * Get shape as a Section object.
+   *
+   * @return Section containing List<Range>, one for each Dimension.
+   */
+  public Section getShapeAsSection() {
+    if (shapeAsSection == null) {
+      shapeAsSection = Dimensions.makeSectionFromDimensions(this.dimensions).build();
+    }
+    return shapeAsSection;
+  }
+
+  /** The short name of the variable */
+  public String getShortName() {
+    return this.shortName;
+  }
+
+  /**
+   * Get the total number of elements in the Variable.
+   * If this is an unlimited Variable, will use the current number of elements.
+   * If this is a Sequence, will return 1.
+   * If variable length, will skip vlen dimensions
+   *
+   * @return total number of elements in the Variable.
+   */
+  public long getSize() {
+    long size = 1;
+    for (int aShape : shape) {
+      if (aShape >= 0)
+        size *= aShape;
+    }
+    return size;
+  }
+
+  /**
    * Get the Unit String for the Variable.
    * Looks for the CDM.UNITS attribute value
    *
@@ -252,26 +267,84 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /**
-   * Get shape as an List of Range objects.
-   * The List is immutable.
+   * Calculate if this is a classic coordinate variable: has same name as its first dimension.
+   * If type char, must be 2D, else must be 1D.
    *
-   * @return List of Ranges, one for each Dimension.
+   * @return true if a coordinate variable.
    */
-  public ImmutableList<Range> getRanges() {
-    // Ok to use Immutable as there are no nulls.
-    return ImmutableList.copyOf(getShapeAsSection().getRanges());
+  public boolean isCoordinateVariable() {
+    if ((dataType == DataType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be coordinate
+      // variables
+      return false;
+
+    int n = getRank();
+    if (n == 1 && dimensions.size() == 1) {
+      Dimension firstd = dimensions.get(0);
+      if (getShortName().equals(firstd.getShortName())) { // : short names match
+        return true;
+      }
+    }
+    if (n == 2 && dimensions.size() == 2) { // two dimensional
+      Dimension firstd = dimensions.get(0);
+      // must be char valued (really a String)
+      return shortName.equals(firstd.getShortName()) && // short names match
+          (getDataType() == DataType.CHAR);
+    }
+
+    return false;
+  }
+
+  /** Is this a Structure Member? */
+  public boolean isMemberOfStructure() {
+    return this.parentStructure != null;
+  }
+
+  /** Is this variable metadata?. True if its values need to be included explicitly in NcML output. */
+  public boolean isMetadata() {
+    return cache != null && cache.isMetadata;
+  }
+
+  /** Whether this is a scalar Variable (rank == 0). */
+  public boolean isScalar() {
+    return getRank() == 0;
   }
 
   /**
-   * Get shape as a Section object.
+   * Can this variable's size grow?.
+   * This is equivalent to saying at least one of its dimensions is unlimited.
    *
-   * @return Section containing List<Range>, one for each Dimension.
+   * @return boolean true iff this variable can grow
    */
-  public Section getShapeAsSection() {
-    if (shapeAsSection == null) {
-      shapeAsSection = Dimensions.makeSectionFromDimensions(this.dimensions).build();
+  public boolean isUnlimited() {
+    for (Dimension d : dimensions) {
+      if (d.isUnlimited())
+        return true;
     }
-    return shapeAsSection;
+    return false;
+  }
+
+  /**
+   * Does this variable have a variable length dimension?
+   * If so, it has as one of its dimensions Dimension.VLEN.
+   *
+   * @return true if Variable has a variable length dimension?
+   */
+  public boolean isVariableLength() {
+    return isVariableLength;
+  }
+
+  /**
+   * Lookup the enum string for this value.
+   * Can only be called on enum types, where dataType.isEnum() is true.
+   *
+   * @param val the integer value of this enum
+   * @return the String value, or null if not exist.
+   */
+  @Nullable
+  public String lookupEnumString(int val) {
+    Preconditions.checkArgument(dataType.isEnum(), "Can only call Variable.lookupEnumVal() on enum types");
+    Preconditions.checkNotNull(enumTypedef, "enum Variable does not have enumTypedef");
+    return enumTypedef.lookupEnumString(val);
   }
 
   /**
@@ -285,7 +358,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @throws InvalidRangeException if shape and range list dont match
    */
   public Variable section(List<Range> ranges) throws InvalidRangeException {
-    return section(new Section(ranges, shape).makeImmutable());
+    return section(new Section(ranges, shape));
   }
 
   /**
@@ -303,8 +376,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     subsection = Section.fill(subsection, shape);
 
     // create a copy of this variable with a proxy reader
-    Variable.Builder sectionV = this.toBuilder(); // subclasses override toBuilder()
+    Variable.Builder<?> sectionV = this.toBuilder(); // subclasses override toBuilder()
     sectionV.setProxyReader(new SectionReader(this, subsection));
+    sectionV.resetCache(); // dont cache
     sectionV.setCaching(false); // dont cache
 
     // replace dimensions if needed !! LOOK not shared
@@ -318,7 +392,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       dimensions.add(newD);
     }
     sectionV.dimensions = dimensions;
-    return sectionV.build(getParentGroupOrRoot());
+    return sectionV.build(getParentGroup());
   }
 
   /**
@@ -349,7 +423,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     // create a copy of this variable with a proxy reader
-    Variable.Builder sliceV = this.toBuilder(); // subclasses override toBuilder()
+    Variable.Builder<?> sliceV = this.toBuilder(); // subclasses override toBuilder()
     Section.Builder slice = Section.builder().appendRanges(getShape());
     slice.replaceRange(dim, new Range(value, value));
     sliceV.setProxyReader(new SliceReader(this, dim, slice.build()));
@@ -358,7 +432,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
-    return sliceV.build(getParentGroupOrRoot());
+    return sliceV.build(getParentGroup());
   }
 
   /**
@@ -378,48 +452,16 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     // create a copy of this variable with a proxy reader
-    Variable.Builder sliceV = this.toBuilder(); // subclasses override toBuilder()
+    Variable.Builder<?> sliceV = this.toBuilder(); // subclasses override toBuilder()
     sliceV.setProxyReader(new ReduceReader(this, dimIdx));
     sliceV.resetCache(); // dont share the cache
     sliceV.setCaching(false); // dont cache
 
     // remove dimension(s) - reduce rank
-    for (Dimension d : dims)
+    for (Dimension d : dims) {
       sliceV.dimensions.remove(d);
-    return sliceV.build(getParentGroupOrRoot());
-  }
-
-  /** Get the NetcdfFile that this variable is contained in. May be null. */
-  @Nullable
-  public NetcdfFile getNetcdfFile() {
-    return ncfile;
-  }
-
-  @Nullable
-  public String getFileTypeId() {
-    return ncfile == null ? null : ncfile.getFileTypeId();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Lookup the enum string for this value.
-   * Can only be called on enum types, where dataType.isEnum() is true.
-   *
-   * @param val the integer value of this enum
-   * @return the String value
-   */
-  @Nullable
-  public String lookupEnumString(int val) {
-    if (!dataType.isEnum())
-      throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
-    return enumTypedef.lookupEnumString(val);
-  }
-
-  /** Get the EnumTypedef, only use if getDataType.isEnum() */
-  @Nullable
-  public EnumTypedef getEnumTypedef() {
-    return enumTypedef;
+    }
+    return sliceV.build(getParentGroup());
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -618,17 +660,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       throw new IllegalArgumentException("readScalarString not STRING or CHAR " + getFullName());
   }
 
-  /** @deprecated use readScalarXXXX */
-  @Deprecated
-  protected Array getScalarData() throws IOException {
-    Array scalarData = (cache.data != null) ? cache.data : read();
-    scalarData = scalarData.reduce();
-
-    if ((scalarData.getRank() == 0) || ((scalarData.getRank() == 1) && dataType == DataType.CHAR))
-      return scalarData;
-    throw new java.lang.UnsupportedOperationException("not a scalar variable =" + this);
-  }
-
   ///////////////
   // internal reads: all other calls go through these.
   // subclasses must override, so that NetcdfDataset wrapping will work.
@@ -728,96 +759,13 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return ncfile.readToOutputStream(this, section, out);
   }
 
-  /**
-   * Get its containing Group.
-   * LOOK if you relied on Group being set during construction, use getParentGroupOrRoot().
-   */
-  @SuppressWarnings("deprecated")
-  public Group getParentGroup() {
-    return this.parentGroup;
-  }
-
-  /** Get its parent structure, or null if not in structure */
-  @Nullable
-  public Structure getParentStructure() {
-    return this.parentStructure;
-  }
-
-  /** Is this a Structure Member? */
-  public boolean isMemberOfStructure() {
-    return this.parentStructure != null;
-  }
-
-  /**
-   * Get the full name of this Variable.
-   * Certain characters are backslash escaped (see NetcdfFiles.getFullName(Variable))
-   *
-   * @return full name with backslash escapes
-   */
-  public String getFullName() {
-    return NetcdfFiles.makeFullName(this);
-  }
-
-  public String getShortName() {
-    return this.shortName;
-  }
+  ////////////////////////////////////////////////////////////////////////
 
   /** Get the display name plus the dimensions, eg 'float name(dim1, dim2)' */
   public String getNameAndDimensions() {
     Formatter buf = new Formatter();
     getNameAndDimensions(buf, true, false);
     return buf.toString();
-  }
-
-  /**
-   * Get the display name plus the dimensions, eg 'float name(dim1, dim2)'
-   *
-   * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
-   * @return display name plus the dimensions
-   */
-  public String getNameAndDimensions(boolean strict) {
-    Formatter buf = new Formatter();
-    getNameAndDimensions(buf, false, strict);
-    return buf.toString();
-  }
-
-  /**
-   * Get the display name plus the dimensions, eg 'name(dim1, dim2)'
-   *
-   * @param buf add info to this StringBuilder
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public void getNameAndDimensions(StringBuilder buf) {
-    getNameAndDimensions(buf, true, false);
-  }
-
-  /**
-   * Get the display name plus the dimensions, eg 'name(dim1, dim2)'
-   *
-   * @param buf add info to this StringBuffer
-   * @deprecated use getNameAndDimensions(StringBuilder buf)
-   */
-  @Deprecated
-  public void getNameAndDimensions(StringBuffer buf) {
-    Formatter proxy = new Formatter();
-    getNameAndDimensions(proxy, true, false);
-    buf.append(proxy);
-  }
-
-  /**
-   * Add display name plus the dimensions to the StringBuffer
-   *
-   * @param buf add info to this
-   * @param useFullName use full name else short name. strict = true implies short name
-   * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public void getNameAndDimensions(StringBuilder buf, boolean useFullName, boolean strict) {
-    Formatter proxy = new Formatter();
-    getNameAndDimensions(proxy, useFullName, strict);
-    buf.append(proxy);
   }
 
   /**
@@ -864,27 +812,12 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   public String toString() {
-    return writeCDL(false, false);
-  }
-
-  /**
-   * CDL representation of a Variable.
-   *
-   * @param useFullName use full name, else use short name
-   * @param strict strictly comply with ncgen syntax
-   * @return CDL representation of the Variable.
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public String writeCDL(boolean useFullName, boolean strict) {
     Formatter buf = new Formatter();
-    writeCDL(buf, new Indent(2), useFullName, strict);
+    writeCDL(buf, new Indent(2), false, false);
     return buf.toString();
   }
 
-  /** @deprecated use CDLWriter */
-  @Deprecated
-  protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
+  void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
     buf.format("%s", indent);
     if (dataType == null)
       buf.format("Unknown");
@@ -931,22 +864,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return f.toString();
   }
 
-  private static boolean showSize = false;
-
   protected String extraInfo() {
     return showSize ? " // " + getElementSize() + " " + getSize() : "";
   }
 
-  /** The location of the dataset this belongs to. Labeling purposes only. */
-  public String getDatasetLocation() {
-    if (ncfile != null)
-      return ncfile.getLocation();
-    return "N/A";
-  }
-
-  /**
-   * Instances which have same content are equal.
-   */
+  @Override
   public boolean equals(Object oo) {
     if (this == oo)
       return true;
@@ -975,9 +897,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return true;
   }
 
-  /**
-   * Override Object.hashCode() to implement equals.
-   */
   @Override
   public int hashCode() {
     if (hashCode == 0) {
@@ -997,27 +916,12 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return hashCode;
   }
 
+  // Joshua Bloch (Item 9, chapter 3, page 49)
   protected int hashCode;
 
-  /**
-   * Sort by name
-   */
+  /** Sort by name */
   public int compareTo(VariableSimpleIF o) {
     return getShortName().compareTo(o.getShortName());
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Set the element size. Usually elementSize is determined by the dataType,
-   * use this only for exceptional cases.
-   *
-   * @param elementSize set to this value
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setElementSize(int elementSize) {
-    this.elementSize = elementSize;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1206,124 +1110,21 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
   }
 
-  ///////////////////////////////////////////////////////////////////////
-  // setting variable data values
-
-  /**
-   * Generate the list of values from a starting value and an increment.
-   * Will reshape to variable if needed.
-   *
-   * @param npts number of values, must = v.getSize()
-   * @param start starting value
-   * @param incr increment
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setValues(int npts, double start, double incr) {
-    if (npts != getSize())
-      throw new IllegalArgumentException("bad npts = " + npts + " should be " + getSize());
-    Array data = Array.makeArray(getDataType(), npts, start, incr);
-    if (getRank() != 1)
-      data = data.reshape(getShape());
-    setCachedData(data, true);
-  }
-
-  /**
-   * Set the data values from a list of Strings.
-   *
-   * @param values list of Strings
-   * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setValues(List<String> values) throws IllegalArgumentException {
-    Array data = Array.makeArray(getDataType(), values);
-
-    if (data.getSize() != getSize())
-      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getFullName()
-          + " needed= " + getSize() + " given=" + data.getSize());
-
-    if (getRank() != 1) // dont have to reshape for rank 1
-      data = data.reshape(getShape());
-
-    setCachedData(data, true);
-  }
-
-  ////////////////////////////////////////////////////////////////////////
-  // StructureMember - could be a subclass, but that has problems
-
-  /**
-   * Get list of Dimensions, including parents if any.
-   *
-   * @return array of Dimension, rank of v plus all parents.
-   * @deprecated use {@link Dimensions#makeDimensionsAll(Variable)};
-   */
-  @Deprecated
-  public List<Dimension> getDimensionsAll() {
-    List<Dimension> dimsAll = new ArrayList<>();
-    addDimensionsAll(dimsAll, this);
-    return dimsAll;
-  }
-
-  private void addDimensionsAll(List<Dimension> result, Variable v) {
-    if (v.isMemberOfStructure())
-      addDimensionsAll(result, v.getParentStructure());
-
-    for (int i = 0; i < v.getRank(); i++)
-      result.add(v.getDimension(i));
-  }
-
-  /** @deprecated use Dimensions.makeDimensionsAll(Variable); */
-  @Deprecated
-  public int[] getShapeAll() {
-    if (getParentStructure() == null)
-      return getShape();
-    List<Dimension> dimAll = getDimensionsAll();
-    int[] shapeAll = new int[dimAll.size()];
-    for (int i = 0; i < dimAll.size(); i++)
-      shapeAll[i] = dimAll.get(i).getLength();
-    return shapeAll;
-  }
-
-  /**
-   * Calculate if this is a classic coordinate variable: has same name as its first dimension.
-   * If type char, must be 2D, else must be 1D.
-   *
-   * @return true if a coordinate variable.
-   */
-  public boolean isCoordinateVariable() {
-    if ((dataType == DataType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be coordinate
-                                                                   // variables
-      return false;
-
-    int n = getRank();
-    if (n == 1 && dimensions.size() == 1) {
-      Dimension firstd = dimensions.get(0);
-      if (getShortName().equals(firstd.getShortName())) { // : short names match
-        return true;
-      }
-    }
-    if (n == 2 && dimensions.size() == 2) { // two dimensional
-      Dimension firstd = dimensions.get(0);
-      // must be char valued (really a String)
-      return shortName.equals(firstd.getShortName()) && // short names match
-          (getDataType() == DataType.CHAR);
-    }
-
-    return false;
-  }
-
   /////////////////////////////////////////////////////////////////////////////////////
   private final String shortName;
   private final Group parentGroup;
+  @Nullable
   private final Structure parentStructure;
-  protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens. may be null if
-                                     // Variable is self contained (eg NcML)
+  @Nullable
+  protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens.
+                                     // TODO may be null if Variable is self contained (eg NcML). really?
   protected DataType dataType; // TODO not final, so VariableDS can override, is there a better solution?
+  @Nullable
   private final EnumTypedef enumTypedef;
   protected final ImmutableList<Dimension> dimensions;
   protected final AttributeContainer attributes;
   protected final ProxyReader proxyReader;
+  @Nullable
   protected final Object spiObject;
 
   // computed
@@ -1338,8 +1139,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected int sizeToCache = -1; // bytes
 
   protected Variable(Builder<?> builder, Group parentGroup) {
-    this.shortName = builder.shortName;
-
     if (parentGroup == null) {
       throw new IllegalStateException(String.format("Parent Group must be set for Variable %s", builder.shortName));
     }
@@ -1352,14 +1151,16 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       throw new IllegalStateException("Name must be set for Variable");
     }
 
+    this.shortName = builder.shortName;
     this.parentGroup = parentGroup;
     this.ncfile = builder.ncfile;
     this.parentStructure = builder.parentStruct;
     this.dataType = builder.dataType;
     this.attributes = builder.attributes;
-    ProxyReader useProxyReader = builder.proxyReader == null ? this : builder.proxyReader;
     this.spiObject = builder.spiObject;
     this.cache = builder.cache;
+
+    ProxyReader useProxyReader = builder.proxyReader == null ? this : builder.proxyReader;
 
     if (this.dataType.isEnum()) {
       this.enumTypedef = this.parentGroup.findEnumeration(builder.enumTypeName);
@@ -1676,6 +1477,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
+    // TODO problem with this is that things may not be wired together, so should eliminate use of it
+    @Deprecated
     public String getFullName() {
       String full = "";
       Group.Builder group = parentStructureBuilder != null ? parentStructureBuilder.parentBuilder : parentBuilder;

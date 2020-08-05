@@ -146,14 +146,18 @@ public class Dimension implements Comparable<Dimension> {
       return false;
     }
     Dimension dimension = (Dimension) o;
-    return isUnlimited == dimension.isUnlimited && isVariableLength == dimension.isVariableLength
-        && isShared == dimension.isShared && getLength() == dimension.getLength()
-        && Objects.equal(shortName, dimension.shortName);
+    boolean result = isUnlimited == dimension.isUnlimited && isVariableLength == dimension.isVariableLength
+        && isShared == dimension.isShared && Objects.equal(shortName, dimension.shortName);
+    return isUnlimited ? result : result && getLength() == dimension.getLength();
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared, getLength());
+    if (isUnlimited) {
+      return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared);
+    } else {
+      return Objects.hashCode(shortName, isUnlimited, isVariableLength, isShared, getLength());
+    }
   }
 
   /**

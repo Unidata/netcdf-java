@@ -136,6 +136,14 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       writeRecordData((Structure) v2, section, (ArrayStructure) values);
 
     } else {
+      if (vinfo == null || header == null) {
+        N3headerNew.Vinfo vinfo3 = headerw.vinfoMap.get(v2);
+        for (Variable v : headerw.vinfoMap.keySet()) {
+          System.out.printf("GET %s %d%n", v.getShortName(), v.hashCode());
+          System.out.printf("HAVE %d%n", v2.hashCode());
+        }
+        System.out.printf("HAVE %d%n", v2.hashCode());
+      }
       Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
           : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
       writeData(values, layout, dataType);

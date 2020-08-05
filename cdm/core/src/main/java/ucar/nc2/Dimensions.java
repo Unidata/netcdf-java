@@ -59,6 +59,12 @@ public class Dimensions {
     return size;
   }
 
+
+  /** Make an array of Dimension lengths from all the dimensions in a variable, including parentStructures. */
+  public static int[] makeShapeAll(Variable v) {
+    return makeShape(makeDimensionsAll(v));
+  }
+
   /** Make an array of Dimension lengths. */
   public static int[] makeShape(Iterable<Dimension> dimensions) {
     return makeSectionFromDimensions(dimensions).build().getShape();

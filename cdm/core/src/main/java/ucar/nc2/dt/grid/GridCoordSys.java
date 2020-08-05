@@ -416,8 +416,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     // collect dimensions
     for (CoordinateAxis axis : coordAxes) {
-      List<Dimension> dims = axis.getDimensionsAll();
-      domain.addAll(dims);
+      domain.addAll(Dimensions.makeDimensionsAll(axis));
     }
 
     // WRF NMM
@@ -560,7 +559,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     // collect dimensions
     for (CoordinateAxis axis : coordAxes) {
-      List<Dimension> dims = axis.getDimensionsAll();
+      List<Dimension> dims = Dimensions.makeDimensionsAll(axis);
       for (Dimension dim : dims) {
         // TODO dim.setShared(true); // make them shared (section will make them unshared)
         domain.add(dim);
