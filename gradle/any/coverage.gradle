@@ -1,6 +1,6 @@
 // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
 
-apply plugin: "jacoco"
+apply plugin: 'jacoco'
 
 // Will apply to any task of type Test
 Closure isExtendedByJacoco = {Task task -> task.extensions.findByType(JacocoTaskExtension)
@@ -12,9 +12,6 @@ tasksExtendedByJacoco.all {
   // The data is a record of all the classes visited during test execution. It is self-contained; we don't need to
   // provide any source or class directories for it to "work". Those are only necessary for the report.
   outputs.file jacoco.destinationFile
-
-  // Whether or not data should be appended if the execution data already exists.
-  //jacoco.append = false
 }
 
 /*
@@ -43,11 +40,8 @@ tasksExtendedByJacoco.all {
  * 'integTest' SourceSet to :tds. So in the future, we won't be generating empty Jacoco reports.
  */
 tasks.withType(JacocoReport).all {  // Will apply to ":<subproject>:jacocoTestReport" and ":rootJacocoReport".
-  group = "Reports"
+  group = 'Reports'
   dependsOn tasks.withType(Test)
-
-  //executionData tasks.withType(Test).findAll { it.state.executed }
-  //executionData { tasks.withType(Test).findAll { it.jacoco.destinationFile.exists() }*.jacoco.destinationFile }
 
   reports {
     xml.enabled = false

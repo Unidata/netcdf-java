@@ -7,8 +7,11 @@ apply plugin: 'base' // Gives us the "clean" task for removing rootJacocoReport'
 apply from: "$rootDir/gradle/any/properties.gradle"  // For Coveralls repo token property.
 
 gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
-  // Add the source directories for each Java subproject to one big FileCollection.
+  // Find the source directories for each Java subproject to one big FileCollection.
   // Ditto for the class directories.
+  FileCollection allSubprojectSourceDirs = files(javaProjects*.sourceSets*.main*.allSource*.srcDirs)
+  FileCollection allSubprojectClassDirs = files(javaProjects*.sourceSets*.main*.output)
+
   task rootJacocoReport(type: JacocoReport, group: 'Reports') {
     description = 'Generates an aggregate coverage report from all subprojects'
     dependsOn tasks.testAll  // Added in root/testing.gradle.
@@ -19,19 +22,20 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     // :buildSrc has already run as a SEPARATE build (see http://stackoverflow.com/questions/26597147),
     // so we cannot programmatically access its Project object to retrieve these paths.
     // Also add the source directories of all Java subprojects.
-    additionalSourceDirs.from = files('buildSrc/src/main/groovy', publicProjectSourceDirs)
+    sourceDirectories.from files('buildSrc/src/main/groovy', allSubprojectSourceDirs)
 
     // Ditto for class directories.
-    classDirectories.from = files('buildSrc/build/classes/main', publicProjectClassDirs)
+    classDirectories.from files('buildSrc/build/classes/main', allSubprojectClassDirs)
 
-    Closure isExtendedByJacoco = {Task task -> task.extensions.findByType(JacocoTaskExtension)
+    Closure isExtendedByJacoco = {
+      Task task -> task.extensions.findByType(JacocoTaskExtension)
     }
-    Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
+
+    Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten() as Collection<Task>
     Collection<File> subprojectExeData = tasksExtendedByJacoco*.jacoco*.destinationFile
 
     // Some of subprojectExeData may not exist. Make sure those are removed.
-    //executionData.from = files('buildSrc/build/jacoco/test.exec', subprojectExeData)
-    executionData.from = files('buildSrc/build/jacoco/test.exec', subprojectExeData.findAll {
+    executionData.from files('buildSrc/build/jacoco/test.exec', subprojectExeData.findAll {
       it.exists()
     })
   }
@@ -78,7 +82,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
     coveralls {
       jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
-      sourceDirs = publicProjectSourceDirs.flatten()
+      sourceDirs = files('buildSrc/src/main/groovy', allSubprojectSourceDirs) as List
 
       sendToCoveralls = true
       saveAsFile = true  // Save JSON payload to file, so we can use it for UP-TO-DATE checking.
