@@ -4,8 +4,6 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 
 // All dependencies used by the netCDF-Java library are defined here
 
-platformProjects.add(project)
-
 dependencies {
   constraints {
     // general dependencies
@@ -43,7 +41,7 @@ dependencies {
     // apache httpclient
     api 'org.apache.httpcomponents:httpclient:4.5.12'
     api 'org.apache.httpcomponents:httpmime:4.5.12'
-    api "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+    api "org.slf4j:jcl-over-slf4j:${depVersion.slf4j}"
 
     // waterml xml beans
     api 'org.apache.xmlbeans:xmlbeans:2.6.0'
@@ -54,7 +52,7 @@ dependencies {
     api 'org.n52.sensorweb:52n-xml-sampling-v20:2.0.0'
 
     // netcdf-java logging
-    api "org.slf4j:slf4j-api:${slf4jVersion}"
+    api "org.slf4j:slf4j-api:${depVersion.slf4j}"
     runtime 'ch.qos.logback:logback-classic:1.2.3'
 
     //////////////////////////
