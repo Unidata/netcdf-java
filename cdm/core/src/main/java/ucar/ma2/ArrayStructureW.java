@@ -221,4 +221,9 @@ public class ArrayStructureW extends ArrayStructure {
     StructureData sd = getStructureData(recnum);
     return sd.getArraySequence(m.getName());
   }
+
+  // TODO only for immutable
+  public Array copy() {
+    return this;
+  }
 }

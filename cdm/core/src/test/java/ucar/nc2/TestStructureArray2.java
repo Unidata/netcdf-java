@@ -4,9 +4,6 @@
  */
 package ucar.nc2;
 
-import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,43 +25,43 @@ public class TestStructureArray2 {
 
   @Test
   public void testBB() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
-        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    // testWriteRecord is 1 dimensional (nc2 record dimension)
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
+        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
 
-    Structure v = (Structure) ncfile.findVariable("record");
-    assert v != null;
+      Structure v = (Structure) ncfile.findVariable("record");
+      assert v != null;
 
-    assert (v.getDataType() == DataType.STRUCTURE);
+      assert (v.getDataType() == DataType.STRUCTURE);
 
-    Array data = v.read();
-    assert (data instanceof ArrayStructure);
-    assert (data instanceof ArrayStructureBB);
-    assert (data.getElementType() == StructureData.class);
+      Array data = v.read();
+      assert (data instanceof ArrayStructure);
+      assert (data instanceof ArrayStructureBB);
+      assert (data.getElementType() == StructureData.class);
 
-    test.testArrayStructure((ArrayStructure) data);
-
-    ncfile.close();
+      test.testArrayStructure((ArrayStructure) data);
+    }
   }
 
   @Test
   public void testMA() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
-    NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
-    Dimension dim = ncd.findDimension("time");
-    assert dim != null;
+    // jan.nc is 1 dimensional (nc2 record dimension)
+    try (NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
+        NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null)) {
+      Dimension dim = ncd.findDimension("time");
+      assert dim != null;
 
-    Structure p = StructurePseudoDS.fromVars(ncd.getRootGroup(), "Psuedo", null, dim);
+      Structure p = StructurePseudoDS.fromVars(ncd.getRootGroup(), "Psuedo", null, dim);
 
-    assert (p.getDataType() == DataType.STRUCTURE);
+      assert (p.getDataType() == DataType.STRUCTURE);
 
-    Array data = p.read();
-    assert (data instanceof ArrayStructure);
-    assert (data instanceof ArrayStructureMA);
-    assert (data.getElementType() == StructureData.class);
+      Array data = p.read();
+      assert (data instanceof ArrayStructure);
+      assert (data instanceof ArrayStructureMA);
+      assert (data.getElementType() == StructureData.class);
 
-    test.testArrayStructure((ArrayStructure) data);
-
-    ncfile.close();
+      test.testArrayStructure((ArrayStructure) data);
+    }
   }
 
 }

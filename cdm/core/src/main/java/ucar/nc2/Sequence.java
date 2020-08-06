@@ -53,14 +53,6 @@ public class Sequence extends Structure {
    * @throws UnsupportedOperationException always
    */
   @Override
-  public StructureData readStructure() {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * @throws UnsupportedOperationException always
-   */
-  @Override
   public StructureData readStructure(int index) {
     throw new UnsupportedOperationException();
   }

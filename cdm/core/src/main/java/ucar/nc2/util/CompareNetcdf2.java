@@ -837,7 +837,7 @@ public class CompareNetcdf2 {
         Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
   }
 
-  private boolean compareStructureData(StructureData sdata1, StructureData sdata2, boolean justOne) {
+  public boolean compareStructureData(StructureData sdata1, StructureData sdata2, boolean justOne) {
     boolean ok = true;
 
     StructureMembers sm1 = sdata1.getStructureMembers();

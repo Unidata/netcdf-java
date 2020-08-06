@@ -19,11 +19,12 @@ import javax.annotation.Nullable;
  * @author caron
  */
 public class Section {
+  public static final Section SCALAR = new Section(Range.ONE);
 
   /**
    * Return a Section guaranteed to be non null, with no null Ranges, and within the bounds set by shape.
    * A section with no nulls is called "filled".
-   * If its is already filled, return it, otherwise return a new Section, filled from the shape.
+   * If it is already filled, return it, otherwise return a new Section, filled from the shape.
    *
    * @param s the original Section, may be null or not filled
    * @param shape use this as default shape if any of the ranges are null.
@@ -32,19 +33,27 @@ public class Section {
    */
   public static Section fill(Section s, int[] shape) throws InvalidRangeException {
     // want all
-    if (s == null)
+    if (s == null) {
       return new Section(shape);
+    }
+    // scalar
+    if (shape.length == 0 && s.equals(SCALAR)) {
+      return s;
+    }
 
     String errs = s.checkInRange(shape);
-    if (errs != null)
+    if (errs != null) {
       throw new InvalidRangeException(errs);
+    }
 
     // if s is already filled, use it
     boolean ok = true;
-    for (int i = 0; i < shape.length; i++)
+    for (int i = 0; i < shape.length; i++) {
       ok &= (s.getRange(i) != null);
-    if (ok)
+    }
+    if (ok) {
       return s;
+    }
 
     // fill in any nulls
     return new Section(s.getRanges(), shape);

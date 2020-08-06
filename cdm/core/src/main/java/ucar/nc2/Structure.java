@@ -4,11 +4,13 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -45,6 +47,62 @@ public class Structure extends Variable {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
   private static final int defaultBufferSize = 500 * 1000; // 500K bytes
 
+
+  /** Find the Variable member with the specified (short) name, or null if not found. */
+  @Nullable
+  public Variable findVariable(String shortName) {
+    if (shortName == null)
+      return null;
+    return memberHash.get(shortName);
+  }
+
+  /** Get the number of variables contained directly in this Structure. */
+  public int getNumberOfMemberVariables() {
+    return members.size();
+  }
+
+  /** Get the size in bytes of one element of the Structure. */
+  @Override
+  public int getElementSize() {
+    if (elementSize <= 0)
+      calcElementSize();
+    return elementSize;
+  }
+
+  /** Get the variables contained directly in this Structure. */
+  public ImmutableList<Variable> getVariables() {
+    return members;
+  }
+
+  /** Get the (short) names of the variables contained directly in this Structure. */
+  public ImmutableList<String> getVariableNames() {
+    return members.stream().map(Variable::getShortName).collect(ImmutableList.toImmutableList());
+  }
+
+  /** Find if this was created from a subset() method. */
+  public boolean isSubset() {
+    return isSubset;
+  }
+
+  /**
+   * Create a StructureMembers object that describes this Structure.
+   * CAUTION: Do not use for iterating over a StructureData or ArrayStructure - get the StructureMembers object
+   * directly from the StructureData or ArrayStructure.
+   *
+   * @return a StructureMembers object that describes this Structure.
+   */
+  public StructureMembers makeStructureMembers() {
+    StructureMembers.Builder builder = StructureMembers.builder().setName(getShortName());
+    for (Variable v2 : this.getVariables()) {
+      StructureMembers.MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(),
+          v2.getDataType(), v2.getShape());
+      if (v2 instanceof Structure) {
+        m.setStructureMembers(((Structure) v2).makeStructureMembers());
+      }
+    }
+    return builder.build();
+  }
+
   /**
    * Create a subset of the Structure consisting only of the given member variables
    * 
@@ -70,19 +128,12 @@ public class Structure extends Variable {
    * @return containing just that member
    */
   public Structure select(String varName) {
-    List<String> memberNames = new ArrayList<>(1);
-    memberNames.add(varName);
-    return select(memberNames);
+    Preconditions.checkArgument(findVariable(varName) != null);
+    return select(ImmutableList.of(varName));
   }
 
-  /**
-   * Find if this was created from a subset() method.
-   * 
-   * @return true if this is a subset
-   */
-  public boolean isSubset() {
-    return isSubset;
-  }
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   protected int calcStructureSize() {
     int structureSize = 0;
@@ -90,72 +141,6 @@ public class Structure extends Variable {
       structureSize += member.getSize() * member.getElementSize();
     }
     return structureSize;
-  }
-
-  /** Caching is not allowed */
-  @Override
-  public boolean isCaching() {
-    return false;
-  }
-
-  /** Caching is not allowed */
-  @Override
-  public void setCaching(boolean caching) {
-    super.setCaching(false);
-  }
-
-  /** Get the variables contained directly in this Structure. */
-  public ImmutableList<Variable> getVariables() {
-    return ImmutableList.copyOf(members);
-  }
-
-  /** Get the number of variables contained directly in this Structure. */
-  public int getNumberOfMemberVariables() {
-    return members.size();
-  }
-
-  /** Get the (short) names of the variables contained directly in this Structure. */
-  public ImmutableList<String> getVariableNames() {
-    return members.stream().map(m -> m.getShortName()).collect(ImmutableList.toImmutableList());
-  }
-
-  /** Find the Variable member with the specified (short) name, or null if not found. */
-  @Nullable
-  public Variable findVariable(String shortName) {
-    if (shortName == null)
-      return null;
-    return memberHash.get(shortName);
-  }
-
-  /**
-   * Create a StructureMembers object that describes this Structure.
-   * CAUTION: Do not use for iterating over a StructureData or ArrayStructure - get the StructureMembers object
-   * directly from the StructureData or ArrayStructure.
-   *
-   * @return a StructureMembers object that describes this Structure.
-   */
-  public StructureMembers makeStructureMembers() {
-    StructureMembers.Builder builder = StructureMembers.builder().setName(getShortName());
-    for (Variable v2 : this.getVariables()) {
-      StructureMembers.MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(),
-          v2.getDataType(), v2.getShape());
-      if (v2 instanceof Structure) {
-        m.setStructureMembers(((Structure) v2).makeStructureMembers());
-      }
-    }
-    return builder.build();
-  }
-
-  /**
-   * Get the size of one element of the Structure.
-   * 
-   * @return size (in bytes)
-   */
-  @Override
-  public int getElementSize() {
-    if (elementSize <= 0)
-      calcElementSize();
-    return elementSize;
   }
 
   /**
@@ -170,26 +155,13 @@ public class Structure extends Variable {
     elementSize = total;
   }
 
-  /**
-   * Use this when this is a scalar Structure. Its the same as read(), but it extracts the single
-   * StructureData out of the Array.
-   * 
-   * @return StructureData for a scalar
-   * @throws java.io.IOException on read error
-   */
-  public StructureData readStructure() throws IOException {
-    if (getRank() != 0)
-      throw new java.lang.UnsupportedOperationException("not a scalar structure");
-    Array dataArray = read();
-    ArrayStructure data = (ArrayStructure) dataArray;
-    return data.getStructureData(0);
-  }
+  //////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Use this when this is a one dimensional array of Structures, or you are doing the index calculation yourself for
-   * a multidimension array. This will read only the ith structure, and return the data as a StructureData object.
+   * Use this when this is a scalar or one dimensional array of Structures, or you are doing the index calculation
+   * yourself for a multidimensional array. This will read only the ith structure, and return a StructureData.
    * 
-   * @param index index into 1D array
+   * @param index linear index into the array
    * @return ith StructureData
    * @throws java.io.IOException on read error
    * @throws ucar.ma2.InvalidRangeException if index out of range
@@ -204,8 +176,9 @@ public class Structure extends Variable {
       Index ii = Index.factory(shape); // convert to nD index
       ii.setCurrentCounter(index);
       int[] origin = ii.getCurrentCounter();
-      for (int anOrigin : origin)
+      for (int anOrigin : origin) {
         sb.appendRange(anOrigin, anOrigin);
+      }
     }
 
     Array dataArray = read(sb.build());
@@ -214,7 +187,7 @@ public class Structure extends Variable {
   }
 
   /**
-   * For rank 1 array of Structures, read count Structures and return the data as an ArrayStructure.
+   * For rank 0 or 1 array of Structures, read count Structures and return the data as an ArrayStructure.
    * Use only when this is a one dimensional array of Structures.
    * 
    * @param start start at this index
@@ -224,12 +197,9 @@ public class Structure extends Variable {
    * @throws ucar.ma2.InvalidRangeException if start, count out of range
    */
   public ArrayStructure readStructure(int start, int count) throws IOException, ucar.ma2.InvalidRangeException {
-    if (getRank() != 1)
-      throw new java.lang.UnsupportedOperationException("not a vector structure");
+    Preconditions.checkArgument(getRank() <= 1, "not a vector structure");
     int[] origin = {start};
     int[] shape = {count};
-    if (NetcdfFile.debugStructureIterator)
-      System.out.println("readStructure " + start + " " + count);
     return (ArrayStructure) read(origin, shape);
   }
 
@@ -272,15 +242,13 @@ public class Structure extends Variable {
    * @throws java.io.IOException on read error
    */
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    return (getRank() < 2) ? new Structure.IteratorRank1(bufferSize) : new Structure.Iterator(bufferSize);
+    return (getRank() < 2) ? new Structure.IteratorRank1(bufferSize) : new IteratorRankAny();
   }
 
-  /**
-   * Iterator over type StructureData, rank 1 (common) case
-   */
+  /** Iterator over type StructureData, rank 1 (common) case */
   private class IteratorRank1 implements StructureDataIterator {
     private int count;
-    private int recnum = (int) getSize();
+    private final int recnum = (int) getSize();
     private int readStart;
     private int readCount;
     private int readAtaTime;
@@ -350,20 +318,14 @@ public class Structure extends Variable {
 
   }
 
-  /**
-   * Iterator over type StructureData, general case
-   */
-  private class Iterator implements StructureDataIterator {
+  /** Iterator over type StructureData, general case */
+  private class IteratorRankAny implements StructureDataIterator {
     private int count; // done so far
-    private int total; // total to do
+    private int total = (int) getSize();
     private int readStart; // current buffer starts at
     private int readCount; // count within the current buffer [0,readAtaTime)
     private int outerCount; // over the outer Dimension
     private ArrayStructure as;
-
-    Iterator(int bufferSize) {
-      reset();
-    }
 
     @Override
     public boolean hasNext() {
@@ -387,8 +349,9 @@ public class Structure extends Variable {
 
     @Override
     public StructureData next() throws IOException {
-      if (count >= readStart)
+      if (count >= readStart) {
         readNextGeneralRank();
+      }
 
       count++;
       return as.getStructureData(readCount++);
@@ -402,8 +365,9 @@ public class Structure extends Variable {
 
         as = (ArrayStructure) read(sb.build());
 
-        if (NetcdfFile.debugStructureIterator)
+        if (NetcdfFile.debugStructureIterator) {
           System.out.println("readNext inner=" + outerCount + " total=" + outerCount);
+        }
 
         outerCount++;
 
@@ -420,11 +384,7 @@ public class Structure extends Variable {
 
   ////////////////////////////////////////////
 
-  /**
-   * Get String with name and attributes. Used in short descriptions like tooltips.
-   * 
-   * @return name and attributes String
-   */
+  /** Get String with name and attributes. Used in short descriptions like tooltips. */
   public String getNameAndAttributes() {
     Formatter sbuff = new Formatter();
     sbuff.format("Structure ");
@@ -437,7 +397,7 @@ public class Structure extends Variable {
   }
 
   @Override
-  protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
+  void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
     buf.format("%n%s%s {%n", indent, dataType);
 
     indent.incr();
@@ -524,7 +484,7 @@ public class Structure extends Variable {
 
     /** Add a Variable to the root group. */
     public T addMemberVariable(String shortName, DataType dataType, String dimString) {
-      Variable.Builder vb = Variable.builder().setName(shortName).setDataType(dataType)
+      Variable.Builder<?> vb = Variable.builder().setName(shortName).setDataType(dataType)
           .setParentGroupBuilder(this.parentBuilder).setDimensionsByName(dimString);
       addMemberVariable(vb);
       return self();
@@ -537,7 +497,7 @@ public class Structure extends Variable {
       return want.isPresent();
     }
 
-    /** Remove member variable, if present. Return whether it was present */
+    /** Add a member variable, replacing one of same name if there is one. Return whether it was present */
     public boolean replaceMemberVariable(Variable.Builder<?> replacement) {
       boolean wasPresent = removeMemberVariable(replacement.shortName);
       addMemberVariable(replacement);
