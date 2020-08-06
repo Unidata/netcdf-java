@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.junit.Test;
 import ucar.ma2.DataType;
 
+/** Test {@link ucar.nc2.Dimension} */
 public class TestDimension {
 
   @Test

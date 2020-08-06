@@ -72,7 +72,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     if (org instanceof CoordinateAxis) {
       builder.setAxisType(((CoordinateAxis) org).axisType);
     }
-    return builder.build(org.getParentGroupOrRoot());
+    return builder.build(org.getParentGroup());
   }
 
   /**
@@ -133,7 +133,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     if (org instanceof CoordinateAxis) {
       builder.setAxisType(((CoordinateAxis) org).axisType);
     }
-    return builder.build(org.getParentGroupOrRoot());
+    return builder.build(org.getParentGroup());
   }
 
   ////////////////////////////////////////////////////////////////

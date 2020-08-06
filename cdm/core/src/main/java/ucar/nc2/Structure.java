@@ -60,7 +60,7 @@ public class Structure extends Variable {
     }
     result.vbuilders = selected;
     result.isSubset = true;
-    return result.build(getParentGroupOrRoot());
+    return result.build(getParentGroup());
   }
 
   /**

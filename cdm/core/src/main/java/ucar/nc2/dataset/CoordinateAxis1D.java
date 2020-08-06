@@ -784,7 +784,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (boundsVarName == null) {
       return false;
     }
-    VariableDS boundsVar = (VariableDS) getParentGroupOrRoot().findVariableLocal(boundsVarName);
+    VariableDS boundsVar = (VariableDS) getParentGroup().findVariableLocal(boundsVarName);
     if (null == boundsVar)
       return false;
     if (2 != boundsVar.getRank())

@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.Test;
 import ucar.ma2.DataType;
 
-/** Describe {@link ucar.nc2.Group} */
+/** Test {@link ucar.nc2.Group} */
 public class TestGroup {
 
   @Test
