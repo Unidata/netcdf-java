@@ -1031,9 +1031,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     if (!this.cache.cachingSet) {
-      cache.isCaching = !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
+      cache.isCaching =
+          !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
       if (debugCaching)
-        System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(), getSizeToCache());
+        System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(),
+            getSizeToCache());
       this.cache.cachingSet = true;
     }
     return cache.isCaching;
