@@ -1366,7 +1366,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     /** Set dimensions by name. If not empty, the parent group builder must be set. */
     public T setDimensionsByName(String dimString) {
-      if (dimString.isEmpty()) {
+      if (dimString == null || dimString.isEmpty()) {
         return self();
       }
       Preconditions.checkNotNull(this.parentBuilder);
