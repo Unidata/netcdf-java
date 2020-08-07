@@ -110,6 +110,8 @@ public class Structure extends Variable {
    */
   public Structure select(List<String> memberNames) {
     Structure.Builder<?> result = this.toBuilder();
+    // Will read the entire Structure, then transfer selected members to StructureData
+    result.setElementSize(this.elementSize);
 
     List<Variable.Builder<?>> selected = new ArrayList<>();
     for (String name : memberNames) {
