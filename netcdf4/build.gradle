@@ -78,8 +78,7 @@ jacocoFullTestReport.configure {
     }
   }
 
-  // just the html here, as it's only for devs and not something that gets submitted elsewhere,
-  // such as coveralls. Coveralls is handled by the root project
+  // just the html here, as it's only for devs and not something that gets submitted elsewhere
   reports {
     xml.enabled = false
     html.destination file("${buildDir}/reports/allTests")

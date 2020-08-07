@@ -3,9 +3,6 @@ ext {
   NEXUS_USERNAME_KEY = 'nexus.username'
   NEXUS_PASSWORD_KEY = 'nexus.password'
 
-  // Used to publish code coverage report to https://coveralls.io/github/Unidata/netcdf-java
-  COVERALLS_REPO_TOKEN_KEY = 'coveralls.repo.token.ncj'
-
   // Used to publish static analysis report to https://sonarcloud.io/dashboard?id=edu.ucar.unidata:ncj
   SONARQUBE_USER_TOKEN_KEY = 'sonarqube.user.token.ncj'
 
