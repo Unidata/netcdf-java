@@ -17,65 +17,58 @@ import java.util.List;
 public class Sequence extends Structure {
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    return ncfile.getStructureIterator(this, bufferSize);
-  }
-
-  /**
-   * @throws UnsupportedOperationException always
-   */
-  @Override
-  public Array read(int[] origin, int[] shape) {
+    if (getCachedData() instanceof ArrayStructure) {
+      return ((ArrayStructure) getCachedData()).getStructureDataIterator();
+    }
+    if (ncfile != null) {
+      return ncfile.getStructureIterator(this, bufferSize);
+    }
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * @throws UnsupportedOperationException always
-   */
-  @Override
-  public Array read(String sectionSpec) {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * @throws UnsupportedOperationException always
-   */
-  @Override
-  public Array read(List<Range> ranges) {
-    throw new UnsupportedOperationException();
-  }
-
+  /** Same as read() */
   @Override
   public Array read(ucar.ma2.Section section) throws java.io.IOException {
     return read();
   }
 
-  /**
-   * @throws UnsupportedOperationException always
-   */
+  /** @throws UnsupportedOperationException always */
+  @Override
+  public Array read(int[] origin, int[] shape) {
+    throw new UnsupportedOperationException();
+  }
+
+  /** @throws UnsupportedOperationException always */
+  @Override
+  public Array read(String sectionSpec) {
+    throw new UnsupportedOperationException();
+  }
+
+  /** @throws UnsupportedOperationException always */
+  @Override
+  public Array read(List<Range> ranges) {
+    throw new UnsupportedOperationException();
+  }
+
+  /** @throws UnsupportedOperationException always */
   @Override
   public StructureData readStructure(int index) {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * @throws UnsupportedOperationException always
-   */
+  /** @throws UnsupportedOperationException always */
   @Override
   public ArrayStructure readStructure(int start, int count) {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * @throws UnsupportedOperationException always
-   */
+  /** @throws UnsupportedOperationException always */
   @Override
   public Variable slice(int dim, int value) {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * @throws UnsupportedOperationException always
-   */
+  /** @throws UnsupportedOperationException always */
   @Override
   public Variable section(Section subsection) {
     throw new UnsupportedOperationException();

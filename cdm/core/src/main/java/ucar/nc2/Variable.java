@@ -1058,6 +1058,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     setCachedData(cacheData, false);
   }
 
+  Array getCachedData() {
+    return cache.data;
+  }
+
   /**
    * Set the data cache
    *
@@ -1360,8 +1364,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return (idx >= 0);
     }
 
-    /** Set dimensions by name. The parent group builder must be set. */
+    /** Set dimensions by name. If not empty, the parent group builder must be set. */
     public T setDimensionsByName(String dimString) {
+      if (dimString.isEmpty()) {
+        return self();
+      }
       Preconditions.checkNotNull(this.parentBuilder);
       this.dimensions = new ArrayList<>(this.parentBuilder.makeDimensionsList(dimString));
       return self();
