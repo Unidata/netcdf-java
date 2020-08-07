@@ -21,6 +21,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.write.Ncdump;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -38,6 +39,12 @@ public class TestN4problems {
   @AfterClass
   static public void after() {
     H5headerNew.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
+  }
+
+  @Test
+  public void readProblem() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "/formats/netcdf4/files/tst_grps.nc4.ncml";
+    TestDir.readAll(filename);
   }
 
   @Test
