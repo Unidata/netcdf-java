@@ -1031,10 +1031,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     if (!this.cache.cachingSet) {
-      cache.isCaching = !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
+      cache.isCaching = !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
       if (debugCaching)
-        System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(),
-            getSizeToCache());
+        System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(), getSizeToCache());
       this.cache.cachingSet = true;
     }
     return cache.isCaching;
@@ -1097,7 +1096,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   private static class Cache {
     private Array data;
     protected boolean isCaching;
-    protected boolean cachingSet;
+    protected boolean cachingSet; // true if cache was explicitly set
     private boolean isMetadata;
 
     private Cache() {}
