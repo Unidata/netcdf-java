@@ -55,9 +55,11 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     title = "NetCDF-Java All API v${version}"
     destinationDir = file("$buildDir/javadocAll/")
 
-    source publicProjects.collect {project -> project.sourceSets.main.allJava
+    source javaProjects.collect {
+      project -> project.sourceSets.main.allJava
     }
-    classpath = files(publicProjects.collect {project ->
+
+    classpath = files(javaProjects.collect {project ->
       [project.sourceSets.main.compileClasspath, project.sourceSets.main.output]
     })
   }

@@ -2,7 +2,7 @@
 // However, that behavior doesn't seem to hold for script plugins (this file) applied from the parent script.
 // So we have to repeat ourselves. See the root project's build script for more notes on buildscript {} block weirdness.
 buildscript {
-  apply from: "$rootDir/gradle/any/plugins.gradle"
+  apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
   repositories {
     jcenter()

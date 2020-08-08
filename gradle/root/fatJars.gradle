@@ -3,7 +3,7 @@
 // So we have to repeat ourselves. See the root project's build script for more notes on buildscript {} block weirdness.
 buildscript {
   // get buildPlugins map
-  apply from: "$rootDir/gradle/any/plugins.gradle"
+  apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
   repositories {
     mavenCentral()
