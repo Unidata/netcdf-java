@@ -1031,7 +1031,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     if (!this.cache.cachingSet) {
-      cache.isCaching = !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
+      cache.isCaching =
+          !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
       if (debugCaching)
         System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(),
             getSizeToCache());
@@ -1055,6 +1056,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   @Deprecated
   public void setCachedData(Array cacheData) {
     setCachedData(cacheData, false);
+  }
+
+  Array getCachedData() {
+    return cache.data;
   }
 
   /**
@@ -1097,7 +1102,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   private static class Cache {
     private Array data;
     protected boolean isCaching;
-    protected boolean cachingSet;
+    protected boolean cachingSet; // true if cache was explicitly set
     private boolean isMetadata;
 
     private Cache() {}
@@ -1359,8 +1364,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return (idx >= 0);
     }
 
-    /** Set dimensions by name. The parent group builder must be set. */
+    /** Set dimensions by name. If not empty, the parent group builder must be set. */
     public T setDimensionsByName(String dimString) {
+      if (dimString == null || dimString.isEmpty()) {
+        return self();
+      }
       Preconditions.checkNotNull(this.parentBuilder);
       this.dimensions = new ArrayList<>(this.parentBuilder.makeDimensionsList(dimString));
       return self();

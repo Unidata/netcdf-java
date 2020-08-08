@@ -245,6 +245,7 @@ public class TestH5ReadStructure {
 
       Index ii = a1.getIndex();
       assert a1.getInt(ii.set(3)) == 52203 : a1.getInt(ii.set(3));
+      assert a1.getInt(ii.set(23)) == 221496 : a1.getInt(ii.set(3));
 
       Array a2 = ncfile.readSection("/Chromosomes/Summary.StartIndex");
       CompareNetcdf2.compareData(v.getShortName(), a1, a2);

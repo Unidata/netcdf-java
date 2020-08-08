@@ -10,19 +10,15 @@ import java.io.IOException;
 /**
  * An iterator over StructureData.
  * Make sure that you call close().
- * Best to put in a try/finally block like:
+ * Best to put in a try block like:
  * 
  * <pre>
- * try {
- *   while (iter.hasNext())
- *     process(iter.next());
- * } finally {
- *   iter.finish();
+ * try (StructureDataIterator iter = struct.getStructureIterator()) {
+ *   while (iter.hasNext()) {
+ *     StructureData sd = iter.next();
+ *   }
  * }
  * </pre>
- * 
- * @author caron
- * @since Feb 23, 2008
  */
 public interface StructureDataIterator extends Closeable {
 

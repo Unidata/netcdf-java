@@ -8,10 +8,7 @@ import ucar.ma2.*;
 import java.util.List;
 import java.io.IOException;
 
-/**
- * @author caron
- * @since Apr 14, 2008
- */
+/** Consistency checks for ArrayStructure */
 public class UtilsTestStructureArray {
 
   public void testArrayStructure(ArrayStructure as) {

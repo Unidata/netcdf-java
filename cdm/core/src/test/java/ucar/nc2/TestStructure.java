@@ -1,237 +1,136 @@
-/*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
- */
 package ucar.nc2;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import static com.google.common.truth.Truth.assertThat;
+import static ucar.nc2.TestUtils.makeDummyGroup;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
-import ucar.unidata.util.test.TestDir;
-import java.io.*;
-import java.lang.invoke.MethodHandles;
-import java.util.*;
+import ucar.ma2.DataType;
+import ucar.ma2.StructureMembers;
 
-/** Test reading record data */
+/** Test {@link ucar.nc2.Structure} */
 public class TestStructure {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  NetcdfFile ncfile;
+  @Test
+  public void testBuilder() {
+    Variable.Builder<?> var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
+    Structure struct = Structure.builder().setName("name").addMemberVariable(var)
+        .addAttribute(new Attribute("att", "value")).build(makeDummyGroup());
+    assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct.getShortName()).isEqualTo("name");
+    assertThat(struct.isScalar()).isTrue();
+    assertThat(struct.getVariableNames()).hasSize(1);
+    assertThat(struct.getVariableNames().get(0)).isEqualTo("member");
+    assertThat(struct.getVariables()).hasSize(1);
+    assertThat(struct.getVariables().get(0).getShortName()).isEqualTo("member");
+    assertThat(struct.getVariables().get(0).getDataType()).isEqualTo(DataType.FLOAT);
 
-  @Before
-  public void setUp() throws Exception {
-    ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", -1, null,
-        NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    System.out.printf("TestStructure %s%n", ncfile.getLocation());
-  }
+    assertThat(struct.getElementSize()).isEqualTo(4);
+    assertThat(struct.isSubset()).isFalse();
 
-  @After
-  public void tearDown() throws Exception {
-    ncfile.close();
+    assertThat(struct.getNameAndAttributes()).startsWith("Structure name");
+    assertThat(struct.toString())
+        .startsWith(String.format("%nStructure {%n" + "  float member;%n" + "} name;%n" + ":att = \"value\";"));
   }
 
   @Test
-  public void testNames() {
-    List<Variable> vars = ncfile.getVariables();
-    String[] trueNames = {"rh", "T", "lat", "lon", "time", "recordvarTest", "record"};
-    for (int i = 0; i < vars.size(); i++) {
-      Assert.assertEquals("Checking names", trueNames[i], vars.get(i).getFullName());
-    }
-
-    Structure record = (Structure) ncfile.findVariable("record");
-    assert record != null;
-
-    vars = record.getVariables();
-    String[] trueRecordNames = {"record.rh", "record.T", "record.time", "record.recordvarTest"};
-    for (int i = 0; i < vars.size(); i++) {
-      Assert.assertEquals("Checking record names", trueRecordNames[i], vars.get(i).getFullName());
-    }
-
-    Variable time = ncfile.findVariable("record.time");
-    assert time != null;
-
-    Variable time2 = record.findVariable("time");
-    assert time2 != null;
-
-    Assert.assertEquals(time, time2);
+  public void testBuilderChain() {
+    Structure struct =
+        Structure.builder().setName("struct").addMemberVariables(ImmutableList.of()).build(makeDummyGroup());
+    assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct.getShortName()).isEqualTo("struct");
+    assertThat(struct.getVariableNames()).hasSize(0);
+    assertThat(struct.getVariables()).hasSize(0);
   }
 
   @Test
-  public void testReadStructureCountBytesRead() throws IOException, InvalidRangeException {
+  public void testToBuilderChain() {
+    Variable.Builder<?> var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
+    Structure struct = Structure.builder().setName("name").addMemberVariable(var).build(makeDummyGroup());
+    Structure struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
+    assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct2.getShortName()).isEqualTo("s2");
 
-    Structure record = (Structure) ncfile.findVariable("record");
-    assert record != null;
+    assertThat(struct.getVariableNames()).hasSize(1);
+    assertThat(struct.getVariableNames().get(0)).isEqualTo("member");
+    assertThat(struct.getVariables()).hasSize(1);
+    assertThat(struct.getVariables().get(0).getShortName()).isEqualTo("member");
+    assertThat(struct.getVariables().get(0).getDataType()).isEqualTo(DataType.FLOAT);
 
-    // read all at once
-    long totalAll = 0;
-    Array dataAll = record.read();
-    IndexIterator iter = dataAll.getIndexIterator();
-    while (iter.hasNext()) {
-      StructureData sd = (StructureData) iter.next();
-
-      Iterator viter = sd.getMembers().iterator();
-      while (viter.hasNext()) {
-        StructureMembers.Member m = (StructureMembers.Member) viter.next();
-        Array data = sd.getArray(m);
-        totalAll += data.getSize() * m.getDataType().getSize();
-      }
-    }
-    Assert.assertEquals("Total bytes read", 304, totalAll);
-
-    // read one at a time
-    int numrecs = record.getShape()[0];
-    long totalOne = 0;
-    for (int i = 0; i < numrecs; i++) {
-      StructureData sd = record.readStructure(i);
-
-      Iterator viter = sd.getMembers().iterator();
-      while (viter.hasNext()) {
-        StructureMembers.Member m = (StructureMembers.Member) viter.next();
-        Array data = sd.getArray(m);
-        totalOne += data.getSize() * m.getDataType().getSize();
-      }
-    }
-    Assert.assertEquals("testReadStructureCountBytesRead", totalAll, totalOne);
-
-    // read with the iterator
-    long totalIter = 0;
-    try (StructureDataIterator iter2 = record.getStructureIterator()) {
-      while (iter2.hasNext()) {
-        StructureData sd = iter2.next();
-        for (StructureMembers.Member m : sd.getMembers()) {
-          Array data = sd.getArray(m);
-          totalIter += data.getSize() * m.getDataType().getSize();
-        }
-      }
-    }
-    Assert.assertEquals("Bytes through iteration", totalIter, totalOne);
+    assertThat(struct2.getElementSize()).isEqualTo(4);
+    assertThat(struct2.isSubset()).isFalse();
   }
 
   @Test
-  public void testN3ReadStructureCheckValues() throws IOException, InvalidRangeException {
+  public void testNestedStructure() {
+    Variable.Builder<?> varb1 = Variable.builder().setName("var1").setDataType(DataType.FLOAT);
+    Structure.Builder<?> structb = Structure.builder().setName("top").addMemberVariable(varb1);
+    Variable.Builder<?> varb2 = Variable.builder().setName("var2").setDataType(DataType.FLOAT);
+    Structure.Builder<?> structb2 = Structure.builder().setName("nested").addMemberVariable(varb2);
 
-    Structure record = (Structure) ncfile.findVariable("record");
-    assert record != null;
+    Structure struct = structb.addMemberVariable(structb2).build(makeDummyGroup());
 
-    // read all at once
-    int recnum = 0;
-    Array dataAll = record.read();
-    IndexIterator iter = dataAll.getIndexIterator();
-    while (iter.hasNext()) {
-      StructureData s = (StructureData) iter.next();
-      Array rh = s.getArray("rh");
-      assert (rh instanceof ArrayInt.D2);
-      checkValues(rh, recnum); // check the values are right
-      recnum++;
-    }
+    assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct.getShortName()).isEqualTo("top");
+    assertThat(struct.getElementSize()).isEqualTo(8);
 
-    // read one at a time
-    int numrecs = record.getShape()[0];
-    long totalOne = 0;
-    for (int i = 0; i < numrecs; i++) {
-      StructureData s = record.readStructure(i);
-      Array rh = s.getArray("rh");
-      assert (rh instanceof ArrayInt.D2);
-      checkValues(rh, i); // check the values are right
-    }
+    Variable v = struct.findVariable("nested");
+    assertThat(v).isNotNull();
+    assertThat(v instanceof Structure).isTrue();
+    Structure nested = (Structure) v;
 
-    // read using iterator
-    recnum = 0;
-    try (StructureDataIterator iter2 = record.getStructureIterator()) {
-      while (iter2.hasNext()) {
-        StructureData s = iter2.next();
-        Array rh = s.getArray("rh");
-        assert (rh instanceof ArrayInt.D2);
-        checkValues(rh, recnum); // check the values are right
-        recnum++;
-      }
-    }
+    Variable nestedVar = nested.findVariable("var2");
+    assertThat(nestedVar).isNotNull();
+    assertThat(nestedVar.getDataType()).isEqualTo(DataType.FLOAT);
+
+    assertThat(struct.getNumberOfMemberVariables()).isEqualTo(2);
+    assertThat(nested.getNumberOfMemberVariables()).isEqualTo(1);
+    assertThat(struct.findVariable(null)).isNull();
+
+    StructureMembers sm = struct.makeStructureMembers();
+    assertThat(sm.findMember("var1")).isNotNull();
+    assertThat(sm.findMember("nested")).isNotNull();
+
+    StructureMembers smNested = nested.makeStructureMembers();
+    assertThat(smNested.findMember("var1")).isNull();
+    assertThat(smNested.findMember("var2")).isNotNull();
   }
-
-  /*
-   * public void testN3ReadStructureWithCE() throws IOException, InvalidRangeException {
-   * Structure record = (Structure) ncfile.findVariable("record");
-   * assert record != null;
-   * assert record.isUnlimited();
-   * 
-   * Iterator iter = record.getVariables().iterator();
-   * while (iter.hasNext()) {
-   * Variable v = (Variable) iter.next();
-   * assert !v.isUnlimited();
-   * }
-   * 
-   * Variable rh = record.findVariable("rh");
-   * Array data;
-   * 
-   * /* //System.out.println("rh = \n"+rh);
-   * checkValues( rh.read(), 0); // check the values are right
-   * 
-   * data = ncfile.read("record(0).rh", true);
-   * assert data instanceof ArrayInt.D3;
-   * checkValues( data.reduce(), 0); // check the values are right
-   * 
-   * data = ncfile.read("record(1).rh", true);
-   * assert data instanceof ArrayInt.D3;
-   * checkValues( data.reduce(), 1); // check the values are right
-   * 
-   * data = ncfile.read("record.rh", true);
-   * assert data instanceof ArrayInt.D3;
-   * checkValues( data.slice(0, 0), 0); // check the values are right
-   * checkValues( data.slice(0, 1), 1); // check the values are right
-   * 
-   * /* data = rh.readAllStructures(null, true);
-   * assert data instanceof ArrayInt.D3;
-   * checkValues( data.slice(0, 0), 0); // check the values are right
-   * checkValues( data.slice(0, 1), 1); // check the values are right
-   * 
-   * data = rh.readAllStructuresSpec("0,:,:", true);
-   * assert data instanceof ArrayInt.D3;
-   * checkValues( data.reduce(), 0); // check the values are right
-   * 
-   * data = rh.readAllStructuresSpec("1,:,:", true);
-   * assert data instanceof ArrayInt.D3;
-   * checkValues( data.reduce(), 1); // check the values are right
-   * 
-   * System.out.println("*** testN3ReadStructureWithCE ok");
-   * }
-   */
 
   @Test
-  public void testReadBothWaysV3mode() throws IOException {
-    // readBothWays(TestAll.testdataDir+"grid/netcdf/mm5/n040.nc");
-    readBothWays(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
-    // readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
+  public void testSelect() {
+    Variable.Builder<?> varb1 = Variable.builder().setName("var1").setDataType(DataType.FLOAT);
+    Variable.Builder<?> varb2 = Variable.builder().setName("var2").setDataType(DataType.INT);
+    Structure.Builder<?> structb =
+        Structure.builder().setName("top").addMemberVariables(ImmutableList.of(varb1, varb2));
+    Structure struct = structb.build(makeDummyGroup());
 
-    // System.out.println("*** testReadBothWaysV3mode ok");
+    assertThat(struct.getNumberOfMemberVariables()).isEqualTo(2);
+    assertThat(struct.findVariable("var1")).isNotNull();
+    assertThat(struct.findVariable("var2")).isNotNull();
+
+    Structure selected = struct.select("var1");
+    assertThat(selected.getNumberOfMemberVariables()).isEqualTo(1);
+    assertThat(selected.findVariable("var1")).isNotNull();
+    assertThat(selected.findVariable("var2")).isNull();
   }
 
-  private void readBothWays(String filename) throws IOException {
-    NetcdfFile ncfile = NetcdfFiles.open(filename);
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    // System.out.println(ncfile);
-    ncfile.close();
+  @Test
+  public void testAddMembers() {
+    Group.Builder parent = Group.builder();
+    Structure.Builder<?> structb = Structure.builder().setName("struct").setParentGroupBuilder(parent)
+        .addMemberVariable("one", DataType.BYTE, "").addMemberVariable("two", DataType.CHAR, "");
 
-    ncfile = NetcdfFiles.open(filename);
-    // System.out.println(ncfile);
-    ncfile.close();
-  }
+    Variable.Builder<?> two = Variable.builder().setName("two").setDataType(DataType.FLOAT);
+    assertThat(structb.replaceMemberVariable(two)).isTrue();
 
-  private void checkValues(Array rh, int recnum) {
-    assert (rh instanceof ArrayInt.D2) : rh.getClass().getName();
+    assertThat(structb.removeMemberVariable("one")).isTrue();
+    assertThat(structb.removeMemberVariable("nope")).isFalse();
 
-    // check the values are right
-    ArrayInt.D2 rha = (ArrayInt.D2) rh;
-    int[] shape = rha.getShape();
-    for (int j = 0; j < shape[0]; j++) {
-      for (int k = 0; k < shape[1]; k++) {
-        int want = 20 * recnum + 4 * j + k + 1;
-        int val = rha.get(j, k);
-        Assert.assertEquals(" " + recnum + " " + j + " " + k + " " + want + " " + val, want, val);
-      }
-    }
+    assertThat(structb.findMemberVariable("nope").isPresent()).isFalse();
+    assertThat(structb.findMemberVariable("one").isPresent()).isFalse();
+    assertThat(structb.findMemberVariable("two").isPresent()).isTrue();
+
+    Variable.Builder<?> vb = structb.findMemberVariable("two").orElse(null);
+    assertThat(vb).isNotNull();
+    assertThat(vb.dataType).isEqualTo(DataType.FLOAT);
   }
 }

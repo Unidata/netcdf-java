@@ -4,7 +4,8 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +15,8 @@ import ucar.ma2.*;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
-import java.util.*;
 
 /** Test reading record data */
-
 public class TestStructureArray {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -25,6 +24,7 @@ public class TestStructureArray {
 
   @Before
   public void setUp() throws Exception {
+    // testStructures is 1 dimensional (nc2 record dimension)
     ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "testStructures.nc", -1, null,
         NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
@@ -36,19 +36,15 @@ public class TestStructureArray {
 
   @Test
   public void testNames() {
-    List vars = ncfile.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
+    for (Variable v : ncfile.getVariables()) {
       System.out.println(" " + v.getShortName() + " == " + v.getFullName());
     }
 
     Structure record = (Structure) ncfile.findVariable("record");
-    assert record != null;
+    assertThat(record).isNotNull();
 
-    vars = record.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      assert ("record." + v.getShortName()).equals(v.getFullName());
+    for (Variable v : record.getVariables()) {
+      assertThat("record." + v.getShortName()).isEqualTo(v.getFullName());
     }
   }
 
