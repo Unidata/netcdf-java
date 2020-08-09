@@ -64,7 +64,7 @@ public class NetcdfFormatWriter implements Closeable {
    */
   public static NetcdfFormatWriter.Builder openExisting(String location) throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(location)) {
-      IOServiceProvider iosp = ncfile.getIosp();
+      IOServiceProvider iosp = (IOServiceProvider) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_GET_IOSP);
       Preconditions.checkArgument(iosp instanceof N3iospNew || iosp instanceof H5iospNew,
           "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();

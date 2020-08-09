@@ -4,14 +4,12 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -100,11 +98,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   @Deprecated
   public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
-  @Deprecated
-  public static final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
-  @Deprecated
-  public static final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
   public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
+  public static final String IOSP_MESSAGE_GET_IOSP = "IOSP";
 
   static boolean debugSPI, debugCompress;
   static boolean debugStructureIterator;
@@ -146,271 +141,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     }
   }
 
-  /**
-   * Public by accident.
-   * Release any resources like file handles
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  public void release() throws IOException {
-    if (iosp != null)
-      iosp.release();
-  }
-
-  /**
-   * Public by accident.
-   * Reacquire any resources like file handles
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  public void reacquire() throws IOException {
-    if (iosp != null)
-      iosp.reacquire();
-  }
-
-  /**
-   * Public by accident.
-   * Optional file caching.
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  public synchronized void setFileCache(FileCacheIF cache) {
-    this.cache = cache;
-  }
-
-  /**
-   * Get the NetcdfFile location. This is a URL, or a file pathname.
-   *
-   * @return location URL or file pathname.
-   */
-  public String getLocation() {
-    return location;
-  }
-
-  /**
-   * Get the globally unique dataset identifier, if it exists.
-   *
-   * @return id, or null if none.
-   */
-  @Nullable
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Get the human-readable title, if it exists.
-   *
-   * @return title, or null if none.
-   */
-  @Nullable
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Get the root group.
-   *
-   * @return root group
-   */
-  public Group getRootGroup() {
-    return rootGroup;
-  }
-
-  /**
-   * Find a Group, with the specified (full) name.
-   * A full name should start with a '/'. For backwards compatibility, we accept full names that omit the leading '/'.
-   * An embedded '/' separates subgroup names.
-   *
-   * @param fullName eg "/group/subgroup/wantGroup". Null or empty string returns the root group.
-   * @return Group or null if not found.
-   */
-  @Nullable
-  public Group findGroup(@Nullable String fullName) {
-    if (fullName == null || fullName.isEmpty())
-      return rootGroup;
-
-    Group g = rootGroup;
-    StringTokenizer stoke = new StringTokenizer(fullName, "/");
-    while (stoke.hasMoreTokens()) {
-      String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
-      g = g.findGroupLocal(groupName);
-      if (g == null)
-        return null;
-    }
-    return g;
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////
-  // compatibilty API
-
-  /**
-   * Find a Variable, with the specified (escaped full) name.
-   * It may possibly be nested in multiple groups and/or structures.
-   * An embedded "." is interpreted as structure.member.
-   * An embedded "/" is interpreted as group/variable.
-   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
-   * Any other chars may also be escaped, as they are removed before testing.
-   *
-   * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
-   * @return Variable or null if not found.
-   */
-  @Nullable
-  public Variable findVariable(String fullNameEscaped) {
-    if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
-      return null;
-    }
-
-    Group g = rootGroup;
-    String vars = fullNameEscaped;
-
-    // break into group/group and var.var
-    int pos = fullNameEscaped.lastIndexOf('/');
-    if (pos >= 0) {
-      String groups = fullNameEscaped.substring(0, pos);
-      vars = fullNameEscaped.substring(pos + 1);
-      StringTokenizer stoke = new StringTokenizer(groups, "/");
-      while (stoke.hasMoreTokens()) {
-        String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
-        g = g.findGroupLocal(token);
-        if (g == null)
-          return null;
-      }
-    }
-
-    // heres var.var - tokenize respecting the possible escaped '.'
-    List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
-    if (snames.isEmpty())
-      return null;
-
-    String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
-    Variable v = g.findVariableLocal(varShortName);
-    if (v == null)
-      return null;
-
-    int memberCount = 1;
-    while (memberCount < snames.size()) {
-      if (!(v instanceof Structure))
-        return null;
-      String name = NetcdfFiles.makeNameUnescaped(snames.get(memberCount++));
-      v = ((Structure) v).findVariable(name);
-      if (v == null)
-        return null;
-    }
-    return v;
-  }
-
-  /**
-   * Finds a Dimension with the specified full name. It may be nested in multiple groups.
-   * An embedded "/" is interpreted as a group separator. A leading slash indicates the root group. That slash may be
-   * omitted, but the {@code fullName} will be treated as if it were there. In other words, the first name token in
-   * {@code fullName} is treated as the short name of a Group or Dimension, relative to the root group.
-   *
-   * @param fullName Dimension full name, e.g. "/group/subgroup/dim".
-   * @return the Dimension or {@code null} if it wasn't found.
-   */
-  @Nullable
-  public Dimension findDimension(String fullName) {
-    if (fullName == null || fullName.isEmpty()) {
-      return null;
-    }
-
-    Group group = rootGroup;
-    String dimShortName = fullName;
-
-    // break into group/group and dim
-    int pos = fullName.lastIndexOf('/');
-    if (pos >= 0) {
-      String groups = fullName.substring(0, pos);
-      dimShortName = fullName.substring(pos + 1);
-
-      StringTokenizer stoke = new StringTokenizer(groups, "/");
-      while (stoke.hasMoreTokens()) {
-        String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
-        group = group.findGroupLocal(token);
-
-        if (group == null) {
-          return null;
-        }
-      }
-    }
-
-    return group.findDimensionLocal(dimShortName);
-  }
-
-  /**
-   * Return true if this file has one or more unlimited (record) dimension.
-   *
-   * @return if this file has an unlimited Dimension(s)
-   */
-  public boolean hasUnlimitedDimension() {
-    return getUnlimitedDimension() != null;
-  }
-
-  /**
-   * Return the unlimited (record) dimension, or null if not exist.
-   * If there are multiple unlimited dimensions, it will return the first one.
-   *
-   * @return the unlimited Dimension, or null if none.
-   */
-  @Nullable
-  public Dimension getUnlimitedDimension() {
-    for (Dimension d : allDimensions) {
-      if (d.isUnlimited())
-        return d;
-    }
-    return null;
-  }
-
-  /** Get all shared Dimensions used in this file. */
-  public ImmutableList<Dimension> getDimensions() {
-    return allDimensions;
-  }
-
-  /** Get all of the variables in the file, in all groups. Alternatively, use groups. */
-  public ImmutableList<Variable> getVariables() {
-    return allVariables;
-  }
-
-  /**
-   * Returns the set of global attributes associated with this file, which are the attributes associated
-   * with the root group, or any subgroup. Alternatively, use groups.
-   */
-  public ImmutableList<Attribute> getGlobalAttributes() {
-    return allAttributes;
-  }
-
-  /**
-   * Look up an Attribute by (short) name in the root Group or nested Groups, exact match.
-   *
-   * @param attName the name of the attribute
-   * @return the first Group attribute with given name, or null if not found
-   */
-  @Nullable
-  public Attribute findGlobalAttribute(String attName) {
-    for (Attribute a : allAttributes) {
-      if (attName.equals(a.getShortName()))
-        return a;
-    }
-    return null;
-  }
-
-  /**
-   * Look up an Attribute by (short) name in the root Group or nested Groups, ignore case.
-   *
-   * @param name the name of the attribute
-   * @return the first group attribute with given Attribute name, ignoronmg case, or null if not found
-   */
-  @Nullable
-  public Attribute findGlobalAttributeIgnoreCase(String name) {
-    for (Attribute a : allAttributes) {
-      if (name.equalsIgnoreCase(a.getShortName()))
-        return a;
-    }
-    return null;
-  }
 
   /**
    * Find an attribute, with the specified (escaped full) name.
@@ -480,192 +211,269 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return v.findAttribute(attName);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
-
-  /** CDL representation of Netcdf header info, non strict */
-  @Override
-  public String toString() {
-    Formatter f = new Formatter();
-    writeCDL(f, new Indent(2), false);
-    return f.toString();
-  }
-
-  /** NcML representation of Netcdf header info, non strict */
-  public String toNcml(String url) {
-    NcmlWriter ncmlWriter = new NcmlWriter(null, null, NcmlWriter.writeNoVariablesPredicate);
-    Element netcdfElement = ncmlWriter.makeNetcdfElement(this, url);
-    return ncmlWriter.writeToString(netcdfElement);
-  }
-
   /**
-   * Write the NcML representation: dont show coordinate values
+   * Finds a Dimension with the specified full name. It may be nested in multiple groups.
+   * An embedded "/" is interpreted as a group separator. A leading slash indicates the root group. That slash may be
+   * omitted, but the {@code fullName} will be treated as if it were there. In other words, the first name token in
+   * {@code fullName} is treated as the short name of a Group or Dimension, relative to the root group.
    *
-   * @param os : write to this OutputStream. Will be closed at end of the method.
-   * @param uri use this for the url attribute; if null use getLocation(). // ??
-   * @throws IOException if error
+   * @param fullName Dimension full name, e.g. "/group/subgroup/dim".
+   * @return the Dimension or {@code null} if it wasn't found.
    */
-  public void writeNcml(OutputStream os, String uri) throws IOException {
-    NcmlWriter ncmlWriter = new NcmlWriter();
-    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
-    ncmlWriter.writeToStream(netcdfElem, os);
-  }
-
-  /**
-   * Write the NcML representation: dont show coordinate values
-   *
-   * @param writer : write to this Writer, should have encoding of UTF-8. Will be closed at end of the
-   *        method.
-   * @param uri use this for the url attribute; if null use getLocation().
-   * @throws IOException if error
-   */
-  public void writeNcml(Writer writer, String uri) throws IOException {
-    NcmlWriter ncmlWriter = new NcmlWriter();
-    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
-    ncmlWriter.writeToWriter(netcdfElem, writer);
-  }
-
-  ///////////////////////////////////////////////////////////////////
-  // old stuff for backwards compatilibilty, esp with NCdumpW
-  // TODO: Move to helper class.
-
-  /**
-   * Write CDL representation to OutputStream.
-   *
-   * @param out write to this OutputStream
-   * @param strict if true, make it stricly CDL, otherwise, add a little extra info
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public void writeCDL(OutputStream out, boolean strict) {
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
-    toStringStart(pw, strict);
-    toStringEnd(pw);
-    pw.flush();
-  }
-
-  /**
-   * Write CDL representation to PrintWriter.
-   *
-   * @param pw write to this PrintWriter
-   * @param strict if true, make it stricly CDL, otherwise, add a little extra info
-   * @deprecated use CDLWriter
-   */
-  @Deprecated
-  public void writeCDL(PrintWriter pw, boolean strict) {
-    toStringStart(pw, strict);
-    toStringEnd(pw);
-    pw.flush();
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  void toStringStart(PrintWriter pw, boolean strict) {
-    Formatter f = new Formatter();
-    toStringStart(f, new Indent(2), strict);
-    pw.write(f.toString());
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  void toStringEnd(PrintWriter pw) {
-    pw.print("}\n");
-  }
-
-  //////////////////////////////////////////////////////////
-  // the actual work is here
-
-  protected void writeCDL(Formatter f, Indent indent, boolean strict) {
-    toStringStart(f, indent, strict);
-    f.format("%s}%n", indent);
-  }
-
-  private void toStringStart(Formatter f, Indent indent, boolean strict) {
-    String name = getLocation();
-    if (strict) {
-      if (name.endsWith(".nc"))
-        name = name.substring(0, name.length() - 3);
-      if (name.endsWith(".cdl"))
-        name = name.substring(0, name.length() - 4);
-      name = NetcdfFiles.makeValidCDLName(name);
-    }
-    f.format("%snetcdf %s {%n", indent, name);
-    indent.incr();
-    rootGroup.writeCDL(f, indent, strict);
-    indent.decr();
-  }
-
-  /** @deprecated */
-  @Deprecated
-  @Override
-  public long getLastModified() {
-    if (iosp != null && iosp instanceof AbstractIOServiceProvider) {
-      AbstractIOServiceProvider aspi = (AbstractIOServiceProvider) iosp;
-      return aspi.getLastModified();
-    }
-    return 0;
-  }
-
-  /**
-   * Generic way to send a "message" to the underlying IOSP.
-   * This message is sent after the file is open. To affect the creation of the file,
-   * use a factory method like NetcdfFile.open().
-   * In ver6, IOSP_MESSAGE_ADD_RECORD_STRUCTURE, IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE will not work here.
-   *
-   * @param message iosp specific message
-   * @return iosp specific return, may be null
-   */
-  public Object sendIospMessage(Object message) {
-    if (null == message)
+  @Nullable
+  public Dimension findDimension(String fullName) {
+    if (fullName == null || fullName.isEmpty()) {
       return null;
-
-    if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
-      Variable v = rootGroup.findVariableLocal("record");
-      boolean gotit = (v instanceof Structure);
-      return gotit || makeRecordStructure();
-
-    } else if (message == IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE) {
-      Variable v = rootGroup.findVariableLocal("record");
-      boolean gotit = (v instanceof Structure);
-      if (gotit) {
-        // TODO rootGroup.remove(v);
-        allVariables.remove(v);
-        removeRecordStructure();
-      }
-      return (gotit);
     }
 
-    if (iosp != null)
-      return iosp.sendIospMessage(message);
+    Group group = rootGroup;
+    String dimShortName = fullName;
+
+    // break into group/group and dim
+    int pos = fullName.lastIndexOf('/');
+    if (pos >= 0) {
+      String groups = fullName.substring(0, pos);
+      dimShortName = fullName.substring(pos + 1);
+
+      StringTokenizer stoke = new StringTokenizer(groups, "/");
+      while (stoke.hasMoreTokens()) {
+        String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
+        group = group.findGroupLocal(token);
+
+        if (group == null) {
+          return null;
+        }
+      }
+    }
+
+    return group.findDimensionLocal(dimShortName);
+  }
+
+  /**
+   * Look up an Attribute by (short) name in the root Group or nested Groups, exact match.
+   *
+   * @param attName the name of the attribute
+   * @return the first Group attribute with given name, or null if not found
+   */
+  @Nullable
+  public Attribute findGlobalAttribute(String attName) {
+    for (Attribute a : allAttributes) {
+      if (attName.equals(a.getShortName()))
+        return a;
+    }
     return null;
   }
 
   /**
-   * If there is an unlimited dimension, make all variables that use it into a Structure.
-   * A Variable called "record" is added.
-   * You can then access these through the record structure.
+   * Look up an Attribute by (short) name in the root Group or nested Groups, ignore case.
    *
-   * @return true if it has a Nectdf-3 record structure
+   * @param name the name of the attribute
+   * @return the first group attribute with given Attribute name, ignoronmg case, or null if not found
    */
-  @Deprecated
-  protected boolean makeRecordStructure() {
-    Boolean didit = false;
-    if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
-      didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+  @Nullable
+  public Attribute findGlobalAttributeIgnoreCase(String name) {
+    for (Attribute a : allAttributes) {
+      if (name.equalsIgnoreCase(a.getShortName()))
+        return a;
     }
-    return (didit != null) && didit;
+    return null;
   }
 
-  @Deprecated
-  protected boolean removeRecordStructure() {
-    Boolean didit = false;
-    if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
-      didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
+  /**
+   * Find a Group, with the specified (full) name.
+   * A full name should start with a '/'. For backwards compatibility, we accept full names that omit the leading '/'.
+   * An embedded '/' separates subgroup names.
+   *
+   * @param fullName eg "/group/subgroup/wantGroup". Null or empty string returns the root group.
+   * @return Group or null if not found.
+   */
+  @Nullable
+  public Group findGroup(@Nullable String fullName) {
+    if (fullName == null || fullName.isEmpty())
+      return rootGroup;
+
+    Group g = rootGroup;
+    StringTokenizer stoke = new StringTokenizer(fullName, "/");
+    while (stoke.hasMoreTokens()) {
+      String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
+      g = g.findGroupLocal(groupName);
+      if (g == null)
+        return null;
     }
-    return (didit != null) && didit;
+    return g;
   }
 
-  private Group makeRootGroup() {
-    return Group.builder().setNcfile(this).setName("").build();
+  /**
+   * Find a Variable, with the specified (escaped full) name.
+   * It may possibly be nested in multiple groups and/or structures.
+   * An embedded "." is interpreted as structure.member.
+   * An embedded "/" is interpreted as group/variable.
+   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
+   * Any other chars may also be escaped, as they are removed before testing.
+   *
+   * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
+   * @return Variable or null if not found.
+   */
+  @Nullable
+  public Variable findVariable(String fullNameEscaped) {
+    if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
+      return null;
+    }
+
+    Group g = rootGroup;
+    String vars = fullNameEscaped;
+
+    // break into group/group and var.var
+    int pos = fullNameEscaped.lastIndexOf('/');
+    if (pos >= 0) {
+      String groups = fullNameEscaped.substring(0, pos);
+      vars = fullNameEscaped.substring(pos + 1);
+      StringTokenizer stoke = new StringTokenizer(groups, "/");
+      while (stoke.hasMoreTokens()) {
+        String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
+        g = g.findGroupLocal(token);
+        if (g == null)
+          return null;
+      }
+    }
+
+    // heres var.var - tokenize respecting the possible escaped '.'
+    List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
+    if (snames.isEmpty())
+      return null;
+
+    String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
+    Variable v = g.findVariableLocal(varShortName);
+    if (v == null)
+      return null;
+
+    int memberCount = 1;
+    while (memberCount < snames.size()) {
+      if (!(v instanceof Structure))
+        return null;
+      String name = NetcdfFiles.makeNameUnescaped(snames.get(memberCount++));
+      v = ((Structure) v).findVariable(name);
+      if (v == null)
+        return null;
+    }
+    return v;
+  }
+
+  /** Get all shared Dimensions used in this file. */
+  public ImmutableList<Dimension> getDimensions() {
+    return allDimensions;
+  }
+
+  /**
+   * Get the file type id for the underlying data source.
+   *
+   * @return registered id of the file type
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   */
+  public String getFileTypeId() {
+    if (iosp != null)
+      return iosp.getFileTypeId();
+    return "N/A";
+  }
+
+  /**
+   * Get a human-readable description for this file type.
+   *
+   * @return description of the file type
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   */
+  public String getFileTypeDescription() {
+    if (iosp != null)
+      return iosp.getFileTypeDescription();
+    return "N/A";
+  }
+
+  /**
+   * Get the version of this file type.
+   *
+   * @return version of the file type
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   */
+  public String getFileTypeVersion() {
+    if (iosp != null)
+      return iosp.getFileTypeVersion();
+    return "N/A";
+  }
+
+
+  /**
+   * Returns the set of global attributes associated with this file, which are the attributes associated
+   * with the root group, or any subgroup. Alternatively, use groups.
+   */
+  public ImmutableList<Attribute> getGlobalAttributes() {
+    return allAttributes;
+  }
+
+  /**
+   * Get the NetcdfFile location. This is a URL, or a file pathname.
+   *
+   * @return location URL or file pathname.
+   */
+  public String getLocation() {
+    return location;
+  }
+
+  /**
+   * Get the globally unique dataset identifier, if it exists.
+   *
+   * @return id, or null if none.
+   */
+  @Nullable
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Get the root group.
+   *
+   * @return root group
+   */
+  public Group getRootGroup() {
+    return rootGroup;
+  }
+
+  /**
+   * Get the human-readable title, if it exists.
+   *
+   * @return title, or null if none.
+   */
+  @Nullable
+  public String getTitle() {
+    return title;
+  }
+
+  /** Get all of the variables in the file, in all groups. Alternatively, use groups. */
+  public ImmutableList<Variable> getVariables() {
+    return allVariables;
+  }
+
+  /**
+   * Return the unlimited (record) dimension, or null if not exist.
+   * If there are multiple unlimited dimensions, it will return the first one.
+   *
+   * @return the unlimited Dimension, or null if none.
+   */
+  @Nullable
+  public Dimension getUnlimitedDimension() {
+    for (Dimension d : allDimensions) {
+      if (d.isUnlimited())
+        return d;
+    }
+    return null;
+  }
+
+  /**
+   * Return true if this file has one or more unlimited (record) dimension.
+   *
+   * @return if this file has an unlimited Dimension(s)
+   */
+  public boolean hasUnlimitedDimension() {
+    return getUnlimitedDimension() != null;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -676,6 +484,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   // this is for reading non-member variables
   // section is null for full read
+
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
+    return iosp.getStructureIterator(s, bufferSize);
+  }
 
   /**
    * Do not call this directly, use Variable.read() !!
@@ -720,11 +532,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
    *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-    /*
-     * if (unlocked)
-     * throw new IllegalStateException("File is unlocked - cannot use");
-     */
-
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     if (cer.getChild() == null) {
       return cer.getVariable().read(cer.getSection());
@@ -740,29 +547,180 @@ public class NetcdfFile implements FileCacheable, Closeable {
   protected long readToOutputStream(Variable v, Section section, OutputStream out)
       throws IOException, InvalidRangeException {
 
-    // if (unlocked)
-    // throw new IllegalStateException("File is unlocked - cannot use");
-
     if ((iosp == null) || v.hasCachedData())
       return IospHelper.copyToOutputStream(v.read(section), out);
 
     return iosp.readToOutputStream(v, section, out);
   }
 
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
-    return iosp.getStructureIterator(s, bufferSize);
+  /**
+   * Generic way to send a "message" to the underlying IOSP.
+   * This message is sent after the file is open. To affect the creation of the file,
+   * use a factory method like NetcdfFile.open().
+   * In ver6, IOSP_MESSAGE_ADD_RECORD_STRUCTURE, IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE will not work here.
+   *
+   * @param message iosp specific message
+   * @return iosp specific return, may be null
+   */
+  public Object sendIospMessage(Object message) {
+    if (null == message)
+      return null;
+
+    if (message == IOSP_MESSAGE_GET_IOSP) {
+      return this.iosp;
+    }
+
+    if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
+      Variable v = rootGroup.findVariableLocal("record");
+      boolean gotit = (v instanceof Structure);
+      return gotit || makeRecordStructure();
+    }
+
+    if (iosp != null)
+      return iosp.sendIospMessage(message);
+    return null;
+  }
+
+  /**
+   * If there is an unlimited dimension, make all variables that use it into a Structure.
+   * A Variable called "record" is added.
+   * You can then access these through the record structure.
+   *
+   * @return true if it has a Nectdf-3 record structure
+   */
+  @Deprecated
+  private boolean makeRecordStructure() {
+    Boolean didit = false;
+    if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
+      didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    }
+    return (didit != null) && didit;
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////////////
+
+  /** CDL representation of Netcdf header info, non strict */
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    writeCDL(f, new Indent(2), false);
+    return f.toString();
+  }
+
+  /** NcML representation of Netcdf header info, non strict */
+  public String toNcml(String url) {
+    NcmlWriter ncmlWriter = new NcmlWriter(null, null, NcmlWriter.writeNoVariablesPredicate);
+    Element netcdfElement = ncmlWriter.makeNetcdfElement(this, url);
+    return ncmlWriter.writeToString(netcdfElement);
+  }
+
+  /**
+   * Write the NcML representation: dont show coordinate values
+   *
+   * @param os : write to this OutputStream. Will be closed at end of the method.
+   * @param uri use this for the url attribute; if null use getLocation(). // ??
+   * @throws IOException if error
+   */
+  public void writeNcml(OutputStream os, String uri) throws IOException {
+    NcmlWriter ncmlWriter = new NcmlWriter();
+    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
+    ncmlWriter.writeToStream(netcdfElem, os);
+  }
+
+  /**
+   * Write the NcML representation: dont show coordinate values
+   *
+   * @param writer : write to this Writer, should have encoding of UTF-8. Will be closed at end of the
+   *        method.
+   * @param uri use this for the url attribute; if null use getLocation().
+   * @throws IOException if error
+   */
+  public void writeNcml(Writer writer, String uri) throws IOException {
+    NcmlWriter ncmlWriter = new NcmlWriter();
+    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
+    ncmlWriter.writeToWriter(netcdfElem, writer);
+  }
+
+  void writeCDL(Formatter f, Indent indent, boolean strict) {
+    toStringStart(f, indent, strict);
+    f.format("%s}%n", indent);
+  }
+
+  private void toStringStart(Formatter f, Indent indent, boolean strict) {
+    String name = getLocation();
+    if (strict) {
+      if (name.endsWith(".nc"))
+        name = name.substring(0, name.length() - 3);
+      if (name.endsWith(".cdl"))
+        name = name.substring(0, name.length() - 4);
+      name = NetcdfFiles.makeValidCDLName(name);
+    }
+    f.format("%snetcdf %s {%n", indent, name);
+    indent.incr();
+    rootGroup.writeCDL(f, indent, strict);
+    indent.decr();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
+  // deprecations
+
+  /** @deprecated */
+  @Deprecated
+  @Override
+  public long getLastModified() {
+    if (iosp != null && iosp instanceof AbstractIOServiceProvider) {
+      AbstractIOServiceProvider aspi = (AbstractIOServiceProvider) iosp;
+      return aspi.getLastModified();
+    }
+    return 0;
+  }
 
   /**
    * Access to iosp debugging info.
    *
    * @param o must be a Variable, Dimension, Attribute, or Group
    * @return debug info for this object.
+   * @deprecated do not use
    */
+  @Deprecated
   protected String toStringDebug(Object o) {
     return (iosp == null) ? "" : iosp.toStringDebug(o);
+  }
+
+  /**
+   * Public by accident.
+   * Release any resources like file handles
+   *
+   * @deprecated do not use
+   */
+  @Deprecated
+  public void release() throws IOException {
+    if (iosp != null)
+      iosp.release();
+  }
+
+  /**
+   * Public by accident.
+   * Reacquire any resources like file handles
+   *
+   * @deprecated do not use
+   */
+  @Deprecated
+  public void reacquire() throws IOException {
+    if (iosp != null)
+      iosp.reacquire();
+  }
+
+  /**
+   * Public by accident.
+   * Optional file caching.
+   *
+   * @deprecated do not use
+   */
+  @Deprecated
+  public synchronized void setFileCache(FileCacheIF cache) {
+    this.cache = cache;
   }
 
   /**
@@ -832,6 +790,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
     f.format(" %" + maxNameLen + "s total %8d Mb cached= %8d Kb%n", " ", total / 1000 / 1000, totalCached / 1000);
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   protected void showProxies(Formatter f) {
     int maxNameLen = 8;
     boolean hasProxy = false;
@@ -852,53 +812,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
     f.format("%n");
   }
 
-  /**
-   * @deprecated do not use.
-   */
-  @Deprecated
-  public IOServiceProvider getIosp() {
-    return iosp;
-  }
-
-  /**
-   * Get the file type id for the underlying data source.
-   *
-   * @return registered id of the file type
-   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
-   */
-  public String getFileTypeId() {
-    if (iosp != null)
-      return iosp.getFileTypeId();
-    return "N/A";
-  }
-
-  /**
-   * Get a human-readable description for this file type.
-   *
-   * @return description of the file type
-   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
-   */
-  public String getFileTypeDescription() {
-    if (iosp != null)
-      return iosp.getFileTypeDescription();
-    return "N/A";
-  }
-
-  /**
-   * Get the version of this file type.
-   *
-   * @return version of the file type
-   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
-   */
-  public String getFileTypeVersion() {
-    if (iosp != null)
-      return iosp.getFileTypeVersion();
-    return "N/A";
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
 
-  // TODO make these final and immutable in 6.
   private final String location;
   private final String id;
   private final String title;
@@ -924,7 +839,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       builder.rootGroup.setNcfile(this);
       this.rootGroup = builder.rootGroup.build();
     } else {
-      rootGroup = makeRootGroup();
+      rootGroup = Group.builder().setNcfile(this).setName("").build();
     }
     if (builder.iosp != null) {
       builder.iosp.setNetcdfFile(this);
@@ -936,13 +851,13 @@ public class NetcdfFile implements FileCacheable, Closeable {
     ImmutableList.Builder<Attribute> alist = ImmutableList.builder();
     ImmutableList.Builder<Dimension> dlist = ImmutableList.builder();
     ImmutableList.Builder<Variable> vlist = ImmutableList.builder();
-    finishGroup(rootGroup, alist, dlist, vlist);
+    extractAll(rootGroup, alist, dlist, vlist);
     allAttributes = alist.build();
     allDimensions = dlist.build();
     allVariables = vlist.build();
   }
 
-  private void finishGroup(Group group, ImmutableList.Builder<Attribute> alist, ImmutableList.Builder<Dimension> dlist,
+  private void extractAll(Group group, ImmutableList.Builder<Attribute> alist, ImmutableList.Builder<Dimension> dlist,
       ImmutableList.Builder<Variable> vlist) {
 
     alist.addAll(group.attributes());
@@ -950,10 +865,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
     vlist.addAll(group.getVariables());
 
     for (Group nested : group.getGroups()) {
-      finishGroup(nested, alist, dlist, vlist);
+      extractAll(nested, alist, dlist, vlist);
     }
   }
-
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public Builder<?> toBuilder() {
@@ -995,6 +909,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     protected abstract T self();
 
     public T setRootGroup(Group.Builder rootGroup) {
+      Preconditions.checkArgument(rootGroup.shortName.equals(""), "root group name must be empty string");
       this.rootGroup = rootGroup;
       return self();
     }

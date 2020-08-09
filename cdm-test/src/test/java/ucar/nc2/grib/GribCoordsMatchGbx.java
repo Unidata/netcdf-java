@@ -16,6 +16,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -194,8 +195,7 @@ public class GribCoordsMatchGbx {
     int countFailures = 0;
     try (GridDataset gds = GridDataset.open(filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
-      IOServiceProvider iosp = ncfile.getIosp();
-      isGrib1 = iosp instanceof Grib1Iosp;
+      isGrib1 = ncfile.getFileTypeId().equals(DataFormatType.GRIB1.getDescription());
 
       for (GridDatatype gdt : gds.getGrids()) {
         if (read(gdt))

@@ -12,7 +12,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
-import ucar.nc2.iosp.IOServiceProvider;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -321,6 +320,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   @Override
   public Object sendIospMessage(Object message) {
+    if (message == IOSP_MESSAGE_GET_IOSP) {
+      return (orgFile == null) ? null : orgFile.sendIospMessage(message);
+    }
     if (message == AGGREGATION) {
       return this.agg;
     }
@@ -403,13 +405,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   @Deprecated
   public NetcdfFile getReferencedFile() {
     return orgFile;
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  @Override
-  public IOServiceProvider getIosp() {
-    return (orgFile == null) ? null : orgFile.getIosp();
   }
 
   /**

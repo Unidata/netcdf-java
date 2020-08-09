@@ -4,13 +4,15 @@
  */
 package ucar.nc2.util.cache;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
@@ -121,7 +123,7 @@ public class TestFileCacheConcurrent {
         FileCacheable fc = cache.acquire(factory, durl);
         NetcdfFile ncfile = (NetcdfFile) fc;
         // assert ncfile.isLocked();
-        assert (null != ncfile.getIosp());
+        assertThat(ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_GET_IOSP)).isNotNull();
         Thread.sleep(wait);
         ncfile.close();
         int d = done.incrementAndGet();
@@ -134,7 +136,7 @@ public class TestFileCacheConcurrent {
       } catch (Throwable e) {
         System.out.println(" fail=" + e.getMessage());
         e.printStackTrace();
-        assert false;
+        fail();
       }
 
     }

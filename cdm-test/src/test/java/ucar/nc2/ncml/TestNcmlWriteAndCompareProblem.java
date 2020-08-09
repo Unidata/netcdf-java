@@ -66,7 +66,7 @@ public class TestNcmlWriteAndCompareProblem {
       org = NetcdfDatasets.acquireFile(null, null, durl, -1, null, iospMessage);
 
     // create a file and write it out
-    String ncmlOut = location + ".ncml"; // tempFolder.newFile().getAbsolutePath();
+    String ncmlOut = tempFolder.newFile().getAbsolutePath();
     if (showFiles)
       System.out.println(" output filename= " + ncmlOut);
 

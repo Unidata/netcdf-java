@@ -65,7 +65,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     if (v.getDataType() == DataType.SEQUENCE) {
       Structure s = (Structure) v;
-      StructureDataIterator siter = getStructureIterator(s, -1);
+      StructureDataIterator siter = s.getStructureIterator(-1);
       return new ArraySequence(s.makeStructureMembers(), siter, -1);
     }
 
@@ -127,6 +127,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return (content == null) ? status + " " + path : status + " " + path + "\n " + content;
   }
 
+  @Override
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     try {
       InputStream is = sendQuery(httpSession, remoteURI, NetcdfFiles.makeFullName(s));
@@ -247,8 +248,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   @Override
   public synchronized void close() {
-    if (httpSession != null)
+    if (httpSession != null) {
       httpSession.close();
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

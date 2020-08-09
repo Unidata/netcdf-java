@@ -27,6 +27,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
@@ -37,7 +38,6 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.*;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -60,8 +60,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
   @Override
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) {
-    IOServiceProvider iosp = ncd.getIosp();
-    return (iosp instanceof BufrIosp2) ? true : null;
+    return ncd.getFileTypeId().equals(DataFormatType.BUFR.getDescription()) ? true : null;
   }
 
   @Override
