@@ -4,8 +4,6 @@ ext.title = 'NetCDF-Java testing utilities'
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 
-internalProjects.add(project)
-
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
 

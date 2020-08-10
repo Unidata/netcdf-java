@@ -6,6 +6,10 @@
 //     apply from: "$rootDir/gradle/any/dependencies.gradle"
 //
 
+// make shared-mvn-coords available to all
+// this script plugin specifically needs the depVersion variable
+apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
+
 //================================================ Repositories ================================================//
 
 repositories {
@@ -21,18 +25,19 @@ repositories {
 
   // Hosted release repositories.
   maven {
-    // "visad" and "jj2000".
+    // For visad (edu.ucar:cdm-vis5d) and jj2000 (:grib).
+    // Also for releases of dtswar (dap2) and d4ts (dap4) (used to stand up local servers for tests)
     url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
   }
   maven {
-    // For snapshots of "dtswar", "d4ts" (used by tests)
+    // For snapshots of dtswar and d4ts (used to stand up local servers for tests)
     url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
   }
 
   maven {
     url 'https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/'
     content {
-      // this repository *only* contains artifacts with group "org.bounce"
+      // this repository *only* used for artifacts with group "org.bounce" (NcML editor in toolsUI)
       includeGroup 'org.bounce'
     }
   }
@@ -47,13 +52,13 @@ configurations.all {
     // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j". This effectively
     // converts every JCL call to an slf4j call. We can see the first-level dependencies that drag in
     // "commons-logging" by commenting-out the rule below and running:
-    /*
-         ./gradlew -q :cdm:cdm-core:dependencyInsight --configuration compileClasspath --dependency commons-logging
-
-        commons-logging:commons-logging:1.2
-        +--- org.apache.httpcomponents:httpclient:4.5.12
-        |    ...
-     */
-    substitute module('commons-logging:commons-logging') because 'we want to control JCL logging with slf4j' with module("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+    //
+    //    >./gradlew -q :cdm:cdm-core:dependencyInsight --configuration compileClasspath --dependency commons-logging
+    //
+    //    commons-logging:commons-logging:1.2
+    //    +--- org.apache.httpcomponents:httpclient:4.5.12
+    //    |    ...
+    //
+    substitute module('commons-logging:commons-logging') because 'we want to control JCL logging with slf4j' with module("org.slf4j:jcl-over-slf4j:${depVersion.slf4j}")
   }
 }
