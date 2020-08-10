@@ -31,8 +31,8 @@ public class TestNetcdfFiles {
   }
 
   @Test
-  public void testCompression() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "compress/testCompression.nc.Z")) {
+  public void testCompressionZ() throws IOException {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "compress/testCompress.nc.Z")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
@@ -42,7 +42,7 @@ public class TestNetcdfFiles {
     }
 
     // repeat, to read from cache
-    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "compress/testCompression.nc.Z")) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "compress/testCompress.nc.Z")) {
       // global attributes
       assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
 
