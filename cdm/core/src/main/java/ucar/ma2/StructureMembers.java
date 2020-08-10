@@ -523,6 +523,11 @@ public final class StructureMembers {
     return new Builder();
   }
 
+  /** Create an StructureMembers builder. */
+  public static MemberBuilder memberBuilder() {
+    return new MemberBuilder();
+  }
+
   /** A builder for StructureMembers */
   public static class Builder {
     private String name;

@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft.point.writer2;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -368,7 +369,7 @@ public class FeatureDatasetCapabilitiesWriter {
     }
 
     @Override
-    public List<Dimension> getDimensions() {
+    public ImmutableList<Dimension> getDimensions() {
       return null;
     }
 

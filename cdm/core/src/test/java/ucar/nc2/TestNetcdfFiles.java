@@ -31,6 +31,28 @@ public class TestNetcdfFiles {
   }
 
   @Test
+  public void testCompression() throws IOException {
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "compress/testCompression.nc.Z")) {
+      // global attributes
+      assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
+
+      Variable temp = ncfile.findVariable("temperature");
+      assertThat(temp).isNotNull();
+      assertThat(temp.findAttributeString("units", "barf")).isEqualTo("K");
+    }
+
+    // repeat, to read from cache
+    try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "compress/testCompression.nc.Z")) {
+      // global attributes
+      assertThat(ncfile.getRootGroup().findAttributeString("yo", "barf")).isEqualTo("face");
+
+      Variable temp = ncfile.findVariable("temperature");
+      assertThat(temp).isNotNull();
+      assertThat(temp.findAttributeString("units", "barf")).isEqualTo("K");
+    }
+  }
+
+  @Test
   public void testCompressionZip() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "compress/testZip.nc.zip")) {
       // global attributes
