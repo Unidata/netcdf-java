@@ -54,15 +54,13 @@ public class NetcdfFiles {
   private static final StringLocker stringLocker = new StringLocker();
   private static final List<String> possibleCompressedSuffixes = Arrays.asList("Z", "zip", "gzip", "gz", "bz2");
   private static boolean loadWarnings = false;
-  private static boolean userLoads;
+  private static boolean userLoadsFirst;
 
   // load core service providers
   static {
-    // IOSPs can be loaded by reflection.
     // Most IOSPs are loaded using the ServiceLoader mechanism. One problem with this is that we no longer
     // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
-    // making open() slow.
-    // Register iosp's that are part of cdm-core. This ensures that they are tried first.
+    // making open() slow. So we load the core ones here to make sure they are tried first.
     try {
       registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospNew");
     } catch (Throwable e) {
@@ -82,7 +80,6 @@ public class NetcdfFiles {
         log.info("Cant load class H4iosp", e);
     }
 
-    // register RandomAccessFile providers that are part of cdm-core. This ensures that they are tried first.
     try {
       registerRandomAccessFileProvider("ucar.unidata.io.http.HTTPRandomAccessFile$Provider");
     } catch (Throwable e) {
@@ -103,7 +100,7 @@ public class NetcdfFiles {
     // if false, user registered implementations will be tried after the core implementations.
     // Implementations loaded by the ServiceLoader mechanism are only tried after core and explicitly
     // loaded implementations are tried.
-    userLoads = true;
+    userLoadsFirst = true;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +144,7 @@ public class NetcdfFiles {
       throws IllegalAccessException, InstantiationException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
-    if (userLoads && !last)
+    if (userLoadsFirst && !last)
       registeredProviders.add(0, spi); // put user stuff first
     else
       registeredProviders.add(spi);
@@ -193,7 +190,7 @@ public class NetcdfFiles {
       throws IllegalAccessException, InstantiationException {
     RandomAccessFileProvider rafProvider;
     rafProvider = (RandomAccessFileProvider) rafClass.newInstance(); // fail fast
-    if (userLoads && !last) {
+    if (userLoadsFirst && !last) {
       registeredRandomAccessFileProviders.add(0, rafProvider); // put user stuff first
     } else {
       registeredRandomAccessFileProviders.add(rafProvider);
@@ -298,11 +295,13 @@ public class NetcdfFiles {
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
 
     // send iospMessage before iosp is opened
-    if (iospMessage != null)
+    if (iospMessage != null) {
       spi.sendIospMessage(iospMessage);
+    }
 
-    if (bufferSize <= 0)
+    if (bufferSize <= 0) {
       bufferSize = default_buffersize;
+    }
 
     ucar.unidata.io.RandomAccessFile raf =
         ucar.unidata.io.RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
@@ -310,8 +309,9 @@ public class NetcdfFiles {
     NetcdfFile result = build(spi, raf, location, cancelTask);
 
     // send after iosp is opened
-    if (iospMessage != null)
+    if (iospMessage != null) {
       spi.sendIospMessage(iospMessage);
+    }
 
     return result;
   }
@@ -391,6 +391,7 @@ public class NetcdfFiles {
 
     ucar.unidata.io.RandomAccessFile raf = null;
 
+    // look for registered RandomAccessFile Providers
     for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
       if (provider.isOwnerOf(location)) {
         raf = provider.open(location);
@@ -471,7 +472,6 @@ public class NetcdfFiles {
   }
 
   private static String makeUncompressed(String filename) throws Exception {
-
     int pos = filename.lastIndexOf('.');
     String suffix = filename.substring(pos + 1);
     String uncompressedFilename = filename.substring(0, pos);
@@ -520,7 +520,6 @@ public class NetcdfFiles {
     }
 
     try (FileOutputStream fout = new FileOutputStream(uncompressedFile)) {
-
       // obtain the lock
       FileLock lock;
       while (true) { // loop waiting for the lock
@@ -539,7 +538,7 @@ public class NetcdfFiles {
       try {
         if (suffix.equalsIgnoreCase("Z")) {
           try (InputStream in = new UncompressInputStream(new FileInputStream(filename))) {
-            copy(in, fout, 100000);
+            IO.copyBuffered(in, fout, 100000);
           }
           if (NetcdfFile.debugCompress)
             log.info("uncompressed {} to {}", filename, uncompressedFile);
@@ -549,7 +548,7 @@ public class NetcdfFiles {
           try (ZipInputStream zin = new ZipInputStream(new FileInputStream(filename))) {
             ZipEntry ze = zin.getNextEntry();
             if (ze != null) {
-              copy(zin, fout, 100000);
+              IO.copyBuffered(zin, fout, 100000);
               if (NetcdfFile.debugCompress)
                 log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
             }
@@ -557,15 +556,14 @@ public class NetcdfFiles {
 
         } else if (suffix.equalsIgnoreCase("bz2")) {
           try (InputStream in = new CBZip2InputStream(new FileInputStream(filename), true)) {
-            copy(in, fout, 100000);
+            IO.copyBuffered(in, fout, 100000);
           }
           if (NetcdfFile.debugCompress)
             log.info("unbzipped {} to {}", filename, uncompressedFile);
 
         } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
-
           try (InputStream in = new GZIPInputStream(new FileInputStream(filename))) {
-            copy(in, fout, 100000);
+            IO.copyBuffered(in, fout, 100000);
           }
 
           if (NetcdfFile.debugCompress)
@@ -591,17 +589,6 @@ public class NetcdfFiles {
     }
 
     return uncompressedFile.getPath();
-  }
-
-  // LOOK why not use util.IO ?
-  private static void copy(InputStream in, OutputStream out, int bufferSize) throws IOException {
-    byte[] buffer = new byte[bufferSize];
-    while (true) {
-      int bytesRead = in.read(buffer);
-      if (bytesRead == -1)
-        break;
-      out.write(buffer, 0, bytesRead);
-    }
   }
 
   private static void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {

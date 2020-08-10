@@ -69,16 +69,27 @@ public class IO {
   }
 
   /**
-   * copy all bytes from in to out.
+   * Copy all bytes from in to out.
    *
    * @param in InputStream
    * @param out OutputStream
    * @return number of bytes copied
-   * @throws java.io.IOException on io error
    */
   public static long copy(InputStream in, OutputStream out) throws IOException {
+    return copyBuffered(in, out, default_file_buffersize);
+  }
+
+  /**
+   * Copy all bytes from in to out, setting buffer size.
+   * 
+   * @param in InputStream
+   * @param out OutputStream
+   * @param buffer_size size of buffer to read through.
+   * @return number of bytes copied
+   */
+  public static long copyBuffered(InputStream in, OutputStream out, int buffer_size) throws IOException {
     long totalBytesRead = 0;
-    byte[] buffer = new byte[default_file_buffersize];
+    byte[] buffer = new byte[buffer_size];
     while (true) {
       int bytesRead = in.read(buffer);
       if (bytesRead == -1)
@@ -90,13 +101,13 @@ public class IO {
     return totalBytesRead;
   }
 
+
   /**
    * copy all bytes from in and throw them away.
    *
    * @param in InputStream
    * @param buffersize size of buffer to use, if -1 uses default value (9200)
    * @return number of bytes copied
-   * @throws java.io.IOException on io error
    */
   public static long copy2null(InputStream in, int buffersize) throws IOException {
     long totalBytesRead = 0;
@@ -135,7 +146,6 @@ public class IO {
    * @param in FileChannel
    * @param buffersize size of buffer to use, if -1 uses default value (9200)
    * @return number of bytes copied
-   * @throws java.io.IOException on io error
    */
   public static long copy2null(FileChannel in, int buffersize) throws IOException {
     long totalBytesRead = 0;
@@ -210,14 +220,14 @@ public class IO {
   }
 
   /**
-   * copy n bytes from in to out.
+   * Copy up to maxBytes bytes from in to out.
    *
    * @param in InputStream
    * @param out OutputStream
-   * @param n number of bytes to copy
+   * @param maxBytes number of bytes to copy
    * @throws java.io.IOException on io error
    */
-  public static void copy(InputStream in, OutputStream out, int n) throws IOException {
+  public static void copyMaxBytes(InputStream in, OutputStream out, int maxBytes) throws IOException {
     byte[] buffer = new byte[default_file_buffersize];
     int count = 0;
     while (true) {
@@ -226,7 +236,7 @@ public class IO {
         break;
       out.write(buffer, 0, bytesRead);
       count += bytesRead;
-      if (count > n)
+      if (count > maxBytes)
         return;
     }
     out.flush();

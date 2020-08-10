@@ -174,7 +174,7 @@ public class HttpClientManager {
 
   private static String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
-    IO.copy(is, bout, 1000 * maxKbytes);
+    IO.copyMaxBytes(is, bout, 1000 * maxKbytes);
     return bout.toString(charset);
   }
 
