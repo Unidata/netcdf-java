@@ -41,6 +41,7 @@ gradle.projectsEvaluated {
       properties['sonar.host.url'] = 'https://sonarcloud.io'
       // Defer invocation of getPropertyOrFailBuild() until the execution phase, using lazy GStrings.
       properties['sonar.login'] = "${-> getPropertyOrFailBuild SONARQUBE_USER_TOKEN_KEY}"
+
       /*
        * We want to analyze the code in :buildSrc. Unfortunately, that's doesn't happen by default with the
        * application of the Sonar plugin because :buildSrc isn't technically part of netcdf-java (Gradle considers

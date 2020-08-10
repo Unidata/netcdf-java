@@ -9,7 +9,6 @@ ext {
   buildPlugins = [:]
   buildPlugins.gretty = 'org.gretty:gretty:3.0.1'
   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
-  buildPlugins.coveralls = 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
   buildPlugins.grgit = 'org.ajoberstar.grgit:grgit-core:4.0.2'
