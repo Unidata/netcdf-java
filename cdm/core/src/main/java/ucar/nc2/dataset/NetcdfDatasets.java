@@ -17,6 +17,7 @@ import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.ncml.NcmlReader;
+import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -230,7 +231,9 @@ public class NetcdfDatasets {
     NetcdfFile orgFile = ncd.getReferencedFile();
 
     // Is it a netcdf3 file?
-    if (orgFile.getIosp() == null || !(orgFile.getIosp() instanceof N3iospNew)) {
+    IOServiceProvider iosp = (IOServiceProvider) orgFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_GET_IOSP);
+
+    if (iosp == null || !(iosp instanceof N3iospNew)) {
       return ncd;
     }
 

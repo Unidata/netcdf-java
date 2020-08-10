@@ -41,11 +41,13 @@ public class TestN4problems {
     H5headerNew.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
   }
 
-  @Test
-  public void readProblem() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "/formats/netcdf4/files/tst_grps.nc4.ncml";
-    TestDir.readAll(filename);
-  }
+  /*
+   * @Test
+   * public void readProblem() throws IOException {
+   * String filename = TestDir.cdmUnitTestDir + "/formats/netcdf4/files/tst_grps.nc4.ncml";
+   * TestDir.readAll(filename);
+   * }
+   */
 
   @Test
   public void testTiling2() throws IOException, InvalidRangeException {

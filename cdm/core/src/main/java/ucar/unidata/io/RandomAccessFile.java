@@ -647,7 +647,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     }
 
     // Copy as much as we can.
-    int copyLength = (bytesAvailable >= len) ? len : bytesAvailable;
+    int copyLength = Math.min(bytesAvailable, len);
     System.arraycopy(buffer, (int) (filePosition - bufferStart), b, off, copyLength);
     filePosition += copyLength;
 

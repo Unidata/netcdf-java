@@ -17,7 +17,7 @@ public class TestNetcdfDatasetBuilder {
     Group.Builder nested = Group.builder().setName("child");
     VariableDS.Builder<?> vb = VariableDS.builder().setName("varName").setDataType(DataType.STRING);
     Group.Builder groupb =
-        Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
+        Group.builder().setName("").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
     nested.setParentGroup(groupb);
 
     NetcdfDataset.Builder builder =
@@ -30,7 +30,7 @@ public class TestNetcdfDatasetBuilder {
 
     Group group = ncfile.getRootGroup();
     assertThat(group.getNetcdfFile()).isEqualTo(ncfile);
-    assertThat(group.getShortName()).isEqualTo("name");
+    assertThat(group.getShortName()).isEqualTo("");
     assertThat(group.isRoot()).isTrue();
     assertThat(group.attributes()).isNotEmpty();
     assertThat(group.attributes()).hasSize(1);
