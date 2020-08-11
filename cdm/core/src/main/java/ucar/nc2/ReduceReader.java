@@ -17,10 +17,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Allow dimensions of length 1 to be removed
- *
- * @author caron
- * @since 12/16/13
+ * A ProxyReader that allows dimensions of length 1 to be removed.
+ * 
+ * @see {@link Variable#reduce(List<Dimension>)}
  */
 @Immutable
 class ReduceReader implements ProxyReader {

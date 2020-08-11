@@ -358,6 +358,9 @@ public class TestVariable {
 
     Array data = section.read();
     assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 11, 200, 10))).isTrue();
+
+    Array data2 = section.read(new Section(new int[] {1}, new int[] {10}));
+    assertThat(MAMath.equals(data2, Array.makeArray(DataType.INT, 10, 210, 10))).isTrue();
   }
 
   @Test
@@ -392,7 +395,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testReduce() throws IOException {
+  public void testReduce() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 1);
     Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
@@ -405,6 +408,9 @@ public class TestVariable {
     assertThat(reduce.getShape()).isEqualTo(new int[] {20});
     Array data = reduce.read();
     assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 20, 10, 2))).isTrue();
+
+    Array data2 = reduce.read(new Section(new int[] {1}, new int[] {10}));
+    assertThat(MAMath.equals(data2, Array.makeArray(DataType.INT, 10, 12, 2))).isTrue();
   }
 
   @Test

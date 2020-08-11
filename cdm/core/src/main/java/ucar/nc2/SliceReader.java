@@ -11,9 +11,8 @@ import java.io.IOException;
 
 /**
  * A ProxyReader for slices.
- *
- * @author caron
- * @see Variable#slice(int, int)
+ * 
+ * @see {@link Variable#slice(int, int)}
  */
 @Immutable
 class SliceReader implements ProxyReader {

@@ -18,7 +18,7 @@ import java.lang.invoke.MethodHandles;
 public class Tds355Test {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  File supportDir = new File(TestDir.testdataDir, "support");
+  File supportDir = new File(TestDir.cdmTestDataDir, "support");
   File tds355Dir = new File(supportDir, "TDS-355");
 
   @Ignore("cant deal with BUFR at the moment")

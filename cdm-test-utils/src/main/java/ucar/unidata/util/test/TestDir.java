@@ -70,25 +70,24 @@ public class TestDir {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /** Property name for the path to the Unidata test data directory, e.g "unidata.testdata.path=/share/testdata". */
-  private static String testdataDirPropName = "unidata.testdata.path";
+  private static final String testdataDirPropName = "unidata.testdata.path";
 
-  /** Path to the Unidata test data directory. */
-  public static String testdataDir;
+  /** Path to the Unidata test data. see "https://github.com/Unidata/thredds-test-data". */
+  // -Dunidata.testdata.path=D:/testData/thredds-test-data/local/thredds-test-data/
+  private static String testdataDir;
 
-  /**
-   * New test data directory. do not put temporary files in here. migrate all test data here eventually
-   * Unidata "//fileserver/data/testdata2/cdmUnitTest" directory.
-   */
+  /** Unidata test data for the CDM. testdataDir + CdmUnitTest. */
   public static String cdmUnitTestDir;
 
-  /** The cdm-core local test directory, from any cdm submodule. */
+  /** The cdm-core local test data, use from any cdm submodule. */
   public static String cdmLocalTestDataDir = "../core/src/test/data/";
 
-  /** The module local test directory. Assumes pwd = top of module. */
-  public static String localTestDataDir = "src/test/data/";
-
-  /** The cdm-core local test directory, from cdm-test submodule. */
+  /** The cdm-core local test data, use from cdm-test submodule. */
   public static String cdmLocalFromTestDataDir = "../cdm/core/src/test/data/";
+
+  /** The module local test directory. Assumes pwd = top of module. TODO used in cdm-radial */
+  @Deprecated
+  public static String localTestDataDir = "src/test/data/";
 
   /** cdm-test data directory (distributed with code but depends on data not in github) */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
