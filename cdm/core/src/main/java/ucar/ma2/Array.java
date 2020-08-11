@@ -110,15 +110,11 @@ public abstract class Array {
         return ArrayObject.factory(dtype, StructureDataIterator.class, false, index, (Object[]) storage);
       case OPAQUE:
         return ArrayObject.factory(dtype, ByteBuffer.class, false, index, (Object[]) storage);
+      case OBJECT:
+        return ArrayObject.factory(dtype, Object.class, true, index, (Object[]) storage);
     }
 
     throw new RuntimeException("Cant use this method for datatype " + dtype);
-
-    // used for VLEN ??
-    // default:
-    // return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage); // LOOK dont know the
-    // object class
-    // }
   }
 
   /**

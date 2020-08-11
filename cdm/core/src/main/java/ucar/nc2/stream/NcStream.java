@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -272,6 +273,20 @@ public class NcStream {
     return writeBytes(out, b, 0, b.length);
   }
 
+  public static int writeString(OutputStream out, String s) throws IOException {
+    int vsize = NcStream.writeVInt(out, s.length());
+    byte[] b = s.getBytes(StandardCharsets.UTF_8);
+    out.write(b);
+    return vsize + b.length;
+  }
+
+  public static int writeByteBuffer(OutputStream out, ByteBuffer bb) throws IOException {
+    int vsize = NcStream.writeVInt(out, bb.limit());
+    bb.rewind();
+    out.write(bb.array());
+    return vsize + bb.limit();
+  }
+
   public static int writeVInt(OutputStream out, int value) throws IOException {
     int count = 0;
 
@@ -333,6 +348,20 @@ public class NcStream {
     }
     writeByte(out, (byte) i);
     return count + 1;
+  }
+
+  public static ByteBuffer readByteBuffer(InputStream in) throws IOException {
+    int vsize = NcStream.readVInt(in);
+    byte[] b = new byte[vsize];
+    readFully(in, b);
+    return ByteBuffer.wrap(b);
+  }
+
+  public static String readString(InputStream in) throws IOException {
+    int vsize = NcStream.readVInt(in);
+    byte[] b = new byte[vsize];
+    readFully(in, b);
+    return new String(b, StandardCharsets.UTF_8);
   }
 
   public static int readVInt(InputStream is) throws IOException {
