@@ -1,10 +1,11 @@
 // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
-
-apply plugin: "jacoco"
+apply plugin: 'jacoco'
 
 // Will apply to any task of type Test
-Closure isExtendedByJacoco = {Task task -> task.extensions.findByType(JacocoTaskExtension)
+Closure isExtendedByJacoco = {Task task ->
+  task.extensions.findByType(JacocoTaskExtension)
 }
+
 Collection<Task> tasksExtendedByJacoco = tasks.matching(isExtendedByJacoco)
 
 tasksExtendedByJacoco.all {
@@ -12,9 +13,6 @@ tasksExtendedByJacoco.all {
   // The data is a record of all the classes visited during test execution. It is self-contained; we don't need to
   // provide any source or class directories for it to "work". Those are only necessary for the report.
   outputs.file jacoco.destinationFile
-
-  // Whether or not data should be appended if the execution data already exists.
-  //jacoco.append = false
 }
 
 /*
@@ -29,7 +27,7 @@ tasksExtendedByJacoco.all {
  * We could remedy this by adding main SourceSets from other projects to report on. This would be particularly
  * appropriate for :cdm-test, which touches code in damn near every subproject. However, I don't really like that idea
  * because we're already producing an aggregate report in :rootJacocoReport. And frankly, that's the only report
- * that we REALLY care about; it gets published to Jenkins and Coveralls.
+ * that we REALLY care about; it gets published to Jenkins and Codecov.
  *
  * Therefore, I'd like to maintain the default behavior: a subproject only reports on how well its own tests cover its
  * own 'main' code. That partitioning of reports promotes TRUE unit tests in our project, which--by definition--
@@ -43,11 +41,8 @@ tasksExtendedByJacoco.all {
  * 'integTest' SourceSet to :tds. So in the future, we won't be generating empty Jacoco reports.
  */
 tasks.withType(JacocoReport).all {  // Will apply to ":<subproject>:jacocoTestReport" and ":rootJacocoReport".
-  group = "Reports"
+  group = 'Reports'
   dependsOn tasks.withType(Test)
-
-  //executionData tasks.withType(Test).findAll { it.state.executed }
-  //executionData { tasks.withType(Test).findAll { it.jacoco.destinationFile.exists() }*.jacoco.destinationFile }
 
   reports {
     xml.enabled = false
@@ -60,16 +55,5 @@ tasks.withType(JacocoReport).all {  // Will apply to ":<subproject>:jacocoTestRe
     executionData.any {
       it.exists()
     }
-  }
-
-  // JacocoReport's @TaskAction expects everything in executionData to exist. However, by modifying onlyIf{} above,
-  // we've allowed some potentially non-existent files to creep in. We must filter them out before the task runs.
-  // Unlike most changes to an @Input property during execution, this does not break the task's UP-TO-DATE checking.
-  // Apparently, a snapshot of a FileCollection containing non-existent files is equal to a snapshot of that same
-  // FileCollection with those elements removed.
-  doFirst {
-    executionData(executionData.filter {
-      it.exists()
-    })
   }
 }

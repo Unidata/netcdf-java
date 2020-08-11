@@ -1,7 +1,7 @@
 buildscript {
   // Add the "buildPlugins" ExtraProperty. It should be usable from the rest of this script as well.
   // See http://goo.gl/9bixNV
-  apply from: "$rootDir/gradle/any/plugins.gradle"
+  apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
   // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
   // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
@@ -76,20 +76,13 @@ gradle.projectsEvaluated {
         // We're already reporting test failures and code coverage in Jenkins; we don't need to do it in Sonar
         // too. Setting these properties to the empty string effectively disables the associated functionality.
         properties['sonar.junit.reportsPath'] = ''
-        properties['sonar.surefire.reportsPath'] = ''
-        properties['sonar.jacoco.reportPath'] = ''
-        properties['sonar.groovy.jacoco.reportPath'] = ''
-
-        // These properties are deprecated, so go ahead and empty them as well.
-        properties['sonar.binaries'] = ''
-        properties['sonar.libraries'] = ''
       }
     }
   }
 
 
 
-  configure(publicProjects) {  // The 'sourceSets' property will only be found on Java projects.
+  configure(javaProjects) {  // The 'sourceSets' property will only be found on Java projects.
     sonarqube {
       properties {
         /*
@@ -128,7 +121,7 @@ gradle.projectsEvaluated {
 
   tasks.sonarqube {
     // Some inspections require bytecode. 'testClasses' depends on 'classes'.
-    dependsOn = publicProjects*.tasks*.testClasses
+    dependsOn = javaProjects*.tasks*.testClasses
 
     if (debug) {
       doFirst {

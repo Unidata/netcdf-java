@@ -4,7 +4,7 @@
 buildscript {
   // Add the "buildPlugins" ExtraProperty. It should be usable from the rest of this script as well.
   // See http://goo.gl/9bixNV
-  apply from: "$rootDir/gradle/any/plugins.gradle"
+  apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
   // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
   // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
@@ -17,7 +17,6 @@ buildscript {
 
   dependencies {
     classpath buildPlugins.shadow
-    classpath buildPlugins.coveralls
     classpath buildPlugins.sonarqube
     classpath buildPlugins.spotless
     classpath buildPlugins.gretty
@@ -71,60 +70,32 @@ ext {
   docVersion = docVersionParts[0] + '.' + docVersionParts[1]
 
   // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
-  url = "https://docs.unidata.ucar.edu/thredds/netcdf-java/$docVersion/userguide/index.html"
+  url = 'https://www.unidata.ucar.edu/software/netcdf-java/'
 
   SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
   buildTimestamp = iso_8601_format.format(new Date())
 
-  // will hold the list of projects that apply the java-platform plugin
-  // These projects are individually marked by calling platformProjects.add(project) in
-  // their build scripts (for example, see netcdf-java-platform/build.gradle).
-  platformProjects = []
+  // Will hold the list of projects that apply the java plugin
+  // Used by :docs (javadocAll), project wide coverage reports, and sonarqube
+  javaProjects = []
 
   // Will hold the list of projects that apply the maven-publish plugin
   // A project is registered when the gradle/any/publishing.gradle script plugin
-  // is applied.
+  // is applied. We track these so that we can be sure to remove any dependencies added
+  // by the gretty plugin (for example, httpservices certainly does not depend on javax.servlet-api,
+  // spring-boot-starter-tomcat, or spring-boot-starter-jetty :-/
   publishedProjects = []
-
-  // Projects that are explicitly for internal use (although might still be published)
-  // These projects are individual marked by calling internalProjects.add(project) in
-  // their build scripts (for example, see cdm-test-utils/build.gradle).
-  internalProjects = []
-
-  // Will hold list of public projects.
-  // Here, public projects are defined to be those projects which are not:
-  //   * platforms (e.g. BOMs)
-  //   * shadowed (e.g. fatJars)
-  //   * internal use (e.g. test utils)
-  // These projects are the projects included in the root coverage report,
-  // and are submitted to sonarcloud for static analysis
-  // Effectively publishedProjects - internalProjects - platformProjects
-  // after all projects have been evaluated (see gradle.projectsEvaluated below)
-  publicProjects = []
-
-  publicProjectSourceDirs = files()
-  publicProjectClassDirs = files()
-
-  publicJavadocSourceDirs = files()
-  publicJavadocClassDirs = files()
-
-  // slf4j version is declaired in a place where we cannot use the netcdf-java-platform project.
-  // best we can do is define the version here, which can be read in all of the places we need it to be read.
-  slf4jVersion = '1.7.28'
 }
 
 gradle.projectsEvaluated {
-  publicProjects = publishedProjects - internalProjects - platformProjects - project.rootProject
-  // Need to make sure to add in netcdf4 project's unloadedTests sourceSet as well
-//  publicProjectSourceDirs = files(publicProjects*.sourceSets*.main*.allSource*.srcDirs +
-//      project(':netcdf4').sourceSets.unloadedTest*.allSource*.srcDirs.flatten())
-//  publicProjectClassDirs =
-//      files(publicProjects*.sourceSets*.main*.output + project(':netcdf4').sourceSets.unloadedTest*.output)
+  javaProjects = subprojects.findAll {
+    subproject -> subproject.plugins.hasPlugin('java')
+  }
 }
 
 // Set up properties needed for all testing, adds "testAll" task to root
 apply from: "$rootDir/gradle/root/testing.gradle"
-// Generates coverage report for testAll and submit to coveralls
+// Generates coverage report for testAll
 apply from: "$rootDir/gradle/root/coverage.gradle"
 // Attaches fatJar tasks to root project (makes toolsUI, ncIdv, etc.)
 apply from: "$rootDir/gradle/root/fatJars.gradle"
@@ -135,8 +106,6 @@ apply from: "$rootDir/gradle/root/sonarqube.gradle"
 // Adds the spotless tasks to the root project and add check for .gradle files
 apply from: "$rootDir/gradle/root/spotless.gradle"
 
-// Modifies Test task from root/testing.gradle and JacocoReport task from root/coverage.gradle
-apply from: "$rootDir/gradle/any/coverage.gradle"
 // Modifies Jar tasks created in fatJars.gradle
 apply from: "$rootDir/gradle/any/archiving.gradle"
 // Modifies pubs created in root/publishing.gradle

@@ -2,93 +2,89 @@ if (!name.equals(rootProject.name)) {
   throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
+// Without declaring a repository, this plugin script will fail with:
+// Execution failed for task ':jacocoMerge'.
+// > Could not resolve all files for configuration ':jacocoAnt'.
+repositories {
+  jcenter()
+}
+
 apply plugin: 'jacoco'
 apply plugin: 'base' // Gives us the "clean" task for removing rootJacocoReport's output.
-apply from: "$rootDir/gradle/any/properties.gradle"  // For Coveralls repo token property.
 
-gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
-  // Add the source directories for each Java subproject to one big FileCollection.
-  // Ditto for the class directories.
-  task rootJacocoReport(type: JacocoReport, group: 'Reports') {
-    description = 'Generates an aggregate coverage report from all subprojects'
-    dependsOn tasks.testAll  // Added in root/testing.gradle.
+// Modified from:
+// https://gist.github.com/tsjensen/d8b9ab9e6314ae2f63f4955c44399dad
 
-    reports.xml.enabled = true  // Needed by the coveralls task.
+def getProjectList() {
+  // These projects are considered. Replace with a different list as needed.
+  subprojects + project
+}
 
-    // Add the source directories for the :buildSrc project. Note that by this time in the 'thredds' config,
-    // :buildSrc has already run as a SEPARATE build (see http://stackoverflow.com/questions/26597147),
-    // so we cannot programmatically access its Project object to retrieve these paths.
-    // Also add the source directories of all Java subprojects.
-    additionalSourceDirs.from = files('buildSrc/src/main/groovy', publicProjectSourceDirs)
+// task to merge the exec files produced by subprojects.
+task jacocoMerge(type: JacocoMerge) {
+  group = LifecycleBasePlugin.VERIFICATION_GROUP
+  description = 'Merge the JaCoCo data files from all subprojects into one'
+  // Need all projects to be evaluated, otherwise the hasPlugin('jacoco') will not find anything.
+  gradle.projectsEvaluated {
+    // an empty FileCollection used to collect exec files from subprojects.
+    FileCollection execFiles = project.objects.fileCollection()
+    getProjectList().each {Project subproject ->
+      if (subproject.plugins.hasPlugin('jacoco')) {
+        def testTasks = subproject.tasks.withType(Test)
+        // ensure that .exec files are actually present
+        dependsOn(testTasks)
 
-    // Ditto for class directories.
-    classDirectories.from = files('buildSrc/build/classes/main', publicProjectClassDirs)
-
-    Closure isExtendedByJacoco = {Task task -> task.extensions.findByType(JacocoTaskExtension)
+        testTasks.each {Test task ->
+          // The JacocoTaskExtension is the source of truth for the location of the .exec file.
+          JacocoTaskExtension extension = task.getExtensions().findByType(JacocoTaskExtension.class)
+          if (extension != null) {
+            execFiles.from extension.getDestinationFile()
+          }
+        }
+      }
     }
-    Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
-    Collection<File> subprojectExeData = tasksExtendedByJacoco*.jacoco*.destinationFile
 
-    // Some of subprojectExeData may not exist. Make sure those are removed.
-    //executionData.from = files('buildSrc/build/jacoco/test.exec', subprojectExeData)
-    executionData.from = files('buildSrc/build/jacoco/test.exec', subprojectExeData.findAll {
-      it.exists()
-    })
+    executionData = execFiles
+
+    doFirst {
+      // .exec files might be missing if a project has no tests. Filter in execution phase.
+      executionData = executionData.filter {
+        it.canRead()
+      }
+    }
+  }
+}
+
+def getReportTasks(JacocoReport pRootTask) {
+  getProjectList().collect {
+    it.tasks.withType(JacocoReport).findAll {
+      it != pRootTask
+    }
+  }.flatten()
+}
+
+task jacocoRootReport(type: JacocoReport, dependsOn: tasks.jacocoMerge) {
+  group = LifecycleBasePlugin.VERIFICATION_GROUP
+  description = 'Generates an aggregate report from all subprojects'
+
+  executionData.from tasks.jacocoMerge.destinationFile
+
+  reports {
+    xml.enabled = true
+    html.enabled = true
+    csv.enabled = false
   }
 
-  apply plugin: 'com.github.kt3k.coveralls'
+  // subprojects must be evaluated so that we can grab their source and class directories.
+  gradle.projectsEvaluated {
+    // The JacocoReport tasks are the source of truth for class files and sources.
+    def reportTasks = getReportTasks(tasks.jacocoRootReport)
 
-  /*
-   * Ordinarily, I'd be able to configure the "coveralls" task by using the "coveralls(Closure)" dynamic method
-   * added to Project when the above plugin is applied. However, the plugin also adds an extension with the same
-   * name (see http://goo.gl/GVE4v6). As a result, Project now has TWO dynamic methods with the "coveralls(Closure)"
-   * signature.
-   *
-   * Which method takes precedence: the one that configures the extension or the one that configures the task? I
-   * can't find a definitive answer, but the Gradle docs (http://goo.gl/KPXLpf) seem to indicate that the extension
-   * wins (it appears earlier in the list--hardly definitive, I know).
-   *
-   * Operating under this assumption, we must explicitly indicate that we are configuring the "coveralls" task. Why
-   * not just create a new task of type CoverallsTask? Something like "task coverallsReport(type: CoverallsTask)"?
-   *
-   * Unfortunately, that gives an error: "Extension of type 'CoverallsPluginExtension' does not exist", originating
-   * from here: http://goo.gl/HAZk1L. The behavior does not occur when the task is defined in the root build script,
-   * meaning it's most likely a Gradle bug, not a coveralls-gradle-plugin bug. That's not surprising: there are lots
-   * of weird and poorly-defined limitations about what you can and can't do in a script plugin.
-   */
-  tasks.coveralls {Task task ->
-    group = 'Reports'
-    description = 'Uploads the aggregate coverage report to Coveralls'
-    dependsOn tasks.rootJacocoReport
-
-    // This task logs the entire coveralls.io JSON payload (~27 MB) to the INFO log level.
-    // We don't want to see it, so we're going to bump this task's log level up to LIFECYCLE.
-    //
-    // In Gradle 3.0, LoggingManager.setLevel() was removed without an appropriate (public) replacement.
-    // So, we have no choice but to use the deprecated, internal class's method.
-    (task.logging as org.gradle.logging.LoggingManagerInternal).level = LogLevel.LIFECYCLE
-
-    // We want to add the COVERALLS_REPO_TOKEN entry, but coveralls.env is an UnmodifiableMap.
-    // So, create a copy of env, add our entry, then replace the old map with it.
-    Map<String, String> envCopy = new HashMap<>(env)
-    // Defer invocation of getPropertyOrFailBuild() until the execution phase, using lazy GStrings.
-    envCopy['COVERALLS_REPO_TOKEN'] = "${-> getPropertyOrFailBuild COVERALLS_REPO_TOKEN_KEY}"
-    env = envCopy
-
-    // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
-    coveralls {
-      jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
-      sourceDirs = publicProjectSourceDirs.flatten()
-
-      sendToCoveralls = true
-      saveAsFile = true  // Save JSON payload to file, so we can use it for UP-TO-DATE checking.
-
-      inputs.file jacocoReportPath
-      outputs.file saveFilePath
-    }
-
-    doLast {
-      println 'The latest Coveralls report can be found at https://coveralls.io/github/Unidata/netcdf-java'
-    }
+    classDirectories.from project.files({
+      reportTasks.collect {it.classDirectories}.findAll {it != null}
+    })
+    sourceDirectories.from project.files({
+      reportTasks.collect {it.sourceDirectories}.findAll {it != null}
+    })
   }
 }
