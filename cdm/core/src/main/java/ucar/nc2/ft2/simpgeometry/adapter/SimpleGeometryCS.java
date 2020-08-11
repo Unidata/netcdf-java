@@ -5,6 +5,7 @@
 
 package ucar.nc2.ft2.simpgeometry.adapter;
 
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -101,8 +102,8 @@ public class SimpleGeometryCS {
    * 
    * @return list of dimensions.
    */
-  public List<Dimension> getDimensions() {
-    return builder.getDimensions();
+  public ImmutableList<Dimension> getDimensions() {
+    return ImmutableList.copyOf(builder.getDimensions());
   }
 
   /**

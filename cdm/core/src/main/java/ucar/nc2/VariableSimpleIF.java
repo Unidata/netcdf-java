@@ -4,68 +4,37 @@
  */
 package ucar.nc2;
 
+import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import ucar.ma2.DataType;
-import java.util.List;
 
-/**
- * A lightweight abstraction of a Variable.
- */
+/** A lightweight abstraction of a Variable. */
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
 
-  /**
-   * full, backslash escaped name of the data Variable
-   * 
-   * @return full, backslash escaped name of the data Variable
-   */
+  /** full, backslash escaped name of the data Variable */
   String getFullName();
 
-  /**
-   * short name of the data Variable
-   * 
-   * @return short name of the data Variable
-   */
+  /** short name of the data Variable */
   String getShortName();
 
-  /**
-   * description of the Variable
-   * 
-   * @return description of the Variable, or null if none.
-   */
+  /** description of the Variable, or null if none. */
+  @Nullable
   String getDescription();
 
-  /**
-   * Units of the Variable. These should be udunits compatible if possible
-   * 
-   * @return Units of the Variable, or null if none.
-   */
+  /** Units of the Variable, or null if none. */
+  @Nullable
   String getUnitsString();
 
-  /**
-   * Variable rank
-   * 
-   * @return Variable rank
-   */
+  /** Variable rank */
   int getRank();
 
-  /**
-   * Variable shape
-   * 
-   * @return Variable shape
-   */
+  /** Variable shape */
   int[] getShape();
 
-  /**
-   * Dimension List. empty for a scalar variable.
-   * 
-   * @return List of ucar.nc2.Dimension, ImmutableList in ver6
-   */
-  List<Dimension> getDimensions();
+  /** Dimension List. empty for a scalar variable. */
+  ImmutableList<Dimension> getDimensions();
 
-  /**
-   * Variable's data type
-   * 
-   * @return Variable's data type
-   */
+  /** Variable's data type */
   DataType getDataType();
 
   /** Attributes for the variable. */

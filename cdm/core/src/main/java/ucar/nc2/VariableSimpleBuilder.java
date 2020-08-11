@@ -14,6 +14,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.CDM;
 
 /** Builder for VariableSimpleIF, makes true immutable objects. */
+@Immutable
 public class VariableSimpleBuilder {
 
   public static VariableSimpleBuilder fromMember(StructureMembers.Member m) {
@@ -79,10 +80,6 @@ public class VariableSimpleBuilder {
       this.dt = builder.dt;
       this.atts = builder.atts.toImmutable();
       this.dims = builder.dims;
-    }
-
-    public String getName() {
-      return name;
     }
 
     @Override

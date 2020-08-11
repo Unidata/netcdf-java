@@ -1,5 +1,6 @@
 package ucar.nc2.ft2.simpgeometry;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -287,7 +288,7 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
   }
 
   @Override
-  public List<Dimension> getDimensions() {
+  public ImmutableList<Dimension> getDimensions() {
     return coordSys.getDimensions();
   }
 
