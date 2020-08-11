@@ -5,18 +5,13 @@
 
 package ucar.nc2.iosp;
 
+import com.google.common.base.Preconditions;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.EOFException;
 import java.io.IOException;
 
-/**
- * Helper for reading data that has been bit packed.
- *
- * @author caron
- * @since Apr 7, 2008
- */
+/** Helper for reading data that has been bit packed. */
 public class BitReader {
-
   private static final int BIT_LENGTH = Byte.SIZE;
   private static final int BYTE_BITMASK = 0xFF;
   private static final long LONG_BITMASK = Long.MAX_VALUE;
@@ -41,7 +36,7 @@ public class BitReader {
    *
    * @param raf the RandomAccessFile
    * @param startPos points to start of data in data section, in bytes
-   * @throws IOException on read error
+   * @throws IOException on seek error
    */
   public BitReader(RandomAccessFile raf, long startPos) throws IOException {
     this.raf = raf;
@@ -49,9 +44,7 @@ public class BitReader {
     raf.seek(startPos);
   }
 
-  /**
-   * Go to the next byte in the stream
-   */
+  /** Go to the next byte in the stream */
   public void incrByte() {
     this.bitPos = 0;
   }
@@ -75,6 +68,7 @@ public class BitReader {
     }
   }
 
+  /** Get the current file offset in bytes. */
   public long getPos() {
     if (raf != null) {
       return raf.getFilePointer();
@@ -84,15 +78,15 @@ public class BitReader {
   }
 
   /**
-   * Read the next nb bits and return an Unsigned Long .
+   * Read the next nb bits and return the value as an unsigned long.
    *
    * @param nb the number of bits to convert to int, must be 0 <= nb <= 64.
-   * @return result
+   * @return the value as an unsigned long.
    * @throws java.io.IOException on read error
    */
   public long bits2UInt(int nb) throws IOException {
-    assert nb <= 64;
-    assert nb >= 0;
+    Preconditions.checkArgument(nb <= 64);
+    Preconditions.checkArgument(nb >= 0);
 
     long result = 0;
     int bitsLeft = nb;
@@ -133,14 +127,13 @@ public class BitReader {
   }
 
   /**
-   * Read the next nb bits and return an Signed Long .
+   * Read the next nb bits and return the value as a signed long.
    *
    * @param nb the number of bits to convert to int, must be <= 64.
-   * @return result
+   * @return the value as a signed long
    * @throws java.io.IOException on read error
    */
   public long bits2SInt(int nb) throws IOException {
-
     long result = bits2UInt(nb);
 
     // check if we're negative
@@ -151,9 +144,7 @@ public class BitReader {
       result = ~result & LONG_BITMASK;
       result = result + 1;
     }
-
     return result;
-
   }
 
   private byte nextByte() throws IOException {
@@ -167,11 +158,11 @@ public class BitReader {
     }
   }
 
-  public static long setBit(long decimal, int N, boolean value) {
+  private static long setBit(long decimal, int N, boolean value) {
     return value ? decimal | (1 << (N - 1)) : decimal & ~(1 << (N - 1));
   }
 
-  public static boolean getBit(long decimal, int N) {
+  private static boolean getBit(long decimal, int N) {
     int constant = 1 << (N - 1);
     return (decimal & constant) > 0;
   }

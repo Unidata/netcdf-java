@@ -14,7 +14,7 @@ import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.TableLookup;
 import ucar.nc2.util.TableParser;
-import ucar.nc2.wmo.Util;
+import ucar.nc2.internal.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;

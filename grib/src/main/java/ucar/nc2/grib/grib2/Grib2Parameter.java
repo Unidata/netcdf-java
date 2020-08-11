@@ -7,7 +7,7 @@ package ucar.nc2.grib.grib2;
 
 import javax.annotation.Nonnull;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.wmo.Util;
+import ucar.nc2.internal.wmo.Util;
 import javax.annotation.concurrent.Immutable;
 
 /**

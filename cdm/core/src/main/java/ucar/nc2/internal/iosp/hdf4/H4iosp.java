@@ -112,6 +112,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isLinked) {
+        System.out.printf(" LayoutSegmented %s%n", v.getFullName());
         Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
         Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
         return Array.factory(dataType, section.getShape(), data);
@@ -143,6 +144,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isChunked) {
+        System.out.printf(" LayoutBBTiled %s%n", v.getFullName());
         LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
         LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
         Object data = IospHelper.readDataFill(layout, dataType, vinfo.fillValue);

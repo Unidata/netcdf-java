@@ -10,25 +10,27 @@ import ucar.ma2.InvalidRangeException;
 
 /**
  * LayoutRegularSegmented has data stored in segments that are regularly spaced.
- * This is now Netcdf-3 "record variables" are laid out.
- *
- * @author caron
- * @since Dec 31, 2007
+ * This is how Netcdf-3 "record variables" are laid out.
  */
 public class LayoutRegularSegmented implements Layout {
-  private long total, done, innerNelems;
-  private long startPos;
-  private long recSize;
-  private int elemSize;
+  private static final boolean debugNext = false;
+
+  private final long total;
+  private final long innerNelems;
+  private final long startPos;
+  private final long recSize;
+  private final int elemSize;
 
   // outer chunk
-  private IndexChunker chunker;
+  private final IndexChunker chunker;
   private IndexChunker.Chunk chunkOuter;
 
   // inner chunk = deal with segmentation
-  private IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0, 0, 0);
+  private final IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0, 0, 0);
 
-  private static final boolean debugNext = false;
+  private int needInner;
+  private int doneInner;
+  private long done;
 
   /**
    * Constructor.
@@ -51,20 +53,23 @@ public class LayoutRegularSegmented implements Layout {
     this.elemSize = elemSize;
     this.recSize = recSize;
 
-    chunker = new IndexChunker(srcShape, wantSection);
+    this.chunker = new IndexChunker(srcShape, wantSection);
     this.total = chunker.getTotalNelems();
     this.innerNelems = (srcShape[0] == 0) ? 0 : Index.computeSize(srcShape) / srcShape[0];
     this.done = 0;
   }
 
+  @Override
   public long getTotalNelems() {
     return total;
   }
 
+  @Override
   public int getElemSize() {
     return elemSize;
   }
 
+  @Override
   public boolean hasNext() {
     return done < total;
   }
@@ -82,9 +87,7 @@ public class LayoutRegularSegmented implements Layout {
     return (int) (innerNelems - startElem % innerNelems);
   }
 
-  private int needInner;
-  private int doneInner;
-
+  @Override
   public Chunk next() {
     IndexChunker.Chunk result;
 

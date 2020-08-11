@@ -168,7 +168,6 @@ public class IospHelper {
     return readData(is, index, dataType, arr);
   }
 
-
   /**
    * Read data subset from PositioningDataInputStream, place in given primitive array.
    * Reading is controlled by the Layout object.

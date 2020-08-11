@@ -40,7 +40,7 @@ import java.util.Formatter;
  */
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   /**
-   * Subclasses that use AbstractIOServiceProvider.open(...) or .close()
+   * Subclasses that use AbstractIOServiceProvider.open(...) or close()
    * should use this (instead of their own private variable).
    */
   protected ucar.unidata.io.RandomAccessFile raf;
@@ -103,7 +103,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override

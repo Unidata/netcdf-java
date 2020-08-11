@@ -4,6 +4,7 @@
  */
 package ucar.nc2.constants;
 
+import javax.annotation.Nullable;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -198,6 +199,7 @@ public class CF {
   public enum FeatureType {
     point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile, line, polygon,;
 
+    @Nullable
     public static FeatureType convert(ucar.nc2.constants.FeatureType ft) {
       switch (ft) {
         case POINT:
@@ -216,6 +218,7 @@ public class CF {
       return null;
     }
 
+    @Nullable
     public static ucar.nc2.constants.FeatureType convert(FeatureType cff) {
       switch (cff) {
         case point:
@@ -234,6 +237,7 @@ public class CF {
       return null;
     }
 
+    @Nullable
     public static FeatureType getFeatureType(String s) {
       if (s.equalsIgnoreCase("point"))
         return FeatureType.point;
@@ -257,9 +261,14 @@ public class CF {
         return FeatureType.trajectoryProfile;
       if (s.equalsIgnoreCase("section"))
         return FeatureType.trajectoryProfile;
+      if (s.equalsIgnoreCase("line"))
+        return FeatureType.line;
+      if (s.equalsIgnoreCase("polygon"))
+        return FeatureType.polygon;
       return null;
     }
 
+    @Nullable
     public static FeatureType getFeatureTypeFromGlobalAttribute(NetcdfFile ds) {
       String ftypeS = ds.getRootGroup().findAttributeString(CF.FEATURE_TYPE, null);
       if (ftypeS == null)
@@ -281,30 +290,6 @@ public class CF {
    */
   public enum CellMethods {
     point, sum, maximum, median, mid_range, minimum, mean, mode, standard_deviation, variance;
-
-    // deprecated
-    public static CellMethods convertGribCodeTable4_10(int code) {
-      switch (code) {
-        case 0:
-          return CellMethods.mean; // "Average";
-        case 1:
-          return CellMethods.sum; // "Accumulation";
-        case 2:
-          return CellMethods.maximum; // "Maximum";
-        case 3:
-          return CellMethods.minimum; // "Minimum";
-        // case 4: return "Difference"; // (Value at the end of time range minus value at the beginning)";
-        // case 5: return "RootMeanSquare";
-        case 6:
-          return CellMethods.standard_deviation; // "StandardDeviation";
-        case 7:
-          return CellMethods.variance; // "Covariance"; // (Temporal variance)";
-        // case 8: return "Difference"; // (Value at the start of time range minus value at the end)";
-        // case 9: return "Ratio";
-        default:
-          return null;
-      }
-    }
   }
 
   // class not interface, per Bloch edition 2 item 19

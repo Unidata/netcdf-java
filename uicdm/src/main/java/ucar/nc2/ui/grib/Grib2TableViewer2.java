@@ -15,7 +15,7 @@ import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.internal.wmo.CommonCodeTable;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;

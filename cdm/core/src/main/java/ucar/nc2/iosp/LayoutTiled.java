@@ -16,23 +16,24 @@ import java.util.List;
  * "Tiled" means that all chunks are assumed to be equal size.
  * Chunks have an offset into the complete array.
  * Chunks do not necessarily cover the array, missing data is possible.
- *
- * @author caron
- * @since Jan 9, 2008
+ * Used by HDF4 and HDF5.
  */
 public class LayoutTiled implements Layout {
+  private static final boolean debug = false, debugNext = false;
+
   private Section want;
-  private int[] chunkSize; // all chunks assumed to be the same size
-  private int elemSize;
+  private final int[] chunkSize; // all chunks assumed to be the same size
+  private final int elemSize;
   private long startSrcPos;
 
-  private DataChunkIterator chunkIterator; // iterate across chunks
+  private final DataChunkIterator chunkIterator; // iterate across chunks
   private IndexChunkerTiled index; // iterate within a chunk
 
   // track the overall iteration
-  private long totalNelems, totalNelemsDone; // total number of elemens
+  private final long totalNelems;
+  private long totalNelemsDone;
 
-  private static final boolean debug = false, debugNext = false;
+  private Layout.Chunk next;
 
   /**
    * Constructor.
@@ -58,16 +59,17 @@ public class LayoutTiled implements Layout {
     this.totalNelemsDone = 0;
   }
 
+  @Override
   public long getTotalNelems() {
     return totalNelems;
   }
 
+  @Override
   public int getElemSize() {
     return elemSize;
   }
 
-  private Layout.Chunk next;
-
+  @Override
   public boolean hasNext() { // have to actually fetch the thing here
     if (totalNelemsDone >= totalNelems)
       return false;
@@ -118,12 +120,14 @@ public class LayoutTiled implements Layout {
     return true;
   }
 
+  @Override
   public Layout.Chunk next() {
     if (debugNext)
       System.out.println("  next=" + next);
     return next;
   }
 
+  @Override
   public String toString() {
     StringBuilder sbuff = new StringBuilder();
     sbuff.append("want=").append(want).append("; ");

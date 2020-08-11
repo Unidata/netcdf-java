@@ -3,16 +3,11 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.wmo;
+package ucar.nc2.internal.wmo;
 
 import ucar.unidata.util.StringUtil2;
 
-/**
- * Uitlities common to WMO table parsing.
- *
- * @deprecated will be moved in ver6
- */
-@Deprecated
+/** Utilities common to WMO table parsing. */
 public class Util {
 
   /**
@@ -70,7 +65,7 @@ public class Util {
     return StringUtil2.collapseWhitespace(sb.toString().trim());
   }
 
-  public static String cleanupDescription(String desc) {
+  public static String cleanDescription(String desc) {
     if (desc == null)
       return null;
     int pos = desc.indexOf("(see");
@@ -83,7 +78,7 @@ public class Util {
   }
 
   /**
-   * Compare two names from tables, trying to ignore superfulous characters.
+   * Compare two names from tables, trying to ignore superfluous characters.
    * 
    * @return true if these are equivilent
    */

@@ -41,39 +41,19 @@ package ucar.nc2.iosp;
       }
  * 
  * </pre>
- *
- * @author caron
- * @since Jan 2, 2008
  */
-
 public interface Layout {
 
-  /**
-   * Get total number of elements in the wanted subset.
-   *
-   * @return total number of elements in the wanted subset.
-   */
+  /** Get total number of elements in the wanted subset. */
   long getTotalNelems();
 
-  /**
-   * Get size of each element in bytes.
-   *
-   * @return size of each element in bytes.
-   */
+  /** Get size of each element in bytes. */
   int getElemSize();
 
-  /**
-   * Is there more to do
-   *
-   * @return true if theres more to do
-   */
+  /** Is there more to do? */
   boolean hasNext();
 
-  /**
-   * Get the next chunk
-   *
-   * @return next chunk, or null if !hasNext()
-   */
+  /** Get the next chunk, not null if hasNext() is true. */
   Chunk next();
 
   /**
@@ -83,18 +63,10 @@ public interface Layout {
    */
   interface Chunk {
 
-    /**
-     * Get the position in source where to read or write: "file position"
-     * 
-     * @return position as a byte count into the source, eg a file
-     */
+    /** Get the position in source where to read or write: eg "file position" */
     long getSrcPos();
 
-    /**
-     * Get number of elements to transfer contiguously (Note: elements, not bytes)
-     * 
-     * @return number of elements to transfer
-     */
+    /** Get number of elements to transfer contiguously (Note: elements, not bytes) */
     int getNelems();
 
     /**

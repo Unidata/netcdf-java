@@ -21,6 +21,7 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
+/** Test {@link ucar.nc2.ParsedSectionSpec} */
 public class TestParsedSectionSpec {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

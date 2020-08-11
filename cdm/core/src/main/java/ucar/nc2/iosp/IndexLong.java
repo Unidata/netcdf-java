@@ -4,19 +4,14 @@
  */
 package ucar.nc2.iosp;
 
-/**
- * Uses longs for indexing, otherwise similar to ucar.ma2.Index
- *
- * @author caron
- * @since Jul 30, 2010
- */
+/** Uses longs for indexing, otherwise similar to ucar.ma2.Index */
 public class IndexLong {
-  private int[] shape;
-  private long[] stride;
-  private int rank;
+  private final int[] shape;
+  private final long[] stride;
+  private final int rank;
 
-  private int offset; // element = offset + stride[0]*current[0] + ...
-  private int[] current; // current element's index
+  private final int offset; // element = offset + stride[0]*current[0] + ...
+  private final int[] current; // current element's index
 
   // shape = int[] {1}
   public IndexLong() {
@@ -25,8 +20,6 @@ public class IndexLong {
 
     rank = shape.length;
     current = new int[rank];
-
-    stride[0] = 1;
     offset = 0;
   }
 

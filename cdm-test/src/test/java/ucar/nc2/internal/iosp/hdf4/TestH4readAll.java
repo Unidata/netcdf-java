@@ -34,7 +34,7 @@ public class TestH4readAll {
   }
 
   @Parameterized.Parameters(name = "{0}")
-  public static Collection<Object[]> getTestParameters() throws IOException {
+  public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
 
     try {

@@ -9,7 +9,7 @@ import ucar.nc2.grib.grib2.table.Grib2CodeTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.wmo.Util;
+import ucar.nc2.internal.wmo.Util;
 
 public class EcmwfCodeTableCompare {
 

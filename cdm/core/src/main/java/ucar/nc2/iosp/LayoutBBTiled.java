@@ -14,22 +14,22 @@ import java.nio.*;
  * The data is read, processed, and placed in a ByteBuffer. Chunks have an offset into the ByteBuffer.
  * "Tiled" means that all chunks are assumed to be equal size.
  * Chunks do not necessarily cover the array, missing data is possible.
- *
- * @author caron
- * @since Jan 9, 2008
+ * Used by HDF4 and HDF5.
  */
 public class LayoutBBTiled implements LayoutBB {
-  private Section want;
-  private int[] chunkSize; // all chunks assumed to be the same size
-  private int elemSize;
+  private static final boolean debug = false, debugIntersection = false;
 
-  private DataChunkIterator chunkIterator; // iterate across chunks
-  private IndexChunkerTiled index; // iterate within a chunk
+  private final Section want;
+  private final int[] chunkSize; // all chunks assumed to be the same size
+  private final int elemSize;
+  private final DataChunkIterator chunkIterator; // iterate across chunks
 
   // track the overall iteration
-  private long totalNelems, totalNelemsDone; // total number of elemens
+  private final long totalNelems;
+  private long totalNelemsDone;
 
-  private static final boolean debug = false, debugIntersection = false;
+  private IndexChunkerTiled index; // iterate within a chunk
+  private LayoutBBTiled.Chunk next;
 
   /**
    * Constructor.
@@ -51,16 +51,17 @@ public class LayoutBBTiled implements LayoutBB {
     this.totalNelemsDone = 0;
   }
 
+  @Override
   public long getTotalNelems() {
     return totalNelems;
   }
 
+  @Override
   public int getElemSize() {
     return elemSize;
   }
 
-  private LayoutBBTiled.Chunk next;
-
+  @Override
   public boolean hasNext() { // have to actually fetch the thing
     if (totalNelemsDone >= totalNelems)
       return false;
@@ -130,18 +131,12 @@ public class LayoutBBTiled implements LayoutBB {
     return sbuff.toString();
   }
 
-  /**
-   * An iterator over the data chunks.
-   */
   public interface DataChunkIterator {
     boolean hasNext();
 
     DataChunk next() throws IOException;
   }
 
-  /**
-   * A data chunk
-   */
   public interface DataChunk {
     int[] getOffset();
 
@@ -156,7 +151,7 @@ public class LayoutBBTiled implements LayoutBB {
   private static class Chunk implements LayoutBB.Chunk {
     IndexChunker.Chunk delegate;
 
-    private ByteBuffer bb;
+    private final ByteBuffer bb;
     private ShortBuffer sb;
     private IntBuffer ib;
     private LongBuffer longb;
@@ -171,46 +166,55 @@ public class LayoutBBTiled implements LayoutBB {
       this.delegate = delegate;
     }
 
+    @Override
     public int getSrcElem() {
       return (int) delegate.getSrcElem();
     }
 
+    @Override
     public int getNelems() {
       return delegate.getNelems();
     }
 
+    @Override
     public long getDestElem() {
       return delegate.getDestElem();
     }
 
+    @Override
     public ByteBuffer getByteBuffer() {
       return bb;
     }
 
+    @Override
     public ShortBuffer getShortBuffer() {
       if (sb == null)
         sb = bb.asShortBuffer();
       return sb;
     }
 
+    @Override
     public IntBuffer getIntBuffer() {
       if (ib == null)
         ib = bb.asIntBuffer();
       return ib;
     }
 
+    @Override
     public LongBuffer getLongBuffer() {
       if (longb == null)
         longb = bb.asLongBuffer();
       return longb;
     }
 
+    @Override
     public FloatBuffer getFloatBuffer() {
       if (fb == null)
         fb = bb.asFloatBuffer();
       return fb;
     }
 
+    @Override
     public DoubleBuffer getDoubleBuffer() {
       if (db == null)
         db = bb.asDoubleBuffer();
@@ -223,6 +227,7 @@ public class LayoutBBTiled implements LayoutBB {
     }
 
     // artifact of overriding Layout
+    @Override
     public long getSrcPos() {
       throw new UnsupportedOperationException();
     }

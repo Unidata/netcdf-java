@@ -12,7 +12,7 @@ import java.util.List;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.wmo.Util;
+import ucar.nc2.internal.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
 /**

@@ -114,7 +114,7 @@ import javax.annotation.Nullable;
  * http://cucis.ece.northwestern.edu/projects/PnetCDF/CDF-5.html.
  */
 
-/** Enumeration of the kinds of NetCDF file formats. NETCDF3_64BIT_DATA is not currently supported. */
+/** Enumeration of the kinds of NetCDF file formats. NETCDF3_64BIT_DATA is not currently supported in this library. */
 public enum NetcdfFileFormat {
   INVALID(0, "Invalid"), //
   NETCDF3(1, "netcdf-3"), //

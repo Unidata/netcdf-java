@@ -12,8 +12,7 @@ import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables.TemplateTable;
-import ucar.nc2.util.Misc;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.internal.wmo.CommonCodeTable;
 import java.util.Formatter;
 
 /**

@@ -10,7 +10,7 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.bufr.tables.TableB;
 import ucar.nc2.iosp.bufr.tables.TableD;
 import ucar.nc2.iosp.bufr.tables.WmoXmlReader;
-import ucar.nc2.wmo.Util;
+import ucar.nc2.internal.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -5,7 +5,7 @@
 package ucar.nc2.iosp.grid;
 
 import java.util.Objects;
-import ucar.nc2.wmo.Util;
+import ucar.nc2.internal.wmo.Util;
 
 /**
  * Class which represents a grid parameter.

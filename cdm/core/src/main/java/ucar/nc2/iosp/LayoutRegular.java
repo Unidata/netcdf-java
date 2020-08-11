@@ -4,7 +4,9 @@
  */
 package ucar.nc2.iosp;
 
+import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 
@@ -13,14 +15,12 @@ import ucar.ma2.InvalidRangeException;
  * The data is contiguous, with outer dimension varying fastest.
  * Given a Section, this calculates the set of contiguous "chunks" of the wanted data into the stored data.
  * The wanted section is always a subset of the data section (see RegularSectionLayout where thats not the case).
- *
- * @author caron
- * @since Jan 3, 2008
  */
+@Immutable
 public class LayoutRegular implements Layout {
-  private IndexChunker chunker;
-  private long startPos; // starting position
-  private int elemSize; // size of each element
+  private final IndexChunker chunker;
+  private final long startPos; // starting position
+  private final int elemSize; // size of each element
 
   /**
    * Constructor.
@@ -33,27 +33,30 @@ public class LayoutRegular implements Layout {
    */
   public LayoutRegular(long startPos, int elemSize, int[] varShape, @Nullable Section wantSection)
       throws InvalidRangeException {
-    assert startPos >= 0;
-    assert elemSize > 0;
+    Preconditions.checkArgument(startPos >= 0);
+    Preconditions.checkArgument(elemSize > 0);
 
     this.startPos = startPos;
     this.elemSize = elemSize;
-
-    chunker = new IndexChunker(varShape, wantSection);
+    this.chunker = new IndexChunker(varShape, wantSection);
   }
 
+  @Override
   public long getTotalNelems() {
     return chunker.getTotalNelems();
   }
 
+  @Override
   public int getElemSize() {
     return elemSize;
   }
 
+  @Override
   public boolean hasNext() {
     return chunker.hasNext();
   }
 
+  @Override
   public Chunk next() {
     IndexChunker.Chunk chunk = chunker.next();
     chunk.setSrcPos(startPos + chunk.getSrcElem() * elemSize);

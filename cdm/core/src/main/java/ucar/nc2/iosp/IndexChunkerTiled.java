@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp;
 
+import java.util.Arrays;
+import java.util.Formatter;
 import ucar.ma2.Index;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
@@ -29,15 +31,16 @@ import java.util.ArrayList;
  * @since Jan 9, 2008
  */
 public class IndexChunkerTiled {
-  private List<Dim> dimList = new ArrayList<>();
-  private IndexLong dataIndex; // Index into the data source section - used to calculate chunk.filePos
-  private Index resultIndex; // Index into the data result section - used to calculate chunk.startElem
+  private final List<Dim> dimList = new ArrayList<>();
+  private final IndexLong dataIndex; // Index into the data source section - used to calculate chunk.filePos
+  private final Index resultIndex; // Index into the data result section - used to calculate chunk.startElem
 
   private IndexChunker.Chunk chunk; // gets returned on next().
-  private int nelems; // number of elements to read at one time
-  private long total, done;
-  private int startDestElem; // the offset in the result Array of this piece of it
-  private int startSrcElem; // the offset in the source Array of this piece of it
+  private final int nelems; // number of elements to read at one time
+  private final long total;
+  private long done;
+  private final int startDestElem; // the offset in the result Array of this piece of it
+  private final int startSrcElem; // the offset in the source Array of this piece of it
 
   private static final boolean debug = false, debugMerge = false, debugDetail = false, debugNext = false,
       debugStartingElems = false;
@@ -108,10 +111,10 @@ public class IndexChunkerTiled {
       shape[rank - i - 1] = dim.wantNelems;
     }
     if (debugDetail) {
-      IndexChunker.printa(" indexShape=", shape);
-      IndexChunker.printl(" dataStrides=", dataStrides);
-      IndexChunker.printa(" wantStride=", resultStrides);
-      System.out.println(" indexChunks=" + Index.computeSize(shape));
+      System.out.printf("  indexShape=%s%n", Arrays.toString(shape));
+      System.out.printf("  dataStrides=%s%n", Arrays.toString(dataStrides));
+      System.out.printf("  wantStride=%s%n", Arrays.toString(resultStrides));
+      System.out.printf("  indexChunks=%d%n", Index.computeSize(shape));
     }
     dataIndex = new IndexLong(shape, dataStrides);
     resultIndex = new Index(shape, resultStrides);
@@ -197,12 +200,11 @@ public class IndexChunkerTiled {
   ////////////////////
 
   public String toString() {
-    StringBuilder sbuff = new StringBuilder();
+    Formatter f = new Formatter();
     for (Dim elem : dimList) {
-      sbuff.append("\n");
-      sbuff.append(elem);
+      f.format("%s%n", elem);
     }
-    return sbuff.toString();
+    return f.toString();
   }
 
 }

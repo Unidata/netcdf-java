@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +13,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import java.lang.invoke.MethodHandles;
 
-/**
- * @author caron
- * @since Jan 2, 2008
- */
+/** Test {@link ucar.nc2.iosp.IndexChunker} and {@link ucar.nc2.iosp.IndexChunkerTiled} */
 public class TestIndexChunker {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -23,10 +22,10 @@ public class TestIndexChunker {
     int[] shape = new int[] {123, 22, 92, 12};
     Section section = new Section(shape);
     IndexChunker index = new IndexChunker(shape, section);
-    assert index.getTotalNelems() == section.computeSize();
+    assertThat(index.getTotalNelems()).isEqualTo(section.computeSize());
     IndexChunker.Chunk chunk = index.next();
-    assert chunk.getNelems() == section.computeSize();
-    assert !index.hasNext();
+    assertThat(chunk.getNelems()).isEqualTo(section.computeSize());
+    assertThat(index.hasNext()).isFalse();
   }
 
   @Test
@@ -35,9 +34,9 @@ public class TestIndexChunker {
     int[] part = new int[] {2, 5, 20};
     Section section = new Section(part);
     IndexChunker index = new IndexChunker(full, section);
-    assert index.getTotalNelems() == section.computeSize();
+    assertThat(index.getTotalNelems()).isEqualTo(section.computeSize());
     IndexChunker.Chunk chunk = index.next();
-    assert chunk.getNelems() == section.computeSize() / 2;
+    assertThat(chunk.getNelems()).isEqualTo(section.computeSize() / 2);
   }
 
   @Test
@@ -60,6 +59,26 @@ public class TestIndexChunker {
       Layout.Chunk chunk = index.next();
       System.out.println(" " + chunk);
     }
+  }
+
+  @Test
+  public void testIndexChunkerToString() throws InvalidRangeException {
+    int[] full = new int[] {2, 10, 20};
+    int[] part = new int[] {2, 5, 20};
+    Section section = new Section(part);
+    IndexChunker index = new IndexChunker(full, section);
+    assertThat(index.toString()).isEqualTo("wantSize=1,2 maxSize=200,2 wantStride=1,1 stride=20,200");
+  }
+
+  @Test
+  public void testIndexChunkerTiledToString() throws InvalidRangeException {
+    Section dataSection = new Section("0:0, 40:59,  0:1353  ");
+    Section wantSection = new Section("0:2, 22:3152,0:1350");
+    IndexChunkerTiled index = new IndexChunkerTiled(dataSection, wantSection);
+    assertThat(index.toString())
+        .isEqualTo(String.format("  data = 0:1353 want = 0:1350 intersect = 0:1350 ncontigElements = 1351%n"
+            + "  data = 40:59 want = 22:3152 intersect = 40:59 ncontigElements = 20%n"
+            + "  data = 0:0 want = 0:2 intersect = 0:0 ncontigElements = 1%n"));
   }
 
 }
