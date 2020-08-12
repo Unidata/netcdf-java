@@ -34,23 +34,11 @@ import java.util.Date;
  *
  * @author john caron
  * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
+ * @deprecated will move in version 7
  */
-
-
+@Deprecated
 public class TimeDuration {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TimeDuration.class);
-
-  /*
-   * private static TimeUnit secUnits;
-   * 
-   * static {
-   * try {
-   * secUnits = new TimeUnit("1 sec");
-   * } catch (Exception e) {
-   * e.printStackTrace();
-   * }
-   * }
-   */
 
   private String text;
   private TimeUnit timeUnit;

@@ -18,7 +18,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 
 /** Suomi coord sys builder. */
@@ -64,8 +64,6 @@ public class Suomi extends CoordSystemBuilder {
       return;
 
     SimpleDateFormat df = new SimpleDateFormat("yyyy.DDD.HH.mm.ss"); // "2006.105.00.00.00"
-    DateFormatter dfo = new DateFormatter();
-
     Date start;
     try {
       start = df.parse(start_date);
@@ -73,8 +71,8 @@ public class Suomi extends CoordSystemBuilder {
       throw new RuntimeException("Cant read start_date=" + start_date);
     }
 
-    rootGroup.findVariableLocal("time_offset")
-        .ifPresent(v -> v.addAttribute(new Attribute(CDM.UNITS, "seconds since " + dfo.toDateTimeString(start))));
+    rootGroup.findVariableLocal("time_offset").ifPresent(v -> v
+        .addAttribute(new Attribute(CDM.UNITS, "seconds since " + CalendarDateFormatter.toDateTimeString(start))));
 
     rootGroup.addAttribute(new Attribute(CDM.CONVENTIONS, "Suomi-Station-CDM"));
   }

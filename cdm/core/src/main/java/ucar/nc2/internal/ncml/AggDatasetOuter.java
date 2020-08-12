@@ -20,7 +20,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.internal.ncml.Aggregation.Type;
 import ucar.nc2.internal.ncml.AggregationOuter.CacheVar;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateFromString;
 import ucar.nc2.util.CancelTask;
 
@@ -126,7 +126,7 @@ class AggDatasetOuter extends AggDataset {
     if (null != aggregationOuter.dateFormatMark) {
       String filename = cd.getName(); // LOOK operates on name, not path
       coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, aggregationOuter.dateFormatMark, '#');
-      coordValueS = new DateFormatter().toDateTimeStringISO(coordValueDate);
+      coordValueS = CalendarDateFormatter.toDateTimeStringISO(coordValueDate);
       if (Aggregation.debugDateParse)
         System.out.println("  adding " + cd.getPath() + " date= " + coordValueS);
 
@@ -165,7 +165,7 @@ class AggDatasetOuter extends AggDataset {
     if (coordValue != null)
       f.format(" coordValue='%s'", coordValue);
     if (coordValueDate != null)
-      f.format(" coordValueDate='%s'", new DateFormatter().toDateTimeString(coordValueDate));
+      f.format(" coordValueDate='%s'", CalendarDateFormatter.toDateTimeString(coordValueDate));
     f.format(" range=[%d:%d) (%d)%n", aggStart, aggEnd, ncoord);
   }
 

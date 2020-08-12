@@ -13,10 +13,10 @@ import java.text.ParseException;
  * Implements a range of dates, using DateType and/or TimeDuration.
  * You can use a DateType = "present" and a time duration to specify "real time" intervals, eg
  * "last 3 days" uses endDate = "present" and duration = "3 days".
- *
- * @author john caron
+ * 
+ * @deprecated use {@link ucar.nc2.time.CalendarDateRange}
  */
-
+@Deprecated
 public class DateRange {
   private DateType start, end;
   private TimeDuration duration, resolution;

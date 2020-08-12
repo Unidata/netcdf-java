@@ -16,9 +16,7 @@ import java.text.ParseException;
 
 /**
  * Convenience routines for parsing a String to produce a Date.
- *
- * @author edavis
- * @since Nov 29, 2005 4:53:46 PM
+ * Used in thredds date extraction, also in aggregation configuration DateFormatMark.
  */
 public class DateFromString {
   private static final Logger logger = LoggerFactory.getLogger(DateFromString.class);
@@ -107,8 +105,9 @@ public class DateFromString {
     String match = dateFormatString.substring(pos1 + 1, pos2);
 
     int pos3 = dateString.indexOf(match);
-    if (pos3 < 0)
+    if (pos3 < 0) {
       return null;
+    }
 
     if (pos1 > 0) { // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
       dateFormatString = dateFormatString.substring(0, pos1);
@@ -132,58 +131,6 @@ public class DateFromString {
     }
 
     return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, 0);
-  }
-
-  public static Date getDateUsingDemarkatedMatchOld(String dateString, String dateFormatString, char demark) {
-    // extract the match string
-    int pos1 = dateFormatString.indexOf(demark);
-    int pos2 = dateFormatString.indexOf(demark, pos1 + 1);
-    if ((pos1 < 0) || (pos2 < 0)) {
-      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = '" + dateFormatString + "'",
-          new Throwable());
-      return null;
-    }
-    String match = dateFormatString.substring(pos1 + 1, pos2);
-
-    int pos3 = dateString.indexOf(match);
-    if (pos3 < 0)
-      return null;
-
-    if (pos1 > 0) { // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
-      dateFormatString = dateFormatString.substring(0, pos1);
-      dateString = dateString.substring(pos3 - dateFormatString.length(), pos3);
-
-    } else { // pos1 == 0, date is after the match: "#wrfout_d01_#yyyy-MM-dd_HHmm"
-      dateFormatString = dateFormatString.substring(pos2 + 1);
-      dateString = dateString.substring(pos3 + match.length());
-    }
-
-    return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, 0);
-  }
-
-  public static Double getHourUsingDemarkatedMatch(String hourString, String formatString, char demark) {
-    // extract the match string
-    int pos1 = formatString.indexOf(demark);
-    int pos2 = formatString.indexOf(demark, pos1 + 1);
-    if ((pos1 < 0) || (pos2 < 0))
-      return null;
-    String match = formatString.substring(pos1 + 1, pos2);
-
-    // where does it live in the hour string ?
-    int pos3 = hourString.indexOf(match);
-    if (pos3 < 0)
-      return null;
-
-    // for now, just match the number of chars
-    if (pos1 > 0) {
-      hourString = hourString.substring(pos3 - pos1, pos3);
-    } else {
-      int len = formatString.length() - pos2 - 1;
-      int start = pos3 + match.length();
-      hourString = hourString.substring(start, start + len);
-    }
-
-    return Double.valueOf(hourString);
   }
 
   /**

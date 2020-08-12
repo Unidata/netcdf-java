@@ -14,12 +14,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * test that DateRange moves when start or end is "present".
- *
- * @author edavis
- * @since 4.0
- */
+/** Test {@link ucar.nc2.units.DateRange} */
 public class TestDateRange {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

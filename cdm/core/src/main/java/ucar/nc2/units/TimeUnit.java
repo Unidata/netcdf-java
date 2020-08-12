@@ -5,6 +5,7 @@
 
 package ucar.nc2.units;
 
+import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.Format;
 import ucar.units.ConversionException;
 import ucar.units.UnitException;
@@ -20,27 +21,20 @@ import java.util.Calendar;
  * This is a wrapper around ucar.units.
  * The underlying ucar.units.Unit always has a value of "1.0", ie is a base unit.
  *
- * @author John Caron
+ * TODO: 8/12/2020 make Immutable in version 7
  */
 public class TimeUnit extends SimpleUnit {
   private double value;
-  private double factor = 1.0;
-  private String unitString;
+  private final double factor;
+  private final String unitString;
 
   /**
    * Constructor from a String.
    * 
    * @param text [value] <time unit> eg "hours" or "13 hours". Time unit is from udunits.
-   * @throws UnitException is bad format
+   * @throws UnitException if bad format
    */
   public TimeUnit(String text) throws UnitException {
-    if (text == null) {
-      this.value = 1.0;
-      this.unitString = "secs";
-      this.uu = SimpleUnit.makeUnit(unitString); // always a base unit
-      return;
-    }
-
     StringTokenizer stoker = new StringTokenizer(text);
     int ntoke = stoker.countTokens();
     if (ntoke == 1) {
@@ -50,8 +44,9 @@ public class TimeUnit extends SimpleUnit {
     } else if (ntoke == 2) {
       this.value = Double.parseDouble(stoker.nextToken());
       this.unitString = stoker.nextToken();
-    } else
+    } else {
       throw new IllegalArgumentException("Not TimeUnit = " + text);
+    }
 
     uu = SimpleUnit.makeUnit(unitString); // always a base unit
     factor = uu.convertTo(1.0, SimpleUnit.secsUnit);
@@ -103,7 +98,9 @@ public class TimeUnit extends SimpleUnit {
    * Set the value in the original units.
    * 
    * @param value set value, must be in units of this
+   * @deprecated do not use - will be Immutable in ver7
    */
+  @Deprecated
   public void setValue(double value) {
     this.value = value;
   }
@@ -143,7 +140,9 @@ public class TimeUnit extends SimpleUnit {
    * Set the value, using the given number of seconds.
    * 
    * @param secs : number of seconds; convert this to the units of this TimeUnit.
+   * @deprecated do not use - will be Immutable in ver7
    */
+  @Deprecated
   public void setValueInSeconds(double secs) {
     value = secs / factor;
   }
@@ -168,7 +167,9 @@ public class TimeUnit extends SimpleUnit {
    * 
    * @param d add to this Date
    * @return Date with getValueInSeconds() added to it.
+   * @deprecated use {@link ucar.nc2.time.CalendarDate#add(CalendarPeriod)}
    */
+  @Deprecated
   public Date add(Date d) {
     Calendar cal = Calendar.getInstance();
     cal.setTime(d);

@@ -30,8 +30,9 @@ import ucar.nc2.time.CalendarPeriod;
  * @author john caron
  * @see <a href=""https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateType"">THREDDS
  *      dateType</a>
+ * @deprecated will move in version 7
  */
-
+@Deprecated
 public class DateType {
   private String text, format, type;
   private boolean isPresent, isBlank;
