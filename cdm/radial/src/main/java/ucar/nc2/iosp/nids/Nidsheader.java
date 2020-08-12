@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.nids;
@@ -1653,7 +1653,7 @@ class Nidsheader {
     addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC", hoff,
         hedsiz, isZ, 0);
     // add RAW, BRIT variables for all radial variable
-    if (pcode == 182 || pcode == 99) {
+    if (pcode == 182 || pcode == 99 || pcode == 180) {
       levels = getTDWRLevels(nlevel, threshold);
       iscale = 10;
     } else if (pcode == 186 || pcode == 94) {
@@ -3062,7 +3062,7 @@ class Nidsheader {
     buf.get(b2, 0, 2);
     p3 = (short) getInt(b2, 2);
     off += 40;
-    if (pcode == 182 || pcode == 186 || pcode == 32 || pcode == 94 || pcode == 99) {
+    if (pcode == 182 || pcode == 186 || pcode == 32 || pcode == 94 || pcode == 99 || pcode == 180) {
       for (int i = 0; i < 16; i++) {
         buf.get(b2, 0, 2);
         threshold[i] = (short) bytesToInt(b2[0], b2[1], false);
@@ -3736,7 +3736,7 @@ class Nidsheader {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0.25, /* 150-159 */
         0, 0.25, 0, 0.25, 0, 0.25, 0, 0, 0, 2, /* 160-169 */
         0.25, 2, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0, 0, /* 170-179 */
-        0, 150.0, 150.0, 0, 0, 0, 300.0, 0, 0, 0, /* 180-189 */
+        150, 150.0, 150.0, 0, 0, 0, 300.0, 0, 0, 0, /* 180-189 */
     };
 
     if (code < 0 || code > 189) {
@@ -3778,7 +3778,7 @@ class Nidsheader {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 256, /* 150-159 */
         0, 256, 0, 256, 0, 256, 0, 0, 0, 16, /* 160-169 */
         256, 16, 256, 256, 0, 0, 0, 16, 0, 0, /* 170-179 */
-        0, 16, 256, 0, 0, 0, 256, 0, 0, 0, /* 180-189 */
+        256, 16, 256, 0, 0, 0, 256, 0, 0, 0, /* 180-189 */
     };
 
     if (code < 0 || code > 189) {
