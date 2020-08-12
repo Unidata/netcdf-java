@@ -1,21 +1,25 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.nids;
 
-import junit.framework.*;
+import static com.google.common.truth.Truth.assertThat;
+
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
+import ucar.ma2.MAMath;
+import ucar.ma2.MAMath.MinMax;
 import ucar.ma2.StructureData;
 import ucar.nc2.*;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
-public class TestNids extends TestCase {
+public class TestNids {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static String basereflectFile = TestDir.localTestDataDir + "nids/N0R_20041119_2147";
@@ -37,6 +41,7 @@ public class TestNids extends TestCase {
   private static String vertIntegLiquidFile = TestDir.localTestDataDir + "nids/NVL_20041130_1946";
   private static String vadWindProfileFile = TestDir.localTestDataDir + "nids/NVW_20041117_1657";
 
+  @Test
   public void testNidsReadRadial() throws IOException {
     NetcdfFile ncfile = null;
     try {
@@ -210,6 +215,7 @@ public class TestNids extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testNidsReadRadialN1P() throws IOException {
     NetcdfFile ncfile = null;
     try {
@@ -245,6 +251,7 @@ public class TestNids extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testNidsReadRaster() throws IOException {
     NetcdfFile ncfile = null;
     try {
@@ -297,7 +304,7 @@ public class TestNids extends TestCase {
     ncfile.close();
   }
 
-
+  @Test
   public void testNidsReadNVW() throws IOException {
     NetcdfFile ncfile = null;
     Variable v = null;
@@ -325,6 +332,7 @@ public class TestNids extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testNidsReadDPA() throws IOException {
     NetcdfFile ncfile = null;
     Variable v = null;
@@ -385,6 +393,29 @@ public class TestNids extends TestCase {
     assert (null != ncfile.findVariable("textStruct_code1").getDimension(0));
 
     ncfile.close();
+  }
+
+  @Test
+  public void testRadialImageMessagePcode180() throws IOException {
+    // Radial Image message, product code 180 (TDWR)
+    double comparisonTolerance = 0.1;
+    String basereflect180TdwrFile = TestDir.localTestDataDir + "nids/Level3_TUL_TZ0_20200811_1804.nids";
+    try (NetcdfFile ncf = NetcdfFiles.open(basereflect180TdwrFile)) {
+      Variable bref = ncf.findVariable("BaseReflectivity");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // max reflectivity value as shown by NWS web display at the time
+      // not a *great* check, but not the worst either.
+      assertThat(max).isWithin(comparisonTolerance).of(56.5);
+      // test that range of the radial axis variable is good
+      // expect 0 to 48 nautical miles (according to the ICD)
+      // which is roughly 0 to 88650 meters
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      assertThat(minMax.min).isWithin(comparisonTolerance).of(0);
+      assertThat(minMax.max).isWithin(comparisonTolerance).of(88650);
+    }
   }
 
   private void testReadData(Variable v) {
