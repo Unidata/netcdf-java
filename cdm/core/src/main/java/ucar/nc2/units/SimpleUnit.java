@@ -16,10 +16,8 @@ import ucar.units.*;
  * <li>dates, represented as "n units of time since reference date" eg
  * "1203 days since 1970-01-01 00:00:00"
  * </ol>
- *
- * @author caron
+ * TODO: 8/12/2020 make Immutable in version 7
  */
-
 public class SimpleUnit {
   public static final SimpleUnit kmUnit;
   public static final SimpleUnit meterUnit;
@@ -61,8 +59,6 @@ public class SimpleUnit {
     try {
       return factoryWithExceptions(name);
     } catch (Exception e) {
-      if (debugParse)
-        System.out.println("Parse " + name + " got Exception " + e);
       return null;
     }
   }
@@ -269,8 +265,6 @@ public class SimpleUnit {
       UnitFormat format = UnitFormatManager.instance();
       uuWant = format.parse(unitString);
     } catch (Exception e) {
-      if (debugParse)
-        System.out.println("Parse " + unitString + " got Exception1 " + e);
       return false;
     }
 

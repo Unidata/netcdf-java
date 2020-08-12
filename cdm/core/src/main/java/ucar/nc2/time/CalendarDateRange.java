@@ -9,12 +9,7 @@ import ucar.nc2.units.DateRange;
 import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 
-/**
- * A range of CalendarDates.
- *
- * @author caron
- * @since 3/21/11
- */
+/** A range of CalendarDates. */
 @Immutable
 public class CalendarDateRange {
   private final CalendarDate start, end;

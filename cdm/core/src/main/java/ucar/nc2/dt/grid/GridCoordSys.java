@@ -17,9 +17,12 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.NamedObject;
-import ucar.nc2.units.*;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -1507,20 +1510,18 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       } else if (tAxis.getDataType() == DataType.STRING) {
         // otherwise, see if its a String or CHAR, and if we can parse the values as an ISO date
-        DateFormatter formatter = new DateFormatter();
         Array data = tAxis.read();
         data.resetLocalIterator();
         while (data.hasNext()) {
-          Date d = formatter.getISODate((String) data.next());
+          Date d = CalendarDateFormatter.isoStringToDate((String) data.next());
           dates.add(d);
         }
 
       } else if (tAxis.getDataType() == DataType.CHAR) {
-        DateFormatter formatter = new DateFormatter();
         ArrayChar data = (ArrayChar) tAxis.read();
         ArrayChar.StringIterator iter = data.getStringIterator();
         while (iter.hasNext()) {
-          Date d = formatter.getISODate(iter.next());
+          Date d = CalendarDateFormatter.isoStringToDate(iter.next());
           dates.add(d);
         }
 

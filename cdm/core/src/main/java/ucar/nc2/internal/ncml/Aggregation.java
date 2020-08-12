@@ -14,7 +14,6 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
 import java.io.FileNotFoundException;
@@ -33,8 +32,6 @@ import java.util.concurrent.Executor;
  * 
  * public Array read(Variable mainv, Section section);
  * </pre>
- *
- * @author caron
  */
 public abstract class Aggregation {
 
@@ -106,7 +103,6 @@ public abstract class Aggregation {
   protected String dateFormatMark;
   // protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
   protected boolean isDate;
-  protected DateFormatter dateFormatter = new DateFormatter();
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
