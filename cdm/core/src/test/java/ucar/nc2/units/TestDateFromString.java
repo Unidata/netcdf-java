@@ -34,8 +34,8 @@ public class TestDateFromString {
   @Test
   @Ignore("failing on locale on github")
   public void testSimpleDateFormatProblem() throws ParseException {
-    //  expected: Wed Nov 29 06:00:00 MST 2006
-    //  but was : Wed Nov 29 06:00:00 UTC 2006
+    // expected: Wed Nov 29 06:00:00 MST 2006
+    // but was : Wed Nov 29 06:00:00 UTC 2006
     assertThat(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06").toString())
         .isEqualTo("Wed Nov 29 06:00:00 MST 2006");
 
