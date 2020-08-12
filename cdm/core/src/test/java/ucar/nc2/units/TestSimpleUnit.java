@@ -151,7 +151,7 @@ public class TestSimpleUnit {
 
     assertThat(uu.getUnit()).isInstanceOf(ScaledUnit.class);
     ScaledUnit scaled = (ScaledUnit) uu.getUnit();
-    assertThat(scaled.getScale()).isEqualTo(100.0);
+    assertThat(scaled.getScale()).isEqualTo(9900.0);
   }
 
 }
