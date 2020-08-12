@@ -1,8 +1,12 @@
 package ucar.nc2.units;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.util.Date;
 import org.junit.Test;
+import ucar.nc2.time.CalendarDateFormatter;
 
+/** Test {@link ucar.nc2.units.DateFormatter} */
 public class TestDateFormatter {
 
   private static void test(String text) {
@@ -12,6 +16,8 @@ public class TestDateFormatter {
     Date date2 = formatter.getISODate(text2);
     assert date.equals(date2);
     System.out.println(text + " == " + text2);
+
+    assertThat(CalendarDateFormatter.toDateTimeStringISO(date)).isEqualTo(text2);
   }
 
   @Test

@@ -5,6 +5,7 @@
 package ucar.nc2.units;
 
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.units.*;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -15,12 +16,11 @@ import java.util.StringTokenizer;
  * <p>
  * This is a wrapper around ucar.units package.
  * It tracks the value, the base time unit, and the date origin seperately.
- *
- * @author caron
+ * 
+ * @deprecated use {@link ucar.nc2.time.CalendarDate}
  */
-
-public class DateUnit { // extends SimpleUnit {
-
+@Deprecated
+public class DateUnit {
   /**
    * Create a java.util.Date from this udunits String.
    *
@@ -145,8 +145,7 @@ public class DateUnit { // extends SimpleUnit {
    */
   public DateUnit(double value, String timeUnitString, Date since) throws UnitException {
     this.value = value;
-    DateFormatter df = new DateFormatter();
-    this.udunitString = timeUnitString + " since " + df.toDateTimeStringISO(since);
+    this.udunitString = timeUnitString + " since " + CalendarDateFormatter.toDateTimeStringISO(since);
     uu = SimpleUnit.makeUnit(this.udunitString);
     timeUnit = new TimeUnit(timeUnitString);
   }
@@ -243,8 +242,7 @@ public class DateUnit { // extends SimpleUnit {
     Date date = makeDate(value);
     if (date == null)
       return null;
-    DateFormatter formatter = new DateFormatter();
-    return formatter.toDateTimeStringISO(date);
+    return CalendarDateFormatter.toDateTimeStringISO(date);
   }
 
   public String toString() {
