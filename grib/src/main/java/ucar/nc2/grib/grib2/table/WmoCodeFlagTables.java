@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.wmo.Util;
+import ucar.nc2.internal.wmo.Util;
 
 /**
  * Read and manage the WMO GRIB2 Code, Flag, and Parameter tables, in their standard XML format

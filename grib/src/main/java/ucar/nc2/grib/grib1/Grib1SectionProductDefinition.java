@@ -12,7 +12,7 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.internal.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;

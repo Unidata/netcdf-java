@@ -13,7 +13,7 @@ import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.*;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.internal.wmo.CommonCodeTable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;

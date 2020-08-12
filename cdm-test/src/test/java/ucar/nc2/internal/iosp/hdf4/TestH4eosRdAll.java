@@ -29,7 +29,7 @@ public class TestH4eosRdAll {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name = "{0}")
-  public static Collection<Object[]> getTestParameters() throws IOException {
+  public static Collection<Object[]> getTestParameters() {
     Collection<Object[]> filenames = new ArrayList<>();
 
     try {

@@ -14,8 +14,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.stream.NcStream;
 import java.io.OutputStream;
 import java.nio.*;
-import java.nio.channels.WritableByteChannel;
-import java.nio.channels.Channels;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -167,7 +165,6 @@ public class IospHelper {
         : makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(is, index, dataType, arr);
   }
-
 
   /**
    * Read data subset from PositioningDataInputStream, place in given primitive array.
@@ -376,101 +373,6 @@ public class IospHelper {
   }
 
   /**
-   * Copy data to a channel. Used by ncstream. Not doing Structures correctly yet.
-   *
-   * @param data copy from here
-   * @param channel copy to here
-   * @return number of bytes copied
-   * @throws java.io.IOException on write error
-   */
-  public static long copyToByteChannel(Array data, WritableByteChannel channel) throws java.io.IOException {
-    Class classType = data.getElementType();
-
-    /*
-     * if (data instanceof ArrayStructure) { // use NcStream encoding
-     * DataOutputStream os = new DataOutputStream(Channels.newOutputStream(channel));
-     * return NcStream.encodeArrayStructure((ArrayStructure) data, null, os);
-     * }
-     */
-
-    try (DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel))) {
-      IndexIterator iterA = data.getIndexIterator();
-
-      if (classType == double.class) {
-        while (iterA.hasNext())
-          outStream.writeDouble(iterA.getDoubleNext());
-
-      } else if (classType == float.class) {
-        while (iterA.hasNext())
-          outStream.writeFloat(iterA.getFloatNext());
-
-      } else if (classType == long.class) {
-        while (iterA.hasNext())
-          outStream.writeLong(iterA.getLongNext());
-
-      } else if (classType == int.class) {
-        while (iterA.hasNext())
-          outStream.writeInt(iterA.getIntNext());
-
-      } else if (classType == short.class) {
-        while (iterA.hasNext())
-          outStream.writeShort(iterA.getShortNext());
-
-      } else if (classType == char.class) { // LOOK why are we using chars anyway ?
-        byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
-        outStream.write(pa, 0, pa.length);
-
-      } else if (classType == byte.class) {
-        while (iterA.hasNext())
-          outStream.writeByte(iterA.getByteNext());
-
-      } else if (classType == boolean.class) {
-        while (iterA.hasNext())
-          outStream.writeBoolean(iterA.getBooleanNext());
-
-      } else if (classType == String.class) {
-        long size = 0;
-        while (iterA.hasNext()) {
-          String s = (String) iterA.getObjectNext();
-          size += NcStream.writeVInt(outStream, s.length());
-          byte[] b = s.getBytes(StandardCharsets.UTF_8);
-          outStream.write(b);
-          size += b.length;
-        }
-        return size;
-
-      } else if (classType == ByteBuffer.class) { // OPAQUE
-        long size = 0;
-        while (iterA.hasNext()) {
-          ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
-          size += NcStream.writeVInt(outStream, bb.limit());
-          bb.rewind();
-          channel.write(bb);
-          size += bb.limit();
-        }
-        return size;
-
-      } else if (data instanceof ArrayObject) { // vlen
-        long size = 0;
-        // size += NcStream.writeVInt(outStream, (int) data.getSize()); // nelems already written
-        while (iterA.hasNext()) {
-          Array row = (Array) iterA.getObjectNext();
-          ByteBuffer bb = row.getDataAsByteBuffer();
-          byte[] result = bb.array();
-          size += NcStream.writeVInt(outStream, result.length); // size in bytes
-          outStream.write(result); // array
-          size += result.length;
-        }
-        return size;
-
-      } else
-        throw new UnsupportedOperationException("Class type = " + classType.getName());
-
-      return data.getSizeBytes();
-    }
-  }
-
-  /**
    * Copy data to a OutputStream. Used by ncstream. Not doing Structures correctly yet.
    *
    * @param data copy from here
@@ -531,10 +433,7 @@ public class IospHelper {
       long size = 0;
       while (iterA.hasNext()) {
         String s = (String) iterA.getObjectNext();
-        size += NcStream.writeVInt(dataOut, s.length());
-        byte[] b = s.getBytes(StandardCharsets.UTF_8);
-        dataOut.write(b);
-        size += b.length;
+        size += NcStream.writeString(dataOut, s);
       }
       return size;
 
@@ -542,10 +441,7 @@ public class IospHelper {
       long size = 0;
       while (iterA.hasNext()) {
         ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
-        size += NcStream.writeVInt(dataOut, bb.limit());
-        bb.rewind();
-        dataOut.write(bb.array());
-        size += bb.limit();
+        size += NcStream.writeByteBuffer(dataOut, bb);
       }
       return size;
 
@@ -555,10 +451,7 @@ public class IospHelper {
       while (iterA.hasNext()) {
         Array row = (Array) iterA.getObjectNext();
         ByteBuffer bb = row.getDataAsByteBuffer();
-        byte[] result = bb.array();
-        size += NcStream.writeVInt(dataOut, result.length); // size in bytes
-        dataOut.write(result); // array
-        size += result.length;
+        size += NcStream.writeByteBuffer(dataOut, bb);
       }
       return size;
 
@@ -566,37 +459,6 @@ public class IospHelper {
       throw new UnsupportedOperationException("Class type = " + classType.getName());
 
     return data.getSizeBytes();
-  }
-
-  /**
-   * @deprecated use StructureDataDeep.copyToArrayBB
-   */
-  public static ArrayStructureBB makeArrayBB(ArrayStructure as) throws IOException {
-    if (as.getClass().equals(ArrayStructureBB.class)) // no subclasses
-      return (ArrayStructureBB) as;
-
-    StructureMembers sm = as.getStructureMembers().toBuilder(false).build();
-    ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
-    ArrayStructureBB.setOffsets(sm);
-
-    try (StructureDataIterator iter = as.getStructureDataIterator()) {
-      while (iter.hasNext())
-        StructureDataDeep.copyToArrayBB(iter.next(), abb);
-    }
-    return abb;
-  }
-
-  /**
-   * @deprecated use StructureDataDeep.copyToArrayBB
-   */
-  public static ArrayStructureBB copyToArrayBB(StructureData sdata) {
-    StructureMembers sm = sdata.getStructureMembers();
-    int size = sm.getStructureSize();
-    ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
-    ArrayStructureBB abb = new ArrayStructureBB(sm, new int[] {1}, bb, 0);
-    ArrayStructureBB.setOffsets(sm);
-    StructureDataDeep.copyToArrayBB(sdata, abb);
-    return abb;
   }
 
   /**
@@ -710,7 +572,7 @@ public class IospHelper {
       if (fillValue != null) {
         byte[] val = (byte[]) fillValue;
         int count = 0;
-        while (count < size)
+        while (count < size && count < val.length)
           for (byte aVal : val)
             pa[count++] = aVal;
       }
@@ -721,22 +583,16 @@ public class IospHelper {
   }
 
   // convert byte array to char array, assuming UTF-8 encoding
-
   public static char[] convertByteToCharUTF(byte[] byteArray) {
-    Charset c = StandardCharsets.UTF_8;
-    CharBuffer output = c.decode(ByteBuffer.wrap(byteArray));
-    return output.array();
+    return StandardCharsets.UTF_8.decode(ByteBuffer.wrap(byteArray)).array();
   }
 
   // convert char array to byte array, assuming UTF-8 encoding
   public static byte[] convertCharToByteUTF(char[] from) {
-    Charset c = StandardCharsets.UTF_8;
-    ByteBuffer output = c.encode(CharBuffer.wrap(from));
-    return output.array();
+    return StandardCharsets.UTF_8.encode(CharBuffer.wrap(from)).array();
   }
 
   // convert byte array to char array
-
   public static char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
@@ -746,7 +602,6 @@ public class IospHelper {
   }
 
   // convert char array to byte array
-
   public static byte[] convertCharToByte(char[] from) {
     byte[] to = null;
     if (from != null) {
@@ -756,53 +611,6 @@ public class IospHelper {
         to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
     }
     return to;
-  }
-
-  public static long transferData(Array result, WritableByteChannel channel) throws java.io.IOException {
-
-    // LOOK should we buffer ??
-    try (DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel))) {
-
-      IndexIterator iterA = result.getIndexIterator();
-      Class classType = result.getElementType();
-
-      if (classType == double.class) {
-        while (iterA.hasNext())
-          outStream.writeDouble(iterA.getDoubleNext());
-
-      } else if (classType == float.class) {
-        while (iterA.hasNext())
-          outStream.writeFloat(iterA.getFloatNext());
-
-      } else if (classType == long.class) {
-        while (iterA.hasNext())
-          outStream.writeLong(iterA.getLongNext());
-
-      } else if (classType == int.class) {
-        while (iterA.hasNext())
-          outStream.writeInt(iterA.getIntNext());
-
-      } else if (classType == short.class) {
-        while (iterA.hasNext())
-          outStream.writeShort(iterA.getShortNext());
-
-      } else if (classType == char.class) {
-        while (iterA.hasNext())
-          outStream.writeChar(iterA.getCharNext());
-
-      } else if (classType == byte.class) {
-        while (iterA.hasNext())
-          outStream.writeByte(iterA.getByteNext());
-
-      } else if (classType == boolean.class) {
-        while (iterA.hasNext())
-          outStream.writeBoolean(iterA.getBooleanNext());
-
-      } else
-        throw new UnsupportedOperationException("Class type = " + classType.getName());
-
-      return 0;
-    }
   }
 
   // section reading for member data

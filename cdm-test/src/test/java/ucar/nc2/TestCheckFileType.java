@@ -48,6 +48,7 @@ public class TestCheckFileType {
   @Test
   public void testCheckFileType() throws Exception {
     String location = TestDir.cdmTestDataDir + PREFIX + filename;
+    System.out.printf("testCheckFileType %s%n", location);
     try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
       NetcdfFileFormat found = NetcdfFileFormat.findNetcdfFormatType(raf);
       assertThat(found).isEqualTo(expected);

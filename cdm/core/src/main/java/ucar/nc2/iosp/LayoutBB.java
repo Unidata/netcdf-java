@@ -16,7 +16,6 @@ import java.nio.*;
  * Example for Integers:
  * 
  * <pre>
- * 
  * int[] read(LayoutBB index, int[] pa) {
  *   while (index.hasNext()) {
  *     LayoutBB.Chunk chunk = index.next();
@@ -28,42 +27,13 @@ import java.nio.*;
  *   }
  *   return pa;
  * }
- * 
  * </pre>
- *
- * @author caron
- * @since Jan 9, 2008
  */
 
 public interface LayoutBB extends Layout {
 
-  /**
-   * Get total number of elements in the wanted subset.
-   *
-   * @return total number of elements in the wanted subset.
-   */
-  long getTotalNelems();
-
-  /**
-   * Get size of each element in bytes.
-   *
-   * @return size of each element in bytes.
-   */
-  int getElemSize();
-
-  /**
-   * Is there more to do
-   *
-   * @return true if theres more to do
-   */
-  boolean hasNext();
-
-  /**
-   * Get the next chunk
-   *
-   * @return next chunk, or null if !hasNext()
-   */
-  Chunk next();
+  @Override
+  LayoutBB.Chunk next(); // covariant return.
 
   /**
    * A chunk of data that is contiguous in both the source and destination.
@@ -71,11 +41,7 @@ public interface LayoutBB extends Layout {
    */
   interface Chunk extends Layout.Chunk {
 
-    /**
-     * Get the position in source <Type>Buffer where to read or write: "file position"
-     * 
-     * @return position as a element index into the <Type>Buffer
-     */
+    /** Get the position as a element index where to read or write: "buffer position" */
     int getSrcElem();
 
     ByteBuffer getByteBuffer();
@@ -89,20 +55,5 @@ public interface LayoutBB extends Layout {
     DoubleBuffer getDoubleBuffer();
 
     LongBuffer getLongBuffer();
-
-    /**
-     * Get number of elements to transfer contiguously (Note: elements, not bytes)
-     *
-     * @return number of elements to transfer
-     */
-    int getNelems();
-
-    /**
-     * Get starting element position as a 1D element index into the destination, eg the requested array with shape
-     * "wantSection".
-     *
-     * @return starting element in the array (Note: elements, not bytes)
-     */
-    long getDestElem();
   }
 }

@@ -6,7 +6,7 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.iosp.bufr.tables.*;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.internal.wmo.CommonCodeTable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;

@@ -31,8 +31,6 @@ import ucar.unidata.io.RandomAccessFile;
  * <li>the file is handed to the isValidFile() method of each registered
  * IOServiceProvider class (until one returns true, which means it can read the file).</li>
  * <li>the open() method on the resulting IOServiceProvider class is handed the file.</li>
- *
- * @author caron
  */
 public interface IOServiceProvider {
 

@@ -125,8 +125,6 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     } else {
       if (!vinfo.isLinked && !vinfo.isChunked) {
-        if (showLayoutTypes)
-          System.out.println("***notLinked, compressed");
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
@@ -134,8 +132,6 @@ public class H4iosp extends AbstractIOServiceProvider {
         return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isLinked) {
-        if (showLayoutTypes)
-          System.out.println("***Linked, compressed");
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getLinkedCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);

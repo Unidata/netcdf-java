@@ -11,9 +11,8 @@ import java.io.IOException;
 
 /**
  * A ProxyReader for logical sections of a Variable.
- *
- * @author caron
- * @see Variable#section(Section subsection)
+ * 
+ * @see {@link Variable#section(Section)}
  */
 @Immutable
 class SectionReader implements ProxyReader {
@@ -31,11 +30,6 @@ class SectionReader implements ProxyReader {
     try {
       return orgClient._read(orgSection);
     } catch (InvalidRangeException e) {
-      try {
-        orgClient._read(orgSection); // debug
-      } catch (InvalidRangeException e1) {
-        e1.printStackTrace();
-      }
       throw new RuntimeException(e);
     }
   }

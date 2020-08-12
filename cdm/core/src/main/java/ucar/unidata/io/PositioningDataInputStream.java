@@ -10,14 +10,9 @@ import java.io.*;
  * Similar to a DataInputStream that keeps track of position.
  * position must always increase, no going backwards.
  * cant handle byte order yet - assume big endian(?).
- * 
- * @author caron
- * @since Jan 3, 2008
- * @deprecated not part of public API.
  */
-@Deprecated
 public class PositioningDataInputStream {
-  private DataInputStream delegate;
+  private final DataInputStream delegate;
   private long cpos;
 
   public PositioningDataInputStream(InputStream is) {

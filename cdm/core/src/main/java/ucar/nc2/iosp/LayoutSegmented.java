@@ -11,25 +11,28 @@ import ucar.ma2.InvalidRangeException;
 /**
  * LayoutSegmented has data stored in segments.
  * Assume that each segment size is a multiple of elemSize.
- *
- * @author caron
- * @since Dec 31, 2007
+ * Used by HDF4.
  */
 public class LayoutSegmented implements Layout {
-  private long total, done;
-  private int elemSize; // size of each element
+  private static final boolean debugNext = false;
 
-  private long[] segPos; // bytes
-  private long[] segMax, segMin; // bytes
+  private final long total;
+  private final int elemSize; // size of each element
+
+  private final long[] segPos; // bytes
+  private final long[] segMax; // bytes
+  private final long[] segMin; // bytes
 
   // outer chunk
-  private IndexChunker chunker;
+  private final IndexChunker chunker;
   private IndexChunker.Chunk chunkOuter;
 
   // inner chunk = deal with segmentation
-  private IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0, 0, 0);
+  private final IndexChunker.Chunk chunkInner = new IndexChunker.Chunk(0, 0, 0);
 
-  private static final boolean debugNext = false;
+  private long done;
+  private int needInner;
+  private int doneInner;
 
   /**
    * Constructor.
@@ -67,14 +70,17 @@ public class LayoutSegmented implements Layout {
     this.elemSize = elemSize;
   }
 
+  @Override
   public long getTotalNelems() {
     return total;
   }
 
+  @Override
   public int getElemSize() {
     return elemSize;
   }
 
+  @Override
   public boolean hasNext() {
     return done < total;
   }
@@ -96,9 +102,7 @@ public class LayoutSegmented implements Layout {
     return (int) (segMax[segno] - start);
   }
 
-  private int needInner;
-  private int doneInner;
-
+  @Override
   public Chunk next() {
     Chunk result;
 

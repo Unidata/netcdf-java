@@ -8,7 +8,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import ucar.nc2.iosp.bufr.Descriptor;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.internal.wmo.CommonCodeTable;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;

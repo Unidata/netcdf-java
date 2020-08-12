@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
@@ -47,19 +48,18 @@ import java.util.ArrayList;
  *   }
  * }
  * </pre>
- *
- * @author caron
- * @since Jan 2, 2008
  */
 public class IndexChunker {
   private static final boolean debug = false, debugMerge = false, debugNext = false;
 
-  private List<Dim> dimList = new ArrayList<>();
-  private IndexLong chunkIndex; // each element is one chunk; strides track position in source
+  private final List<Dim> dimList = new ArrayList<>();
+  private final IndexLong chunkIndex; // each element is one chunk; strides track position in source
 
   private Chunk chunk; // gets returned on next().
-  private int nelems; // number of elements to read at one time
-  private long start, total, done;
+  private final int nelems; // number of elements to read at one time
+  private long start;
+  private final long total;
+  private long done;
 
   /**
    * Constructor
@@ -151,9 +151,9 @@ public class IndexChunker {
       shape[rank - i - 1] = dim.wantSize;
     }
     if (debug) {
-      System.out.println("  elemsPerChunk=" + nelems + "  nchunks=" + IndexLong.computeSize(shape));
-      printa("  indexShape=", shape);
-      printl("  indexStride=", wstride);
+      System.out.printf("  elemsPerChunk=%d  nchunks=%d ", nelems, IndexLong.computeSize(shape));
+      System.out.printf("  indexShape=%s%n", Arrays.toString(shape));
+      System.out.printf("  indexStride=%s%n", Arrays.toString(wstride));
     }
     chunkIndex = new IndexLong(shape, wstride);
 
@@ -162,7 +162,8 @@ public class IndexChunker {
 
     if (debug) {
       System.out.println("Index2= " + this);
-      System.out.println(" start= " + start + " varShape= " + printa(srcShape) + " wantSection= " + wantSection);
+      System.out
+          .println(" start= " + start + " varShape= " + Arrays.toString(srcShape) + " wantSection= " + wantSection);
     }
   }
 
@@ -180,29 +181,17 @@ public class IndexChunker {
     }
   }
 
-  /**
-   * Get total number of elements in wantSection
-   * 
-   * @return total number of elements in wantSection
-   */
+  /** Get total number of elements in wantSection */
   public long getTotalNelems() {
     return total;
   }
 
-  /**
-   * If there are more chunks to process
-   * 
-   * @return true if there are more chunks to process
-   */
+  /** If there are more chunks to process */
   public boolean hasNext() {
     return done < total;
   }
 
-  /**
-   * Get the next chunk
-   * 
-   * @return the next chunk
-   */
+  /** Get the next chunk */
   public Chunk next() {
     if (chunk == null) {
       chunk = new Chunk(start, nelems, 0);
@@ -248,57 +237,45 @@ public class IndexChunker {
       return srcElem;
     }
 
-    public void setSrcElem(long srcElem) {
+    void setSrcElem(long srcElem) {
       this.srcElem = srcElem;
     }
 
-    public void incrSrcElem(int incr) {
-      this.srcElem += incr;
-    }
-
-    /**
-     * @return number of elements to transfer contiguously (Note: elements, not bytes)
-     */
+    @Override
     public int getNelems() {
       return nelems;
     }
 
-    public void setNelems(int nelems) {
+    void setNelems(int nelems) {
       this.nelems = nelems;
     }
 
-    /**
-     * Get the position in destination where to read or write
-     * 
-     * @return starting element in the array: "starting array element" (Note: elements, not bytes)
-     */
+    @Override
     public long getDestElem() {
       return destElem;
     }
 
-    public void setDestElem(long destElem) {
+    void setDestElem(long destElem) {
       this.destElem = destElem;
     }
 
-    public void incrDestElem(int incr) {
+    void incrDestElem(int incr) {
       this.destElem += incr;
     }
 
+    @Override
     public String toString() {
       return " srcPos=" + srcPos + " srcElem=" + srcElem + " nelems=" + nelems + " destElem=" + destElem;
     }
 
     // must be set by controlling Layout class - not used here
+    @Override
     public long getSrcPos() {
       return srcPos;
     }
 
-    public void setSrcPos(long srcPos) {
+    void setSrcPos(long srcPos) {
       this.srcPos = srcPos;
-    }
-
-    public void incrSrcPos(int incr) {
-      this.srcPos += incr;
     }
   }
 
@@ -333,28 +310,6 @@ public class IndexChunker {
       sbuff.append(elem.stride);
     }
     return sbuff.toString();
-  }
-
-  // debugging
-  protected static String printa(int[] a) {
-    StringBuilder sbuff = new StringBuilder();
-    for (int anA : a)
-      sbuff.append(anA).append(" ");
-    return sbuff.toString();
-  }
-
-  protected static void printa(String name, int[] a) {
-    System.out.print(name + "= ");
-    for (int anA : a)
-      System.out.print(anA + " ");
-    System.out.println();
-  }
-
-  protected static void printl(String name, long[] a) {
-    System.out.print(name + "= ");
-    for (long anA : a)
-      System.out.print(anA + " ");
-    System.out.println();
   }
 
 }

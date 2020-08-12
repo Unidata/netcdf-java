@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.wmo;
+package ucar.nc2.internal.wmo;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -38,10 +38,7 @@ import java.io.InputStream;
   COMMON CODE TABLE C–14:  Atmospheric chemical or physical constituent type
  * 
  * </pre>
- * 
- * @deprecated will be moved in ver6
  */
-@Deprecated
 public class CommonCodeTable implements Comparable<CommonCodeTable> {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CommonCodeTable.class);
   private static final Map<Integer, CommonCodeTable> tableMap = new HashMap<>();

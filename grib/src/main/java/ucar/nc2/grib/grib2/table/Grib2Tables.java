@@ -23,7 +23,7 @@ import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.internal.wmo.CommonCodeTable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
