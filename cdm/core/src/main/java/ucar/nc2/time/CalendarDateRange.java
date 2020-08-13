@@ -112,8 +112,6 @@ public class CalendarDateRange {
     return start + " - " + end;
   }
 
-
-
   ///////////////////////////////////////////////
   /**
    * Does not handle non-standard calendars

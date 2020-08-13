@@ -11,7 +11,6 @@ import javax.annotation.concurrent.Immutable;
 /**
  * A replacement for ucar.nc2.units.TimeDuration. incomplete.
  *
- *
  * A Duration is a fixed number of seconds.
  * I think thats wrong: a CalendarDuration should be a integer and a CalendarPeriod.
  * Optionally, a CalendarPeriod could have an integer value.
@@ -43,7 +42,6 @@ import javax.annotation.concurrent.Immutable;
  * @author john caron
  * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
  */
-
 @Immutable
 public class CalendarDuration {
 

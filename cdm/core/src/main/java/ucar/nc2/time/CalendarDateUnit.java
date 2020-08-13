@@ -27,7 +27,6 @@ import java.util.Formatter;
  * "years since base_date by calendar field"
  *
  * bob simon's proposal:
- *
  * "calendar_month since base_date"
  * "calendar_year since base_date"
  * * only integer values are allowed (?)
@@ -39,11 +38,7 @@ import java.util.Formatter;
  * There’s an alternative proposition, in which the new units of calendar_month and calendar_year are added, with the
  * same semantic effect.
  * (However, personally I like the "by calendar field" solution since it allows other fields to vary between calendars,
- * e.g.
- * because of leap-seconds.)
- *
- * @author caron
- * @since 3/18/11
+ * e.g. because of leap-seconds.)
  */
 @Immutable
 public class CalendarDateUnit {

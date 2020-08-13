@@ -43,7 +43,7 @@ import java.lang.invoke.MethodHandles;
  * @author caron
  * @since 11/8/11
  */
-public class TestCalendars {
+public class TestCalendarNonStandard {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test

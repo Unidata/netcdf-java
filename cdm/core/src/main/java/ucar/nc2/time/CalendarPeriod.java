@@ -19,9 +19,7 @@ import javax.annotation.concurrent.Immutable;
  * A CalendarField is expressed as {integer x Field}.
  *
  * Design follows joda Period class.
- * 
- * @author caron
- * @since 3/30/11
+ * TODO redo this, not using fixed length intervals.
  */
 @Immutable
 public class CalendarPeriod {
@@ -44,7 +42,7 @@ public class CalendarPeriod {
   }
 
   /**
-   * Convert a period string into a CalendarPeriod.Field.
+   * Convert a udunit period string into a CalendarPeriod.Field.
    * 
    * @param udunit period string
    * @return CalendarPeriod.Field enum
@@ -111,6 +109,9 @@ public class CalendarPeriod {
    * @return CalendarPeriod or null if illegal
    */
   public static CalendarPeriod of(String udunit) {
+    if (udunit == null || udunit.isEmpty()) {
+      return null;
+    }
     int value;
     String units;
 
@@ -126,14 +127,16 @@ public class CalendarPeriod {
         return null;
       }
       units = split[1];
-    } else
+    } else {
       return null;
-
+    }
 
     CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(units);
     return CalendarPeriod.of(value, unit);
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public static CalendarPeriod of(TimeDuration td) {
     CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(td.getTimeUnit().getUnitString());
     return CalendarPeriod.of((int) td.getValue(), unit);
@@ -168,27 +171,13 @@ public class CalendarPeriod {
   }
 
   /**
-   * Subtract two dates, return difference in units of this period.
-   * If not even, will round down and log a warning
-   * 
-   * @param start start date
-   * @param end end date
-   * @return difference in units of this period
-   */
-  public int subtract(CalendarDate start, CalendarDate end) {
-    long diff = end.getDifferenceInMsecs(start);
-    int thislen = millisecs();
-    if ((diff % thislen != 0))
-      log.warn("roundoff error");
-    return (int) (diff / thislen);
-  }
-
-  /**
    * Get the conversion factor of the other CalendarPeriod to this one
    * 
    * @param from convert from this
    * @return conversion factor, so that getConvertFactor(from) * from = this
+   * @deprecated dont use because these are fixed length and thus approximate.
    */
+  @Deprecated
   public double getConvertFactor(CalendarPeriod from) {
     if (field == CalendarPeriod.Field.Month || field == CalendarPeriod.Field.Year) {
       log.warn(" CalendarDate.convert on Month or Year");
@@ -203,6 +192,7 @@ public class CalendarPeriod {
    * @return the duration in seconds
    * @deprecated dont use because these are fixed length and thus approximate.
    */
+  @Deprecated
   public double getValueInMillisecs() {
     if (field == CalendarPeriod.Field.Month)
       return 30.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
@@ -236,11 +226,30 @@ public class CalendarPeriod {
    * }
    */
 
-  // offset from start to end, in these units
-  // start + offset = end
+  /** @deprecated use getOffset(). */
+  @Deprecated
+  public int subtract(CalendarDate start, CalendarDate end) {
+    long diff = end.getDifferenceInMsecs(start);
+    int thislen = millisecs();
+    if ((diff % thislen != 0))
+      log.warn("roundoff error");
+    return (int) (diff / thislen);
+  }
+
+  /**
+   * offset from start to end, in these units.
+   * start + offset = end.
+   * If not even, will round down and log a warning
+   *
+   * @param start start date
+   * @param end end date
+   * @return difference in units of this period
+   *         TODO review this
+   */
   public int getOffset(CalendarDate start, CalendarDate end) {
-    if (start.equals(end))
+    if (start.equals(end)) {
       return 0;
+    }
     long start_millis = start.getDateTime().getMillis();
     long end_millis = end.getDateTime().getMillis();
 
