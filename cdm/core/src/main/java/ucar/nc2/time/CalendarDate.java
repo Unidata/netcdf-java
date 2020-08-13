@@ -58,13 +58,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public static CalendarDate of(Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay,
       int minuteOfHour, int secondOfMinute) {
     Chronology base = Calendar.getChronology(cal);
-    /*
-     * if (base == null)
-     * base = ISOChronology.getInstanceUTC(); // already in UTC
-     * else
-     * base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
-     */
-
     DateTime dt = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, base);
     if (!Calendar.isDefaultChronology(cal))
       dt = dt.withChronology(Calendar.getChronology(cal));
@@ -75,13 +68,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public static CalendarDate withDoy(Calendar cal, int year, int doy, int hourOfDay, int minuteOfHour,
       int secondOfMinute) {
     Chronology base = Calendar.getChronology(cal);
-    /*
-     * if (base == null)
-     * base = ISOChronology.getInstanceUTC(); // already in UTC
-     * else
-     * base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
-     */
-
     DateTime dt = new DateTime(year, 1, 1, hourOfDay, minuteOfHour, secondOfMinute, base);
     dt = dt.withZone(DateTimeZone.UTC);
     dt = dt.withDayOfYear(doy);
@@ -152,8 +138,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
     }
     return result;
   }
-
-
 
   /**
    * Get CalendarDate from ISO date string
@@ -265,6 +249,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /**
+   * TODO rename toUdunitsString ?
    * udunits formatting
    * 
    * @return udunits formatted date
@@ -316,7 +301,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * @deprecated use CalendarDate add(CalendarPeriod period)
+   *             Note that CalendarPeriod has integral values
    */
+  @Deprecated
   public CalendarDate add(double value, CalendarPeriod.Field unit) {
     switch (unit) {
       case Millisec:

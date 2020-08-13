@@ -16,12 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.units.DateFormatter;
 
-/**
- * Test CalendarDateFormatter
- *
- * @author caron
- * @since 5/3/12
- */
+/** Test {@link ucar.nc2.time.CalendarDateFormatter} */
 public class TestCalendarDateFormatter {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
