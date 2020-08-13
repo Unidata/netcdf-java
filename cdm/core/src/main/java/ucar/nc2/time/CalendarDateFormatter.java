@@ -70,6 +70,10 @@ public class CalendarDateFormatter {
     return dtf.print(new DateTime());
   }
 
+  public static String toDateString(Date date) {
+    return toDateString(CalendarDate.of(date));
+  }
+
   public static String toDateString(CalendarDate cd) {
     return df.print(cd.getDateTime());
   }

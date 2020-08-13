@@ -4,7 +4,10 @@
  */
 package ucar.nc2.units;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,26 +16,32 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Test DateFromString
- *
- * @author edavis
- * @since Nov 29, 2005 6:14:37 PM
- */
+/** Test {@link ucar.nc2.units.DateFromString} */
 public class TestDateFromString {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private String fileName = "xzy_tds_20051129_1235_junk.grib";
-  private String dateAsISOString = "2005-11-29T12:35";
-  private long dateAsLong = 1133267700000L;
+  private final String fileName = "xzy_tds_20051129_1235_junk.grib";
+  private final String dateAsISOString = "2005-11-29T12:35";
+  private final long dateAsLong = 1133267700000L;
 
   @Test
   public void testGetDateUsingSimpleDateFormat() {
     String dateFormatString = "yyyyMMdd_HHmm";
     Date date = DateFromString.getDateUsingSimpleDateFormat(fileName, dateFormatString);
-    Assert.assertEquals("Calculated date <" + date.toString() + " [" + date.getTime() + "]> not as expected <"
-        + dateAsISOString + "[" + dateAsLong + "]>." + "\nUsing fileName <" + fileName + "> and dateFormatString <"
-        + dateFormatString + ">", date.getTime(), dateAsLong);
+    assertThat(date.getTime()).isEqualTo(dateAsLong);
+  }
+
+  @Test
+  @Ignore("failing on locale on github")
+  public void testSimpleDateFormatProblem() throws ParseException {
+    // expected: Wed Nov 29 06:00:00 MST 2006
+    // but was : Wed Nov 29 06:00:00 UTC 2006
+    assertThat(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06").toString())
+        .isEqualTo("Wed Nov 29 06:00:00 MST 2006");
+
+    // TODO investigate this
+    assertThat(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_0600").toString())
+        .isEqualTo("Sun Dec 24 00:00:00 MST 2006");
   }
 
   @Test
@@ -71,39 +80,34 @@ public class TestDateFromString {
         date.getTime(), dateAsLong);
   }
 
-
   @Test
-  public void testFromMain() throws ParseException {
-    /*
-     * dateString = /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
-     * dateFormatString = #wrfout_d01_#yyyy-MM-dd_HHmm
-     * would extract the date 2006-07-06T08:00
-     *
-     * dateString = /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
-     * dateFormatString = yyyyMM-ddHH#/wrfout_d01_#
-     * would extract the date 2006-07-06T11:00
-     * </pre>
-     *
-     * @param dateString the String to be parsed
-     * 
-     * @param dateFormatString the date format String
-     * 
-     * @return the Date that was parsed.
-     */
-
+  public void testGetDateUsingDemarkatedMatch() {
     DateFormatter formatter = new DateFormatter();
     Date result = DateFromString.getDateUsingDemarkatedMatch(
         "/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc", "#wrfout_d01_#yyyy-MM-dd_HHmm", '#');
-    assert result != null;
-    System.out.println(" 2006-07-06_080000 -> " + formatter.toDateTimeStringISO(result));
+    assertThat(result).isNotNull();
+    assertThat(formatter.toDateTimeStringISO(result)).isEqualTo("2006-07-06T08:00:00Z");
 
     result = DateFromString.getDateUsingDemarkatedMatch("C:\\data\\nomads\\gfs-hi\\gfs_3_20061129_0600",
         "#gfs_3_#yyyyMMdd_HH", '#');
-    assert result != null;
-    System.out.println(" 20061129_06 -> " + formatter.toDateTimeStringISO(result));
+    assertThat(result).isNotNull();
+    assertThat(formatter.toDateTimeStringISO(result)).isEqualTo("2006-11-29T06:00:00Z");
 
-    System.out.println(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06"));
-    System.out.println(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_0600"));
-
+    result = DateFromString.getDateUsingDemarkatedMatch("/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc",
+        "yyyyMMddHH#/wrfout_d01_#", '#');
+    assertThat(result).isNotNull();
+    assertThat(formatter.toDateTimeStringISO(result)).isEqualTo("2006-07-06T11:00:00Z");
   }
+
+  @Test
+  public void testGetDateUsingDemarkatedMatchFails() {
+    // doesnt have two demark's
+    assertThat(DateFromString.getDateUsingDemarkatedMatch("/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc",
+        "#wrfout_d01_yyyy-MM-dd_HHmm", '#')).isNull();
+
+    // doesnt match
+    assertThat(DateFromString.getDateUsingDemarkatedMatch("/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc",
+        "#wrfout_d02_#yyyy-MM-dd_HHmm", '#')).isNull();
+  }
+
 }

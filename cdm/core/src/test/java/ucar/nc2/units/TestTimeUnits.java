@@ -4,6 +4,9 @@
  */
 package ucar.nc2.units;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +14,11 @@ import ucar.unidata.util.test.Assert2;
 import java.lang.invoke.MethodHandles;
 
 public class TestTimeUnits {
+
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void testTimes() throws Exception {
+  public void testTimeUnitConstruction() throws Exception {
     TimeUnit tu = new TimeUnit(3.0, "hours");
     logger.debug("TimeUnit.toString: {}", tu.toString());
     logger.debug("TimeUnit.getValue: {}", tu.getValue());
@@ -50,5 +54,21 @@ public class TestTimeUnits {
 
     hoursInDay = day.convertTo(10.0, tu);
     assert hoursInDay == 240.0 : hoursInDay;
+
+    try {
+      new TimeUnit("");
+      fail();
+    } catch (Exception e) {
+      // expected
+    }
   }
+
+  @Test
+  public void testCopyConstructor() throws Exception {
+    TimeUnit tu = new TimeUnit(3.0, "hours");
+    TimeUnit tuCopy = new TimeUnit(tu);
+    assertThat(tuCopy).isEqualTo(tu);
+    assertThat(tuCopy.hashCode()).isEqualTo(tu.hashCode());
+  }
+
 }
