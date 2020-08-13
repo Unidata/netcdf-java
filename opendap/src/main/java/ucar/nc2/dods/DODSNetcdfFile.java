@@ -1526,37 +1526,81 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     // read the data
     DataDDS dataDDS;
     Map<DodsV, DodsV> map = new HashMap<DodsV, DodsV>(2 * reqDodsVlist.size() + 1);
+    // As we build the request URL, we need to keep in mind that there is a limit on the length of a GET request
+    // URL, otherwise we will run into a 414 (https://github.com/Unidata/netcdf-java/issues/413)
+    // According to stackoverflow lore, the 414 does not always happen, so sometimes things will fail silently.
+    // This limit is configurable on the server side, and there does not appear to be a "one size fits all web server
+    // stacks" solution here. RFC 2616 says "Note: Servers ought to be cautious about depending on URI lengths
+    // above 255 bytes, because some older client or proxy implementations might not properly support these lengths."
+    // 255 byte URIs feels too small for DAP (i.e. I'd assume the maintainers of a DAP server with that limitation
+    // would hear about it quickly, and adjust the settings higher, so we won't go with that as the max uri size).
+    // Apache 2.4 has a default limit of 8190 bytes (https://httpd.apache.org/docs/2.4/mod/core.html#limitrequestline)
+    // * Nginx has a default of 8K bytes:
+    // http://nginx.org/en/docs/http/ngx_http_core_module.html#large_client_header_buffers
+    // * Microsoft IIS has a default of 4096 bytes:
+    // https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/#attributes
+    // * Tomcat has a default header size of 8192 bytes - not quite the same thing as the url size defined above, but
+    // effectively much less than the limits above because the header will contain the various parts of the request
+    // URI. Again, stackoverflow lore suggest tomcat issue start to creep in when the URL gets above 4kB (as that's
+    // only part of the header size).
+    // Given the above defaults, we'll go with 4kb for now.
+    // If we find this gives us trouble in the future, we should just go with the limit set by Internet Explorer,
+    // since we know web servers will likely at least support that, which is 2048 bytes.
+    // https://support.microsoft.com/en-us/help/208427/maximum-url-length-is-2-083-characters-in-internet-explorer
+    int maxQueryLength = 4096 - this.location.length(); // just keep track of the query size
+    // Track where we are in reqDodsVlist
+    int lastRequestedVariableIndex = 0;
     if (reqDodsVlist.size() > 0) {
+      // keep preloading until we get all the variables
+      while (lastRequestedVariableIndex < reqDodsVlist.size()) {
+        // current length of the query for this round of prefetching
+        int queryLength = 0;
+        // track number of variables being requested in this round of prefetching
+        short numberOfVarsInRequest = 0;
+        // Create the request
+        StringBuilder requestString = new StringBuilder();
+        // keep the length of the query under the maxUriSize
+        while (queryLength <= maxQueryLength && lastRequestedVariableIndex < reqDodsVlist.size()) {
+          DodsV dodsV = reqDodsVlist.get(lastRequestedVariableIndex);
+          // will this take us over our query length limit?
+          int newQueryLength = queryLength + dodsV.getEncodedName().length() + 1; // +1 for var separator
+          if (newQueryLength >= maxQueryLength) {
+            break;
+          } else {
+            // we're good on size - add the variable to the query
+            requestString.append(numberOfVarsInRequest == 0 ? "?" : ",");
+            requestString.append(dodsV.getEncodedName());
+            // bump up the query length, increment to next request variable
+            queryLength = newQueryLength;
+            lastRequestedVariableIndex += 1;
+            numberOfVarsInRequest += 1;
+          }
+        }
 
-      // Create the request
-      StringBuilder requestString = new StringBuilder();
-      for (int i = 0; i < reqDodsVlist.size(); i++) {
-        DodsV dodsV = reqDodsVlist.get(i);
-        requestString.append(i == 0 ? "?" : ",");
-        // requestString.append(makeDODSname(dodsV));
-        requestString.append(dodsV.getEncodedName());
-      }
-      String s = requestString.toString();
+        try {
+          dataDDS = readDataDDSfromServer(requestString.toString());
+          root = DodsV.parseDataDDS(dataDDS);
 
-      try {
-        dataDDS = readDataDDSfromServer(requestString.toString());
-        root = DodsV.parseDataDDS(dataDDS);
+        } catch (Exception exc) {
+          logger.error("ERROR readDataDDSfromServer on " + requestString, exc);
+          throw new IOException(exc.getMessage());
+        }
 
-      } catch (Exception exc) {
-        logger.error("ERROR readDataDDSfromServer on " + requestString, exc);
-        throw new IOException(exc.getMessage());
-      }
-
-      // gotta find the corresponding data in "depth first" order
-      for (DodsV ddsV : reqDodsVlist) {
-        DodsV dataV = root.findDataV(ddsV);
-        if (dataV != null) {
-          if (debugConvertData)
-            System.out.println("readArray found dataV= " + makeDODSname(ddsV));
-          dataV.isDone = true;
-          map.put(ddsV, dataV); // thread safe!
-        } else {
-          logger.error("ERROR findDataV cant find " + makeDODSname(ddsV) + " on " + location);
+        // gotta find the corresponding data from this round of prefetching in "depth first" order
+        for (int i = lastRequestedVariableIndex - numberOfVarsInRequest; i < lastRequestedVariableIndex; i++) {
+          // variable that was requested
+          DodsV ddsV = reqDodsVlist.get(i);
+          // requested variable, but from the parsed dds
+          DodsV dataV = root.findDataV(ddsV);
+          if (dataV != null) {
+            if (debugConvertData) {
+              System.out.println("readArray found dataV= " + makeDODSname(ddsV));
+            }
+            dataV.isDone = true;
+            map.put(ddsV, dataV); // thread safe!
+          } else {
+            logger.error("ERROR findDataV cant find " + makeDODSname(ddsV) + " on " + location);
+          }
         }
       }
     }
@@ -1571,8 +1615,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         if (dataV == null) {
           logger.error("DODSNetcdfFile.readArrays cant find " + makeDODSname(ddsV) + " in dataDDS; " + location);
         } else {
-          if (debugConvertData)
+          if (debugConvertData) {
             System.out.println("readArray converting " + makeDODSname(ddsV));
+          }
           dataV.isDone = true;
 
           try {
@@ -1582,10 +1627,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
                 dataV = dataV.parent;
               }
               data = convertD2N.convertNestedVariable(var, null, dataV, true);
-
             } else
               data = convertD2N.convertTopVariable(var, null, dataV);
-
           } catch (DAP2Exception de) {
             logger.error("ERROR convertVariable on " + var.getFullName(), de);
             throw new IOException(de.getMessage());
@@ -1593,8 +1636,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
           if (var.isCaching()) {
             var.setCachedData(data);
-            if (debugCached)
+            if (debugCached) {
               System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
+            }
           }
         }
       }
