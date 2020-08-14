@@ -863,8 +863,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       List<CoordinateAxis> axisList = new ArrayList<>();
       List<CoordinateAxis> axes = ncDataset.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
-        if (isCoordinateAxisForVariable(axis, vp.v))
+        if (isCoordinateAxisForVariable(axis, vp.v)) {
           axisList.add(axis);
+        }
       }
 
       if (axisList.size() < 2)

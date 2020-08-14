@@ -398,7 +398,9 @@ public class Attribute extends CDMNode {
    * @param name name of Attribute
    * @param val value of Attribute
    * @param isUnsigned if value is unsigned, used only for integer types.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, Number val, boolean isUnsigned) {
     super(name);
     if (name == null)
@@ -420,7 +422,9 @@ public class Attribute extends CDMNode {
    *
    * @param name name of attribute
    * @param values array of values.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, Array values) {
     this(name, values.getDataType());
     setValues(values); // make private
@@ -451,7 +455,9 @@ public class Attribute extends CDMNode {
    * @param name name of attribute
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    * @param isUnsigned if the data type is unsigned.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
     if (values == null || values.isEmpty())
@@ -467,7 +473,9 @@ public class Attribute extends CDMNode {
    * Need to do this so ucar.unidata.geoloc package doesnt depend on ucar.nc2 library
    *
    * @param param copy info from here.
+   * @deprecated Use Attribute.builder()
    */
+  @Deprecated
   public Attribute(Parameter param) {
     this(param.getName());
 
