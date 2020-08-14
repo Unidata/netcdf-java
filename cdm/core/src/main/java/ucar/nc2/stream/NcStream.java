@@ -238,25 +238,6 @@ public class NcStream {
     return sbuilder.build();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-  static void show(NcStreamProto.Header proto) {
-    NcStreamProto.Group root = proto.getRoot();
-
-    for (NcStreamProto.Dimension dim : root.getDimsList()) {
-      System.out.println("dim= " + dim);
-    }
-
-    for (NcStreamProto.Attribute att : root.getAttsList()) {
-      System.out.println("att= " + att);
-    }
-
-    for (NcStreamProto.Variable var : root.getVarsList()) {
-      System.out.println("var= " + var);
-    }
-  }
-
   ////////////////////////////////////////////////////////////
 
   static int writeByte(OutputStream out, byte b) throws IOException {
@@ -566,14 +547,17 @@ public class NcStream {
     }
     ncvar.addDimensions(dims);
 
-    for (ucar.nc2.stream.NcStreamProto.Attribute att : s.getAttsList())
+    for (ucar.nc2.stream.NcStreamProto.Attribute att : s.getAttsList()) {
       ncvar.addAttribute(decodeAtt(att));
+    }
 
-    for (ucar.nc2.stream.NcStreamProto.Variable vp : s.getVarsList())
+    for (ucar.nc2.stream.NcStreamProto.Variable vp : s.getVarsList()) {
       ncvar.addMemberVariable(decodeVar(vp));
+    }
 
-    for (NcStreamProto.Structure sp : s.getStructsList())
+    for (NcStreamProto.Structure sp : s.getStructsList()) {
       ncvar.addMemberVariable(decodeStructure(sp));
+    }
 
     return ncvar;
   }

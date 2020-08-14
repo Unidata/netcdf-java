@@ -26,7 +26,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -276,7 +275,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       ByteOrder bo = NcStream.decodeDataByteOrder(dproto); // LOOK not using bo !!
 
       List<DataStorage> storage;
-      Optional<Variable.Builder<?>> vbopt = rootBuilder.findVariableLocal(dproto.getVarName());
+      Optional<Variable.Builder<?>> vbopt = rootBuilder.findVariableNested(dproto.getVarName());
       if (!vbopt.isPresent()) {
         logger.warn(" ERR cant find var {} {}", dproto.getVarName(), dproto);
         storage = new ArrayList<>(); // barf
@@ -287,7 +286,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         }
         storage = (List<DataStorage>) vb.spiObject; // LOOK could be an in memory Rtree using section
         if (storage == null) {
-          storage = new ArrayList<>();
+          storage = new ArrayList<>(); // LOOK why no storage?
           vb.setSPobject(storage);
         }
       }

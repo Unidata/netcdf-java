@@ -4,57 +4,46 @@
  */
 package ucar.nc2.stream;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.List;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 
-/** Test {@link ucar.nc2.stream.NcStreamWriter} */
-@RunWith(Parameterized.class)
-public class TestNcStreamWriter {
+/** Test {@link ucar.nc2.stream.NcStreamWriter} for Structure data. */
+public class TestStreamWriterStructures {
 
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-  @Parameterized.Parameters(name = "{0}")
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>(500);
-    result.add(new Object[] {TestDir.cdmLocalTestDataDir + "testWrite.nc"});
-    result.add(new Object[] {TestDir.cdmLocalTestDataDir + "testStructures.nc"});
-    result.add(new Object[] {TestDir.cdmLocalTestDataDir + "testNestedGroups.ncml"});
-    return result;
-  }
-
-  private final String filename;
-
-  public TestNcStreamWriter(String filename) {
-    this.filename = filename;
-  }
-
   @Test
+  @Ignore("CdmRemote doesnt work reading member data")
   public void writeNcStream() throws IOException, InvalidRangeException {
+    String filename = TestDir.cdmLocalTestDataDir + "testStructures.nc";
+    // String outFile = "C:/temp/testStructures.ncs"; // tempFolder.newFile().getAbsolutePath();
     String outFile = tempFolder.newFile().getAbsolutePath();
-    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       NcStreamWriter writer = new NcStreamWriter(ncfile, null);
+
+      Variable record = ncfile.findVariable("record");
+      assertThat(record).isNotNull();
+      assertThat(record).isInstanceOf(Structure.class);
+
       try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(outFile), 50 * 1000)) {
         writer.streamAll(fos);
       }

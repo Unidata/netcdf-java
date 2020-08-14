@@ -474,10 +474,14 @@ public class TestGroup {
 
   @Test
   public void testNestedGroupBuilders() {
-    Group.Builder parent = Group.builder().setName("parent");
+    Variable.Builder<?> vroot = Variable.builder().setName("vroot").setDataType(DataType.STRING);
+    Variable.Builder<?> vleaf = Variable.builder().setName("vleaf").setDataType(DataType.STRING);
+    Variable.Builder<?> voff = Variable.builder().setName("voff").setDataType(DataType.STRING);
+
+    Group.Builder parent = Group.builder().setName("parent").addVariable(vleaf);
     Group.Builder gramps = Group.builder().setName("gramps").addGroup(parent);
-    Group.Builder uncle = Group.builder().setName("uncle");
-    Group.Builder root = Group.builder().addGroup(gramps).addGroup(uncle);
+    Group.Builder uncle = Group.builder().setName("uncle").addVariable(voff);
+    Group.Builder root = Group.builder().addGroup(gramps).addGroup(uncle).addVariable(vroot);
 
     Group.Builder found = root.findGroupNested("/gramps/parent").orElse(null);
     assertThat(found).isNotNull();
@@ -498,10 +502,26 @@ public class TestGroup {
     assertThat(root.findGroupNested("/random").isPresent()).isFalse();
     assertThat(root.findGroupNested("random").isPresent()).isFalse();
     assertThat(root.findGroupNested("parent").isPresent()).isFalse();
-    assertThat(root.findGroupNested(null).isPresent()).isFalse();
-    assertThat(root.findGroupNested("").isPresent()).isFalse();
-  }
+    assertThat(root.findGroupNested(null).isPresent()).isTrue();
+    assertThat(root.findGroupNested("").isPresent()).isTrue();
+    assertThat(gramps.findGroupNested("").isPresent()).isFalse();
 
+    assertThat(root.findVariableNested("gramps/parent/vleaf").isPresent()).isTrue();
+    assertThat(root.findVariableNested("/gramps/parent/vleaf").isPresent()).isTrue();
+    assertThat(root.findVariableNested("vroot").isPresent()).isTrue();
+    assertThat(root.findVariableNested("/vroot").isPresent()).isTrue();
+    assertThat(root.findVariableNested("/uncle/voff").isPresent()).isTrue();
+    assertThat(root.findVariableNested("uncle/voff").isPresent()).isTrue();
+
+    assertThat(root.findVariableNested("/random").isPresent()).isFalse();
+    assertThat(root.findVariableNested("/gramps/voff").isPresent()).isFalse();
+    assertThat(root.findVariableNested("/gramps/parent/voff.m").isPresent()).isFalse();
+
+    assertThat(gramps.findVariableNested("parent/vleaf").isPresent()).isTrue();
+    assertThat(uncle.findVariableNested("voff").isPresent()).isTrue();
+    assertThat(uncle.findVariableNested("vleaf").isPresent()).isFalse();
+    assertThat(uncle.findVariableNested("vroot").isPresent()).isFalse();
+  }
 
   @Test
   public void testCommonParentBuilders() {
