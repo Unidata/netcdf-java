@@ -3,6 +3,7 @@ ext.title = 'GRIB 1 and 2 IOSPs and Feature Collections'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
+apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
