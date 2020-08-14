@@ -3,8 +3,8 @@ apply plugin: 'com.diffplug.gradle.spotless'
 
 spotless {
   java {
-    // target java files
-    target '*/**/*.java'
+    // target java files in source directories (will not pick up generated sources)
+    target 'src/*/java/**/*.java'
     eclipse().configFile "$rootDir/project-files/code-styles/eclipse-style-guide.xml"
     encoding 'UTF-8'
   }

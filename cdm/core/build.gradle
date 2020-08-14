@@ -4,6 +4,8 @@ ext.title = 'CDM core library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
+apply from: "$rootDir/gradle/any/protobuf.gradle"
+
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
@@ -32,13 +34,6 @@ dependencies {
   testImplementation 'org.spockframework:spock-core'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
-}
-
-
-spotless {
-  java {
-    targetExclude('src/main/java/ucar/nc2/stream/NcStreamProto.java') // exclude protobuf generated sources
-  }
 }
 
 // todo: move to ucar.nc2.write.Ncdump in 6?

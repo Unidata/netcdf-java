@@ -6,8 +6,12 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 
 dependencies {
   constraints {
+    // Note: The depVersion variable is defined in gradle/any/shared-mvn-coords.gradle and is used for dependencies
+    // that are used in different configurations of a build that need access to the full maven coordinates.
+
     // general dependencies
-    api 'com.google.protobuf:protobuf-java:3.9.1'
+    api "com.google.protobuf:protobuf-java:${depVersion.protobuf}"
+    api "com.google.protobuf:protoc:${depVersion.protobuf}"
     api 'com.google.guava:guava:28.0-jre'
     api 'com.google.re2j:re2j:1.3'
     api 'org.jdom:jdom2:2.0.6'
