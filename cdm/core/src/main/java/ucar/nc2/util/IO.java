@@ -209,15 +209,21 @@ public class IO {
     return totalBytesRead;
   }
 
+  /** @deprecated use copyMaxBytes() */
+  @Deprecated
+  public static void copy(InputStream in, OutputStream out, int n) throws IOException {
+    copyMaxBytes(in, out, n);
+  }
+
   /**
-   * copy n bytes from in to out.
+   * Copy up to maxBytes bytes from in to out.
    *
    * @param in InputStream
    * @param out OutputStream
-   * @param n number of bytes to copy
+   * @param maxBytes number of bytes to copy
    * @throws java.io.IOException on io error
    */
-  public static void copy(InputStream in, OutputStream out, int n) throws IOException {
+  public static void copyMaxBytes(InputStream in, OutputStream out, int maxBytes) throws IOException {
     byte[] buffer = new byte[default_file_buffersize];
     int count = 0;
     while (true) {
@@ -226,7 +232,7 @@ public class IO {
         break;
       out.write(buffer, 0, bytesRead);
       count += bytesRead;
-      if (count > n)
+      if (count > maxBytes)
         return;
     }
     out.flush();

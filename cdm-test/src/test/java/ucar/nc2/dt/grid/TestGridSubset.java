@@ -369,8 +369,8 @@ public class TestGridSubset {
       GridCoordSystem gcs = grid.getCoordinateSystem();
       assert null != gcs;
 
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-      logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
+      System.out.printf("original bbox = %s%n", gcs.getBoundingBox());
+      System.out.printf("lat/lon bbox = %s%n", gcs.getLatLonBoundingBox());
 
       ucar.unidata.geoloc.LatLonRect llbb_subset =
           new LatLonRect(LatLonPoint.create(38, -110), LatLonPoint.create(42, -90));
@@ -380,8 +380,8 @@ public class TestGridSubset {
       GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
       assert null != gcs2;
 
-      logger.debug("result lat/lon bbox = {}", gcs2.getLatLonBoundingBox());
-      logger.debug("result bbox = {}", gcs2.getBoundingBox());
+      System.out.printf("result lat/lon bbox = %s%n", gcs2.getLatLonBoundingBox());
+      System.out.printf("result bbox = %s%n", gcs2.getBoundingBox());
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       logger.debug("projection mapArea = {}", pr);
