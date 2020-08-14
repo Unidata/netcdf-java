@@ -19,7 +19,6 @@ public class NcStreamWriter {
 
   private final NetcdfFile ncfile;
   private final NcStreamProto.Header header;
-  private boolean show = false;
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
@@ -52,28 +51,24 @@ public class NcStreamWriter {
     size += writeBytes(out, NcStream.MAGIC_HEADER);
     byte[] b = header.toByteArray();
     size += NcStream.writeVInt(out, b.length); // len
-    if (show)
-      System.out.println("Write Header len=" + b.length);
 
     // payload
     size += writeBytes(out, b);
-    if (show)
-      System.out.println(" header size=" + size);
-
     return size;
   }
 
   public long sendData(Variable v, Section section, OutputStream out, NcStreamCompression compress)
       throws IOException, InvalidRangeException {
-    if (show)
-      System.out.printf(" %s section=%s%n", v.getFullName(), section);
-
     // length of data uncompressed
     long uncompressedLength = section.computeSize();
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
       uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
 
-    ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
+    // TODO prefer ByteOrder.nativeOrder(); : reader makes right
+    // But we would need an OutputStream that knows how to switch LE and BE.
+    // IospHelper uses DataOutputStream which assumes BE
+    // So just use fixed BE for now.
+    ByteOrder bo = ByteOrder.BIG_ENDIAN;
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
     NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, compress.type, bo, (int) uncompressedLength);
@@ -97,8 +92,6 @@ public class NcStreamWriter {
         }
       }
       size += writeBytes(out, NcStream.MAGIC_VEND);
-      if (show)
-        System.out.printf(" NcStreamWriter sent %d seqData bytes = %d%n", count, size);
       return size;
     }
 
@@ -107,8 +100,6 @@ public class NcStreamWriter {
       ArrayStructure abb = (ArrayStructure) v.read(); // read all - LOOK break this up into chunks if needed
       // coverity[FB.BC_UNCONFIRMED_CAST]
       size += NcStream.encodeArrayStructure(abb, bo, out);
-      if (show)
-        System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
       return size;
     }
 
@@ -122,9 +113,6 @@ public class NcStreamWriter {
   // LOOK compression not used
   public long sendData2(Variable v, Section section, OutputStream out, NcStreamCompression compress)
       throws IOException, InvalidRangeException {
-    if (show)
-      System.out.printf(" %s section=%s%n", v.getFullName(), section);
-
     boolean isVlen = v.isVariableLength(); // && v.getRank() > 1;
     if (isVlen)
       v.read(section);
@@ -151,8 +139,6 @@ public class NcStreamWriter {
   public long streamAll(OutputStream out) throws IOException, InvalidRangeException {
     long size = writeBytes(out, NcStream.MAGIC_START);
     size += sendHeader(out);
-    if (show)
-      System.out.printf(" data starts at= %d%n", size);
 
     for (Variable v : ncfile.getVariables()) {
       NcStreamCompression compress;
@@ -161,8 +147,6 @@ public class NcStreamWriter {
         if (compType.equalsIgnoreCase(CDM.COMPRESS_DEFLATE)) {
           compress = NcStreamCompression.deflate();
         } else {
-          if (show)
-            System.out.printf(" Unknown compression type %s. Defaulting to none.%n", compType);
           compress = NcStreamCompression.none();
         }
       } else {
@@ -171,9 +155,6 @@ public class NcStreamWriter {
 
       long vsize = v.getSize() * v.getElementSize();
       // if (vsize < sizeToCache) continue; // in the header;
-      if (show)
-        System.out.printf(" var %s len=%d starts at= %d%n", v.getFullName(), vsize, size);
-
       if (vsize > maxChunk) {
         size += copyChunks(out, v, maxChunk, compress);
       } else {
@@ -182,8 +163,6 @@ public class NcStreamWriter {
     }
 
     size += writeBytes(out, NcStream.MAGIC_END);
-    if (show)
-      System.out.printf("total size= %d%n", size);
     return size;
   }
 

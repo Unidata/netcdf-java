@@ -626,16 +626,18 @@ public class Group {
     /**
      * Find a subgroup of this Group, with the specified reletive name.
      * An embedded "/" separates group names.
+     * Can have a leading "/" only if this is the root group.
      *
-     * @param fullName eg "/group/subgroup/wantGroup".
+     * @param reletiveName eg "group/subgroup/wantGroup".
      * @return Group or empty if not found.
      */
-    public Optional<Group.Builder> findGroupNested(String fullName) {
-      if (fullName == null || fullName.isEmpty())
-        return Optional.empty();
+    public Optional<Group.Builder> findGroupNested(String reletiveName) {
+      if (reletiveName == null || reletiveName.isEmpty()) {
+        return (this.getParentGroup() == null) ? Optional.of(this) : Optional.empty();
+      }
 
       Group.Builder g = this;
-      StringTokenizer stoke = new StringTokenizer(fullName, "/");
+      StringTokenizer stoke = new StringTokenizer(reletiveName, "/");
       while (stoke.hasMoreTokens()) {
         String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         Optional<Group.Builder> sub = g.findGroupLocal(groupName);
@@ -739,6 +741,29 @@ public class Group {
 
     public Optional<Variable.Builder<?>> findVariableLocal(String name) {
       return vbuilders.stream().filter(v -> v.shortName.equals(name)).findFirst();
+    }
+
+    /**
+     * Find a Variable, with the specified reletive name. No structure members.
+     * 
+     * @param reletiveName eg "group/subgroup/varname".
+     */
+    public Optional<Variable.Builder<?>> findVariableNested(String reletiveName) {
+      if (reletiveName == null || reletiveName.isEmpty()) {
+        return Optional.empty();
+      }
+
+      // break into groupNames and varName
+      Group.Builder group = this;
+      String varName = reletiveName;
+      int pos = reletiveName.lastIndexOf('/');
+      if (pos >= 0) {
+        String groupNames = reletiveName.substring(0, pos);
+        varName = reletiveName.substring(pos + 1);
+        group = findGroupNested(groupNames).orElse(null);
+      }
+
+      return group == null ? Optional.empty() : group.findVariableLocal(varName);
     }
 
     /**

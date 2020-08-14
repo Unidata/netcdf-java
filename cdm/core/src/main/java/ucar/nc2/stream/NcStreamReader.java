@@ -21,10 +21,7 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * Read an ncStream InputStream into a NetcdfFile.
- * Used by CdmRemote
- *
- * @author caron
- * @since Feb 7, 2009
+ * Used by CdmRemote and CdmrCoverageReader.
  */
 public class NcStreamReader {
   private static final Logger logger = LoggerFactory.getLogger(NcStreamReader.class);
