@@ -58,7 +58,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   private int mode;
 
   public StereographicAzimuthalProjection() { // polar stereographic with true longitude at 60 deg
-    this(90.0, 0.0, 0.9330127018922193, 60., 0, 0, new Earth());
+    this(90.0, 0.0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84);
   }
 
   /**

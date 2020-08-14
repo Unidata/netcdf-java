@@ -118,7 +118,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   public void initialize() {
     this.e = ellipsoid.getEccentricity();
     this.es = ellipsoid.getEccentricitySquared();
-    this.spherical = (e == 0.0);
+    this.spherical = ellipsoid.isSpherical();
     this.one_es = 1.0 - es;
     this.totalScale = ellipsoid.getMajor() * .001; // scale factor for cartesion coords in km.
 

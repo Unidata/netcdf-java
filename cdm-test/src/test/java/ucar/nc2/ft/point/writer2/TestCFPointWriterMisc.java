@@ -56,8 +56,8 @@ public class TestCFPointWriterMisc {
   @Category(NeedsCdmUnitTest.class)
   public void testPointProblem() throws IOException {
     CFPointWriterConfig config = CFPointWriterConfig.builder().build();
-    String filename = TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc";
-    TestCFPointWriter.writeDataset(filename, FeatureType.POINT, config, false, tempFolder.newFile());
+    String filename = TestDir.cdmLocalFromTestDataDir + "point/stationMultidimUnlimited.nc";
+    TestCFPointWriter.writeDataset(filename, FeatureType.STATION, config, false, tempFolder.newFile());
   }
 
   @Test

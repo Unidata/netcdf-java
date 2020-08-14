@@ -501,7 +501,7 @@ public class NcMLReader {
    *
    * @param ncmlLocation NcML URL location, or may be just a unique name for caching purposes.
    * @param targetDS add the info to this one, never null
-   * @param refds the referenced dataset; may equal newds, never null
+   * @param refds the referenced dataset; may equal targetDS, never null
    * @param netcdfElem JDOM netcdf element
    * @param cancelTask allow user to cancel the task; may be null
    * @throws IOException on read error
