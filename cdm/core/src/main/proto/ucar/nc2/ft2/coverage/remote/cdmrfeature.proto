@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "java/ucar/nc2/stream/ncStream.proto";
+import "ucar/nc2/stream/ncStream.proto";
 
 option java_package = "ucar.nc2.ft2.coverage.remote";
 option java_outer_classname = "CdmrFeatureProto";

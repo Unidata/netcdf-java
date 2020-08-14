@@ -3,6 +3,7 @@ ext.title = 'CDM misc iosp library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
+apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 apply plugin: 'groovy'  // For Spock tests.
 

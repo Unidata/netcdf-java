@@ -4,7 +4,6 @@
  */
 package ucar.nc2.iosp;
 
-import java.io.DataOutput;
 import java.nio.charset.StandardCharsets;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.PositioningDataInputStream;
@@ -17,7 +16,6 @@ import java.io.OutputStream;
 import java.nio.*;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.ArrayList;
 
