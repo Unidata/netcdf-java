@@ -190,6 +190,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   @Override
+  /** @deprecated use builder */
+  @Deprecated
   public String setName(String newName) {
     this.orgName = getShortName();
     setShortName(newName);

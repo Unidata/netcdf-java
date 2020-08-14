@@ -255,7 +255,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         ii.setDoubleNext(val);
       }
     }
-    // must set isMetadata rture so that data is transferred on a copy
+    // must set isMetadata true so that data is transferred on a copy
     timeAxis.setCachedData(timeCoordVals, true);
   }
 

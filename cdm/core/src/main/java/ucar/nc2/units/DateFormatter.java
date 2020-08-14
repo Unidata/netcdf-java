@@ -12,8 +12,9 @@ import java.util.Date;
  * These are not thread-safe.
  * These use java.util.Date and java.text.SimpleDateFormat.
  *
- * @author caron
+ * @deprecated use {@link ucar.nc2.time.CalendarDateFormatter}
  */
+@Deprecated
 public class DateFormatter {
 
   private java.text.SimpleDateFormat isoDateTimeFormat, isoDateNoSecsFormat, stdDateTimeFormat, stdDateNoSecsFormat,
@@ -189,9 +190,10 @@ public class DateFormatter {
 
   /**
    * date only format= yyyy-MM-dd
-   * 
-   * @deprecated use toDateOnlyString
+   *
+   * @deprecated use {@link ucar.nc2.time.CalendarDateFormatter#toDateString(Date)}
    */
+  @Deprecated
   public String toDateString(Date date) {
     return toDateOnlyString(date);
   }
@@ -201,7 +203,9 @@ public class DateFormatter {
    * 
    * @param date format this date
    * @return date formatted as date only
+   * @deprecated use {@link ucar.nc2.time.CalendarDateFormatter#toDateString(Date)}
    */
+  @Deprecated
   public String toDateOnlyString(Date date) {
     dateOnlyFormat();
     return dateOnlyFormat.format(date);
@@ -209,9 +213,10 @@ public class DateFormatter {
 
   /**
    * Return standard formatted GMT date and time String. Format = "yyyy-MM-dd HH:mm:ss'Z'"
-   * 
-   * @deprecated use toDateTimeString
+   *
+   * @deprecated use {@link ucar.nc2.time.CalendarDateFormatter#toDateTimeString(Date)}
    */
+  @Deprecated
   public String getStandardDateString2(Date date) {
     return toDateTimeString(date);
   }
@@ -221,7 +226,9 @@ public class DateFormatter {
    * 
    * @param date format this date
    * @return date formatted as date/time
+   * @deprecated use {@link ucar.nc2.time.CalendarDateFormatter#toDateTimeString(Date)}
    */
+  @Deprecated
   public String toDateTimeString(Date date) {
     if (date == null)
       return "Unknown";
@@ -231,9 +238,10 @@ public class DateFormatter {
 
   /**
    * Return standard formatted GMT date and time String. Format = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-   * 
-   * @deprecated use toDateTimeStringISO
+   *
+   * @deprecated use {@link ucar.nc2.time.CalendarDateFormatter#toDateTimeStringISO}
    */
+  @Deprecated
   public String getStandardDateString(Date date) {
     return toDateTimeStringISO(date);
   }
@@ -243,7 +251,9 @@ public class DateFormatter {
    * 
    * @param date format this date
    * @return date formatted as ISO date string
+   * @deprecated use {@link ucar.nc2.time.CalendarDateFormatter#toDateTimeStringISO}
    */
+  @Deprecated
   public String toDateTimeStringISO(Date date) {
     isoDateTimeFormat();
     return isoDateTimeFormat.format(date) + "Z";
