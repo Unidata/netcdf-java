@@ -23,7 +23,7 @@ public class TestH5aura {
 
   @org.junit.Test
   public void test1() throws IOException {
-    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( DebugFlags.create("H5header/header"));
     try (NetcdfFile ncfile = TestH5.open(testDir + "HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5")) {
       Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data_Fields/Scaled_Ch01_Radiance");
       assert dset != null;
@@ -36,7 +36,7 @@ public class TestH5aura {
     try (NetcdfFile ncfile = TestH5.open(testDir + "HIRDLS2-AFGL_b027_na.he5")) {
       Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
 
-      // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree"));
+      // H5header.setDebugFlags( DebugFlags.create("H5header/dataBtree"));
       Array data = dset.read();
       assert data.getElementType() == float.class;
     }

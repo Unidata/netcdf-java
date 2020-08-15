@@ -10,13 +10,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
@@ -40,13 +35,13 @@ public class TestCoordinatesMatchGbxP {
 
   @BeforeClass
   static public void before() {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     countersAll = GribCoordsMatchGbx.getCounters();
   }
 
   @AfterClass
   static public void after() {
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
     System.out.printf("countersAll = %s%n", countersAll);
   }
 

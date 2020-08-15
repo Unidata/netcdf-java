@@ -43,7 +43,7 @@ public class TestH5ReadStructure2 {
         "  --  Professor Cheng Man-ch'ing"};
     String c_name = "Hello!";
 
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("complex/compound_complex.h5")) {
 
       Variable dset = ncfile.findVariable("CompoundComplex");
@@ -88,7 +88,7 @@ public class TestH5ReadStructure2 {
         "  --  Professor Cheng Man-ch'ing"};
     String c_name = "Hello!";
 
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestH5.testDir + "complex/compound_complex.h5")) {
 
       Variable dset = ncfile.findVariable("CompoundComplex");

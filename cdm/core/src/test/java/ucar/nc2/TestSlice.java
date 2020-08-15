@@ -16,7 +16,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.nc2.write.NetcdfFormatWriter.Builder;
 import static org.junit.Assert.assertEquals;

@@ -31,7 +31,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NeedsUcarNetwork;
 

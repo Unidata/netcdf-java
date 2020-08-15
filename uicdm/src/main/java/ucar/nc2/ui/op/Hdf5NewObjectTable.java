@@ -11,6 +11,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.nc2.internal.iosp.hdf5.H5objects;
+import ucar.nc2.util.DebugFlags;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
@@ -211,14 +212,14 @@ public class Hdf5NewObjectTable extends Hdf5ObjectTable {
 
     ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
     PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(
-        "H5headerNew/header H5headerNew/headerDetails H5headerNew/symbolTable H5headerNew/memTracker"));
+    H5headerNew.setDebugFlags(DebugFlags
+        .create("H5headerNew/header H5headerNew/headerDetails H5headerNew/symbolTable H5headerNew/memTracker"));
     H5headerNew headerEmpty = (H5headerNew) iosp.sendIospMessage("headerEmpty");
     headerEmpty.read(pw);
-    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
+    H5headerNew.setDebugFlags(DebugFlags.create(""));
     pw.flush();
     f.format("%s", os.toString(StandardCharsets.UTF_8.name()));
-    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
+    H5headerNew.setDebugFlags(DebugFlags.create(""));
   }
 
   public static class ObjectBean {

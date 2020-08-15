@@ -5,7 +5,7 @@
 
 // $Id: TestCompare.java 51 2006-07-12 17:13:13Z caron $
 
-package ucar.nc2.util;
+package ucar.nc2.internal.util;
 
 import java.util.Arrays;
 import javax.annotation.Nullable;
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Formatter;
 import java.util.ArrayList;
 import ucar.nc2.iosp.NetcdfFormatUtils;
+import ucar.nc2.util.Misc;
 
 /**
  * Compare two NetcdfFile.

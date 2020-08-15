@@ -41,7 +41,7 @@ public class TestDODSArrayOfStructure {
   @After
   public void after() throws IOException {
     dodsfile.close();
-    H5headerNew.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
+    H5headerNew.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
   @Before
@@ -49,7 +49,7 @@ public class TestDODSArrayOfStructure {
     DODSNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.50");
     DODSNetcdfFile.setPreload(true);
-    DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
+    DODSNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
   }
 
   @Test

@@ -5,34 +5,51 @@
 
 package ucar.nc2.util;
 
-/**
- * Interface for global debug flags.
- * Allows decoupling of packages.
- * 
- * TODO will move in ver 6
- */
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+/** A set of boolena flags. */
 public interface DebugFlags {
 
   /**
-   * Test if named debug flag is set.
-   * 
-   * @param flagName name of flag
-   * @return true if named flag is set true
+   * Create a set of debug flags from a list of flag names.
+   *
+   * @param flagsOn space-separated list of flags to turn on.
    */
+  static DebugFlags create(String flagsOn) {
+    return DebugFlags.create(flagsOn);
+  }
+
+  /** Test if named debug flag is set. */
   boolean isSet(String flagName);
 
-  /**
-   * Set named debug flag.
-   * 
-   * @param flagName set this flag
-   * @param value set to this value
-   */
+  /** Set named debug flag. */
   void set(String flagName, boolean value);
 
-  /**
-   * Return the string representing the current debug flag(s) set. Flags can be either
-   * or false - they just need to be set.
-   */
-  String getSetFlags();
+  ////////////////////////////////////////////////////////
+
+  class DebugFlagsImpl implements DebugFlags {
+    private final Map<String, Boolean> map = new HashMap<>();
+
+    private DebugFlagsImpl(String flagsOn) {
+      StringTokenizer stoke = new StringTokenizer(flagsOn);
+      while (stoke.hasMoreTokens()) {
+        set(stoke.nextToken(), true);
+      }
+    }
+
+    @Override
+    public boolean isSet(String flagName) {
+      Boolean b = map.get(flagName);
+      return (b != null) && b;
+    }
+
+    @Override
+    public void set(String flagName, boolean value) {
+      map.put(flagName, value);
+    }
+
+  }
 
 }

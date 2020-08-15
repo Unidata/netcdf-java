@@ -14,8 +14,8 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.internal.util.DiskCache2;
+import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
@@ -44,7 +44,7 @@ public class TestGribIndexCreation {
     PartitionCollectionImmutable.countPC = 0;
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
-    // Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    // Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
 
@@ -56,7 +56,7 @@ public class TestGribIndexCreation {
 
   @AfterClass
   static public void after() {
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
     Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
@@ -87,7 +87,7 @@ public class TestGribIndexCreation {
 
   @Test
   public void testGdsHashChange() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("NDFD-CONUS_noaaport", "test/NDFD-CONUS_noaaport", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/.*gbx9", null, null, null, "file", null);
@@ -103,7 +103,7 @@ public class TestGribIndexCreation {
       Assert.assertEquals(2, root.getGroups().size());
     }
 
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   /*
@@ -130,7 +130,7 @@ public class TestGribIndexCreation {
    */
   @Test
   public void createNDFD() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("NDFD-CONUS-5km", "test/NDFD-CONUS-5km", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2$", null, null, null, "file", null);
@@ -237,25 +237,25 @@ public class TestGribIndexCreation {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Test
   public void testRdvamds083p2() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9", null,
         null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   /*
    * @Test
    * public void testRdvamds083p2_1999() throws IOException {
-   * Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+   * Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
    * FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2",
    * FeatureCollectionType.GRIB1,
    * TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/** /*gbx9",
@@ -263,40 +263,40 @@ public class TestGribIndexCreation {
    * 
    * boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
    * System.out.printf("changed = %s%n", changed);
-   * Grib.setDebugFlags(new DebugFlagsImpl());
+   * Grib.setDebugFlags(DebugFlags.create(""));
    * }
    */
 
   @Test
   public void testRdvamds627p0() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.0_46", "test/ds627.0",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/**/.*gbx9",
         null, "#ei.oper.an.pv/#yyyyMM", null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
 
   @Test // has one file for for each month, all in same directory
   public void testRdvamds627p1() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("GCpass1-union", "test/GCpass1", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   ////////////////
 
   @Test // has one file for for each month, all in same directory
   public void testTimePartition() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("yearPartition", "test/yearPartition",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null,
         "#ei.mdfa.fc12hr.sfc.regn128sc.#yyyyMMddhh", null, "year", null);
@@ -304,7 +304,7 @@ public class TestGribIndexCreation {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Test

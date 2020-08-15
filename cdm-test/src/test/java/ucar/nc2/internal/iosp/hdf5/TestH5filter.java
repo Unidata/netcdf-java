@@ -27,7 +27,7 @@ public class TestH5filter {
 
   @org.junit.Test
   public void testFilterNoneApplied() throws IOException {
-    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( DebugFlags.create("H5header/header"));
 
     // actually bogus - apparently all filters arre turned off
     // but its a test of filtered data with no filter actually applied
@@ -50,7 +50,7 @@ public class TestH5filter {
 
   @org.junit.Test
   public void test2() throws IOException {
-    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( DebugFlags.create("H5header/header"));
 
     // probably bogus also, cant find any non-zero filtered variables
     try (NetcdfFile ncfile = TestH5.openH5("wrf/wrf_input_seq.h5")) {
@@ -66,7 +66,7 @@ public class TestH5filter {
 
   @org.junit.Test
   public void testDeflate() throws IOException {
-    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( DebugFlags.create("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("msg/MSG1_8bit_HRV.H5")) {
 
       // picture looks ok in ToolsUI
@@ -81,7 +81,7 @@ public class TestH5filter {
 
   @org.junit.Test
   public void testMissing() throws IOException {
-    // H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags( DebugFlags.create("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS2-AFGL_b027_na.he5")) {
 
       // picture looks ok in ToolsUI

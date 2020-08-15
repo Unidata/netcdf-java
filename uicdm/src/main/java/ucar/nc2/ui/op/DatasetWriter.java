@@ -5,7 +5,7 @@
 
 package ucar.nc2.ui.op;
 
-import static ucar.nc2.util.CompareNetcdf2.IDENTITY_FILTER;
+import static ucar.nc2.internal.util.CompareNetcdf2.IDENTITY_FILTER;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -31,7 +31,7 @@ import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.ProgressMonitor;
 import ucar.ui.widget.ProgressMonitorTask;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.util.prefs.PreferencesExt;

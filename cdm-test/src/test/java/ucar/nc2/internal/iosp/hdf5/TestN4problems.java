@@ -19,9 +19,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.nc2.write.Ncdump;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -38,7 +37,7 @@ public class TestN4problems {
 
   @AfterClass
   static public void after() {
-    H5headerNew.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
+    H5headerNew.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
   /*
@@ -78,7 +77,7 @@ public class TestN4problems {
 
   // @Test
   public void utestEnum() throws IOException {
-    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    H5headerNew.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = TestN4reading.testDir + "nc4/tst_enum_data.nc";
     NetcdfFile ncfile = NetcdfFiles.open(filename);
     Variable v = ncfile.findVariable("primary_cloud");
@@ -86,7 +85,7 @@ public class TestN4problems {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     logger.debug(Ncdump.printArray(data, "primary_cloud", null));
     ncfile.close();
-    H5headerNew.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
+    H5headerNew.setDebugFlags(DebugFlags.create(""));
   }
 
   // @Test

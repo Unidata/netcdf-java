@@ -17,7 +17,7 @@ import ucar.ma2.ArrayDouble;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -42,14 +42,14 @@ public class TestGribCollectionCoordinates {
     PartitionCollectionImmutable.countPC = 0;
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
 
   @AfterClass
   static public void after() {
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
     /*
      * Formatter out = new Formatter(System.out);
      * 
@@ -83,7 +83,7 @@ public class TestGribCollectionCoordinates {
   // check that all time variables are coordinates (TwoD PofP was not eliminating unused coordinates after merging)
   @Test
   public void testExtraCoordinates() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);

@@ -20,8 +20,8 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.CompareNetcdf2.ObjFilter;
+import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2.ObjFilter;
 
 /** Test NetcdfDatasets.openDataset() of NcML files. */
 public class TestNcmlEquals {

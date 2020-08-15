@@ -66,7 +66,7 @@ public class TestH5problem {
   // fixes by rschmunk 4/30/2015
   @Test
   public void problemHugeHeapId() throws IOException {
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = TestH5.testDir + "SMAP_L4_SM_aup_20140115T030000_V05007_001.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Group g = ncfile.findGroup("Metadata");
