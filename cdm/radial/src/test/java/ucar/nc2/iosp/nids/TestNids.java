@@ -418,6 +418,91 @@ public class TestNids {
     }
   }
 
+  @Test
+  public void testRadialImageMessagePcode153() throws IOException {
+    // Radial Image message, product code 153 (super res reflectivity).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.localTestDataDir + "nids/H0Z_20200812_1318";
+    try (NetcdfFile ncf = NetcdfFiles.open(datafile)) {
+      Variable bref = ncf.findVariable("BaseReflectivityDR");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max reflectivity value obtained from metpy decoder.
+      assertThat(max).isWithin(comparisonTolerance).of(59.0);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      assertThat(minMax.min).isWithin(comparisonTolerance).of(0);
+      // within 1 km of 460 km.
+      assertThat(minMax.max).isWithin(1000).of(460000);
+    }
+  }
+
+  @Test
+  public void testRadialImageMessagePcode154() throws IOException {
+    // Radial Image message, product code 154 (super res velocity).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.localTestDataDir + "nids/H0V_20200812_1309";
+    try (NetcdfFile ncf = NetcdfFiles.open(datafile)) {
+      Variable bref = ncf.findVariable("BaseVelocityDV");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max velocity value obtained from metpy decoder.
+      assertThat(max).isWithin(comparisonTolerance).of(44.5);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      assertThat(minMax.min).isWithin(comparisonTolerance).of(0);
+      // within 1 km of 300 km.
+      assertThat(minMax.max).isWithin(1000).of(300000);
+    }
+  }
+
+  @Test
+  public void testRadialImageMessagePcode155() throws IOException {
+    // Radial Image message, product code 155 (super res spectrum width).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.localTestDataDir + "nids/H0W_20200812_1305";
+    try (NetcdfFile ncf = NetcdfFiles.open(datafile)) {
+      Variable bref = ncf.findVariable("SpectrumWidth");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max spectrum width value obtained from metpy decoder.
+      assertThat(max).isWithin(comparisonTolerance).of(15.0);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      assertThat(minMax.min).isWithin(comparisonTolerance).of(0);
+      // within 1 km of 300 km.
+      assertThat(minMax.max).isWithin(1000).of(300000);
+    }
+  }
+
+  @Test
+  public void testRadialImageMessagePcode167() throws IOException {
+    // Radial Image message, product code 167 (super res digital correlation coefficient).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.localTestDataDir + "nids/H0C_20200814_0417";
+    try (NetcdfFile ncf = NetcdfFiles.open(datafile)) {
+      Variable bref = ncf.findVariable("CorrelationCoefficient");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max correlation coefficient value obtained from metpy decoder.
+      // can be greater than 1 due to the way it is measured, but should not be much greater than one.
+      assertThat(max).isWithin(comparisonTolerance).of(1.05167);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      assertThat(minMax.min).isWithin(comparisonTolerance).of(0);
+      // within 1 km of 300 km.
+      assertThat(minMax.max).isWithin(1000).of(300000);
+    }
+  }
+
   private void testReadData(Variable v) {
     Array a = null;
     assert (null != v);
