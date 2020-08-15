@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.util;
+package ucar.nc2.internal.util;
 
 import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
@@ -50,10 +50,7 @@ import java.net.URL;
  * field[i] goes from [endPos[i-1] to endPos[i])
  * <p/>
  * </pre>
- * 
- * @deprecated move in ver6
  */
-@Deprecated
 /*
  * ClassLoader cl = Level2VolumeScan.class.getClassLoader();
  * InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");
@@ -194,7 +191,6 @@ public class TableParser {
     return fields.size();
   }
 
-  /** @deprecated will move in ver6. */
   public static class Field {
     int start, end;
     Class type;
@@ -266,7 +262,6 @@ public class TableParser {
     return fld;
   }
 
-  /** @deprecated will move in ver6. */
   public static class DerivedField extends Field {
     Field from;
     Transform transform;
@@ -283,12 +278,10 @@ public class TableParser {
     }
   }
 
-  /** @deprecated will move in ver6. */
   public interface Transform {
     Object derive(Object org);
   }
 
-  /** @deprecated will move in ver6. */
   public static class Record {
     List<Object> values = new ArrayList<>();
 
@@ -310,19 +303,15 @@ public class TableParser {
       return values.size();
     }
 
-    /**
-     * Get the kth value of this record. Will be a String, Double, or Integer.
-     *
-     * @param k which one
-     * @return object
-     */
+    /** Get the kth value of this record. Will be a String, Double, or Integer. */
     public Object get(int k) {
       return values.get(k);
     }
 
     public void toString(Formatter f) {
-      for (Object s : values)
+      for (Object s : values) {
         f.format(" %s,", s.toString());
+      }
       f.format("%n");
     }
   }

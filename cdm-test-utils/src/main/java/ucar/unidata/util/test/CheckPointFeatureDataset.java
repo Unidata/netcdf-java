@@ -43,7 +43,7 @@ import ucar.nc2.ft.point.DsgCollectionHelper;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.util.IOIterator;
+import ucar.nc2.ft.IOIterator;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPoint;

@@ -176,11 +176,9 @@ public class Nccopy {
       NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
 
       try (NetcdfFile ncfileOut = copier.write(cancel)) {
-
-      } finally {
-        cancel.setDone(true);
-        System.out.printf("%s%n", cancel);
+        // empty body
       }
+      System.out.printf("Successfully copied%n");
 
     } catch (Exception ex) {
       System.out.printf("%s = %s %n", ex.getClass().getName(), ex.getMessage());

@@ -1399,7 +1399,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     int n = (int) vertZaxis.getSize();
     List<NamedObject> levels = new ArrayList<>(n);
     for (int i = 0; i < n; i++)
-      levels.add(new ucar.nc2.util.NamedAnything(vertZaxis.getCoordName(i), vertZaxis.getUnitsString()));
+      levels.add(NamedObject.create(vertZaxis.getCoordName(i), vertZaxis.getUnitsString()));
 
     return levels;
   }
@@ -1445,7 +1445,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     List<CalendarDate> cdates = getCalendarDates();
     List<NamedObject> times = new ArrayList<>(cdates.size());
     for (CalendarDate cd : cdates) {
-      times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
+      times.add(NamedObject.create(cd.toString(), "calendar date"));
     }
     return times;
   }

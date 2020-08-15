@@ -7,7 +7,6 @@ package thredds.inventory;
 
 import org.slf4j.Logger;
 import thredds.filesystem.MFileOS7;
-import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;

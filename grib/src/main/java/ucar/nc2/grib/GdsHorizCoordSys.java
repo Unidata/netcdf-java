@@ -146,12 +146,12 @@ public class GdsHorizCoordSys {
     double bestStartDiff = Double.MAX_VALUE;
     double bestEndDiff = Double.MAX_VALUE;
     for (int i = 0; i < nlats; i++) {
-      double diff = Math.abs(gaussLats.latd[i] - la1);
+      double diff = Math.abs(gaussLats.getLatitude(i) - la1);
       if (diff < bestStartDiff) {
         bestStartDiff = diff;
         bestStartIndex = i;
       }
-      diff = Math.abs(gaussLats.latd[i] - la2);
+      diff = Math.abs(gaussLats.getLatitude(i) - la2);
       if (diff < bestEndDiff) {
         bestEndDiff = diff;
         bestEndIndex = i;
@@ -176,8 +176,8 @@ public class GdsHorizCoordSys {
     float[] data = new float[nyRaw];
     float[] gaussw = new float[nyRaw];
     for (int i = 0; i < nyRaw; i++) {
-      data[i] = (float) gaussLats.latd[useIndex];
-      gaussw[i] = (float) gaussLats.gaussw[useIndex];
+      data[i] = (float) gaussLats.getLatitude(useIndex);
+      gaussw[i] = (float) gaussLats.getGaussWeight(useIndex);
 
       log.trace("i {}, useIndex {}, data {}, gaussw {}", i, useIndex, data[i], gaussw[i]);
       if (goesUp) {

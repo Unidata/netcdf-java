@@ -4,7 +4,7 @@
 
 package ucar.nc2.ui.dialog;
 
-import ucar.nc2.util.ListenerManager;
+import ucar.nc2.ui.util.ListenerManager;
 import ucar.nc2.write.Nc4Chunking;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

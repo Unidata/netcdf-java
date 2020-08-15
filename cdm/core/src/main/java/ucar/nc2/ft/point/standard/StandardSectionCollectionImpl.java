@@ -25,7 +25,7 @@ import ucar.nc2.ft.point.SectionCollectionImpl;
 import ucar.nc2.ft.point.SectionFeatureImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.util.IOIterator;
+import ucar.nc2.ft.IOIterator;
 
 /**
  * Nested Table implementation of SectionCollection.

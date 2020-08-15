@@ -51,7 +51,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   public static int invocation; // debugging
 
   protected List<String> aggVarNames = new ArrayList<>(); // explicitly specified in the NcML
-  protected List<VariableDS.Builder> aggVars = new ArrayList<>(); // actual vars that will be aggregated
+  protected List<VariableDS.Builder<?>> aggVars = new ArrayList<>(); // actual vars that will be aggregated
   private int totalCoords; // the aggregation dimension size
 
   protected List<CacheVar> cacheList = new ArrayList<>(); // promote global attribute to variable
@@ -66,7 +66,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
    * @param type the Aggregation.Type
    * @param recheckS how often to check if files have changes
    */
-  AggregationOuter(NetcdfDataset.Builder ncd, String dimName, Type type, String recheckS) {
+  AggregationOuter(NetcdfDataset.Builder<?> ncd, String dimName, Type type, String recheckS) {
     super(ncd, dimName, type, recheckS);
   }
 
@@ -162,11 +162,11 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   // time units change - must read in time coords and convert, cache the results
   // must be able to be made into a CoordinateAxis1DTime
   // calendars must be equivalent
-  protected void readTimeCoordinates(Variable.Builder timeAxis, CancelTask cancelTask) throws IOException {
+  protected void readTimeCoordinates(Variable.Builder<?> timeAxis, CancelTask cancelTask) throws IOException {
     List<CalendarDate> dateList = new ArrayList<>();
     String timeUnits = null;
     Calendar calendar = null;
-    Calendar calendarToCheck = null;
+    Calendar calendarToCheck;
     CalendarDateUnit calendarDateUnit;
 
     // make concurrent
@@ -195,9 +195,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
           } else {
             String msg = String.format("Time coordinate %s must have a non-null unit attribute.", timeAxis.shortName);
             logger.error(msg);
-            if (cancelTask != null) {
-              cancelTask.setError(msg);
-            }
             throw new UnsupportedOperationException(msg);
           }
         } else {
@@ -213,9 +210,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
                 "Inequivalent calendars found across the aggregation: calendar %s is not equivalent to %s.", calendar,
                 calendarToCheck);
             logger.error(msg);
-            if (cancelTask != null) {
-              cancelTask.setError(msg);
-            }
             throw new UnsupportedOperationException(msg);
           }
         }
@@ -295,7 +289,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         throw new IOException("cant read " + typicalDataset);
 
       pv.dtype = DataType.getType(data);
-      VariableDS.Builder promotedVar = VariableDS.builder().setName(pv.varName).setDataType(pv.dtype)
+      VariableDS.Builder<?> promotedVar = VariableDS.builder().setName(pv.varName).setDataType(pv.dtype)
           .setParentGroupBuilder(ncDataset.rootGroup).setDimensionsByName(dimName);
       /*
        * if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not dealt with
@@ -902,7 +896,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     }
 
     f.format("%nVariable Proxies%n");
-    for (Variable.Builder v : ncDataset.rootGroup.vbuilders) {
+    for (Variable.Builder<?> v : ncDataset.rootGroup.vbuilders) {
       f.format("   %20s proxy %s%n", v.shortName, v.proxyReader == null ? "" : v.proxyReader.getClass().getName());
     }
 

@@ -4,7 +4,6 @@
  */
 package thredds.inventory;
 
-import ucar.nc2.util.CloseableIterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 

@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import javax.swing.*;
-import ucar.nc2.util.ListenerManager;
+import ucar.nc2.ui.util.ListenerManager;
 import ucar.util.prefs.PreferencesExt;
 import ucar.unidata.geoloc.*;
 

@@ -11,7 +11,7 @@ import ucar.nc2.ft.PointFeatureCCC;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.util.IOIterator;
+import ucar.nc2.ft.IOIterator;
 
 /**
  * An aggregate collection of all the PointFeatures in a dataset formed by flattening the nested structures within.

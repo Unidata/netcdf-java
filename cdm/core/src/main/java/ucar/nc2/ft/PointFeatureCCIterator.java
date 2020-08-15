@@ -5,7 +5,6 @@
 package ucar.nc2.ft;
 
 import java.io.Closeable;
-import ucar.nc2.util.IOIterator;
 
 /**
  * An iterator over PointFeatureCC.

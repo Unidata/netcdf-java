@@ -9,7 +9,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.CloseableIterator;
 
 /**
  * Collection of MFiles

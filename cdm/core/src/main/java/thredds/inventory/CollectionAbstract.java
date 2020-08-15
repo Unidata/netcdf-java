@@ -10,7 +10,6 @@ import thredds.filesystem.MFileOS7;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 import java.io.FileNotFoundException;
 import java.io.IOException;

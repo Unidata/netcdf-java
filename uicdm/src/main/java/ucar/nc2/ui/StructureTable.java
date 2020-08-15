@@ -5,7 +5,11 @@
 
 package ucar.nc2.ui;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -18,7 +22,6 @@ import ucar.nc2.write.Ncdump;
 import ucar.ui.table.*;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
-import ucar.nc2.util.HashMapLRU;
 import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
@@ -379,21 +382,39 @@ public class StructureTable extends JPanel {
   ////////////////////////////////////////////////////////////////////////////////////////
 
   private abstract static class StructureTableModel extends AbstractTableModel {
-    protected HashMapLRU rowHash = new HashMapLRU(500, 500); // cache 500 rows
     protected StructureMembers members;
     protected boolean wantDate;
     protected List<Structure> subtables = new ArrayList<>();
+    private final LoadingCache<Integer, StructureData> cache =
+        CacheBuilder.newBuilder().maximumSize(500).build(new CacheLoader<Integer, StructureData>() {
+          @Override
+          public StructureData load(Integer row) {
+            try {
+              return getStructureData(row);
+            } catch (InvalidRangeException e) {
+              throw new IllegalStateException(e.getCause());
+            } catch (IOException e) {
+              throw new IllegalStateException(e.getCause());
+            }
+          }
+        });
+
+    // get row data if in the cache, otherwise read it
+    public StructureData getStructureDataHash(int row) throws InvalidRangeException, IOException {
+      try {
+        return cache.get(row);
+      } catch (ExecutionException e) {
+        throw new IllegalStateException(e.getCause());
+      }
+    }
 
     // subclasses implement these
-
     public abstract StructureData getStructureData(int row) throws InvalidRangeException, IOException;
 
     // remove all data
-
     public abstract void clear();
 
     // if we know how to extract the date for this data, add two extra columns
-
     public abstract CalendarDate getObsDate(int row);
 
     public abstract CalendarDate getNomDate(int row);
@@ -417,17 +438,6 @@ public class StructureTable extends JPanel {
         return "nomDate";
       int memberCol = wantDate ? columnIndex - 2 : columnIndex;
       return members.getMember(memberCol).getName();
-    }
-
-    // get row data if in the cache, otherwise read it
-
-    public StructureData getStructureDataHash(int row) throws InvalidRangeException, IOException {
-      StructureData sd = (StructureData) rowHash.get(row);
-      if (sd == null) {
-        sd = getStructureData(row);
-        rowHash.put(row, sd);
-      }
-      return sd;
     }
 
     public Object getValueAt(int row, int column) {

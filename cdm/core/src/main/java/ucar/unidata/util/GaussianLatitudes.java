@@ -5,13 +5,17 @@
 
 package ucar.unidata.util;
 
-import ucar.nc2.util.HashMapLRU;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.concurrent.Immutable;
 
 /**
  * Calculate Gaussian Latitudes by finding the roots of the ordinary Legendre polynomial of degree
  * NLAT using Newton's iteration method.
- * Moderately expensive to compute, so keep LRU cache.
+ * Moderately expensive to compute, so keep cache.
  *
  * @author caron port to Java
  * @author Amy Solomon, 28 Jan 1991, via http://dss.ucar.edu/libraries/gridinterps/gaus-lats.f
@@ -19,19 +23,42 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class GaussianLatitudes {
   private static final double XLIM = 1.0E-7;
-  private static final HashMapLRU<Integer, GaussianLatitudes> hash = new HashMapLRU<>(10, 20);
+  private static final LoadingCache<Integer, GaussianLatitudes> cache =
+      CacheBuilder.newBuilder().maximumSize(50).build(new CacheLoader<Integer, GaussianLatitudes>() {
+        @Override
+        public GaussianLatitudes load(Integer nlats) {
+          return new GaussianLatitudes(nlats);
+        }
+      });
 
   public static GaussianLatitudes factory(int nlats) {
-    GaussianLatitudes glats = hash.get(nlats);
-    if (glats == null) {
-      glats = new GaussianLatitudes(nlats);
-      hash.put(nlats, glats);
+    try {
+      return cache.get(nlats);
+    } catch (ExecutionException e) {
+      throw new IllegalStateException(e.getCause());
     }
-    return glats;
   }
 
-  public final double[] gaussw; // the Gaussian weights
-  public final double[] latd; // the latitudes in degrees
+  //////////////////////////////////////////////////////////////////////
+
+  private final ImmutableList<Double> weights; // the Gaussian weights
+  private final ImmutableList<Double> latitudes; // the latitudes in degrees
+
+  public ImmutableList<Double> getGaussWeights() {
+    return weights;
+  }
+
+  public ImmutableList<Double> getLatitudes() {
+    return latitudes;
+  }
+
+  public double getGaussWeight(int index) {
+    return weights.get(index);
+  }
+
+  public double getLatitude(int index) {
+    return latitudes.get(index);
+  }
 
   /**
    * Constructor
@@ -49,8 +76,7 @@ public class GaussianLatitudes {
     double[] cosc = new double[nlat];
     // the colatitudes in radians
     double[] colat = new double[nlat];
-    gaussw = new double[nlat];
-    latd = new double[nlat];
+    double[] gaussw = new double[nlat];
     // sin(colatitude) or cos(latitude)
     double[] sinc = new double[nlat];
     // Gaussian weight over sin**2(colatitude)
@@ -73,7 +99,7 @@ public class GaussianLatitudes {
      * A = FI*FI1 / SQRT(4.0*FI1*FI1-1.0)
      * B = FI1*FI / SQRT(4.0*FI*FI-1.0)
      */
-    double FI = (double) nlat;
+    double FI = nlat;
     double FI1 = nlat + 1.0;
     double A = FI * FI1 / Math.sqrt(4.0 * FI1 * FI1 - 1.0);
     double B = FI * FI1 / Math.sqrt(4.0 * FI * FI - 1.0);
@@ -191,9 +217,15 @@ public class GaussianLatitudes {
       wos2[i] = wos2[nlat - i - 1];
     }
 
-    // the lats in degrees
-    for (int i = 0; i < nlat; i++)
-      latd[i] = Math.toDegrees(Math.PI / 2 - colat[i]);
+    // Transfer to Immutable lists
+    ImmutableList.Builder<Double> gausswBuilder = ImmutableList.builder();
+    ImmutableList.Builder<Double> latBuilder = ImmutableList.builder();
+    for (int i = 0; i < nlat; i++) {
+      gausswBuilder.add(gaussw[i]);
+      latBuilder.add(Math.toDegrees(Math.PI / 2 - colat[i]));
+    }
+    weights = gausswBuilder.build();
+    latitudes = latBuilder.build();
   }
 
   private double lgord(double cosc, int nlat) {
@@ -229,7 +261,7 @@ public class GaussianLatitudes {
      * F = S1 * C1
      */
 
-    double FN = (double) nlat;
+    double FN = nlat;
     double ANG = FN * colat;
     double S1 = 0.0;
     double C4 = 1.0;
@@ -241,7 +273,7 @@ public class GaussianLatitudes {
       S1 = S1 + C4 * Math.cos(ANG);
       A = A + 2.0;
       B = B + 1.0;
-      double FK = (double) k;
+      double FK = k;
       ANG = colat * (FN - FK - 2.0);
       C4 = (A * (FN - B + 1.0) / (B * (FN + FN - A))) * C4;
     }

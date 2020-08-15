@@ -7,7 +7,7 @@ package ucar.nc2.ft.point;
 import java.io.IOException;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCCIterator;
-import ucar.nc2.util.IOIterator;
+import ucar.nc2.ft.IOIterator;
 
 /**
  * Implement NestedPointFeatureCollectionIterator interface

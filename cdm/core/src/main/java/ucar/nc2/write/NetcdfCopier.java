@@ -157,7 +157,6 @@ public class NetcdfCopier {
       System.out.format("FileCopier done: total bytes written = %d, number of variables = %d%n", counter.bytes,
           counter.countVars);
 
-      cancel.setSuccess();
       return ncwriter.getOutputFile();
     }
   }
@@ -292,7 +291,6 @@ public class NetcdfCopier {
         System.out.format("write var= %s size = %d type = %s%n", oldVar.getFullName(), oldVar.getSize(),
             oldVar.getDataType());
       }
-      cancel.setProgress("writing " + oldVar.getFullName(), counter.countVars++);
 
       long size = oldVar.getSize() * oldVar.getElementSize();
       counter.bytes += size;
@@ -352,18 +350,12 @@ public class NetcdfCopier {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
-        cancel.setProgress(
-            "Reading chunk " + new Section(chunkOrigin, chunkShape) + " from variable: " + oldVar.getShortName(), -1);
-
         Array data = oldVar.read(chunkOrigin, chunkShape);
         if (!getOutputFormat().isNetdf4format() && oldVar.getDataType() == DataType.STRING) {
           data = convertDataToChar(newVar, data);
         }
 
         if (data.getSize() > 0) { // zero when record dimension = 0
-          cancel.setProgress(
-              "Writing chunk " + new Section(chunkOrigin, chunkShape) + " from variable: " + oldVar.getShortName(), -1);
-
           ncwriter.write(newVar, chunkOrigin, data);
           if (debugWrite) {
             System.out.println(" write " + data.getSize() + " bytes at " + new Section(chunkOrigin, chunkShape));

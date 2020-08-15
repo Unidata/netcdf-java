@@ -9,7 +9,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import java.util.Optional;
 import ucar.unidata.util.Format;
@@ -264,7 +263,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
           value = new CoordInterval(getCoordEdge1(i), getCoordEdge2(i), 3);
           break;
       }
-      result.add(new NamedAnything(value, value + " " + getUnits()));
+      result.add(NamedObject.create(value, value + " " + getUnits()));
     }
 
     return result;

@@ -5,6 +5,7 @@
 
 package ucar.nc2.util;
 
+import com.google.common.io.CharStreams;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import java.io.*;
@@ -32,8 +33,6 @@ public class IO {
   private static final boolean debug = false, showCopy = false;
   private static final boolean showHeaders = false;
 
-  private static Class cl;
-
   /**
    * Open a resource as a Stream. First try ClassLoader.getResourceAsStream().
    * If that fails, try a plain old FileInputStream().
@@ -42,8 +41,7 @@ public class IO {
    * @return InputStream or null on failure
    */
   public static InputStream getFileResource(String resourcePath) {
-    if (cl == null)
-      cl = IO.class; // (new IO()).getClass();
+    Class<IO> cl = IO.class;
 
     InputStream is = cl.getResourceAsStream(resourcePath);
     if (is != null) {
@@ -496,12 +494,9 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   public static String readFile(String filename) throws IOException {
-    try (FileInputStream fin = new FileInputStream(filename)) {
-      InputStreamReader reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
-      StringWriter swriter = new StringWriter(50000);
-      UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(swriter);
-      writer.write(reader);
-      return swriter.toString();
+    try (FileInputStream fin = new FileInputStream(filename);
+        InputStreamReader stream = new InputStreamReader(fin, StandardCharsets.UTF_8)) {
+      return CharStreams.toString(stream);
     }
   }
 
@@ -513,11 +508,9 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   public static void writeToFile(String contents, File file) throws IOException {
-    try (FileOutputStream fout = new FileOutputStream(file)) {
-      OutputStreamWriter fw = new OutputStreamWriter(fout, StandardCharsets.UTF_8);
-      UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
-      writer.write(contents);
-      writer.flush();
+    try (FileOutputStream fout = new FileOutputStream(file);
+        OutputStreamWriter fw = new OutputStreamWriter(fout, StandardCharsets.UTF_8)) {
+      fw.write(contents);
     }
   }
 
@@ -767,8 +760,6 @@ public class IO {
     }
   }
 
-
-
   /**
    * read the contents from the named URL, write to a file.
    *
@@ -791,9 +782,7 @@ public class IO {
       if (showStackTrace)
         e.printStackTrace();
       return "** IOException reading URL: <" + urlString + ">\n" + e.getMessage() + "\n";
-
     }
-
   }
 
   /**
@@ -839,9 +828,7 @@ public class IO {
       copyUrlB(urlString, out, buffer_size);
       return "ok";
     }
-
   }
-
 
   /**
    * Read the contents from the named URL and place into a String.

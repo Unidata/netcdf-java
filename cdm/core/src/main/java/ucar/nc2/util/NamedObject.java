@@ -4,29 +4,39 @@
  */
 package ucar.nc2.util;
 
-/**
- * An object that has a name and a description.
- * 
- * @deprecated will move in ver 6
- */
-@Deprecated
+import com.google.auto.value.AutoValue;
+
+/** An object that has a name and a description. */
 public interface NamedObject {
 
-  /**
-   * Get the object's name
-   * 
-   * @return object's name
-   */
+  /** Get the object's name */
   String getName();
 
-  /**
-   * Get the object's description. Use as a tooltip, for example
-   * 
-   * @return object's description
-   */
+  /** Get the object's description. */
   String getDescription();
 
-  // the object itself
+  /** Get the object itself */
   Object getValue();
+
+  static NamedObject create(String name, String desc, Object value) {
+    return NamedObject.Value.create(name, desc, value);
+  }
+
+  static NamedObject create(Object value, String desc) {
+    return NamedObject.Value.create(value.toString(), desc, value);
+  }
+
+  @AutoValue
+  abstract class Value implements NamedObject {
+    public abstract String getName();
+
+    public abstract String getDescription();
+
+    public abstract Object getValue();
+
+    private static NamedObject create(String name, String desc, Object value) {
+      return new AutoValue_NamedObject_Value(name, desc, value);
+    }
+  }
 
 }

@@ -6,7 +6,7 @@ package ucar.nc2.ui.grid;
 
 import ucar.ma2.IsMissingEvaluator;
 import ucar.ui.widget.FontUtil;
-import ucar.nc2.util.ListenerManager;
+import ucar.nc2.ui.util.ListenerManager;
 import ucar.unidata.util.Format;
 import java.awt.*;
 import java.awt.event.*;
