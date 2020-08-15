@@ -17,8 +17,6 @@ public class TestAliasTranslator {
     assertThat(AliasTranslator.translateAlias("alias")).isEqualTo("really");
     assertThat(AliasTranslator.translateAlias("aliasNot")).isEqualTo("reallyNot");
     assertThat(AliasTranslator.translateAlias("alia")).isEqualTo("alia");
-
-    assertThat(AliasTranslator.size()).isEqualTo(1);
   }
 
 }
