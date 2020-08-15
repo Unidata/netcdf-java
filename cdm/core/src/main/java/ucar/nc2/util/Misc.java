@@ -131,6 +131,7 @@ public class Misc {
 
   //////////////////////////////////////////////////////////////////////
 
+  /** For testing, use Truth.assertThat(raw1).isEqualTo(raw2) */
   public static boolean compare(byte[] raw1, byte[] raw2, Formatter f) {
     if (raw1 == null || raw2 == null)
       return false;
@@ -143,16 +144,20 @@ public class Misc {
     int ndiff = 0;
     for (int i = 0; i < len; i++) {
       if (raw1[i] != raw2[i]) {
-        f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
+        f.format(" %3d : %3d != %3d%n", i, raw1[i], raw2[i]);
         ndiff++;
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d bytes, %d are different %n", len, ndiff);
+      f.format("Misc.compare %d bytes, %d are different%n", len, ndiff);
     return ndiff == 0 && (raw1.length == raw2.length);
   }
 
+  /** For testing, use Truth.assertThat(raw1).isEqualTo(raw2) */
   public static boolean compare(float[] raw1, float[] raw2, Formatter f) {
+    if (raw1 == null || raw2 == null)
+      return false;
+
     boolean ok = true;
     if (raw1.length != raw2.length) {
       f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
@@ -169,14 +174,18 @@ public class Misc {
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d floats, %d are different %n", len, ndiff);
+      f.format("Misc.compare %d floats, %d are different%n", len, ndiff);
     return ok;
   }
 
+  /** For testing, use Truth.assertThat(raw1).isEqualTo(raw2) */
   public static boolean compare(int[] raw1, int[] raw2, Formatter f) {
+    if (raw1 == null || raw2 == null)
+      return false;
+
     boolean ok = true;
     if (raw1.length != raw2.length) {
-      f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+      f.format("compareInt: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
       ok = false;
     }
     int len = Math.min(raw1.length, raw2.length);
@@ -184,13 +193,13 @@ public class Misc {
     int ndiff = 0;
     for (int i = 0; i < len; i++) {
       if (raw1[i] != raw2[i]) {
-        f.format(" %5d : %3d != %3d%n", i, raw1[i], raw2[i]);
+        f.format(" %3d : %3d != %3d%n", i, raw1[i], raw2[i]);
         ndiff++;
         ok = false;
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d ints, %d are different %n", len, ndiff);
+      f.format("Misc.compare %d ints, %d are different%n", len, ndiff);
     return ok;
   }
 }

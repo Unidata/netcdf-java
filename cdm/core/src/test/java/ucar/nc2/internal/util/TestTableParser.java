@@ -1,4 +1,9 @@
-package ucar.nc2.util;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.internal.util;
 
 import org.junit.Assert;
 import org.junit.Test;

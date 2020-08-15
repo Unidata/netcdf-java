@@ -1,4 +1,9 @@
-package ucar.nc2.util;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.internal.util;
 
 import static com.google.common.truth.Truth.assertThat;
 import java.util.ArrayList;
@@ -9,7 +14,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import ucar.nc2.internal.util.DiskCache2;
 
 /**
  * @author cwardgar

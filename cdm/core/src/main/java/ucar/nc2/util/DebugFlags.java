@@ -18,7 +18,7 @@ public interface DebugFlags {
    * @param flagsOn space-separated list of flags to turn on.
    */
   static DebugFlags create(String flagsOn) {
-    return DebugFlags.create(flagsOn);
+    return new DebugFlagsImpl(flagsOn);
   }
 
   /** Test if named debug flag is set. */

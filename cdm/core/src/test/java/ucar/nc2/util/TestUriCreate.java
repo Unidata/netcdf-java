@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 
-/** Examine how java.net.URI brakes up a uri string */
+/** Examine how java.net.URI breaks up a uri string */
 public class TestUriCreate {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
