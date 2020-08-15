@@ -5,7 +5,7 @@ import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.ui.util.SocketMessage;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.internal.util.EscapeStrings;
 
 public class TestSocketMessage {
   private static final boolean testing = false;

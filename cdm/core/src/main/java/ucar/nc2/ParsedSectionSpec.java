@@ -5,7 +5,7 @@
 
 package ucar.nc2;
 
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.internal.util.EscapeStrings;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;

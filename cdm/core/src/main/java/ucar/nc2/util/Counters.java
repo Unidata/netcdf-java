@@ -10,11 +10,7 @@ import javax.annotation.Nullable;
 
 /**
  * Count number of times a value appears.
- * value may be any Comparable;
- * equals() is used for uniqueness.
- *
- * @author caron
- * @since 11/15/2014
+ * The value may be any Comparable; equals() is used for uniqueness.
  */
 public class Counters {
   List<Counter> counters = new ArrayList<>();
@@ -53,7 +49,7 @@ public class Counters {
    * 
    * @return true if its a new value, not seen before.
    */
-  public boolean count(String name, Comparable value) {
+  public boolean count(String name, Comparable<?> value) {
     Counter counter = map.get(name);
     if (counter == null) {
       counter = add(name);
@@ -80,10 +76,10 @@ public class Counters {
   }
 
   public static class Counter {
-    private String name;
+    private final String name;
     private boolean showRange;
-    private Comparable first, last;
-    private Map<Comparable, Integer> set = new HashMap<>();
+    private Comparable<?> first, last;
+    private Map<Comparable<?>, Integer> set = new HashMap<>();
     private String range;
 
     public Counter(String name) {
@@ -103,7 +99,7 @@ public class Counters {
       set = new HashMap<>();
     }
 
-    public boolean count(Comparable value) {
+    public boolean count(Comparable<?> value) {
       Integer count = set.get(value);
       if (count == null) {
         set.put(value, 1);
@@ -115,7 +111,7 @@ public class Counters {
     }
 
     public void addTo(Counter sub) {
-      for (Map.Entry<Comparable, Integer> entry : sub.set.entrySet()) {
+      for (Map.Entry<Comparable<?>, Integer> entry : sub.set.entrySet()) {
         Integer count = this.set.get(entry.getKey());
         if (count == null)
           count = 0;
@@ -127,34 +123,34 @@ public class Counters {
       return set.size();
     }
 
-    public Set<Comparable> getValues() {
+    public Set<Comparable<?>> getValues() {
       return set.keySet();
     }
 
-    public Integer getCount(Comparable key) {
+    public Integer getCount(Comparable<?> key) {
       return set.get(key);
     }
 
-    public Comparable getFirst() {
+    public Comparable<?> getFirst() {
       return first;
     }
 
-    public Comparable getLast() {
+    public Comparable<?> getLast() {
       return last;
     }
 
     // get the value with greatest number of values.
     // if more than one, but all have same number, return null
     @Nullable
-    public Comparable getMode() {
+    public Comparable<?> getMode() {
       if (set.size() == 1)
         return set.keySet().iterator().next(); // if only one, return it
 
       int max = -1;
-      Comparable mode = null;
+      Comparable<?> mode = null;
       boolean same = true; // are all keys the same ??
-      Comparable testKey = null;
-      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
+      Comparable<?> testKey = null;
+      for (Map.Entry<Comparable<?>, Integer> entry : set.entrySet()) {
         Comparable entryKey = entry.getKey();
         if (testKey != null && entryKey.compareTo(testKey) != 0)
           same = false;
@@ -170,7 +166,7 @@ public class Counters {
 
     public int getTotal() {
       int total = 0;
-      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
+      for (Map.Entry<Comparable<?>, Integer> entry : set.entrySet()) {
         total += entry.getValue();
       }
       return total;
@@ -189,8 +185,8 @@ public class Counters {
           f.format("   %10s - %10s: count = %d%n", list.get(0), list.get(n - 1), getUnique());
 
       } else {
-        Comparable prev = null;
-        for (Comparable key : list) {
+        Comparable<?> prev = null;
+        for (Comparable<?> key : list) {
           int count = set.get(key);
           boolean isHashDup = (prev != null) && key.hashCode() == prev.hashCode();
           boolean isNameDup = (prev != null) && key.toString().equals(prev.toString());

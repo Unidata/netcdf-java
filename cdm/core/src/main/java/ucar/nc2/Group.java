@@ -15,7 +15,7 @@ import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
 import java.util.Formatter;

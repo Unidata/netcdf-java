@@ -7,7 +7,7 @@ package thredds.logs;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.internal.util.EscapeStrings;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;

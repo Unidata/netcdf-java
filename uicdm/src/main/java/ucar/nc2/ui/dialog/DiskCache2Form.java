@@ -10,7 +10,7 @@
 package ucar.nc2.ui.dialog;
 
 import java.awt.event.*;
-import ucar.nc2.util.DiskCache2;
+import ucar.nc2.internal.util.DiskCache2;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;

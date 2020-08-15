@@ -16,7 +16,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import ucar.nc2.util.DiskCache;
+import ucar.nc2.internal.util.DiskCache;
 
 /** Utility to implement nccopy command line utility. */
 public class Nccopy {

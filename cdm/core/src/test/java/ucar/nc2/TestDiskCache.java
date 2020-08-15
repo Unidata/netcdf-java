@@ -1,14 +1,14 @@
 package ucar.nc2;
 
-import static ucar.nc2.util.DiskCache.cleanCache;
-import static ucar.nc2.util.DiskCache.showCache;
+import static ucar.nc2.internal.util.DiskCache.cleanCache;
+import static ucar.nc2.internal.util.DiskCache.showCache;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
 import org.junit.Test;
-import ucar.nc2.util.DiskCache;
+import ucar.nc2.internal.util.DiskCache;
 
 /** Test DiskCache */
 public class TestDiskCache {

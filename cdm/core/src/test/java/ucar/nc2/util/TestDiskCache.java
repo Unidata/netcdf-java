@@ -8,6 +8,7 @@ package ucar.nc2.util;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.internal.util.DiskCache2;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.lang.invoke.MethodHandles;

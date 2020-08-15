@@ -12,7 +12,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.Catalog;
 import ucar.nc2.util.AliasTranslator;
-import ucar.nc2.util.URLnaming;
+import ucar.nc2.util.net.URLnaming;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
 import java.net.URL;

@@ -9,6 +9,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.util.net.URLnaming;
 
 /** Test URLnaming.resolve() */
 public class TestURLnaming {

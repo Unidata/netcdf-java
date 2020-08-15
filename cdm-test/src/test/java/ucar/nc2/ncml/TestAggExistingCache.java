@@ -19,7 +19,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.ncml.Aggregation;
-import ucar.nc2.util.DiskCache2;
+import ucar.nc2.internal.util.DiskCache2;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;

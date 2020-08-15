@@ -50,7 +50,7 @@ import ucar.nc2.internal.dataset.DatasetEnhancer;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.URLnaming;
+import ucar.nc2.util.net.URLnaming;
 import static ucar.unidata.util.StringUtil2.getTokens;
 
 /**

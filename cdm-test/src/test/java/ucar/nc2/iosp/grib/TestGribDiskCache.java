@@ -32,7 +32,6 @@
 
 package ucar.nc2.iosp.grib;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.util.DiskCache2;
+import ucar.nc2.internal.util.DiskCache2;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;

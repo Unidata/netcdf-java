@@ -466,7 +466,7 @@ public class FileCacheARC implements FileCacheIF {
       }
 
       public int compareTo(CacheFile o) {
-        return Misc.compare(lastAccessed.get(), o.getLastAccessed());
+        return Long.compare(lastAccessed.get(), o.getLastAccessed());
       }
     }
   }
@@ -474,7 +474,7 @@ public class FileCacheARC implements FileCacheIF {
   private static class CacheElementComparator implements Comparator<CacheElement> {
     @Override
     public int compare(CacheElement o1, CacheElement o2) {
-      return Misc.compare(o1.getLastAccessed(), o2.getLastAccessed());
+      return Long.compare(o1.getLastAccessed(), o2.getLastAccessed());
     }
   }
 

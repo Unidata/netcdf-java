@@ -37,7 +37,7 @@ import ucar.ui.widget.*;
 import ucar.ui.widget.ProgressMonitor;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
-import ucar.nc2.util.DiskCache2;
+import ucar.nc2.internal.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.xml.RuntimeConfigParser;
