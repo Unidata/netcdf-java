@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.util;
+package ucar.nc2.internal.util;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.internal.util.DiskCache2;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.lang.invoke.MethodHandles;

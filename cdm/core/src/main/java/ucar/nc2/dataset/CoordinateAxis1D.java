@@ -117,8 +117,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public List<NamedObject> getNames() {
     int n = getDimension(0).getLength();
     List<NamedObject> names = new ArrayList<>(n);
-    for (int i = 0; i < n; i++)
-      names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getShortName() + " " + getUnitsString()));
+    for (int i = 0; i < n; i++) {
+      names.add(NamedObject.create(getCoordName(i), getShortName() + " " + getUnitsString()));
+    }
     return names;
   }
 

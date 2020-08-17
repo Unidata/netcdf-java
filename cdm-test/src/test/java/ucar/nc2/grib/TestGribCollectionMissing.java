@@ -43,7 +43,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
@@ -75,14 +75,14 @@ public class TestGribCollectionMissing {
     PartitionCollectionImmutable.countPC = 0;
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
 
   @AfterClass
   static public void after() {
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
     Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;

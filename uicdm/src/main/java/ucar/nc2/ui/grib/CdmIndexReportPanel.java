@@ -10,7 +10,7 @@ import thredds.inventory.*;
 import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.ui.ReportPanel;
-import ucar.nc2.util.CloseableIterator;
+import thredds.inventory.CloseableIterator;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;

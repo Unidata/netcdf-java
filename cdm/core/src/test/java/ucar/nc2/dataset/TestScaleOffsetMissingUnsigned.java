@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NetcdfFormatWriter;

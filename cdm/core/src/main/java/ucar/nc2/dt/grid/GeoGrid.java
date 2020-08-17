@@ -30,7 +30,7 @@ import java.util.*;
  * @author caron
  */
 
-public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
+public class GeoGrid implements ucar.nc2.dt.GridDatatype {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGrid.class);
   private static final boolean debugArrayShape = false;
 
@@ -337,11 +337,6 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   @Override
   public String getDescription() {
     return vs.getDescription();
-  }
-
-  @Override
-  public Object getValue() {
-    return this;
   }
 
   /**

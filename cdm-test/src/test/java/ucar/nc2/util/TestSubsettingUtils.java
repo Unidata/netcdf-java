@@ -12,6 +12,7 @@ import ucar.nc2.Variable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Random;
+import ucar.nc2.internal.util.CompareNetcdf2;
 
 /**
  * Utilities to read and subset data

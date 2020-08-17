@@ -15,7 +15,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.DiskCache2;
+import ucar.nc2.internal.util.DiskCache2;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;

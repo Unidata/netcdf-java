@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class TestH5readAll {
 
   @AfterClass
   static public void after() {
-    H5headerNew.setDebugFlags(new DebugFlagsImpl("")); // make sure debug flags are off
+    H5headerNew.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
   @Parameterized.Parameters(name = "{0}")

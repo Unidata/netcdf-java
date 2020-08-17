@@ -8,7 +8,7 @@ package thredds.inventory.partition;
 import java.util.Collections;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import ucar.nc2.util.CloseableIterator;
+import thredds.inventory.CloseableIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

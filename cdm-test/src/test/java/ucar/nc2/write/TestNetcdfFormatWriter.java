@@ -22,7 +22,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 
 /** NetcdfFormatWriter tests */
 public class TestNetcdfFormatWriter {

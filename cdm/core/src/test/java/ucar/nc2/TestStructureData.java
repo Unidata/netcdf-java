@@ -16,7 +16,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureDataScalar;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 
 /** Test {@link ucar.nc2.Structure} and {@link ucar.ma2.StructureData} */
 public class TestStructureData {

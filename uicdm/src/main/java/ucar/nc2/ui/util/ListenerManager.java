@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.util;
+package ucar.nc2.ui.util;
 
 import org.slf4j.Logger;
 import javax.annotation.concurrent.ThreadSafe;
@@ -54,10 +54,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
  lm.sendEvent(event);
  * </pre>
- * 
- * @deprecated will move in ver 6
  */
-@Deprecated
 @ThreadSafe
 public class ListenerManager {
   private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ListenerManager.class);

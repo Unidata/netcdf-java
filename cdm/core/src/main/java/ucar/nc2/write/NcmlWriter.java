@@ -41,7 +41,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
-import ucar.nc2.util.URLnaming;
+import ucar.nc2.util.net.URLnaming;
 import ucar.nc2.util.xml.Parse;
 
 /**

@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import thredds.client.catalog.ServiceType;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.internal.util.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
 import java.io.*;

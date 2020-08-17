@@ -5,7 +5,7 @@
 package ucar.nc2.ui.geoloc;
 
 import ucar.ui.widget.BAMutil;
-import ucar.nc2.util.ListenerManager;
+import ucar.nc2.ui.util.ListenerManager;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;

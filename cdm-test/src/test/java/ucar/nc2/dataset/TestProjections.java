@@ -21,7 +21,7 @@ import java.util.Formatter;
 import java.util.List;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;

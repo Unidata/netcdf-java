@@ -4,8 +4,6 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.util.IOIterator;
-
 /**
  * Single nested PointFeatureCollection
  *

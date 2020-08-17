@@ -15,8 +15,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.DebugFlagsImpl;
-import ucar.nc2.util.Misc;
+import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.category.NeedsRdaData;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -36,7 +35,7 @@ public class TestRdaReading {
   // doesnt actually work since we only have the gbx9
   @Test
   public void testNonOrthMRUTC() throws IOException, InvalidRangeException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
 
     String endpoint = "D:/work/rdavm/ds277.6/monthly/ds277.6.ncx4";
     String ccName = "ds277.6#MRUTC-LatLon_418X360-4p83S-179p50W";
@@ -54,13 +53,13 @@ public class TestRdaReading {
       System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   // /thredds/cdmrfeature/grid/aggregations/g/ds084.3/1/TwoD?req=data&var=v-component_of_wind_potential_vorticity_surface&timePresent=true
   @Test
   public void testNegDataSize() throws IOException, InvalidRangeException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
 
     String endpoint = "D:/work/rdavm/ds084.3/ds084.3.ncx4";
     String covName = "v-component_of_wind_potential_vorticity_surface";
@@ -77,7 +76,7 @@ public class TestRdaReading {
       System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   /*
@@ -100,7 +99,7 @@ public class TestRdaReading {
 
   // @Test
   public void testWrongRuntime() throws IOException, InvalidRangeException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
 
     String endpoint = "D:/work/rdavm/index/ds083.2_Grib2.ncx4";
     String covName = "Soil_temperature_depth_below_surface_layer";
@@ -117,7 +116,7 @@ public class TestRdaReading {
       System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   /*
@@ -143,7 +142,7 @@ public class TestRdaReading {
    */
   @Test
   public void testBadSize() throws IOException, InvalidRangeException {
-    // Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    // Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
 
     String endpoint = "D:/work/rdavm/ds084.3/ds084.3.ncx4";
     String covName = "Geopotential_height_isobaric";
@@ -160,7 +159,7 @@ public class TestRdaReading {
       System.out.printf(" read data from %s shape = %s%n", cov.getName(), Arrays.toString(data.getShape()));
     }
 
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
 }

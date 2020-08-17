@@ -17,7 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import software.amazon.awssdk.regions.Region;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;

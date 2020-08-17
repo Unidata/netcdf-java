@@ -13,7 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.NcmlWriter;
 
 /** Read dataset, write NcML, compare results. */

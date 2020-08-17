@@ -5,10 +5,7 @@
 
 package ucar.nc2.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Formatter;
-import java.util.List;
 import ucar.ma2.DataType;
 
 /** Miscellaneous static routines. */
@@ -119,57 +116,6 @@ public class Misc {
     return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
   }
 
-  //////////////////////////////////////////////////////////////////////
-
-  /** @deprecated use Arrays.toString(arr) */
-  @Deprecated
-  public static String showInts(int[] inta) {
-    Formatter f = new Formatter();
-    showInts(inta, f);
-    return f.toString();
-  }
-
-  /** @deprecated use List.toString() */
-  public static String showInts(List<Integer> intList) {
-    if (intList == null)
-      return "null";
-    Formatter f = new Formatter();
-    for (int i : intList)
-      f.format("%d,", i);
-    return f.toString();
-  }
-
-  /** @deprecated use Arrays.toString(arr) */
-  public static void showInts(int[] inta, Formatter f) {
-    if (inta == null) {
-      f.format("null");
-      return;
-    }
-    for (int i : inta)
-      f.format("%d, ", i);
-  }
-
-  /** @deprecated use Arrays.toString(arr) */
-  public static String showBytes(byte[] buff) {
-    StringBuilder sbuff = new StringBuilder();
-    for (int i = 0; i < buff.length; i++) {
-      byte b = buff[i];
-      int ub = (b < 0) ? b + 256 : b;
-      if (i > 0)
-        sbuff.append(" ");
-      sbuff.append(ub);
-    }
-    return sbuff.toString();
-  }
-
-  /** @deprecated use Arrays.toString(arr) */
-  public static void showBytes(byte[] buff, Formatter f) {
-    for (byte b : buff) {
-      int ub = (b < 0) ? b + 256 : b;
-      f.format("%3d ", ub);
-    }
-  }
-
   public static String showBits(byte[] bytes) {
     try (Formatter f = new Formatter()) {
       int count = 0;
@@ -185,6 +131,7 @@ public class Misc {
 
   //////////////////////////////////////////////////////////////////////
 
+  /** For testing, use Truth.assertThat(raw1).isEqualTo(raw2) */
   public static boolean compare(byte[] raw1, byte[] raw2, Formatter f) {
     if (raw1 == null || raw2 == null)
       return false;
@@ -197,16 +144,20 @@ public class Misc {
     int ndiff = 0;
     for (int i = 0; i < len; i++) {
       if (raw1[i] != raw2[i]) {
-        f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
+        f.format(" %3d : %3d != %3d%n", i, raw1[i], raw2[i]);
         ndiff++;
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d bytes, %d are different %n", len, ndiff);
+      f.format("Misc.compare %d bytes, %d are different%n", len, ndiff);
     return ndiff == 0 && (raw1.length == raw2.length);
   }
 
+  /** For testing, use Truth.assertThat(raw1).isEqualTo(raw2) */
   public static boolean compare(float[] raw1, float[] raw2, Formatter f) {
+    if (raw1 == null || raw2 == null)
+      return false;
+
     boolean ok = true;
     if (raw1.length != raw2.length) {
       f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
@@ -223,14 +174,18 @@ public class Misc {
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d floats, %d are different %n", len, ndiff);
+      f.format("Misc.compare %d floats, %d are different%n", len, ndiff);
     return ok;
   }
 
+  /** For testing, use Truth.assertThat(raw1).isEqualTo(raw2) */
   public static boolean compare(int[] raw1, int[] raw2, Formatter f) {
+    if (raw1 == null || raw2 == null)
+      return false;
+
     boolean ok = true;
     if (raw1.length != raw2.length) {
-      f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+      f.format("compareInt: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
       ok = false;
     }
     int len = Math.min(raw1.length, raw2.length);
@@ -238,62 +193,13 @@ public class Misc {
     int ndiff = 0;
     for (int i = 0; i < len; i++) {
       if (raw1[i] != raw2[i]) {
-        f.format(" %5d : %3d != %3d%n", i, raw1[i], raw2[i]);
+        f.format(" %3d : %3d != %3d%n", i, raw1[i], raw2[i]);
         ndiff++;
         ok = false;
       }
     }
     if (ndiff > 0)
-      f.format("Misc.compare %d ints, %d are different %n", len, ndiff);
+      f.format("Misc.compare %d ints, %d are different%n", len, ndiff);
     return ok;
   }
-
-  /** @deprecated use Integer.compare(x, y) */
-  @Deprecated
-  public static int compare(int x, int y) {
-    return Integer.compare(x, y);
-  }
-
-  /** @deprecated use Long.compare(x, y) */
-  @Deprecated
-  public static int compare(long x, long y) {
-    return Long.compare(x, y);
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public static String stackTraceToString(StackTraceElement[] stackTrace) {
-    StringBuilder buf = new StringBuilder();
-    for (StackTraceElement ste : stackTrace) {
-      buf.append(ste);
-      buf.append("\n");
-    }
-    return buf.toString();
-  }
-
-
-  /** @deprecated use Iterables.size(Iterable it) */
-  @Deprecated
-  public static int getSize(Iterable ii) {
-    if (ii instanceof Collection)
-      return ((Collection) ii).size();
-    int count = 0;
-    for (Object i : ii)
-      count++;
-    return count;
-  }
-
-  /** @deprecated use ImmutableList.copyOf(iterator) or Lists.newArrayList(iterator) */
-  @Deprecated
-  public static List getList(Iterable ii) {
-    if (ii instanceof List)
-      return (List) ii;
-    List<Object> result = new ArrayList<>();
-    for (Object i : ii)
-      result.add(i);
-    return result;
-  }
-
-
-
 }

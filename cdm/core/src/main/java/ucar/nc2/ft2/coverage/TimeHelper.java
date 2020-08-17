@@ -8,7 +8,6 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.*;
-import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
@@ -81,14 +80,14 @@ public class TimeHelper {
         case regularPoint:
         case irregularPoint:
           value = axis.getCoordMidpoint(i);
-          result.add(new NamedAnything(makeDate(value), axis.getAxisType().toString()));
+          result.add(NamedObject.create(makeDate(value), axis.getAxisType().toString()));
           break;
 
         case regularInterval:
         case contiguousInterval:
         case discontiguousInterval:
           CoordInterval coord = new CoordInterval(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);
-          result.add(new NamedAnything(coord, coord + " " + axis.getUnits()));
+          result.add(NamedObject.create(coord, coord + " " + axis.getUnits()));
           break;
       }
     }

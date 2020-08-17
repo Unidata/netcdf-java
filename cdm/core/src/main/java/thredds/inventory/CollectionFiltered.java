@@ -4,7 +4,6 @@
  */
 package thredds.inventory;
 
-import ucar.nc2.util.CloseableIterator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

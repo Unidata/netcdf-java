@@ -39,6 +39,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.httpservices.HttpNameValue;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.net.Util;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.unidata.util.Urlencoded;
 import ucar.util.prefs.PreferencesExt;
@@ -411,7 +412,7 @@ public class URLDumpPane extends TextHistoryPane {
     if (urlString == null)
       return;
     String contents = ta.getText();
-    IO.HttpResult result = IO.putToURL(urlString, contents);
+    Util.HttpResult result = Util.putToURL(urlString, contents);
     javax.swing.JOptionPane.showMessageDialog(this, "Status code= " + result.statusCode + "\n" + result.message);
   }
 

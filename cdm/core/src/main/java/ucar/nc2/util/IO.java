@@ -5,10 +5,10 @@
 
 package ucar.nc2.util;
 
+import com.google.common.io.CharStreams;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.CDM;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -25,14 +25,11 @@ import java.util.zip.GZIPInputStream;
  * @see "http://stackoverflow.com/questions/12552863/correct-idiom-for-managing-multiple-chained-resources-in-try-with-resources-bloc"
  */
 public class IO {
-
   public static final int default_file_buffersize = 9200;
   public static final int default_socket_buffersize = 64000;
   private static final boolean showStackTrace = false;
   private static final boolean debug = false, showCopy = false;
   private static final boolean showHeaders = false;
-
-  private static Class cl;
 
   /**
    * Open a resource as a Stream. First try ClassLoader.getResourceAsStream().
@@ -42,8 +39,7 @@ public class IO {
    * @return InputStream or null on failure
    */
   public static InputStream getFileResource(String resourcePath) {
-    if (cl == null)
-      cl = IO.class; // (new IO()).getClass();
+    Class<IO> cl = IO.class;
 
     InputStream is = cl.getResourceAsStream(resourcePath);
     if (is != null) {
@@ -496,12 +492,9 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   public static String readFile(String filename) throws IOException {
-    try (FileInputStream fin = new FileInputStream(filename)) {
-      InputStreamReader reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
-      StringWriter swriter = new StringWriter(50000);
-      UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(swriter);
-      writer.write(reader);
-      return swriter.toString();
+    try (FileInputStream fin = new FileInputStream(filename);
+        InputStreamReader stream = new InputStreamReader(fin, StandardCharsets.UTF_8)) {
+      return CharStreams.toString(stream);
     }
   }
 
@@ -513,11 +506,9 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   public static void writeToFile(String contents, File file) throws IOException {
-    try (FileOutputStream fout = new FileOutputStream(file)) {
-      OutputStreamWriter fw = new OutputStreamWriter(fout, StandardCharsets.UTF_8);
-      UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
-      writer.write(contents);
-      writer.flush();
+    try (FileOutputStream fout = new FileOutputStream(file);
+        OutputStreamWriter fw = new OutputStreamWriter(fout, StandardCharsets.UTF_8)) {
+      fw.write(contents);
     }
   }
 
@@ -767,8 +758,6 @@ public class IO {
     }
   }
 
-
-
   /**
    * read the contents from the named URL, write to a file.
    *
@@ -791,9 +780,7 @@ public class IO {
       if (showStackTrace)
         e.printStackTrace();
       return "** IOException reading URL: <" + urlString + ">\n" + e.getMessage() + "\n";
-
     }
-
   }
 
   /**
@@ -839,9 +826,7 @@ public class IO {
       copyUrlB(urlString, out, buffer_size);
       return "ok";
     }
-
   }
-
 
   /**
    * Read the contents from the named URL and place into a String.
@@ -868,63 +853,6 @@ public class IO {
       return readURLcontentsWithException(urlString);
     } catch (IOException e) {
       return e.getMessage();
-    }
-  }
-
-  /**
-   * use HTTP PUT to send the contents to the named URL.
-   *
-   * @param urlString the URL to read from. must be http:
-   * @param contents String holding the contents
-   * @return a Result object; generally 0 <= code <=400 is ok
-   */
-  public static HttpResult putToURL(String urlString, String contents) {
-    URL url;
-    try {
-      url = new URL(urlString);
-    } catch (MalformedURLException e) {
-      return new HttpResult(-1, "** MalformedURLException on URL (" + urlString + ")\n" + e.getMessage());
-    }
-
-    try {
-      java.net.HttpURLConnection c = (HttpURLConnection) url.openConnection();
-      c.setDoOutput(true);
-      c.setRequestMethod("PUT");
-
-      // write it
-      try (OutputStream out = c.getOutputStream()) {
-        BufferedOutputStream bout = new BufferedOutputStream(out);
-        IO.copy(new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)), bout);
-      }
-
-      int code = c.getResponseCode();
-      String mess = c.getResponseMessage();
-      return new HttpResult(code, mess);
-
-    } catch (java.net.ConnectException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      return new HttpResult(-2,
-          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
-
-    } catch (IOException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      return new HttpResult(-3, "** IOException on URL: (" + urlString + ")\n" + e.getMessage());
-    }
-
-  }
-
-  /**
-   * Holds the result of an HTTP action.
-   */
-  public static class HttpResult {
-    public int statusCode;
-    public String message;
-
-    HttpResult(int code, String message) {
-      this.statusCode = code;
-      this.message = message;
     }
   }
 

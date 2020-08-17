@@ -8,7 +8,7 @@ package ucar.nc2.grib.grib2.table;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.nc2.util.TableParser;
+import ucar.nc2.internal.util.TableParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Formatter;

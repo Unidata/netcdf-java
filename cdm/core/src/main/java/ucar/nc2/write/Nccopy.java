@@ -16,7 +16,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import ucar.nc2.util.DiskCache;
+import ucar.nc2.internal.util.DiskCache;
 
 /** Utility to implement nccopy command line utility. */
 public class Nccopy {
@@ -176,11 +176,9 @@ public class Nccopy {
       NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
 
       try (NetcdfFile ncfileOut = copier.write(cancel)) {
-
-      } finally {
-        cancel.setDone(true);
-        System.out.printf("%s%n", cancel);
+        // empty body
       }
+      System.out.printf("Successfully copied%n");
 
     } catch (Exception ex) {
       System.out.printf("%s = %s %n", ex.getClass().getName(), ex.getMessage());

@@ -13,7 +13,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -21,11 +20,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.iosp.NetcdfFileFormat;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 
 /** Test {@link ucar.nc2.stream.NcStreamWriter} */

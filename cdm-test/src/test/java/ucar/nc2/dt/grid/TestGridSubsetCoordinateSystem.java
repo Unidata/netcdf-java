@@ -21,7 +21,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.lang.invoke.MethodHandles;
@@ -77,7 +77,7 @@ public class TestGridSubsetCoordinateSystem {
   @Test
   public void testGridDomain() throws Exception {
     System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
     try (GridDataset dataset = GridDataset.open(filename)) {
       GeoGrid grid = dataset.findGridByName(gridName);
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -90,7 +90,7 @@ public class TestGridSubsetCoordinateSystem {
       testDomain("subset grid", gridSubset.getDimensions(), gcsSubset.getCoordinateAxes());
 
     } finally {
-      Grib.setDebugFlags(new DebugFlagsImpl(""));
+      Grib.setDebugFlags(DebugFlags.create(""));
     }
   }
 
@@ -109,7 +109,7 @@ public class TestGridSubsetCoordinateSystem {
   @Test
   public void testCoordinateSystemDomain() throws Exception {
     System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
       Assert.assertNotNull(filename, ncd);
@@ -121,7 +121,7 @@ public class TestGridSubsetCoordinateSystem {
       }
 
     } finally {
-      Grib.setDebugFlags(new DebugFlagsImpl(""));
+      Grib.setDebugFlags(DebugFlags.create(""));
     }
   }
 

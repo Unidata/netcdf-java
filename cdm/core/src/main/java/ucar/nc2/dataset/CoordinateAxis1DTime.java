@@ -10,12 +10,10 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Group;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Dimension;
-import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.ma2.*;
 import java.util.*;
@@ -177,8 +175,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   public List<NamedObject> getNames() {
     List<CalendarDate> cdates = getCalendarDates();
     List<NamedObject> names = new ArrayList<>(cdates.size());
-    for (CalendarDate cd : cdates)
-      names.add(new NamedAnything(CalendarDateFormatter.toDateTimeStringISO(cd), getShortName())); // "calendar date"));
+    for (CalendarDate cd : cdates) {
+      names.add(NamedObject.create(CalendarDateFormatter.toDateTimeStringISO(cd), getShortName()));
+    }
     return names;
   }
 

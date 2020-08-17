@@ -6,7 +6,7 @@ import java.util.List;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.util.IOIterator;
+import ucar.nc2.ft.IOIterator;
 
 /**
  * @author cwardgar

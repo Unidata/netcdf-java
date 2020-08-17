@@ -7,7 +7,7 @@ package ucar.nc2;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.internal.util.EscapeStrings;
 import ucar.ma2.*;
 import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;

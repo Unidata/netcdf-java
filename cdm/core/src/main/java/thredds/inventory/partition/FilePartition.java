@@ -5,7 +5,7 @@
 package thredds.inventory.partition;
 
 import thredds.inventory.*;
-import ucar.nc2.util.CloseableIterator;
+import thredds.inventory.CloseableIterator;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;

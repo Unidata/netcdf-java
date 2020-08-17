@@ -97,7 +97,7 @@ public class TestN4reading {
 
   @Test
   public void testEnums() throws IOException {
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = testDir + "tst/tst_enums.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
@@ -111,7 +111,7 @@ public class TestN4reading {
 
   @Test
   public void testVlenStrings() throws IOException {
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = testDir + "tst/tst_strings.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
@@ -123,7 +123,7 @@ public class TestN4reading {
 
   @Test
   public void testVlen() throws IOException, InvalidRangeException {
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     // String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
     String filename = testDir + "vlen/fpcs_1dwave_2.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
@@ -252,7 +252,7 @@ public class TestN4reading {
 
   @Test
   public void testStrings() throws IOException {
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = testDir + "files/nc_test_netcdf4.nc4";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
@@ -317,7 +317,7 @@ public class TestN4reading {
 
   @Test
   public void testCompoundVlens() throws IOException {
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = testDir + "vlen/cdm_sea_soundings.nc4";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);

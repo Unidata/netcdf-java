@@ -19,7 +19,7 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.VerticalTransform;

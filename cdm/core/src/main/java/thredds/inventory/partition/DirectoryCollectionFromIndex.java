@@ -8,7 +8,7 @@ import thredds.inventory.CollectionAbstract;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileIterator;
-import ucar.nc2.util.CloseableIterator;
+import thredds.inventory.CloseableIterator;
 import java.io.IOException;
 
 /**

@@ -28,7 +28,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.DebugFlags;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;

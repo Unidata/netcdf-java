@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.util;
+package ucar.nc2.internal.util;
 
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
@@ -68,8 +68,6 @@ import java.util.*;
  * }
  * doSomething(wf);
  * </pre>
- * 
- * TODO will move in ver 6
  */
 public class DiskCache {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");

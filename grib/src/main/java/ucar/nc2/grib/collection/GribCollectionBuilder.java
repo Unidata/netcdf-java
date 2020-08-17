@@ -21,7 +21,7 @@ import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.CloseableIterator;
+import thredds.inventory.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.IOException;

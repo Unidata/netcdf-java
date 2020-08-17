@@ -6,8 +6,6 @@
 package thredds.inventory;
 
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.CloseableIterator;
-import ucar.nc2.util.ListenerManager;
 import java.io.IOException;
 import java.util.*;
 
@@ -31,7 +29,6 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   TimeDuration recheck;
-  private ListenerManager lm; // lazy init
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
   CollectionManagerAbstract(String collectionName, org.slf4j.Logger logger) {
@@ -69,27 +66,29 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
 
   /////////////////////////////////////////////////////////////////////
 
+  private final List<TriggerListener> listeners = new ArrayList<>();
+
   void sendEvent(TriggerEvent event) {
-    if (lm != null)
-      lm.sendEvent(event);
+    for (TriggerListener listen : listeners) {
+      listen.handleCollectionEvent(event);
+    }
   }
 
   @Override
   public void addEventListener(TriggerListener l) {
-    if (lm == null)
-      createListenerManager();
-    lm.addListener(l);
+    listeners.add(l);
   }
 
   @Override
   public void removeEventListener(TriggerListener l) {
-    if (lm != null)
-      lm.removeListener(l);
+    listeners.remove(l);
   }
 
-  private void createListenerManager() {
-    lm = new ListenerManager("thredds.inventory.CollectionManager$TriggerListener",
-        "thredds.inventory.CollectionManager$TriggerEvent", "handleCollectionEvent");
-  }
+  /*
+   * private void createListenerManager() {
+   * lm = new ListenerManager("thredds.inventory.CollectionManager$TriggerListener",
+   * "thredds.inventory.CollectionManager$TriggerEvent", "handleCollectionEvent");
+   * }
+   */
 
 }

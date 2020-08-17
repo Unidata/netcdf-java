@@ -6,7 +6,7 @@
 package ucar.nc2.grib;
 
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.DiskCache2;
+import ucar.nc2.internal.util.DiskCache2;
 import java.io.File;
 
 /**

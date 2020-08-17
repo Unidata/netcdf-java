@@ -65,7 +65,7 @@ public class TestUserProblems {
   public void testNomads() throws InvalidRangeException {
     // This server is running TDS v4.2, and there appears to be an issue with encoded urls?
     System.setProperty("httpservices.urlencode", "false");
-    DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
+    DODSNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
     /* The temperature is recorded */
     String testfile = "http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2";
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(testfile, null)) {

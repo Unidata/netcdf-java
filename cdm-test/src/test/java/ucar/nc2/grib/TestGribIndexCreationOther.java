@@ -11,7 +11,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
@@ -39,14 +39,14 @@ public class TestGribIndexCreationOther {
     PartitionCollectionImmutable.countPC = 0;
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
-    // Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    // Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
 
   @AfterClass
   static public void after() {
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
     Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
@@ -90,7 +90,7 @@ public class TestGribIndexCreationOther {
   @Ignore("B: not visible on spock")
   @Test
   public void testRadarNWS() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("radarNWS", "test/radarNWS", FeatureCollectionType.GRIB1,
             // TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
@@ -99,13 +99,13 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
   @Test
   public void testWwwCoastalAlaska() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("Coastal_Alaska", "test/Coastal_Alaska", FeatureCollectionType.GRIB2,
             // TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
@@ -114,7 +114,7 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
 
@@ -125,7 +125,7 @@ public class TestGribIndexCreationOther {
   @Ignore("B: not visible on spock")
   @Test
   public void testTimePartitionWithSubdirs() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0", "test/ds626.0", FeatureCollectionType.GRIB1,
         "B:/rdavm/ds626.0/**/.*gbx9", null, "#regn80#...yyyyMMddHH", null, "year", null);
     // config.gribConfig.unionRuntimeCoord = true;
@@ -133,7 +133,7 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
@@ -145,51 +145,51 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
   @Test
   public void makeCfsr() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,
         "B:/rdavm/ds093.1/data/.*gbx9", null, null, null, null, null);
     // config.gribConfig.unionRuntimeCoord = true;
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
   @Test
   public void makeCfsr2() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1", "test/ds094.1", FeatureCollectionType.GRIB2,
         "B:/rdavm/ds094.1/2011/.*gbx9", null, null, null, null, null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
 
   @Ignore("B: not visible on spock")
   @Test
   public void makeDs0832() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2", "test/ds083.2", FeatureCollectionType.GRIB1,
         "B:/rdavm/ds083.2/grib1/**/.*gbx9", null, null, null, null, null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
   @Test
   public void testGsdHrrSurface() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("GSD_HRRR_CONUS_3km_surface", "test/GSD_HRRR_CONUS_3km_surface",
             FeatureCollectionType.GRIB2, "B:/idd/GSD_HRRR_CONUS_3km_surface/.*gbx9", null, null, null, "file", null);
@@ -197,33 +197,33 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
   @Test
   public void testRtma() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("RTMA-CONUS_2p5km", "test/RTMA-CONUS_2p5km",
         FeatureCollectionType.GRIB2, "B:/idd/RTMA-CONUS_2p5km/.*gbx9", null, null, null, "file", null);
     // config.gribConfig.setOption("timeUnit", "1 minute");
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
   @Test
   public void testJma() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds628-redo", "test/ds628.0",
         FeatureCollectionType.GRIB1, "B:/rdavm/ds628.0/anl_land/**/.*gbx9", null, null, null, null, null);
     // config.gribConfig.setOption("timeUnit", "1 minute");
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
@@ -262,7 +262,7 @@ public class TestGribIndexCreationOther {
   @Ignore("B: not visible on spock")
   @Test
   public void testNcdcNarr() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("NcdcNarr", "NcdcNarr", FeatureCollectionType.GRIB1,
         "B:/ncdc/0402/home/tomcat/dans-tdm-content/content/tdm/cache/GribIndex/global/nomads/nexus/narr/**/.*gbx9",
         null, null, null, null, null);
@@ -271,7 +271,7 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   // String name, String path, FeatureCollectionType fcType, String spec, String collectionName, String dateFormatMark,
@@ -279,13 +279,13 @@ public class TestGribIndexCreationOther {
   @Ignore("B: not visible on spock")
   @Test
   public void testNam20() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("Nam10", "Nam10", FeatureCollectionType.GRIB1,
         "B:/atm/nam20/.*gbx9", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.testIndexOnly, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
 
@@ -294,14 +294,14 @@ public class TestGribIndexCreationOther {
   @Ignore("B: not visible on spock")
   @Test
   public void testNdfdNoaaport() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ndfdNoaaport", "ndfdNoaaport",
         FeatureCollectionType.GRIB2, "B:/atm/ndfd/.*gbx9", null, null, null, "file", null);
     config.gribConfig.addGdsHash("-1506003048", "-1505079527");
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   // String name, String path, FeatureCollectionType fcType, String spec, String collectionName, String dateFormatMark,
@@ -309,25 +309,25 @@ public class TestGribIndexCreationOther {
   @Ignore("B: not visible on spock")
   @Test
   public void testNcdcGfsanl3() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("Gfs003anl", "Gfs003anl", FeatureCollectionType.GRIB1,
         "B:/ncdc/0416/indexes/gfsanl3/**/gfsanl_3_.*gbx9", null, null, null, null, null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Ignore("B: not visible on spock")
   @Test
   public void testNcdcGfsanl4() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("Gfs004anl", "Gfs004anl", FeatureCollectionType.GRIB2,
         "B:/ncdc/0416/indexes/gfsanl3/**/gfsanl_4_.*gbx9", null, null, null, null, null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   /// rdavm
@@ -335,25 +335,25 @@ public class TestGribIndexCreationOther {
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds084p3() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds084.3", "test/ds084.3", FeatureCollectionType.GRIB2,
         "D:/work/rdavm/ds084.3/**/.*gbx9", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.nocheck, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds084p4() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds084.4", "test/ds084.4", FeatureCollectionType.GRIB2,
         "D:/work/rdavm/ds084.4/**/.*gbx9", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.nocheck, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
@@ -364,7 +364,7 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
@@ -375,13 +375,13 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds094p1() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1_Aggregation", "test/ds094.1",
         FeatureCollectionType.GRIB2, "D:/work/rdavm/ds094.1/**/.*gbx9", null, null, null, "directory", null);
     config.gribConfig.addGdsHash("341801380", "342723940");
@@ -389,13 +389,13 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds094p1p2013() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1_Test2013", "test/ds094.1",
         FeatureCollectionType.GRIB2, "D:/work/rdavm/ds094.1/2013/.*gbx9", null, null, null, "directory", null);
     config.gribConfig.addGdsHash("341801380", "342723940");
@@ -403,13 +403,13 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds094p2t_dlw() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ds094.2_t_dlw", "test/ds094.2_t_dlw", FeatureCollectionType.GRIB2,
             "D:/work/rdavm/ds094.2/timeseries/flxf...gdas.DLWRF.SFC.grb2.gbx9", null, null, null, "directory", null);
@@ -418,13 +418,13 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds094p2t() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ds094.2_t", "test/ds094.2_t", FeatureCollectionType.GRIB2,
             "D:\\work\\rdavm\\ds094.2\\timeseries/.*gbx9", null, null, null, "directory", null);
@@ -433,14 +433,14 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds094p2dt() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ds094.2_dt", "test/ds094.2_dt", FeatureCollectionType.GRIB2,
             "D:\\work\\rdavm\\ds094.2\\diurnal_timeseries/.*gbx9", null, null, null, "directory", null);
@@ -449,25 +449,25 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds277p6() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds277.6", "test/ds277.6", FeatureCollectionType.GRIB1,
         "D:/work/rdavm/ds277.6/monthly/.*gbx9", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds626p0() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0_Aggregation", "test/ds626.0",
         FeatureCollectionType.GRIB2, "D:/work/rdavm/ds626.0/.*gbx9", null, null, null, "directory", null);
     config.gribConfig.addGdsHash("341801380", "342723940");
@@ -475,7 +475,7 @@ public class TestGribIndexCreationOther {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
@@ -502,25 +502,25 @@ public class TestGribIndexCreationOther {
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds628p2() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds628.2", "test/ds628.2", FeatureCollectionType.GRIB1,
         "D:/work/rdavm/ds628.2/fcst_column125/**/.*gbx9$", null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Category(NeedsRdaData.class)
   @Test
   public void testRdvamds628p5() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds628.5.MRUTC", "test/ds628.5",
         FeatureCollectionType.GRIB1, "D:/work/rdavm/ds628.5/fcst_surf125_var_diurnal/**/fcst_surf125_var.*.gbx9", null,
         null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 }

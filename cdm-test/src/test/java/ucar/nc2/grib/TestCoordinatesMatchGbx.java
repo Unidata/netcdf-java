@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.File;
@@ -31,7 +31,7 @@ public class TestCoordinatesMatchGbx {
 
   @BeforeClass
   static public void before() {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     countersAll = GribCoordsMatchGbx.getCounters();
 
     // cant allow caching to interfere with "get last record read from GribCollectionImmutable"
@@ -40,7 +40,7 @@ public class TestCoordinatesMatchGbx {
 
   @AfterClass
   static public void after() {
-    Grib.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(DebugFlags.create(""));
     logger.debug("countersAll = {}", countersAll);
     Variable.permitCaching = true;
   }
