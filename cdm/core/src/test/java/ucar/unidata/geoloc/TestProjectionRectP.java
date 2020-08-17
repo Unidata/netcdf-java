@@ -178,7 +178,7 @@ public class TestProjectionRectP {
     double height2 = height + 10d;
     ProjectionRect test = projectionRect.toBuilder().setHeight(height2).build();
 
-    assertEquals(height2, projectionRect.getHeight(), 0);
+    assertEquals(height2, test.getHeight(), 0);
     assertNotEquals(height, height2);
   }
 
