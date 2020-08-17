@@ -145,13 +145,14 @@ public class DtCoverageDataset implements Closeable {
   private void makeHorizRanges() {
     LatLonRect.Builder llbbBuilder = null;
 
+    ProjectionRect.Builder projBBbuilder = null;
     for (Gridset gset : getGridsets()) {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
       ProjectionRect bb = gcs.getBoundingBox();
-      if (projBB == null)
-        projBB = bb;
+      if (projBBbuilder == null)
+        projBBbuilder = bb.toBuilder();
       else if (bb != null)
-        projBB.add(bb);
+        projBBbuilder.add(bb);
 
       LatLonRect llbb = gcs.getLatLonBoundingBox();
       if (llbbBuilder == null)

@@ -57,7 +57,7 @@ public class Navigation {
 
     if (mapAreaIsSet && screenSizeIsSet) {
       // make sure bb is current
-      bb.setRect(getMapArea(null));
+      bb = ProjectionRect.builder().setRect(getMapArea()).build();
     }
 
     this.pwidth = pwidth;
@@ -86,7 +86,7 @@ public class Navigation {
 
   // calculate if we want to rotate based on aspect ratio
   boolean wantRotate(double displayWidth, double displayHeight) {
-    getMapArea(bb); // current world bounding box
+    this.bb = getMapArea(); // current world bounding box
     boolean aspectDisplay = displayHeight < displayWidth;
     boolean aspectWorldBB = bb.getHeight() < bb.getWidth();
     return (aspectDisplay ^ aspectWorldBB); // aspects are different
@@ -105,7 +105,7 @@ public class Navigation {
    */
   AffineTransform calcTransform(boolean rotate, double displayX, double displayY, double displayWidth,
       double displayHeight) {
-    getMapArea(bb); // current world bounding box
+    this.bb = getMapArea(); // current world bounding box
     // scale to limiting dimension
     double pxpsx, pypsy;
     if (rotate) {
@@ -139,15 +139,8 @@ public class Navigation {
     return cat;
   }
 
-  /**
-   * Get current MapArea .
-   * 
-   * @param rect : place results here, or null to create new Object
-   */
-  public ProjectionRect getMapArea(ProjectionRect rect) {
-    if (rect == null)
-      rect = new ProjectionRect();
-
+  /** Get current MapArea . */
+  public ProjectionRect getMapArea() {
     double width = pwidth / pix_per_world;
     double height = pheight / pix_per_world;
 
@@ -155,17 +148,15 @@ public class Navigation {
     double wx0 = (pwidth / 2 - pix_x0) / pix_per_world;
     double wy0 = (pix_y0 - pheight / 2) / pix_per_world;
 
-    rect.setRect(wx0 - width / 2, wy0 - height / 2, // minx, miny
-        width, height); // width, height
-
-    return rect;
+    return ProjectionRect.builder().setRect(wx0 - width / 2, wy0 - height / 2, // minx, miny
+        width, height).build();
   }
 
   void setMapArea(ProjectionRect ma) {
     if (debugRecalc)
       System.out.println("navigation/setMapArea " + ma);
 
-    bb.setRect(ma);
+    this.bb = ma;
     zoom.push();
 
     mapAreaIsSet = true;

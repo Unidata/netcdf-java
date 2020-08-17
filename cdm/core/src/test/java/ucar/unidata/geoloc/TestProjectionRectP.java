@@ -6,18 +6,20 @@ package ucar.unidata.geoloc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
+import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.lang.invoke.MethodHandles;
-import java.util.*;
 
-/** Test ncml value element in the JUnit framework. */
+/** Test {@link ProjectionRect} */
 @RunWith(Parameterized.class)
-public class TestProjRect {
+public class TestProjectionRectP {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private double x1, x2, y1, y2;
@@ -29,7 +31,7 @@ public class TestProjRect {
     return Arrays.asList(data);
   }
 
-  public TestProjRect(double x1, double y1, double x2, double y2) {
+  public TestProjectionRectP(double x1, double y1, double x2, double y2) {
     this.x1 = x1;
     this.x2 = x2;
     this.y1 = y1;
@@ -138,10 +140,10 @@ public class TestProjRect {
 
     double x = projectionRect.getX();
     double x2 = x * x + 1d;
-    projectionRect.setX(x2);
+    ProjectionRect test = projectionRect.toBuilder().setX(x2).build();
 
-    assertEquals(x2, projectionRect.getX(), 0);
-    assertEquals(x2, projectionRect.getMinX(), 0);
+    assertEquals(x2, test.getX(), 0);
+    assertEquals(x2, test.getMinX(), 0);
     assertNotEquals(x, x2);
   }
 
@@ -150,10 +152,11 @@ public class TestProjRect {
 
     double y = projectionRect.getY();
     double y2 = y * y + 1d;
-    projectionRect.setY(y2);
+    ProjectionRect test = projectionRect.toBuilder().setY(y2).build();
 
-    assertEquals(y2, projectionRect.getY(), 0);
-    assertEquals(y2, projectionRect.getMinY(), 0);
+
+    assertEquals(y2, test.getY(), 0);
+    assertEquals(y2, test.getMinY(), 0);
     assertNotEquals(y, y2);
   }
 
@@ -162,9 +165,9 @@ public class TestProjRect {
 
     double width = projectionRect.getWidth();
     double width2 = width + 10d;
-    projectionRect.setWidth(width2);
+    ProjectionRect test = projectionRect.toBuilder().setWidth(width2).build();
 
-    assertEquals(width2, projectionRect.getWidth(), 0);
+    assertEquals(width2, test.getWidth(), 0);
     assertNotEquals(width, width2);
   }
 
@@ -173,7 +176,7 @@ public class TestProjRect {
 
     double height = projectionRect.getHeight();
     double height2 = height + 10d;
-    projectionRect.setHeight(height2);
+    ProjectionRect test = projectionRect.toBuilder().setHeight(height2).build();
 
     assertEquals(height2, projectionRect.getHeight(), 0);
     assertNotEquals(height, height2);
@@ -220,6 +223,6 @@ public class TestProjRect {
     assert (projectionRect.contains(scaleShiftRect(0.5, 0.1, 0.1)));
     // contain the same rect, offset by 0.1? -> NO
     assert (!projectionRect.contains(scaleShiftRect(1.0, 0.1, 0.1)));
-
   }
+
 }

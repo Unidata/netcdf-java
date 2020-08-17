@@ -6,23 +6,16 @@ package ucar.unidata.geoloc;
 
 import com.google.common.math.DoubleMath;
 import java.util.StringTokenizer;
+import javax.annotation.concurrent.Immutable;
 import ucar.nc2.util.Misc;
-import java.io.*;
 
 /**
  * Bounding box for ProjectionPoint's.
  * Note that getX() getY() really means getMinX(), getMinY(), rather than
  * "upper left point" of the rectangle.
- *
- * LOOK may be immutable AutoValue in ver6
  */
+@Immutable
 public class ProjectionRect {
-  // TODO make final in ver6
-  private double x;
-  private double y;
-  private double width;
-  private double height;
-
   /**
    * default constructor, initialized to center (0,0) and width (10000, 10000)
    */
@@ -48,18 +41,14 @@ public class ProjectionRect {
    * @param height y height
    */
   public ProjectionRect(ProjectionPoint minimum, double width, double height) {
-    setRect(minimum.getX(), minimum.getY(), width, height);
+    this.x = minimum.getX();
+    this.y = minimum.getY();
+    this.width = width;
+    this.height = height;
   }
 
   /**
-   * Copy Constructor
-   */
-  public ProjectionRect(ProjectionRect r) {
-    this(r.getMinX(), r.getMinY(), r.getMaxX(), r.getMaxY());
-  }
-
-  /**
-   * construct a MapArea from any two opposite corner points
+   * construct a ProjectionRect from any two opposite corner points
    *
    * @param x1 x coord of any corner of the bounding box
    * @param y1 y coord of the same corner as x1
@@ -67,11 +56,12 @@ public class ProjectionRect {
    * @param y2 y coord of same corner as x2
    */
   public ProjectionRect(double x1, double y1, double x2, double y2) {
+    this.width = Math.abs(x1 - x2);
+    this.height = Math.abs(y1 - y2);
     double wx0 = 0.5 * (x1 + x2);
     double wy0 = 0.5 * (y1 + y2);
-    double width = Math.abs(x1 - x2);
-    double height = Math.abs(y1 - y2);
-    setRect(wx0 - width / 2, wy0 - height / 2, width, height);
+    this.x = wx0 - width / 2;
+    this.y = wy0 - height / 2;
   }
 
   /**
@@ -84,18 +74,20 @@ public class ProjectionRect {
     int n = stoker.countTokens();
     if (n != 4)
       throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
-    double startx = Double.parseDouble(stoker.nextToken());
-    double starty = Double.parseDouble(stoker.nextToken());
-    double width = Double.parseDouble(stoker.nextToken());
-    double height = Double.parseDouble(stoker.nextToken());
-
-    setRect(startx, starty, width, height);
+    this.x = Double.parseDouble(stoker.nextToken());
+    this.y = Double.parseDouble(stoker.nextToken());
+    this.width = Double.parseDouble(stoker.nextToken());
+    this.height = Double.parseDouble(stoker.nextToken());
   }
 
+  /** @deprecated use getMinX */
+  @Deprecated
   public double getX() {
     return x;
   }
 
+  /** @deprecated use getMinY */
+  @Deprecated
   public double getY() {
     return y;
   }
@@ -189,80 +181,6 @@ public class ProjectionRect {
     return getY() + getHeight() / 2.0;
   }
 
-  /**
-   * Adds a <code>Rectangle2D</code> object to this
-   * <code>Rectangle2D</code>. The resulting <code>Rectangle2D</code>
-   * is the union of the two <code>Rectangle2D</code> objects.
-   * 
-   * @param r the <code>Rectangle2D</code> to add to this
-   *        <code>Rectangle2D</code>.
-   * @since 1.2
-   * @deprecated use builder
-   */
-  @Deprecated
-  public void add(ProjectionRect r) {
-    double x1 = Math.min(getMinX(), r.getMinX());
-    double x2 = Math.max(getMaxX(), r.getMaxX());
-    double y1 = Math.min(getMinY(), r.getMinY());
-    double y2 = Math.max(getMaxY(), r.getMaxY());
-    setRect(x1, y1, x2 - x1, y2 - y1);
-  }
-
-  /**
-   * Adds a point, specified by the double precision arguments
-   * <code>newx</code> and <code>newy</code>, to this
-   * <code>Rectangle2D</code>. The resulting <code>Rectangle2D</code>
-   * is the smallest <code>Rectangle2D</code> that
-   * contains both the original <code>Rectangle2D</code> and the
-   * specified point.
-   * <p>
-   * After adding a point, a call to <code>contains</code> with the
-   * added point as an argument does not necessarily return
-   * <code>true</code>. The <code>contains</code> method does not
-   * return <code>true</code> for points on the right or bottom
-   * edges of a rectangle. Therefore, if the added point falls on
-   * the left or bottom edge of the enlarged rectangle,
-   * <code>contains</code> returns <code>false</code> for that point.
-   * 
-   * @param newx the X coordinate of the new point
-   * @param newy the Y coordinate of the new point
-   * @since 1.2
-   * @deprecated use builder
-   */
-  @Deprecated
-  public void add(double newx, double newy) {
-    double x1 = Math.min(getMinX(), newx);
-    double x2 = Math.max(getMaxX(), newx);
-    double y1 = Math.min(getMinY(), newy);
-    double y2 = Math.max(getMaxY(), newy);
-    setRect(x1, y1, x2 - x1, y2 - y1);
-  }
-
-  /**
-   * Adds the <code>Point2D</code> object <code>pt</code> to this
-   * <code>Rectangle2D</code>.
-   * The resulting <code>Rectangle2D</code> is the smallest
-   * <code>Rectangle2D</code> that contains both the original
-   * <code>Rectangle2D</code> and the specified <code>Point2D</code>.
-   * <p>
-   * After adding a point, a call to <code>contains</code> with the
-   * added point as an argument does not necessarily return
-   * <code>true</code>. The <code>contains</code>
-   * method does not return <code>true</code> for points on the right
-   * or bottom edges of a rectangle. Therefore, if the added point falls
-   * on the left or bottom edge of the enlarged rectangle,
-   * <code>contains</code> returns <code>false</code> for that point.
-   * 
-   * @param pt the new <code>Point2D</code> to add to this
-   *        <code>Rectangle2D</code>.
-   * @since 1.2
-   * @deprecated use builder
-   */
-  @Deprecated
-  public void add(ProjectionPoint pt) {
-    add(pt.getX(), pt.getY());
-  }
-
   public boolean isEmpty() {
     return (width <= 0.0) || (height <= 0.0);
   }
@@ -292,17 +210,17 @@ public class ProjectionRect {
    *        objects to be intersected with each other
    * @param src2 the second of a pair of <code>Rectangle2D</code>
    *        objects to be intersected with each other
-   * @param dest the <code>Rectangle2D</code> that holds the
-   *        results of the intersection of <code>src1</code> and
-   *        <code>src2</code>
+   * @return the <code>ProjectionRect</code> that holds the
+   *         results of the intersection of <code>src1</code> and
+   *         <code>src2</code>
    * @since 1.2
    */
-  public static void intersect(ProjectionRect src1, ProjectionRect src2, ProjectionRect dest) {
+  public static ProjectionRect intersect(ProjectionRect src1, ProjectionRect src2) {
     double x1 = Math.max(src1.getMinX(), src2.getMinX());
     double y1 = Math.max(src1.getMinY(), src2.getMinY());
     double x2 = Math.min(src1.getMaxX(), src2.getMaxX());
     double y2 = Math.min(src1.getMaxY(), src2.getMaxY());
-    dest.setRect(x1, y1, x2 - x1, y2 - y1);
+    return builder().setX(x1).setY(y1).setWidth(x2 - x1).setHeight(y2 - y1).build();
   }
 
   /**
@@ -417,93 +335,6 @@ public class ProjectionRect {
     return String.format("%f, %f, %f, %f", x, y, getWidth(), getHeight());
   }
 
-  /**
-   * set minimum X
-   *
-   * @deprecated use builder
-   */
-  @Deprecated
-  public void setX(double x) {
-    setRect(x, getY(), getWidth(), getHeight());
-  }
-
-  /**
-   * set minimum Y
-   *
-   * @param y minimum y
-   * @deprecated use builder
-   */
-  @Deprecated
-  public void setY(double y) {
-    setRect(getX(), y, getWidth(), getHeight());
-  }
-
-  /**
-   * set X width
-   *
-   * @param w x width
-   * @deprecated use builder
-   */
-  @Deprecated
-  public void setWidth(double w) {
-    setRect(getX(), getY(), w, getHeight());
-  }
-
-  /**
-   * set Y height
-   *
-   * @param h Y height
-   * @deprecated use builder
-   */
-  @Deprecated
-  public void setHeight(double h) {
-    setRect(getX(), getY(), getWidth(), h);
-  }
-
-  /** @deprecated use builder */
-  @Deprecated
-  public void setRect(ProjectionRect r) {
-    setRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-  }
-
-  /** @deprecated use builder */
-  @Deprecated
-  public void setRect(double x, double y, double w, double h) {
-    this.x = x;
-    this.y = y;
-    this.width = w;
-    this.height = h;
-  }
-
-  // serialization
-
-  /**
-   * Read the object from the input stream of the serialized object
-   *
-   * @param s stream to read
-   * @throws IOException Problem reading from stream
-   */
-  private void readObject(ObjectInputStream s) throws IOException {
-    double x = s.readDouble();
-    double y = s.readDouble();
-    double w = s.readDouble();
-    double h = s.readDouble();
-    setRect(x, y, w, h);
-  }
-
-  /**
-   * Wrtie the object to the output stream
-   *
-   * @param s stream to write
-   * @throws IOException Problem writing to stream
-   */
-  private void writeObject(ObjectOutputStream s) throws IOException {
-    s.writeDouble(getX());
-    s.writeDouble(getY());
-    s.writeDouble(getWidth());
-    s.writeDouble(getHeight());
-  }
-
   // Exact comparison is needed in order to be consistent with hashCode().
   @Override
   public boolean equals(Object o) {
@@ -556,5 +387,119 @@ public class ProjectionRect {
   public boolean nearlyEquals(ProjectionRect other, double maxRelDiff) {
     return this.getLowerLeftPoint().nearlyEquals(other.getLowerLeftPoint(), maxRelDiff)
         && this.getUpperRightPoint().nearlyEquals(other.getUpperRightPoint(), maxRelDiff);
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+  private final double x;
+  private final double y;
+  private final double width;
+  private final double height;
+
+  private ProjectionRect(ProjectionRect.Builder builder) {
+    this.x = builder.x;
+    this.y = builder.y;
+    this.width = builder.width;
+    this.height = builder.height;
+  }
+
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
+  public ProjectionRect.Builder toBuilder() {
+    return builder().setX(this.x).setY(this.y).setWidth(this.width).setHeight(this.height);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static Builder builder(double x1, double y1, double x2, double y2) {
+    double wx0 = 0.5 * (x1 + x2);
+    double wy0 = 0.5 * (y1 + y2);
+    double width = Math.abs(x1 - x2);
+    double height = Math.abs(y1 - y2);
+    return new Builder().setWidth(width).setHeight(height).setX(wx0 - width / 2).setY(wy0 - height / 2);
+  }
+
+  /** A builder of Groups. */
+  public static class Builder {
+    private double x;
+    private double y;
+    private double width;
+    private double height;
+
+    public double getWidth() {
+      return width;
+    }
+
+    public double getHeight() {
+      return height;
+    }
+
+    public Builder setX(double x) {
+      this.x = x;
+      return this;
+    }
+
+    public Builder setY(double y) {
+      this.y = y;
+      return this;
+    }
+
+    public Builder setWidth(double width) {
+      this.width = width;
+      return this;
+    }
+
+    public Builder setHeight(double height) {
+      this.height = height;
+      return this;
+    }
+
+    public Builder setRect(double x, double y, double w, double h) {
+      this.x = x;
+      this.y = y;
+      this.width = w;
+      this.height = h;
+      return this;
+    }
+
+    public Builder setRect(ProjectionRect r) {
+      return setRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    }
+
+    /** Extend the rectangle by the given rectangle. */
+    public Builder add(ProjectionRect r) {
+      double x1 = Math.min(this.x, r.getMinX());
+      double x2 = Math.max(this.x + this.height, r.getMaxX());
+      double y1 = Math.min(this.y, r.getMinY());
+      double y2 = Math.max(this.y + this.height, r.getMaxY());
+      this.x = x1;
+      this.y = y1;
+      this.width = x2 - x1;
+      this.height = y2 - y1;
+      return this;
+    }
+
+    /** Extend the rectangle by the given point. */
+    public Builder add(double newx, double newy) {
+      double x1 = Math.min(this.x, newx);
+      double x2 = Math.max(this.x + this.height, newx);
+      double y1 = Math.min(this.y, newy);
+      double y2 = Math.max(this.y + this.height, newy);
+      this.x = x1;
+      this.y = y1;
+      this.width = x2 - x1;
+      this.height = y2 - y1;
+      return this;
+    }
+
+    /** Extend the rectangle by the given point. */
+    public Builder add(ProjectionPoint pt) {
+      add(pt.getX(), pt.getY());
+      return this;
+    }
+
+    public ProjectionRect build() {
+      return new ProjectionRect(this);
+    }
   }
 }

@@ -328,7 +328,8 @@ public class NavigatedPanel extends JPanel {
 
   /** Get the current Map Area */
   public ProjectionRect getMapArea() {
-    return navigate.getMapArea(boundingBox);
+    this.boundingBox = navigate.getMapArea();
+    return this.boundingBox;
   }
 
   /** Get the current Map Area as a lat/lon bounding box */
@@ -345,11 +346,11 @@ public class NavigatedPanel extends JPanel {
   public void setLatLonCenterMapArea(double lat, double lon) {
     ProjectionPoint center = project.latLonToProj(lat, lon);
 
-    ProjectionRect ma = getMapArea();
+    ProjectionRect.Builder ma = getMapArea().toBuilder();
     ma.setX(center.getX() - ma.getWidth() / 2);
     ma.setY(center.getY() - ma.getHeight() / 2);
 
-    setMapArea(ma);
+    setMapArea(ma.build());
   }
 
   /** Get the current Projection. */
@@ -497,7 +498,7 @@ public class NavigatedPanel extends JPanel {
     Graphics2D g2 = bImage.createGraphics();
 
     // set clipping rectangle into boundingBox
-    navigate.getMapArea(boundingBox);
+    boundingBox = navigate.getMapArea();
     if (debugBB)
       System.out.println(" getBufferedImageGraphics BB = " + boundingBox);
 
@@ -506,7 +507,7 @@ public class NavigatedPanel extends JPanel {
     g2.setStroke(new BasicStroke(0.0f)); // default stroke size is one pixel
     g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
     Rectangle2D hr = new Rectangle2D.Double();
-    hr.setRect(boundingBox.getX(), boundingBox.getY(), boundingBox.getWidth(), boundingBox.getHeight());
+    hr.setRect(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getWidth(), boundingBox.getHeight());
     g2.setClip(hr); // normalized coord system, because transform is applied
     g2.setBackground(backColor);
 
@@ -810,11 +811,13 @@ public class NavigatedPanel extends JPanel {
         if (e.getClickCount() == 2) {
           ProjectionPoint pp = navigate.screenToWorld(e.getPoint());
           // make geoSelection fit in screen
-          geoSelection.setWidth(boundingBox.getWidth() / 4);
-          geoSelection.setHeight(boundingBox.getHeight() / 4);
+          ProjectionRect.Builder builder = ProjectionRect.builder();
+          builder.setWidth(boundingBox.getWidth() / 4);
+          builder.setHeight(boundingBox.getHeight() / 4);
           // make it the center point
-          geoSelection.setX(pp.getX() - geoSelection.getWidth() / 2);
-          geoSelection.setY(pp.getY() - geoSelection.getHeight() / 2);
+          builder.setX(pp.getX() - geoSelection.getWidth() / 2);
+          builder.setY(pp.getY() - geoSelection.getHeight() / 2);
+          geoSelection = builder.build();
           lmGeoSelect.sendEvent(new GeoSelectionEvent(this, geoSelection));
           return;
         }
