@@ -81,7 +81,7 @@ public interface Projection {
    * @return a reasonable bounding box in this projection.
    * @deprecated Do not use.
    */
-   @Deprecated
+  @Deprecated
   ProjectionRect getDefaultMapArea();
 
   /**

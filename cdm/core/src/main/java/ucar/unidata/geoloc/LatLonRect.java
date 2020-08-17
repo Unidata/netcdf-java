@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
  *
  * @author Russ Rew
  * @author John Caron
- * TODO will be @Immutable in ver6, will use Builders.
+ *         TODO will be @Immutable in ver6, will use Builders.
  */
 public class LatLonRect {
 

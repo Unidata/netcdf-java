@@ -763,7 +763,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   // LOOK turns longitude coordinate into monotonic, dealing with possible wrap.
-  /** @deprecated do not use.  */
+  /** @deprecated do not use. */
   @Deprecated
   public void correctLongitudeWrap() {
     // correct non-monotonic longitude coords

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * See LICENSE for license information.
  */
 package ucar.nc2.ft.coverage;
 
@@ -21,7 +21,8 @@ public class TestCoverageProblems {
 
   @Test
   public void testFactory() throws IOException {
-    String endpoint = TestDir.cdmUnitTestDir + "formats/hdf4/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
+    String endpoint =
+        TestDir.cdmUnitTestDir + "formats/hdf4/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
     System.out.printf("TestCoverageProblems %s%n", endpoint);
     FeatureType expectType = FeatureType.SWATH;
     int ncoverages = 93;
