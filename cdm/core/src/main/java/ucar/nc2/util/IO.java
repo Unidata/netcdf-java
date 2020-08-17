@@ -7,16 +7,12 @@ package ucar.nc2.util;
 
 import com.google.common.io.CharStreams;
 import java.nio.charset.StandardCharsets;
+import java.security.AccessControlException;
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Input/Output static utilities.
@@ -27,9 +23,7 @@ import java.util.zip.GZIPInputStream;
 public class IO {
   public static final int default_file_buffersize = 9200;
   public static final int default_socket_buffersize = 64000;
-  private static final boolean showStackTrace = false;
-  private static final boolean debug = false, showCopy = false;
-  private static final boolean showHeaders = false;
+  private static final boolean showCopy = false;
 
   /**
    * Open a resource as a Stream. First try ClassLoader.getResourceAsStream().
@@ -38,27 +32,19 @@ public class IO {
    * @param resourcePath name of file path (use forward slashes!)
    * @return InputStream or null on failure
    */
+  @Nullable
   public static InputStream getFileResource(String resourcePath) {
     Class<IO> cl = IO.class;
 
     InputStream is = cl.getResourceAsStream(resourcePath);
     if (is != null) {
-      if (debug)
-        System.out.println("Resource.getResourceAsStream ok on " + resourcePath);
       return is;
-    } else if (debug)
-      System.out.println("Resource.getResourceAsStream failed on (" + resourcePath + ")");
+    }
 
     try {
       is = new FileInputStream(resourcePath);
-      if (debug)
-        System.out.println("Resource.FileInputStream ok on " + resourcePath);
-    } catch (FileNotFoundException e) {
-      if (debug)
-        System.out.println("  FileNotFoundException: Resource.getFile failed on " + resourcePath);
-    } catch (java.security.AccessControlException e) {
-      if (debug)
-        System.out.println("  AccessControlException: Resource.getFile failed on " + resourcePath);
+    } catch (FileNotFoundException | AccessControlException e) {
+      // should throw exception ??
     }
 
     return is;
@@ -120,22 +106,6 @@ public class IO {
     return totalBytesRead;
   }
 
-  public static long touch(InputStream in, int buffersize) throws IOException {
-    long touch = 0;
-    if (buffersize <= 0)
-      buffersize = default_file_buffersize;
-    byte[] buffer = new byte[buffersize];
-    while (true) {
-      int n = in.read(buffer);
-      if (n == -1)
-        break;
-      for (int i = 0; i < buffersize; i++)
-        touch += buffer[i];
-    }
-    // if (fout != null) fout.format("done=%d %n",totalBytesRead);
-    return touch;
-  }
-
   /**
    * copy all bytes from in and throw them away.
    *
@@ -156,30 +126,6 @@ public class IO {
       buffer.flip();
     }
     return totalBytesRead;
-  }
-
-  public static long touch(FileChannel in, int buffersize) throws IOException {
-    long touch = 0;
-    if (buffersize <= 0)
-      buffersize = default_file_buffersize;
-    ByteBuffer buffer = ByteBuffer.allocate(buffersize);
-    while (true) {
-      int n = in.read(buffer);
-      if (n == -1)
-        break;
-
-      // touch all the bytes
-      // buffer.rewind();
-      // for (int i=0; i<buffersize; i++)
-      // touch += buffer.get();
-
-      byte[] result = buffer.array();
-      for (int i = 0; i < buffersize; i++)
-        touch += result[i];
-
-      buffer.flip();
-    }
-    return touch;
   }
 
   /**
@@ -230,9 +176,10 @@ public class IO {
       int bytesRead = in.read(buffer);
       if (bytesRead == -1)
         break;
-      out.write(buffer, 0, bytesRead);
-      count += bytesRead;
-      if (count > maxBytes)
+      int transfer = Math.min(maxBytes - count, bytesRead);
+      out.write(buffer, 0, transfer);
+      count += transfer;
+      if (count >= maxBytes)
         return;
     }
     out.flush();
@@ -327,7 +274,7 @@ public class IO {
   }
 
   /**
-   * copy file to output stream
+   * copy bytes to File
    *
    * @param src source
    * @param fileOut copy to this file
@@ -366,50 +313,6 @@ public class IO {
       IO.copyB(in, out, bufferSize);
     }
   }
-
-  public static void copyFileWithChannels(File fileIn, WritableByteChannel out) throws IOException {
-    try (FileChannel in = new FileInputStream(fileIn).getChannel()) {
-      long want = fileIn.length();
-      long pos = 0;
-      while (true) {
-        long did = in.transferTo(pos, want, out);
-        if (did == want)
-          break;
-        pos += did;
-        want -= did;
-      }
-    }
-  }
-
-  /*
-   * static public void copyFileWithChannels2(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
-   * ReadableByteChannel in = new FileInputStream(fileIn).getChannel();
-   * copy(in, out, 32 * 1024);
-   * }
-   * 
-   * // Read all available bytes from one channel and copy them to the other.
-   * static public void copy(ReadableByteChannel in, WritableByteChannel out, int bufferSize) throws IOException {
-   * // First, we need a buffer to hold blocks of copied bytes.
-   * ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
-   * 
-   * // Now loop until no more bytes to read and the buffer is empty
-   * while (in.read(buffer) != -1 || buffer.position() > 0) {
-   * // The read() call leaves the buffer in "fill mode". To prepare
-   * // to write bytes from the bufferwe have to put it in "drain mode"
-   * // by flipping it: setting limit to position and position to zero
-   * buffer.flip();
-   * 
-   * // Now write some or all of the bytes out to the output channel
-   * out.write(buffer);
-   * 
-   * // Compact the buffer by discarding bytes that were written,
-   * // and shifting any remaining bytes. This method also
-   * // prepares the buffer for the next call to read() by setting the
-   * // position to the limit and the limit to the buffer capacity.
-   * buffer.compact();
-   * }
-   * }
-   */
 
   /**
    * Copy part of a RandomAccessFile to output stream, specify internal buffer size
@@ -556,303 +459,9 @@ public class IO {
   }
 
   public static long appendToFile(InputStream in, String fileOutName) throws IOException {
-    try (FileOutputStream fout = new FileOutputStream(fileOutName)) {
+    try (FileOutputStream fout = new FileOutputStream(fileOutName, true)) {
       OutputStream out = new BufferedOutputStream(fout);
       return IO.copy(in, out);
-    }
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // URLs
-
-  /**
-   * copy contents of URL to output stream, specify internal buffer size. request gzip encoding
-   *
-   * @param urlString copy the contents of this URL
-   * @param out copy to this stream. If null, throw bytes away
-   * @param bufferSize internal buffer size.
-   * @return number of bytes copied
-   * @throws java.io.IOException on io error
-   */
-  public static long copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
-    long count;
-    URL url;
-
-    try {
-      url = new URL(urlString);
-    } catch (MalformedURLException e) {
-      throw new IOException("** MalformedURLException on URL <" + urlString + ">\n" + e.getMessage() + "\n");
-    }
-
-    try {
-      java.net.URLConnection connection = url.openConnection();
-      java.net.HttpURLConnection httpConnection = null;
-      if (connection instanceof java.net.HttpURLConnection) {
-        httpConnection = (java.net.HttpURLConnection) connection;
-        httpConnection.addRequestProperty("Accept-Encoding", "gzip");
-      }
-
-      if (showHeaders) {
-        showRequestHeaders(urlString, connection);
-      }
-
-      // get response
-      if (httpConnection != null) {
-        int responseCode = httpConnection.getResponseCode();
-        if (responseCode / 100 != 2)
-          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode + "\n"
-              + httpConnection.getResponseMessage() + "\n");
-      }
-
-      if (showHeaders && (httpConnection != null)) {
-        int code = httpConnection.getResponseCode();
-        String response = httpConnection.getResponseMessage();
-
-        // response headers
-        System.out.println("\nRESPONSE for " + urlString + ": ");
-        System.out.println(" HTTP/1.x " + code + " " + response);
-        System.out.println("Headers: ");
-
-        for (int j = 1;; j++) {
-          String header = connection.getHeaderField(j);
-          String key = connection.getHeaderFieldKey(j);
-          if (header == null || key == null)
-            break;
-          System.out.println(" " + key + ": " + header);
-        }
-      }
-
-      // read it
-      try (InputStream is = connection.getInputStream()) {
-        BufferedInputStream bis;
-
-        // check if its gzipped
-        if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
-          bis = new BufferedInputStream(new GZIPInputStream(is), 8000);
-        } else {
-          bis = new BufferedInputStream(is, 8000);
-        }
-
-        if (out == null)
-          count = IO.copy2null(bis, bufferSize);
-        else
-          count = IO.copyB(bis, out, bufferSize);
-      }
-
-    } catch (java.net.ConnectException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException(
-          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
-
-    } catch (java.net.UnknownHostException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
-
-    } catch (Exception e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
-    }
-
-    return count;
-  }
-
-  private static void showRequestHeaders(String urlString, java.net.URLConnection connection) {
-    System.out.println("\nREQUEST Properties for " + urlString + ": ");
-    Map<String, List<String>> reqs = connection.getRequestProperties();
-    for (Map.Entry<String, List<String>> entry : reqs.entrySet()) {
-      System.out.printf(" %s:", entry.getKey());
-      for (String v : entry.getValue())
-        System.out.printf("%s,", v);
-      System.out.printf("%n");
-    }
-  }
-
-  /**
-   * get input stream from URL
-   *
-   * @param urlString URL
-   * @return input stream, unzipped if needed
-   * @throws java.io.IOException on io error
-   */
-  public static InputStream getInputStreamFromUrl(String urlString) throws IOException {
-    URL url;
-
-    try {
-      url = new URL(urlString);
-    } catch (MalformedURLException e) {
-      throw new IOException("** MalformedURLException on URL <" + urlString + ">\n" + e.getMessage() + "\n");
-    }
-
-    try {
-      java.net.URLConnection connection = url.openConnection();
-      java.net.HttpURLConnection httpConnection = null;
-      if (connection instanceof java.net.HttpURLConnection) {
-        httpConnection = (java.net.HttpURLConnection) connection;
-        httpConnection.addRequestProperty("Accept-Encoding", "gzip");
-      }
-
-      if (showHeaders) {
-        showRequestHeaders(urlString, connection);
-      }
-
-      // get response
-      if (httpConnection != null) {
-        int responseCode = httpConnection.getResponseCode();
-        if (responseCode / 100 != 2)
-          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode + "\n"
-              + httpConnection.getResponseMessage() + "\n");
-      }
-
-      if (showHeaders && (httpConnection != null)) {
-        int code = httpConnection.getResponseCode();
-        String response = httpConnection.getResponseMessage();
-
-        // response headers
-        System.out.println("\nRESPONSE for " + urlString + ": ");
-        System.out.println(" HTTP/1.x " + code + " " + response);
-        System.out.println("Headers: ");
-
-        for (int j = 1;; j++) {
-          String header = connection.getHeaderField(j);
-          String key = connection.getHeaderFieldKey(j);
-          if (header == null || key == null)
-            break;
-          System.out.println(" " + key + ": " + header);
-        }
-      }
-
-      java.io.InputStream is = null;
-      try {
-        // read it
-        is = connection.getInputStream();
-
-        // check if its gzipped
-        if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
-          is = new BufferedInputStream(new GZIPInputStream(is), 1000);
-        }
-      } catch (Throwable t) {
-        if (is != null)
-          is.close();
-      }
-      return is;
-
-    } catch (java.net.ConnectException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException(
-          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
-
-    } catch (java.net.UnknownHostException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
-
-    } catch (Exception e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
-
-    }
-  }
-
-  /**
-   * read the contents from the named URL, write to a file.
-   *
-   * @param urlString the URL to read from.
-   * @param file write to this file
-   * @return status or error message.
-   */
-  public static String readURLtoFile(String urlString, File file) {
-    try (FileOutputStream fout = new FileOutputStream(file)) {
-      OutputStream out = new BufferedOutputStream(fout);
-      copyUrlB(urlString, out, 20000);
-      return "ok";
-
-    } catch (FileNotFoundException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      return "** IOException opening file: <" + file.getPath() + ">\n" + e.getMessage() + "\n";
-
-    } catch (IOException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      return "** IOException reading URL: <" + urlString + ">\n" + e.getMessage() + "\n";
-    }
-  }
-
-  /**
-   * Read the contents from the given URL and place into a byte array,
-   * with any error messages put in the return String.
-   *
-   * @param urlString read from this URL.
-   * @return byte[] holding the contents, or an error message.
-   * @throws java.io.IOException on io error
-   */
-  public static byte[] readURLContentsToByteArray(String urlString) throws IOException {
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(200000);
-    copyUrlB(urlString, bout, 200000);
-    return bout.toByteArray();
-  }
-
-
-  /**
-   * read the contents from the named URL, write to a file.
-   *
-   * @param urlString the URL to read from.
-   * @param file write to this file
-   * @return status or error message.
-   * @throws IOException if failure
-   */
-  public static String readURLtoFileWithExceptions(String urlString, File file) throws IOException {
-    return readURLtoFileWithExceptions(urlString, file, default_socket_buffersize);
-
-  }
-
-  /**
-   * read the contents from the named URL, write to a file.
-   *
-   * @param urlString the URL to read from.
-   * @param file write to this file
-   * @param buffer_size read/write in this size chunks
-   * @return status or error message.
-   * @throws IOException if failure
-   */
-  public static String readURLtoFileWithExceptions(String urlString, File file, int buffer_size) throws IOException {
-    try (FileOutputStream fout = new FileOutputStream(file)) {
-      OutputStream out = new BufferedOutputStream(fout);
-      copyUrlB(urlString, out, buffer_size);
-      return "ok";
-    }
-  }
-
-  /**
-   * Read the contents from the named URL and place into a String.
-   *
-   * @param urlString the URL to read from.
-   * @return String holding the contents.
-   * @throws IOException if fails
-   */
-  public static String readURLcontentsWithException(String urlString) throws IOException {
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(20000);
-    copyUrlB(urlString, bout, 20000);
-    return bout.toString(CDM.UTF8);
-  }
-
-  /**
-   * Read the contents from the named URL and place into a String,
-   * with any error messages put in the return String.
-   *
-   * @param urlString the URL to read from.
-   * @return String holding the contents, or an error message.
-   */
-  public static String readURLcontents(String urlString) {
-    try {
-      return readURLcontentsWithException(urlString);
-    } catch (IOException e) {
-      return e.getMessage();
     }
   }
 

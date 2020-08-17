@@ -43,7 +43,7 @@ public class TestGribCollectionCoordinates {
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
     Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
-    GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
+    GribCdmIndex.setGribCollectionCache(new ucar.nc2.internal.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
 

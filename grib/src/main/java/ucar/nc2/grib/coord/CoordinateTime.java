@@ -19,9 +19,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.Misc;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,7 +111,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public Counters calcDistributions() {
-    ucar.nc2.util.Counters counters = new Counters();
+    Counters counters = new Counters();
     counters.add("resol");
 
     List<Integer> offsets = getOffsetSorted();

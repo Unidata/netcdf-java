@@ -19,9 +19,9 @@ import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileFactory;
+import ucar.nc2.internal.cache.FileCache;
+import ucar.nc2.internal.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileFactory;
 
 /**
  * Static helper methods for NetcdfDataset
@@ -34,11 +34,11 @@ public class NetcdfDatasets {
   ////////////////////////////////////////////////////////////////////////////////////
   // NetcdfFile caching
 
-  private static ucar.nc2.util.cache.FileCache netcdfFileCache;
-  private static ucar.nc2.util.cache.FileFactory defaultNetcdfFileFactory = new StandardFileFactory();
+  private static ucar.nc2.internal.cache.FileCache netcdfFileCache;
+  private static ucar.nc2.internal.cache.FileFactory defaultNetcdfFileFactory = new StandardFileFactory();
 
   // no state, so a singleton is ok
-  private static class StandardFileFactory implements ucar.nc2.util.cache.FileFactory {
+  private static class StandardFileFactory implements ucar.nc2.internal.cache.FileFactory {
     public NetcdfFile open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
       return openFile(location, buffer_size, cancelTask, iospMessage);
@@ -368,7 +368,7 @@ public class NetcdfDatasets {
         iospMessage);
   }
 
-  private static class StandardDatasetFactory implements ucar.nc2.util.cache.FileFactory {
+  private static class StandardDatasetFactory implements ucar.nc2.internal.cache.FileFactory {
     DatasetUrl location;
     EnumSet<Enhance> enhanceMode;
 
@@ -450,7 +450,7 @@ public class NetcdfDatasets {
    * @return NetcdfFile object
    * @throws java.io.IOException on read error
    */
-  public static NetcdfFile acquireFile(@Nullable ucar.nc2.util.cache.FileFactory factory, @Nullable Object hashKey,
+  public static NetcdfFile acquireFile(@Nullable ucar.nc2.internal.cache.FileFactory factory, @Nullable Object hashKey,
       DatasetUrl location, int buffer_size, @Nullable ucar.nc2.util.CancelTask cancelTask, @Nullable Object spiObject)
       throws IOException {
 

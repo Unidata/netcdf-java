@@ -136,7 +136,7 @@ public abstract class Aggregation {
    * @param reader factory for reading this netcdf dataset
    */
   public void addExplicitDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
-      String sectionSpec, ucar.nc2.util.cache.FileFactory reader) {
+      String sectionSpec, ucar.nc2.internal.cache.FileFactory reader) {
 
     AggDataset nested = makeDataset(cacheName, location, id, ncoordS, coordValueS, sectionSpec, null, reader);
     explicitDatasets.add(nested);
@@ -456,7 +456,7 @@ public abstract class Aggregation {
    * @return a Dataset
    */
   protected AggDataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
-      String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+      String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.internal.cache.FileFactory reader) {
     // overridden in AggregationOuter
     return new AggDataset(cacheName, location, id, enhance, reader, spiObject, ncmlElem);
   }

@@ -2,44 +2,47 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.util;
 
 /** Maintains indentation level for printing nested structures. */
 public class Indent {
-  private int nspaces;
+  private final int nspaces;
 
   private int level;
   private final StringBuilder blanks = new StringBuilder();
   private String indent = "";
 
-  // nspaces = how many spaces each level adds.
-  // max 100 levels
+  /** Create an Indent with nspaces per level. */
   public Indent(int nspaces) {
     this.nspaces = nspaces;
     makeBlanks(100);
   }
 
+  /** Increment the indent level */
   public Indent incr() {
     level++;
     setIndentLevel(level);
     return this;
   }
 
+  /** Decrement the indent level */
   public Indent decr() {
     level--;
     setIndentLevel(level);
     return this;
   }
 
+  /** Get the indent level */
   public int level() {
     return level;
   }
 
+  /** Return a String of nspaces * level blanks which is the indentation. */
   public String toString() {
     return indent;
   }
 
+  /** Set the indent level */
   public void setIndentLevel(int level) {
     this.level = level;
     if (level * nspaces >= blanks.length())

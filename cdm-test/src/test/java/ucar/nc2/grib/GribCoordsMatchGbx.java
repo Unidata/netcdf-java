@@ -13,7 +13,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.DataFormatType;
@@ -30,11 +29,10 @@ import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Misc;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -66,12 +64,12 @@ public class GribCoordsMatchGbx {
   }
 
   private String filename;
-  ucar.nc2.util.Counters counters;
+  Counters counters;
 
   private boolean isGrib1;
   private ArrayDouble.D3 timeCoord2DBoundsArray;
 
-  public GribCoordsMatchGbx(String filename, ucar.nc2.util.Counters counters) {
+  public GribCoordsMatchGbx(String filename, Counters counters) {
     this.filename = filename;
     this.counters = counters;
   }

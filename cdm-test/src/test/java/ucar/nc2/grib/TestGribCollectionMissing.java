@@ -44,8 +44,8 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlags;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCache;
+import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -76,7 +76,7 @@ public class TestGribCollectionMissing {
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
     Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
-    GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
+    GribCdmIndex.setGribCollectionCache(new ucar.nc2.internal.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
 

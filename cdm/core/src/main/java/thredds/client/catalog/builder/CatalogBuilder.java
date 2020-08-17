@@ -18,7 +18,7 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.net.URLnaming;
+import ucar.nc2.internal.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.Nullable;
 import java.io.IOException;

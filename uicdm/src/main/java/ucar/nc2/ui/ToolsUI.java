@@ -39,9 +39,10 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.internal.util.DiskCache2;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.xml.RuntimeConfigParser;
+import ucar.nc2.internal.cache.FileCache;
+import ucar.nc2.internal.util.xml.RuntimeConfigParser;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.http.ReadFromUrl;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.ui.prefs.Debug;
@@ -1281,7 +1282,7 @@ public class ToolsUI extends JPanel {
 
         try (FileOutputStream fos = new FileOutputStream(values[0])) {
           out = new BufferedOutputStream(fos, 60000);
-          IO.copyUrlB(values[1], out, 60000);
+          ReadFromUrl.copyUrlB(values[1], out, 60000);
           downloadStatus = values[1] + " written to " + values[0];
 
         } catch (IOException ioe) {
@@ -1321,7 +1322,7 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
-    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
+    ucar.nc2.internal.cache.FileCacheIF cache = NetcdfDatasets.getNetcdfFileCache();
     if (cache != null) {
       cache.clearCache(true);
     }

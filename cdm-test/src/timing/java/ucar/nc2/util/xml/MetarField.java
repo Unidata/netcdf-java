@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.util.xml;
+package ucar.nc2.internal.util.xml;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;

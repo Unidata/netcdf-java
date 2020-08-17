@@ -7,11 +7,10 @@ package ucar.nc2.ui.menu;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Set;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
-import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.ui.widget.PLAF;
 import ucar.unidata.io.RandomAccessFile;
 import java.awt.event.ActionEvent;

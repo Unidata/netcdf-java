@@ -12,7 +12,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.internal.cache.FileCacheable;
 import javax.annotation.Nullable;
 
 /**

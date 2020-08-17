@@ -7,7 +7,7 @@ import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.util.AliasTranslator;
+import ucar.nc2.internal.util.AliasTranslator;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;

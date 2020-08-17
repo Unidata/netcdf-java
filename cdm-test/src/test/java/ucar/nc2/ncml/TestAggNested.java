@@ -15,7 +15,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;

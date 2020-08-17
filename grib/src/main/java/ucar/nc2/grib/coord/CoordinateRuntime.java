@@ -8,7 +8,7 @@ import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
@@ -176,7 +176,7 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public Counters calcDistributions() {
-    ucar.nc2.util.Counters counters = new Counters();
+    Counters counters = new Counters();
     counters.add("resol");
 
     List<Double> offsets = getOffsetsInTimeUnits();
