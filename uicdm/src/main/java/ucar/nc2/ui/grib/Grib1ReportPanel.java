@@ -26,7 +26,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.ui.ReportPanel;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import java.io.*;

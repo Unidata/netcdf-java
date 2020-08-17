@@ -6,7 +6,7 @@
 package ucar.nc2.grib.coord;
 
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import java.util.Formatter;
 import java.util.List;

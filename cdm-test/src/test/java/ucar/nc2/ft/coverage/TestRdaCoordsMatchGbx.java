@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribCoordsMatchGbx;
 import ucar.nc2.grib.collection.Grib;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.category.NeedsRdaData;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class TestRdaCoordsMatchGbx {
     System.out.printf("countersAll = %s%n", countersAll);
   }
 
-  static ucar.nc2.util.Counters countersAll;
+  static Counters countersAll;
 
   static String topdir = "D:/work/rdavm/"; // LOOK how can we handle this better?
 
@@ -75,7 +76,7 @@ public class TestRdaCoordsMatchGbx {
   @Test
   public void doOneFile() throws IOException {
     System.out.printf("%s%n", endpoint);
-    ucar.nc2.util.Counters fileCounters = GribCoordsMatchGbx.getCounters();
+    Counters fileCounters = GribCoordsMatchGbx.getCounters();
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(endpoint, fileCounters);
     int fail = helper.readGridDataset();
     fail += helper.readCoverageDataset();

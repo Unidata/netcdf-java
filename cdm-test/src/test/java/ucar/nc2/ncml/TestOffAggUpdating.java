@@ -44,7 +44,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.internal.cache.FileCacheable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -126,7 +126,7 @@ public class TestOffAggUpdating {
     assert v.getRank() == 3 : v.getRank();
   }
 
-  private class NcmlStringFileFactory implements ucar.nc2.util.cache.FileFactory {
+  private class NcmlStringFileFactory implements ucar.nc2.internal.cache.FileFactory {
 
     @Override
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)

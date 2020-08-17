@@ -307,7 +307,7 @@ class AggregationExisting extends AggregationOuter {
 
     Element aggElem;
     try {
-      aggElem = ucar.nc2.util.xml.Parse.readRootElement("file:" + cacheFile.getPath());
+      aggElem = ucar.nc2.internal.util.xml.Parse.readRootElement("file:" + cacheFile.getPath());
     } catch (IOException e) {
       if (debugCache) {
         System.out.println(" No cache for " + cacheName + " - " + e.getMessage());

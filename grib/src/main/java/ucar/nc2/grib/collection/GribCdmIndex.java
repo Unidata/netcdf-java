@@ -23,9 +23,9 @@ import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.util.cache.FileFactory;
+import ucar.nc2.internal.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheable;
+import ucar.nc2.internal.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
@@ -62,7 +62,7 @@ public class GribCdmIndex implements IndexReader {
   public static FileCacheIF gribCollectionCache;
 
   public static void initDefaultCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    gribCollectionCache = new ucar.nc2.util.cache.FileCacheGuava("DefaultGribCollectionCache", maxElementsInMemory);
+    gribCollectionCache = new ucar.nc2.internal.cache.FileCacheGuava("DefaultGribCollectionCache", maxElementsInMemory);
   }
 
   public static void disableGribCollectionCache() {

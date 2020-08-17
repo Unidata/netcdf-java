@@ -117,7 +117,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   /**
    * Returns the time that the underlying file(s) were last modified. If they've changed since they were stored in the
-   * cache, they will be closed and reopened with {@link ucar.nc2.util.cache.FileFactory}.
+   * cache, they will be closed and reopened with {@link ucar.nc2.internal.cache.FileFactory}.
    *
    * @return a {@code long} value representing the time the file(s) were last modified or {@code 0L} if the
    *         last-modified time couldn't be determined for any reason.

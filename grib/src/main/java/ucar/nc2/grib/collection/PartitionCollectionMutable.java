@@ -13,7 +13,7 @@ import thredds.inventory.MCollection;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.cache.SmartArrayInt;
+import ucar.nc2.internal.cache.SmartArrayInt;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -52,7 +52,7 @@ class AggDatasetOuter extends AggDataset {
    * @param reader factory for reading this netcdf dataset; if null, use NetcdfDatasets.open( location)
    */
   AggDatasetOuter(AggregationOuter aggregationOuter, String cacheName, String location, String id, String ncoordS,
-      String coordValueS, EnumSet<Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+      String coordValueS, EnumSet<Enhance> enhance, ucar.nc2.internal.cache.FileFactory reader) {
 
     super(cacheName, location, id, enhance, reader, aggregationOuter.spiObject, aggregationOuter.ncmlElem);
     this.aggregationOuter = aggregationOuter;

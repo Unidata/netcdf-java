@@ -17,7 +17,7 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
@@ -279,7 +279,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public Counters calcDistributions() {
-    ucar.nc2.util.Counters counters = new Counters();
+    Counters counters = new Counters();
     counters.add("resol");
 
     List<?> offsets = getOffsetsSorted();

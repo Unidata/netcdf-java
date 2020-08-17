@@ -25,6 +25,7 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.write.Nc4ChunkingStrategy;
+import ucar.unidata.io.http.ReadFromUrl;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
 import java.awt.BorderLayout;
@@ -242,7 +243,7 @@ public class NcmlEditor extends JPanel {
         cmd = "file:" + cmd;
       }
       ncmlLocation = cmd;
-      String text = IO.readURLcontents(cmd);
+      String text = ReadFromUrl.readURLcontents(cmd);
       editor.setText(text);
     } else {
       writeNcml(cmd);

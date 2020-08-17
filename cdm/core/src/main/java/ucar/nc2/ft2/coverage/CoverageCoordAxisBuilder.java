@@ -13,7 +13,7 @@ import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.StringUtil2;
 import java.util.ArrayList;

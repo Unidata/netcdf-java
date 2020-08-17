@@ -10,7 +10,7 @@ import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.util.Counters;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 import javax.annotation.concurrent.Immutable;
@@ -122,7 +122,7 @@ public class CoordinateEns implements Coordinate {
 
   @Override
   public Counters calcDistributions() {
-    ucar.nc2.util.Counters counters = new Counters();
+    Counters counters = new Counters();
     counters.add("resol");
 
     for (int i = 0; i < ensSorted.size() - 1; i++) {

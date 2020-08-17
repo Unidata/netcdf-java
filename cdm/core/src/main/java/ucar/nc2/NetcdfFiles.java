@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.util.StringLocker;
+import ucar.nc2.internal.util.URLnaming;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;
@@ -303,8 +304,8 @@ public class NetcdfFiles {
       bufferSize = default_buffersize;
     }
 
-    ucar.unidata.io.RandomAccessFile raf =
-        ucar.unidata.io.RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
+    String urlCanonical = URLnaming.canonicalizeUriString(location);
+    ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(urlCanonical, bufferSize);
 
     NetcdfFile result = build(spi, raf, location, cancelTask);
 
@@ -342,25 +343,6 @@ public class NetcdfFiles {
       }
     }
     return canOpen;
-  }
-
-  /**
-   * Removes the {@code "file:"} or {@code "file://"} prefix from the location, if necessary. Also replaces
-   * back slashes with forward slashes.
-   *
-   * @param location a URI string.
-   * @return a canonical URI string.
-   */
-  public static String canonicalizeUriString(String location) {
-    // get rid of file prefix, if any
-    String uriString = location.trim();
-    if (uriString.startsWith("file://"))
-      uriString = uriString.substring(7);
-    else if (uriString.startsWith("file:"))
-      uriString = uriString.substring(5);
-
-    // get rid of crappy microsnot \ replace with happy /
-    return StringUtil2.replace(uriString, '\\', "/");
   }
 
   private static ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf,
