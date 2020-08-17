@@ -8,7 +8,6 @@ import thredds.client.catalog.*;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.ui.widget.TextGetPutPane;
 import ucar.ui.widget.*;
-import ucar.nc2.util.IO;
 import ucar.unidata.io.http.ReadFromUrl;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
@@ -135,7 +134,7 @@ public class ThreddsUI extends JPanel {
             if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
               String urlString = access.getWrappedUrlName();
               ReadFromUrl.readURLcontents(urlString);
-              xmlPane.setText(IO.readURLcontents(urlString));
+              xmlPane.setText(ReadFromUrl.readURLcontents(urlString));
               xmlPane.gotoTop();
               xmlWindow.setVisible(true);
               return;
