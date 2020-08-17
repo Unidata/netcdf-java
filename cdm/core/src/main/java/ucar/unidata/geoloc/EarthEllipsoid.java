@@ -4,6 +4,7 @@
  */
 package ucar.unidata.geoloc;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class EarthEllipsoid extends Earth {
    * @param name : name to match
    * @return EarthEllipsoid or null if no match.
    */
+  @Nullable
   public static EarthEllipsoid getType(String name) {
     if (name == null)
       return null;
@@ -69,6 +71,7 @@ public class EarthEllipsoid extends Earth {
    * @param epsgId : epsg Id to match
    * @return EarthEllipsoid or null if no match.
    */
+  @Nullable
   public static EarthEllipsoid getType(int epsgId) {
     Collection<EarthEllipsoid> all = getAll();
     for (EarthEllipsoid ellipsoid : all) {

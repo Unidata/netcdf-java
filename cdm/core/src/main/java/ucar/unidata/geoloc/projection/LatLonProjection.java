@@ -143,22 +143,21 @@ public class LatLonProjection extends AbstractProjection {
    *         the second rectangle is null.
    */
   public ProjectionRect[] latLonToProjRect(LatLonRect latlonR) {
-
     double lat0 = latlonR.getLowerLeftPoint().getLatitude();
     double height = Math.abs(latlonR.getUpperRightPoint().getLatitude() - lat0);
     double width = latlonR.getWidth();
     double lon0 = LatLonPoints.lonNormal(latlonR.getLowerLeftPoint().getLongitude(), centerLon);
     double lon1 = LatLonPoints.lonNormal(latlonR.getUpperRightPoint().getLongitude(), centerLon);
 
-    ProjectionRect[] rects = {new ProjectionRect(), new ProjectionRect()};
+    ProjectionRect[] rects = {};
     if (lon0 < lon1) {
-      rects[0].setRect(lon0, lat0, width, height);
+      rects[0] = ProjectionRect.builder().setRect(lon0, lat0, width, height).build();
       rects[1] = null;
 
     } else {
       double y = centerLon + 180 - lon0;
-      rects[0].setRect(lon0, lat0, y, height);
-      rects[1].setRect(lon1 - width + y, lat0, width - y, height);
+      rects[0] = ProjectionRect.builder().setRect(lon0, lat0, y, height).build();
+      rects[1] = ProjectionRect.builder().setRect(lon1 - width + y, lat0, width - y, height).build();
     }
 
     return rects;
@@ -200,17 +199,17 @@ public class LatLonProjection extends AbstractProjection {
     lon0 = LatLonPoints.lonNormal(lon0, centerLon);
     lon1 = LatLonPoints.lonNormal(lon1, centerLon);
 
-    ProjectionRect[] rects = {new ProjectionRect(), new ProjectionRect()};
+    ProjectionRect[] rects = {};
     if (width >= 360.0) {
-      rects[0].setRect(centerLon - 180.0, lat0, 360.0, height);
+      rects[0] = ProjectionRect.builder().setRect(centerLon - 180.0, lat0, 360.0, height).build();
       rects[1] = null;
     } else if (lon0 < lon1) {
-      rects[0].setRect(lon0, lat0, width, height);
+      rects[0] = ProjectionRect.builder().setRect(lon0, lat0, width, height).build();
       rects[1] = null;
     } else {
       double y = centerLon + 180 - lon0;
-      rects[0].setRect(lon0, lat0, y, height);
-      rects[1].setRect(lon1 - width + y, lat0, width - y, height);
+      rects[0] = ProjectionRect.builder().setRect(lon0, lat0, y, height).build();
+      rects[1] = ProjectionRect.builder().setRect(lon1 - width + y, lat0, width - y, height).build();
     }
     return rects;
   }
@@ -226,7 +225,7 @@ public class LatLonProjection extends AbstractProjection {
     ProjectionPoint w2 = latLonToProj(ur, centerLon);
 
     // make bounding box out of those two corners
-    ProjectionRect world = new ProjectionRect(w1.getX(), w1.getY(), w2.getX(), w2.getY());
+    ProjectionRect.Builder world = ProjectionRect.builder(w1.getX(), w1.getY(), w2.getX(), w2.getY());
 
     LatLonPoint la = LatLonPoint.create(ur.getLatitude(), ll.getLongitude());
     LatLonPoint lb = LatLonPoint.create(ll.getLatitude(), ur.getLongitude());
@@ -235,7 +234,7 @@ public class LatLonProjection extends AbstractProjection {
     world.add(latLonToProj(la, centerLon));
     world.add(latLonToProj(lb, centerLon));
 
-    return world;
+    return world.build();
   }
 
 }

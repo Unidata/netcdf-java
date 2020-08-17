@@ -57,7 +57,6 @@ public class Earth {
     this(equatorRadius, poleRadius, reciprocalFlattening, "ellipsoidal_earth");
   }
 
-
   /**
    * Create an ellipsoidal earth with a name.
    *

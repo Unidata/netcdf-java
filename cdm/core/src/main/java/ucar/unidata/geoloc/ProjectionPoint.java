@@ -41,9 +41,4 @@ public abstract class ProjectionPoint {
   public boolean nearlyEquals(ProjectionPoint other, double maxRelDiff) {
     return Misc.nearlyEquals(getX(), other.getX(), maxRelDiff) && Misc.nearlyEquals(getY(), other.getY(), maxRelDiff);
   }
-
-  public boolean isInfinite() {
-    return (getX() == java.lang.Double.POSITIVE_INFINITY) || (getX() == java.lang.Double.NEGATIVE_INFINITY)
-        || (getY() == java.lang.Double.POSITIVE_INFINITY) || (getY() == java.lang.Double.NEGATIVE_INFINITY);
-  }
 }

@@ -189,7 +189,7 @@ public abstract class AbstractProjection implements Projection {
     ProjectionPoint w2 = latLonToProj(ur);
 
     // make bounding box out of those two corners
-    ProjectionRect world = new ProjectionRect(w1.getX(), w1.getY(), w2.getX(), w2.getY());
+    ProjectionRect.Builder world = ProjectionRect.builder(w1.getX(), w1.getY(), w2.getX(), w2.getY());
 
     LatLonPoint la = LatLonPoint.create(ur.getLatitude(), ll.getLongitude());
     LatLonPoint lb = LatLonPoint.create(ll.getLatitude(), ur.getLongitude());
@@ -198,7 +198,7 @@ public abstract class AbstractProjection implements Projection {
     world.add(latLonToProj(la));
     world.add(latLonToProj(lb));
 
-    return world;
+    return world.build();
   }
 
   // Allow subclasses to override.
