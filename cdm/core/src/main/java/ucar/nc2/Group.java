@@ -1179,6 +1179,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
     /**
      * Find a Variable, with the specified reletive name. No structure members.
+     * 
      * @param reletiveName eg "group/subgroup/varname".
      */
     public Optional<Variable.Builder<?>> findVariableNested(String reletiveName) {

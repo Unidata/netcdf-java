@@ -134,7 +134,7 @@ public class DateFromString {
     return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, 0);
   }
 
-  /** @deprecated do not use  */
+  /** @deprecated do not use */
   @Deprecated
   public static Date getDateUsingDemarkatedMatchOld(String dateString, String dateFormatString, char demark) {
     // extract the match string
@@ -163,7 +163,7 @@ public class DateFromString {
     return getDateUsingCompleteDateFormatWithOffset(dateString, dateFormatString, 0);
   }
 
-  /** @deprecated do not use  */
+  /** @deprecated do not use */
   @Deprecated
   public static Double getHourUsingDemarkatedMatch(String hourString, String formatString, char demark) {
     // extract the match string

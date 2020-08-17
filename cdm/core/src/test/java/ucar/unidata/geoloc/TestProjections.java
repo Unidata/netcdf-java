@@ -486,14 +486,18 @@ public class TestProjections {
     makeSanityTest(new LambertConformalConicEllipse(), ppt, lpt);
     makeSanityTest(new PolyconicProjection(), ppt, lpt);
 
-    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
-    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60.,0, 0, EarthEllipsoid.WGS84), ppt, lpt);
-    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60.,0, 0, EarthEllipsoid.WGS84), ppt, lpt);
-    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60.,0, 0, EarthEllipsoid.WGS84), ppt, lpt);
-    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60.,0, 0, new Earth()), ppt, lpt);
-    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60.,0, 0, new Earth()), ppt, lpt);
-    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60.,0, 0, new Earth()), ppt, lpt);
-    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60.,0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84), ppt,
+        lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
 
     makeSanityTest(new TransverseMercatorProjection(), ppt, lpt);
     makeSanityTest(new TransverseMercatorProjection(new Earth(), 0, 0, 0.9996, 0, 0), ppt, lpt);
