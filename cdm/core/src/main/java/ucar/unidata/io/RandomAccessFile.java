@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.util.cache.FileFactory;
+import ucar.nc2.internal.cache.FileCache;
+import ucar.nc2.internal.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheable;
+import ucar.nc2.internal.cache.FileFactory;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
@@ -144,7 +144,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   // internal File Caching. this allows a global pool of OS files.
   // note read only
 
-  private static final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
+  private static final ucar.nc2.internal.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
       String location = StringUtil2.replace(durl.trueurl, "\\", "/"); // canonicalize the name

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.util.xml;
+package ucar.nc2.internal.util.xml;
 
 import org.jdom2.Element;
 import java.io.*;
@@ -22,7 +22,7 @@ public class TimeStringParsing {
   TimeStringParsing() throws IOException {
 
     String filename = "file:C:\\Documents and Settings\\caron\\.unidata\\cachePersist\\fileD-godas-singleAgg.ncml";
-    Element aggElem = ucar.nc2.util.xml.Parse.readRootElement(filename);
+    Element aggElem = ucar.nc2.internal.util.xml.Parse.readRootElement(filename);
 
     List<Element> ncList = aggElem.getChildren("netcdf", thredds.client.catalog.Catalog.ncmlNS);
     for (Element netcdfElemNested : ncList) {

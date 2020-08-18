@@ -27,7 +27,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -156,14 +156,15 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   private void makeRanges() {
     LatLonRect.Builder llbbBuilder = null;
+    ProjectionRect.Builder projBBbuilder = null;
     for (ucar.nc2.dt.GridDataset.Gridset gset : getGridsets()) {
       GridCoordSystem gcs = gset.getGeoCoordSystem();
 
       ProjectionRect bb = gcs.getBoundingBox();
-      if (projBB == null)
-        projBB = bb;
+      if (projBBbuilder == null)
+        projBBbuilder = bb.toBuilder();
       else
-        projBB.add(bb);
+        projBBbuilder.add(bb);
 
       LatLonRect llbb = gcs.getLatLonBoundingBox();
       if (llbbBuilder == null) {
@@ -184,6 +185,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     if (llbbBuilder != null) {
       llbbMax = llbbBuilder.build();
     }
+
+    projBB = projBBbuilder.build();
+
   }
 
   // stuff to satisfy ucar.nc2.dt.TypedDataset

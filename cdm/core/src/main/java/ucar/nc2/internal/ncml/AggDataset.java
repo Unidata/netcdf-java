@@ -40,7 +40,7 @@ public class AggDataset implements Comparable<AggDataset> {
   @Nullable
   private final Element ncmlElem;
   @Nullable
-  protected final ucar.nc2.util.cache.FileFactory reader;
+  protected final ucar.nc2.internal.cache.FileFactory reader;
   @Nullable
   protected final Object spiObject; // pass to NetcdfFiles.open()
 
@@ -70,7 +70,7 @@ public class AggDataset implements Comparable<AggDataset> {
    * @param reader factory for reading this netcdf dataset; if null, use NetcdfDatasets.open( location)
    */
   protected AggDataset(String cacheLocation, String location, @Nullable String id,
-      @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.util.cache.FileFactory reader,
+      @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.internal.cache.FileFactory reader,
       @Nullable Object spiObject, @Nullable Element ncmlElem) {
     this.mfile = MFileOS.getExistingFile(location); // may be null
     this.cacheLocation = cacheLocation;

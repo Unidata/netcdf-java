@@ -38,7 +38,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.Catalog;
 import thredds.inventory.CollectionAbstract;
-import ucar.nc2.util.AliasTranslator;
+import ucar.nc2.internal.util.AliasTranslator;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Formatter;

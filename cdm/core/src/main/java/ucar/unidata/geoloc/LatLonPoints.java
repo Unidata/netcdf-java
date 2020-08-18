@@ -7,36 +7,23 @@ package ucar.unidata.geoloc;
 import java.util.Formatter;
 import ucar.unidata.util.Format;
 
-/**
- * Static utilities for LatLonPoint.
- *
- * @author caron
- * @since 3/15/2020.
- */
+/** Static utilities for LatLonPoint. */
 public class LatLonPoints {
 
   /**
-   * Test if point lies between two longitudes, deal with wrapping.
+   * Test if a longitude lies in the interval [lonBeg, lonEnd].
+   * All points are adjusted to deal with possible longitude wrap.
+   * -180 is consider to be east of 180.
    *
    * @param lon point to test
    * @param lonBeg beginning longitude
-   * @param lonEnd ending longitude
-   * @return true if lon is between lonBeg and lonEnd.
+   * @param lonEnd ending longitude, always to the east of lonBeg
+   * @return true if lon is in the interval [lonBeg, lonEnd].
    */
   public static boolean betweenLon(double lon, double lonBeg, double lonEnd) {
-    lonBeg = lonNormal(lonBeg, lon);
-    lonEnd = lonNormal(lonEnd, lon);
-    return (lon >= lonBeg) && (lon <= lonEnd);
-  }
-
-  /**
-   * put longitude into the range [-180, 180] deg
-   *
-   * @param lon lon to normalize
-   * @return longitude in range [-180, 180] deg
-   */
-  public static double range180(double lon) {
-    return lonNormal(lon);
+    lon = lonNormalFrom(lon, lonBeg);
+    lonEnd = lonNormalFrom(lon, lonEnd);
+    return (lon <= lonEnd);
   }
 
   /**
@@ -109,10 +96,8 @@ public class LatLonPoints {
   public static double latNormal(double lat) {
     if (lat < -90.) {
       return -90.;
-    } else if (lat > 90.) {
-      return 90.;
     } else {
-      return lat;
+      return Math.min(lat, 90.);
     }
   }
 
@@ -169,6 +154,16 @@ public class LatLonPoints {
   public static boolean isInfinite(ProjectionPoint pt) {
     return (pt.getX() == java.lang.Double.POSITIVE_INFINITY) || (pt.getX() == java.lang.Double.NEGATIVE_INFINITY)
         || (pt.getY() == java.lang.Double.POSITIVE_INFINITY) || (pt.getY() == java.lang.Double.NEGATIVE_INFINITY);
+  }
+
+  /**
+   * put longitude into the range [-180, 180] deg
+   *
+   * @param lon lon to normalize
+   * @return longitude in range [-180, 180] deg
+   */
+  public static double range180(double lon) {
+    return lonNormal(lon);
   }
 
   /**

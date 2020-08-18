@@ -13,7 +13,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.util.*;

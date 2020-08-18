@@ -536,7 +536,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
   @Override
   protected AggDataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
-      String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+      String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.internal.cache.FileFactory reader) {
     return new AggDatasetOuter(this, cacheName, location, id, ncoordS, coordValueS, enhance, reader);
   }
 

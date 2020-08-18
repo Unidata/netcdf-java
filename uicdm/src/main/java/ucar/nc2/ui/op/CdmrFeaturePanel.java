@@ -14,7 +14,7 @@ import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.util.IO;
+import ucar.unidata.io.http.ReadFromUrl;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import java.awt.*;
@@ -100,7 +100,7 @@ public class CdmrFeaturePanel extends JPanel {
     try {
       System.out.printf("open %s%n", stream);
       if (stream.startsWith("http:"))
-        is = IO.getInputStreamFromUrl(stream);
+        is = ReadFromUrl.getInputStreamFromUrl(stream);
       else
         is = new FileInputStream(stream);
       if (is == null)

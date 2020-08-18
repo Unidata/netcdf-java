@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.Grib;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -45,8 +46,8 @@ public class TestCoordinatesMatchGbx {
     Variable.permitCaching = true;
   }
 
-  static ucar.nc2.util.Counters countersAll;
-  ucar.nc2.util.Counters counterCurrent;
+  static Counters countersAll;
+  Counters counterCurrent;
 
   @Test
   public void readGrib1Files() throws Exception {
@@ -159,7 +160,7 @@ public class TestCoordinatesMatchGbx {
    */
   @Ignore("Overlapping time interval")
   public void testNonUniqueTimeCoordsProblem() throws IOException {
-    ucar.nc2.util.Counters counters = GribCoordsMatchGbx.getCounters();
+    Counters counters = GribCoordsMatchGbx.getCounters();
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/QPE.20101005.009.157";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
@@ -168,7 +169,7 @@ public class TestCoordinatesMatchGbx {
   }
 
   public void testProblem2() throws IOException {
-    ucar.nc2.util.Counters counters = GribCoordsMatchGbx.getCounters();
+    Counters counters = GribCoordsMatchGbx.getCounters();
     String filename = "D:/work/rdavm/ds084.3/2015/20150201/ds084.3-20150201.ncx4";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     // helper.readGridDataset();
@@ -178,7 +179,7 @@ public class TestCoordinatesMatchGbx {
 
   @Test
   public void testRdaPofP() throws IOException {
-    ucar.nc2.util.Counters counters = GribCoordsMatchGbx.getCounters();
+    Counters counters = GribCoordsMatchGbx.getCounters();
     String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp.ncx4";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
@@ -213,7 +214,7 @@ public class TestCoordinatesMatchGbx {
     public int doAct(String filename) throws IOException {
       int fail = 0;
       int fail2 = 0;
-      ucar.nc2.util.Counters fileCounters = counterCurrent.makeSubCounters();
+      Counters fileCounters = counterCurrent.makeSubCounters();
       GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, fileCounters);
       fail = helper.readGridDataset();
       fail2 = helper.readCoverageDataset();

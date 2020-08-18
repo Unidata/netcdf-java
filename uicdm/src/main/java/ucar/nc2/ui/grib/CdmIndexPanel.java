@@ -20,6 +20,7 @@ import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordValue;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.MFileTable;
 import ucar.ui.widget.BAMutil;
@@ -955,7 +956,7 @@ public class CdmIndexPanel extends JPanel {
     int idx;
     double start, end, resol;
     Comparable resolMode;
-    ucar.nc2.util.Counters counters;
+    Counters counters;
 
     // no-arg constructor
 

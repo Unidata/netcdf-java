@@ -7,6 +7,7 @@ package timing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.util.IO;
+import ucar.unidata.io.http.ReadFromUrl;
 import ucar.unidata.util.Format;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
@@ -306,26 +307,10 @@ public class TimingCopy {
     System.out.println(" copy (" + bufferSize + ") took = " + took + " sec; rate = " + rate + "Mb/sec total=" + total);
   }
 
-
-  static public void copyURL(String url, String filenameOut, int bufferSize) throws IOException {
-
-    File outFile = new File(filenameOut);
-
-    long start = System.currentTimeMillis();
-    String ok = IO.readURLtoFileWithExceptions(url, outFile, bufferSize);
-    double took = .001 * (System.currentTimeMillis() - start);
-
-    double len = (double) outFile.length() / (1000 * 1000);
-
-    double rate = len / took;
-    System.out.println(" copyURL (" + url + ") took = " + took + " sec; len= " + len + " Mbytes; rate = "
-        + Format.d(rate, 3) + "Mb/sec ok=" + ok);
-  }
-
   static public void copyURL2null(String url, int bufferSize) throws IOException {
 
     long start = System.currentTimeMillis();
-    long count = IO.copyUrlB(url, null, bufferSize);
+    long count = ReadFromUrl.copyUrlB(url, null, bufferSize);
     double len = (double) count / (1000 * 1000);
     double took = .001 * (System.currentTimeMillis() - start);
 

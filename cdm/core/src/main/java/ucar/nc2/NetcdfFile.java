@@ -30,8 +30,8 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.internal.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheable;
 import ucar.nc2.write.NcmlWriter;
 
 /**

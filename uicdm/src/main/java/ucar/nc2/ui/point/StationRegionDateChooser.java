@@ -484,7 +484,7 @@ public class StationRegionDateChooser extends NPController {
   }
 
   public void setGeoBounds(ProjectionRect bb) {
-    geoBounds = new ProjectionRect(bb);
+    geoBounds = bb;
     np.setMapArea(bb);
     // np.getProjectionImpl().setDefaultMapArea(geoBounds);
   }

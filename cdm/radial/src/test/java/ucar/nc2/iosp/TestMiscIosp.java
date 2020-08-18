@@ -17,7 +17,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.internal.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;

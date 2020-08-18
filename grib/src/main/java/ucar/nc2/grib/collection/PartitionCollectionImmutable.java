@@ -22,10 +22,9 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
-import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.util.cache.FileFactory;
-import ucar.nc2.util.cache.SmartArrayInt;
+import ucar.nc2.internal.cache.FileCacheable;
+import ucar.nc2.internal.cache.FileFactory;
+import ucar.nc2.internal.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.File;
@@ -46,7 +45,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   private static final Logger logger = LoggerFactory.getLogger(PartitionCollectionImmutable.class);
   public static int countPC; // debug
 
-  static final ucar.nc2.util.cache.FileFactory partitionCollectionFactory = new FileFactory() {
+  static final ucar.nc2.internal.cache.FileFactory partitionCollectionFactory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
       try (RandomAccessFile raf = RandomAccessFile.acquire(durl.trueurl)) {

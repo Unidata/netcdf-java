@@ -14,7 +14,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.DataType;
 import java.util.*;

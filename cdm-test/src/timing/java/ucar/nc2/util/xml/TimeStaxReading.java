@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.util.xml;
+package ucar.nc2.internal.util.xml;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;

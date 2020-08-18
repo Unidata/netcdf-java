@@ -11,6 +11,7 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.collection.Grib;
+import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.DebugFlags;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -45,7 +46,7 @@ public class TestCoordinatesMatchGbxP {
     System.out.printf("countersAll = %s%n", countersAll);
   }
 
-  static ucar.nc2.util.Counters countersAll;
+  static Counters countersAll;
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -95,7 +96,7 @@ public class TestCoordinatesMatchGbxP {
   @Test
   public void doOneFile() throws IOException {
     System.out.printf("%s%n", endpoint);
-    ucar.nc2.util.Counters fileCounters = GribCoordsMatchGbx.getCounters();
+    Counters fileCounters = GribCoordsMatchGbx.getCounters();
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(endpoint, fileCounters);
     int fail = helper.readGridDataset();
     fail += helper.readCoverageDataset();
