@@ -9,7 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
 import ucar.nc2.internal.util.Counters.Counter;
 
-/** Test {@link Counters} */
+/** Test {@link ucar.nc2.internal.util.Counters} */
 public class TestCounters {
 
   @Test
@@ -34,7 +34,6 @@ public class TestCounters {
 
     assertThat(one.getMode()).isEqualTo("value1");
     assertThat(one.getTotal()).isEqualTo(3);
-
   }
 
 }
