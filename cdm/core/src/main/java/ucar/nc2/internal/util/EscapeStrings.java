@@ -5,353 +5,35 @@
 
 package ucar.nc2.internal.util;
 
-import com.google.re2j.Matcher;
-import com.google.re2j.Pattern;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * We want to refactor the escaping.
- * 1. EscapeStrings (this class)
- * 2. StringUtil2.escape() DONE
- * 3. URLnaming DONE
- * 4. Eliminate URLencode/decode in favor of guava.
- * 
- * https://texnoblog.wordpress.com/2014/06/11/urlencode-just-one-is-not-enough/
- * "Starting from version 15.0, Google's excellent Guava libraries have UrlEscapers class to do just that!
- * The documentation is pretty clear, use
- * 1) urlPathSegmentEscaper to encode URL path segments (things that go between slashes),
- * 2) urlFragmentEscaper if you already have a path/with/slashes
- * 3) urlPathSegmentEscaper for the names and values of request parameters (things after the '?').
- * 
- * from Guava:
- * 
- * 1) HtmlEscapers
- * HTML escaping is particularly tricky: For example, some elements' text contents must not be HTML escaped.
- * As a result, it is impossible to escape an HTML document correctly without domain-specific knowledge beyond what
- * HtmlEscapers provides.
- * We strongly encourage the use of HTML templating systems.
- * 
- * 2) XMLEscaper
- * Escaper instances suitable for strings to be included in XML attribute values and elements' text contents. When
- * possible, avoid manual escaping
- * by using templating systems and high-level APIs that provide autoescaping. For example, consider XOM or JDOM.
- * 
- * 3) PercentEscaper
- * PercentEscaper(String safeChars, boolean plusForSpace)
- * Constructs a percent escaper with the specified safe characters and optional handling of the space character.
- * 
- * TODO replace with standard escape libraries
+/**
+ * Text Escaping utilities.
+ * TODO replace with standard escape libraries where possible
  */
 public class EscapeStrings {
-  protected static final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  protected static final String numeric = "0123456789";
-  protected static final String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  protected static final String _allowableInUrl =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$&'()*+,-./:;=?@_~";
-  protected static final String _allowableInUrlQuery =
+  static final String alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  static final String _allowableInOGC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~*'()";
+  private static final String _allowableInUrlQuery =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&'()*+,-./:;=?@_~";
-  protected static final String _allowableInDAP =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_!~*'-\"./";
-  protected static final String _allowableInOGC =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~*'()";
-  protected static final char _URIEscape = '%';
-  protected static final char _JavaEscape = '\\';
-  static final byte blank = ((byte) ' ');
-  static final byte plus = ((byte) '+');
 
-  /**
-   * @param in String to escape
-   * @param allowable allowedcharacters
-   * @param esc escape char prefix
-   * @param spaceplus true =>convert ' ' to '+'
-   */
-  private static String xescapeString(String in, String allowable, char esc, boolean spaceplus) {
-    try {
-      StringBuilder out = new StringBuilder();
-      if (in == null) {
-        return null;
-      }
-      byte[] utf8 = in.getBytes(StandardCharsets.UTF_8);
-      byte[] allow8 = allowable.getBytes(StandardCharsets.UTF_8);
-      for (byte b : utf8) {
-        if (b == blank && spaceplus) {
-          out.append('+');
-        } else {
-          // search allow8
-          boolean found = false;
-          for (byte a : allow8) {
-            if (a == b) {
-              found = true;
-              break;
-            }
-          }
-          if (found) {
-            out.append((char) b);
-          } else {
-            String c = Integer.toHexString(b);
-            out.append(esc);
-            if (c.length() < 2) {
-              out.append('0');
-            }
-            out.append(c);
-          }
-        }
-      }
+  private static final char _URIEscape = '%';
+  private static final byte blank = ((byte) ' ');
+  private static final byte plus = ((byte) '+');
 
-      return out.toString();
-
-    } catch (Exception e) {
-      return in;
-    }
-  }
-
-  private static String escapeString(String in, String allowable) {
-    return xescapeString(in, allowable, _URIEscape, false);
-  }
-
-  /**
-   * Given a string that contains WWW escape sequences, translate those escape sequences back into
-   * ASCII characters. Return the modified string.
-   *
-   * @param in The string to modify.
-   * @param escape The character used to signal the begining of an escape sequence. param except If
-   *        there is some escape code that should not be removed by this call (e.g., you might not want to
-   *        remove spaces, %20) use this parameter to specify that code. The function will then transform
-   *        all escapes except that one.
-   * @param spaceplus True if spaces should be replaced by '+'.
-   * @return The modified string.
-   */
-
-  private static String xunescapeString(String in, char escape, boolean spaceplus) {
-    try {
-      if (in == null) {
-        return null;
-      }
-
-      byte[] utf8 = in.getBytes(StandardCharsets.UTF_8);
-      byte escape8 = (byte) escape;
-      byte[] out = new byte[utf8.length]; // Should be max we need
-
-      int index8 = 0;
-      for (int i = 0; i < utf8.length;) {
-        byte b = utf8[i++];
-        if (b == plus && spaceplus) {
-          out[index8++] = blank;
-        } else if (b == escape8) {
-          // check to see if there are enough characters left
-          if (i + 2 <= utf8.length) {
-            b = (byte) (fromHex(utf8[i]) << 4 | fromHex(utf8[i + 1]));
-            i += 2;
-          }
-        }
-        out[index8++] = b;
-      }
-      return new String(out, 0, index8, StandardCharsets.UTF_8);
-    } catch (Exception e) {
-      return in;
-    }
-
-  }
-
-  private static String unescapeString(String in) {
-    return xunescapeString(in, _URIEscape, false);
-  }
-
-  static private final byte hexa = (byte) 'a';
-  static private final byte hexf = (byte) 'f';
-  static private final byte hexA = (byte) 'A';
-  static private final byte hexF = (byte) 'F';
-  static private final byte hex0 = (byte) '0';
-  static private final byte hex9 = (byte) '9';
-  static private final byte ten = (byte) 10;
-
-  private static byte fromHex(byte b) throws NumberFormatException {
-    if (b >= hex0 && b <= hex9) {
-      return (byte) (b - hex0);
-    }
-    if (b >= hexa && b <= hexf) {
-      return (byte) (ten + (b - hexa));
-    }
-    if (b >= hexA && b <= hexF) {
-      return (byte) (ten + (b - hexA));
-    }
-    throw new NumberFormatException("Illegal hex character: " + b);
-  }
-
-
-  /**
-   * Define the DEFINITIVE opendap identifier unescape function.
-   *
-   * @param id The identifier to unescape.
-   * @return The unescaped identifier.
-   */
-  public static String unescapeDAPIdentifier(String id) {
-    String s;
-    try {
-      s = unescapeString(id);
-    } catch (Exception e) {
-      s = null;
-    }
-    return s;
-  }
-
-  private static final Pattern p = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
-
-  /** @deprecated do not use */
-  @Deprecated
-  public static String escapeURL(String url) {
-    String protocol;
-    String authority;
-    String path;
-    String query;
-    String fragment;
-    if (false) {
-      // We split the url ourselves to minimize character dependencies
-      Matcher m = p.matcher(url);
-      boolean match = m.matches();
-      if (!match) {
-        return null;
-      }
-      protocol = m.group(1);
-      authority = m.group(2);
-      path = m.group(3);
-      query = m.group(4);
-      fragment = m.group(5);
-    } else {// faster, but may not work quite right
-      URL u;
-      try {
-        u = new URL(url);
-      } catch (MalformedURLException e) {
-        return null;
-      }
-      protocol = u.getProtocol();
-      authority = u.getAuthority();
-      path = u.getPath();
-      query = u.getQuery();
-      fragment = u.getRef();
-    }
-    // Reassemble
-    StringBuilder ret = new StringBuilder(protocol);
-    ret.append("://");
-    ret.append(authority);
-    if (path != null && !path.isEmpty()) {
-      // Encode pieces between '/'
-      String[] pieces = path.split("[/]", -1);
-      for (int i = 0; i < pieces.length; i++) {
-        String p = pieces[i];
-        if (p == null) {
-          p = "";
-        }
-        if (i > 0) {
-          ret.append("/");
-        }
-        ret.append(urlEncode(p));
-      }
-    }
-    if (query != null && !query.isEmpty()) {
-      ret.append("?");
-      ret.append(escapeURLQuery(query));
-    }
-    if (fragment != null && !fragment.isEmpty()) {
-      ret.append("#");
-      ret.append(urlEncode(fragment));
-    }
-    return ret.toString();
-  }
-
-  /**
-   * Define the DEFINITIVE URL constraint expression escape function.
-   *
-   * @param ce The expression to modify.
-   * @return The escaped expression.
-   */
-  public static String escapeURLQuery(String ce) {
-    try {
-      ce = escapeString(ce, _allowableInUrlQuery);
-    } catch (Exception e) {
-      ce = null;
-    }
-    return ce;
-  }
-
-  /**
-   * Define the DEFINITIVE URL constraint expression unescape function.
-   *
-   * @param ce The expression to unescape.
-   * @return The unescaped expression.
-   */
-  public static String unescapeURLQuery(String ce) {
-    try {
-      ce = unescapeString(ce);
-    } catch (Exception e) {
-      ce = null;
-    }
-    return ce;
-  }
-
-  /**
-   * Define the DEFINITIVE URL escape function. Note that the whole string is escaped, so be careful
-   * what you pass into this procedure.
-   *
-   * @param s The string to modify.
-   * @return The escaped expression.
-   */
-  private static String urlEncode(String s) {
-    // try {s = URLEncoder.encode(s,"UTF-8");} catch(Exception e) {s = null;}
-    s = escapeString(s, _allowableInUrl);
-    return s;
-  }
-
-  /**
-   * Define the DEFINITIVE URL unescape function.
-   *
-   * @param s The string to unescape.
-   * @return The unescaped expression.
-   */
-  public static String urlDecode(String s) {
-    try {
-      s = URLDecoder.decode(s, CDM.UTF8);
-    } catch (Exception e) {
-      s = null;
-    }
-    return s;
-  }
-
-  /**
-   * Decode all of the parts of the url including query and fragment
-   *
-   * @param url the url to encode
-   */
-  public static String unescapeURL(String url) {
-    String newurl;
-    newurl = urlDecode(url);
-    return newurl;
-  }
-
-
-  /**
-   * Define the DAP escape identifier function.
-   *
-   * @param s The string to encode.
-   * @return The escaped string.
-   */
-  public static String escapeDAPIdentifier(String s) {
-    return escapeString(s, _allowableInDAP);
-  }
-
-  /**
-   * Define the OGC Web Services escape function.
-   *
-   * @param s The string to encode.
-   * @return The escaped string.
-   */
-  public static String escapeOGC(String s) {
-    return escapeString(s, _allowableInOGC);
-  }
+  private static final byte hexa = (byte) 'a';
+  private static final byte hexf = (byte) 'f';
+  private static final byte hexA = (byte) 'A';
+  private static final byte hexF = (byte) 'F';
+  private static final byte hex0 = (byte) '0';
+  private static final byte hex9 = (byte) '9';
+  private static final byte ten = (byte) 10;
+  private static final int sep = '.';
 
   ///////////////////////////////////////////////////////////////
 
@@ -422,7 +104,6 @@ public class EscapeStrings {
     return sb.toString();
   }
 
-
   /**
    * Tokenize an escaped name using "." as delimiter, skipping "\."
    *
@@ -447,7 +128,24 @@ public class EscapeStrings {
     return result;
   }
 
-  private static final int sep = '.';
+  /** Given a CDM string, insert backslashes before <toescape> characters. */
+  public static String backslashEscapeCDMString(String s, String toescape) {
+    if (toescape == null || toescape.isEmpty()) {
+      return s;
+    }
+    if (s == null || s.isEmpty()) {
+      return s;
+    }
+    StringBuilder buf = new StringBuilder();
+    for (int i = 0; i < s.length(); i++) {
+      int c = s.charAt(i);
+      if (toescape.indexOf(c) >= 0) {
+        buf.append('\\');
+      }
+      buf.append((char) c);
+    }
+    return buf.toString();
+  }
 
   /**
    * Find first occurence of char c in escapedName, excluding escaped c.
@@ -469,129 +167,172 @@ public class EscapeStrings {
     }
   }
 
-  // Some handy definitons.
-  static private final String xmlGT = "&gt;";
-  static private final String xmlLT = "&lt;";
-  static private final String xmlAmp = "&amp;";
-  static private final String xmlApos = "&apos;";
-  static private final String xmlQuote = "&quot;";
-
-  /** @deprecated do not use */
-  @Deprecated
-  public static String normalizeToXML(String s) {
-    StringBuilder sb = new StringBuilder(s);
-    for (int offset = 0; offset < sb.length(); offset++) {
-      char c = sb.charAt(offset);
-      switch (c) {
-        case '>': // GreaterThan
-          sb.replace(offset, offset + 1, xmlGT);
-          break;
-        case '<': // Less Than
-          sb.replace(offset, offset + 1, xmlLT);
-          break;
-        case '&': // Ampersand
-          sb.replace(offset, offset + 1, xmlAmp);
-          break;
-        case '\'': // Single Quote
-          sb.replace(offset, offset + 1, xmlApos);
-          break;
-        case '\"': // Double Quote
-          sb.replace(offset, offset + 1, xmlQuote);
-          break;
-        default:
-          break;
-      }
-    }
-    return (sb.toString());
-
-  }
+  ///////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Given a backslash escaped name, convert to a DAP escaped name
+   * The OGC Web Services escape function.
    *
-   * @param bs the string to DAP encode; may have backslash escapes
-   * @return escaped string
+   * @param s The string to encode.
+   * @return The escaped string, or null on error.
    */
-
-  public static String backslashToDAP(String bs) {
-    StringBuilder buf = new StringBuilder();
-    int len = bs.length();
-    for (int i = 0; i < len; i++) {
-      char c = bs.charAt(i);
-      if (i < (len - 1) && c == '\\') {
-        c = bs.charAt(++i);
-      }
-      if (_allowableInDAP.indexOf(c) < 0) {
-        buf.append(_URIEscape);
-        // convert the char to hex
-        String ashex = Integer.toHexString(c);
-        if (ashex.length() < 2) {
-          buf.append('0');
-        }
-        buf.append(ashex);
-      } else {
-        buf.append(c);
-      }
-    }
-    return buf.toString();
+  @Nullable
+  public static String escapeOGC(String s) {
+    return escapeString(s, _allowableInOGC);
   }
 
+  /**
+   * Define the DEFINITIVE URL constraint expression escape function.
+   *
+   * @param ce The expression to modify.
+   * @return The escaped string, or null on error.
+   */
+  @Nullable
+  public static String escapeURLQuery(String ce) {
+    return escapeString(ce, _allowableInUrlQuery);
+  }
+
+  /** Public by accident, do not use directly */
+  @Nullable
+  public static String escapeString(String in, String allowable) {
+    return xescapeString(in, allowable, _URIEscape, false);
+  }
 
   /**
-   * Given a DAP (attribute) string, insert backslashes before '"' and '/' characters. This code
-   * also escapes control characters, although the spec does not call for it; make that code
-   * conditional.
+   * @param in String to escape
+   * @param allowable allowedcharacters
+   * @param esc escape char prefix
+   * @param spaceplus true =>convert ' ' to '+'
    */
-  public static String backslashEscapeDapString(String s) {
-    StringBuilder buf = new StringBuilder();
-    for (int i = 0; i < s.length(); i++) {
-      int c = s.charAt(i);
-      if (true) {
-        if (c < ' ') {
-          switch (c) {
-            case '\n':
-            case '\r':
-            case '\t':
-            case '\f':
-              buf.append((char) c);
+  @Nullable
+  private static String xescapeString(String in, String allowable, char esc, boolean spaceplus) {
+    try {
+      StringBuilder out = new StringBuilder();
+      if (in == null) {
+        return null;
+      }
+      byte[] utf8 = in.getBytes(StandardCharsets.UTF_8);
+      byte[] allow8 = allowable.getBytes(StandardCharsets.UTF_8);
+      for (byte b : utf8) {
+        if (b == blank && spaceplus) {
+          out.append('+');
+        } else {
+          // search allow8
+          boolean found = false;
+          for (byte a : allow8) {
+            if (a == b) {
+              found = true;
               break;
-            default:
-              buf.append(String.format("\\x%02x", (c & 0xff)));
-              break;
+            }
           }
-          continue;
+          if (found) {
+            out.append((char) b);
+          } else {
+            String c = Integer.toHexString(b);
+            out.append(esc);
+            if (c.length() < 2) {
+              out.append('0');
+            }
+            out.append(c);
+          }
         }
       }
-      if (c == '"') {
-        buf.append("\\\"");
-      } else if (c == '\\') {
-        buf.append("\\\\");
-      } else {
-        buf.append((char) c);
-      }
+
+      return out.toString();
+
+    } catch (Exception e) {
+      return null;
     }
-    return buf.toString();
   }
 
   /**
-   * Given a CDM string, insert backslashes before <toescape> characters.
+   * Define the DEFINITIVE URL constraint expression unescape function.
+   *
+   * @param ce The expression to unescape.
+   * @return The unescaped expression, or null on error.
    */
-  public static String backslashEscapeCDMString(String s, String toescape) {
-    if (toescape == null || toescape.isEmpty()) {
-      return s;
-    }
-    if (s == null || s.isEmpty()) {
-      return s;
-    }
-    StringBuilder buf = new StringBuilder();
-    for (int i = 0; i < s.length(); i++) {
-      int c = s.charAt(i);
-      if (toescape.indexOf(c) >= 0) {
-        buf.append('\\');
+  @Nullable
+  public static String unescapeURLQuery(String ce) {
+    return unescapeString(ce);
+  }
+
+  /** Public by accident, do not use directly */
+  @Nullable
+  public static String unescapeString(String in) {
+    return xunescapeString(in, _URIEscape, false);
+  }
+
+  /**
+   * Given a string that contains WWW escape sequences, translate those escape sequences back into
+   * ASCII characters. Return the modified string.
+   *
+   * @param in The string to modify.
+   * @param escape The character used to signal the begining of an escape sequence. param except If
+   *        there is some escape code that should not be removed by this call (e.g., you might not want to
+   *        remove spaces, %20) use this parameter to specify that code. The function will then transform
+   *        all escapes except that one.
+   * @param spaceplus True if spaces should be replaced by '+'.
+   * @return The modified string.
+   */
+  @Nullable
+  private static String xunescapeString(String in, char escape, boolean spaceplus) {
+    try {
+      if (in == null) {
+        return null;
       }
-      buf.append((char) c);
+
+      byte[] utf8 = in.getBytes(StandardCharsets.UTF_8);
+      byte escape8 = (byte) escape;
+      byte[] out = new byte[utf8.length]; // Should be max we need
+
+      int index8 = 0;
+      for (int i = 0; i < utf8.length;) {
+        byte b = utf8[i++];
+        if (b == plus && spaceplus) {
+          out[index8++] = blank;
+        } else if (b == escape8) {
+          // check to see if there are enough characters left
+          if (i + 2 <= utf8.length) {
+            b = (byte) (fromHex(utf8[i]) << 4 | fromHex(utf8[i + 1]));
+            i += 2;
+          }
+        }
+        out[index8++] = b;
+      }
+      return new String(out, 0, index8, StandardCharsets.UTF_8);
+    } catch (Exception e) {
+      return null;
     }
-    return buf.toString();
+
+  }
+
+  private static byte fromHex(byte b) throws NumberFormatException {
+    if (b >= hex0 && b <= hex9) {
+      return (byte) (b - hex0);
+    }
+    if (b >= hexa && b <= hexf) {
+      return (byte) (ten + (b - hexa));
+    }
+    if (b >= hexA && b <= hexF) {
+      return (byte) (ten + (b - hexA));
+    }
+    throw new NumberFormatException("Illegal hex character: " + b);
+  }
+
+  /**
+   * A cover for URLDecoder.decode(): Decodes a {@code application/x-www-form-urlencoded} string.
+   * Returns null instead of throwing an Exception.
+   * 
+   * @param s The string to unescape.
+   * @return The unescaped expression, or null on error
+   */
+  @Nullable
+  public static String urlDecode(String s) {
+    try {
+      s = URLDecoder.decode(s, CDM.UTF8);
+    } catch (Exception e) {
+      s = null;
+    }
+    return s;
   }
 
 }

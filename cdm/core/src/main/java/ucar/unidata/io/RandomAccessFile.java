@@ -147,7 +147,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   private static final ucar.nc2.internal.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
-      String location = StringUtil2.replace(durl.trueurl, "\\", "/"); // canonicalize the name
+      String location = StringUtil2.replace(durl.getTrueurl(), "\\", "/"); // canonicalize the name
       RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
       result.cacheState = 1; // in use
       return result;

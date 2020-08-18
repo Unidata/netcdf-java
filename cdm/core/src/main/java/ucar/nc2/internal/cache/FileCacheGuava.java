@@ -51,14 +51,14 @@ public class FileCacheGuava implements FileCacheIF {
 
   @Override
   public FileCacheable acquire(FileFactory factory, DatasetUrl durl) {
-    return acquire(factory, durl.trueurl, durl, -1, null, null);
+    return acquire(factory, durl.getTrueurl(), durl, -1, null, null);
   }
 
   @Override
   public FileCacheable acquire(FileFactory factory, Object hashKey, DatasetUrl durl, int buffer_size,
       CancelTask cancelTask, Object spiObject) {
     if (null == hashKey)
-      hashKey = durl.trueurl;
+      hashKey = durl.getTrueurl();
     if (null == hashKey)
       throw new IllegalArgumentException();
 

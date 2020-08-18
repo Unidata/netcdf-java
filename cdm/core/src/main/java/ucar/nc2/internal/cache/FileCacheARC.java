@@ -109,7 +109,7 @@ public class FileCacheARC implements FileCacheIF {
    */
   @Override
   public FileCacheable acquire(FileFactory factory, DatasetUrl location) throws IOException {
-    return acquire(factory, location.trueurl, location, -1, null, null);
+    return acquire(factory, location.getTrueurl(), location, -1, null, null);
   }
 
   /**
@@ -137,7 +137,7 @@ public class FileCacheARC implements FileCacheIF {
       CancelTask cancelTask, Object spiObject) throws IOException {
 
     if (null == hashKey)
-      hashKey = location.trueurl;
+      hashKey = location.getTrueurl();
     if (null == hashKey)
       throw new IllegalArgumentException();
 

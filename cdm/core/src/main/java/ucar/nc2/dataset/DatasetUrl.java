@@ -10,6 +10,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import thredds.client.catalog.ServiceType;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -26,6 +27,7 @@ import java.util.*;
  * @author caron
  * @since 10/20/2015.
  */
+@Immutable
 public class DatasetUrl {
   private static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   private static final String slashalpha = "\\/" + alpha;
@@ -46,7 +48,7 @@ public class DatasetUrl {
    * @return list of leading protocols without the trailing :
    */
   @VisibleForTesting
-  public static List<String> getProtocols(String url) {
+  static List<String> getProtocols(String url) {
     List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
     // Note, we cannot use split because of the context sensitivity
@@ -191,6 +193,7 @@ public class DatasetUrl {
    * @param fragment the fragment is to be examined
    * @return The discovered ServiceType, or null
    */
+  @Nullable
   private static ServiceType searchFragment(String fragment) {
     if (fragment.isEmpty())
       return null;
@@ -234,18 +237,18 @@ public class DatasetUrl {
   private static Map<String, String> parseFragment(String fragment) {
     Map<String, String> map = new HashMap<>();
     if (fragment != null && fragment.length() >= 0) {
-      if (fragment.charAt(0) == '#')
+      if (fragment.charAt(0) == '#') {
         fragment = fragment.substring(1);
+      }
       String[] pairs = fragment.split("[ \t]*[&][ \t]*");
       for (String pair : pairs) {
         String[] pieces = pair.split("[ \t]*[=][ \t]*");
         switch (pieces.length) {
           case 1:
-            map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(), "true");
+            map.put(EscapeStrings.urlDecode(pieces[0]).toLowerCase(), "true");
             break;
           case 2:
-            map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
-                EscapeStrings.unescapeURL(pieces[1]).toLowerCase());
+            map.put(EscapeStrings.urlDecode(pieces[0]).toLowerCase(), EscapeStrings.urlDecode(pieces[1]).toLowerCase());
             break;
           default:
             return null; // does not parse
@@ -534,10 +537,8 @@ public class DatasetUrl {
 
   /////////////////////////////////////////////////////////////////////
   // TODO this could be an @AutoValue
-  @Deprecated // use getServiceType()()
-  public final ServiceType serviceType;
-  @Deprecated // use getTrueurl()
-  public final String trueurl;
+  private final ServiceType serviceType;
+  private final String trueurl;
 
   /**
    * Create a DatasetUrl, which annotates a url with its service type.
@@ -549,9 +550,7 @@ public class DatasetUrl {
     return new DatasetUrl(serviceType, trueurl);
   }
 
-  /** @deprecated use create() */
-  @Deprecated
-  public DatasetUrl(ServiceType serviceType, String trueurl) {
+  private DatasetUrl(ServiceType serviceType, String trueurl) {
     this.serviceType = serviceType;
     this.trueurl = trueurl;
   }

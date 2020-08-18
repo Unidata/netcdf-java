@@ -5,9 +5,10 @@
 package ucar.nc2.internal.util;
 
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
-import java.net.URLDecoder;
 import java.nio.file.*;
 import java.util.*;
 
@@ -441,27 +442,15 @@ public class DiskCache2 {
     return root + cachePath;
   }
 
-  /**
-   * Show cache contents, for debugging.
-   * 
-   * @param pw write to this PrintStream.
-   */
-  public void showCache(PrintStream pw) {
-    pw.println("Cache files");
-    pw.println("Size   LastModified       Filename");
+  /** Show cache contents, for debugging. */
+  public void showCache(Formatter f) {
+    f.format("Cache files%n");
+    f.format("  Size     LastModified        Filename%n");
     File dir = new File(root);
-    File[] files = dir.listFiles();
-    if (files != null)
-      for (File file : files) {
-        String org = null;
-        try {
-          org = URLDecoder.decode(file.getName(), "UTF8");
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
-        }
-
-        pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
-      }
+    for (File file : dir.listFiles()) {
+      f.format("%10s %20s %s%n", Format.formatByteSize(file.length()),
+          CalendarDateFormatter.toDateTimeStringShort(CalendarDate.of(file.lastModified())), file.getName());
+    }
   }
 
   /**
