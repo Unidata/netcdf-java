@@ -45,7 +45,7 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return dataEnd;
   }
 
-  // @Override LOOK weird error
+  @Override
   public void setBufferSize(int bufferSize) {
     // do nothing
   }
@@ -63,14 +63,12 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return dest.write(ByteBuffer.wrap(buffer, (int) offset, (int) nbytes));
   }
 
-  /**
-   * Hook for service provider interface RandomAccessFileProvider
-   */
+  /** Hook for service provider interface RandomAccessFileProvider */
   public static class Provider implements RandomAccessFileProvider {
 
     @Override
     public boolean isOwnerOf(String location) {
-      return location.startsWith("slurp:");
+      return location.startsWith("slurp:"); // TODO undocumented prefix
     }
 
     @Override

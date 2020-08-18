@@ -5,6 +5,7 @@
 
 package ucar.nc2;
 
+import com.google.common.base.Preconditions;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -116,7 +117,7 @@ public class NetcdfFiles {
    */
   public static void registerIOProvider(String className)
       throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-    Class ioClass = NetcdfFile.class.getClassLoader().loadClass(className);
+    Class<?> ioClass = NetcdfFile.class.getClassLoader().loadClass(className);
     registerIOProvider(ioClass);
   }
 
@@ -128,7 +129,7 @@ public class NetcdfFiles {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
-  public static void registerIOProvider(Class iospClass) throws IllegalAccessException, InstantiationException {
+  public static void registerIOProvider(Class<?> iospClass) throws IllegalAccessException, InstantiationException {
     registerIOProvider(iospClass, false);
   }
 
@@ -141,7 +142,7 @@ public class NetcdfFiles {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
-  private static void registerIOProvider(Class iospClass, boolean last)
+  private static void registerIOProvider(Class<?> iospClass, boolean last)
       throws IllegalAccessException, InstantiationException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
@@ -161,7 +162,7 @@ public class NetcdfFiles {
    */
   public static void registerRandomAccessFileProvider(String className)
       throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-    Class rafClass = NetcdfFile.class.getClassLoader().loadClass(className);
+    Class<?> rafClass = NetcdfFile.class.getClassLoader().loadClass(className);
     registerRandomAccessFileProvider(rafClass);
   }
 
@@ -173,7 +174,7 @@ public class NetcdfFiles {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
-  public static void registerRandomAccessFileProvider(Class rafClass)
+  public static void registerRandomAccessFileProvider(Class<?> rafClass)
       throws IllegalAccessException, InstantiationException {
     registerRandomAccessFileProvider(rafClass, false);
   }
@@ -187,7 +188,7 @@ public class NetcdfFiles {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
-  private static void registerRandomAccessFileProvider(Class rafClass, boolean last)
+  private static void registerRandomAccessFileProvider(Class<?> rafClass, boolean last)
       throws IllegalAccessException, InstantiationException {
     RandomAccessFileProvider rafProvider;
     rafProvider = (RandomAccessFileProvider) rafClass.newInstance(); // fail fast
@@ -292,7 +293,7 @@ public class NetcdfFiles {
   public static NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask,
       Object iospMessage) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 
-    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
+    Class<?> iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
 
     // send iospMessage before iosp is opened
@@ -326,50 +327,29 @@ public class NetcdfFiles {
    *
    * @param location location of file
    * @return true if can be opened
-   * @throws IOException on read error
    */
-  public static boolean canOpen(String location) throws IOException {
+  public static boolean canOpen(String location) {
     boolean canOpen = false;
     // do we have a RandomAccessFile class that will work?
     try (ucar.unidata.io.RandomAccessFile raf = getRaf(location, -1)) {
-      if (raf != null) {
-        log.info(String.format("%s can be accessed with %s", raf.getLocation(), raf.getClass()));
-        // do we have an appropriate IOSP?
-        IOServiceProvider iosp = getIosp(raf);
-        if (iosp != null) {
-          canOpen = true;
-          log.info(String.format("%s can be opened by %s", raf.getLocation(), iosp.getClass()));
-        }
+      log.info(String.format("%s can be accessed with %s", raf.getLocation(), raf.getClass()));
+      // do we have an appropriate IOSP?
+      IOServiceProvider iosp = getIosp(raf);
+      if (iosp != null) {
+        canOpen = true;
+        log.info(String.format("%s can be opened by %s", raf.getLocation(), iosp.getClass()));
       }
+    } catch (IOException e) {
+      return false;
     }
     return canOpen;
   }
 
-  private static ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf,
-      String uriString, int buffer_size) throws IOException {
-    int pos = uriString.lastIndexOf('/');
-
-    if (pos < 0)
-      pos = uriString.lastIndexOf(':');
-
-    String tmp = System.getProperty("java.io.tmpdir");
-    String filename = uriString.substring(pos + 1);
-    String sep = File.separator;
-
-    uriString = DiskCache.getFileStandardPolicy(tmp + sep + filename).getPath();
-    copy(raf, new FileOutputStream(uriString), 1 << 20);
-    try {
-      String uncompressedFileName = makeUncompressed(uriString);
-      return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
-    } catch (Exception e) {
-      throw new IOException();
-    }
-  }
-
   private static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
     String uriString = location.trim();
-    if (buffer_size <= 0)
+    if (buffer_size <= 0) {
       buffer_size = default_buffersize;
+    }
 
     ucar.unidata.io.RandomAccessFile raf = null;
 
@@ -377,8 +357,9 @@ public class NetcdfFiles {
     for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
       if (provider.isOwnerOf(location)) {
         raf = provider.open(location);
-        // might cause issues if the end of a resource location string
-        // cannot be reliably used to determine compression
+        Preconditions.checkNotNull(raf);
+        // TODO what if resource location cannot be reliably used to determine compression
+        // TODO can provider tell if it owns it if compressed?
         if (looksCompressed(uriString)) {
           raf = downloadAndDecompress(raf, uriString, buffer_size);
         }
@@ -391,8 +372,8 @@ public class NetcdfFiles {
       for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
         if (provider.isOwnerOf(location)) {
           raf = provider.open(location);
-          // might cause issues if the end of a resource location string
-          // cannot be used to determine compression
+          Preconditions.checkNotNull(raf);
+          // TODO what if resource location cannot be reliably used to determine compression
           if (looksCompressed(uriString)) {
             raf = downloadAndDecompress(raf, uriString, buffer_size);
           }
@@ -447,10 +428,47 @@ public class NetcdfFiles {
     boolean looksCompressed = false;
     if (pos > 0) {
       String suffix = filename.substring(pos + 1).toLowerCase();
-      looksCompressed =
-          possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> suffix.equalsIgnoreCase(compressedSuffix));
+      looksCompressed = possibleCompressedSuffixes.stream().anyMatch(suffix::equalsIgnoreCase);
     }
     return looksCompressed;
+  }
+
+  private static ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf,
+      String uriString, int buffer_size) throws IOException {
+    int pos = uriString.lastIndexOf('/');
+
+    if (pos < 0)
+      pos = uriString.lastIndexOf(':');
+
+    String tmp = System.getProperty("java.io.tmpdir");
+    String filename = uriString.substring(pos + 1);
+    String sep = File.separator;
+
+    uriString = DiskCache.getFileStandardPolicy(tmp + sep + filename).getPath();
+    copy(raf, new FileOutputStream(uriString), 1 << 20);
+    try {
+      String uncompressedFileName = makeUncompressed(uriString);
+      return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
+    } catch (Exception e) {
+      throw new IOException();
+    }
+  }
+
+  private static void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {
+    long length = in.length();
+    byte[] buffer = new byte[bufferSize];
+    int bytesRead = 0;
+    while (length > 0) {
+      if (length > bufferSize) {
+        in.readFully(buffer, 0, bufferSize);
+        bytesRead = bufferSize;
+      } else if (length <= bufferSize) {
+        in.readFully(buffer, 0, (int) length);
+        bytesRead = (int) length;
+      }
+      length -= bufferSize;
+      out.write(buffer, 0, bytesRead);
+    }
   }
 
   private static String makeUncompressed(String filename) throws Exception {
@@ -463,10 +481,8 @@ public class NetcdfFiles {
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
-      FileInputStream stream = null;
       FileLock lock = null;
-      try {
-        stream = new FileInputStream(uncompressedFile);
+      try (FileInputStream stream = new FileInputStream(uncompressedFile)) {
         // obtain the lock
         while (true) { // loop waiting for the lock
           try {
@@ -489,8 +505,6 @@ public class NetcdfFiles {
       } finally {
         if (lock != null)
           lock.release();
-        if (stream != null)
-          stream.close();
       }
     }
 
@@ -573,23 +587,6 @@ public class NetcdfFiles {
     return uncompressedFile.getPath();
   }
 
-  private static void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {
-    long length = in.length();
-    byte[] buffer = new byte[bufferSize];
-    int bytesRead = 0;
-    while (length > 0) {
-      if (length > bufferSize) {
-        in.readFully(buffer, 0, bufferSize);
-        bytesRead = bufferSize;
-      } else if (length <= bufferSize) {
-        in.readFully(buffer, 0, (int) length);
-        bytesRead = (int) length;
-      }
-      length -= bufferSize;
-      out.write(buffer, 0, bytesRead);
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -653,7 +650,7 @@ public class NetcdfFiles {
       throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
     ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
-    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
+    Class<?> iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
 
     return build(spi, raf, name, null);
@@ -662,15 +659,15 @@ public class NetcdfFiles {
   /**
    * Open a RandomAccessFile as a NetcdfFile, if possible.
    *
-   * @param raf The open raf, is not cloised by this method.
-   * @param location human readable locatoin of this dataset.
+   * @param raf The open raf; is closed by this method onlu on IOException.
+   * @param location human readable location of this dataset.
    * @param cancelTask used to monitor user cancellation; may be null.
    * @param iospMessage send this message to iosp; may be null.
    * @return NetcdfFile or throw an Exception.
-   * @throws IOException if cannot open as a CDM NetCDF.
+   * @throws IOException if cannot find an IOSP for it.
    */
   public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location,
-      ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
+      @Nullable ucar.nc2.util.CancelTask cancelTask, @Nullable Object iospMessage) throws IOException {
 
     IOServiceProvider spi = getIosp(raf);
     if (spi == null) {
@@ -679,18 +676,21 @@ public class NetcdfFiles {
     }
 
     // send iospMessage before the iosp is opened
-    if (iospMessage != null)
+    if (iospMessage != null) {
       spi.sendIospMessage(iospMessage);
+    }
 
-    if (log.isDebugEnabled())
+    if (log.isDebugEnabled()) {
       log.debug("Using IOSP {}", spi.getClass().getName());
+    }
 
     NetcdfFile ncfile = build(spi, raf, location, cancelTask);
     spi.buildFinish(ncfile);
 
     // send iospMessage after iosp is opened
-    if (iospMessage != null)
+    if (iospMessage != null) {
       spi.sendIospMessage(iospMessage);
+    }
 
     return ncfile;
   }
@@ -707,7 +707,7 @@ public class NetcdfFiles {
 
       if (registeredSpi.isValidFile(raf)) {
         // need a new instance for thread safety
-        Class c = registeredSpi.getClass();
+        Class<?> c = registeredSpi.getClass();
         try {
           return (IOServiceProvider) c.newInstance();
         } catch (InstantiationException e) {
@@ -725,7 +725,7 @@ public class NetcdfFiles {
       // look for dynamically loaded IOSPs
       for (IOServiceProvider loadedSpi : ServiceLoader.load(IOServiceProvider.class)) {
         if (loadedSpi.isValidFile(raf)) {
-          Class c = loadedSpi.getClass();
+          Class<?> c = loadedSpi.getClass();
           try {
             return (IOServiceProvider) c.newInstance();
           } catch (InstantiationException e) {
@@ -742,7 +742,7 @@ public class NetcdfFiles {
   public static NetcdfFile build(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location,
       ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
-    NetcdfFile.Builder builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);
+    NetcdfFile.Builder<?> builder = NetcdfFile.builder().setIosp((AbstractIOServiceProvider) spi).setLocation(location);
 
     try {
       Group.Builder root = Group.builder().setName("");
@@ -922,6 +922,9 @@ public class NetcdfFiles {
   }
 
   private static void appendStructureName(StringBuilder sbuff, Variable n, String reserved) {
+    if (n == null) {
+      return;
+    }
     if (n.isMemberOfStructure()) {
       appendStructureName(sbuff, n.getParentStructure(), reserved);
       sbuff.append(".");

@@ -26,9 +26,7 @@ import java.io.*;
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschalar
  * @author Unidata Program Center
- * @deprecated not part of public API.
  */
-@Deprecated
 public class UncompressInputStream extends FilterInputStream {
 
   // string table stuff
@@ -37,7 +35,7 @@ public class UncompressInputStream extends FilterInputStream {
 
   private int[] tab_prefix;
   private byte[] tab_suffix;
-  private int[] zeros = new int[256];
+  private final int[] zeros = new int[256];
   private byte[] stack;
 
   // various state
@@ -53,7 +51,7 @@ public class UncompressInputStream extends FilterInputStream {
   private int free_ent;
 
   // input buffer
-  private byte[] data = new byte[10000];
+  private final byte[] data = new byte[10000];
   private int bit_pos, end, got;
   private boolean eof;
   private static final int EXTRA = 64;
@@ -69,7 +67,7 @@ public class UncompressInputStream extends FilterInputStream {
   }
 
 
-  private byte[] one = new byte[1];
+  private final byte[] one = new byte[1];
 
   @Override
   public int read() throws IOException {
@@ -109,7 +107,7 @@ public class UncompressInputStream extends FilterInputStream {
 
     int s_size = l_stack.length - l_stackp;
     if (s_size > 0) {
-      int num = (s_size >= len) ? len : s_size;
+      int num = Math.min(s_size, len);
       System.arraycopy(l_stack, l_stackp, buf, off, num);
       off += num;
       len -= num;
@@ -235,7 +233,7 @@ public class UncompressInputStream extends FilterInputStream {
         // And put them out in forward order
 
         s_size = l_stack.length - l_stackp;
-        int num = (s_size >= len) ? len : s_size;
+        int num = Math.min(s_size, len);
         System.arraycopy(l_stack, l_stackp, buf, off, num);
         off += num;
         len -= num;
@@ -312,7 +310,7 @@ public class UncompressInputStream extends FilterInputStream {
     int got = read(tmp, 0, (int) num);
 
     if (got > 0)
-      return (long) got;
+      return got;
     else
       return 0L;
   }
