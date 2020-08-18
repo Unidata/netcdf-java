@@ -1,5 +1,10 @@
 
-package ucar.unidata.geoloc;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.unidata.geoloc.projection;
 
 import static com.google.common.truth.Truth.assertThat;
 import org.junit.Assert;
@@ -7,6 +12,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.EarthEllipsoid;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPoints;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
