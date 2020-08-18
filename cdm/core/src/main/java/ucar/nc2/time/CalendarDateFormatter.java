@@ -55,11 +55,14 @@ public class CalendarDateFormatter {
   }
 
   public static String toDateTimeString(CalendarDate cd) {
-
     if (cd.getDateTime().getMillisOfSecond() == 0)
       return dtf.print(cd.getDateTime());
     else
       return dtf_with_millis_of_second.print(cd.getDateTime());
+  }
+
+  public static String toDateTimeStringShort(CalendarDate cd) {
+    return dtf.print(cd.getDateTime());
   }
 
   public static String toDateTimeString(Date date) {

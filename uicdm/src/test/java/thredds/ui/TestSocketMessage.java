@@ -1,11 +1,11 @@
 package thredds.ui;
 
+import com.google.common.net.UrlEscapers;
 import java.io.IOException;
 import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.ui.util.SocketMessage;
-import ucar.nc2.internal.util.EscapeStrings;
 
 public class TestSocketMessage {
   private static final boolean testing = false;
@@ -17,8 +17,8 @@ public class TestSocketMessage {
       sm.setRaw(true);
 
     } else {
-      String url = "http://localhost:8080/thredds/test/it" // + EscapeStrings.escapeOGC("yabba/bad[0]/good")
-          + "?" + EscapeStrings.escapeOGC("quuery[1]");
+      String query = UrlEscapers.urlFragmentEscaper().escape("quuery[1]");
+      String url = "http://localhost:8080/thredds/test/it?" + query;
       System.out.printf("send '%s'%n", url);
       try (HTTPMethod method = HTTPFactory.Head(url)) {
         method.execute();
