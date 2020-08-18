@@ -12,8 +12,6 @@ import java.lang.Math;
  * Recoded from online sources for licensing purposes.
  * caron 6/22/2012
  */
-
-
 public final class SpecialMathFunction {
   private static final double log2 = Math.log(2);
 

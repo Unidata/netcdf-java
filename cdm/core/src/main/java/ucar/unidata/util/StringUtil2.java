@@ -7,20 +7,12 @@ package ucar.unidata.util;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.StringTokenizer;
 
-/**
- * Static String and StringBuilder utilities
- *
- * @author caron
- * @since 7/29/11
- */
+/** Static String utilities. Replace with standard java library when possible. */
 public class StringUtil2 {
-
   /**
    * Replace any char not alphanumeric or in allowChars by replaceChar.
    *
@@ -505,26 +497,6 @@ public class StringUtil2 {
   }
 
   /**
-   * Find all occurrences of the "match" in original, and substitute the "subst" string.
-   *
-   * @param original starting string
-   * @param match string to match
-   * @param subst string to substitute
-   * @return a new string with substitutions
-   * @deprecated use original.replace(match, subst)
-   */
-  @Deprecated
-  public static String substitute(String original, String match, String subst) {
-    String s = original;
-    int pos;
-    while (0 <= (pos = s.indexOf(match))) {
-      StringBuilder sb = new StringBuilder(s);
-      s = sb.replace(pos, pos + match.length(), subst).toString();
-    }
-    return s;
-  }
-
-  /**
    * Escape any char not alphanumeric or in okChars.
    * Escape by replacing char with %xx (hex).
    *
@@ -586,20 +558,23 @@ public class StringUtil2 {
   }
 
   /**
-   * Split a string on one or more whitespace.
-   * Cover for String.split, because who can remember regexp?
+   * Split a string on whitespace.
    *
    * @param source split this string
-   * @return tokens that were seperated by whitespace
-   * @deprecated use StringUtil2.split()
+   * @return tokens that were seperated by whitespace, trimmed
    */
-  @Deprecated
-  public static String[] splitString(String source) {
-    return source.trim().split("\\s+"); // Separated by "whitespace"
+  public static ImmutableList<String> splitList(String source) {
+    return ImmutableList.copyOf(split(source));
   }
 
+  /**
+   * Split a string on whitespace.
+   *
+   * @param source split this string
+   * @return tokens that were seperated by whitespace, trimmed
+   */
   public static Iterable<String> split(String source) {
-    return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().split(source);
+    return Splitter.on(CharMatcher.whitespace()).omitEmptyStrings().trimResults().split(source);
   }
 
   /**
@@ -630,50 +605,6 @@ public class StringUtil2 {
       substitute(sb, match[i], subst[i]);
     }
     return sb.toString();
-  }
-
-  public static List<String> getTokens(String fullString, String sep) {
-
-    List<String> strs = new ArrayList<>();
-    if (sep != null) {
-      int sepLength = sep.length();
-      switch (sepLength) {
-        case 0:
-          String[] tokens = splitString(fullString); // default to use white space if separator is ""
-          strs = Arrays.asList(tokens);
-          break;
-
-        case 1:
-          StringTokenizer tokenizer = new StringTokenizer(fullString, sep); // maybe use StreamTokenizer?
-          while (tokenizer.hasMoreTokens())
-            strs.add(tokenizer.nextToken());
-          break;
-
-        default:
-          String remainderString = fullString; // multicharacter separator
-          int location = remainderString.indexOf(sep);
-          while (location != -1) { // watch out for off-by-one errors on the string splitting indices!!!
-            if (location == 0) { // remainderString starts with the separator, cut it off
-              remainderString = remainderString.substring(location + sepLength);
-              location = remainderString.indexOf(sep);
-            } else {
-              String token = remainderString.substring(0, location); // pull the token off the front of the string
-              strs.add(token); // add the token to our list
-              remainderString = remainderString.substring(location + sepLength); // cut out both the token and the
-                                                                                 // separator
-              location = remainderString.indexOf(sep);
-            }
-          } // close while loop
-          if (!remainderString.isEmpty())
-            strs.add(remainderString); // add the last token, post last separator
-      } // close switch (sepLength)
-    } else { // default to white space separator if sep is null
-      String[] tokens = splitString(fullString);
-      strs = Arrays.asList(tokens);
-    }
-    if (strs.isEmpty())
-      strs.add(""); // maybe thrown an exception instead? return null?
-    return strs;
   }
 
   ////////////////////////////////////////////////////
@@ -775,7 +706,6 @@ public class StringUtil2 {
    * @param s operate on this
    * @return trimmed string
    */
-
   public static String trim(String s, int bad) {
     int len = s.length();
     int st = 0;
@@ -787,19 +717,5 @@ public class StringUtil2 {
       len--;
     }
     return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
-  }
-
-  //////////////////////////////////////////////////////////////////////
-
-  private static final char[] htmlIn = {'&', '"', '\'', '<', '>', '\n'};
-  private static final String[] htmlOut = {"&amp;", "&quot;", "&#39;", "&lt;", "&gt;", "\n<p>"};
-
-  /**
-   * @deprecated legacy only, use HtmlEscapers.htmlEscaper()
-   */
-  public static String quoteHtmlContent(String x) {
-    if (x == null)
-      return null;
-    return replace(x, htmlIn, htmlOut);
   }
 }

@@ -400,7 +400,7 @@ public class WRFConvention extends CoordSystemBuilder {
         units = "";
         break;
       default:
-        units = StringUtil2.substitute(units, "**", "^");
+        units = units.replace("**", "^");
         units = StringUtil2.remove(units, '}');
         units = StringUtil2.remove(units, '{');
         break;

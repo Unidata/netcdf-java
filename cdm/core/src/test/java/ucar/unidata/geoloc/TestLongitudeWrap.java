@@ -12,12 +12,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Describe
- *
- * @author caron
- * @since 9/11/2015.
- */
+/** Test that the algorithm for longitude wrapping works */
 @RunWith(Parameterized.class)
 public class TestLongitudeWrap {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

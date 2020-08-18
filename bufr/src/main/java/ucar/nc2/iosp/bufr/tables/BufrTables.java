@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import com.google.common.collect.ImmutableList;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import java.nio.charset.StandardCharsets;
@@ -640,10 +641,10 @@ public class BufrTables {
           line = dataIS.readLine();
           if (line != null) {
             line = StringUtil2.remove(line, '*');
-            String[] split = StringUtil2.splitString(line);
-            scale = Integer.parseInt(split[0].trim());
-            refVal = Integer.parseInt(split[1].trim());
-            width = Integer.parseInt(split[2].trim());
+            ImmutableList<String> split = StringUtil2.splitList(line);
+            scale = Integer.parseInt(split.get(0));
+            refVal = Integer.parseInt(split.get(1));
+            width = Integer.parseInt(split.get(2));
           }
 
           b.addDescriptor(x, y, scale, refVal, width, name, units, null);
@@ -988,8 +989,8 @@ public class BufrTables {
 
       if (startMode) {
         try {
-          String[] flds = StringUtil2.splitString(line);
-          int fxy = Integer.parseInt(flds[0]);
+          ImmutableList<String> flds = StringUtil2.splitList(line);
+          int fxy = Integer.parseInt(flds.get(0));
           int y = fxy % 1000;
           fxy /= 1000;
           int x = fxy % 100;
@@ -1007,8 +1008,8 @@ public class BufrTables {
       }
       if (currDesc != null) {
         try {
-          String[] flds = StringUtil2.splitString(line);
-          String fxys = cleanNumber(flds[0]);
+          ImmutableList<String> flds = StringUtil2.splitList(line);
+          String fxys = cleanNumber(flds.get(0));
           int fxy = Integer.parseInt(fxys);
           int y1 = fxy % 1000;
           fxy /= 1000;

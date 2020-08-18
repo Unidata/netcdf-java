@@ -1,18 +1,20 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.unidata.geoloc;
+package ucar.unidata.geoloc.projection;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 import java.lang.invoke.MethodHandles;
 
-/** Test the LatLonProjection */
+/** Test {@link ucar.unidata.geoloc.projection.LatLonProjection} */
 public class TestLatLonProjection {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

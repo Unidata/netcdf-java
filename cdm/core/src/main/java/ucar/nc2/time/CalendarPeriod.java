@@ -7,6 +7,7 @@ package ucar.nc2.time;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
@@ -115,18 +116,18 @@ public class CalendarPeriod {
     int value;
     String units;
 
-    String[] split = StringUtil2.splitString(udunit);
-    if (split.length == 1) {
+    ImmutableList<String> split = StringUtil2.splitList(udunit);
+    if (split.size() == 1) {
       value = 1;
-      units = split[0];
+      units = split.get(0);
 
-    } else if (split.length == 2) {
+    } else if (split.size() == 2) {
       try {
-        value = Integer.parseInt(split[0]);
+        value = Integer.parseInt(split.get(0));
       } catch (Throwable t) {
         return null;
       }
-      units = split[1];
+      units = split.get(1);
     } else {
       return null;
     }

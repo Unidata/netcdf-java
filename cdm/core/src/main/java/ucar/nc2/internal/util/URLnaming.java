@@ -89,7 +89,7 @@ public class URLnaming {
       if ((!relativeUri.isEmpty()) && (relativeUri.charAt(0) == '/'))
         return relativeUri;
 
-      baseUri = StringUtil2.substitute(baseUri, "\\", "/"); // assumes forward slash
+      baseUri = baseUri.replace("\\", "/"); // assumes forward slash
       int pos = baseUri.lastIndexOf('/');
       if (pos > 0) {
         String baseDir = baseUri.substring(0, pos + 1);

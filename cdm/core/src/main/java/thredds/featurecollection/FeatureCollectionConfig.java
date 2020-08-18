@@ -378,8 +378,7 @@ public class FeatureCollectionConfig {
         datasets = EnumSet.noneOf(FmrcDatasetType.class);
       explicit = true;
 
-      String[] types = StringUtil2.splitString(datasetTypes);
-      for (String type : types) {
+      for (String type : StringUtil2.split(datasetTypes)) {
         try {
           FmrcDatasetType fdt = FmrcDatasetType.valueOf(type);
           datasets.add(fdt);
@@ -434,8 +433,7 @@ public class FeatureCollectionConfig {
         datasets = EnumSet.noneOf(PointDatasetType.class);
       explicit = true;
 
-      String[] types = StringUtil2.splitString(datasetTypes);
-      for (String type : types) {
+      for (String type : StringUtil2.split(datasetTypes)) {
         try {
           PointDatasetType fdt = PointDatasetType.valueOf(type);
           datasets.add(fdt);
@@ -636,8 +634,7 @@ public class FeatureCollectionConfig {
         datasets = EnumSet.noneOf(GribDatasetType.class);
       explicitDatasets = true;
 
-      String[] types = StringUtil2.splitString(datasetTypes);
-      for (String type : types) {
+      for (String type : StringUtil2.split(datasetTypes)) {
         try {
           GribDatasetType fdt = GribDatasetType.valueOf(type);
           if (fdt == GribDatasetType.LatestFile)

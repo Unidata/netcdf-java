@@ -4,33 +4,8 @@
  */
 package ucar.unidata.util;
 
-
-/**
- * static formatting utilities. Replace with standard java library when possible.
- *
- * @author John Caron
- */
+/** static formatting utilities. Replace with standard java library when possible. */
 public class Format {
-
-  /**
-   * Blank fill sbuff with blanks, until position tabStop.
-   *
-   * @param sbuff StringBuffer to manipulate
-   * @param tabStop pad out to here
-   * @param alwaysOne true if you want to guarentee at least one space.
-   */
-  public static void tab(StringBuffer sbuff, int tabStop, boolean alwaysOne) {
-    int len = sbuff.length();
-    if (tabStop > len) {
-      sbuff.setLength(tabStop);
-      for (int i = len; i < tabStop; i++) {
-        sbuff.setCharAt(i, ' ');
-      }
-    } else if (alwaysOne) {
-      sbuff.setLength(len + 1);
-      sbuff.setCharAt(len, ' ');
-    }
-  }
 
   /**
    * Blank fill sbuff with blanks, until position tabStop.
@@ -153,9 +128,6 @@ public class Format {
    */
   public static String dfrac(double d, int fixed_decimals) {
     return formatDouble(d, 100, fixed_decimals).trim();
-    // String s = Double.toString( d);
-    // s = sigfigFix( s, 100, num_dec);
-    // return s.trim();
   }
 
   /*
@@ -193,7 +165,6 @@ public class Format {
    * @return double formatted as a string
    */
   public static String formatDouble(double d, int min_sigFigs, int fixed_decimals) {
-
     String s = Double.toString(d);
 
     // extract the sign
@@ -281,50 +252,12 @@ public class Format {
       }
     }
 
-
-    /*
-     * int sigFigs = numFigs + fracFigs;
-     * if (sigFigs > max_sigFigs) {
-     * 
-     * if (numFigs >= max_sigFigs) { // enough sig figs in just the number part
-     * fraction.setLength( 0 );
-     * for ( int i=max_sigFigs; i<numFigs; ++i )
-     * number.setCharAt( i, '0' ); // should round?
-     * } else {
-     * 
-     * // Want fewer figures in the fraction; chop (should round? )
-     * int chop = sigFigs - max_sigFigs;
-     * fraction.setLength( fraction.length() - chop );
-     * }
-     * }
-     * 
-     * 
-     * /* may want a fixed decimal place
-     * if (dec_places != -1) {
-     * 
-     * if (dec_places == 0) {
-     * fraction.setLength( 0 );
-     * fracFigs = 0;
-     * } else if (dec_places > fracFigs) {
-     * int want = dec_places - fracFigs;
-     * for (int i=0; i<want; i++)
-     * fraction.append("0");
-     * } else if (dec_places < fracFigs) {
-     * int chop = fracFigs - dec_places;
-     * fraction.setLength( fraction.length() - chop );
-     * fracFigs = dec_places;
-     * }
-     * 
-     * }
-     */
-
     if (fraction.length() == 0) {
       return sign + number + exponent;
     } else {
       return sign + number + "." + fraction + exponent;
     }
   }
-
 
   /**
    * Nicely formatted representation of bytes, eg turn 5.636E7 into '56.3 Mbytes'.

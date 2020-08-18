@@ -2,7 +2,6 @@ package ucar.nc2.ft2.coverage
 
 import spock.lang.Specification
 import ucar.unidata.geoloc.LatLonPoint
-import ucar.unidata.geoloc.LatLonPointNoNormalize
 import ucar.unidata.geoloc.LatLonRect
 import ucar.unidata.geoloc.ProjectionPoint
 import ucar.unidata.geoloc.ProjectionRect
@@ -60,10 +59,10 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         HorizCoordSys horizCoordSys = getHorizCoordSysOfDataset("crossSeamLatLon1D.ncml")
         
         and: "get actual points"
-        List<LatLonPointNoNormalize> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints()
+        List<ProjectionPoint> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints()
         
         and: "declare expected points"
-        List<LatLonPointNoNormalize> expectedPoints = convertCoordsToPoints(true, [
+        List<ProjectionPoint> expectedPoints = convertCoordsToPoints(true, [
                 [0, 130],  [0, 150],  [0, 170],  [0, 190],  [0, 210],   // Bottom edge
                 [0, 230],  [10, 230], [20, 230], [30, 230], [40, 230],  // Right edge
                 [50, 230], [50, 210], [50, 190], [50, 170], [50, 150],  // Top edge
@@ -80,10 +79,10 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         
         and: "get actual points"
         // Results in strideY == 3 and strideX == 2.
-        List<LatLonPointNoNormalize> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints(2, 3)
+        List<ProjectionPoint> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints(2, 3)
         
         and: "declare expected points"
-        List<LatLonPointNoNormalize> expectedPoints = convertCoordsToPoints(true, [
+        List<ProjectionPoint> expectedPoints = convertCoordsToPoints(true, [
                 [0, 130],  [0, 170],  [0, 210],   // Bottom edge
                 [0, 230],  [30, 230],             // Right edge
                 [50, 230], [50, 190], [50, 150],  // Top edge
@@ -99,10 +98,10 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         HorizCoordSys horizCoordSys = getHorizCoordSysOfDataset("crossSeamProjection.ncml")
         
         and: "get actual points"
-        List<LatLonPointNoNormalize> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints()
+        List<ProjectionPoint> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints()
         
         and: "declare expected points"
-        List<LatLonPointNoNormalize> expectedPoints = convertCoordsToPoints(true, [
+        List<ProjectionPoint> expectedPoints = convertCoordsToPoints(true, [
                 [43.3711, -166.4342], [50.4680, -160.0080], [57.1887, -150.5787], [62.8319, -136.4768],  // Bottom edge
                 [66.2450, -116.5346], [74.3993, -122.8787], [82.1083, -142.5686], [84.6159, -221.5651],  // Right edge
                 [77.9578, -261.5014], [71.9333, -232.4762], [63.9355, -219.7024], [55.5660, -213.1890],  // Top edge
@@ -123,11 +122,11 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         HorizCoordSys horizCoordSys = getHorizCoordSysOfDataset("crossSeamLatLon2D.ncml")
     
         and: "get actual points"
-        List<LatLonPointNoNormalize> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints()
+        List<ProjectionPoint> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints()
         println actualPoints
     
         and: "declare expected points"
-        List<LatLonPointNoNormalize> expectedPoints = convertCoordsToPoints(true, [
+        List<ProjectionPoint> expectedPoints = convertCoordsToPoints(true, [
                 // Verified by visually inspecting the coverage drawing in ToolsUI.
                 // Note how these boundary points differ from the ones we calculated in the test above, even though
                 // "crossSeamProjection.ncml" and "crossSeamLatLon2D.ncml" represent the same grid. That's because the
@@ -155,10 +154,10 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         
         and: "get actual points"
         // Results in strideY == 2 and strideX == 2.
-        List<LatLonPointNoNormalize> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints(2, 2)
+        List<ProjectionPoint> actualPoints = horizCoordSys.calcConnectedLatLonBoundaryPoints(2, 2)
         
         and: "declare expected points"
-        List<LatLonPointNoNormalize> expectedPoints = convertCoordsToPoints(true, [
+        List<ProjectionPoint> expectedPoints = convertCoordsToPoints(true, [
                 [44.8740, -169.5274], [58.6851, -145.7993],  // Bottom edge
                 [69.7501, -106.0074], [82.3559, -162.8391],  // Right edge
                 [85.1317, -252.9728], [66.4291, -221.0677],  // Top edge
@@ -260,7 +259,7 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         def points = []
         coords.each { List<Double> coord ->
             if (coordsAreLatLons) {
-                points << new LatLonPointNoNormalize(coord.get(0), coord.get(1))
+                points << ProjectionPoint.create(coord.get(1), coord.get(0))
             } else {
                 points << ProjectionPoint.create(coord.get(1), coord.get(0))
             }

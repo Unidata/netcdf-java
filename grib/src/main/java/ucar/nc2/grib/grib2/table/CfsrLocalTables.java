@@ -239,30 +239,30 @@ class CfsrLocalTables extends NcepLocalTables {
           if ((line.isEmpty()) || line.startsWith("#")) {
             continue;
           }
-          String[] flds = StringUtil2.splitString(line);
+          ImmutableList<String> flds = StringUtil2.splitList(line);
 
-          int p1 = Integer.parseInt(flds[0].trim()); // must have a number
-          int p2 = Integer.parseInt(flds[1].trim()); // must have a number
-          int p3 = Integer.parseInt(flds[2].trim()); // must have a number
+          int p1 = Integer.parseInt(flds.get(0)); // must have a number
+          int p2 = Integer.parseInt(flds.get(1)); // must have a number
+          int p3 = Integer.parseInt(flds.get(2)); // must have a number
           StringBuilder b = new StringBuilder();
           int count = 3;
 
-          while (count < flds.length && !flds[count].equals(".")) {
-            b.append(flds[count++]).append(' ');
+          while (count < flds.size() && !flds.get(count).equals(".")) {
+            b.append(flds.get(count++)).append(' ');
           }
           String abbrev = b.toString().trim();
           b.setLength(0);
           count++;
 
-          while (count < flds.length && !flds[count].equals(".")) {
-            b.append(flds[count++]).append(' ');
+          while (count < flds.size() && !flds.get(count).equals(".")) {
+            b.append(flds.get(count++)).append(' ');
           }
           String name = b.toString().trim();
           b.setLength(0);
           count++;
 
-          while (count < flds.length && !flds[count].equals(".")) {
-            b.append(flds[count++]).append(' ');
+          while (count < flds.size() && !flds.get(count).equals(".")) {
+            b.append(flds.get(count++)).append(' ');
           }
           String unit = b.toString().trim();
 

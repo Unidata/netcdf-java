@@ -51,7 +51,7 @@ import ucar.nc2.internal.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.internal.util.URLnaming;
-import static ucar.unidata.util.StringUtil2.getTokens;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Read NcML and create NetcdfDataset.Builder, using builders and immutable objects.
@@ -1257,6 +1257,48 @@ public class NcmlReader {
     } catch (Throwable t) {
       throw new RuntimeException("NCML Reading on " + v.shortName, t);
     }
+  }
+
+  static List<String> getTokens(String fullString, String sep) {
+
+    List<String> strs = new ArrayList<>();
+    if (sep != null) {
+      int sepLength = sep.length();
+      switch (sepLength) {
+        case 0:
+          strs = StringUtil2.splitList(fullString);
+          break;
+
+        case 1:
+          StringTokenizer tokenizer = new StringTokenizer(fullString, sep); // maybe use StreamTokenizer?
+          while (tokenizer.hasMoreTokens())
+            strs.add(tokenizer.nextToken());
+          break;
+
+        default:
+          String remainderString = fullString; // multicharacter separator
+          int location = remainderString.indexOf(sep);
+          while (location != -1) { // watch out for off-by-one errors on the string splitting indices!!!
+            if (location == 0) { // remainderString starts with the separator, cut it off
+              remainderString = remainderString.substring(location + sepLength);
+              location = remainderString.indexOf(sep);
+            } else {
+              String token = remainderString.substring(0, location); // pull the token off the front of the string
+              strs.add(token); // add the token to our list
+              remainderString = remainderString.substring(location + sepLength); // cut out both the token and the
+              // separator
+              location = remainderString.indexOf(sep);
+            }
+          } // close while loop
+          if (!remainderString.isEmpty())
+            strs.add(remainderString); // add the last token, post last separator
+      } // close switch (sepLength)
+    } else { // default to white space separator if sep is null
+      strs = StringUtil2.splitList(fullString);
+    }
+    if (strs.isEmpty())
+      strs.add(""); // maybe thrown an exception instead? return null?
+    return strs;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////

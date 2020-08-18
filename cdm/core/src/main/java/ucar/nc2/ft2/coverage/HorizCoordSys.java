@@ -10,9 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import java.util.Optional;
-import ucar.unidata.geoloc.*;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPoints;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.ProjectionRect;
 
 /**
  * Horizontal CoordSys
@@ -476,11 +481,11 @@ public class HorizCoordSys {
     double maxLat = -Double.MAX_VALUE;
     double maxLon = -Double.MAX_VALUE;
 
-    for (LatLonPointNoNormalize boundaryPoint : calcConnectedLatLonBoundaryPoints()) {
-      minLat = Math.min(minLat, boundaryPoint.getLatitude());
-      minLon = Math.min(minLon, boundaryPoint.getLongitude());
-      maxLat = Math.max(maxLat, boundaryPoint.getLatitude());
-      maxLon = Math.max(maxLon, boundaryPoint.getLongitude());
+    for (ProjectionPoint boundaryPoint : calcConnectedLatLonBoundaryPoints()) {
+      minLat = Math.min(minLat, boundaryPoint.getY());
+      minLon = Math.min(minLon, boundaryPoint.getX());
+      maxLat = Math.max(maxLat, boundaryPoint.getY());
+      maxLon = Math.max(maxLon, boundaryPoint.getX());
     }
 
     return new LatLonRect.Builder(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon)).build();
@@ -492,7 +497,7 @@ public class HorizCoordSys {
    *
    * @return the connected latitude/longitude boundary of this CRS.
    */
-  public List<LatLonPointNoNormalize> calcConnectedLatLonBoundaryPoints() {
+  public List<ProjectionPoint> calcConnectedLatLonBoundaryPoints() {
     return calcConnectedLatLonBoundaryPoints(Integer.MAX_VALUE, Integer.MAX_VALUE);
   }
 
@@ -521,7 +526,7 @@ public class HorizCoordSys {
    * @param maxPointsInXEdge the maximum number of boundary points to include from the bottom and top edges.
    * @return the connected latitude/longitude boundary of this CRS.
    */
-  public List<LatLonPointNoNormalize> calcConnectedLatLonBoundaryPoints(int maxPointsInYEdge, int maxPointsInXEdge) {
+  public List<ProjectionPoint> calcConnectedLatLonBoundaryPoints(int maxPointsInYEdge, int maxPointsInXEdge) {
     List<LatLonPoint> points;
 
     if (isProjection) {
@@ -746,7 +751,7 @@ public class HorizCoordSys {
    * Performing the above adjustment will result in longitudes that lie outside of the normalized range of
    * ({@code [-180, 180]}). To be precise, if adjustments are necessary, all of the longitudes in the returned list
    * will be in either {@code [-360, 0]} or {@code [0, 360]}. Consequently, adjusted points cannot be returned as
-   * {@link LatLonPoint}s; they are returned as {@link LatLonPointNoNormalize} objects instead.
+   * {@link LatLonPoint}s; they are returned as {@link ProjectionPoint} objects instead.
    * <p>
    * Longitudes {@code lon1} and {@code lon2} are considered equivalent if {@code lon1 == lon2 + 360 * i}, for some
    * integer {@code i}.
@@ -754,18 +759,18 @@ public class HorizCoordSys {
    * @param points a sequence of normalized lat/lon points that potentially crosses the international date line.
    * @return an equivalent sequence of points that has been adjusted to be "connected".
    */
-  public static List<LatLonPointNoNormalize> connectLatLonPoints(List<LatLonPoint> points) {
-    LinkedList<LatLonPointNoNormalize> connectedPoints = new LinkedList<>();
+  public static List<ProjectionPoint> connectLatLonPoints(List<LatLonPoint> points) {
+    LinkedList<ProjectionPoint> connectedPoints = new LinkedList<>();
 
     for (LatLonPoint point : points) {
       double curLat = point.getLatitude();
       double curLon = point.getLongitude();
 
       if (!connectedPoints.isEmpty()) {
-        double prevLon = connectedPoints.getLast().getLongitude();
+        double prevLon = connectedPoints.getLast().getX();
         curLon = LatLonPoints.lonNormal(curLon, prevLon);
       }
-      connectedPoints.add(new LatLonPointNoNormalize(curLat, curLon));
+      connectedPoints.add(ProjectionPoint.create(curLon, curLat));
     }
 
     return connectedPoints;
@@ -793,11 +798,11 @@ public class HorizCoordSys {
    * @return the latitude/longitude boundary of this CRS as a polygon in WKT.
    */
   public String getLatLonBoundaryAsWKT(int maxPointsInYEdge, int maxPointsInXEdge) {
-    List<LatLonPointNoNormalize> points = calcConnectedLatLonBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
+    List<ProjectionPoint> points = calcConnectedLatLonBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
     StringBuilder sb = new StringBuilder("POLYGON((");
 
-    for (LatLonPointNoNormalize point : points) {
-      sb.append(String.format("%.3f %.3f, ", point.getLongitude(), point.getLatitude()));
+    for (ProjectionPoint point : points) {
+      sb.append(String.format("%.3f %.3f, ", point.getX(), point.getY()));
     }
 
     sb.delete(sb.length() - 2, sb.length()); // Nuke trailing comma and space.
@@ -819,11 +824,11 @@ public class HorizCoordSys {
    * Similar to {@link #getLatLonBoundaryAsWKT}, but returns a GeoJSON polygon instead.
    */
   public String getLatLonBoundaryAsGeoJSON(int maxPointsInYEdge, int maxPointsInXEdge) {
-    List<LatLonPointNoNormalize> points = calcConnectedLatLonBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
+    List<ProjectionPoint> points = calcConnectedLatLonBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
     StringBuilder sb = new StringBuilder("{ 'type': 'Polygon', 'coordinates': [ [ ");
 
-    for (LatLonPointNoNormalize point : points) {
-      sb.append(String.format("[%.3f, %.3f], ", point.getLongitude(), point.getLatitude()));
+    for (ProjectionPoint point : points) {
+      sb.append(String.format("[%.3f, %.3f], ", point.getX(), point.getY()));
     }
 
     sb.delete(sb.length() - 2, sb.length()); // Nuke trailing comma and space.

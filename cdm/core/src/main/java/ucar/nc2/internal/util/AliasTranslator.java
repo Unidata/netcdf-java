@@ -18,7 +18,7 @@ public class AliasTranslator {
   private static Map<String, String> alias = new ConcurrentHashMap<>();
 
   public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
+    alias.put(aliasKey, actual.replace("\\", "/"));
   }
 
   public static String translateAlias(String scanDir) {

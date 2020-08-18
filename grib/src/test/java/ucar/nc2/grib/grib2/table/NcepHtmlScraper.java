@@ -249,7 +249,7 @@ public class NcepHtmlScraper {
     int lastPos = url.lastIndexOf('.');
     String filename = "Table4" + url.substring(pos, lastPos);
     filename = StringUtil2.removeWhitespace(filename);
-    filename = StringUtil2.substitute(filename, "-", ".");
+    filename = filename.replace("-", ".");
     writeParamTableXml(filename, title, url, filename, stuff);
   }
 

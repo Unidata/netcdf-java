@@ -13,11 +13,9 @@ import javax.annotation.concurrent.Immutable;
 /**
  * A parameter has a name and a value that is String, a double, or an array of doubles.
  * A substitute for ucar.nc2.Attribute, to prevent dependencies of the ucar.unidata packages on ucar.nc2.
- *
- * LOOK will not implement Serializable in ver6; may be replaced by Attribute.
  */
 @Immutable
-public class Parameter implements java.io.Serializable {
+public class Parameter {
   private final String name;
   private final String valueS;
   private final double[] valueD;

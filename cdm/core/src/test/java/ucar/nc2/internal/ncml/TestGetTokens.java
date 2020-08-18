@@ -1,4 +1,9 @@
-package ucar.unidata.util;
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.nc2.internal.ncml;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.junit.Assert.*;
+import static ucar.nc2.internal.ncml.NcmlReader.getTokens;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +23,7 @@ import static org.junit.Assert.*;
  * Time: 10:50 AM
  * To change this template use File | Settings | File Templates.
  */
-public class TestStringUtil2 {
+public class TestGetTokens {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String sep1 = "*|*"; // obnoxious multicharacter separator
@@ -189,49 +196,49 @@ public class TestStringUtil2 {
   @Test
   public void testGetTokens() throws Exception {
 
-    assertEquals(values1_sep1, StringUtil2.getTokens(values1, sep1));
-    assertEquals(values2_sep1, StringUtil2.getTokens(values2, sep1));
-    assertEquals(values3_sep1, StringUtil2.getTokens(values3, sep1));
-    assertEquals(values4_sep1, StringUtil2.getTokens(values4, sep1));
-    assertEquals(values5_sep1, StringUtil2.getTokens(values5, sep1));
-    assertEquals(values6_sep1, StringUtil2.getTokens(values6, sep1));
+    assertEquals(values1_sep1, getTokens(values1, sep1));
+    assertEquals(values2_sep1, getTokens(values2, sep1));
+    assertEquals(values3_sep1, getTokens(values3, sep1));
+    assertEquals(values4_sep1, getTokens(values4, sep1));
+    assertEquals(values5_sep1, getTokens(values5, sep1));
+    assertEquals(values6_sep1, getTokens(values6, sep1));
 
-    assertEquals(values1_sep2, StringUtil2.getTokens(values1, sep2));
-    assertEquals(values2_sep2, StringUtil2.getTokens(values2, sep2));
-    assertEquals(values3_sep2, StringUtil2.getTokens(values3, sep2));
-    assertEquals(values4_sep2, StringUtil2.getTokens(values4, sep2));
-    assertEquals(values5_sep2, StringUtil2.getTokens(values5, sep2));
-    assertEquals(values6_sep2, StringUtil2.getTokens(values6, sep2));
+    assertEquals(values1_sep2, getTokens(values1, sep2));
+    assertEquals(values2_sep2, getTokens(values2, sep2));
+    assertEquals(values3_sep2, getTokens(values3, sep2));
+    assertEquals(values4_sep2, getTokens(values4, sep2));
+    assertEquals(values5_sep2, getTokens(values5, sep2));
+    assertEquals(values6_sep2, getTokens(values6, sep2));
 
-    assertEquals(values1_sep3, StringUtil2.getTokens(values1, sep3));
-    assertEquals(values2_sep3, StringUtil2.getTokens(values2, sep3));
-    assertEquals(values3_sep3, StringUtil2.getTokens(values3, sep3));
-    assertEquals(values4_sep3, StringUtil2.getTokens(values4, sep3));
-    assertEquals(values5_sep3, StringUtil2.getTokens(values5, sep3));
-    assertEquals(values6_sep3, StringUtil2.getTokens(values6, sep3));
+    assertEquals(values1_sep3, getTokens(values1, sep3));
+    assertEquals(values2_sep3, getTokens(values2, sep3));
+    assertEquals(values3_sep3, getTokens(values3, sep3));
+    assertEquals(values4_sep3, getTokens(values4, sep3));
+    assertEquals(values5_sep3, getTokens(values5, sep3));
+    assertEquals(values6_sep3, getTokens(values6, sep3));
 
-    assertEquals(values1_sep4, StringUtil2.getTokens(values1, sep4));
-    assertEquals(values2_sep4, StringUtil2.getTokens(values2, sep4));
-    assertEquals(values3_sep4, StringUtil2.getTokens(values3, sep4));
-    assertEquals(values4_sep4, StringUtil2.getTokens(values4, sep4));
-    assertEquals(values5_sep4, StringUtil2.getTokens(values5, sep4));
-    assertEquals(values6_sep4, StringUtil2.getTokens(values6, sep4));
+    assertEquals(values1_sep4, getTokens(values1, sep4));
+    assertEquals(values2_sep4, getTokens(values2, sep4));
+    assertEquals(values3_sep4, getTokens(values3, sep4));
+    assertEquals(values4_sep4, getTokens(values4, sep4));
+    assertEquals(values5_sep4, getTokens(values5, sep4));
+    assertEquals(values6_sep4, getTokens(values6, sep4));
 
-    assertEquals(values1_sep6, StringUtil2.getTokens(values1, sep6));
-    assertEquals(values2_sep6, StringUtil2.getTokens(values2, sep6));
-    assertEquals(values3_sep6, StringUtil2.getTokens(values3, sep6));
-    assertEquals(values4_sep6, StringUtil2.getTokens(values4, sep6));
-    assertEquals(values5_sep6, StringUtil2.getTokens(values5, sep6));
-    assertEquals(values6_sep6, StringUtil2.getTokens(values6, sep6));
+    assertEquals(values1_sep6, getTokens(values1, sep6));
+    assertEquals(values2_sep6, getTokens(values2, sep6));
+    assertEquals(values3_sep6, getTokens(values3, sep6));
+    assertEquals(values4_sep6, getTokens(values4, sep6));
+    assertEquals(values5_sep6, getTokens(values5, sep6));
+    assertEquals(values6_sep6, getTokens(values6, sep6));
 
-    assertEquals(values1_sep5, StringUtil2.getTokens(values1, sep5));
-    assertEquals(values2_sep5, StringUtil2.getTokens(values2, sep5));
-    assertEquals(values3_sep5, StringUtil2.getTokens(values3, sep5));
-    assertEquals(values4_sep5, StringUtil2.getTokens(values4, sep5));
-    assertEquals(values5_sep5, StringUtil2.getTokens(values5, sep5));
-    assertEquals(values6_sep5, StringUtil2.getTokens(values6, sep5));
+    assertEquals(values1_sep5, getTokens(values1, sep5));
+    assertEquals(values2_sep5, getTokens(values2, sep5));
+    assertEquals(values3_sep5, getTokens(values3, sep5));
+    assertEquals(values4_sep5, getTokens(values4, sep5));
+    assertEquals(values5_sep5, getTokens(values5, sep5));
+    assertEquals(values6_sep5, getTokens(values6, sep5));
 
-    assertEquals(values1_sep7, StringUtil2.getTokens(values1, sep7));
+    assertEquals(values1_sep7, getTokens(values1, sep7));
 
   }
 }
