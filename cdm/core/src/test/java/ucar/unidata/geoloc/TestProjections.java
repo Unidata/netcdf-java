@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
+import ucar.unidata.geoloc.projection.proj4.PolyconicProjection;
+import ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection;
+import ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection;
+import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
@@ -427,6 +431,85 @@ public class TestProjections {
 
     if (show)
       System.out.println("Tested " + n + " pts for UTM projection ");
+  }
+
+  @Test
+  // Test known values for the port to 6.
+  public void makeSanityTest() {
+    ProjectionPoint ppt = ProjectionPoint.create(-4000, -2000);
+    LatLonPoint lpt = LatLonPoint.create(11, -22);
+
+    makeSanityTest(new AlbersEqualArea(), ppt, lpt);
+    makeSanityTest(new FlatEarth(), ppt, lpt);
+    makeSanityTest(new LambertAzimuthalEqualArea(), ppt, lpt);
+    makeSanityTest(new LambertConformal(), ppt, lpt);
+    makeSanityTest(new Mercator(), ppt, lpt);
+    makeSanityTest(new Orthographic(), ppt, lpt);
+    makeSanityTest(new RotatedLatLon(), ppt, lpt);
+    makeSanityTest(new RotatedPole(), ProjectionPoint.create(-105, -40), lpt);
+    makeSanityTest(new Sinusoidal(), ppt, lpt);
+    makeSanityTest(new Stereographic(90.0, 255.0, 0.9330127018922193, 0, 0, 6371229.0), ppt, lpt);
+    makeSanityTest(new UtmProjection(), ppt, lpt);
+    makeSanityTest(new VerticalPerspectiveView(), ppt, lpt);
+  }
+
+  @Test
+  // Test known values for the port to 6.
+  public void makeSatSanityTest() {
+    ProjectionPoint ppt = ProjectionPoint.create(1000, -1000);
+    LatLonPoint lpt = LatLonPoint.create(11, -22);
+
+    makeSanityTest(new Geostationary(), ProjectionPoint.create(-.07, .04), lpt);
+    makeSanityTest(new MSGnavigation(), ppt, lpt);
+  }
+
+  @Test
+  // Test known values for the port to 6.
+  public void makeProj4SanityTest() {
+    ProjectionPoint ppt = ProjectionPoint.create(999, 666);
+    LatLonPoint lpt = LatLonPoint.create(11.1, -222);
+
+    makeSanityTest(new AlbersEqualAreaEllipse(), ppt, lpt);
+    makeSanityTest(new AlbersEqualAreaEllipse(23.0, -96.0, 29.5, 45.5, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new CylindricalEqualAreaProjection(), ppt, lpt);
+    makeSanityTest(new CylindricalEqualAreaProjection(0, 1, 0, 0, new Earth()), ppt, lpt);
+
+    makeSanityTest(new EquidistantAzimuthalProjection(0, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(45, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(90, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(-90, 0, 0, 0, EarthEllipsoid.WGS84), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(0, 0, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(45, 0, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(90, 0, 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new EquidistantAzimuthalProjection(-90, 0, 0, 0, new Earth()), ppt, lpt);
+
+    makeSanityTest(new LambertConformalConicEllipse(), ppt, lpt);
+    makeSanityTest(new PolyconicProjection(), ppt, lpt);
+
+    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84), ppt,
+        lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60., 0, 0, EarthEllipsoid.WGS84),
+        ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(0, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(45, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(90, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+    makeSanityTest(new StereographicAzimuthalProjection(-90, 0, 0.9330127018922193, 60., 0, 0, new Earth()), ppt, lpt);
+
+    makeSanityTest(new TransverseMercatorProjection(), ppt, lpt);
+    makeSanityTest(new TransverseMercatorProjection(new Earth(), 0, 0, 0.9996, 0, 0), ppt, lpt);
+  }
+
+  private void makeSanityTest(Projection p, ProjectionPoint ppt, LatLonPoint lpt) {
+    System.out.printf("%s%n", p);
+    LatLonPoint pr = p.projToLatLon(ppt);
+    System.out.printf(" projToLatLon %s -> %s%n", ppt, pr);
+
+    ProjectionPoint lr = p.latLonToProj(lpt);
+    System.out.printf(" latLonToProj %s -> %s%n", lpt, lr);
   }
 
 }

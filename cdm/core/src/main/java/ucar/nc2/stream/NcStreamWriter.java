@@ -78,7 +78,11 @@ public class NcStreamWriter {
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
       uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
 
-    ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
+    // TODO prefer ByteOrder.nativeOrder(); : reader makes right
+    // But we would need an OutputStream that knows how to switch LE and BE.
+    // IospHelper uses DataOutputStream which assumes BE
+    // So just use fixed BE for now.
+    ByteOrder bo = ByteOrder.BIG_ENDIAN;
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
     NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, compress.type, bo, (int) uncompressedLength);

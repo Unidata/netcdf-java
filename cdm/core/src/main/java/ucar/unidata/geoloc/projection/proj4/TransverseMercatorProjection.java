@@ -23,6 +23,7 @@ import java.util.Formatter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoints;
@@ -68,7 +69,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
 
   public TransverseMercatorProjection() {
     super("TransverseMercatorProjection", false);
-    ellipsoid = new Earth();
+    ellipsoid = EarthEllipsoid.WGS84;
     _lat0 = 0;
     _lon0 = 0;
     projectionLatitude = Math.toRadians(0);
@@ -118,7 +119,7 @@ public class TransverseMercatorProjection extends ProjectionImpl {
   public void initialize() {
     this.e = ellipsoid.getEccentricity();
     this.es = ellipsoid.getEccentricitySquared();
-    this.spherical = (e == 0.0);
+    this.spherical = ellipsoid.isSpherical();
     this.one_es = 1.0 - es;
     this.totalScale = ellipsoid.getMajor() * .001; // scale factor for cartesion coords in km.
 

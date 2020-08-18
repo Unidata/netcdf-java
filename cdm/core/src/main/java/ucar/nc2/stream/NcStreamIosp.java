@@ -427,7 +427,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       ByteOrder bo = NcStream.decodeDataByteOrder(dproto); // LOOK not using bo !!
 
       List<DataStorage> storage;
-      Optional<Variable.Builder<?>> vbopt = rootBuilder.findVariableLocal(dproto.getVarName());
+      Optional<Variable.Builder<?>> vbopt = rootBuilder.findVariableNested(dproto.getVarName());
       if (!vbopt.isPresent()) {
         logger.warn(" ERR cant find var {} {}", dproto.getVarName(), dproto);
         storage = new ArrayList<>(); // barf

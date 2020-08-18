@@ -53,7 +53,7 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
   private double sinphi0, cosphi0;
 
   public EquidistantAzimuthalProjection() {
-    this(90, 0, 0, 0, new Earth());
+    this(90, 0, 0, 0, EarthEllipsoid.WGS84);
   }
 
   public EquidistantAzimuthalProjection(double lat0, double lon0, double falseEasting, double falseNorthing,

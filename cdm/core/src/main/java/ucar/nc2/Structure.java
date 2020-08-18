@@ -359,7 +359,9 @@ public class Structure extends Variable {
    * 
    * @return StructureData for a scalar
    * @throws java.io.IOException on read error
+   * @deprecated use readStructure(0)
    */
+  @Deprecated
   public StructureData readStructure() throws IOException {
     if (getRank() != 0)
       throw new java.lang.UnsupportedOperationException("not a scalar structure");
