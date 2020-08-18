@@ -219,7 +219,7 @@ public class Grib2Collection extends GribCollectionImmutable {
       if (vindex.getEnsDerivedType() >= 0) {
         f.format("_D%d", vindex.getEnsDerivedType());
       } else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty()) {
-        String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
+        String s = vindex.getProbabilityName().replace(".", "p");
         f.format("_Prob_%s", s);
       }
 

@@ -116,9 +116,7 @@ public class CoverageCoordAxisBuilder {
 
   public CoverageCoordAxisBuilder setDependsOn(String dependsOn) {
     if (dependsOn != null && !dependsOn.trim().isEmpty()) {
-      List<String> temp = new ArrayList<>();
-      Collections.addAll(temp, StringUtil2.splitString(dependsOn));
-      this.dependsOn = Collections.unmodifiableList(temp);
+      this.dependsOn = StringUtil2.splitList(dependsOn);
     } else {
       this.dependsOn = Collections.emptyList();
     }

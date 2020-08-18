@@ -43,7 +43,7 @@ public class Grib2Iosp extends GribIosp {
 
       } else if (useGenType && vindex.getGenProcessType() >= 0) {
         String genType = cust.getGeneratingProcessTypeName(vindex.getGenProcessType());
-        String s = StringUtil2.substitute(genType, " ", "_");
+        String s = genType.replace(" ", "_");
         f.format("_%s", s);
       }
 
@@ -76,7 +76,7 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.getEnsDerivedType() >= 0) {
         f.format("_%s", cust.getProbabilityNameShort(vindex.getEnsDerivedType()));
       } else if (vindex.getProbabilityName() != null && !vindex.getProbabilityName().isEmpty()) {
-        String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
+        String s = vindex.getProbabilityName().replace(".", "p");
         f.format("_probability_%s", s);
       } else if (vindex.isEnsemble()) {
         f.format("_ens");

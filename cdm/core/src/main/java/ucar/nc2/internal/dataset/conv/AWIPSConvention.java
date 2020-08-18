@@ -150,7 +150,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (units.equals("degrees K"))
       units = "K";
     else {
-      units = StringUtil2.substitute(units, "**", "^");
+      units = units.replace("**", "^");
       units = StringUtil2.remove(units, ')');
       units = StringUtil2.remove(units, '(');
     }
