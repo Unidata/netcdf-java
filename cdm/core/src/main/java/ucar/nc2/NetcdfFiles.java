@@ -503,7 +503,7 @@ public class NetcdfFiles {
         return uncompressedFile.getPath();
 
       } finally {
-        if (lock != null)
+        if (lock != null && lock.isValid())
           lock.release();
       }
     }
@@ -579,7 +579,7 @@ public class NetcdfFiles {
         throw e;
 
       } finally {
-        if (lock != null)
+        if (lock != null && lock.isValid())
           lock.release();
       }
     }

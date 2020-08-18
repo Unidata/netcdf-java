@@ -314,7 +314,6 @@ public class EscapeStrings {
    */
   public static String urlDecode(String s) {
     try {
-      // s = unescapeString(s, _URIEscape, "", false);
       s = URLDecoder.decode(s, CDM.UTF8);
     } catch (Exception e) {
       s = null;
@@ -352,13 +351,6 @@ public class EscapeStrings {
    */
   public static String escapeOGC(String s) {
     return escapeString(s, _allowableInOGC);
-  }
-
-  public static void testOGC() {
-    for (char c : (alphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
-      String encoded = EscapeStrings.escapeOGC("" + c);
-      System.err.printf("|%c|=|%s|%n", c, encoded);
-    }
   }
 
   ///////////////////////////////////////////////////////////////
