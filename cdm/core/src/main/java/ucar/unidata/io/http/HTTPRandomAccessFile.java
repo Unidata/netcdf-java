@@ -212,10 +212,7 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
   @Override
   public long length() {
     long fileLength = total_length;
-    if (fileLength < dataEnd)
-      return dataEnd;
-    else
-      return fileLength;
+    return Math.max(fileLength, dataEnd);
   }
 
   /**
