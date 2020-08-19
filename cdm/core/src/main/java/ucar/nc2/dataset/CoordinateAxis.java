@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -40,13 +41,9 @@ import java.util.Formatter;
  * a units string and optionally a description string.
  * <p/>
  * A Structure cannot be a CoordinateAxis, although members of Structures can.
- *
- * @author john caron
  */
-
 public class CoordinateAxis extends VariableDS {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
-  private static int axisSizeToCache = 100 * 1000; // bytes
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
 
   /**
    * Create a coordinate axis from an existing VariableDS.Builder.
@@ -54,7 +51,7 @@ public class CoordinateAxis extends VariableDS {
    * @param vdsBuilder an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
    */
-  public static CoordinateAxis.Builder fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
+  public static CoordinateAxis.Builder<?> fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
         || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == DataType.CHAR)) {
       return CoordinateAxis1D.builder().copyFrom(vdsBuilder);
@@ -219,10 +216,8 @@ public class CoordinateAxis extends VariableDS {
    */
   public static class AxisComparator implements java.util.Comparator<CoordinateAxis> {
     public int compare(CoordinateAxis c1, CoordinateAxis c2) {
-
-      if (c1 == null || c2 == null) {
-        System.out.printf("HEY%n");
-      }
+      Preconditions.checkNotNull(c1);
+      Preconditions.checkNotNull(c2);
 
       AxisType t1 = c1.getAxisType();
       AxisType t2 = c2.getAxisType();
@@ -292,7 +287,7 @@ public class CoordinateAxis extends VariableDS {
           // if (version < 7 ) return Calendar.gregorian;
           // if (version >= 7 ) return Calendar.proleptic_gregorian; //
         }
-        if (hasName.equalsIgnoreCase("COARDS"))
+        if (hasName != null && hasName.equalsIgnoreCase("COARDS"))
           return Calendar.gregorian;
       }
     }
@@ -305,7 +300,7 @@ public class CoordinateAxis extends VariableDS {
   protected AxisType axisType;
   protected String positive;
   protected String boundaryRef;
-  protected boolean isContiguous = true;
+  protected boolean isContiguous;
 
   protected CoordinateAxis(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);

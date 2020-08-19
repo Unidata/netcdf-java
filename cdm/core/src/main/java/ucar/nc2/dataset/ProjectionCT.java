@@ -9,7 +9,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.unidata.geoloc.Projection;
 
-/** A Projection CoordinateTransform has a Projection bijection (GeoX, GeoY) <-> (Lat, Lon). */
+/**
+ * A Projection CoordinateTransform has a Projection bijection (GeoX, GeoY) <-> (Lat, Lon).
+ * All the work is done in the {@link ucar.unidata.geoloc.Projection}.
+ */
 @Immutable
 public class ProjectionCT extends CoordinateTransform {
   /**

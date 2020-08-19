@@ -60,6 +60,7 @@ public interface AttributeContainer extends Iterable<Attribute> {
 
   /**
    * Find a Numeric Attribute by name (ignore case), return the double value of the Attribute.
+   * Must be numeric or a string that parses as an Integer.
    *
    * @return the attribute value, or defaultValue if not found
    */
@@ -67,6 +68,7 @@ public interface AttributeContainer extends Iterable<Attribute> {
 
   /**
    * Find a Numeric Attribute by name (ignore case), return the integer value of the Attribute.
+   * Must be numeric or a string that parses as an Integer.
    *
    * @return the attribute value, or defaultValue if not found
    */

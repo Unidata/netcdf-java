@@ -442,12 +442,12 @@ public class CoordSystemBuilder {
     for (VarProcess vp : varList) {
       if (!vp.hasCoordinateSystem() && (vp.coordinateAxes != null) && vp.isData()) {
         String coordSysName = coords.makeCanonicalName(vp.vb, vp.coordinateAxes);
-        Optional<CoordinateSystem.Builder> cso = coords.findCoordinateSystem(coordSysName);
+        Optional<CoordinateSystem.Builder<?>> cso = coords.findCoordinateSystem(coordSysName);
         if (cso.isPresent()) {
           vp.vb.addCoordinateSystemName(coordSysName);
           parseInfo.format(" assigned explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
         } else {
-          CoordinateSystem.Builder csnew = CoordinateSystem.builder().setCoordAxesNames(coordSysName);
+          CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder().setCoordAxesNames(coordSysName);
           coords.addCoordinateSystem(csnew);
           vp.vb.addCoordinateSystemName(coordSysName);
           parseInfo.format(" created explicit CoordSystem '%s' for var= %s%n", coordSysName, vp);
@@ -467,18 +467,18 @@ public class CoordSystemBuilder {
   protected void makeCoordinateSystemsImplicit() {
     for (VarProcess vp : varList) {
       if (!vp.hasCoordinateSystem() && vp.maybeData()) {
-        List<CoordinateAxis.Builder> dataAxesList = vp.findCoordinateAxes(true);
+        List<CoordinateAxis.Builder<?>> dataAxesList = vp.findCoordinateAxes(true);
         if (dataAxesList.size() < 2) {
           continue;
         }
 
         String csName = coords.makeCanonicalName(dataAxesList);
-        Optional<CoordinateSystem.Builder> csOpt = coords.findCoordinateSystem(csName);
+        Optional<CoordinateSystem.Builder<?>> csOpt = coords.findCoordinateSystem(csName);
         if (csOpt.isPresent() && coords.isComplete(csOpt.get(), vp.vb)) {
           vp.vb.addCoordinateSystemName(csName);
           parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s%n", csName, vp);
         } else {
-          CoordinateSystem.Builder csnew = CoordinateSystem.builder().setCoordAxesNames(csName).setImplicit(true);
+          CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder().setCoordAxesNames(csName).setImplicit(true);
           if (coords.isComplete(csnew, vp.vb)) {
             vp.vb.addCoordinateSystemName(csName);
             coords.addCoordinateSystem(csnew);
@@ -505,8 +505,8 @@ public class CoordSystemBuilder {
       }
 
       // look through all axes that fit
-      List<CoordinateAxis.Builder> axisList = new ArrayList<>();
-      for (CoordinateAxis.Builder axis : coords.coordAxes) {
+      List<CoordinateAxis.Builder<?>> axisList = new ArrayList<>();
+      for (CoordinateAxis.Builder<?> axis : coords.coordAxes) {
         if (axis.getDimensions().isEmpty()) {
           continue; // scalar coords must be explicitly added.
         }
@@ -522,7 +522,7 @@ public class CoordSystemBuilder {
       }
 
       String csName = coords.makeCanonicalName(axisList);
-      Optional<CoordinateSystem.Builder> csOpt = coords.findCoordinateSystem(csName);
+      Optional<CoordinateSystem.Builder<?>> csOpt = coords.findCoordinateSystem(csName);
       boolean okToBuild = false;
 
       // do coordinate systems need to be complete?
@@ -542,7 +542,7 @@ public class CoordSystemBuilder {
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", csName, vp);
 
       } else {
-        CoordinateSystem.Builder csnew = CoordinateSystem.builder().setCoordAxesNames(csName);
+        CoordinateSystem.Builder<?> csnew = CoordinateSystem.builder().setCoordAxesNames(csName);
         // again, do coordinate systems need to be complete?
         // default enhance mode is yes, they must be complete
         if (requireCompleteCoordSys) {
@@ -630,9 +630,9 @@ public class CoordSystemBuilder {
     // look for coordAxes assignments on the coordinate transforms
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && (vp.ct != null) && (vp.coordinateAxes != null)) {
-        List<CoordinateAxis.Builder> dataAxesList = vp.findCoordinateAxes(false);
+        List<CoordinateAxis.Builder<?>> dataAxesList = vp.findCoordinateAxes(false);
         if (!dataAxesList.isEmpty()) {
-          for (CoordinateSystem.Builder cs : coords.coordSys) {
+          for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
               coords.addCoordinateTransform(vp.ct);
               cs.addCoordinateTransformByName(vp.ct.name);
@@ -931,8 +931,8 @@ public class CoordSystemBuilder {
      * @param addCoordVariables if true, add any coordinate variables that are missing.
      * @return list of coordinate axes for this data variable.
      */
-    protected List<CoordinateAxis.Builder> findCoordinateAxes(boolean addCoordVariables) {
-      List<CoordinateAxis.Builder> axesList = new ArrayList<>();
+    protected List<CoordinateAxis.Builder<?>> findCoordinateAxes(boolean addCoordVariables) {
+      List<CoordinateAxis.Builder<?>> axesList = new ArrayList<>();
 
       if (coordinateAxes != null) { // explicit axes
         StringTokenizer stoker = new StringTokenizer(coordinateAxes);
@@ -940,7 +940,7 @@ public class CoordSystemBuilder {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess(vname, this);
           if (ap != null) {
-            CoordinateAxis.Builder axis = ap.makeIntoCoordinateAxis();
+            CoordinateAxis.Builder<?> axis = ap.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) {
               axesList.add(axis);
             }
@@ -952,7 +952,7 @@ public class CoordSystemBuilder {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess(vname, this);
           if (ap != null) {
-            CoordinateAxis.Builder axis = ap.makeIntoCoordinateAxis(); // LOOK check if its legal
+            CoordinateAxis.Builder<?> axis = ap.makeIntoCoordinateAxis(); // LOOK check if its legal
             if (!axesList.contains(axis)) {
               axesList.add(axis);
             }

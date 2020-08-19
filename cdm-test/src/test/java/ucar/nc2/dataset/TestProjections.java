@@ -21,6 +21,7 @@ import java.util.Formatter;
 import java.util.List;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
+import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
@@ -177,7 +178,7 @@ public class TestProjections {
         assert (radius > 10000) : radius; // meters
       }
 
-      VariableDS ctvSyn = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
+      VariableDS ctvSyn = CoordTransformFactory.makeDummyTransformVariable(ncd, ct);
       logger.debug(" dump of equivilent ctv = {}", ctvSyn);
 
       if (ctv != null) {

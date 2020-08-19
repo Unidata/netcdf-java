@@ -128,8 +128,11 @@ public class AttributeContainerMutable implements AttributeContainer {
     Attribute att = findAttributeIgnoreCase(attName);
     if (att == null) {
       return defaultValue;
+    } else if (att.isString()) {
+      return Double.parseDouble(att.getStringValue());
+    } else {
+      return att.getNumericValue().doubleValue();
     }
-    return att.getNumericValue().doubleValue();
   }
 
   @Override
@@ -238,8 +241,11 @@ public class AttributeContainerMutable implements AttributeContainer {
       Attribute att = findAttributeIgnoreCase(attName);
       if (att == null) {
         return defaultValue;
+      } else if (att.isString()) {
+        return Double.parseDouble(att.getStringValue());
+      } else {
+        return att.getNumericValue().doubleValue();
       }
-      return att.getNumericValue().doubleValue();
     }
 
     @Override

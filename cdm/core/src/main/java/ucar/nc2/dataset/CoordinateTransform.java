@@ -8,9 +8,9 @@ import com.google.common.collect.ImmutableList;
 import java.util.Formatter;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
+import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,10 +20,9 @@ import java.util.List;
  * CoordinateTransform is the superclass for ProjectionCT and VerticalCT.
  * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable" which
  * is just a container for the Transform parameters.
- * LOOK this should be abstract.
  */
 @ThreadSafe
-public class CoordinateTransform implements Comparable<CoordinateTransform> {
+public abstract class CoordinateTransform implements Comparable<CoordinateTransform> {
   /**
    * Create a Coordinate Transform.
    *
@@ -37,22 +36,6 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     this.authority = authority;
     this.transformType = transformType;
     this.params = ImmutableList.copyOf(params);
-  }
-
-  /**
-   * Create a Coordinate Transform.
-   *
-   * @param name name of transform, must be unique within the NcML.
-   * @param authority naming authority
-   * @param transformType type of transform.
-   * @deprecated Use CoordinateTransform.builder()
-   */
-  @Deprecated
-  public CoordinateTransform(String name, String authority, TransformType transformType) {
-    this.name = name;
-    this.authority = authority;
-    this.transformType = transformType;
-    this.params = new ArrayList<>();
   }
 
   /**
@@ -70,7 +53,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     return name;
   }
 
-  public AttributeContainer getAttributeContainer() {
+  public AttributeContainer attributes() {
     return attributeContainer;
   }
 
@@ -176,8 +159,8 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
     this.attributeContainer = new AttributeContainerMutable(this.name);
     this.attributeContainer.addAll(builder.attributeContainer);
 
-    CoordinateTransform ct =
-        CoordTransBuilder.makeCoordinateTransform(ncd, builder.attributeContainer, new Formatter(), new Formatter());
+    CoordinateTransform ct = CoordTransformFactory.makeCoordinateTransform(ncd, builder.attributeContainer,
+        new Formatter(), new Formatter());
     ct.attributeContainer = new AttributeContainerMutable(this.name);
     ct.attributeContainer.addAll(builder.attributeContainer);
   }
@@ -255,7 +238,7 @@ public class CoordinateTransform implements Comparable<CoordinateTransform> {
 
       // All this trouble because we need ncd before we can build.
       CoordinateTransform ct =
-          CoordTransBuilder.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
+          CoordTransformFactory.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
       if (ct != null) {
         // ct.name = this.name; // LOOK why is this commented out? Dont know name until this point? Not going to
         // work....

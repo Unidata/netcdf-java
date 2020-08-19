@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.dataset;
+package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.CancelTask;
 import java.util.List;
 import java.util.ArrayList;
@@ -34,8 +36,8 @@ import java.io.IOException;
  */
 @Immutable
 public class StructurePseudoDS extends StructureDS {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudoDS.class);
-  private static boolean debugRecord = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudoDS.class);
+  private static final boolean debugRecord = false;
 
   /**
    * Make a Structure out of all Variables with the named dimension as their outermost dimension, or from a list
@@ -142,7 +144,7 @@ public class StructurePseudoDS extends StructureDS {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  protected List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
+  protected List<Variable> orgVariables; // the underlying original variables
 
   protected StructurePseudoDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);

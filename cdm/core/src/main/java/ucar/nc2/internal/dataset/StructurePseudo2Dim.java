@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.dataset;
+package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.concurrent.Immutable;
@@ -12,12 +12,10 @@ import ucar.nc2.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
+import ucar.nc2.dataset.VariableDS;
 
 /**
  * Make a collection of variables with the same 2 outer dimensions into a fake 2D Structure(outer,inner)
- *
- * @author caron
- * @since Oct 21, 2009
  */
 @Immutable
 public class StructurePseudo2Dim extends StructurePseudoDS {

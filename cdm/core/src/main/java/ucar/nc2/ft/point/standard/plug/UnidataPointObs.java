@@ -9,7 +9,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.internal.dataset.StructurePseudoDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;

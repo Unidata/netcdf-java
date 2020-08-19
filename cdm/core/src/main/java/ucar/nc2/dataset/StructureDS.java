@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 import java.io.IOException;
@@ -87,7 +88,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  protected final EnhancementsImpl proxy; // API relies that this cant be null
+  protected final EnhancementsImpl proxy;
   protected final Structure orgVar; // wrap this Variable
   protected final String orgName; // in case Variable was renamed, and we need the original name for aggregation
 
@@ -105,8 +106,8 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    b.setOriginalVariable(this.orgVar).setOriginalName(this.orgName).setUnits(this.proxy.units)
-        .setDesc(this.proxy.desc);
+    b.setOriginalVariable(this.orgVar).setOriginalName(this.orgName).setUnits(this.proxy.getUnitsString())
+        .setDesc(this.proxy.getDescription());
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 

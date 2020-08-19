@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
 import ucar.nc2.Dimension;
@@ -16,9 +17,9 @@ import ucar.unidata.util.Parameter;
 
 /**
  * A VerticalCT is a CoordinateTransform function CT: (GeoZ) -> Height or Pressure.
- * Typically it may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -> Height or Pressure.
+ * It may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -> Height or Pressure.
  * This class just records the transformation parameters. The mathematical transformation itself is
- * delegated to a class implementing ucar.unidata.geoloc.VerticalTransform.
+ * delegated to a class implementing {@link ucar.unidata.geoloc.VerticalTransform}.
  */
 @Immutable
 public class VerticalCT extends CoordinateTransform {
@@ -82,22 +83,9 @@ public class VerticalCT extends CoordinateTransform {
    * @param builder creates the VerticalTransform
    */
   public VerticalCT(String name, String authority, VerticalCT.Type type, VertTransformBuilderIF builder) {
-    super(name, authority, TransformType.Vertical);
+    super(name, authority, TransformType.Vertical, ImmutableList.of());
     this.type = type;
     this.transformBuilder = builder;
-  }
-
-  /**
-   * Copy Constructor
-   *
-   * @param from copy from this one
-   * @deprecated use builder
-   */
-  @Deprecated
-  public VerticalCT(VerticalCT from) {
-    super(from.getName(), from.getAuthority(), from.getTransformType());
-    this.type = from.getVerticalTransformType();
-    this.transformBuilder = from.getTransformBuilder();
   }
 
   /**
@@ -119,17 +107,6 @@ public class VerticalCT extends CoordinateTransform {
   public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
     // LOOK This is a VerticalTransform.Builder, not a VerticalCT.builder
     return transformBuilder.makeMathTransform(ds, timeDim, this);
-  }
-
-  /**
-   * get the CoordTransBuilderIF
-   *
-   * @return builder
-   * @deprecated do not use
-   */
-  @Deprecated
-  public VertTransformBuilderIF getTransformBuilder() {
-    return transformBuilder;
   }
 
   @Override

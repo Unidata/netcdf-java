@@ -47,12 +47,19 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
  * ucar.nc2.ft2.coverage.grid.GridCoordSys.
  *
  * @author caron
- * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System
- *      Object
- *      Model</a>
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">
+ *      Coordinate System Object Model</a>
  */
 public class CoordinateSystem {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
+
+  /**
+   * TODO needed for GridCoordSys
+   * 
+   * @deprecated Use CoordinateSystem.builder().
+   */
+  @Deprecated
+  protected CoordinateSystem() {}
 
   /**
    * Create standard name from list of axes. Sort the axes first
@@ -73,96 +80,11 @@ public class CoordinateSystem {
     return buff.toString();
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
-
-
-  /** @deprecated Use CoordinateSystem.builder() */
-  @Deprecated
-  protected CoordinateSystem() {}
-
-  /**
-   * Constructor.
-   * 
-   * @param ds the containing dataset
-   * @param axes Collection of type CoordinateAxis, must be at least one.
-   * @param coordTrans Collection of type CoordinateTransform, may be empty or null.
-   * @deprecated Use CoordinateSystem.builder()
-   */
-  @Deprecated
-  public CoordinateSystem(NetcdfDataset ds, Collection<CoordinateAxis> axes,
-      Collection<CoordinateTransform> coordTrans) {
-    this.ds = ds;
-    this.coordAxes = new ArrayList<>(axes);
-    this.name = makeName(coordAxes);
-
-    if (coordTrans != null)
-      this.coordTrans = new ArrayList<>(coordTrans);
-
-    for (CoordinateAxis axis : coordAxes) {
-      // look for AxisType
-      AxisType axisType = axis.getAxisType();
-      if (axisType != null) {
-        if (axisType == AxisType.GeoX)
-          xAxis = lesserRank(xAxis, axis);
-        if (axisType == AxisType.GeoY)
-          yAxis = lesserRank(yAxis, axis);
-        if (axisType == AxisType.GeoZ)
-          zAxis = lesserRank(zAxis, axis);
-        if (axisType == AxisType.Time)
-          tAxis = lesserRank(tAxis, axis);
-        if (axisType == AxisType.Lat)
-          latAxis = lesserRank(latAxis, axis);
-        if (axisType == AxisType.Lon)
-          lonAxis = lesserRank(lonAxis, axis);
-        if (axisType == AxisType.Height)
-          hAxis = lesserRank(hAxis, axis);
-        if (axisType == AxisType.Pressure)
-          pAxis = lesserRank(pAxis, axis);
-        if (axisType == AxisType.Ensemble)
-          ensAxis = lesserRank(ensAxis, axis);
-
-        if (axisType == AxisType.RadialAzimuth)
-          aziAxis = lesserRank(aziAxis, axis);
-        if (axisType == AxisType.RadialDistance)
-          radialAxis = lesserRank(radialAxis, axis);
-        if (axisType == AxisType.RadialElevation)
-          elevAxis = lesserRank(elevAxis, axis);
-      }
-
-      // collect dimensions
-      domain.addAll(Dimensions.makeDimensionsAll(axis));
-    }
-  }
-
   // prefer smaller ranks, in case more than one
   private CoordinateAxis lesserRank(CoordinateAxis a1, CoordinateAxis a2) {
     if (a1 == null)
       return a2;
     return (a1.getRank() <= a2.getRank()) ? a1 : a2;
-  }
-
-  /**
-   * add a CoordinateTransform
-   * 
-   * @param ct add this CoordinateTransform
-   * @deprecated Use CoordinateSystem.builder()
-   */
-  @Deprecated
-  public void addCoordinateTransform(CoordinateTransform ct) {
-    coordTrans.add(ct);
-    ds.addCoordinateTransform(ct);
-  }
-
-  /**
-   * add a Collection of CoordinateTransform
-   * 
-   * @param ct add all CoordinateTransform in this collection
-   * @deprecated Use CoordinateSystem.builder()
-   */
-  @Deprecated
-  public void addCoordinateTransforms(Collection<CoordinateTransform> ct) {
-    if (ct != null)
-      coordTrans.addAll(ct);
   }
 
   /** Get the List of CoordinateAxis objects */
@@ -531,17 +453,6 @@ public class CoordinateSystem {
   }
 
   /**
-   * Set whether this Coordinate System is implicit
-   * 
-   * @param isImplicit true if constructed implicitly.
-   * @deprecated Use CoordinateSystem.builder()
-   */
-  @Deprecated
-  protected void setImplicit(boolean isImplicit) {
-    this.isImplicit = isImplicit;
-  }
-
-  /**
    * true if has Height, Pressure, or GeoZ axis
    * 
    * @return true if has a vertical axis
@@ -753,7 +664,8 @@ public class CoordinateSystem {
     for (String wantTransName : builder.transNames) {
       CoordinateTransform got = allTransforms.stream()
           .filter(ct -> (wantTransName.equals(ct.getName())
-              || ct.getAttributeContainer() != null && wantTransName.equals(ct.getAttributeContainer().getName())))
+              || ct.attributes() != null && wantTransName.equals(ct.attributes().getName()))) // TODO what is this use
+                                                                                              // case?
           .findFirst().orElse(null);
       if (got != null) {
         coordTrans.add(got);
@@ -789,7 +701,7 @@ public class CoordinateSystem {
 
   public static abstract class Builder<T extends Builder<T>> {
     public String coordAxesNames; // canonicalized list of names
-    private List<String> transNames = new ArrayList<>();
+    private final List<String> transNames = new ArrayList<>();
     private boolean isImplicit;
     private boolean built;
 

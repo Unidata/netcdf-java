@@ -25,8 +25,6 @@ import ucar.nc2.units.DateRange;
  * Its coordinate values can be represented as Dates.
  * <p/>
  * May use udunit dates, or ISO Strings.
- *
- * @author caron
  */
 public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
@@ -56,7 +54,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @param ncd the containing dataset
    * @param org the underlying Variable
    * @param dims list of dimensions
-   * @throws IOException on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
   private static CoordinateAxis1DTime fromStringVarDS(@Nullable NetcdfDataset ncd, VariableDS org,
@@ -184,14 +181,17 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   /**
    * only if isRegular() LOOK REDO
    *
-   * @return time unit
-   * @throws Exception on bad unit string
+   * @return time unit or null if bad unit string
    */
+  @Nullable
   public TimeUnit getTimeResolution() throws Exception {
     String tUnits = getUnitsString();
-    StringTokenizer stoker = new StringTokenizer(tUnits);
-    double tResolution = getIncrement();
-    return new TimeUnit(tResolution, stoker.nextToken());
+    if (tUnits != null) {
+      StringTokenizer stoker = new StringTokenizer(tUnits);
+      double tResolution = getIncrement();
+      return new TimeUnit(tResolution, stoker.nextToken());
+    }
+    return null;
   }
 
   /**
@@ -367,7 +367,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private CoordinateAxisTimeHelper helper;
+  private final CoordinateAxisTimeHelper helper;
   private List<CalendarDate> cdates;
 
   protected CoordinateAxis1DTime(Builder<?> builder, Group parentGroup) {

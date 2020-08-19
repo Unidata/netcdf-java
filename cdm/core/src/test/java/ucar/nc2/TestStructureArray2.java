@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.internal.dataset.StructurePseudoDS;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;

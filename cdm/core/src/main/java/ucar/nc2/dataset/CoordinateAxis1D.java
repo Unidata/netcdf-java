@@ -30,15 +30,11 @@ import java.util.List;
  * The only way the bounds can be set is if the coordinate variable has an attribute "bounds" that points to another
  * variable
  * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are.
- * In
- * this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
- *
- * @author john caron
- * @see CoordinateAxis#fromVariableDS
+ * In this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
   /**
    * Create a new CoordinateAxis1D as a section of this CoordinateAxis1D.
@@ -378,13 +374,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return findCoordElementNonContiguous(coordVal, true);
   }
 
-  /**
-   * @deprecated use findCoordElement(coordVal)
-   */
-  public int findCoordElement(double coordVal, int lastIndex) {
-    return findCoordElement(coordVal);
-  }
-
   //////////////////////////////////////////////////////////////////
   // following is from Jon Blower's ncWMS
   // faster routines for coordValue -> index search
@@ -689,7 +678,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return this;
     }
 
-    CoordinateAxis1D.Builder builder = this.toBuilder();
+    CoordinateAxis1D.Builder<?> builder = this.toBuilder();
     boolean cross = false;
     if (isAscending) {
       for (int i = 0; i < coords.length; i++) {
@@ -847,8 +836,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (contig) {
       edge = new double[n + 1];
       edge[0] = value1[0];
-      for (int i = 1; i < n + 1; i++)
-        edge[i] = value2[i - 1];
+      System.arraycopy(value2, 0, edge, 1, n + 1 - 1);
     } else { // what does edge mean when not contiguous ??
       edge = new double[n + 1];
       edge[0] = value1[0];

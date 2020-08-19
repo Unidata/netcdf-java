@@ -83,13 +83,14 @@ public class DatasetUrl {
   // "protocol:" must be followed by alpha or "/"
   private static boolean validateProtocol(StringBuilder buf, int startpos, int endpos) {
     int len = endpos - startpos;
-    if (len == 0)
+    if (len == 0) {
       return false;
+    }
     char cs = buf.charAt(startpos);
     char ce1 = buf.charAt(endpos + 1);
-    String wtf = "/\\";
-    if (len == 1 && alpha.indexOf(cs) >= 0 && (ce1 == '/' || ce1 == '\\'))
+    if (len == 1 && alpha.indexOf(cs) >= 0 && (ce1 == '/' || ce1 == '\\')) {
       return false; // looks like windows drive letter
+    }
     // If trailing colon is not followed by alpha or /, then assume not url
     return slashalpha.indexOf(ce1) >= 0;
   }
@@ -132,14 +133,17 @@ public class DatasetUrl {
       query = trueUrl.substring(pos + 1);
       trueUrl = trueUrl.substring(0, pos);
     }
-    if (fragment != null)
+    if (fragment != null) {
       serviceType = searchFragment(fragment);
+    }
 
-    if (serviceType == null) // See if leading protocol tells us how to interpret
+    if (serviceType == null) {// See if leading protocol tells us how to interpret
       serviceType = decodeLeadProtocol(leadProtocol);
+    }
 
-    if (serviceType == null) // See if path tells us how to interpret
+    if (serviceType == null) {// See if path tells us how to interpret
       serviceType = searchPath(trueUrl);
+    }
 
     if (serviceType == null) {
       // There are several possibilities at this point; all of which

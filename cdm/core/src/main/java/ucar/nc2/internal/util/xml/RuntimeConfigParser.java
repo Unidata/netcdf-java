@@ -15,7 +15,7 @@ import ucar.nc2.constants.FeatureType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import ucar.nc2.dataset.CoordTransBuilder;
+import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
 
@@ -82,7 +82,7 @@ public class RuntimeConfigParser {
           String transformName = elem.getAttributeValue("name");
           String className = elem.getAttributeValue("class");
           try {
-            CoordTransBuilder.registerTransform(transformName, className);
+            CoordTransformFactory.registerTransform(transformName, className);
             errlog.format("CoordTransBuilder added %s%n", className);
           } catch (ClassNotFoundException e) {
             errlog.format("CoordTransBuilder class %s not found; check your classpath%n", className);
