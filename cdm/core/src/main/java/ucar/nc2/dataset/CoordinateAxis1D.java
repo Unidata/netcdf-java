@@ -8,11 +8,8 @@ import ucar.ma2.*;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A 1-dimensional Coordinate Axis. Its values must be monotonic.
@@ -100,23 +97,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     result.calcIsRegular();
 
     return result;
-  }
-
-  /**
-   * Get the list of names, to be used for user selection.
-   * The ith one refers to the ith coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   * @deprecated will move in ver 6
-   */
-  @Deprecated
-  public List<NamedObject> getNames() {
-    int n = getDimension(0).getLength();
-    List<NamedObject> names = new ArrayList<>(n);
-    for (int i = 0; i < n; i++) {
-      names.add(NamedObject.create(getCoordName(i), getShortName() + " " + getUnitsString()));
-    }
-    return names;
   }
 
   /**

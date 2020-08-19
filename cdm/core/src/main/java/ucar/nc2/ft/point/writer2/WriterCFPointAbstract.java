@@ -103,7 +103,6 @@ abstract class WriterCFPointAbstract implements Closeable {
   String altitudeCoordinateName = altName;
 
   Structure record; // used for netcdf3 and netcdf4 extended
-  private Dimension recordDim;
   HashSet<String> dataMap = new HashSet<>();
   private List<Variable> extra;
 
@@ -122,7 +121,7 @@ abstract class WriterCFPointAbstract implements Closeable {
    * @param config configuration
    */
   WriterCFPointAbstract(String fileOut, AttributeContainer atts, List<VariableSimpleIF> dataVars,
-      CalendarDateUnit timeUnit, @Nullable String altUnits, CFPointWriterConfig config) throws IOException {
+      CalendarDateUnit timeUnit, @Nullable String altUnits, CFPointWriterConfig config) {
 
     this.dataVars = dataVars;
     this.timeUnit = timeUnit;
@@ -201,9 +200,8 @@ abstract class WriterCFPointAbstract implements Closeable {
 
   void writeHeader(List<VariableSimpleIF> obsCoords, StructureData featureData, @Nullable StructureData middleData,
       StructureData obsData, String coordNames) throws IOException {
-    this.recordDim = writerb.addUnlimitedDimension(recordDimName);
 
-
+    Dimension recordDim = writerb.addUnlimitedDimension(recordDimName);
     addExtraVariables();
 
     if (isExtendedModel) {
@@ -213,7 +211,7 @@ abstract class WriterCFPointAbstract implements Closeable {
       if (middleData != null) {
         makeMiddleVariables(middleData, true);
       }
-      Structure.Builder recordb = writerb.addStructure(recordName, recordDimName);
+      Structure.Builder<?> recordb = writerb.addStructure(recordName, recordDimName);
       addCoordinatesExtended(recordb, obsCoords);
       addDataVariablesExtended(recordb, obsData, coordNames);
 
@@ -261,7 +259,7 @@ abstract class WriterCFPointAbstract implements Closeable {
     for (VariableSimpleIF oldVar : coords) {
       List<Dimension> dims = makeDimensionList(oldVar.getDimensions());
       dims.add(0, recordDim);
-      Variable.Builder newVar;
+      Variable.Builder<?> newVar;
 
       if (oldVar.getDataType() == DataType.STRING && !this.isExtendedModel) {
         // What should the string length be ?? Should read variable to find out....see old
@@ -311,7 +309,7 @@ abstract class WriterCFPointAbstract implements Closeable {
       List<Dimension> dims = makeDimensionList(oldVar.getDimensions());
       dims.add(0, recordDim);
 
-      Variable.Builder newVar;
+      Variable.Builder<?> newVar;
       if (oldVar.getDataType() == DataType.STRING && !isExtendedModel) {
         // What should the string length be ??
         String name = oldVar.getShortName();
@@ -354,7 +352,7 @@ abstract class WriterCFPointAbstract implements Closeable {
           dimNames.append(" ").append(d.getLength()); // anonymous
       }
 
-      Variable.Builder newVar = Variable.builder().setName(oldVar.getShortName()).setDataType(oldVar.getDataType())
+      Variable.Builder<?> newVar = Variable.builder().setName(oldVar.getShortName()).setDataType(oldVar.getDataType())
           .setParentGroupBuilder(writerb.getRootGroup()).setDimensionsByName(dimNames.toString());
       recordb.addMemberVariable(newVar);
 

@@ -14,11 +14,9 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Dimension;
-import ucar.nc2.util.NamedObject;
 import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
-import ucar.nc2.units.DateRange;
 
 /**
  * A 1-dimensional Coordinate Axis representing Calendar time.
@@ -168,16 +166,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last - 1)) : null;
   }
 
-  @Override
-  public List<NamedObject> getNames() {
-    List<CalendarDate> cdates = getCalendarDates();
-    List<NamedObject> names = new ArrayList<>(cdates.size());
-    for (CalendarDate cd : cdates) {
-      names.add(NamedObject.create(CalendarDateFormatter.toDateTimeStringISO(cd), getShortName()));
-    }
-    return names;
-  }
-
   /**
    * only if isRegular() LOOK REDO
    *
@@ -322,48 +310,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     for (CalendarDate cd : cdates)
       timeDates[index++] = cd.toDate();
     return timeDates;
-  }
-
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use getCalendarDate()
-   */
-  public java.util.Date getTimeDate(int idx) {
-    return getCalendarDate(idx).toDate();
-  }
-
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use getCalendarDateRange()
-   */
-  public DateRange getDateRange() {
-    CalendarDateRange cdr = getCalendarDateRange();
-    return cdr.toDateRange();
-  }
-
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use findTimeIndexFromCalendarDate
-   */
-  public int findTimeIndexFromDate(java.util.Date d) {
-    return findTimeIndexFromCalendarDate(CalendarDate.of(d));
-  }
-
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use hasCalendarDate
-   */
-  public boolean hasTime(Date date) {
-    List<CalendarDate> cdates = getCalendarDates();
-    for (CalendarDate cd : cdates) {
-      if (date.equals(cd.toDate()))
-        return true;
-    }
-    return false;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

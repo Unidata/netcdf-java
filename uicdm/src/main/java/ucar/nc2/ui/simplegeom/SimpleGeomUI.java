@@ -17,6 +17,7 @@ import ucar.nc2.ui.geoloc.NavigatedPanel;
 import ucar.nc2.ui.geoloc.ProjectionManager;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.*;
+import ucar.nc2.ui.util.NamedObjects;
 import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
@@ -295,7 +296,7 @@ public class SimpleGeomUI extends JPanel {
     CoordinateAxis1D axis = gcs.getVerticalAxis();
     setChooserWanted("level", axis != null);
     if (axis != null) {
-      List<NamedObject> levels = axis.getNames();
+      List<NamedObject> levels = NamedObjects.getNames(axis);
       levelChooser.setCollection(levels.iterator(), true);
       NamedObject no = levels.get(controller.getCurrentLevelIndex());
       levelChooser.setSelectedByName(no.getName());
@@ -306,7 +307,7 @@ public class SimpleGeomUI extends JPanel {
       axis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
       setChooserWanted("time", axis != null);
       if (axis != null) {
-        List<NamedObject> names = axis.getNames();
+        List<NamedObject> names = NamedObjects.getNames(axis);
         timeChooser.setCollection(names.iterator(), true);
         NamedObject no = names.get(controller.getCurrentTimeIndex());
         timeChooser.setSelectedByName(no.getName());
@@ -318,7 +319,7 @@ public class SimpleGeomUI extends JPanel {
     axis = gcs.getEnsembleAxis();
     setChooserWanted("ensemble", axis != null);
     if (axis != null) {
-      List<NamedObject> names = axis.getNames();
+      List<NamedObject> names = NamedObjects.getNames(axis);
       ensembleChooser.setCollection(names.iterator(), true);
       NamedObject no = names.get(controller.getCurrentEnsembleIndex());
       ensembleChooser.setSelectedByName(no.getName());
@@ -327,7 +328,7 @@ public class SimpleGeomUI extends JPanel {
     axis = gcs.getRunTimeAxis();
     setChooserWanted("runtime", axis != null);
     if (axis != null) {
-      List<NamedObject> names = axis.getNames();
+      List<NamedObject> names = NamedObjects.getNames(axis);
       runtimeChooser.setCollection(names.iterator(), true);
       NamedObject no = names.get(controller.getCurrentRunTimeIndex());
       runtimeChooser.setSelectedByName(no.getName());

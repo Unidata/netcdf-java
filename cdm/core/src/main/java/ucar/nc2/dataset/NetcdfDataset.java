@@ -76,8 +76,7 @@ import java.util.*;
  */
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
-
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   public static final String AGGREGATION = "Aggregaation";
 
   /**
@@ -109,9 +108,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     IncompleteCoordSystems,
   }
 
-  private static Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
+  private static final Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
       Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems));
-  private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
+  private static final Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 
   public static Set<Enhance> getEnhanceAll() {
@@ -372,23 +371,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (orgFile != null) ? orgFile.getLastModified() : 0;
   }
 
-  // sort by coord sys, then name
-  private static class VariableComparator implements java.util.Comparator {
-    public int compare(Object o1, Object o2) {
-      VariableEnhanced v1 = (VariableEnhanced) o1;
-      VariableEnhanced v2 = (VariableEnhanced) o2;
-      List list1 = v1.getCoordinateSystems();
-      String cs1 = (!list1.isEmpty()) ? ((CoordinateSystem) list1.get(0)).getName() : "";
-      List list2 = v2.getCoordinateSystems();
-      String cs2 = (!list2.isEmpty()) ? ((CoordinateSystem) list2.get(0)).getName() : "";
-
-      if (cs2.equals(cs1))
-        return v1.getShortName().compareToIgnoreCase(v2.getShortName());
-      else
-        return cs1.compareToIgnoreCase(cs2);
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // used by NcMLReader for NcML without a referenced dataset
 
@@ -633,7 +615,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * Add a CoordinateAxis to the dataset coordinates and to the list of variables.
      * Replaces any existing Variable and CoordinateAxis with the same name.
      */
-    public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder axis) {
+    public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder<?> axis) {
       if (axis == null)
         return;
       coords.replaceCoordinateAxis(axis);
@@ -725,8 +707,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       }
     }
 
-    private Variable.Builder convertVariable(Variable v) {
-      Variable.Builder newVar;
+    private Variable.Builder<?> convertVariable(Variable v) {
+      Variable.Builder<?> newVar;
       if (v instanceof Sequence) {
         newVar = SequenceDS.builder().copyFrom((Sequence) v);
       } else if (v instanceof Structure) {

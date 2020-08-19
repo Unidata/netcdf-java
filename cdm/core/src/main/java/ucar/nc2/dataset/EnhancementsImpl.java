@@ -19,7 +19,7 @@ class EnhancementsImpl {
   private final Variable forVar;
   private final String desc;
   private final String units;
-  private ImmutableList<CoordinateSystem> coordSys; // dont allocate unless its used
+  private ImmutableList<CoordinateSystem> coordSys; // LOOK not immutable
 
   /**
    * Constructor.
