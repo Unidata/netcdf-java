@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui;
 
+import java.util.Formatter;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.ui.catalog.ThreddsUI;
@@ -1506,7 +1507,7 @@ public class ToolsUI extends JPanel {
         String runtimeConfig = args[i + 1];
         i++;
         try (FileInputStream fis = new FileInputStream(runtimeConfig)) {
-          StringBuilder errlog = new StringBuilder();
+          Formatter errlog = new Formatter();
           RuntimeConfigParser.read(fis, errlog);
           configRead = true;
           System.out.println(errlog);
@@ -1521,7 +1522,7 @@ public class ToolsUI extends JPanel {
       File f = new File(filename);
       if (f.exists()) {
         try (FileInputStream fis = new FileInputStream(filename)) {
-          StringBuilder errlog = new StringBuilder();
+          Formatter errlog = new Formatter();
           RuntimeConfigParser.read(fis, errlog);
           System.out.println(errlog);
         } catch (IOException ioe) {
