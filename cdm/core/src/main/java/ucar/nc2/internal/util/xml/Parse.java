@@ -9,13 +9,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import java.io.IOException;
 
-/**
- * Miscellaneous XML parsing methods
- * created Jul 3, 2007
- *
- * @author caron
- *         TODO will move to internal.ncml in ver6
- */
+/** Miscellaneous XML parsing methods */
 public class Parse {
   /**
    * Read an XML Document from a URL and return the root element.

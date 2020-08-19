@@ -85,43 +85,38 @@ Instead of calling the above routines in your code, you can pass the CDM library
 
 The configuration file looks like this:
 ~~~
- <?xml version="1.0"?>
- <nj22Config>
-
-1) <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
-2) <coordSysBuilder convention="foo" class="test.Foo"/>
-3) <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
-4) <featureDatasetFactory featureType="Point" class="gov.noaa.obscure.file.Flabulate"/>
-5) <gribParameterTable edition="1" center="58" subcenter="-1" version="128">C:/grib/tables/ons288.xml</gribParameterTable>
-6) <gribParameterTableLookup edition="1">C:/grib/tables/ncepLookup.txt</gribParameterTableLookup>
-7) <table type="GRIB1" filename="/grib/tables/userlookup.lst"/>
-8) <table type="GRIB2" filename="/grib/tables/grib2userparameters" />
-9) <bufrtable filename="C:/my/files/lookup.txt" />
-10)<grib1Table strict="false"/>
-11)<Netcdf4Clibrary>
+ <?xml version='1.0' encoding='UTF-8'?>
+ <runtimeConfig>
+1) <ioServiceProvider  class='edu.univ.ny.stuff.FooFiles'/>
+2) <coordSystemBuilderFactory convention='foo' class='test.Foo'/>
+3) <coordTransBuilder name='atmos_ln_sigma_coordinates' type='vertical' class='my.stuff.atmosSigmaLog'/>
+4) <featureDatasetFactory featureType='Point' class='gov.noaa.obscure.file.Flabulate'/>
+5) <gribParameterTable edition='1' center='58' subcenter='-1' version='128'>C:/grib/tables/ons288.xml</gribParameterTable>
+6) <gribParameterTableLookup edition='1'>C:/grib/tables/ncepLookup.txt</gribParameterTableLookup>
+7) <bufrtable filename='C:/my/files/lookup.txt' />
+8) <grib1Table strict='false'/>
+9) <Netcdf4Clibrary>
      <libraryPath>/usr/local/lib</libraryPath>
      <libraryName>netcdf</libraryName>
      <useForReading>false</useForReading>
-  </Netcdf4Clibrary>
-</nj22Config>
+   </Netcdf4Clibrary>
+</runtimeConfig>
 ~~~
 
 1. Loads an <b>_IOServiceProvider_</b> with the given class name
-2. Loads a <b>_CoordSysBuilderIF_</b> with the given class name, which looks for the given <b>_Convention_</b> attribute value.
+2. Loads a <b>_CoordSystemBuilderFactory_</b> with the given class name, which looks for the given <b>_Convention_</b> attribute value.
 3. Loads a <b>_CoordTransBuilderIF_</b> with the given class name, which looks for the given <b>_transformName_</b> in the dataset. The type must be vertical or projection.
 4. Loads a <b>_FeatureDatasetFactory_</b> with the given class name which open <b>_FeatureDatasets_</b> of the given featureType.
 5. Load a <a href="grib_tables.html">GRIB-1 parameter table</a> (as of version 4.3)
 6. Load a <a href="grib_tables.html">GRIB-1 parameter table lookup</a> (as of version 4.3)
-7. Load a <a href="grib_tables.html">GRIB-1 parameter lookup table</a> (versions < 4.3, deprecated)
-8. Load a <a href="grib_tables.html">GRIB-2 parameter lookup table</a> (versions < 4.3, deprecated)
-9. Load a <a href="bufr_tables.html">BUFR table lookup</a> file.
-10. Turn <a href="grib_tables.html#strict">strict GRIB1 table handling</a> off.
-11. Configure how the <a href="netcdf4_c_library.html">NetCDF-4 C library</a> is discovered and used.
+7. Load a <a href="bufr_tables.html">BUFR table lookup</a> file.
+8. Turn <a href="grib_tables.html#strict">strict GRIB1 table handling</a> off.
+8. Configure how the <a href="netcdf4_c_library.html">NetCDF-4 C library</a> is discovered and used.
     * <b>_libraryPath_</b>: The directory in which the native library is installed.
     * <b>_libraryName_</b>: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file within the <b>_libraryPath_</b> directory.
     * <b>_useForReading_</b>: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is responsible for reading them. However, if this property is set to true, then it will be used for reading NetCDF-4 (and HDF5) files as well.
     
-There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a <b>_java.io.InputStream_</b> (or JDOM element) to <b>_ucar.nc2.util.xml.RuntimeConfigParser_</b>, as in the following examples:
+There are several ways to pass the Runtime Configuration XML to the CDM library. From your application, you can pass a <b>_java.io.InputStream_</b> (or JDOM element) to <b>_ucar.nc2.util.xml.RuntimeConfigParser_</b>, as in the following examples:
 
 ~~~
   // Example 1: read from file

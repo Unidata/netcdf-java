@@ -234,7 +234,8 @@ public class Grib1ParamTables {
 
   /**
    * Add table to standard tables for a specific center, subcenter and version.
-   *
+   * Called with reflection from RuntimeConfigParser.
+   * 
    * @param center center id
    * @param subcenter subcenter id, or -1 for all
    * @param tableVersion table verssion, or -1 for all
