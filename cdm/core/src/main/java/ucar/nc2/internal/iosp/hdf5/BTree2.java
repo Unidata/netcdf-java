@@ -30,22 +30,18 @@ import java.util.List;
  * leaf
  * or internal nodes in the tree. A leaf node consists of solely of records. The format of the records depends on the
  * B-tree type (stored in the header).
- *
- * 
- * @author caron
- * @since 6/27/12
  */
 public class BTree2 {
   private boolean debugBtree2, debugPos;
-  private java.io.PrintStream debugOut = System.out;
+  private final java.io.PrintStream debugOut = System.out;
 
   public final byte btreeType;
-  private int nodeSize; // size in bytes of btree nodes
-  private short recordSize; // size in bytes of btree records
+  private final int nodeSize; // size in bytes of btree nodes
+  private final short recordSize; // size in bytes of btree records
 
-  private String owner;
-  private H5headerNew h5;
-  private RandomAccessFile raf;
+  private final String owner;
+  private final H5headerNew h5;
+  private final RandomAccessFile raf;
 
   public List<Entry2> entryList = new ArrayList<>();
 

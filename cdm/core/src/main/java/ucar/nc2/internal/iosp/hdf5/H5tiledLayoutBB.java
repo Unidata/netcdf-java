@@ -4,6 +4,7 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
+import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import java.io.ByteArrayInputStream;
@@ -31,25 +32,23 @@ import ucar.unidata.io.RandomAccessFile;
  * @author caron
  */
 public class H5tiledLayoutBB implements LayoutBB {
+  static boolean debugFilter;
 
-  static final int DEFAULTZIPBUFFERSIZE = 512;
+  private static final int DEFAULTZIPBUFFERSIZE = 512;
   // System property name for -D flag
-  static final String INFLATEBUFFERSIZE = "unidata.h5iosp.inflate.buffersize";
+  private static final String INFLATEBUFFERSIZE_PROPERTY = "unidata.h5iosp.inflate.buffersize";
+  private static boolean debug;
 
-  public static boolean debugFilter;
+  private final LayoutBBTiled delegate;
 
-  private LayoutBBTiled delegate;
+  private final RandomAccessFile raf;
+  private final Filter[] filters;
+  private final ByteOrder byteOrder;
 
-  private RandomAccessFile raf;
-  private Filter[] filters;
-  private ByteOrder byteOrder;
-
-  private Section want;
-  private int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
-  private int elemSize; // last dimension of the StorageLayout message
-  private int nChunkDims;
-
-  private boolean debug;
+  private final Section want;
+  private final int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
+  private final int elemSize; // last dimension of the StorageLayout message
+  private final int nChunkDims;
 
   private int inflatebuffersize = DEFAULTZIPBUFFERSIZE;
 
@@ -69,8 +68,9 @@ public class H5tiledLayoutBB implements LayoutBB {
     wantSection = Section.fill(wantSection, v2.getShape());
 
     H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
-    assert vinfo.isChunked;
-    assert vinfo.btree != null;
+    Preconditions.checkNotNull(vinfo);
+    Preconditions.checkArgument(vinfo.isChunked);
+    Preconditions.checkNotNull(vinfo.btree);
 
     this.raf = raf;
     this.filters = filters;
@@ -97,19 +97,19 @@ public class H5tiledLayoutBB implements LayoutBB {
     DataChunkIterator dcIter = new DataChunkIterator(iter);
     delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, this.want);
 
-    if (System.getProperty(INFLATEBUFFERSIZE) != null) {
+    if (System.getProperty(INFLATEBUFFERSIZE_PROPERTY) != null) {
       try {
-        int size = Integer.parseInt(System.getProperty(INFLATEBUFFERSIZE));
+        int size = Integer.parseInt(System.getProperty(INFLATEBUFFERSIZE_PROPERTY));
         if (size <= 0)
-          H5iospNew.log.warn(String.format("-D%s must be > 0", INFLATEBUFFERSIZE));
+          H5iospNew.log.warn(String.format("-D%s must be > 0", INFLATEBUFFERSIZE_PROPERTY));
         else
           this.inflatebuffersize = size;
       } catch (NumberFormatException nfe) {
-        H5iospNew.log.warn(String.format("-D%s is not an integer", INFLATEBUFFERSIZE));
+        H5iospNew.log.warn(String.format("-D%s is not an integer", INFLATEBUFFERSIZE_PROPERTY));
       }
     }
     if (debugFilter)
-      System.out.printf("inflate buffer size -D%s = %d%n", INFLATEBUFFERSIZE, this.inflatebuffersize);
+      System.out.printf("inflate buffer size -D%s = %d%n", INFLATEBUFFERSIZE_PROPERTY, this.inflatebuffersize);
 
     if (debug)
       System.out.println(" H5tiledLayout: " + this);

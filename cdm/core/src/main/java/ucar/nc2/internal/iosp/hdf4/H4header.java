@@ -43,12 +43,9 @@ import ucar.unidata.util.Format;
 /**
  * Read the tags of an HDF4 file, construct CDM objects.
  * All page references are to "HDF Specification and Developers Guide" version 4.1r5, nov 2001.
- *
- * @author caron
- * @since Jul 18, 2007
  */
 public class H4header implements HdfHeaderIF {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   private static final byte[] H4HEAD = {(byte) 0x0e, (byte) 0x03, (byte) 0x13, (byte) 0x01};
   private static final String H4HEAD_STRING = new String(H4HEAD, StandardCharsets.UTF_8);
@@ -70,7 +67,6 @@ public class H4header implements HdfHeaderIF {
     return false;
   }
 
-  private static boolean debugDD; // DDH/DD
   private static boolean debugTag1; // show tags after read(), before read2().
   private static boolean debugTag2; // show tags after everything is done.
   private static boolean debugTagDetail; // when showing tags, show detail or not
@@ -109,12 +105,11 @@ public class H4header implements HdfHeaderIF {
   private boolean isEos;
 
   private List<Tag> alltags;
-  private Map<Integer, Tag> tagMap = new HashMap<>();
-  private Map<Short, Vinfo> refnoMap = new HashMap<>();
+  private final Map<Integer, Tag> tagMap = new HashMap<>();
+  private final Map<Short, Vinfo> refnoMap = new HashMap<>();
 
   private MemTracker memTracker;
-  private PrintWriter debugOut;
-
+  private final PrintWriter debugOut;
   private final Charset valueCharset;
 
   public H4header() {
@@ -211,7 +206,7 @@ public class H4header implements HdfHeaderIF {
     // pass 1 : Vgroups with special classes
     for (Tag t : alltags) {
       if (t.code == 306) { // raster image
-        Variable.Builder v = makeImage((TagGroup) t);
+        Variable.Builder<?> v = makeImage((TagGroup) t);
         if (v != null)
           vars.add(v);
 
@@ -221,7 +216,7 @@ public class H4header implements HdfHeaderIF {
           makeDimension(vgroup);
 
         else if (vgroup.className.startsWith("Var")) {
-          Variable.Builder v = makeVariable(vgroup);
+          Variable.Builder<?> v = makeVariable(vgroup);
           if (v != null)
             vars.add(v);
 
@@ -238,13 +233,13 @@ public class H4header implements HdfHeaderIF {
       if (t.code == 1962) { // VHeader
         TagVH tagVH = (TagVH) t;
         if (tagVH.className.startsWith("Data")) {
-          Variable.Builder v = makeVariable(tagVH);
+          Variable.Builder<?> v = makeVariable(tagVH);
           if (v != null)
             vars.add(v);
         }
 
       } else if (t.code == 720) { // numeric data group
-        Variable.Builder v = makeVariable((TagGroup) t);
+        Variable.Builder<?> v = makeVariable((TagGroup) t);
         vars.add(v);
       }
     }
@@ -257,7 +252,7 @@ public class H4header implements HdfHeaderIF {
       if (t.code == 1962) { // VHeader
         TagVH vh = (TagVH) t;
         if (!vh.className.startsWith("Att") && !vh.className.startsWith("_HDF_CHK_TBL")) {
-          Variable.Builder v = makeVariable(vh);
+          Variable.Builder<?> v = makeVariable(vh);
           if (v != null)
             vars.add(v);
         }
@@ -276,7 +271,7 @@ public class H4header implements HdfHeaderIF {
     }
 
     // not already assigned to a group : put in root group.
-    for (Variable.Builder v : vars) {
+    for (Variable.Builder<?> v : vars) {
       Vinfo vinfo = (Vinfo) v.spiObject;
       // if (vinfo.group == null) {
       if (vinfo.group == null && !root.findVariableLocal(v.shortName).isPresent()) {
@@ -322,9 +317,9 @@ public class H4header implements HdfHeaderIF {
     Set<Dimension> dimUsed = dimUsedMap.keySet();
 
     // remove unused dimensions from root group
-    Iterator iter = root.getDimensions().iterator();
+    Iterator<Dimension> iter = root.getDimensions().iterator();
     while (iter.hasNext()) {
-      Dimension dim = (Dimension) iter.next();
+      Dimension dim = iter.next();
       if (!dimUsed.contains(dim)) {
         iter.remove();
       }
@@ -589,7 +584,7 @@ public class H4header implements HdfHeaderIF {
 
       if (tag.code == 720) { // NG - prob var
         if (tag.vinfo != null) {
-          Variable.Builder v = tag.vinfo.v;
+          Variable.Builder<?> v = tag.vinfo.v;
           if (v != null)
             addVariableToGroup(group, v, tag);
           else
@@ -604,7 +599,7 @@ public class H4header implements HdfHeaderIF {
           if (null != att)
             group.addAttribute(att);
         } else if (tag.vinfo != null) {
-          Variable.Builder v = tag.vinfo.v;
+          Variable.Builder<?> v = tag.vinfo.v;
           addVariableToGroup(group, v, tag);
         }
       }
@@ -642,7 +637,7 @@ public class H4header implements HdfHeaderIF {
     return Optional.of(group);
   }
 
-  private void addVariableToGroup(Group.Builder g, Variable.Builder v, Tag tag) {
+  private void addVariableToGroup(Group.Builder g, Variable.Builder<?> v, Tag tag) {
     g.findVariableLocal(v.shortName).ifPresent(varExisting -> v.setName(v.shortName + tag.refno)); // disambiguate
     g.addVariable(v);
     tag.vinfo.group = g;
@@ -658,9 +653,8 @@ public class H4header implements HdfHeaderIF {
     parent.addGroup(g);
   }
 
-  private Variable.Builder makeImage(TagGroup group) {
+  private Variable.Builder<?> makeImage(TagGroup group) {
     TagRIDimension dimTag = null;
-    TagRIPalette palette;
     TagNumberType ntag;
     Tag data = null;
 
@@ -683,8 +677,6 @@ public class H4header implements HdfHeaderIF {
         dimTag = (TagRIDimension) tag;
       if (tag.code == 302)
         data = tag;
-      if (tag.code == 301) {
-      }
     }
     if (dimTag == null) {
       log.warn("Image Group " + group.tag() + " missing dimension tag");
@@ -718,7 +710,7 @@ public class H4header implements HdfHeaderIF {
       dimTag.dims.add(makeDimensionUnshared("xdim", dimTag.xdim));
     }
 
-    Variable.Builder vb = Variable.builder().setName("Image-" + group.refno);
+    Variable.Builder<?> vb = Variable.builder().setName("Image-" + group.refno);
     vb.setDataType(H4type.getDataType(ntag.type));
     vb.addDimensions(dimTag.dims);
     vinfo.setVariable(vb);
@@ -760,7 +752,7 @@ public class H4header implements HdfHeaderIF {
       sb.setIsScalar();
 
     for (int fld = 0; fld < vh.nfields; fld++) {
-      Variable.Builder m = Variable.builder().setName(vh.fld_name[fld]);
+      Variable.Builder<?> m = Variable.builder().setName(vh.fld_name[fld]);
       short type = vh.fld_type[fld];
       short nelems = vh.fld_order[fld];
       m.setDataType(H4type.getDataType(type));
@@ -778,7 +770,7 @@ public class H4header implements HdfHeaderIF {
   }
 
   @Nullable
-  private Variable.Builder makeVariable(TagVH vh) {
+  private Variable.Builder<?> makeVariable(TagVH vh) {
     Vinfo vinfo = new Vinfo(vh.refno);
     vinfo.tags.add(vh);
     vh.vinfo = vinfo;
@@ -796,7 +788,7 @@ public class H4header implements HdfHeaderIF {
     if (vh.nfields < 1)
       throw new IllegalStateException();
 
-    Variable.Builder vb;
+    Variable.Builder<?> vb;
     if (vh.nfields == 1) {
       // String name = createValidObjectName(vh.name);
       vb = Variable.builder().setName(vh.name);
@@ -826,7 +818,7 @@ public class H4header implements HdfHeaderIF {
 
     } else {
 
-      Structure.Builder s = Structure.builder().setName(vh.name);
+      Structure.Builder<?> s = Structure.builder().setName(vh.name);
       vinfo.setVariable(s);
       // vinfo.recsize = vh.ivsize;
 
@@ -836,7 +828,7 @@ public class H4header implements HdfHeaderIF {
         s.setIsScalar();
 
       for (int fld = 0; fld < vh.nfields; fld++) {
-        Variable.Builder m = Variable.builder().setName(vh.fld_name[fld]);
+        Variable.Builder<?> m = Variable.builder().setName(vh.fld_name[fld]);
         short type = vh.fld_type[fld];
         short nelems = vh.fld_order[fld];
         m.setDataType(H4type.getDataType(type));
@@ -887,7 +879,7 @@ public class H4header implements HdfHeaderIF {
     }
   }
 
-  private Variable.Builder makeVariable(TagVGroup group) throws IOException {
+  private Variable.Builder<?> makeVariable(TagVGroup group) throws IOException {
     Vinfo vinfo = new Vinfo(group.refno);
     vinfo.tags.add(group);
     group.used = true;
@@ -974,7 +966,7 @@ public class H4header implements HdfHeaderIF {
     return vb;
   }
 
-  private Variable.Builder makeVariable(TagGroup group) throws IOException {
+  private Variable.Builder<?> makeVariable(TagGroup group) throws IOException {
     Vinfo vinfo = new Vinfo(group.refno);
     vinfo.tags.add(group);
     group.used = true;
@@ -1003,7 +995,7 @@ public class H4header implements HdfHeaderIF {
     if (null == nt)
       throw new IllegalStateException();
 
-    Variable.Builder vb = Variable.builder().setName("SDS-" + group.refno);
+    Variable.Builder<?> vb = Variable.builder().setName("SDS-" + group.refno);
     vb.setDimensionsAnonymous(dim.shape);
     DataType dataType = H4type.getDataType(nt.type);
     vb.setDataType(dataType);
@@ -1113,7 +1105,7 @@ public class H4header implements HdfHeaderIF {
       }
     }
 
-    void setVariable(Variable.Builder v) {
+    void setVariable(Variable.Builder<?> v) {
       this.v = v;
       v.setSPobject(this);
     }
@@ -1222,9 +1214,6 @@ public class H4header implements HdfHeaderIF {
 
     int ndd = DataType.unsignedShortToInt(raf.readShort()); // number of DD blocks
     long link = DataType.unsignedIntToLong(raf.readInt()); // point to the next DDH; link == 0 means no more
-    if (debugDD)
-      System.out.println(" DDHeader ndd=" + ndd + " link=" + link);
-
     long pos = raf.getFilePointer();
     for (int i = 0; i < ndd; i++) {
       raf.seek(pos);
@@ -1952,8 +1941,7 @@ public class H4header implements HdfHeaderIF {
     }
 
     public String detail() {
-      String sbuff = super.detail() + "   min= " + getMin(dt) + "   max= " + getMax(dt);
-      return sbuff;
+      return super.detail() + "   min= " + getMin(dt) + "   max= " + getMax(dt);
     }
   }
 
@@ -2155,10 +2143,8 @@ public class H4header implements HdfHeaderIF {
    */
 
   private class MemTracker {
-    private List<Mem> memList = new ArrayList<>();
-    private StringBuilder sbuff = new StringBuilder();
-
-    private long fileSize;
+    private final List<Mem> memList = new ArrayList<>();
+    private final long fileSize;
 
     MemTracker(long fileSize) {
       this.fileSize = fileSize;
@@ -2189,16 +2175,8 @@ public class H4header implements HdfHeaderIF {
     }
 
     private void doOne(char c, long start, long end, long size, String name) {
-      sbuff.setLength(0);
-      sbuff.append(c);
-      sbuff.append(Format.l(start, 6));
-      sbuff.append(" ");
-      sbuff.append(Format.l(end, 6));
-      sbuff.append(" ");
-      sbuff.append(Format.l(size, 6));
-      sbuff.append(" ");
-      sbuff.append(name);
-      debugOut.println(sbuff);
+      String s = String.format("%c %s %s %s %s", c, Format.l(start, 6), Format.l(end, 6), Format.l(size, 6), name);
+      debugOut.println(s);
     }
 
     class Mem implements Comparable<Mem> {

@@ -12,12 +12,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * HDF5 fractal heaps
- *
- * @author caron
- * @since 6/27/12
- */
+/** HDF5 fractal heaps */
 public class FractalHeap {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FractalHeap.class);
 

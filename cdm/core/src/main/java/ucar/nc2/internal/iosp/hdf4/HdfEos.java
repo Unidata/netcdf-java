@@ -54,11 +54,10 @@ import ucar.nc2.internal.dataset.CoordSystemBuilder;
  * </ul>
  * </pre>
  * </p>
- *
- * @author caron
- * @since Jul 23, 2007
  */
 public class HdfEos {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
+
   public static final String HDF5_GROUP = "HDFEOS_INFORMATION";
   public static final String HDFEOS_CRS = "_HDFEOS_CRS";
   public static final String HDFEOS_CRS_Projection = "Projection";
@@ -67,7 +66,6 @@ public class HdfEos {
   public static final String HDFEOS_CRS_ProjParams = "ProjParams";
   public static final String HDFEOS_CRS_SphereCode = "SphereCode";
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
   static boolean showWork; // set in debug
   private static final String GEOLOC_FIELDS = "Geolocation Fields";
   private static final String GEOLOC_FIELDS2 = "Geolocation_Fields";
@@ -138,8 +136,8 @@ public class HdfEos {
   }
 
   ///////////////////////////////////////////
-  private String location; // for debug messages
-  private HdfHeaderIF header;
+  private final String location; // for debug messages
+  private final HdfHeaderIF header;
 
   private HdfEos(String location, HdfHeaderIF header) {
     this.location = location;
@@ -290,7 +288,7 @@ public class HdfEos {
       int incr = Integer.parseInt(incrS);
 
       // make new variable for this dimension map
-      Variable.Builder v = Variable.builder().setName(dataDimName);
+      Variable.Builder<?> v = Variable.builder().setName(dataDimName);
       parent.addVariable(v);
       v.setDimensionsByName(geoDimName);
       v.setDataType(DataType.INT);
@@ -374,7 +372,7 @@ public class HdfEos {
           continue;
         }
         String varname = NetcdfFiles.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
-        Variable.Builder v = dataG.findVariableLocal(varname).orElse(null);
+        Variable.Builder<?> v = dataG.findVariableLocal(varname).orElse(null);
         if (v == null) {
           log.error("Cant find variable {} {}", varname, location);
           continue;
@@ -388,7 +386,7 @@ public class HdfEos {
     return featureType;
   }
 
-  private AxisType addAxisType(Variable.Builder v) {
+  private AxisType addAxisType(Variable.Builder<?> v) {
     String name = v.shortName;
     if (name.equalsIgnoreCase("Latitude") || name.equalsIgnoreCase("GeodeticLatitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
@@ -463,7 +461,7 @@ public class HdfEos {
      */
     Element proj = gridElem.getChild("Projection");
     if (proj != null) {
-      Variable.Builder crs = Variable.builder().setName(HDFEOS_CRS);
+      Variable.Builder<?> crs = Variable.builder().setName(HDFEOS_CRS);
       crs.setDataType(DataType.SHORT);
       crs.setIsScalar();
       crs.setAutoGen(0, 0); // fake data
@@ -548,7 +546,7 @@ public class HdfEos {
 
       // look for XDim, YDim coordinate variables
       if (isLatLon) {
-        for (Variable.Builder v : dataG.vbuilders) {
+        for (Variable.Builder<?> v : dataG.vbuilders) {
           if (CoordSystemBuilder.isCoordinateVariable(v)) {
             if (v.shortName.equals("YDim")) {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
@@ -680,7 +678,7 @@ public class HdfEos {
   }
 
   private void fixAttributes(Group.Builder g) {
-    for (Variable.Builder v : g.vbuilders) {
+    for (Variable.Builder<?> v : g.vbuilders) {
       AttributeContainerMutable attHelper = v.getAttributeContainer();
       for (Attribute a : ImmutableList.copyOf(attHelper)) {
         if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS")) {

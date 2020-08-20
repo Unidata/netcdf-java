@@ -14,9 +14,6 @@ import java.util.Formatter;
  * Tiles are points in the tiled space.
  * <p>
  * Each tile has the same size, given by tileSize.
- *
- * @author caron
- * @since Jul 20, 2007
  */
 public class Tiling {
 

@@ -4,10 +4,10 @@
  */
 package ucar.nc2.internal.iosp.hdf4;
 
-/**
- * @author caron
- * @since Jul 18, 2007
- */
+import javax.annotation.concurrent.Immutable;
+
+/** HDF4 Tags */
+@Immutable
 public class TagEnum {
   private static java.util.Map<Short, TagEnum> hash = new java.util.HashMap<>(100);
 
@@ -117,8 +117,9 @@ public class TagEnum {
   public static final TagEnum VH = new TagEnum("VH", "Vdata Header", (short) 1962);
   public static final TagEnum VS = new TagEnum("VS", "Vdata Storage", (short) 1963);
 
-  private String name, desc;
-  private short code;
+  private final String name;
+  private final String desc;
+  private final short code;
 
   private TagEnum(String name, String desc, short code) {
     this.name = name;

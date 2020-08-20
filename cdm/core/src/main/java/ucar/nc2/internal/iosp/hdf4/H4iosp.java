@@ -20,7 +20,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
@@ -40,8 +39,7 @@ import javax.annotation.Nullable;
 
 /** HDF4 iosp */
 public class H4iosp extends AbstractIOServiceProvider {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
-  private static boolean showLayoutTypes;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
 
   private H4header header;
   private Charset valueCharset;
@@ -374,7 +372,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     List<H4header.DataChunk> chunks;
     int chunkNo;
 
-    H4ChunkIterator(H4header.Vinfo vinfo) throws IOException {
+    H4ChunkIterator(H4header.Vinfo vinfo) {
       this.chunks = vinfo.chunks;
       this.chunkNo = 0;
     }
@@ -396,7 +394,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     List<H4header.DataChunk> chunks;
     int chunkNo;
 
-    H4CompressedChunkIterator(H4header.Vinfo vinfo) throws IOException {
+    H4CompressedChunkIterator(H4header.Vinfo vinfo) {
       this.chunks = vinfo.chunks;
       this.chunkNo = 0;
     }
@@ -416,8 +414,8 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   private class DataChunk implements LayoutBBTiled.DataChunk {
-    private int[] offset; // offset index of this chunk, reletive to entire array
-    private H4header.SpecialComp compress;
+    private final int[] offset; // offset index of this chunk, reletive to entire array
+    private final H4header.SpecialComp compress;
     private ByteBuffer bb; // the data is placed into here
 
     DataChunk(int[] offset, H4header.SpecialComp compress) {

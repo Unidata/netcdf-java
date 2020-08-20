@@ -37,7 +37,7 @@ import ucar.unidata.io.RandomAccessFile;
 /** IOServiceProviderWriter for Netcdf3 files. */
 public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   private boolean fill = true;
-  private IOServiceProvider iosp;
+  private final IOServiceProvider iosp;
   private N3headerWriter headerw;
 
   public N3iospWriter(IOServiceProvider iosp) {
@@ -45,7 +45,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   }
 
   @Override
-  public void create(String filename, NetcdfFile.Builder ncfileb, int extra, long preallocateSize, boolean largeFile)
+  public void create(String filename, NetcdfFile.Builder<?> ncfileb, int extra, long preallocateSize, boolean largeFile)
       throws IOException {
 
     raf = new ucar.unidata.io.RandomAccessFile(filename, "rw");
@@ -70,10 +70,10 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   }
 
   @Override
-  public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder ncfileb, CancelTask cancelTask) {
+  public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask) {
     // Cant call superclass open, so some duplicate code here
     this.raf = raf;
-    this.location = (raf != null) ? raf.getLocation() : null;
+    this.location = raf.getLocation();
 
     if (location != null && !location.startsWith("http:")) {
       File file = new File(location);
@@ -137,12 +137,14 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
 
     } else {
       if (vinfo == null || header == null) {
+        // DEBUGGING
         N3headerNew.Vinfo vinfo3 = headerw.vinfoMap.get(v2);
         for (Variable v : headerw.vinfoMap.keySet()) {
           System.out.printf("GET %s %d%n", v.getShortName(), v.hashCode());
           System.out.printf("HAVE %d%n", v2.hashCode());
         }
         System.out.printf("HAVE %d%n", v2.hashCode());
+        throw new IllegalStateException("vinfo or header missing for variable" + v2);
       }
       Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
           : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
@@ -287,7 +289,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     // need to let all unlimited variables know of new shape
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) {
-        v.resetShape();
+        v.resetShape(); // LOOK
         v.setCachedData(null, false);
       }
     }
@@ -359,7 +361,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   }
 
   private Array makeConstantArray(Variable v) {
-    Class classType = v.getDataType().getPrimitiveClassType();
+    Class<?> classType = v.getDataType().getPrimitiveClassType();
     // int [] shape = v.getShape();
     Attribute att = v.findAttribute(CDM.FILL_VALUE);
 
