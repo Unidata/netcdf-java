@@ -23,7 +23,6 @@ import static ucar.ma2.DataType.*;
  *
  * @author caron
  * @author cwardgar
- * @see EnhanceScaleMissingUnsigned
  */
 class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -48,12 +47,6 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private double[] missingValue; // LOOK: also wrong to make double, for the same reason.
 
   private DataType.Signedness signedness;
-
-
-  /**
-   * Constructor, when you dont want anything done.
-   */
-  EnhanceScaleMissingUnsignedImpl() {}
 
   /**
    * Constructor, default values.

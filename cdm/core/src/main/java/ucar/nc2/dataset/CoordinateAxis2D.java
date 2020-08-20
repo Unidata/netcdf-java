@@ -19,8 +19,7 @@ import java.util.List;
  * if you draw lines connecting the points, none would cross.
  */
 public class CoordinateAxis2D extends CoordinateAxis {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
-  private static final boolean debug = false;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
 
   /**
    * Get the coordinate value at the i, j index.

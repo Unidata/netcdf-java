@@ -14,19 +14,15 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Dimension;
-import ucar.nc2.util.NamedObject;
 import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
-import ucar.nc2.units.DateRange;
 
 /**
  * A 1-dimensional Coordinate Axis representing Calendar time.
  * Its coordinate values can be represented as Dates.
  * <p/>
  * May use udunit dates, or ISO Strings.
- *
- * @author caron
  */
 public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
@@ -56,7 +52,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @param ncd the containing dataset
    * @param org the underlying Variable
    * @param dims list of dimensions
-   * @throws IOException on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
   private static CoordinateAxis1DTime fromStringVarDS(@Nullable NetcdfDataset ncd, VariableDS org,
@@ -171,27 +166,20 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last - 1)) : null;
   }
 
-  @Override
-  public List<NamedObject> getNames() {
-    List<CalendarDate> cdates = getCalendarDates();
-    List<NamedObject> names = new ArrayList<>(cdates.size());
-    for (CalendarDate cd : cdates) {
-      names.add(NamedObject.create(CalendarDateFormatter.toDateTimeStringISO(cd), getShortName()));
-    }
-    return names;
-  }
-
   /**
    * only if isRegular() LOOK REDO
    *
-   * @return time unit
-   * @throws Exception on bad unit string
+   * @return time unit or null if bad unit string
    */
+  @Nullable
   public TimeUnit getTimeResolution() throws Exception {
     String tUnits = getUnitsString();
-    StringTokenizer stoker = new StringTokenizer(tUnits);
-    double tResolution = getIncrement();
-    return new TimeUnit(tResolution, stoker.nextToken());
+    if (tUnits != null) {
+      StringTokenizer stoker = new StringTokenizer(tUnits);
+      double tResolution = getIncrement();
+      return new TimeUnit(tResolution, stoker.nextToken());
+    }
+    return null;
   }
 
   /**
@@ -324,50 +312,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return timeDates;
   }
 
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use getCalendarDate()
-   */
-  public java.util.Date getTimeDate(int idx) {
-    return getCalendarDate(idx).toDate();
-  }
-
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use getCalendarDateRange()
-   */
-  public DateRange getDateRange() {
-    CalendarDateRange cdr = getCalendarDateRange();
-    return cdr.toDateRange();
-  }
-
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use findTimeIndexFromCalendarDate
-   */
-  public int findTimeIndexFromDate(java.util.Date d) {
-    return findTimeIndexFromCalendarDate(CalendarDate.of(d));
-  }
-
-  /**
-   * Does not handle non-standard Calendars
-   * 
-   * @deprecated use hasCalendarDate
-   */
-  public boolean hasTime(Date date) {
-    List<CalendarDate> cdates = getCalendarDates();
-    for (CalendarDate cd : cdates) {
-      if (date.equals(cd.toDate()))
-        return true;
-    }
-    return false;
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private CoordinateAxisTimeHelper helper;
+  private final CoordinateAxisTimeHelper helper;
   private List<CalendarDate> cdates;
 
   protected CoordinateAxis1DTime(Builder<?> builder, Group parentGroup) {

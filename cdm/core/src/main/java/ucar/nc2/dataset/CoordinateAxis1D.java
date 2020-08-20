@@ -8,11 +8,8 @@ import ucar.ma2.*;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A 1-dimensional Coordinate Axis. Its values must be monotonic.
@@ -30,15 +27,11 @@ import java.util.List;
  * The only way the bounds can be set is if the coordinate variable has an attribute "bounds" that points to another
  * variable
  * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are.
- * In
- * this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
- *
- * @author john caron
- * @see CoordinateAxis#fromVariableDS
+ * In this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
   /**
    * Create a new CoordinateAxis1D as a section of this CoordinateAxis1D.
@@ -104,23 +97,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     result.calcIsRegular();
 
     return result;
-  }
-
-  /**
-   * Get the list of names, to be used for user selection.
-   * The ith one refers to the ith coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   * @deprecated will move in ver 6
-   */
-  @Deprecated
-  public List<NamedObject> getNames() {
-    int n = getDimension(0).getLength();
-    List<NamedObject> names = new ArrayList<>(n);
-    for (int i = 0; i < n; i++) {
-      names.add(NamedObject.create(getCoordName(i), getShortName() + " " + getUnitsString()));
-    }
-    return names;
   }
 
   /**
@@ -376,13 +352,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return findCoordElementIrregular(coordVal, true);
     else
       return findCoordElementNonContiguous(coordVal, true);
-  }
-
-  /**
-   * @deprecated use findCoordElement(coordVal)
-   */
-  public int findCoordElement(double coordVal, int lastIndex) {
-    return findCoordElement(coordVal);
   }
 
   //////////////////////////////////////////////////////////////////
@@ -689,7 +658,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return this;
     }
 
-    CoordinateAxis1D.Builder builder = this.toBuilder();
+    CoordinateAxis1D.Builder<?> builder = this.toBuilder();
     boolean cross = false;
     if (isAscending) {
       for (int i = 0; i < coords.length; i++) {
@@ -847,8 +816,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (contig) {
       edge = new double[n + 1];
       edge[0] = value1[0];
-      for (int i = 1; i < n + 1; i++)
-        edge[i] = value2[i - 1];
+      System.arraycopy(value2, 0, edge, 1, n + 1 - 1);
     } else { // what does edge mean when not contiguous ??
       edge = new double[n + 1];
       edge[0] = value1[0];

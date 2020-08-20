@@ -170,7 +170,7 @@ public class VertScaleSlider extends JPanel {
   private int pos = -1; // optimization
 
   private int slider2index(int pval) {
-    pos = zAxis.findCoordElement(slider2world(pval), pos);
+    pos = zAxis.findCoordElement(slider2world(pval));
     return pos;
   }
 

@@ -14,8 +14,6 @@ import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
@@ -28,6 +26,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDatasetInfo;
+import ucar.nc2.ui.util.NamedObjects;
 import ucar.nc2.write.NcmlWriter;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;
@@ -381,11 +380,7 @@ public class SimpleGeomController {
             GridCoordSystem gcs = currentField.getCoordinateSystem();
             if (gcs != null) {
               CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
-              if (taxis != null) {
-                timeNames = taxis.getNames();
-              } else {
-                timeNames = Collections.emptyList();
-              }
+              timeNames = NamedObjects.getNames(taxis);
             }
             ui.timeChooser.setCollection(timeNames.iterator(), true);
             if (currentTime >= timeNames.size())
@@ -732,7 +727,7 @@ public class SimpleGeomController {
 
     // set levels
     CoordinateAxis1D vaxis = gcs.getVerticalAxis();
-    levelNames = (vaxis == null) ? new ArrayList() : vaxis.getNames();
+    levelNames = NamedObjects.getNames(vaxis);
     if ((levelNames == null) || (currentLevel >= levelNames.size()))
       currentLevel = 0;
     vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
@@ -740,7 +735,7 @@ public class SimpleGeomController {
     // set times
     if (gcs.hasTimeAxis()) {
       CoordinateAxis1DTime taxis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
-      timeNames = (taxis == null) ? new ArrayList() : taxis.getNames();
+      timeNames = NamedObjects.getNames(taxis);
       if ((timeNames == null) || (currentTime >= timeNames.size()))
         currentTime = 0;
       hasDependentTimeAxis = !gcs.hasTimeAxis1D();
@@ -749,12 +744,12 @@ public class SimpleGeomController {
 
     // set ensembles
     CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
-    ensembleNames = (eaxis == null) ? new ArrayList() : eaxis.getNames();
+    ensembleNames = NamedObjects.getNames(eaxis);
     currentEnsemble = !ensembleNames.isEmpty() ? 0 : -1;
 
     // set runtimes
     CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
-    runtimeNames = (rtaxis == null) ? new ArrayList() : rtaxis.getNames();
+    runtimeNames = NamedObjects.getNames(rtaxis);
     currentRunTime = !runtimeNames.isEmpty() ? 0 : -1;
 
     ui.setField(gg);

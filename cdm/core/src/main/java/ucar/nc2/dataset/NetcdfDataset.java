@@ -7,8 +7,6 @@ package ucar.nc2.dataset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nullable;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
@@ -78,8 +76,7 @@ import java.util.*;
  */
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
-
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   public static final String AGGREGATION = "Aggregaation";
 
   /**
@@ -111,9 +108,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     IncompleteCoordSystems,
   }
 
-  private static Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
+  private static final Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
       Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems));
-  private static Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
+  private static final Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 
   public static Set<Enhance> getEnhanceAll() {
@@ -374,23 +371,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (orgFile != null) ? orgFile.getLastModified() : 0;
   }
 
-  // sort by coord sys, then name
-  private static class VariableComparator implements java.util.Comparator {
-    public int compare(Object o1, Object o2) {
-      VariableEnhanced v1 = (VariableEnhanced) o1;
-      VariableEnhanced v2 = (VariableEnhanced) o2;
-      List list1 = v1.getCoordinateSystems();
-      String cs1 = (!list1.isEmpty()) ? ((CoordinateSystem) list1.get(0)).getName() : "";
-      List list2 = v2.getCoordinateSystems();
-      String cs2 = (!list2.isEmpty()) ? ((CoordinateSystem) list2.get(0)).getName() : "";
-
-      if (cs2.equals(cs1))
-        return v1.getShortName().compareToIgnoreCase(v2.getShortName());
-      else
-        return cs1.compareToIgnoreCase(cs2);
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // used by NcMLReader for NcML without a referenced dataset
 
@@ -420,110 +400,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   protected String toStringDebug(Object o) {
     return "";
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
-  // constructor methods
-
-  /**
-   * Add a CoordinateSystem to the dataset.
-   *
-   * @param cs add this CoordinateSystem to the dataset
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void addCoordinateSystem(CoordinateSystem cs) {
-    coordSys.add(cs);
-  }
-
-  /**
-   * Add a CoordinateTransform to the dataset.
-   *
-   * @param ct add this CoordinateTransform to the dataset
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void addCoordinateTransform(CoordinateTransform ct) {
-    if (!coordTransforms.contains(ct))
-      coordTransforms.add(ct);
-  }
-
-  /**
-   * is this enhancement already done ?
-   *
-   * @param want enhancements wanted
-   * @return true if wanted enhancement is not done
-   * @deprecated Do not use.
-   */
-  @Deprecated
-  public boolean enhanceNeeded(Set<Enhance> want) {
-    if (want == null)
-      return false;
-    for (Enhance mode : want) {
-      if (!this.enhanceMode.contains(mode))
-        return true;
-    }
-    return false;
-  }
-
-
-  ///////////////////////////////////////////////////////////////////////
-  // setting variable data values
-
-  /**
-   * Generate the list of values from a starting value and an increment.
-   * Will reshape to variable if needed.
-   *
-   * @param v for this variable
-   * @param npts number of values, must = v.getSize()
-   * @param start starting value
-   * @param incr increment
-   * @deprecated use Variable.setValues()
-   */
-  @Deprecated
-  public void setValues(Variable v, int npts, double start, double incr) {
-    if (npts != v.getSize())
-      throw new IllegalArgumentException("bad npts = " + npts + " should be " + v.getSize());
-    Array data = Array.makeArray(v.getDataType(), npts, start, incr);
-    if (v.getRank() != 1)
-      data = data.reshape(v.getShape());
-    v.setCachedData(data, true);
-  }
-
-  /**
-   * Set the data values from a list of Strings.
-   *
-   * @param v for this variable
-   * @param values list of Strings
-   * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
-   * @deprecated use Variable.setValues()
-   */
-  @Deprecated
-  public void setValues(Variable v, List<String> values) throws IllegalArgumentException {
-    Array data = Array.makeArray(v.getDataType(), values);
-
-    if (data.getSize() != v.getSize())
-      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + v.getFullName()
-          + " needed= " + v.getSize() + " given=" + data.getSize());
-
-    if (v.getRank() != 1) // dont have to reshape for rank 1
-      data = data.reshape(v.getShape());
-
-    v.setCachedData(data, true);
-  }
-
-  /**
-   * Make a 1D array from a list of strings.
-   *
-   * @param dtype data type of the array.
-   * @param stringValues list of strings.
-   * @return resulting 1D array.
-   * @throws NumberFormatException if string values not parssable to specified data type
-   * @deprecated use Array#makeArray directly
-   */
-  @Deprecated
-  public static Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
-    return Array.makeArray(dtype, stringValues);
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -668,13 +544,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.coordSys = coords.getCoordSystems();
     this.coordTransforms = coords.getCoordTransforms();
 
-    // TODO goes away in version 6
     // LOOK how do we get the variableDS to reference the coordinate system?
     // CoordinatesHelper has to wire the coordinate systems together
     // Perhaps a VariableDS uses NetcdfDataset or CoordinatesHelper to manage its CoordinateSystems and Transforms ??
     // So it doesnt need a reference directly to them.
     for (Variable v : this.getVariables()) {
-      // TODO anything needed to do for a StructureDS ??
+      // TODO can StructureDS, SequenceDS have a CoordinateSystem?
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;
         vds.setCoordinateSystems(coords);
@@ -740,7 +615,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * Add a CoordinateAxis to the dataset coordinates and to the list of variables.
      * Replaces any existing Variable and CoordinateAxis with the same name.
      */
-    public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder axis) {
+    public void replaceCoordinateAxis(Group.Builder group, CoordinateAxis.Builder<?> axis) {
       if (axis == null)
         return;
       coords.replaceCoordinateAxis(axis);
@@ -832,8 +707,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       }
     }
 
-    private Variable.Builder convertVariable(Variable v) {
-      Variable.Builder newVar;
+    private Variable.Builder<?> convertVariable(Variable v) {
+      Variable.Builder<?> newVar;
       if (v instanceof Sequence) {
         newVar = SequenceDS.builder().copyFrom((Sequence) v);
       } else if (v instanceof Structure) {

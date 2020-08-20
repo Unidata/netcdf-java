@@ -6,7 +6,7 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.dataset.CoordTransBuilder;
+import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.Projection;
 import javax.annotation.concurrent.Immutable;
@@ -40,7 +40,7 @@ public class CoverageTransform {
   public Projection getProjection() {
     synchronized (this) {
       if (projection == null && isHoriz) {
-        projection = CoordTransBuilder.makeProjection(this, new Formatter());
+        projection = CoordTransformFactory.makeProjection(this, new Formatter());
       }
       return projection;
     }

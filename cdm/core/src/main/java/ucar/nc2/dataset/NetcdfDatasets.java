@@ -1,6 +1,7 @@
 /* Copyright Unidata */
 package ucar.nc2.dataset;
 
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.EnumSet;
@@ -206,7 +207,7 @@ public class NetcdfDatasets {
       throws IOException {
     if (ncfile instanceof NetcdfDataset) {
       NetcdfDataset ncd = (NetcdfDataset) ncfile;
-      NetcdfDataset.Builder builder = ncd.toBuilder();
+      NetcdfDataset.Builder<?> builder = ncd.toBuilder();
       if (DatasetEnhancer.enhanceNeeded(mode, ncd.getEnhanceMode())) {
         DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
         return enhancer.enhance().build();
@@ -216,7 +217,7 @@ public class NetcdfDatasets {
     }
 
     // original file not a NetcdfDataset
-    NetcdfDataset.Builder builder = NetcdfDataset.builder(ncfile);
+    NetcdfDataset.Builder<?> builder = NetcdfDataset.builder(ncfile);
     if (DatasetEnhancer.enhanceNeeded(mode, null)) {
       DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
       return enhancer.enhance().build();
@@ -224,6 +225,8 @@ public class NetcdfDatasets {
     return builder.build();
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   public static NetcdfDataset addNetcdf3RecordStructure(NetcdfDataset ncd) throws IOException {
     if (ncd.getReferencedFile() == null) {
       return ncd;
@@ -233,7 +236,7 @@ public class NetcdfDatasets {
     // Is it a netcdf3 file?
     IOServiceProvider iosp = (IOServiceProvider) orgFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_GET_IOSP);
 
-    if (iosp == null || !(iosp instanceof N3iospNew)) {
+    if (!(iosp instanceof N3iospNew)) {
       return ncd;
     }
 
@@ -252,21 +255,22 @@ public class NetcdfDatasets {
     // LOOK we dont know if it was acquired or opened
     // LOOK we dont know what the buffer size was
     NetcdfFile ncfile = NetcdfDatasets.openFile(durl, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    NetcdfDataset.Builder builder = ncd.toBuilder().setOrgFile(ncfile);
+    NetcdfDataset.Builder<?> builder = ncd.toBuilder().setOrgFile(ncfile);
     ncd.close();
 
     // does the following code need to go in NetcdfDataset.Builder?
     Structure orgStructure = (Structure) ncfile.getRootGroup().findVariableLocal("record");
     Dimension udim = ncfile.getUnlimitedDimension();
+    Preconditions.checkNotNull(udim);
     StructureDS.Builder<?> newStructure = StructureDS.builder().setName("record")
         .setParentGroupBuilder(builder.rootGroup).setDimensionsByName(udim.getShortName());
     newStructure.setOriginalVariable(orgStructure);
 
-    for (Variable.Builder vb : builder.rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : builder.rootGroup.vbuilders) {
       vb.setNcfile(null);
 
       Variable orgVar = ncfile.findVariable(vb.shortName);
-      VariableDS.Builder vdb = (VariableDS.Builder) vb;
+      VariableDS.Builder<?> vdb = (VariableDS.Builder<?>) vb;
       vdb.setOriginalVariable(orgVar);
       vdb.setProxyReader(null);
 
@@ -274,7 +278,7 @@ public class NetcdfDatasets {
         continue;
       }
       // set unlimited dimension to 0
-      VariableDS.Builder memberV = (VariableDS.Builder) vb.makeSliceBuilder(0, 0);
+      VariableDS.Builder<?> memberV = (VariableDS.Builder<?>) vb.makeSliceBuilder(0, 0);
       newStructure.addMemberVariable(memberV);
     }
     builder.rootGroup.addVariable(newStructure);

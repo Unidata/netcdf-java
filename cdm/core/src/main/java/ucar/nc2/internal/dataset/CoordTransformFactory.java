@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.dataset;
+package ucar.nc2.internal.dataset;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -15,20 +15,20 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.transform.*;
 import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.util.Parameter;
 
-/**
- * Manager for Coordinate Transforms.
- * 
- * @author john caron
- */
-public class CoordTransBuilder {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransBuilder.class);
-  private static List<Transform> transformList = new ArrayList<>();
-  private static boolean userMode;
+/** Factory for Coordinate Transforms. */
+public class CoordTransformFactory {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransformFactory.class);
+  private static final List<Transform> transformList = new ArrayList<>();
+  private static boolean userMode = false;
 
   private static final boolean loadWarnings = false;
 
@@ -183,7 +183,7 @@ public class CoordTransBuilder {
     transform_name = transform_name.trim();
 
     // do we have a transform registered for this ?
-    Class builderClass = null;
+    Class<?> builderClass = null;
     for (Transform transform : transformList) {
       if (transform.transName.equals(transform_name)) {
         builderClass = transform.transClass;
@@ -201,12 +201,6 @@ public class CoordTransBuilder {
       builderObject = builderClass.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {
       log.error("Cant create new instance " + builderClass.getName(), e);
-      return null;
-    }
-
-    if (null == builderObject) { // cant happen - because this was tested in registerTransform()
-      parseInfo.format("**Failed to build CoordTransBuilder object from class= %s for Variable= %s%n",
-          builderClass.getName(), ctv);
       return null;
     }
 
@@ -248,7 +242,7 @@ public class CoordTransBuilder {
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
   public static VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
-    VariableDS.Builder vb = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
+    VariableDS.Builder<?> vb = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
     List<Parameter> params = ct.getParameters();
     for (Parameter p : params) {
       if (p.isString())
@@ -269,12 +263,12 @@ public class CoordTransBuilder {
   }
 
   /**
-   * Make a CoordinateTransform object from the parameters in a CoordTransform, using an intrinsic or
-   * registered CoordTransBuilder.
+   * Make a Projection object from the parameters in a CoverageTransform
    * 
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
+  @Nullable
   public static Projection makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
     String transform_name = gct.attributes().findAttributeString(CF.GRID_MAPPING_NAME, null);
@@ -287,7 +281,7 @@ public class CoordTransBuilder {
     transform_name = transform_name.trim();
 
     // do we have a transform registered for this ?
-    Class builderClass = null;
+    Class<?> builderClass = null;
     for (Transform transform : transformList) {
       if (transform.transName.equals(transform_name)) {
         builderClass = transform.transClass;
@@ -305,11 +299,6 @@ public class CoordTransBuilder {
       builder = (HorizTransformBuilderIF) builderClass.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {
       log.error("Cant create new instance " + builderClass.getName(), e);
-      return null;
-    }
-    if (null == builder) { // cant happen - because this was tested in registerTransform()
-      errInfo.format("**Failed to build CoordTransBuilder object from class= %s for GridCoordTransform= %s%n",
-          builderClass.getName(), gct);
       return null;
     }
 

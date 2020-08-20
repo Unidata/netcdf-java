@@ -20,11 +20,10 @@ import java.util.Formatter;
 
 /**
  * Abstract superclass for implementations of HorizTransformBuilderIF and VertTransformBuilderIF
- *
- * @author caron
+ * LOOK could just be static helper class?
  */
 public abstract class AbstractTransformBuilder {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTransformBuilder.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTransformBuilder.class);
 
   /*
    * from CF: false_easting(false_northing):
@@ -109,13 +108,15 @@ public abstract class AbstractTransformBuilder {
   }
 
   /**
-   * Read an attribute as a double.
+   * Read an attribute as a double. May be string or numeric
    *
    * @param atts the attribute container
    * @param attname name of variable
    * @param defValue default value if attribute is not found
-   * @return attribute value as a double, else NaN if not found
+   * @return attribute value as a double, else defValue if not found
+   * @deprecated use atts.findAttributeDouble(attname, defValue);
    */
+  @Deprecated
   protected double readAttributeDouble(AttributeContainer atts, String attname, double defValue) {
     Attribute att = atts.findAttributeIgnoreCase(attname);
     if (att == null)
@@ -215,44 +216,10 @@ public abstract class AbstractTransformBuilder {
    * @param ctv coord transform variable
    * @return earth radius in km
    */
-  double getEarthRadiusInKm(AttributeContainer ctv) {
-    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.WGS84_EARTH_RADIUS_METERS);
+  static double getEarthRadiusInKm(AttributeContainer ctv) {
+    double earth_radius = ctv.findAttributeDouble(CF.EARTH_RADIUS, Earth.WGS84_EARTH_RADIUS_METERS);
     if (earth_radius > 10000.0)
       earth_radius *= .001;
     return earth_radius;
   }
-
-
-  //////////////////////////////////////////
-  /*
-   * //////////////////////////////////////////
-   * static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
-   * double factor = 1.0;
-   * String units = ds.findAttValueIgnoreCase(ctv, CDM.UNITS, null);
-   * if (units == null) {
-   * List<CoordinateAxis> axes = ds.getCoordinateAxes();
-   * for (CoordinateAxis axis : axes) {
-   * if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
-   * Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
-   * units = v.getUnitsString();
-   * break;
-   * }
-   * }
-   * }
-   * 
-   * if (units != null) {
-   * try {
-   * SimpleUnit unit = SimpleUnit.factoryWithExceptions(units);
-   * factor = unit.convertTo(1.0, SimpleUnit.kmUnit);
-   * } catch (Exception e) {
-   * log.error(units + " not convertible to km");
-   * }
-   * }
-   * 
-   * return factor;
-   * }
-   */
-
-
-
 }

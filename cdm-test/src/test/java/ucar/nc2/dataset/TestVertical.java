@@ -74,7 +74,7 @@ public class TestVertical extends TestCase {
 
     CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
     for (int t = 0; t < taxis.getSize(); t++) {
-      System.out.printf("vert coord for time = %s%n", taxis.getTimeDate(t));
+      System.out.printf("vert coord for time = %s%n", taxis.getCalendarDate(t));
       ArrayDouble.D3 ca = vt.getCoordinateArray(t);
       assert ca != null;
       assert ca.getRank() == 3 : ca.getRank();

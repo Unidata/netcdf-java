@@ -32,7 +32,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   public static VariableDS fromVar(Group group, Variable orgVar, boolean enhance) {
     Preconditions.checkArgument(!(orgVar instanceof Structure),
         "VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
-    VariableDS.Builder builder = VariableDS.builder().copyFrom(orgVar);
+    VariableDS.Builder<?> builder = VariableDS.builder().copyFrom(orgVar);
     if (enhance) {
       builder.setEnhanceMode(NetcdfDataset.getDefaultEnhanceMode());
     }
@@ -459,8 +459,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO remove in version 6.
-  private EnhancementsImpl enhanceProxy;
-  private List<String> coordSysNames;
+  private final EnhancementsImpl enhanceProxy;
+  private final List<String> coordSysNames;
 
   private final EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
   private final Set<Enhance> enhanceMode; // The set of enhancements that were made.
@@ -519,25 +519,26 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
     builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
-        .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode).setUnits(this.enhanceProxy.units)
-        .setDesc(this.enhanceProxy.desc);
+        .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode)
+        .setUnits(this.enhanceProxy.getUnitsString()).setDesc(this.enhanceProxy.getDescription());
+
+    for (CoordinateSystem coordSys : this.enhanceProxy.getCoordinateSystems()) {
+      builder.addCoordinateSystemName(coordSys.getName());
+    }
 
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
-  /** @deprecated do not use */
-  @Deprecated
-  void setCoordinateSystems(CoordinatesHelper coords) {
+  /** Backdoor, do not use. */
+  public void setCoordinateSystems(CoordinatesHelper coords) {
+    ImmutableList.Builder<CoordinateSystem> sysBuilder = ImmutableList.builder();
     for (String name : this.coordSysNames) {
-      coords.findCoordSystem(name).ifPresent(cs -> this.enhanceProxy.addCoordinateSystem(cs));
+      coords.findCoordSystem(name).ifPresent(sysBuilder::add);
     }
+    this.enhanceProxy.setCoordinateSystem(sysBuilder.build());
   }
 
-  /**
-   * Get Builder for this class that allows subclassing.
-   * 
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
+  /** Get Builder for this class that allows subclassing. */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -655,7 +656,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     public T copyFrom(VariableDS.Builder<?> builder) {
       super.copyFrom(builder);
 
-      builder.coordSysNames.forEach(name -> this.addCoordinateSystemName(name));
+      builder.coordSysNames.forEach(this::addCoordinateSystemName);
       setDesc(builder.desc);
       setEnhanceMode(builder.enhanceMode);
       setFillValueIsMissing(builder.fillValueIsMissing);

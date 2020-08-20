@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.nc2.Variable;
+import ucar.nc2.internal.dataset.StructurePseudoDS;
 
 public class TestStructurePseudoDSBuilder {
 

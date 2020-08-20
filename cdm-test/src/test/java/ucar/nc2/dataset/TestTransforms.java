@@ -23,6 +23,7 @@ import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.HorizCoordSys;
+import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.*;
@@ -266,7 +267,7 @@ public class TestTransforms {
     VerticalCT vct = (VerticalCT) ct;
     assert vct.getVerticalTransformType() == vtype : vct.getVerticalTransformType();
 
-    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
+    VariableDS ctv = CoordTransformFactory.makeDummyTransformVariable(ncd, ct);
     if (show)
       System.out.println(" dump of equivilent ctv = \n" + ctv);
 

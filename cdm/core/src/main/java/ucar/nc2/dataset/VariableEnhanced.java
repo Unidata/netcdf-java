@@ -7,6 +7,7 @@ package ucar.nc2.dataset;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.Group;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
 
 /** Interface to an "enhanced Variable". */
 public interface VariableEnhanced {
@@ -32,5 +33,4 @@ public interface VariableEnhanced {
 
   /** Get the list of Coordinate Systems for this Variable. */
   ImmutableList<CoordinateSystem> getCoordinateSystems();
-
 }

@@ -10,7 +10,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.internal.dataset.StructurePseudoDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.standard.*;

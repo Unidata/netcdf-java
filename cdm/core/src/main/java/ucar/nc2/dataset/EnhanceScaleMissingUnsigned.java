@@ -7,7 +7,6 @@ package ucar.nc2.dataset;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IsMissingEvaluator;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -204,7 +203,6 @@ public interface EnhanceScaleMissingUnsigned extends IsMissingEvaluator {
    *
    * @return the data type for values that have undergone unsigned conversion.
    */
-  @Nonnull
   DataType getUnsignedConversionType();
 
   /**

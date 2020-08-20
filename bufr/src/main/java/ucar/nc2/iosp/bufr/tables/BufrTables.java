@@ -137,12 +137,15 @@ public class BufrTables {
 
   private static List<String> lookups;
 
+  // Called with reflection from RuntimeConfigParser
   public static synchronized void addLookupFile(String filename) throws FileNotFoundException {
     if (lookups == null)
       lookups = new ArrayList<>();
-    File f = new File(filename);
-    if (!f.exists())
-      throw new FileNotFoundException(filename + " not found");
+    if (!filename.startsWith("resource:")) {
+      File f = new File(filename);
+      if (!f.exists())
+        throw new FileNotFoundException(filename + " not found");
+    }
     lookups.add(filename);
   }
 
@@ -150,8 +153,9 @@ public class BufrTables {
     tables = new ArrayList<>();
     if (lookups != null) {
       lookups.add(canonicalLookup);
-      for (String fname : lookups)
+      for (String fname : lookups) {
         readLookupTable(fname);
+      }
     } else {
       readLookupTable(canonicalLookup);
     }
@@ -159,7 +163,6 @@ public class BufrTables {
 
   // center,subcenter,master,local,cat,tableB,tableBformat,tableD,tableDformat, mode
   private static void readLookupTable(String filename) {
-
     try (InputStream ios = openStream(filename)) {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8));
       int count = 0;

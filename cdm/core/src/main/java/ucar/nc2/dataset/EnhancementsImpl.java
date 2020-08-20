@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -15,32 +16,38 @@ import java.util.*;
  * Factored out so that it can be used as a 'mixin' in VariablesDS and StructureDS.
  */
 class EnhancementsImpl {
-  private Variable forVar;
-  String desc, units;
-  private List<CoordinateSystem> coordSys; // dont allocate unless its used
+  private final Variable forVar;
+  private final String desc;
+  private final String units;
+  private ImmutableList<CoordinateSystem> coordSys; // LOOK not immutable
 
   /**
-   * Constructor when there's no underlying, existing Variable.
-   * You can access units, description and coordSys.
-   * All missing and scale/offset flags are false.
+   * Constructor.
    * 
    * @param forVar the Variable to decorate.
    * @param units set unit string.
    * @param desc set description.
    */
   EnhancementsImpl(Variable forVar, String units, String desc) {
+    Preconditions.checkNotNull(forVar);
     this.forVar = forVar;
-    this.units = units;
-    this.desc = desc;
+    this.units = makeUnits(units);
+    this.desc = makeDescription(desc);
   }
 
   /**
-   * Constructor.
-   * 
-   * @param forVar the Variable to decorate.
+   * Get the description of the Variable.
+   * May be set explicitly, or for attributes: CDM.LONG_NAME, "description", CDM.TITLE, CF.STANDARD_NAME.
    */
-  EnhancementsImpl(Variable forVar) {
-    this.forVar = forVar;
+  public String getDescription() {
+    return desc;
+  }
+
+  /**
+   * Get the Unit String for the Variable. May be set explicitly, else look for attribute CDM.UNITS.
+   */
+  public String getUnitsString() {
+    return units;
   }
 
   /**
@@ -50,17 +57,12 @@ class EnhancementsImpl {
    * @return list of type ucar.nc2.dataset.CoordinateSystem; may be empty not null.
    */
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
-    return (coordSys == null) ? ImmutableList.of() : ImmutableList.copyOf(coordSys);
+    return (coordSys == null) ? ImmutableList.of() : coordSys;
   }
 
-  /** Add a CoordinateSystem to the dataset. */
-  public void addCoordinateSystem(CoordinateSystem cs) {
-    if (cs == null)
-      throw new RuntimeException("Attempted to add null CoordinateSystem to var " + forVar.getFullName());
-
-    if (coordSys == null)
-      coordSys = new ArrayList<>(5);
-    coordSys.add(cs);
+  /** Backdoor, do not use. */
+  void setCoordinateSystem(ImmutableList<CoordinateSystem> cs) {
+    this.coordSys = cs;
   }
 
   public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
@@ -69,20 +71,11 @@ class EnhancementsImpl {
   }
 
   /**
-   * Set the Description for this Variable.
-   * 
-   * @param desc description
-   */
-  public void setDescription(String desc) {
-    this.desc = desc;
-  }
-
-  /**
-   * Get the description of the Variable.
+   * Make the description of the Variable.
    * Default is to look for attributes in this order: CDM.LONG_NAME, "description", "title", "standard_name".
    */
-  public String getDescription() {
-    if ((desc == null) && (forVar != null)) {
+  private String makeDescription(String desc) {
+    if (desc == null) {
       Attribute att = forVar.attributes().findAttributeIgnoreCase(CDM.LONG_NAME);
       if ((att != null) && att.isString())
         desc = att.getStringValue();
@@ -108,31 +101,15 @@ class EnhancementsImpl {
     return (desc == null) ? null : desc.trim();
   }
 
-  /**
-   * Set the Unit String for this Variable. Default is to use the CDM.UNITS attribute.
-   * 
-   * @param units unit string
-   */
-  public void setUnitsString(String units) {
-    if (units != null) {
-      units = units.trim();
-    }
-    this.units = units;
-    // LOOK forVar.addAttribute(new Attribute(CDM.UNITS, units));
-  }
-
-  /**
-   * Get the Unit String for the Variable. May be set explicitly, else look for attribute CDM.UNITS.
-   * 
-   * @return the Unit String for the Variable, or null if none.
-   */
-  public String getUnitsString() {
-    String result = null;
-    if (forVar != null) {
+  /** Make the Unit String for this Variable. Default is to use the CDM.UNITS attribute. */
+  private String makeUnits(String units) {
+    if (units == null) {
       Attribute att = forVar.attributes().findAttributeIgnoreCase(CDM.UNITS);
-      if ((att != null) && att.isString())
-        result = att.getStringValue();
+      if ((att != null) && att.isString()) {
+        units = att.getStringValue().trim();
+      }
     }
-    return (result == null) ? units : result.trim();
+    return units;
+    // LOOK forVar.addAttribute(new Attribute(CDM.UNITS, units));
   }
 }

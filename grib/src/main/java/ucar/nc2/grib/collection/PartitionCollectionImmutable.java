@@ -24,7 +24,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.internal.cache.FileCacheable;
 import ucar.nc2.internal.cache.FileFactory;
-import ucar.nc2.internal.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.File;
