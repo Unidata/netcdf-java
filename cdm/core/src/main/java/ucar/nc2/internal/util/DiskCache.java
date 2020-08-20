@@ -250,7 +250,7 @@ public class DiskCache {
     if (children == null)
       return;
     for (File file : children) {
-      String org = EscapeStrings.urlDecode(file.getName());
+      String org = EscapeStrings.urlDecode(file.getName()); // TODO whats the point of urlDecode?
       pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
     }
   }

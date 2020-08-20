@@ -208,12 +208,12 @@ public class FileCache implements FileCacheIF {
    */
   public FileCacheable acquire(FileFactory factory, DatasetUrl durl, ucar.nc2.util.CancelTask cancelTask)
       throws IOException {
-    return acquire(factory, durl.trueurl, durl, -1, cancelTask, null);
+    return acquire(factory, durl.getTrueurl(), durl, -1, cancelTask, null);
   }
 
   @Override
   public FileCacheable acquire(FileFactory factory, DatasetUrl durl) throws IOException {
-    return acquire(factory, durl.trueurl, durl, -1, null, null);
+    return acquire(factory, durl.getTrueurl(), durl, -1, null, null);
   }
 
   /**
@@ -240,7 +240,7 @@ public class FileCache implements FileCacheIF {
       CancelTask cancelTask, Object spiObject) throws IOException {
 
     if (null == hashKey)
-      hashKey = location.trueurl;
+      hashKey = location.getTrueurl();
     if (null == hashKey)
       throw new IllegalArgumentException();
 

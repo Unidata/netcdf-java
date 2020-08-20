@@ -50,6 +50,8 @@ import java.net.URL;
  * field[i] goes from [endPos[i-1] to endPos[i])
  * <p/>
  * </pre>
+ *
+ * TODO why not put the format line into the file?
  */
 /*
  * ClassLoader cl = Level2VolumeScan.class.getClassLoader();
@@ -77,7 +79,7 @@ public class TableParser {
   private static final boolean debug = false;
 
   /**
-   * Reads a URL or file in as a table.
+   * Reads a URL or file as a table.
    *
    * @param urlString starts with http, read URL contenets, else read file.
    * @param format describe format of each line.

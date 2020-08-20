@@ -5,32 +5,35 @@
 
 package ucar.nc2.internal.util;
 
+import java.util.Formatter;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.internal.util.DiskCache2;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * Test DiskCache2
- *
- * @author caron
- * @since 7/21/2014
- */
-public class TestDiskCache {
+/** Test {@link ucar.nc2.internal.util.DiskCache2} */
+public class TestDiskCache2 {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  // https://github.com/Unidata/thredds/issues/58 from Cameron Beccario
   @Test
-  public void testNotExist() throws Exception {
+  public void testBasic() {
     DiskCache2 cache = DiskCache2.getDefault();
+    System.out.printf("cache.getRootDirectory = %s%n", cache.getRootDirectory());
     File file = cache.getFile("gfs.t00z.master.grbf00.10m.uv.grib2"); // not exist
     System.out.printf("canWrite= %s%n", file.canWrite());
     assert !file.canWrite();
+
+    Formatter f = new Formatter();
+    cache.showCache(f);
+    System.out.printf("cache.getRootDirectory = %s%n", f.toString());
   }
 
+  @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testReletivePath() throws Exception {
     String org = System.getProperty("user.dir");
     try {
@@ -38,7 +41,7 @@ public class TestDiskCache {
       System.out.printf("user.dir = %s%n", System.getProperty("user.dir"));
       File pwd = new File(System.getProperty("user.dir"));
 
-      String filename = "transforms/albers.nc";
+      String filename = "transforms/albers.ncml";
       File rel2 = new File(pwd, filename);
       System.out.printf("abs = %s%n", rel2.getCanonicalFile());
       assert rel2.exists();

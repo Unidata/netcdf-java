@@ -17,7 +17,7 @@ public class CatalogNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public boolean isOwnerOf(DatasetUrl url) {
-    return url.serviceType == ServiceType.THREDDS;
+    return url.getServiceType() == ServiceType.THREDDS;
   }
 
   @Override

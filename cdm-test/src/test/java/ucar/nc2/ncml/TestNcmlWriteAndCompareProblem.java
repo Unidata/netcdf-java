@@ -55,7 +55,7 @@ public class TestNcmlWriteAndCompareProblem {
 
     if (showFiles) {
       System.out.println("-----------");
-      System.out.println("  input filename= " + durl.trueurl);
+      System.out.println("  input filename= " + durl.getTrueurl());
     }
 
     NetcdfFile org;
@@ -99,14 +99,14 @@ public class TestNcmlWriteAndCompareProblem {
       CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, compareData);
       boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter());
       if (!ok) {
-        System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", durl.trueurl,
+        System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", durl.getTrueurl(),
             useRecords, explicit, openDataset, compareData);
         System.out.printf("  %s%n", f);
       } else {
         System.out.printf("--Compare %s is OK (useRecords=%s explicit=%s openDataset=%s compareData=%s)%n",
-            durl.trueurl, useRecords, explicit, openDataset, compareData);
+            durl.getTrueurl(), useRecords, explicit, openDataset, compareData);
       }
-      Assert.assertTrue(durl.trueurl, ok);
+      Assert.assertTrue(durl.getTrueurl(), ok);
     } finally {
       org.close();
       copy.close();

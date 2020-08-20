@@ -76,12 +76,12 @@ public class TestDatasetUrl {
 
   protected void testFind(String path, ServiceType expected) throws IOException {
     DatasetUrl result = DatasetUrl.findDatasetUrl(path);
-    boolean ok = (expected == null) ? result.serviceType == null : expected == result.serviceType;
+    boolean ok = (expected == null) ? result.getServiceType() == null : expected == result.getServiceType();
     if (show || !ok)
-      System.out.printf(" %s <- %s%n", result.serviceType, path);
+      System.out.printf(" %s <- %s%n", result.getServiceType(), path);
     if (!ok)
       System.out.printf("  !!!EXPECTED '%s'%n", expected);
-    assertThat(result.serviceType).isEqualTo(expected);
+    assertThat(result.getServiceType()).isEqualTo(expected);
   }
 
   @Test
