@@ -49,8 +49,7 @@ public class IFPSConvention extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      // check that file has a latitude and longitude variable, and that latitude has an attribute called
-      // projectionType
+      // check that file has a latitude and longitude variable, and that latitude has an attribute called projectionType
       boolean geoVarsCheck;
       Variable v = ncfile.findVariable("latitude");
       if (null != ncfile.findVariable("longitude") && (null != v)) {
@@ -64,7 +63,7 @@ public class IFPSConvention extends CoordSystemBuilder {
       // of two known values
       boolean fileFormatCheck;
       Attribute ff = ncfile.findGlobalAttributeIgnoreCase("fileFormatVersion");
-      if (ff != null) {
+      if (ff != null && ff.getStringValue() != null) {
         String ffValue = ff.getStringValue();
         // two possible values (as of now)
         fileFormatCheck = (ffValue.equalsIgnoreCase("20030117") || ffValue.equalsIgnoreCase("20010816"));
@@ -78,14 +77,14 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new IFPSConvention(datasetBuilder);
     }
   }
 
-  private Variable.Builder projVar; // use this to get projection info
+  private Variable.Builder<?> projVar; // use this to get projection info
 
-  private IFPSConvention(NetcdfDataset.Builder datasetBuilder) {
+  private IFPSConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -98,10 +97,13 @@ public class IFPSConvention extends CoordSystemBuilder {
     parseInfo.format("IFPS augmentDataset %n");
 
     // Figure out projection info. Assume the same for all variables
-    VariableDS.Builder lonVar = (VariableDS.Builder) rootGroup.findVariableLocal("longitude").get();
+    VariableDS.Builder<?> lonVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("longitude")
+        .orElseThrow(() -> new IllegalStateException("Cant find variable longitude"));
     lonVar.setUnits(CDM.LON_UNITS);
     lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-    VariableDS.Builder latVar = (VariableDS.Builder) rootGroup.findVariableLocal("latitude").get();
+
+    VariableDS.Builder<?> latVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("latitude")
+        .orElseThrow(() -> new IllegalStateException("Cant find variable latitude"));
     latVar.setUnits(CDM.LAT_UNITS);
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
@@ -120,7 +122,7 @@ public class IFPSConvention extends CoordSystemBuilder {
       // are just how the person edited the grids
       if ((ncvar.getRank() > 2) && !"DIM_0".equals(ncvar.getFirstDimensionName())
           && !ncvar.shortName.endsWith("History") && !ncvar.shortName.startsWith("Tool")) {
-        createTimeCoordinate((VariableDS.Builder) ncvar);
+        createTimeCoordinate((VariableDS.Builder<?>) ncvar);
       } else if (ncvar.shortName.equals("Topo")) {
         // Deal with Topography variable
         ncvar.addAttribute(new Attribute(CDM.LONG_NAME, "Topography"));
@@ -135,8 +137,9 @@ public class IFPSConvention extends CoordSystemBuilder {
 
     // get the times values
     Attribute timesAtt = ncVar.getAttributeContainer().findAttribute("validTimes");
-    if (timesAtt == null)
+    if (timesAtt == null || timesAtt.getValues() == null) {
       return;
+    }
     Array timesArray = timesAtt.getValues();
 
     // get every other one LOOK this is awkward
@@ -171,7 +174,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     String units = "seconds since 1970-1-1 00:00:00";
     String desc = "time coordinate for " + ncVar.shortName;
 
-    CoordinateAxis1D.Builder timeCoord = CoordinateAxis1D.builder().setName(dimName).setDataType(dtype)
+    CoordinateAxis1D.Builder<?> timeCoord = CoordinateAxis1D.builder().setName(dimName).setDataType(dtype)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(units).setDesc(desc);
     timeCoord.setCachedData(timesArray, true);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -213,14 +216,15 @@ public class IFPSConvention extends CoordSystemBuilder {
 
     // make Coordinate Transform Variable
     ProjectionCT ct = new ProjectionCT("lambertConformalProjection", "FGDC", lc);
-    VariableDS.Builder ctVar = makeCoordinateTransformVariable(ct);
+    VariableDS.Builder<?> ctVar = makeCoordinateTransformVariable(ct);
     ctVar.addAttribute(new Attribute(_Coordinate.Axes, "xCoord yCoord"));
     rootGroup.addVariable(ctVar);
 
     return lc;
   }
 
-  private void makeXYcoords(Projection proj, VariableDS.Builder latVar, VariableDS.Builder lonVar) throws IOException {
+  private void makeXYcoords(Projection proj, VariableDS.Builder<?> latVar, VariableDS.Builder<?> lonVar)
+      throws IOException {
     // brute force
     Array latData = latVar.orgVar.read();
     Array lonData = lonVar.orgVar.read();
@@ -253,14 +257,14 @@ public class IFPSConvention extends CoordSystemBuilder {
       yData.setDouble(yIndex.set(i), pp.getY());
     }
 
-    VariableDS.Builder xaxis =
+    VariableDS.Builder<?> xaxis =
         VariableDS.builder().setName("xCoord").setDataType(DataType.FLOAT).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(x_dim.getShortName()).setUnits("km").setDesc("x on projection");
     xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "x on projection"));
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
-    VariableDS.Builder yaxis =
+    VariableDS.Builder<?> yaxis =
         VariableDS.builder().setName("yCoord").setDataType(DataType.FLOAT).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(y_dim.getShortName()).setUnits("km").setDesc("y on projection");
     yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
@@ -275,8 +279,7 @@ public class IFPSConvention extends CoordSystemBuilder {
   }
 
   private double findAttributeDouble(String attname) {
-    Attribute att = projVar.getAttributeContainer().findAttributeIgnoreCase(attname);
-    return (att == null || att.isString()) ? Double.NaN : att.getNumericValue().doubleValue();
+    return projVar.getAttributeContainer().findAttributeDouble(attname, Double.NaN);
   }
 
 }

@@ -51,17 +51,17 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new NUWGConvention(datasetBuilder);
     }
   }
 
-  private NavInfoList navInfo = new NavInfoList();
+  private final NavInfoList navInfo = new NavInfoList();
   private String xaxisName = "", yaxisName = "";
   private Grib1 grib;
   private static final boolean dumpNav = false;
 
-  NUWGConvention(NetcdfDataset.Builder datasetBuilder) {
+  NUWGConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -75,11 +75,11 @@ public class NUWGConvention extends CoordSystemBuilder {
     // find all variables that have the nav dimension
     // put them into a NavInfoList
     // make their data into metadata
-    for (Variable.Builder vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
       if (!(vb instanceof VariableDS.Builder)) {
         continue;
       }
-      VariableDS.Builder v = (VariableDS.Builder) vb;
+      VariableDS.Builder<?> v = (VariableDS.Builder<?>) vb;
       if (0 <= v.orgVar.findDimensionIndex("nav")) {
         if (dumpNav)
           parseInfo.format("NUWG has NAV var = %s%n", v);
@@ -124,7 +124,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       try {
         // check monotonicity
         boolean ok = true;
-        VariableDS.Builder dc = (VariableDS.Builder) rootGroup.findVariableLocal(xaxisName).get();
+        VariableDS.Builder<?> dc = (VariableDS.Builder<?>) rootGroup.findVariableLocal(xaxisName).get();
         Array coordVal = dc.orgVar.read();
         IndexIterator coordIndex = coordVal.getIndexIterator();
 
@@ -160,12 +160,12 @@ public class NUWGConvention extends CoordSystemBuilder {
       String dimName = dim.getShortName();
       if (rootGroup.findVariableLocal(dimName).isPresent())
         continue; // already has coord axis
-      List<Variable.Builder> ncvars = searchAliasedDimension(dim);
+      List<Variable.Builder<?>> ncvars = searchAliasedDimension(dim);
       if ((ncvars == null) || (ncvars.isEmpty())) // no alias
         continue;
 
       if (ncvars.size() == 1) {
-        Variable.Builder ncvar = ncvars.get(0);
+        Variable.Builder<?> ncvar = ncvars.get(0);
         if (ncvar.dataType == DataType.STRUCTURE)
           continue; // cant be a structure
         if (makeCoordinateAxis(ncvar, dim)) {
@@ -177,10 +177,10 @@ public class NUWGConvention extends CoordSystemBuilder {
       } else if (ncvars.size() == 2) {
 
         if (dimName.equals("record")) {
-          Variable.Builder ncvar0 = ncvars.get(0);
-          Variable.Builder ncvar1 = ncvars.get(1);
-          VariableDS.Builder ncvar =
-              (VariableDS.Builder) (ncvar0.shortName.equalsIgnoreCase("valtime") ? ncvar0 : ncvar1);
+          Variable.Builder<?> ncvar0 = ncvars.get(0);
+          Variable.Builder<?> ncvar1 = ncvars.get(1);
+          VariableDS.Builder<?> ncvar =
+              (VariableDS.Builder<?>) (ncvar0.shortName.equalsIgnoreCase("valtime") ? ncvar0 : ncvar1);
 
           if (makeCoordinateAxis(ncvar, dim)) {
             parseInfo.format("Added referential coordAxis (2) = %s%n", ncvar.shortName);
@@ -198,7 +198,7 @@ public class NUWGConvention extends CoordSystemBuilder {
           }
         } else {
           // lower(?) bound
-          Variable.Builder ncvar = ncvars.get(0);
+          Variable.Builder<?> ncvar = ncvars.get(0);
           if (ncvar.dataType == DataType.STRUCTURE)
             continue; // cant be a structure
 
@@ -212,17 +212,17 @@ public class NUWGConvention extends CoordSystemBuilder {
     } // loop over dims
 
     if (grib.projectionCT != null) {
-      VariableDS.Builder v = makeCoordinateTransformVariable(grib.projectionCT);
+      VariableDS.Builder<?> v = makeCoordinateTransformVariable(grib.projectionCT);
       v.addAttribute(new Attribute(_Coordinate.Axes, xaxisName + " " + yaxisName));
       rootGroup.addVariable(v);
     }
   }
 
-  private boolean makeCoordinateAxis(Variable.Builder ncvar, Dimension dim) {
+  private boolean makeCoordinateAxis(Variable.Builder<?> ncvar, Dimension dim) {
     if (ncvar.getRank() != 1)
       return false;
     String vdimName = ncvar.getFirstDimensionName();
-    if (!vdimName.equals(dim.getShortName()))
+    if (vdimName == null || !vdimName.equals(dim.getShortName()))
       return false;
 
     if (!dim.getShortName().equals(ncvar.shortName)) {
@@ -240,20 +240,20 @@ public class NUWGConvention extends CoordSystemBuilder {
    * @param dim: look for this dimension name
    * @return Collection of nectdf variables, or null if none
    */
-  private List<Variable.Builder> searchAliasedDimension(Dimension dim) {
+  private List<Variable.Builder<?>> searchAliasedDimension(Dimension dim) {
     String dimName = dim.getShortName();
     String alias = rootGroup.getAttributeContainer().findAttributeString(dimName, null);
     if (alias == null)
       return null;
 
-    List<Variable.Builder> vars = new ArrayList<>();
+    List<Variable.Builder<?>> vars = new ArrayList<>();
     StringTokenizer parser = new StringTokenizer(alias, " ,");
     while (parser.hasMoreTokens()) {
       String token = parser.nextToken();
       if (!rootGroup.findVariableLocal(token).isPresent()) {
         continue;
       }
-      Variable.Builder ncvar = rootGroup.findVariableLocal(token).get();
+      Variable.Builder<?> ncvar = rootGroup.findVariableLocal(token).get();
       if (ncvar.getRank() != 1)
         continue;
       String firstDimName = ncvar.getFirstDimensionName();
@@ -264,12 +264,8 @@ public class NUWGConvention extends CoordSystemBuilder {
     return vars;
   }
 
-  private StringBuilder buf = new StringBuilder(2000);
-
   public String extraInfo() {
-    buf.setLength(0);
-    buf.append(navInfo).append("%n");
-    return buf.toString();
+    return String.format("%s%n", navInfo);
   }
 
   @Override
@@ -286,7 +282,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   }
 
   @Override
-  protected AxisType getAxisType(VariableDS.Builder v) {
+  protected AxisType getAxisType(VariableDS.Builder<?> v) {
     String vname = v.shortName;
 
     if (vname.equalsIgnoreCase("lat"))
@@ -348,7 +344,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   }
 
   private class NavInfo {
-    VariableDS.Builder vb;
+    VariableDS.Builder<?> vb;
     Variable orgVar;
     DataType valueType;
     String svalue;
@@ -356,7 +352,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     int ivalue;
     double dvalue;
 
-    NavInfo(VariableDS.Builder vb) throws IOException {
+    NavInfo(VariableDS.Builder<?> vb) throws IOException {
       this.vb = vb;
       this.orgVar = vb.orgVar;
       valueType = vb.dataType;
@@ -394,18 +390,8 @@ public class NUWGConvention extends CoordSystemBuilder {
         return Double.toString(dvalue);
     }
 
-    private StringBuilder buf = new StringBuilder(200);
-
     public String toString() {
-      buf.setLength(0);
-      buf.append(getName());
-      buf.append(" ");
-      Format.tab(buf, 15, true);
-      buf.append(getStringValue());
-      buf.append(" ");
-      Format.tab(buf, 35, true);
-      buf.append(getDescription());
-      return buf.toString();
+      return String.format("%14s %20s %s%n", getName(), getStringValue(), getDescription());
     }
   }
 
@@ -427,9 +413,9 @@ public class NUWGConvention extends CoordSystemBuilder {
       if ((nav.valueType == DataType.DOUBLE) || (nav.valueType == DataType.FLOAT))
         return nav.dvalue;
       else if ((nav.valueType == DataType.INT) || (nav.valueType == DataType.SHORT))
-        return (double) nav.ivalue;
+        return nav.ivalue;
       else if (nav.valueType == DataType.BYTE)
-        return (double) nav.bvalue;
+        return nav.bvalue;
 
       throw new IllegalArgumentException("NUWGConvention.GRIB1.getDouble " + name + " type = " + nav.valueType);
     }
@@ -444,7 +430,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       else if ((nav.valueType == DataType.DOUBLE) || (nav.valueType == DataType.FLOAT))
         return (int) nav.dvalue;
       else if (nav.valueType == DataType.BYTE)
-        return (int) nav.bvalue;
+        return nav.bvalue;
 
       throw new IllegalArgumentException("NUWGConvention.GRIB1.getInt " + name + " type = " + nav.valueType);
     }
@@ -471,8 +457,8 @@ public class NUWGConvention extends CoordSystemBuilder {
 
   // encapsolates GRIB-specific processing
   private class Grib1 {
-    private String grid_name;
-    private int grid_code;
+    private final String grid_name;
+    private final int grid_code;
     private ProjectionCT projectionCT;
 
     private int nx, ny;
@@ -480,11 +466,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     private double dx, dy;
 
     Grib1(int mode) {
-      // horiz system
       grid_name = "Projection";
-      if (grid_name.isEmpty())
-        grid_name = "grid_var";
-
       grid_code = mode;
       if (0 == grid_code)
         processLatLonProjection();
@@ -494,12 +476,10 @@ public class NUWGConvention extends CoordSystemBuilder {
         projectionCT = makePSProjection();
       else
         throw new IllegalArgumentException("NUWGConvention: unknown grid_code= " + grid_code);
-
-      // vertical system
     }
 
     void makeXCoordAxis(String xname) {
-      CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+      CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits((0 == grid_code) ? CDM.LON_UNITS : "km")
           .setDesc("synthesized X coord");
       v.addAttribute(
@@ -509,7 +489,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
 
     void makeYCoordAxis(String yname) {
-      CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
+      CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits((0 == grid_code) ? CDM.LAT_UNITS : "km")
           .setDesc("synthesized Y coord");
       v.addAttribute(

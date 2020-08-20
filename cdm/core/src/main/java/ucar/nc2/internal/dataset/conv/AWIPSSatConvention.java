@@ -31,8 +31,6 @@ import ucar.unidata.geoloc.projection.Mercator;
 /**
  * AWIPS satellite netcdf output.
  *
- * @author caron
- *
  * @see <a href=
  *      "http://www-md.fsl.noaa.gov/eft/AWIPS/16c/onlinehelp/ifpServerSatelliteNETCDF.html">http://www-md.fsl.noaa.gov/eft/AWIPS/16c/onlinehelp/ifpServerSatelliteNETCDF.html</a>
  * @see <a href=
@@ -42,9 +40,8 @@ public class AWIPSSatConvention extends AWIPSConvention {
   private static final String CONVENTION_NAME = "AWIPS-Sat";
 
   private static final boolean debugProj = false;
-  private static final boolean debugBreakup = false;
 
-  private AWIPSSatConvention(NetcdfDataset.Builder datasetBuilder) {
+  private AWIPSSatConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -65,7 +62,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new AWIPSSatConvention(datasetBuilder);
     }
   }
@@ -98,7 +95,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     }
 
     // long_name; LOOK: not sure of units
-    VariableDS.Builder datav = (VariableDS.Builder) rootGroup.findVariableLocal("image")
+    VariableDS.Builder<?> datav = (VariableDS.Builder<?>) rootGroup.findVariableLocal("image")
         .orElseThrow(() -> new RuntimeException("must have varible 'image'"));
     String long_name = rootGroup.getAttributeContainer().findAttributeString("channel", null);
     if (null != long_name) {
@@ -120,14 +117,14 @@ public class AWIPSSatConvention extends AWIPSConvention {
     datav.addAttribute(Attribute.fromArray(CDM.MISSING_VALUE, missing_values));
 
     if (projCT != null) {
-      VariableDS.Builder v = makeCoordinateTransformVariable(projCT);
+      VariableDS.Builder<?> v = makeCoordinateTransformVariable(projCT);
       v.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
       rootGroup.addVariable(v);
     }
   }
 
   @Override
-  protected AxisType getAxisType(VariableDS.Builder v) {
+  protected AxisType getAxisType(VariableDS.Builder<?> v) {
     String units = v.getUnits();
 
     if (units.equalsIgnoreCase(CDM.LON_UNITS))
@@ -229,8 +226,8 @@ public class AWIPSSatConvention extends AWIPSConvention {
     return new ProjectionCT(name, "FGDC", proj);
   }
 
-  private CoordinateAxis.Builder makeLonCoordAxis(String xname) {
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+  private CoordinateAxis.Builder<?> makeLonCoordAxis(String xname) {
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setAutoGen(startx, dx);
@@ -239,8 +236,8 @@ public class AWIPSSatConvention extends AWIPSConvention {
     return v;
   }
 
-  private CoordinateAxis.Builder makeLatCoordAxis(String yname) {
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
+  private CoordinateAxis.Builder<?> makeLatCoordAxis(String yname) {
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits(CDM.LAT_UNITS).setDesc("latitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setAutoGen(starty, dy);

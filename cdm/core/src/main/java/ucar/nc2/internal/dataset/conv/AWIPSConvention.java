@@ -49,7 +49,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   private static final boolean debugProj = false;
   private static final boolean debugBreakup = false;
 
-  AWIPSConvention(NetcdfDataset.Builder datasetBuilder) {
+  AWIPSConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -67,7 +67,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new AWIPSConvention(datasetBuilder);
     }
   }
@@ -100,7 +100,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
       datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis("y"));
     }
 
-    CoordinateAxis.Builder timeCoord = makeTimeCoordAxis();
+    CoordinateAxis.Builder<?> timeCoord = makeTimeCoordAxis();
     if (timeCoord != null) {
       datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
       String dimName = timeCoord.getFirstDimensionName();
@@ -110,10 +110,10 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
 
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
-    for (Variable.Builder ncvar : ImmutableList.copyOf(rootGroup.vbuilders)) {
+    for (Variable.Builder<?> ncvar : ImmutableList.copyOf(rootGroup.vbuilders)) {
       String levelName = ncvar.shortName + "Levels";
       if (rootGroup.findVariableLocal(levelName).isPresent()) {
-        VariableDS.Builder levelVar = (VariableDS.Builder) rootGroup.findVariableLocal(levelName).get();
+        VariableDS.Builder<?> levelVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal(levelName).get();
         if (levelVar.getRank() != 2)
           continue;
         if (levelVar.dataType != DataType.CHAR)
@@ -121,24 +121,24 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
         try {
           List<Dimension> levels = breakupLevels(levelVar);
-          createNewVariables((VariableDS.Builder) ncvar, levels, levelVar.orgVar.getDimension(0));
-        } catch (IOException | InvalidRangeException ioe) {
+          createNewVariables((VariableDS.Builder<?>) ncvar, levels, levelVar.orgVar.getDimension(0));
+        } catch (InvalidRangeException ioe) {
           parseInfo.format("createNewVariables IOException%n");
         }
       }
     }
 
     if (projCT != null) {
-      VariableDS.Builder v = makeCoordinateTransformVariable(projCT);
+      VariableDS.Builder<?> v = makeCoordinateTransformVariable(projCT);
       v.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
       rootGroup.addVariable(v);
     }
 
     // kludge in fixing the units
-    for (Variable.Builder v : rootGroup.vbuilders) {
+    for (Variable.Builder<?> v : rootGroup.vbuilders) {
       String units = v.getAttributeContainer().findAttributeString(CDM.UNITS, null);
       if (units != null) {
-        ((VariableDS.Builder) v).setUnits(normalize(units)); // removes the old
+        ((VariableDS.Builder<?>) v).setUnits(normalize(units)); // removes the old
       }
     }
   }
@@ -160,7 +160,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   // LOOK not dealing with "FHAG 0 10 ", "FHAG 0 30 "
   // take a combined level variable and create multiple levels out of it
   // return the list of Dimensions that were created
-  private List<Dimension> breakupLevels(VariableDS.Builder levelVar) throws IOException {
+  private List<Dimension> breakupLevels(VariableDS.Builder<?> levelVar) {
     if (debugBreakup)
       parseInfo.format("breakupLevels = %s%n", levelVar.shortName);
 
@@ -253,7 +253,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
       parseInfo.format("  make ZCoordAxis = = %s length = %d%n", name, len);
     }
 
-    CoordinateAxis1D.Builder v =
+    CoordinateAxis1D.Builder<?> v =
         CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(name).setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
     String positive = getZisPositive(v);
@@ -316,7 +316,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   }
 
   // create new variables as sections of ncVar
-  private void createNewVariables(VariableDS.Builder ncVar, List<Dimension> newDims, Dimension levelDim)
+  private void createNewVariables(VariableDS.Builder<?> ncVar, List<Dimension> newDims, Dimension levelDim)
       throws InvalidRangeException {
 
     ArrayList<Dimension> dims = new ArrayList<>(ncVar.orgVar.getDimensions());
@@ -331,7 +331,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
       Variable varSection = ncVar.orgVar.section(new Section(origin, shape));
 
       String name = ncVar.shortName + "-" + dim.getShortName();
-      VariableDS.Builder varNew =
+      VariableDS.Builder<?> varNew =
           VariableDS.builder().setName(name).setOriginalVariable(varSection).setDataType(ncVar.dataType);
       dims.set(newDimIndex, dim);
       varNew.addDimensions(dims);
@@ -350,7 +350,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   @Override
   @Nullable
-  protected AxisType getAxisType(VariableDS.Builder v) {
+  protected AxisType getAxisType(VariableDS.Builder<?> v) {
     String vname = v.shortName;
 
     if (vname.equalsIgnoreCase("x"))
@@ -389,7 +389,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     super.makeCoordinateTransforms();
   }
 
-  private String getZisPositive(CoordinateAxis.Builder v) {
+  private String getZisPositive(CoordinateAxis.Builder<?> v) {
     String attValue = v.getAttributeContainer().findAttributeString("positive", null);
     if (null != attValue) {
       return attValue.equalsIgnoreCase("up") ? "up" : "down";
@@ -459,8 +459,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return new ProjectionCT(name, "FGDC", proj);
   }
 
-  CoordinateAxis.Builder makeXCoordAxis(String xname) {
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+  CoordinateAxis.Builder<?> makeXCoordAxis(String xname) {
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits("km").setDesc("x on projection");
     v.setAutoGen(startx, dx);
 
@@ -468,8 +468,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return v;
   }
 
-  CoordinateAxis.Builder makeYCoordAxis(String yname) {
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
+  CoordinateAxis.Builder<?> makeYCoordAxis(String yname) {
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits("km").setDesc("y on projection");
     v.setAutoGen(starty, dy);
 
@@ -478,14 +478,14 @@ public class AWIPSConvention extends CoordSystemBuilder {
   }
 
   @Nullable
-  private CoordinateAxis.Builder makeLonCoordAxis(int n, String xname) {
+  private CoordinateAxis.Builder<?> makeLonCoordAxis(int n, String xname) {
     double min = findAttributeDouble("xMin");
     double max = findAttributeDouble("xMax");
     double d = findAttributeDouble("dx");
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
       return null;
 
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setAutoGen(min, d);
@@ -495,14 +495,14 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return v;
   }
 
-  private CoordinateAxis.Builder makeLatCoordAxis(int n, String name) {
+  private CoordinateAxis.Builder<?> makeLatCoordAxis(int n, String name) {
     double min = findAttributeDouble("yMin");
     double max = findAttributeDouble("yMax");
     double d = findAttributeDouble("dy");
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
       return null;
 
-    CoordinateAxis1D.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(name).setUnits(CDM.LAT_UNITS).setDesc("latitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setAutoGen(min, d);
@@ -512,8 +512,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return v;
   }
 
-  private CoordinateAxis.Builder makeTimeCoordAxis() {
-    VariableDS.Builder timeVar = (VariableDS.Builder) rootGroup.findVariableLocal("valtimeMINUSreftime")
+  private CoordinateAxis.Builder<?> makeTimeCoordAxis() {
+    VariableDS.Builder<?> timeVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("valtimeMINUSreftime")
         .orElseThrow(() -> new RuntimeException("must have varible 'valtimeMINUSreftime'"));
 
     Dimension recordDim =
@@ -547,7 +547,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     // create the coord axis
     String name = "timeCoord";
     String desc = "synthesized time coordinate from valtimeMINUSreftime and filename YYYYMMDD_HHMM";
-    CoordinateAxis1D.Builder timeCoord =
+    CoordinateAxis1D.Builder<?> timeCoord =
         CoordinateAxis1D.builder().setName(name).setDataType(DataType.INT).setParentGroupBuilder(rootGroup)
             .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(vals, true);
 
@@ -585,10 +585,10 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   // construct time coordinate from reftime variable
   @Nullable
-  private CoordinateAxis.Builder makeTimeCoordAxisFromReference(Array vals) {
+  private CoordinateAxis.Builder<?> makeTimeCoordAxisFromReference(Array vals) {
     if (!rootGroup.findVariableLocal("reftime").isPresent())
       return null;
-    VariableDS.Builder refVar = (VariableDS.Builder) rootGroup.findVariableLocal("reftime").get();
+    VariableDS.Builder<?> refVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("reftime").get();
 
     double refValue;
     try {
@@ -611,7 +611,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     String units = refVar.getAttributeContainer().findAttributeString(CDM.UNITS, "seconds since 1970-1-1 00:00:00");
     units = normalize(units);
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
-    CoordinateAxis1D.Builder timeCoord =
+    CoordinateAxis1D.Builder<?> timeCoord =
         CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
             .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(dvals, true);
 

@@ -21,7 +21,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.util.CancelTask;
@@ -47,12 +46,12 @@ public class Cosmic1Convention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new Cosmic1Convention(datasetBuilder);
     }
   }
 
-  private Cosmic1Convention(NetcdfDataset.Builder datasetBuilder) {
+  private Cosmic1Convention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -82,15 +81,17 @@ public class Cosmic1Convention extends CoordSystemBuilder {
           }
         }
 
-        Dimension dim = rootGroup.findDimension("MSL_alt").get();
-        VariableDS.Builder dimV = (VariableDS.Builder) rootGroup.findVariableLocal("MSL_alt").get();
+        Dimension dim = rootGroup.findDimension("MSL_alt")
+            .orElseThrow(() -> new IllegalStateException("Canrt find dimension MSL_alt"));
+        VariableDS.Builder<?> dimV = (VariableDS.Builder<?>) rootGroup.findVariableLocal("MSL_alt")
+            .orElseThrow(() -> new IllegalStateException("Canrt find variable MSL_alt"));
         Array dimU = dimV.orgVar.read();
         int inscr = (dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
         int n = dim.getLength();
         double incr = (stop - start) / n;
 
         String timeUnits = "seconds since 1980-01-06 00:00:00";
-        VariableDS.Builder timeVar = VariableDS.builder().setName("time").setDataType(DataType.DOUBLE)
+        VariableDS.Builder<?> timeVar = VariableDS.builder().setName("time").setDataType(DataType.DOUBLE)
             .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits(timeUnits);
         rootGroup.addVariable(timeVar);
         timeVar.setUnits(timeUnits);
@@ -115,26 +116,28 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         timeVar.setCachedData(data, false);
       }
 
-      Variable.Builder lat =
-          rootGroup.findVariableLocal("Lat").orElse(rootGroup.findVariableLocal("GEO_lat").orElse(null));
+      Variable.Builder<?> lat = rootGroup.findVariableLocal("Lat").orElse(rootGroup.findVariableLocal("GEO_lat")
+          .orElseThrow(() -> new IllegalStateException("Cant find variable Lat or GEO_lat")));
       lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      Variable.Builder lon =
-          rootGroup.findVariableLocal("Lon").orElse(rootGroup.findVariableLocal("GEO_lon").orElse(null));
+      Variable.Builder<?> lon = rootGroup.findVariableLocal("Lon").orElse(rootGroup.findVariableLocal("GEO_lon")
+          .orElseThrow(() -> new IllegalStateException("Cant find variable Lon or GEO_lon")));
       lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      Variable.Builder alt = rootGroup.findVariableLocal("MSL_alt").orElse(null);
+      Variable.Builder<?> alt = rootGroup.findVariableLocal("MSL_alt")
+          .orElseThrow(() -> new IllegalStateException("Cant find variable MSL_alt"));
       alt.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     } else {
-      Dimension dim = rootGroup.findDimension("time").get();
+      Dimension dim =
+          rootGroup.findDimension("time").orElseThrow(() -> new IllegalStateException("Cant find dimension time"));
       int n = dim.getLength();
-      Variable.Builder latVar = VariableDS.builder().setName("Lat").setDataType(DataType.FLOAT)
+      Variable.Builder<?> latVar = VariableDS.builder().setName("Lat").setDataType(DataType.FLOAT)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("degree");
       latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
       rootGroup.addVariable(latVar);
-      Variable.Builder lonVar = VariableDS.builder().setName("Lon").setDataType(DataType.FLOAT)
+      Variable.Builder<?> lonVar = VariableDS.builder().setName("Lon").setDataType(DataType.FLOAT)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("degree");
       lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       rootGroup.addVariable(lonVar);
-      Variable.Builder altVar = VariableDS.builder().setName("MSL_alt").setDataType(DataType.FLOAT)
+      Variable.Builder<?> altVar = VariableDS.builder().setName("MSL_alt").setDataType(DataType.FLOAT)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("meter");
       altVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
       rootGroup.addVariable(altVar);
@@ -161,18 +164,21 @@ public class Cosmic1Convention extends CoordSystemBuilder {
       // cal the dtheta based pm attributes
       double dtheta = gast(iyr, mon, iday, ihr, min, sec, t);
 
-      VariableDS.Builder tVar = (VariableDS.Builder) rootGroup.findVariableLocal("time").get();
+      VariableDS.Builder<?> tVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("time").get();
       String timeUnits = "seconds since 1980-01-06 00:00:00"; // dtime.getUnit().toString();
       tVar.getAttributeContainer().removeAttributeIgnoreCase(CDM.VALID_RANGE);
       tVar.getAttributeContainer().removeAttributeIgnoreCase(CDM.UNITS);
       tVar.setUnits(timeUnits);
       tVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
-      VariableDS.Builder xLeoVar = (VariableDS.Builder) rootGroup.findVariableLocal("xLeo").get();
+      VariableDS.Builder<?> xLeoVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("xLeo")
+          .orElseThrow(() -> new IllegalStateException("Cant find variable xLeo"));
       Array xLeoData = xLeoVar.orgVar.read();
-      VariableDS.Builder yLeoVar = (VariableDS.Builder) rootGroup.findVariableLocal("yLeo").get();
+      VariableDS.Builder<?> yLeoVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("yLeo")
+          .orElseThrow(() -> new IllegalStateException("Cant find variable yLeo"));
       Array yLeoData = yLeoVar.orgVar.read();
-      VariableDS.Builder zLeoVar = (VariableDS.Builder) rootGroup.findVariableLocal("zLeo").get();
+      VariableDS.Builder<?> zLeoVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("zLeo")
+          .orElseThrow(() -> new IllegalStateException("Cant find variable zLeo"));
       Array zLeoData = zLeoVar.orgVar.read();
 
       double a = 6378.1370;
@@ -212,8 +218,9 @@ public class Cosmic1Convention extends CoordSystemBuilder {
     }
   }
 
-  protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
-    String name = v.getShortName();
+  @Override
+  protected AxisType getAxisType(VariableDS.Builder<?> vb) {
+    String name = vb.shortName;
     if (name.equals("time")) {
       return AxisType.Time;
     }
@@ -543,7 +550,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
 
     /* FOR COMPATABILITY */
 
-    tday = (double) ((int) (julian / 86400.));
+    tday = ((int) (julian / 86400.));
     tsec = julian - tday * 86400;
 
     /* THE NUMBER OF DAYS FROM THE J2000 EPOCH */

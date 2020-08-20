@@ -25,7 +25,7 @@ import ucar.nc2.util.CancelTask;
 public class Suomi extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "Suomi";
 
-  private Suomi(NetcdfDataset.Builder datasetBuilder) {
+  private Suomi(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -52,7 +52,7 @@ public class Suomi extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new Suomi(datasetBuilder);
     }
   }
@@ -78,7 +78,7 @@ public class Suomi extends CoordSystemBuilder {
   }
 
   @Override
-  protected AxisType getAxisType(VariableDS.Builder v) {
+  protected AxisType getAxisType(VariableDS.Builder<?> v) {
     String name = v.shortName;
     if (name.equals("time_offset"))
       return AxisType.Time;

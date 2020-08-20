@@ -174,7 +174,7 @@ public class StructurePseudoDS extends StructureDS {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends StructureDS.Builder<T> {
-    private List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
+    private final List<Variable> orgVariables = new ArrayList<>(); // the underlying original variables
     private boolean built;
 
     public T addOriginalVariable(Variable orgVar) {

@@ -37,7 +37,7 @@ public class DefaultConventions extends CoordSystemBuilder {
 
   protected ProjectionCT projCT;
 
-  private DefaultConventions(NetcdfDataset.Builder datasetBuilder) {
+  private DefaultConventions(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = "Default";
   }
@@ -46,7 +46,7 @@ public class DefaultConventions extends CoordSystemBuilder {
   public void augmentDataset(CancelTask cancelTask) {
     projCT = makeProjectionCT();
     if (projCT != null) {
-      VariableDS.Builder vb = makeCoordinateTransformVariable(projCT);
+      VariableDS.Builder<?> vb = makeCoordinateTransformVariable(projCT);
       rootGroup.addVariable(vb);
 
       String xname = findCoordinateName(AxisType.GeoX);
@@ -140,9 +140,9 @@ public class DefaultConventions extends CoordSystemBuilder {
    */
   @Nullable
   private String findCoordinateName(AxisType axisType) {
-    for (Variable.Builder vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
       if (vb instanceof VariableDS.Builder) {
-        VariableDS.Builder vds = (VariableDS.Builder) vb;
+        VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;
         if (axisType == getAxisType(vds)) {
           return vds.getFullName();
         }
@@ -151,22 +151,9 @@ public class DefaultConventions extends CoordSystemBuilder {
     return null;
   }
 
-  /*
-   * @Override
-   * protected void makeCoordinateTransforms() {
-   * if (projCT != null) {
-   * VarProcess vp = findVarProcess(projCT.getName(), null);
-   * if (vp != null) {
-   * vp.ct = projCT;
-   * }
-   * }
-   * super.makeCoordinateTransforms();
-   * }
-   */
-
   @Override
   @Nullable
-  protected AxisType getAxisType(VariableDS.Builder vb) {
+  protected AxisType getAxisType(VariableDS.Builder<?> vb) {
     AxisType result = getAxisTypeCoards(vb);
     if (result != null) {
       return result;
@@ -231,7 +218,7 @@ public class DefaultConventions extends CoordSystemBuilder {
               return AxisType.Time;
             }
           }
-        } catch (IOException | InvalidRangeException e) {
+        } catch (IOException | InvalidRangeException | IllegalArgumentException e) {
           logger.warn("time string error", e);
         }
       } else {
@@ -243,7 +230,7 @@ public class DefaultConventions extends CoordSystemBuilder {
   }
 
   // look for an coord_axis or coord_alias attribute
-  private String findAlias(VariableDS.Builder vb) {
+  private String findAlias(VariableDS.Builder<?> vb) {
     String alias = vb.getAttributeContainer().findAttributeString("coord_axis", null);
     if (alias == null) {
       alias = vb.getAttributeContainer().findAttributeString("coord_alias", "");
@@ -257,7 +244,7 @@ public class DefaultConventions extends CoordSystemBuilder {
   // replicated from COARDS, but we need to diverge from COARDS
   // we assume that coordinate axes get identified by being coordinate variables
   @Nullable
-  private AxisType getAxisTypeCoards(VariableDS.Builder vb) {
+  private AxisType getAxisTypeCoards(VariableDS.Builder<?> vb) {
     String unit = vb.getUnits();
     if (unit == null) {
       return null;
@@ -365,7 +352,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new DefaultConventions(datasetBuilder);
     }
   }

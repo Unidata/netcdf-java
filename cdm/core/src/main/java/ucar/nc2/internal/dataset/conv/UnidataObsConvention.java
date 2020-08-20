@@ -34,12 +34,12 @@ public class UnidataObsConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new UnidataObsConvention(datasetBuilder);
     }
   }
 
-  UnidataObsConvention(NetcdfDataset.Builder datasetBuilder) {
+  UnidataObsConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -50,7 +50,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
       if (!addAxisType("latitude", AxisType.Lat)) { // directly named
         String vname = rootGroup.getAttributeContainer().findAttributeString("latitude_coordinate", null);
         if (!addAxisType(vname, AxisType.Lat)) { // attribute named
-          Variable.Builder v = hasUnits("degrees_north,degrees_N,degreesN,degree_north,degree_N,degreeN");
+          Variable.Builder<?> v = hasUnits("degrees_north,degrees_N,degreesN,degree_north,degree_N,degreeN");
           if (v != null)
             addAxisType(v, AxisType.Lat); // CF-1
         }
@@ -62,7 +62,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
       if (!addAxisType("longitude", AxisType.Lon)) { // directly named
         String vname = rootGroup.getAttributeContainer().findAttributeString("longitude_coordinate", null);
         if (!addAxisType(vname, AxisType.Lon)) { // attribute named
-          Variable.Builder v = hasUnits("degrees_east,degrees_E,degreesE,degree_east,degree_E,degreeE");
+          Variable.Builder<?> v = hasUnits("degrees_east,degrees_E,degreesE,degree_east,degree_E,degreeE");
           if (v != null)
             addAxisType(v, AxisType.Lon); // CF-1
         }
@@ -75,7 +75,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
         if (!addAxisType("depth", AxisType.Height)) { // directly named
           String vname = rootGroup.getAttributeContainer().findAttributeString("altitude_coordinate", null);
           if (!addAxisType(vname, AxisType.Height)) { // attribute named
-            for (Variable.Builder v : rootGroup.vbuilders) {
+            for (Variable.Builder<?> v : rootGroup.vbuilders) {
               String positive = v.getAttributeContainer().findAttributeString(CF.POSITIVE, null);
               if (positive != null) {
                 addAxisType(v, AxisType.Height); // CF-1
@@ -92,8 +92,8 @@ public class UnidataObsConvention extends CoordSystemBuilder {
       if (!addAxisType("time", AxisType.Time)) { // directly named
         String vname = rootGroup.getAttributeContainer().findAttributeString("time_coordinate", null);
         if (!addAxisType(vname, AxisType.Time)) { // attribute named
-          for (Variable.Builder v : rootGroup.vbuilders) {
-            String unit = ((VariableDS.Builder) v).getUnits();
+          for (Variable.Builder<?> v : rootGroup.vbuilders) {
+            String unit = ((VariableDS.Builder<?>) v).getUnits();
             if (unit == null)
               continue;
             if (SimpleUnit.isDateUnit(unit)) {
@@ -104,11 +104,10 @@ public class UnidataObsConvention extends CoordSystemBuilder {
         }
       }
     }
-
   }
 
   private boolean hasAxisType(AxisType a) {
-    for (Variable.Builder v : rootGroup.vbuilders) {
+    for (Variable.Builder<?> v : rootGroup.vbuilders) {
       String axisType = v.getAttributeContainer().findAttributeString("CoordinateAxisType", null);
       if ((axisType != null) && axisType.equals(a.toString()))
         return true;
@@ -116,12 +115,12 @@ public class UnidataObsConvention extends CoordSystemBuilder {
     return false;
   }
 
-  private VariableDS.Builder hasUnits(String unitList) {
+  private VariableDS.Builder<?> hasUnits(String unitList) {
     StringTokenizer stoker = new StringTokenizer(unitList, ",");
     while (stoker.hasMoreTokens()) {
       String unit = stoker.nextToken();
-      for (Variable.Builder v : rootGroup.vbuilders) {
-        VariableDS.Builder ve = (VariableDS.Builder) v;
+      for (Variable.Builder<?> v : rootGroup.vbuilders) {
+        VariableDS.Builder<?> ve = (VariableDS.Builder<?>) v;
         String hasUnit = ve.getUnits();
         if (hasUnit == null)
           continue;
@@ -140,7 +139,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
     return rootGroup.findVariableLocal(vname).isPresent();
   }
 
-  private void addAxisType(Variable.Builder v, AxisType a) {
+  private void addAxisType(Variable.Builder<?> v, AxisType a) {
     v.addAttribute(new Attribute(_Coordinate.AxisType, a.toString()));
   }
 

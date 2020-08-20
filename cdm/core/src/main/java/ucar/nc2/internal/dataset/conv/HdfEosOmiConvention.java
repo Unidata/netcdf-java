@@ -25,15 +25,13 @@ import ucar.nc2.util.CancelTask;
 
 /**
  * HDF5-EOS AURA OMI
- *
- * @author John
- * @since 12/26/12
+ * 
  * @see "http://aura.gsfc.nasa.gov/instruments/omi.html"
  */
 public class HdfEosOmiConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "HDF5-EOS-OMI";
 
-  private HdfEosOmiConvention(NetcdfDataset.Builder datasetBuilder) {
+  private HdfEosOmiConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -80,20 +78,19 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
        * }
        */
       Attribute instName = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@InstrumentName");
-      if (instName == null || !instName.getStringValue().equals("OMI")) {
+      if (instName == null || instName.getStringValue() == null || !instName.getStringValue().equals("OMI")) {
         return false;
       }
 
       Attribute level = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
-      if (level == null) {
+      if (level == null || level.getStringValue() == null) {
         return false;
       }
-
       return !(!level.getStringValue().startsWith("2") && !level.getStringValue().startsWith("3"));
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new HdfEosOmiConvention(datasetBuilder);
     }
   }
@@ -159,7 +156,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
   public void augmentDataset(CancelTask cancelTask) {
     rootGroup.findGroupNested("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES").ifPresent(nested -> {
       Attribute levelAtt = nested.getAttributeContainer().findAttribute("ProcessLevel");
-      if (levelAtt == null) {
+      if (levelAtt == null || levelAtt.getStringValue() == null) {
         return;
       }
       int level = levelAtt.getStringValue().startsWith("2") ? 2 : 3;
@@ -174,21 +171,20 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
     gridso.ifPresent(grids -> {
       for (Group.Builder g2 : grids.gbuilders) {
         Attribute gctp = g2.getAttributeContainer().findAttribute("GCTPProjectionCode");
-        if (gctp == null || !gctp.getNumericValue().equals(0)) {
+        if (gctp == null || gctp.getNumericValue() == null || !gctp.getNumericValue().equals(0)) {
           continue;
         }
 
         Attribute nlon = g2.getAttributeContainer().findAttribute("NumberOfLongitudesInGrid");
         Attribute nlat = g2.getAttributeContainer().findAttribute("NumberOfLatitudesInGrid");
-        if (nlon == null || nlon.isString() || nlat == null || nlat.isString()) {
+        if (nlon == null || nlon.getNumericValue() == null || nlat == null || nlat.getNumericValue() == null) {
           continue;
         }
-
         datasetBuilder.replaceCoordinateAxis(g2, makeLonCoordAxis(g2, nlon.getNumericValue().intValue(), "XDim"));
         datasetBuilder.replaceCoordinateAxis(g2, makeLatCoordAxis(g2, nlat.getNumericValue().intValue(), "YDim"));
 
         for (Group.Builder g3 : g2.gbuilders) {
-          for (Variable.Builder vb : g3.vbuilders) {
+          for (Variable.Builder<?> vb : g3.vbuilders) {
             vb.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
           }
         }
@@ -196,8 +192,8 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
     });
   }
 
-  private CoordinateAxis.Builder makeLatCoordAxis(Group.Builder g2, int n, String dimName) {
-    CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName("lat").setDataType(DataType.FLOAT)
+  private CoordinateAxis.Builder<?> makeLatCoordAxis(Group.Builder g2, int n, String dimName) {
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("lat").setDataType(DataType.FLOAT)
         .setParentGroupBuilder(g2).setDimensionsByName(dimName).setUnits(CDM.LAT_UNITS).setDesc("latitude");
 
     double incr = 180.0 / n;
@@ -206,8 +202,8 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
     return v;
   }
 
-  private CoordinateAxis.Builder makeLonCoordAxis(Group.Builder g2, int n, String dimName) {
-    CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName("lon").setDataType(DataType.FLOAT)
+  private CoordinateAxis.Builder<?> makeLonCoordAxis(Group.Builder g2, int n, String dimName) {
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("lon").setDataType(DataType.FLOAT)
         .setParentGroupBuilder(g2).setDimensionsByName(dimName).setUnits(CDM.LON_UNITS).setDesc("longitude");
 
     double incr = 360.0 / n;

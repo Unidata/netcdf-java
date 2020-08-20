@@ -25,7 +25,7 @@ import ucar.nc2.util.CancelTask;
 public class ZebraConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "Zebra";
 
-  ZebraConvention(NetcdfDataset.Builder datasetBuilder) {
+  ZebraConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -38,9 +38,9 @@ public class ZebraConvention extends CoordSystemBuilder {
     // the time coord var is created in the NcML
     // set its values = base_time + time_offset(time)
     Dimension timeDim = rootGroup.findDimension("time").orElse(null);
-    VariableDS.Builder base_time = (VariableDS.Builder) rootGroup.findVariableLocal("base_time").orElse(null);
-    VariableDS.Builder time_offset = (VariableDS.Builder) rootGroup.findVariableLocal("time_offset").orElse(null);
-    Variable.Builder time = rootGroup.findVariableLocal("time").orElse(null);
+    VariableDS.Builder<?> base_time = (VariableDS.Builder<?>) rootGroup.findVariableLocal("base_time").orElse(null);
+    VariableDS.Builder<?> time_offset = (VariableDS.Builder<?>) rootGroup.findVariableLocal("time_offset").orElse(null);
+    Variable.Builder<?> time = rootGroup.findVariableLocal("time").orElse(null);
     if ((timeDim == null) || (base_time == null) || (time_offset == null) || (time == null))
       return;
 
@@ -79,7 +79,7 @@ public class ZebraConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new ZebraConvention(datasetBuilder);
     }
   }

@@ -84,7 +84,7 @@ public class CoordTransformFactory {
    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
    * @param c class that implements CoordTransBuilderIF.
    */
-  public static void registerTransform(String transformName, Class c) {
+  public static void registerTransform(String transformName, Class<?> c) {
     if (!(VertTransformBuilderIF.class.isAssignableFrom(c)) && !(HorizTransformBuilderIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException(
           "Class " + c.getName() + " must implement VertTransformBuilderIF or HorizTransformBuilderIF");
@@ -115,7 +115,7 @@ public class CoordTransformFactory {
    * @throws ClassNotFoundException if Class.forName( className) fails
    */
   public static void registerTransform(String transformName, String className) throws ClassNotFoundException {
-    Class c = Class.forName(className);
+    Class<?> c = Class.forName(className);
     registerTransform(transformName, c);
   }
 
@@ -126,7 +126,7 @@ public class CoordTransformFactory {
    * @param className name of class that implements CoordTransBuilderIF.
    */
   public static void registerTransformMaybe(String transformName, String className) {
-    Class c;
+    Class<?> c;
     try {
       c = Class.forName(className);
     } catch (ClassNotFoundException e) {
@@ -139,7 +139,7 @@ public class CoordTransformFactory {
 
   private static class Transform {
     String transName;
-    Class transClass;
+    Class<?> transClass;
 
     Transform(String transName, Class transClass) {
       this.transName = transName;

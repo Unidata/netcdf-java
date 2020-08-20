@@ -35,14 +35,14 @@ public class GDVConvention extends CSMConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new GDVConvention(datasetBuilder);
     }
   }
 
   protected ProjectionCT projCT;
 
-  GDVConvention(NetcdfDataset.Builder datasetBuilder) {
+  GDVConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
     checkForMeter = false;
@@ -52,7 +52,7 @@ public class GDVConvention extends CSMConvention {
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
     projCT = makeProjectionCT();
     if (projCT != null) {
-      VariableDS.Builder vb = makeCoordinateTransformVariable(projCT);
+      VariableDS.Builder<?> vb = makeCoordinateTransformVariable(projCT);
       rootGroup.addVariable(vb);
 
       String xname = findCoordinateName(AxisType.GeoX);
@@ -125,8 +125,8 @@ public class GDVConvention extends CSMConvention {
    * @return name of axis of that type
    */
   private String findCoordinateName(AxisType axisType) {
-    for (Variable.Builder aVlist : rootGroup.vbuilders) {
-      VariableDS.Builder ve = (VariableDS.Builder) aVlist;
+    for (Variable.Builder<?> aVlist : rootGroup.vbuilders) {
+      VariableDS.Builder<?> ve = (VariableDS.Builder<?>) aVlist;
       if (axisType == getAxisType(ve)) {
         return ve.getFullName();
       }
@@ -148,7 +148,7 @@ public class GDVConvention extends CSMConvention {
   }
 
   @Override
-  protected AxisType getAxisType(VariableDS.Builder v) {
+  protected AxisType getAxisType(VariableDS.Builder<?> v) {
     String vname = v.shortName;
 
     if (vname.equalsIgnoreCase("x") || findAlias(v).equalsIgnoreCase("x"))
@@ -178,7 +178,7 @@ public class GDVConvention extends CSMConvention {
   }
 
   // look for an coord_axis or coord_alias attribute
-  private String findAlias(Variable.Builder v) {
+  private String findAlias(Variable.Builder<?> v) {
     String alias = v.getAttributeContainer().findAttributeString("coord_axis", null);
     if (alias == null)
       alias = v.getAttributeContainer().findAttributeString("coord_alias", "");
