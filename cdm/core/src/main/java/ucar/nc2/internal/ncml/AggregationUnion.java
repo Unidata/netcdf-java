@@ -11,13 +11,10 @@ import ucar.nc2.util.CancelTask;
 
 /**
  * Aggregation on datasets to be simply combined - aka "union".
- *
  * The variables are transferred from the component files to the ncml dataset
- *
- * @author caron
  */
 class AggregationUnion extends Aggregation {
-  AggregationUnion(NetcdfDataset.Builder ncd, String dimName, String recheckS) {
+  AggregationUnion(NetcdfDataset.Builder<?> ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.union, recheckS);
   }
 
@@ -35,13 +32,4 @@ class AggregationUnion extends Aggregation {
     }
   }
 
-  /*
-   * LOOK is this supported ?
-   * 
-   * @Override
-   * protected void rebuildDataset() throws IOException {
-   * // LOOK ncDataset.empty();
-   * buildNetcdfDataset(null);
-   * }
-   */
 }

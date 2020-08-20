@@ -236,7 +236,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   private static CommonCodeTable readCommonCodes(Table version) throws IOException {
     InputStream ios = null;
     try {
-      Class c = CommonCodeTable.class;
+      Class<?> c = CommonCodeTable.class;
       ios = c.getResourceAsStream(version.getResourceName());
       if (ios == null) {
         throw new IllegalStateException("CommonCodeTable cannot open " + version.getResourceName());

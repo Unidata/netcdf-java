@@ -5,6 +5,7 @@
 package ucar.nc2.internal.ncml;
 
 import java.util.Optional;
+import javax.annotation.Nullable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -16,12 +17,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 
-/**
- * Helper methods for constructing NetcdfDatasets.
- * 
- * @author caron
- * @since Jul 6, 2007
- */
+/** Helper methods for constructing NetcdfDatasets. */
 class BuilderHelper {
 
   /**
@@ -35,13 +31,14 @@ class BuilderHelper {
    * @param replaceCheck if null, add if a Variable of the same name doesnt already exist, otherwise
    *        replace if replaceCheck.replace( Variable v) is true
    */
-  static void transferDataset(NetcdfFile src, NetcdfDataset.Builder target, ReplaceVariableCheck replaceCheck) {
+  static void transferDataset(NetcdfFile src, NetcdfDataset.Builder<?> target,
+      @Nullable ReplaceVariableCheck replaceCheck) {
     transferGroup(src, target, src.getRootGroup(), target.rootGroup, replaceCheck);
   }
 
   // transfer the objects in src group to the target group
-  private static void transferGroup(NetcdfFile ds, NetcdfDataset.Builder targetDs, Group src, Group.Builder targetGroup,
-      ReplaceVariableCheck replaceCheck) {
+  private static void transferGroup(NetcdfFile ds, NetcdfDataset.Builder<?> targetDs, Group src,
+      Group.Builder targetGroup, @Nullable ReplaceVariableCheck replaceCheck) {
     boolean unlimitedOK = true; // LOOK why not allowed?
 
     // group attributes

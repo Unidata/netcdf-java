@@ -20,14 +20,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.CancelTask;
 
-/**
- * JoinNew Aggregation.
- *
- * @author caron
- */
+/** JoinNew Aggregation. */
 public class AggregationNew extends AggregationOuter {
 
-  public AggregationNew(NetcdfDataset.Builder ncd, String dimName, String recheckS) {
+  public AggregationNew(NetcdfDataset.Builder<?> ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.joinNew, recheckS);
   }
 
@@ -56,7 +52,7 @@ public class AggregationNew extends AggregationOuter {
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
       DataType coordType = getCoordinateType();
-      VariableDS.Builder joinAggCoordVar = VariableDS.builder().setName(dimName).setDataType(coordType)
+      VariableDS.Builder<?> joinAggCoordVar = VariableDS.builder().setName(dimName).setDataType(coordType)
           .setParentGroupBuilder(root).setDimensionsByName(dimName);
       root.addVariable(joinAggCoordVar);
       joinAggCoordVar.setProxyReader(this);
@@ -70,7 +66,7 @@ public class AggregationNew extends AggregationOuter {
       joinAggCoordVar.setSPobject(cv);
       cacheList.add(cv);
     } else {
-      Variable.Builder joinAggCoordVar = joinAggCoord.get();
+      Variable.Builder<?> joinAggCoordVar = joinAggCoord.get();
       if (joinAggCoordVar.getRank() == 0) {
         // For an existing variable matching the aggregated dim name, if it's a scalar
         // variable, we can just use it and its values for the aggregation coordinate variable
@@ -102,11 +98,11 @@ public class AggregationNew extends AggregationOuter {
         logger.error(ncDataset.location + " aggNewDimension cant find variable " + varname);
         continue;
       }
-      Variable.Builder aggVar = aggVarOpt.get();
+      Variable.Builder<?> aggVar = aggVarOpt.get();
 
       // construct new variable, replace old one LOOK what about Structures?
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(ncDataset, aggVar.getParentGroup());
-      VariableDS.Builder vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
+      VariableDS.Builder<?> vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
           .setParentGroupBuilder(root).setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(aggVar.getAttributeContainer(), vagg.getAttributeContainer());

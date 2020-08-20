@@ -13,12 +13,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.util.CancelTask;
 
-/**
- * A Proxy reader for a specific Variable.
- *
- * @author caron
- * @since 10/3/2019.
- */
+/** A Proxy reader for a specific Variable. */
 @Immutable
 public class AggProxyReader implements ProxyReader {
   private final AggDataset dataset;

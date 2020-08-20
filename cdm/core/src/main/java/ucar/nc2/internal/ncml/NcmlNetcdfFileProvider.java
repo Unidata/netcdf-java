@@ -12,6 +12,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.util.CancelTask;
 
+/** Provider of NetcdfFile */
 public class NcmlNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
