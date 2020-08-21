@@ -305,6 +305,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
+      read();
       return new CdmRemote(this);
     }
 

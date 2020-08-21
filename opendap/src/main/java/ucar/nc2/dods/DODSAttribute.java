@@ -12,16 +12,10 @@ import ucar.unidata.util.StringUtil2;
  * Adapter for dods.dap.Attribute into a ucar.nc2.Attribute.
  * Byte attributes are widened to short because DODS has Bytes as unsigned,
  * but in Java they are signed.
- *
- * @author caron
- * @see ucar.nc2.Attribute
  */
-
-// Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
 class DODSAttribute extends ucar.nc2.Attribute {
 
   static DODSAttribute create(String rawName, opendap.dap.Attribute att) {
-
     // LOOK dont know if attribute is unsigned byte
     DataType ncType = DODSNetcdfFile.convertToNCType(att.getType(), false);
 
@@ -64,14 +58,13 @@ class DODSAttribute extends ucar.nc2.Attribute {
   }
 
   private DODSAttribute(String name, Array values, String dodsName) {
-    // super(name, values); // TODO should be
-    super(name, "values"); // fake
-    setDODSName(dodsName);
+    super(name, values); // LOOK do we really need DODSAttribute?
+    this.dodsName = dodsName;
   }
 
   DODSAttribute(String dodsName, String val) {
     super(DODSNetcdfFile.makeShortName(dodsName), val);
-    setDODSName(DODSNetcdfFile.makeDODSName(dodsName));
+    this.dodsName = DODSNetcdfFile.makeDODSName(dodsName);
   }
 
   private static String[] escapeAttributeStrings = {"\\", "\""};
@@ -83,11 +76,7 @@ class DODSAttribute extends ucar.nc2.Attribute {
 
   //////////////////////////////////////////////////
   // DODSNode Interface
-  String dodsName = null;
-
-  public void setDODSName(String name) {
-    this.dodsName = name;
-  }
+  private String dodsName = null;
 
   public String getDODSName() {
     if (dodsName == null)

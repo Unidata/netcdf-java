@@ -32,6 +32,7 @@
 
 package opendap.test;
 
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,10 +42,7 @@ import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,27 +85,19 @@ public class TestDuplicates extends UnitTestCommon {
     boolean pass = true;
     for (Result result : results) {
       System.out.println("TestDuplicates: " + result.url);
-      boolean localpass = true;
-      try {
-        DODSNetcdfFile ncfile = new DODSNetcdfFile(result.url);
-        if (ncfile == null)
-          throw new Exception("Cannot read: " + result.url);
-        StringWriter ow = new StringWriter();
-        PrintWriter pw = new PrintWriter(ow);
-        CDLWriter.writeCDL(ncfile, pw, false);
-        try {
-          pw.close();
-          ow.close();
-        } catch (IOException ioe) {
-        } ;
+      try (DODSNetcdfFile ncfile = DODSNetcdfFile.builder().build(result.url, null)) {
+        Formatter f = new Formatter();
+        CDLWriter.writeCDL(ncfile, f, false, null);
+
         StringReader baserdr = new StringReader(result.cdl);
-        String captured = ow.toString();
+        String captured = f.toString();
         StringReader resultrdr = new StringReader(captured);
         // Diff the two files
         Diff diff = new Diff("Testing " + result.title);
-        localpass = !diff.doDiff(baserdr, resultrdr);
+        pass = !diff.doDiff(baserdr, resultrdr);
         baserdr.close();
         resultrdr.close();
+
         // Dump the output for visual comparison
         if (System.getProperty("visual") != null) {
           System.out.println("Testing " + result.title + " visual:");
@@ -115,14 +105,11 @@ public class TestDuplicates extends UnitTestCommon {
           System.out.print(captured);
           System.out.println("---------------");
         }
+
       } catch (IllegalArgumentException e) {
-        localpass = false;
-      }
-      if (!localpass)
         pass = false;
+      }
     }
-    System.out.flush();
-    System.err.flush();
     Assert.assertTrue("Testing " + getTitle(), pass);
   }
 

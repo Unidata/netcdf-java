@@ -186,11 +186,11 @@ public class TestDODSMultiArrayPrimitiveTypes {
   public void testStride() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
 
-    DODSVariable v = null;
+    DodsVariable v = null;
     Array a = null;
 
     // uint32
-    assert (null != (v = (DODSVariable) dodsfile.findVariable("b")));
+    assert (null != (v = (DodsVariable) dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
@@ -224,11 +224,11 @@ public class TestDODSMultiArrayPrimitiveTypes {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
     DODSNetcdfFile.setPreload(true);
 
-    DODSVariable v = null;
+    DodsVariable v = null;
     Array a = null;
 
     // uint32
-    assert (null != (v = (DODSVariable) dodsfile.findVariable("b")));
+    assert (null != (v = (DodsVariable) dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;

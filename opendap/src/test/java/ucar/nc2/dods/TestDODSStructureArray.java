@@ -12,7 +12,6 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
@@ -88,7 +87,7 @@ public class TestDODSStructureArray {
   @Test
   public void testArray2() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
-    DODSStructure exp = (DODSStructure) dodsfile.findVariable("exp");
+    DodsStructure exp = (DodsStructure) dodsfile.findVariable("exp");
     StructureData sd = exp.readStructure();
 
     StructureMembers.Member m = null;
@@ -149,7 +148,7 @@ public class TestDODSStructureArray {
   @Test
   public void testSARead() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
-    DODSStructure exp = (DODSStructure) dodsfile.findVariable("exp");
+    DodsStructure exp = (DodsStructure) dodsfile.findVariable("exp");
     StructureData data = exp.readStructure();
 
     StructureMembers.Member m = data.findMember("f");

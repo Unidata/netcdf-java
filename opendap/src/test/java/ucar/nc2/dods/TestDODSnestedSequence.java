@@ -71,7 +71,7 @@ public class TestDODSnestedSequence {
     Variable v = dodsfile.findVariable("person1");
     assert null != v;
     assert v instanceof Structure;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.isVariableLength();
 
@@ -110,7 +110,7 @@ public class TestDODSnestedSequence {
     v = s.findVariable("stuff");
     assert null != v;
     assert v instanceof Structure;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.isVariableLength();
 

@@ -9,7 +9,7 @@ package opendap.dap.parsers;
 
 import java.util.*;
 import opendap.dap.*;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.dods.EscapeStringsDap;
 import static opendap.dap.parsers.Dap2Lex.*;
 
 public abstract class Dap2Parse {
@@ -536,7 +536,7 @@ public abstract class Dap2Parse {
   }
 
   String dapdecode(Dap2Lex lexer, Object name) {
-    return EscapeStrings.unescapeDAPIdentifier((String) name);
+    return EscapeStringsDap.unescapeDAPIdentifier((String) name);
   }
 
   String unescapeAttributeString(String s) {

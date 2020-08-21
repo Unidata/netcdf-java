@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 
@@ -47,7 +46,7 @@ public class TestDODSStructureForSequence extends TestCase {
     }
 
     // Get the DODS structure for this DFS catalog.
-    DODSStructure struct = (DODSStructure) dfs.findVariable(seqName);
+    DodsStructure struct = (DodsStructure) dfs.findVariable(seqName);
     if (struct == null) {
       assertTrue("Did not find \"" + seqName + "\" variable on JPL DFS.", false);
     }

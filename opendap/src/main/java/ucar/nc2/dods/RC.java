@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ *  See LICENSE for license information.
  */
 
-package ucar.nc2.util.rc;
+package ucar.nc2.dods;
 
 import java.nio.charset.StandardCharsets;
 import java.io.*;
@@ -11,8 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
-/** @deprecated Will be moved to opendap package in 6. */
-@Deprecated
 public class RC {
   static boolean showlog; /* do not do any logging */
   public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RC.class);

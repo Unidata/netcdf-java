@@ -41,7 +41,7 @@ package opendap.dap;
 
 import java.nio.charset.StandardCharsets;
 import opendap.dap.parsers.DDSXMLParser;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.dods.EscapeStringsDap;
 import java.io.BufferedWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -763,7 +763,7 @@ public class Attribute extends DAPNode {
          * os.print(val);
          */
         if (this.type == Attribute.STRING) {
-          String quoted = "\"" + EscapeStrings.backslashEscapeDapString(val) + "\"";
+          String quoted = "\"" + EscapeStringsDap.backslashEscapeDapString(val) + "\"";
           for (int i = 0; i < quoted.length(); i++) {
             os.print((char) ((int) quoted.charAt(i)));
           }

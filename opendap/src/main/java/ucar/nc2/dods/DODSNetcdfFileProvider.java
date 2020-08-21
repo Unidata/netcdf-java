@@ -16,11 +16,11 @@ public class DODSNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public boolean isOwnerOf(DatasetUrl url) {
-    return url.serviceType == ServiceType.OPENDAP;
+    return url.getServiceType() == ServiceType.OPENDAP;
   }
 
   @Override
   public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-    return new DODSNetcdfFile(location, cancelTask);
+    return DODSNetcdfFile.builder().build(location, cancelTask);
   }
 }

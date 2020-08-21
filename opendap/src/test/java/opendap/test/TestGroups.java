@@ -32,12 +32,13 @@
 
 package opendap.test;
 
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.util.rc.RC;
+import ucar.nc2.dods.RC;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.TestDir;
@@ -126,19 +127,11 @@ public class TestGroups extends UnitTestCommon {
   }
 
   boolean process1(Testcase testcase) throws Exception {
-    DODSNetcdfFile ncfile = new DODSNetcdfFile(testcase.url);
-    if (ncfile == null)
-      throw new Exception("Cannot read: " + testcase.url);
-    StringWriter ow = new StringWriter();
-    PrintWriter pw = new PrintWriter(ow);
-    CDLWriter.writeCDL(ncfile, pw, false);
-    try {
-      pw.close();
-      ow.close();
-    } catch (IOException ioe) {
-    } ;
-    String captured = ow.toString();
-    visual(testcase.title, captured);
+    Formatter errs = new Formatter();
+    try (DODSNetcdfFile ncfile = DODSNetcdfFile.builder().build(testcase.url, null)) {
+      CDLWriter.writeCDL(ncfile, errs, false, null);
+      visual(testcase.title, errs.toString());
+    }
 
     // See if the cdl is in a file or a string.
     Reader baserdr = null;
@@ -149,9 +142,10 @@ public class TestGroups extends UnitTestCommon {
       } catch (Exception e) {
         return false;
       }
-    } else
+    } else {
       baserdr = new StringReader(testcase.cdl);
-    StringReader resultrdr = new StringReader(captured);
+    }
+    StringReader resultrdr = new StringReader(errs.toString());
     // Diff the two files
     Diff diff = new Diff("Testing " + testcase.title);
     boolean pass = !diff.doDiff(baserdr, resultrdr);

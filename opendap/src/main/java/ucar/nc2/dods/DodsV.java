@@ -38,8 +38,6 @@ import ucar.nc2.constants.CDM;
  * array of DStructure: DArray with BaseTypePrimitiveVector, whose values are DStructure
  * array of DGrid, DSequence: (not sure how to interpret)
  * DSequence: values = Vector (rows) containing Vector (fields)
- *
- * @author caron
  */
 
 class DodsV implements Comparable {

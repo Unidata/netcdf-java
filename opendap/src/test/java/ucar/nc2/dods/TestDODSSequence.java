@@ -71,7 +71,7 @@ public class TestDODSSequence {
     Variable v = dodsfile.findVariable("person");
     assert null != v;
     assert v instanceof Structure;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
 
     Array a = v.read();

@@ -12,9 +12,8 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -43,7 +42,7 @@ public class TestUserProblems {
 
       // array
       assert (null != (dataV = dodsfile.findVariable("olr")));
-      assert dataV instanceof DODSVariable;
+      assert dataV instanceof DodsVariable;
 
       // maps
       Variable v = null;
@@ -72,7 +71,7 @@ public class TestUserProblems {
       System.out.printf("The GRIB file %s, temperature is displayed.", testfile);
       System.out.println();
 
-      Variable V2 = ncfile.findVariableByAttribute(null, "units", "K");
+      Variable V2 = ncfile.getRootGroup().findVariableByAttribute("units", "K");
 
       List<Dimension> newdim = V2.getDimensions();
       int num_of_dimension = newdim.size();
