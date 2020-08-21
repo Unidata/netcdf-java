@@ -110,14 +110,14 @@ public class TestDODSStructureScalarsNested {
     Variable v = null;
     Array a = null;
 
-    DODSStructure types = null;
+    DodsStructure types = null;
     StructureMembers.Member m;
     StructureData integers = null, floats = null, strings = null;
 
     assert (null != (v = dodsfile.findVariable("types")));
     System.out.println("types=" + v);
-    assert v instanceof DODSStructure;
-    types = (DODSStructure) v;
+    assert v instanceof DodsStructure;
+    types = (DodsStructure) v;
 
     assert (null != (v = types.findVariable("integers")));
     assert v instanceof Structure;
@@ -176,14 +176,14 @@ public class TestDODSStructureScalarsNested {
     Variable v = null;
     Array a = null;
 
-    DODSStructure types = null;
+    DodsStructure types = null;
     StructureMembers.Member m = null;
     StructureData integers = null, floats = null, strings = null;
 
     assert (null != (v = dodsfile.findVariable("types")));
     System.out.println("types=" + v);
-    assert v instanceof DODSStructure;
-    types = (DODSStructure) v;
+    assert v instanceof DodsStructure;
+    types = (DodsStructure) v;
 
     StructureData sdata = types.readStructure();
 

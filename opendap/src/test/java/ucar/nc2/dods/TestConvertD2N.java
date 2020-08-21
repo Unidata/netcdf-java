@@ -15,8 +15,8 @@ import ucar.ma2.ArrayStructure;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Variable;
-import ucar.nc2.util.IO;
 import ucar.nc2.write.Ncdump;
+import ucar.unidata.io.http.ReadFromUrl;
 import ucar.unidata.util.test.UtilsMa2Test;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -74,7 +74,7 @@ public class TestConvertD2N {
 
     // show the original contents
     System.out.println("--" + urlName + ".asc?" + CE);
-    System.out.println(IO.readURLcontents(urlName + ".asc?" + CE));
+    System.out.println(ReadFromUrl.readURLcontents(urlName + ".asc?" + CE));
 
     System.out.println("============");
 
@@ -93,29 +93,28 @@ public class TestConvertD2N {
     DodsV root = DodsV.parseDataDDS(dataDDS);
 
     ConvertD2N converter = new ConvertD2N();
-    DODSNetcdfFile dodsfile = new DODSNetcdfFile(urlName);
-    List vars = dodsfile.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      String name = DODSNetcdfFile.getDODSConstraintName(v);
-      DodsV dodsV = root.findByDodsShortName(name);
-      if (dodsV == null) {
-        System.out.println("Cant find " + name);
-        continue;
+    try (DODSNetcdfFile dodsfile = DODSNetcdfFile.builder().build(urlName, null)) {
+      for (Variable v : dodsfile.getVariables()) {
+        String name = DODSNetcdfFile.getDODSConstraintName(v);
+        DodsV dodsV = root.findByDodsShortName(name);
+        if (dodsV == null) {
+          System.out.println("Cant find " + name);
+          continue;
+        }
+        Array data = converter.convertTopVariable(v, null, dodsV);
+        showArray(v.getFullName(), data, System.out, "");
       }
-      Array data = converter.convertTopVariable(v, null, dodsV);
-      showArray(v.getFullName(), data, System.out, "");
-    }
 
-    /*
-     * for (int i = 0; i < root.children.size(); i++) {
-     * DodsV dodsV = (DodsV) root.children.get(i);
-     * Variable v = dodsfile.findVariable( dodsV.getNetcdfShortName());
-     * Array data = converter.convertTopVariable(v, null, dodsV);
-     * showArray( data, System.out, "");
-     * }
-     */
-    System.out.println("============");
+      /*
+       * for (int i = 0; i < root.children.size(); i++) {
+       * DodsV dodsV = (DodsV) root.children.get(i);
+       * Variable v = dodsfile.findVariable( dodsV.getNetcdfShortName());
+       * Array data = converter.convertTopVariable(v, null, dodsV);
+       * showArray( data, System.out, "");
+       * }
+       */
+      System.out.println("============");
+    }
   }
 
   static void showDDS(DataDDS dds, PrintWriter out) {
@@ -131,34 +130,35 @@ public class TestConvertD2N {
   static boolean useNC = false;
 
   static void testConvertDDS(String urlName, DataDDS dataDDS, PrintStream out) throws IOException, DAP2Exception {
-    DODSNetcdfFile dodsfile = new DODSNetcdfFile(urlName);
-    System.out.println(dodsfile.toString());
+    try (DODSNetcdfFile dodsfile = DODSNetcdfFile.builder().build(urlName, null)) {
+      System.out.println(dodsfile.toString());
 
-    if (useNC) {
-      List vars = dodsfile.getVariables();
-      for (int i = 0; i < vars.size(); i++) {
-        Variable v = (Variable) vars.get(i);
-        Array data = v.read();
+      if (useNC) {
+        List vars = dodsfile.getVariables();
+        for (int i = 0; i < vars.size(); i++) {
+          Variable v = (Variable) vars.get(i);
+          Array data = v.read();
+          if (showData)
+            logger.debug(Ncdump.printArray(data, v.getFullName() + data.shapeToString(), null));
+        }
+      }
+
+      ConvertD2N converter = new ConvertD2N();
+      DodsV root = DodsV.parseDataDDS(dataDDS);
+      for (int i = 0; i < root.children.size(); i++) {
+        DodsV dodsV = root.children.get(i);
+        Variable v = dodsfile.findVariable(dodsV.getFullName());
+        Array data = converter.convertTopVariable(v, null, dodsV);
+        showArray(v.getFullName(), data, out, "");
+
+        if (useNC) {
+          Array data2 = v.read();
+          UtilsMa2Test.testEquals(data, data2);
+        }
+
         if (showData)
           logger.debug(Ncdump.printArray(data, v.getFullName() + data.shapeToString(), null));
       }
-    }
-
-    ConvertD2N converter = new ConvertD2N();
-    DodsV root = DodsV.parseDataDDS(dataDDS);
-    for (int i = 0; i < root.children.size(); i++) {
-      DodsV dodsV = root.children.get(i);
-      Variable v = dodsfile.findVariable(dodsV.getFullName());
-      Array data = converter.convertTopVariable(v, null, dodsV);
-      showArray(v.getFullName(), data, out, "");
-
-      if (useNC) {
-        Array data2 = v.read();
-        UtilsMa2Test.testEquals(data, data2);
-      }
-
-      if (showData)
-        logger.debug(Ncdump.printArray(data, v.getFullName() + data.shapeToString(), null));
     }
 
   }

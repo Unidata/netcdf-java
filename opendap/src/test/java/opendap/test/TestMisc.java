@@ -32,6 +32,7 @@
 
 package opendap.test;
 
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -107,22 +108,18 @@ public class TestMisc extends UnitTestCommon {
   }
 
   boolean process1(Testcase testcase) throws Exception {
-    DODSNetcdfFile ncfile = new DODSNetcdfFile(testcase.url);
-    if (ncfile == null)
-      throw new Exception("Cannot read: " + testcase.url);
-    StringWriter ow = new StringWriter();
-    PrintWriter pw = new PrintWriter(ow);
-    CDLWriter.writeCDL(ncfile, pw, false);
-    pw.close();
-    ow.close();
-    String captured = ow.toString();
-    boolean pass = true;
-    visual(testcase.title, captured);
-    if (System.getProperty("baseline") != null) {
-      baseline(testcase, captured);
-    } else
-      pass = diff(testcase, captured);
-    return pass;
+    Formatter errs = new Formatter();
+    try (DODSNetcdfFile ncfile = DODSNetcdfFile.builder().build(testcase.url, null)) {
+      CDLWriter.writeCDL(ncfile, errs, false, null);
+      String captured = errs.toString();
+      boolean pass = true;
+      visual(testcase.title, captured);
+      if (System.getProperty("baseline") != null) {
+        baseline(testcase, captured);
+      } else
+        pass = diff(testcase, captured);
+      return pass;
+    }
   }
 
   boolean diff(Testcase testcase, String captured) throws Exception {

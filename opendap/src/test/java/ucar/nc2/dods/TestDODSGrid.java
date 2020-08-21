@@ -37,7 +37,7 @@ public class TestDODSGrid {
 
     // arrays
     assert (null != (v = dodsfile.findVariable("OneD")));
-    assert v instanceof DODSVariable;
+    assert v instanceof DodsVariable;
     checkArray(v);
 
     // map

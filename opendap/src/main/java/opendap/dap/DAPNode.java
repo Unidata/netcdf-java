@@ -40,10 +40,10 @@
 
 package opendap.dap;
 
-import ucar.nc2.util.EscapeStrings;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import ucar.nc2.dods.EscapeStringsDap;
 
 /**
  * The DAPNode class is the common parent type for
@@ -191,7 +191,7 @@ public class DAPNode implements Cloneable, Serializable {
    */
   public final void setEncodedName(String n) {
     _nameEncoded = n;
-    _nameClear = EscapeStrings.unescapeDAPIdentifier(n);
+    _nameClear = EscapeStringsDap.unescapeDAPIdentifier(n);
   }
 
   /**
@@ -201,7 +201,7 @@ public class DAPNode implements Cloneable, Serializable {
    */
   public void setClearName(String n) {
     _nameClear = n;
-    _nameEncoded = EscapeStrings.escapeDAPIdentifier(n);
+    _nameEncoded = EscapeStringsDap.escapeDAPIdentifier(n);
   }
 
   /**

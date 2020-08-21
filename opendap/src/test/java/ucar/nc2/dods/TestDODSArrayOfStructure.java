@@ -13,7 +13,7 @@ import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
@@ -109,11 +109,11 @@ public class TestDODSArrayOfStructure {
   public void testReadArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     Array data = struct.read();
     assert data.getRank() == 1;
     assert data.getElementType().equals(StructureData.class);
@@ -129,11 +129,11 @@ public class TestDODSArrayOfStructure {
   public void testRead1DArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     for (int i = 0; i < struct.getSize(); i++) {
       StructureData sd = struct.readStructure(i);
 
@@ -146,11 +146,11 @@ public class TestDODSArrayOfStructure {
   public void testReadIteratorArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     try (StructureDataIterator iter = struct.getStructureIterator()) {
       while (iter.hasNext()) {
         StructureData sd = iter.next();

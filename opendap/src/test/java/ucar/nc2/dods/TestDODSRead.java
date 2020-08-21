@@ -26,7 +26,7 @@ public class TestDODSRead {
 
   static DODSNetcdfFile openAbs(String filename) throws IOException {
     System.out.println("TestDODSRead = " + filename);
-    DODSNetcdfFile dodsfile = new DODSNetcdfFile(filename);
+    DODSNetcdfFile dodsfile = DODSNetcdfFile.builder().build(filename, null);
     if (showFileDebug)
       System.out.println(dodsfile.getDetailInfo());
     if (showFile)
