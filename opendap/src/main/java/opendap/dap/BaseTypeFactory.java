@@ -52,7 +52,6 @@ package opendap.dap;
  * return instances of the appropriate types.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  * @see DefaultFactory
  * @see DDS

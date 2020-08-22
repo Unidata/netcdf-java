@@ -386,9 +386,8 @@ class DodsV implements Comparable {
    * @throws IOException on io error
    */
   void parseDAS(DAS das) throws IOException {
-    Enumeration tableNames = das.getNames();
-    while (tableNames.hasMoreElements()) {
-      String tableName = (String) tableNames.nextElement();
+    for (String tableName : das) {
+
       AttributeTable attTable = das.getAttributeTableN(tableName);
 
       if (tableName.equals("NC_GLOBAL") || tableName.equals("HDF_GLOBAL")) {
@@ -420,9 +419,7 @@ class DodsV implements Comparable {
     if (attTable == null)
       return;
 
-    java.util.Enumeration attNames = attTable.getNames();
-    while (attNames.hasMoreElements()) {
-      String attName = (String) attNames.nextElement();
+    for (String attName : attTable) {
       opendap.dap.Attribute att = attTable.getAttribute(attName);
       if (att == null) {
         logger.error("Attribute not found=" + attName + " in table=" + attTable.getEncodedName());

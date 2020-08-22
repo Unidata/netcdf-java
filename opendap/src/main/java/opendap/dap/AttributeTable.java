@@ -41,134 +41,42 @@
 package opendap.dap;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import javax.annotation.Nullable;
 import opendap.dap.parsers.DDSXMLParser;
-import opendap.util.SortedTable;
-import opendap.util.Debug;
 import java.io.*;
 
 /**
  * An <code>AttributeTable</code> stores a set of names and, for each name,
- * an <code>Attribute</code> object. For more information on the types of
- * data which can be stored in an attribute, including aliases and other
- * <code>AttributeTable</code> objects, see the documentation for
- * <code>Attribute</code>.
- * <p/>
- * The attribute tables have a standard printed representation. There is a
- * <code>print</code> method for writing this form and a <code>parse</code>
- * method for reading the printed form.
- * <p/>
- * An <code>AttributeTable</code>'s print representation might look like:
- * 
- * <pre>
- *   String long_name "Weekly Means of Sea Surface Temperature";
- * </pre>
- * 
- * or
- * 
- * <pre>
- *   actual_range {
- *       Float64 min -1.8;
- *       Float64 max 35.09;
- *   }
- * </pre>
- * 
- * or
- * 
- * <pre>
- *   String Investigators "Cornillon", "Fleirl", "Watts";
- * </pre>
- * 
- * or
- * 
- * <pre>
- *   Alias New_Attribute Old_Attribute;
- * </pre>
- * 
- * Here, <em>long_name</em> and <em>Investigators</em> are
- * simple attributes, <em>actual_range</em> is a container attribute, and
- * <em>New_Attribute</em> is an alias pointing to <em>Old_Attribute</em>.
+ * an <code>Attribute</code> object.
+ * It is an Iterable< that returns the attribute names in insert order.
  *
  * @author jehamby
- * @version $Revision: 15901 $
- * @see DAS
- * @see Attribute
  *
  *      Modified 1/9/2011 Dennis Heimbigner
  *      - Make subclass of BaseType for uniformity
  */
 
-public class AttributeTable extends DAPNode {
-  /**
-   * A table of Attributes with their names as a key
-   */
-  private SortedTable _attr;
+public class AttributeTable extends DAPNode implements Iterable<String> {
+  /** A table of Attributes with their names as a key. */
+  private LinkedHashMap<String, Attribute> attributes;
 
-  /**
-   * Create a new empty <code>AttributeTable</code>.
-   *
-   * @deprecated Use constructor that takes the name of the table.
-   */
-  public AttributeTable() {
-    _attr = new SortedTable();
-  }
-
-  /**
-   * Create a new empty <code>AttributeTable</code>.
-   */
+  /** Create a new empty <code>AttributeTable</code>. */
   public AttributeTable(String clearname) {
     super(clearname);
-    _attr = new SortedTable();
+    attributes = new LinkedHashMap<>();
   }
 
-  /**
-   *
-   * @return the # of contained attributes
-   */
+  /** @return the # of contained attributes */
   public int size() {
-    return (_attr == null ? 0 : _attr.size());
+    return (attributes == null) ? 0 : attributes.size();
   }
 
-  /**
-   * Returns an <code>Enumeration</code> of the attribute names in this
-   * <code>AttributeTable</code>.
-   * Use the <code>getAttribute</code> method to get the
-   * <code>Attribute</code> for a given name.
-   *
-   * @return an <code>Enumeration</code> of <code>String</code>.
-   * @see AttributeTable#getAttribute(String)
-   */
-  public final Enumeration getNames() {
-    return _attr.keys();
-  }
-
-  /**
-   * Returns the <code>Attribute</code> which matches name.
-   *
-   * @param clearname the name of the <code>Attribute</code> to return.
-   * @return the <code>Attribute</code> with the specified name, or null
-   *         if there is no matching <code>Attribute</code>.
-   * @see Attribute
-   */
+  /** Returns the <code>Attribute</code> which matches name. */
+  @Nullable
   public final Attribute getAttribute(String clearname) { // throws NoSuchAttributeException {
-    Attribute a = (Attribute) _attr.get(clearname);
-    return (a);
-  }
-
-  /**
-   * Returns the <code>Attribute</code> which matches name.
-   *
-   * @param clearname the name of the <code>Attribute</code> to return.
-   * @return True if an Attribute with named 'name' exists, False otherwise.
-   * @see Attribute
-   */
-  public final boolean hasAttribute(String clearname) {
-    Attribute a = (Attribute) _attr.get(clearname);
-
-    if (a == null) {
-      return (false);
-    }
-    return (true);
+    return attributes.get(clearname);
   }
 
   /**
@@ -195,23 +103,16 @@ public class AttributeTable extends DAPNode {
    * @see AttributeTable#appendContainer(String)
    */
   public final void appendAttribute(String clearname, int type, String value, boolean check) throws DASException {
-
-    Attribute a = (Attribute) _attr.get(clearname);
-
+    Attribute a = attributes.get(clearname);
     if (a != null && (type != a.getType())) {
-
       // type mismatch error
       throw new AttributeExistsException(
           "The Attribute `" + clearname + "' was previously defined with a different type.");
-
     } else if (a != null) {
-
       a.appendValue(value, check);
-
     } else {
-
       a = new Attribute(type, clearname, value, check);
-      _attr.put(clearname, a);
+      attributes.put(clearname, a);
     }
   }
 
@@ -248,15 +149,16 @@ public class AttributeTable extends DAPNode {
    * @return A pointer to the new <code>AttributeTable</code> object, or null
    *         if a container by that name already exists.
    */
+  @Nullable
   public final AttributeTable appendContainer(String clearname) {
     // return null if clearname already exists
     // FIXME! THIS SHOULD RETURN AN EXCEPTION!
-    if (_attr.get(clearname) != null)
+    if (attributes.get(clearname) != null)
       return null;
 
     AttributeTable at = new AttributeTable(clearname);
     Attribute a = new Attribute(clearname, at);
-    _attr.put(clearname, a);
+    attributes.put(clearname, a);
     return at;
   }
 
@@ -268,15 +170,13 @@ public class AttributeTable extends DAPNode {
    *        if a container by that name already exists.
    */
   public final void addContainer(String clearname, AttributeTable at) throws AttributeExistsException {
-
-    // return null if name already exists
-    if (_attr.get(clearname) != null) {
+    if (attributes.get(clearname) != null) {
       throw new AttributeExistsException(
           "The Attribute '" + clearname + "' already exists in the container '" + getEncodedName() + "'");
     }
 
     Attribute a = new Attribute(clearname, at);
-    _attr.put(clearname, a);
+    attributes.put(clearname, a);
   }
 
   /**
@@ -291,25 +191,17 @@ public class AttributeTable extends DAPNode {
    * @param alias The alias to insert into the attribute table.
    * @param attributeName The normalized name of the attribute to which
    *        the alias will refer.
-   * @throws NoSuchAttributeException thrown if the existing attribute
-   *         could not be found.
    * @throws AttributeExistsException thrown if the new alias has the same
    *         name as an existing attribute.
    */
-  public final void addAlias(String alias, String attributeName)
-      throws NoSuchAttributeException, AttributeExistsException {
-
+  public final void addAlias(String alias, String attributeName) throws AttributeExistsException {
     // complain if alias name already exists in this AttributeTable.
-    if (_attr.get(alias) != null) {
+    if (attributes.get(alias) != null) {
       throw new AttributeExistsException("Could not alias `" + alias + "' to `" + attributeName + "'. "
           + "It is a duplicat name in this AttributeTable");
     }
-    if (Debug.isSet("AttributTable")) {
-      log.debug("Adding alias '" + alias + "' to AttributeTable '" + getClearName() + "'");
-    }
-
     Alias newAlias = new Alias(alias, attributeName);
-    _attr.put(alias, newAlias);
+    attributes.put(alias, newAlias);
   }
 
   /**
@@ -319,7 +211,7 @@ public class AttributeTable extends DAPNode {
    *        attribute of any type, including containers.
    */
   public final void delAttribute(String clearname) {
-    _attr.remove(clearname);
+    attributes.remove(clearname);
   }
 
   /**
@@ -336,23 +228,14 @@ public class AttributeTable extends DAPNode {
   public final void delAttribute(String clearname, int i) throws DASException {
 
     if (i == -1) { // delete the whole attribute
-
-      _attr.remove(clearname);
-
+      attributes.remove(clearname);
     } else {
-
-      Attribute a = (Attribute) _attr.get(clearname);
-
+      Attribute a = attributes.get(clearname);
       if (a != null) {
-
         if (a.isContainer()) {
-
-          _attr.remove(clearname); // delete the entire container
-
+          attributes.remove(clearname); // delete the entire container
         } else {
-
           a.deleteValueAt(i);
-
         }
       }
     }
@@ -365,23 +248,13 @@ public class AttributeTable extends DAPNode {
    * @param pad the number of spaces to indent each line.
    */
   public void print(PrintWriter os, String pad) {
-
-    if (Debug.isSet("AttributTable"))
-      os.println("Entered AttributeTable.print()");
-
     os.println(pad + getEncodedName() + " {");
-    for (Enumeration e = getNames(); e.hasMoreElements();) {
-
-      String name = (String) e.nextElement();
+    for (String name : attributes.keySet()) {
       Attribute a = getAttribute(name);
       if (a != null)
         a.print(os, pad + "    ");
-
-
     }
     os.println(pad + "}");
-    if (Debug.isSet("AttributTable"))
-      os.println("Leaving AttributeTable.print()");
     os.flush();
   }
 
@@ -440,82 +313,26 @@ public class AttributeTable extends DAPNode {
   }
 
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
-
-    if (Debug.isSet("AttributTable"))
-      pw.println("Entered AttributeTable.print()");
-
     pw.println(pad + "<Attribute name=\"" + DDSXMLParser.normalizeToXML(getEncodedName()) + "\" type=\"Container\">");
 
-    Enumeration e = getNames();
-    while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
+    for (String name : attributes.keySet()) {
       Attribute a = getAttribute(name);
       if (a != null)
         a.printXML(pw, pad + "\t", constrained);
-
     }
     pw.println(pad + "</Attribute>");
-    if (Debug.isSet("AttributTable"))
-      pw.println("Leaving AttributeTable.print()");
     pw.flush();
-
-
   }
 
-  /**
-   * Returns a clone of this <code>AttributeTable</code>.
-   * See DAPNode.cloneDag()
-   *
-   * @param map track previously cloned nodes
-   * @return a clone of this <code>Attribute</code>.
-   */
-  public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
+  /** Returns a copy of this <code>AttributeTable</code>. */
+  public AttributeTable cloneDAG(CloneMap map) throws CloneNotSupportedException {
     AttributeTable at = (AttributeTable) super.cloneDAG(map);
-    at._attr = new SortedTable();
-    for (int i = 0; i < _attr.size(); i++) {
-      String key = (String) _attr.getKey(i);
-      Attribute element = (Attribute) _attr.elementAt(i);
-      // clone element (don't clone key because it's a read-only String)
-      at._attr.put(key, (Attribute) cloneDAG(map, element));
-    }
+    at.attributes = new LinkedHashMap<>(attributes);
     return at;
   }
 
+  @Override
+  public Iterator<String> iterator() {
+    return attributes.keySet().iterator();
+  }
 }
-
-// $Log: AttributeTable.java,v $
-// Revision 1.3 2003/09/02 17:49:34 ndp
-// *** empty log message ***
-//
-// Revision 1.2 2003/09/02 15:06:25 ndp
-// *** empty log message ***
-//
-// Revision 1.1 2003/08/12 23:51:25 ndp
-// Mass check in to begin Java-OPeNDAP development work
-//
-// Revision 1.12 2011/01/09 Dennis Heimbigner
-// - Make subclass of BaseType for uniformity
-//
-// Revision 1.11 2003/04/07 22:12:32 jchamber
-// added serialization
-//
-// Revision 1.10 2003/02/12 16:41:15 ndp
-// *** empty log message ***
-//
-// Revision 1.9 2002/10/10 18:12:31 ndp
-// Fixed bugs in DDS.getDAS(), Updated testDataset and sqlDataset
-//
-// Revision 1.8 2002/10/08 21:59:18 ndp
-// Added XML functionality to the core. This includes the new DDS code (aka DDX)
-// for parsing XML representations of the dataset description ( that's a DDX)
-// Also BaseType has been modified to hold Attributes and methods added to DDS
-// to ingest DAS's (inorder to add Attributes to variables) and to get the DAS
-// object from the DDS. Geturl and DConnect hav been modified to provide client
-// access to this new set of functionalites. ndp 10/8/2002
-//
-// Revision 1.7 2002/05/30 23:25:57 jimg
-// I added methods that provide a way to add attribues without the usual
-// type/value checking. See today's log in Attribute.java for more info.
-//
-
-

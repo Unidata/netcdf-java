@@ -44,7 +44,6 @@ package opendap.dap;
  * Thrown when an attempt is made to access a function that does not exist.
  *
  * @author jhrg
- * @version $Revision: 15901 $
  */
 
 public class NoSuchFunctionException extends DDSException {

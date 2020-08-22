@@ -46,8 +46,6 @@ import java.io.*;
  * A vector of ints.
  *
  * @author jehamby
- * @version $Revision: 15901 $
- * @see PrimitiveVector
  */
 public class Int32PrimitiveVector extends PrimitiveVector {
   /**

@@ -45,8 +45,6 @@ import java.io.*;
  * A vector of doubles.
  *
  * @author ndp
- * @version $Revision: 20918 $
- * @see PrimitiveVector
  */
 public class Float32PrimitiveVector extends PrimitiveVector {
 

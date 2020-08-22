@@ -180,7 +180,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
           String vCE = proj.substring(subsetPos);
           if (DODSNetcdfFile.debugCE)
             System.out.println(" vCE = <" + vname + "><" + vCE + ">");
-          DodsVariable dodsVar = (DodsVariable) findVariable(vname);
+          DodsVariable.Builder dodsVar = findVariable(vname);
           if (dodsVar == null)
             throw new IOException("Variable not found: " + vname);
 
@@ -188,24 +188,6 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
           dodsVar.setCaching(true);
         }
       }
-    }
-
-    // preload scalers, coordinate variables, strings, small arrays
-    if (DODSNetcdfFile.preload) {
-      List<Variable> preloadList = new ArrayList<Variable>();
-      for (Variable dodsVar : variables) {
-        long size = dodsVar.getSize() * dodsVar.getElementSize();
-        if ((dodsVar.isCoordinateVariable() && size < DODSNetcdfFile.preloadCoordVarSize) || dodsVar.isCaching()
-            || dodsVar.getDataType() == DataType.STRING) {
-          dodsVar.setCaching(true);
-          preloadList.add(dodsVar);
-          if (DODSNetcdfFile.debugPreload)
-            System.out.printf("  preload (%6d) %s%n", size, dodsVar.getFullName());
-        }
-      }
-      if (cancelTask != null && cancelTask.isCancel())
-        return;
-      preloadData(preloadList);
     }
 
     if (DODSNetcdfFile.showNCfile)
@@ -222,17 +204,13 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     }
 
     // loop over attribute tables, collect global attributes
-    Enumeration tableNames = das.getNames();
-    while (tableNames.hasMoreElements()) {
-      String tableName = (String) tableNames.nextElement();
+    for (String tableName : das) {
       AttributeTable attTable = das.getAttributeTableN(tableName);
       if (attTable == null)
         continue; // should probably never happen
 
       if (tableName.equals("DODS_EXTRA")) {
-        Enumeration attNames = attTable.getNames();
-        while (attNames.hasMoreElements()) {
-          String attName = (String) attNames.nextElement();
+        for (String attName : attTable) {
           if (attName.equals("Unlimited_Dimension")) {
             opendap.dap.Attribute att = attTable.getAttribute(attName);
             DODSAttribute ncatt = DODSAttribute.create(attName, att);
@@ -242,9 +220,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
         }
 
       } else if (tableName.equals("EXTRA_DIMENSION")) {
-        Enumeration attNames = attTable.getNames();
-        while (attNames.hasMoreElements()) {
-          String attName = (String) attNames.nextElement();
+        for (String attName : attTable) {
           opendap.dap.Attribute att = attTable.getAttribute(attName);
           DODSAttribute ncatt = DODSAttribute.create(attName, att);
           int length = ncatt.getNumericValue().intValue();
@@ -383,7 +359,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     } else if (dodsBT instanceof DStructure) {
       DStructure dstruct = (DStructure) dodsBT;
       if (dodsV.darray == null) {
-        if ((RC.getUseGroups() && (parentStructure == null) && isGroup(dstruct)) { // turn into a group
+        if (RC.getUseGroups() && (parentStructure == null) && isGroup(dstruct)) { // turn into a group
           if (DODSNetcdfFile.debugConstruct)
             System.out.println(" assigned to Group <" + dodsShortName + ">");
           Group.Builder gnested = Group.builder().setName(DODSNetcdfFile.makeShortName(dodsShortName));
@@ -414,7 +390,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     }
   }
 
-  private void makeCoordinateVariable(Group.Builder parentGroup, Variable.Builder v, Array data) {
+  private void makeCoordinateVariable(Group.Builder parentGroup, Variable.Builder<?> v, Array data) {
     String name = v.shortName;
 
     // replace in Variable
@@ -430,161 +406,11 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
 
     // might as well cache the data
     if (data != null) {
-      v.setCachedData(data);
+      v.setCachedData(data, false);
       if (DODSNetcdfFile.debugCached)
         System.out.println(" cache for <" + name + "> length =" + data.getSize());
     }
   }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-  // What is reGroup?
-
-  // Define a utility class to decompose names
-  private static class NamePieces {
-    String prefix = null; // group part of the path
-    String var = null; // struct part of the path
-    String name = null; // last name in a path
-  }
-
-  /**
-   * Go thru the variables/structure-variables and their attributes and move to the proper groups.
-   */
-  protected void reGroup() {
-    Preconditions.checkArgument(RC.getUseGroups());
-
-    // Start by moving global attributes
-    // An issue to be addressed is that some attributes that should be attached
-    // to variables, instead get made global with name var.att.
-    for (Attribute ncatt : rootGroup.getAttributeContainer()) {
-      DODSAttribute dodsatt = (DODSAttribute) ncatt;
-      String dodsname = dodsatt.getDODSName();
-      NamePieces pieces = parseName(dodsname);
-      if (pieces.var != null) {
-        // Figure out which variable to which this attribute should be moved.
-        // In the event that there is no matching
-        // variable, then keep the attribute as is.
-        String searchname = pieces.var;
-        if (pieces.prefix != null)
-          searchname = pieces.prefix + '/' + searchname;
-        Variable.Builder<?> v = rootGroup.findVariableNested(searchname).orElse(null);
-        if (v != null) {
-          // TODO WRONG MUST REMOVE
-          // rootgroup.remove(ncatt);
-          // change attribute name to remove var.
-          Attribute renameAtt = ncatt.toBuilder().setName(pieces.name).build();
-          v.addAttribute(renameAtt);
-        }
-      } else if (pieces.prefix != null) {
-        // We have a true group global name to move to proper group
-        // convert prefix to an actual group
-        Group.Builder gb = Group.builder().setName(dodsname); // LOOK ignorelast?
-        rootGroup.addGroup(gb);
-        // TODO WRONG MUST REMOVE
-        // rootgroup.remove(ncatt);
-        gb.addAttribute(ncatt);
-      }
-    }
-
-    Object[] varlist = rootgroup.getVariables().toArray();
-
-    // In theory, we should be able to fix variable attributes
-    // by just removing the group prefix. However, there is the issue
-    // that attribute names sometimes have as a suffix varname.attname.
-    // So, we should use that to adjust the attribute to attach to that
-    // variable.
-    for (Object var : varlist) {
-      reGroupVariableAttributes(rootgroup, (Variable) var);
-    }
-  }
-
-  @Deprecated
-  protected void reGroupVariable(Group.Builder rootgroup, DodsVariable dodsv) {
-    String dodsname = dodsv.getDODSName();
-    NamePieces pieces = parseName(dodsname);
-    if (pieces.prefix != null) {
-      // convert prefix to an actual group
-      Group.Builder gnew = rootgroup.makeRelativeGroup(this, dodsname, true);
-      // Get current group for the variable
-      Group.Builder gold;
-      gold = dodsv.getParentGroupOrRoot();
-      if (gnew != gold) {
-        gold.remove(dodsv);
-        dodsv.setParentGroup(gnew);
-        gnew.addVariable(dodsv);
-      }
-    }
-  }
-
-  private void reGroupVariableAttributes(Group.Builder rootgroup, Variable.Builder vb) {
-    String vname = vb.shortName;
-    Group.Builder vgroup = vb.getParentGroupOrRoot();
-    for (Attribute ncatt : vb.getAttributeContainer()) {
-      DODSAttribute dodsatt = (DODSAttribute) ncatt;
-      String dodsname = dodsatt.getDODSName();
-      NamePieces pieces = parseName(dodsname);
-      Group.Builder agroup;
-      if (pieces.prefix != null) {
-        // convert prefix to an actual group
-        agroup = rootgroup.makeRelativeGroup(this, dodsname, true);
-      } else
-        agroup = vgroup;
-
-      // If the attribute group is different from the variable group,
-      // then we have some kind of inconsistency; presumably from
-      // the original dds+das; in any case, use the variable's group
-      if (agroup != vgroup)
-        agroup = vgroup;
-
-      if (pieces.var != null && !pieces.var.equals(vname)) {
-        // move the attribute to the correct variable
-        // (presumably in the same group)
-        Variable.Builder<?> newvar = agroup.findVariableLocal(pieces.var).orElse(null);
-        if (newvar != null) {// if not found leave the attribute as is
-          // otherwise, move the attribute and rename
-          // TODO WRONG MUST REMOVE
-          // v.remove(ncatt);
-          Attribute renameAtt = ncatt.toBuilder().setName(pieces.name).build();
-          v.addAttribute(renameAtt);
-        }
-      }
-    }
-  }
-
-  // Utility to decompose a name
-  NamePieces parseName(String name) {
-    NamePieces pieces = new NamePieces();
-    int dotpos = name.lastIndexOf('.');
-    int slashpos = name.lastIndexOf('/');
-    if (slashpos < 0 && dotpos < 0) {
-      pieces.name = name;
-    } else if (slashpos >= 0 && dotpos < 0) {
-      pieces.prefix = name.substring(0, slashpos);
-      pieces.name = name.substring(slashpos + 1, name.length());
-    } else if (slashpos < 0 && dotpos >= 0) {
-      pieces.var = name.substring(0, dotpos);
-      pieces.name = name.substring(dotpos + 1, name.length());
-    } else {// slashpos >= 0 && dotpos >= 0)
-      if (slashpos > dotpos) {
-        pieces.prefix = name.substring(0, slashpos);
-        pieces.name = name.substring(slashpos + 1, name.length());
-      } else {// slashpos < dotpos)
-        pieces.prefix = name.substring(0, slashpos);
-        pieces.var = name.substring(slashpos + 1, dotpos);
-        pieces.name = name.substring(dotpos + 1, name.length());
-      }
-    }
-    // fixup
-    if (pieces.prefix != null && pieces.prefix.length() == 0)
-      pieces.prefix = null;
-    if (pieces.var != null && pieces.var.length() == 0)
-      pieces.var = null;
-    if (pieces.name.length() == 0)
-      pieces.name = null;
-    return pieces;
-  }
-
-  // end reGroup?
-  ///////////////////////////////////////////////////////////////////////////////////////////
 
   private void constructConstructors(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
     List<DodsV> topVariables = rootDodsV.children;
@@ -637,7 +463,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     }
   }
 
-  private Group.Builder computeGroup(Variable v, Group.Builder parentGroup/* Ostensibly */) {
+  private Group.Builder computeGroup(DodsVariable.Builder<?> v, Group.Builder parentGroup/* Ostensibly */) {
     if (RC.getUseGroups()) {
       // If the path has '/' in it, then we need to insert
       // this variable into the proper group and rename it. However,
@@ -645,7 +471,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       if (v.getParentStructure() == null) {
         // HACK: Since only the grid array is used in converting
         // to netcdf-3, we look for group info on the array.
-        String dodsname = ((DODSNode) v).getDODSName();
+        String dodsname = v.getDodsName();
         int sindex = dodsname.indexOf('/');
         if (sindex >= 0) {
           assert (parentGroup != null);

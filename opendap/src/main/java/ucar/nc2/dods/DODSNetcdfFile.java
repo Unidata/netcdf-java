@@ -120,6 +120,22 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     this.dodsConnection = builder.dodsConnection;
     this.dds = builder.dds;
     this.das = builder.das;
+
+    // preload scalers, coordinate variables, strings, small arrays
+    if (DODSNetcdfFile.preload) {
+      List<Variable> preloadList = new ArrayList<>();
+      for (Variable dodsVar : getVariables()) {
+        long size = dodsVar.getSize() * dodsVar.getElementSize();
+        if ((dodsVar.isCoordinateVariable() && size < DODSNetcdfFile.preloadCoordVarSize) || dodsVar.isCaching()
+            || dodsVar.getDataType() == DataType.STRING) {
+          dodsVar.setCaching(true);
+          preloadList.add(dodsVar);
+          if (DODSNetcdfFile.debugPreload)
+            System.out.printf("  preload (%6d) %s%n", size, dodsVar.getFullName());
+        }
+      }
+      preloadData(preloadList);
+    }
   }
 
   @Override

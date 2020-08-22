@@ -41,18 +41,19 @@
 package opendap.dap;
 
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
 
 /**
  * The Util class holds static methods used by this package.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  */
 public class Util {
 
   /**
-   * Compares elements in a <code>Vector</code> of <code>BaseType</code>s and
+   * Compares elements in a <code>List</code> of <code>BaseType</code>s and
    * throw a <code>BadSemanticsException</code> if there are any
    * duplicate elements.
    *
@@ -63,111 +64,14 @@ public class Util {
    * @throws IndexOutOfBoundsException if size doesn't match the number
    *         of elements in the <code>Enumeration</code>
    */
-  static void uniqueNames(Vector v, String varName, String typeName) throws BadSemanticsException {
-    String[] names = sortedNames(v);
-    // DEBUG: print out names
-    // for(int i=0; i<names.length; i++) {
-    // LogStream.err.println("names[" + i + "] = " + names[i]);
-    // }
-    // look for any instance of consecutive names that are ==
-    for (int i = 1; i < names.length; i++) {
-      if (names[i - 1].equals(names[i])) {
+  static void uniqueNames(List<BaseType> v, String varName, String typeName) throws BadSemanticsException {
+    HashSet<String> dedup = new HashSet<>();
+    for (BaseType bt : v) {
+      if (dedup.add(bt.getEncodedName())) {
         throw new BadSemanticsException(
-            "The variable `" + names[i] + "' is used more than once in " + typeName + " `" + varName + "'");
+            "The variable `" + bt.getEncodedName() + "' is used more than once in " + typeName + " `" + varName + "'");
       }
     }
-  }
-
-  /**
-   * Takes a <code>Vector</code> of <code>BaseType</code>s, retrieves their
-   * names into an array of <code>String</code>s, and performs a Quick Sort
-   * on that array.
-   *
-   * @param v The Vector to check
-   * @return a sorted array of <code>String</code>
-   * @throws BadSemanticsException if there is an element with no name
-   */
-  static String[] sortedNames(Vector v) throws BadSemanticsException {
-    String[] names = new String[v.size()];
-    int count = 0;
-    for (Enumeration e = v.elements(); e.hasMoreElements();) {
-      BaseType bt = (BaseType) e.nextElement();
-      String tempName = bt.getEncodedName();
-      if (tempName == null)
-        throw new BadSemanticsException(bt.getClass().getName() + " variable with no name");
-      names[count++] = tempName;
-    }
-    // DEBUG: print out names
-    // for(int i=0; i<names.length; i++) {
-    // LogStream.err.println("names[" + i + "] = " + names[i]);
-    // }
-    // assert that size is correct
-    if (count != names.length)
-      throw new IndexOutOfBoundsException("Vector size changed unexpectedly");
-    quickSort(names, 0, names.length - 1);
-    return names;
-  }
-
-  /**
-   * Internal recursive method to perform Quick Sort on name array.
-   *
-   * @param a an array of <code>String</code>.
-   * @param lo0 the low index to sort.
-   * @param hi0 the high index to sort.
-   */
-  private static void quickSort(String a[], int lo0, int hi0) {
-    int lo = lo0;
-    int hi = hi0;
-    String mid;
-
-    if (hi0 > lo0) {
-      // Arbitrarily establishing partition element as the array midpoint */
-      // Coverity[FB.IM_AVERAGE_COMPUTATION_COULD_OVERFLOW]
-      mid = a[(lo0 + hi0) / 2];
-
-      // loop through the array until indices cross
-      while (lo <= hi) {
-        // find the first element that is >= the partition element
-        // starting from the left index.
-        while ((lo < hi0) && (a[lo].compareTo(mid) < 0))
-          ++lo;
-
-        // find an element that is <= the partition element
-        // starting from the right index.
-        while ((hi > lo0) && (a[hi].compareTo(mid) > 0))
-          --hi;
-
-        // if the indexes have not crossed, swap
-        if (lo <= hi) {
-          swap(a, lo, hi);
-          ++lo;
-          --hi;
-        }
-      }
-      // If the right index has not reached the left side of array,
-      // sort the left partition.
-      if (lo0 < hi)
-        quickSort(a, lo0, hi);
-
-      // If the left index has not reached the right side of array,
-      // sort the right partition.
-      if (lo < hi0)
-        quickSort(a, lo, hi0);
-    }
-  }
-
-  /**
-   * Private method to swap two elements in the array
-   *
-   * @param a an array of <code>String</code>.
-   * @param i the index of the first element.
-   * @param j the index of the second element.
-   */
-  private static void swap(String a[], int i, int j) {
-    String T;
-    T = a[i];
-    a[i] = a[j];
-    a[j] = T;
   }
 
   /**
@@ -203,7 +107,6 @@ public class Util {
   /**
    * Filter out runtime exceptions from other exceptions and re-throw
    */
-
   public static void check(Exception ex) throws RuntimeException {
     if (ex instanceof RuntimeException)
       throw (RuntimeException) ex;

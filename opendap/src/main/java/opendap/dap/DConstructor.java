@@ -40,8 +40,8 @@
 
 package opendap.dap;
 
+import com.google.common.collect.ImmutableList;
 import opendap.dap.parsers.DDSXMLParser;
-import java.util.Enumeration;
 import java.io.PrintWriter;
 
 /**
@@ -119,43 +119,23 @@ public abstract class DConstructor extends BaseType {
   public abstract int getVarCount();
 
 
-  /**
-   * Return an Enumeration that can be used to iterate over all of the
-   * members of the class. Each implementation must define what this means.
-   * The intent of this method is to support operations on all members of a
-   * Structure, Seqeunce or Grid that can be performed equally. So it is
-   * not necessary that this methods be usable, for example, when the
-   * caller needs to know that it s dealing with the Array part of a grid.
-   *
-   * @return An Enumeration object.
-   */
-  public abstract Enumeration getVariables();
-
+  /** Return a List of member Variables. */
+  public abstract ImmutableList<BaseType> getVariables();
 
   /**
-   *
-   * @param bt The BasType object to search.
+   * @param bt The BaseType object to search.
    * @return true if some child of the passed BaseType has attributes
    */
   protected boolean someChildHasAttributes(BaseType bt) {
-
     boolean foundit = false;
-
     if (bt.hasAttributes())
       return (true);
-
     if (bt instanceof DConstructor) {
-
-      Enumeration e = ((DConstructor) bt).getVariables();
-
-      while (e.hasMoreElements()) {
-        BaseType thisBT = (BaseType) e.nextElement();
-
-        foundit = foundit || someChildHasAttributes(thisBT);
+      for (BaseType member : ((DConstructor)bt).getVariables()) {
+        foundit = foundit || someChildHasAttributes(member);
       }
     }
-
-    return (foundit);
+    return foundit;
   }
 
   /**
@@ -169,42 +149,29 @@ public abstract class DConstructor extends BaseType {
   // Coverity[CALL_SUPER]
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
 
-    Enumeration e = getAttributeNames();
-    Enumeration ve = getVariables();
-
-    boolean hasAttributes = e.hasMoreElements();
-    boolean hasVariables = ve.hasMoreElements();
+    boolean hasAttributes = hasAttributes();
+    boolean hasVariables = !getVariables().isEmpty();
 
     pw.print(pad + "<" + getTypeName());
     if (getEncodedName() != null) {
       pw.print(" name=\"" + DDSXMLParser.normalizeToXML(getClearName()) + "\"");
     }
 
-
     if (hasAttributes || hasVariables) {
-
       pw.println(">");
-
-      while (e.hasMoreElements()) {
-        String aName = (String) e.nextElement();
-
-        Attribute a = getAttribute(aName);
+      for (String attName : getAttributeNames()) {
+        Attribute a = getAttribute(attName);
         if (a != null)
           a.printXML(pw, pad + "\t", constrained);
-
       }
 
-      while (ve.hasMoreElements()) {
-        BaseType bt = (BaseType) ve.nextElement();
+      for (BaseType bt : getVariables()) {
         bt.printXML(pw, pad + "\t", constrained);
       }
-
       pw.println(pad + "</" + getTypeName() + ">");
 
     } else {
-
       pw.println("/>");
-
     }
 
   }

@@ -40,10 +40,11 @@
 
 package opendap.dap;
 
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import opendap.dap.parsers.DDSXMLParser;
 import java.io.*;
 import java.util.Vector;
-import java.util.Enumeration;
 
 /**
  * This class holds a <code>DArray</code> and a set of "Map"
@@ -86,7 +87,6 @@ import java.util.Enumeration;
  * and last column is at (8,27).
  *
  * @author jehamby
- * @version $Revision: 19676 $
  * @see BaseType
  * @see DArray
  */
@@ -106,10 +106,8 @@ public class DGrid extends DConstructor implements ClientIO {
    */
   protected DArray arrayVar;
 
-  /**
-   * The Map component of this <code>DGrid</code>.
-   */
-  protected Vector mapVars;
+  /** The Map component of this <code>DGrid</code>. */
+  protected ArrayList<BaseType> mapVars = new ArrayList<>();
 
   /**
    * Constructs a new <code>DGrid</code>.
@@ -125,7 +123,6 @@ public class DGrid extends DConstructor implements ClientIO {
    */
   public DGrid(String n) {
     super(n);
-    mapVars = new Vector();
   }
 
   /**
@@ -152,8 +149,7 @@ public class DGrid extends DConstructor implements ClientIO {
       return mapVars.size() + 1; // Number of Maps plus 1 Array component
     else {
       int count = 0;
-      for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
-        BaseType bt = (BaseType) e.nextElement();
+      for (BaseType bt : mapVars) {
         count += bt.elementCount(leaves);
       }
       count += arrayVar.elementCount(leaves);
@@ -184,7 +180,7 @@ public class DGrid extends DConstructor implements ClientIO {
         return;
 
       case MAPS:
-        mapVars.addElement(v);
+        mapVars.add(v);
         return;
 
       default:
@@ -218,8 +214,7 @@ public class DGrid extends DConstructor implements ClientIO {
       if (arrayVar.getEncodedName().equals(name))
         return arrayVar;
 
-      for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
-        BaseType v = (BaseType) e.nextElement();
+      for (BaseType v : mapVars) {
         if (v.getEncodedName().equals(name))
           return v;
       }
@@ -242,7 +237,7 @@ public class DGrid extends DConstructor implements ClientIO {
     } else {
       int i = index - 1;
       if (i < mapVars.size())
-        return ((BaseType) mapVars.elementAt(i));
+        return mapVars.get(i);
       else
         throw new NoSuchVariableException("DGrid.getVariable() No Such variable: " + index + " - 1");
     }
@@ -258,45 +253,8 @@ public class DGrid extends DConstructor implements ClientIO {
     return mapVars.size() + 1;
   }
 
-  /**
-   * Private class for implemantation of the Enumeration. Because
-   * DStructure and DSequence are simpler classes and use a single Vector,
-   * their implementations of getVariables aren't as fancy.
-   */
-  class EnumerateDGrid implements Enumeration {
-    boolean array;
-    Enumeration e;
-
-    EnumerateDGrid() {
-      array = false; // true when the array is/has being/been
-      // visited
-      e = mapVars.elements();
-    }
-
-    public boolean hasMoreElements() {
-      return (!array) || e.hasMoreElements();
-    }
-
-    public Object nextElement() {
-      if (!array) {
-        array = true;
-        return arrayVar;
-      } else {
-        return e.nextElement();
-      }
-    }
-  }
-
-  /**
-   * Return an Enumeration that can be used to iterate over the members of
-   * a Structure. This implementation provides access to the elements of
-   * the Structure. Each Object returned by the Enumeration can be cast to
-   * a BaseType.
-   *
-   * @return An Enumeration
-   */
-  public Enumeration getVariables() {
-    return new EnumerateDGrid();
+  public ImmutableList<BaseType> getVariables() {
+    return ImmutableList.of();
   }
 
   /**
@@ -324,34 +282,6 @@ public class DGrid extends DConstructor implements ClientIO {
     if (mapVars.size() != arrayVar.numDimensions())
       throw new BadSemanticsException("DGrid.checkSemantics(): The number of map variables for grid `"
           + getEncodedName() + "' does not match the number of dimensions of `" + arrayVar.getEncodedName() + "'");
-
-    // ----- I added this next test 12/3/99. As soon as I did I questioned whether or not
-    // ----- it adds any value. ie: Can it ever happen that this test fails? I don't think
-    // ----- so now that I have written it... ndp 12/3/99
-
-    // Is the size of the maps equal to the size of the cooresponding dimensions?
-    Enumeration emap = mapVars.elements();
-
-    Enumeration edims = arrayVar.getDimensions();
-    int dim = 0;
-    while (emap.hasMoreElements() && edims.hasMoreElements()) {
-
-      DArray thisMapArray = (DArray) emap.nextElement();
-      Enumeration ema = thisMapArray.getDimensions();
-      DArrayDimension thisMapDim = (DArrayDimension) ema.nextElement();
-
-      DArrayDimension thisArrayDim = (DArrayDimension) edims.nextElement();
-
-      if (thisMapDim.getSize() != thisArrayDim.getSize()) {
-
-        throw new BadSemanticsException("In grid '" + getEncodedName() + " The size of dimension " + dim
-            + " in the array component '" + arrayVar.getEncodedName()
-            + "is not equal to the size of the coresponding map vector '" + thisMapArray.getEncodedName() + ".");
-      }
-      dim++;
-    }
-    // ----- end ndp 12/3/99
-
   }
 
 
@@ -375,8 +305,7 @@ public class DGrid extends DConstructor implements ClientIO {
     os.println(space + " ARRAY:");
     arrayVar.printDecl(os, space + "    ", true);
     os.println(space + " MAPS:");
-    for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
-      BaseType bt = (BaseType) e.nextElement();
+    for (BaseType bt : mapVars) {
       bt.printDecl(os, space + "    ", true);
     }
     os.print(space + "} " + getEncodedName());
@@ -406,12 +335,13 @@ public class DGrid extends DConstructor implements ClientIO {
     os.print("{ ARRAY: ");
     arrayVar.printVal(os, "", false);
 
+    int count = 0;
     os.print(" MAPS: ");
-    for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
-      BaseType bt = (BaseType) e.nextElement();
-      bt.printVal(os, "", false);
-      if (e.hasMoreElements())
+    for (BaseType bt : mapVars) {
+      if (count > 0)
         os.print(", ");
+      bt.printVal(os, "", false);
+      count++;
     }
     os.print(" }");
 
@@ -436,11 +366,11 @@ public class DGrid extends DConstructor implements ClientIO {
   public synchronized void deserialize(DataInputStream source, ServerVersion sv, StatusUI statusUI)
       throws IOException, DataReadException {
     arrayVar.deserialize(source, sv, statusUI);
-    for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
+    for (BaseType bt : mapVars) {
       if (statusUI != null && statusUI.userCancelled())
         throw new DataReadException("DGrid.deserialize(): User cancelled");
-      ClientIO bt = (ClientIO) e.nextElement();
-      bt.deserialize(source, sv, statusUI);
+      ClientIO client = (ClientIO) bt;
+      client.deserialize(source, sv, statusUI);
     }
   }
 
@@ -455,9 +385,9 @@ public class DGrid extends DConstructor implements ClientIO {
    */
   public void externalize(DataOutputStream sink) throws IOException {
     arrayVar.externalize(sink);
-    for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
-      ClientIO bt = (ClientIO) e.nextElement();
-      bt.externalize(sink);
+    for (BaseType bt : mapVars) {
+      ClientIO client = (ClientIO) bt;
+      client.externalize(sink);
     }
   }
 
@@ -467,29 +397,18 @@ public class DGrid extends DConstructor implements ClientIO {
     }
     pw.println(">");
 
-    Enumeration e = getAttributeNames();
-
-    while (e.hasMoreElements()) {
-      String aName = (String) e.nextElement();
-
-
-      Attribute a = getAttribute(aName);
+    for (String attName : getAttributeNames()) {
+      Attribute a = getAttribute(attName);
       if (a != null)
         a.printXML(pw, pad + "\t", constrained);
-
     }
 
     arrayVar.printXML(pw, pad + "\t", constrained);
 
-
-    e = mapVars.elements();
-    while (e.hasMoreElements()) {
-      DArray map = (DArray) e.nextElement();
-
+    for (BaseType bt : mapVars) {
+      DArray map = (DArray)bt ;
       map.printAsMapXML(pw, pad + "\t", constrained);
-
     }
-
 
     pw.println(pad + "</Grid>");
   }
@@ -501,30 +420,6 @@ public class DGrid extends DConstructor implements ClientIO {
 
   public Vector<DArrayDimension> getArrayDims() {
     return arrayVar.dimVector;
-  }
-
-  /**
-   * How many prohected components of this Grid object?
-   *
-   * @return The number of projected components.
-   */
-  public int projectedComponents(boolean constrained) {
-    int comp;
-
-    if (constrained) {
-      comp = arrayVar.isProject() ? 1 : 0;
-
-      Enumeration e = mapVars.elements();
-
-      while (e.hasMoreElements()) {
-        if (((DArray) e.nextElement()).isProject())
-          comp++;
-      }
-    } else {
-      comp = 1 + mapVars.size();
-    }
-
-    return comp;
   }
 
 
@@ -613,14 +508,13 @@ public class DGrid extends DConstructor implements ClientIO {
    * @param map track previously cloned nodes
    * @return a clone of this object.
    */
-  public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
+  public DGrid cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DGrid g = (DGrid) super.cloneDAG(map);
     g.arrayVar = (DArray) cloneDAG(map, arrayVar);
-    g.mapVars = new Vector();
     for (int i = 0; i < mapVars.size(); i++) {
-      BaseType bt = (BaseType) mapVars.elementAt(i);
+      BaseType bt = (BaseType) mapVars.get(i);
       BaseType btclone = (BaseType) cloneDAG(map, bt);
-      g.mapVars.addElement(btclone);
+      g.mapVars.add(btclone);
     }
     return g;
   }

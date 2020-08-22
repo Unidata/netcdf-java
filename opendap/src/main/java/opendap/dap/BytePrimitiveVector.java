@@ -45,7 +45,6 @@ import java.io.*;
  * A vector of bytes.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see PrimitiveVector
  */
 public class BytePrimitiveVector extends PrimitiveVector {

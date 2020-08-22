@@ -46,7 +46,6 @@ import java.io.*;
  * Holds a OPeNDAP <code>Float64</code> value.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  */
 public class DFloat64 extends DPrimitive implements ClientIO {

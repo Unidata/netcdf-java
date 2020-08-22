@@ -48,7 +48,6 @@ import java.io.*;
  * DDSParser will read the data as well as the DDS otherwise.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  */
 public class HeaderInputStream extends FilterInputStream {
   /**

@@ -42,7 +42,6 @@ package opendap.dap;
 import java.util.Enumeration;
 import java.io.PrintWriter;
 import opendap.dap.parsers.DDSXMLParser;
-import opendap.util.Debug;
 
 /**
  * The Alias type is a special attribute. It is simply a reference
@@ -305,43 +304,18 @@ public class Alias extends Attribute {
 
 
   public void print(PrintWriter os, String pad) {
-
-    if (Debug.isSet("Alias")) {
-      DAPNode.log.debug("  Attribute \"" + getClearName() + "\" is an Alias.");
-    }
-
     os.println(pad + "Alias " + getEncodedName() + " " + getAliasedToAttributeField() + ";");
-
   }
 
-
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
-
-
-    if (Debug.isSet("Alias"))
-      pw.println("    Printing Alias \"" + getClearName() + "\"");
-
-    /*
-     * if (Debug.isSet("Alias")) pw.println("       constrained:    "+constrained);
-     * if (Debug.isSet("Alias")) pw.println("       targetVariable: '"+targetVariable.getName()+
-     * "' (Projected: "+((ServerMethods) targetVariable).isProject()+")");
-     */
-
     if (constrained && targetVariable != null) {
-
-
       if (!targetVariable.isProject())
         return;
     }
 
-
     pw.println(pad + "<Alias name=\"" + DDSXMLParser.normalizeToXML(getClearName()) + "\" " + "Attribute=\""
         + DDSXMLParser.normalizeToXML(getAliasedToAttributeFieldAsClearString()) + "\"/>");
-
-    if (Debug.isSet("Alias"))
-      pw.println("Leaving Alias.print()");
     pw.flush();
-
   }
 
   /**

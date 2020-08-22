@@ -45,8 +45,6 @@ package opendap.dap;
  * a non-existent attribute.
  *
  * @author jehamby
- * @version $Revision: 15901 $
- * @see AttributeTable#addAlias(String, String)
  */
 public class NoSuchAttributeException extends DASException {
   /**

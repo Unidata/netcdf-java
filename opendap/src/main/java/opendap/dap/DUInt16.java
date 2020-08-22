@@ -46,7 +46,6 @@ import java.io.*;
  * Holds a OPeNDAP <code>UInt16</code> value.
  *
  * @author ndp
- * @version $Revision: 15901 $
  * @see BaseType
  */
 public class DUInt16 extends DInt16 {

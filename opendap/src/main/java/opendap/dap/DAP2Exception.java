@@ -61,7 +61,6 @@ import java.io.*;
  * </h3>
  *
  * @author jehamby
- * @version $Revision: 15901 $
  */
 public class DAP2Exception extends Exception {
 

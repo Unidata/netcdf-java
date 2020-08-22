@@ -90,9 +90,9 @@ class DodsVariable extends ucar.nc2.Variable {
 
 
   ////////////////////////////////////////////////////////
-  protected final String CE; // projection is allowed
-  protected final String dodsName;
-  protected final DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
+  private final String CE; // projection is allowed
+  private final String dodsName;
+  private final DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
 
   protected DodsVariable(DodsVariable.Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
@@ -123,7 +123,7 @@ class DodsVariable extends ucar.nc2.Variable {
     }
   }
 
-  /** A builder of Structures. */
+  /** A builder of DodsVariable. */
   public static abstract class Builder<T extends DodsVariable.Builder<T>> extends Variable.Builder<T> {
     private boolean built;
     private String CE; // projection is allowed
