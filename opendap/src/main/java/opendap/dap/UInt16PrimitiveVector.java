@@ -47,8 +47,6 @@ import java.io.*;
  * A vector of unsigned ints.
  *
  * @author ndp
- * @version $Revision: 15901 $
- * @see PrimitiveVector
  */
 public class UInt16PrimitiveVector extends Int16PrimitiveVector {
   /**

@@ -46,7 +46,6 @@ import java.io.*;
  * Holds a OPeNDAP <code>Byte</code> value.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  */
 public class DByte extends DPrimitive implements ClientIO {

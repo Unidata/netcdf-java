@@ -45,7 +45,6 @@ import java.io.*;
  * A vector of <code>BaseType</code>.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see PrimitiveVector
  */
 public class BaseTypePrimitiveVector extends PrimitiveVector {

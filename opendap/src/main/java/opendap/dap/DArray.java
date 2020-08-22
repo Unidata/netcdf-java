@@ -81,7 +81,6 @@ import java.util.Vector;
  * NB: OPeNDAP uses zero-based indexing.
  *
  * @author jehamby
- * @version $Revision: 19676 $
  * @see DGrid
  * @see DVector
  * @see BaseType
@@ -376,11 +375,8 @@ public class DArray extends DVector {
   }
 
   private void printXMLcore(PrintWriter pw, String pad, boolean constrained) {
-    Enumeration e = getAttributeNames();
-    while (e.hasMoreElements()) {
-      String aName = (String) e.nextElement();
-
-      Attribute a = getAttribute(aName);
+    for (String attName : getAttributeNames()) {
+      Attribute a = getAttribute(attName);
       if (a != null)
         a.printXML(pw, pad + "\t", constrained);
     }

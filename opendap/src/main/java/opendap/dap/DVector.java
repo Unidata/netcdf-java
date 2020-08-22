@@ -50,7 +50,6 @@ import java.io.*;
  * primitive types.
  *
  * @author jehamby
- * @version $Revision: 20918 $
  * @see BaseType
  * @see DArray
  * @see PrimitiveVector

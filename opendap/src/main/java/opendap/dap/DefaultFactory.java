@@ -44,16 +44,11 @@ package opendap.dap;
  * The default client-side Factory for BaseType objects.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseTypeFactory
  */
 
 public class DefaultFactory implements BaseTypeFactory, java.io.Serializable {
-
   static final long serialVersionUID = 1;
-
-
-  // ..................................
 
   /**
    * Construct a new DByte.

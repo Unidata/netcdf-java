@@ -7,7 +7,6 @@ package ucar.nc2.dods;
 import opendap.dap.*;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
 import ucar.ma2.*;
@@ -228,9 +227,7 @@ class ConvertD2N {
     // tell it how long each one is
     String name = dataV.getClearName();
     for (int row = 0; row < outerLength; row++) {
-      Vector dv = outerSeq.getRow(row);
-      for (int j = 0; j < dv.size(); j++) {
-        BaseType bt = (BaseType) dv.elementAt(j);
+      for (BaseType bt : outerSeq.getRow(row)) {
         if (bt.getClearName().equals(name)) {
           DSequence innerSeq = (DSequence) bt;
           int innerLength = innerSeq.getRowCount();
@@ -292,9 +289,7 @@ class ConvertD2N {
     // tell it how long each one is
     String name = dataV.getClearName();
     for (int row = 0; row < outerLength; row++) {
-      Vector dv = outerSeq.getRow(row);
-      for (int j = 0; j < dv.size(); j++) {
-        BaseType bt = (BaseType) dv.elementAt(j);
+      for (BaseType bt : outerSeq.getRow(row)) {
         if (bt.getClearName().equals(name)) {
           DSequence innerSeq = (DSequence) bt;
           int innerLength = innerSeq.getRowCount();
@@ -336,9 +331,7 @@ class ConvertD2N {
 
   private void iconvertDataSequenceArray(DSequence dseq, StructureMembers members) throws DAP2Exception {
     for (int row = 0; row < dseq.getRowCount(); row++) {
-      Vector dv = dseq.getRow(row);
-      for (int j = 0; j < dv.size(); j++) {
-        BaseType member_data = (BaseType) dv.elementAt(j);
+      for (BaseType member_data : dseq.getRow(row)) {
         StructureMembers.Member member = members.findMember(member_data.getEncodedName());
         IndexIterator ii = (IndexIterator) member.getDataObject();
         iconvertData(member_data, ii);

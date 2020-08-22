@@ -47,8 +47,6 @@ import java.io.*;
  * A vector of shorts. (as in 16bit ints :)
  *
  * @author npotter
- * @version $Revision: 15901 $
- * @see PrimitiveVector
  */
 public class Int16PrimitiveVector extends PrimitiveVector {
   /**

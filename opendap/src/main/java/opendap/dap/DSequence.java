@@ -40,9 +40,10 @@
 
 package opendap.dap;
 
+import com.google.common.collect.ImmutableList;
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A <code>DSequence</code> in OPeNDAP can hold <em>N</em> sequentially accessed
@@ -57,7 +58,6 @@ import java.util.Vector;
  * to worry about <code>DSequence</code> as a special case.
  *
  * @author jehamby
- * @version $Revision: 22922 $
  * @see BaseType
  * @see DConstructor
  */
@@ -73,18 +73,17 @@ public class DSequence extends DConstructor implements ClientIO {
   protected static byte END_OF_SEQUENCE = (byte) 0xA5;
 
   /**
-   * The variables in this <code>DSequence</code>, stored in a
-   * <code>Vector</code> of <code>BaseType</code> objects
-   * and used as a template for <code>deserialize</code>.
+   * The variables in this <code>DSequence</code>
+   * used as a template for <code>deserialize</code>.
    */
-  protected Vector varTemplate;
+  protected ArrayList<BaseType> varTemplate = new ArrayList<>();
 
   /**
    * The values in this <code>DSequence</code>, stored as a
-   * <code>Vector</code> of <code>Vector</code> of <code>BaseType</code>
+   * <code>List</code> of <code>List</code> of <code>BaseType</code>
    * objects.
    */
-  protected Vector allValues;
+  protected ArrayList<List<BaseType>> allValues = new ArrayList<>();
 
   /**
    * Level number in a multilevel sequence.
@@ -105,8 +104,6 @@ public class DSequence extends DConstructor implements ClientIO {
    */
   public DSequence(String n) {
     super(n);
-    varTemplate = new Vector();
-    allValues = new Vector();
     level = 0;
   }
 
@@ -152,8 +149,7 @@ public class DSequence extends DConstructor implements ClientIO {
       return varTemplate.size();
     else {
       int count = 0;
-      for (Enumeration e = varTemplate.elements(); e.hasMoreElements();) {
-        BaseType bt = (BaseType) e.nextElement();
+      for (BaseType bt : varTemplate) {
         count += bt.elementCount(leaves);
       }
       return count;
@@ -168,20 +164,20 @@ public class DSequence extends DConstructor implements ClientIO {
    */
   public void addVariable(BaseType v, int part) {
     v.setParent(this);
-    varTemplate.addElement(v);
+    varTemplate.add(v);
     if (v instanceof DSequence)
       ((DSequence) v).setLevel(getLevel() + 1);
   }
 
   /**
    * Adds a row to the container. This is assumed to contain a
-   * <code>Vector</code> of variables of the same type and in the same order
+   * <code>List</code> of variables of the same type and in the same order
    * as the variable template added with the <code>addVariable</code> method.
    *
    * @param row the <code>Vector</code> to add.
    */
-  public final void addRow(Vector row) {
-    allValues.addElement(row);
+  public final void addRow(List<BaseType> row) {
+    allValues.add(row);
   }
 
   /**
@@ -192,18 +188,8 @@ public class DSequence extends DConstructor implements ClientIO {
    * @param row the row number to retrieve.
    * @return the <code>Vector</code> of <code>BaseType</code> variables.
    */
-  public final Vector getRow(int row) {
-    return (Vector) allValues.elementAt(row);
-  }
-
-  /**
-   * Deletes a row from the container.
-   *
-   * @param row the row number to delete.
-   * @throws ArrayIndexOutOfBoundsException if the index was invalid.
-   */
-  public final void delRow(int row) {
-    allValues.removeElementAt(row);
+  public final List<BaseType> getRow(int row) {
+    return allValues.get(row);
   }
 
   /**
@@ -241,8 +227,7 @@ public class DSequence extends DConstructor implements ClientIO {
       else
         ; // fall through to throw statement
     } else {
-      for (Enumeration e = varTemplate.elements(); e.hasMoreElements();) {
-        BaseType v = (BaseType) e.nextElement();
+      for (BaseType v : varTemplate) {
         if (v.getEncodedName().equals(name))
           return v;
       }
@@ -262,7 +247,7 @@ public class DSequence extends DConstructor implements ClientIO {
   public BaseType getVar(int index) throws NoSuchVariableException {
 
     if (index < varTemplate.size())
-      return ((BaseType) varTemplate.elementAt(index));
+      return varTemplate.get(index);
     else
       throw new NoSuchVariableException("DSequence.getVariable(" + index + " - 1)");
 
@@ -300,9 +285,8 @@ public class DSequence extends DConstructor implements ClientIO {
       else
         ; // fall through to throw statement
     } else {
-      Vector selectedRow = (Vector) allValues.elementAt(row);
-      for (Enumeration e = selectedRow.elements(); e.hasMoreElements();) {
-        BaseType v = (BaseType) e.nextElement();
+      List<BaseType> selectedRow = allValues.get(row);
+      for (BaseType v : selectedRow) {
         if (v.getEncodedName().equals(name))
           return v;
       }
@@ -318,8 +302,8 @@ public class DSequence extends DConstructor implements ClientIO {
    *
    * @return An Enumeration
    */
-  public Enumeration getVariables() {
-    return varTemplate.elements();
+  public ImmutableList<BaseType> getVariables() {
+    return ImmutableList.copyOf(varTemplate);
   }
 
   /**
@@ -337,8 +321,7 @@ public class DSequence extends DConstructor implements ClientIO {
     Util.uniqueNames(varTemplate, getEncodedName(), getTypeName());
 
     if (all) {
-      for (Enumeration e = varTemplate.elements(); e.hasMoreElements();) {
-        BaseType bt = (BaseType) e.nextElement();
+      for (BaseType bt : varTemplate) {
         bt.checkSemantics(true);
       }
     }
@@ -369,8 +352,7 @@ public class DSequence extends DConstructor implements ClientIO {
     // this object lead to this implementation.
 
     os.println(space + getTypeName() + " {");
-    for (Enumeration e = varTemplate.elements(); e.hasMoreElements();) {
-      BaseType bt = (BaseType) e.nextElement();
+    for (BaseType bt : varTemplate) {
       // os.println("Printing declaration for \""+bt.getName()+"\" constrained: "+constrained);
       bt.printDecl(os, space + "    ", true, constrained);
     }
@@ -398,20 +380,23 @@ public class DSequence extends DConstructor implements ClientIO {
     }
 
     os.print("{ ");
-    for (Enumeration e1 = allValues.elements(); e1.hasMoreElements();) {
+    int countRow = 0;
+    for (List<BaseType> row : allValues) {
       // get next instance vector
       os.print("{ ");
-      Vector v = (Vector) e1.nextElement();
-      for (Enumeration e2 = v.elements(); e2.hasMoreElements();) {
-        // get next instance variable
-        BaseType bt = (BaseType) e2.nextElement();
-        bt.printVal(os, "", false);
-        if (e2.hasMoreElements())
-          os.print(", ");
-      }
-      os.print(" }");
-      if (e1.hasMoreElements())
+      if (countRow > 0)
         os.print(", ");
+
+      int count = 0;
+      for (BaseType bt : row) {
+        if (count > 0)
+          os.print(", ");
+        bt.printVal(os, "", false);
+        count++;
+      }
+
+      os.print(" }");
+      countRow++;
     }
     os.print(" }");
 
@@ -514,20 +499,19 @@ public class DSequence extends DConstructor implements ClientIO {
   private void deserializeSingle(DataInputStream source, ServerVersion sv, StatusUI statusUI)
       throws IOException, EOFException, DataReadException {
     // create a new instance from the variable template Vector
-    Vector newInstance = new Vector();
-    for (int i = 0; i < varTemplate.size(); i++) {
-      BaseType bt = (BaseType) varTemplate.elementAt(i);
-      newInstance.addElement(bt.clone());
+    ArrayList<BaseType> newInstance = new ArrayList<>();
+    for (BaseType bt : varTemplate) {
+      newInstance.add((BaseType) bt.clone());
     }
     // deserialize the new instance
-    for (Enumeration e = newInstance.elements(); e.hasMoreElements();) {
+    for (BaseType bt : newInstance) {
       if (statusUI != null && statusUI.userCancelled())
         throw new DataReadException("User cancelled");
-      ClientIO bt = (ClientIO) e.nextElement();
-      bt.deserialize(source, sv, statusUI);
+      ClientIO client = (ClientIO) bt;
+      client.deserialize(source, sv, statusUI);
     }
     // add the new instance to the allValues vector
-    allValues.addElement(newInstance);
+    allValues.add(newInstance);
   }
 
   /**
@@ -567,17 +551,14 @@ public class DSequence extends DConstructor implements ClientIO {
 
     // loop until end of sequence
     for (int i = 0; i < allValues.size(); i++) {
-
       // ************* Pulled out the getLevel() check in order to support the "new"
       // and "improved" serialization of OPeNDAP sequences. 8/31/01 ndp
       // if (getLevel() == 0)
       writeMarker(sink, START_OF_INSTANCE);
-
-      Vector rowVec = (Vector) allValues.elementAt(i);
-
-      for (int j = 0; j < rowVec.size(); j++) {
-        ClientIO bt = (ClientIO) rowVec.elementAt(j);
-        bt.externalize(sink);
+      List<BaseType> rowVec = allValues.get(i);
+      for (BaseType bt : rowVec) {
+        ClientIO client = (ClientIO) bt;
+        client.externalize(sink);
       }
 
     }
@@ -594,27 +575,20 @@ public class DSequence extends DConstructor implements ClientIO {
    * @param map track previously cloned nodes
    * @return a clone of this object.
    */
-  public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
+  public DSequence cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DSequence s = (DSequence) super.cloneDAG(map);
-
-    s.varTemplate = new Vector();
-
-    for (int i = 0; i < varTemplate.size(); i++) {
-      BaseType bt = (BaseType) varTemplate.elementAt(i);
+    for (BaseType bt : varTemplate) {
       BaseType btclone = (BaseType) cloneDAG(map, bt);
-      s.varTemplate.addElement(btclone);
+      s.varTemplate.add(btclone);
     }
 
-    s.allValues = new Vector();
-
-    for (int i = 0; i < allValues.size(); i++) {
-      Vector rowVec = (Vector) allValues.elementAt(i);
-      Vector newVec = new Vector();
-      for (int j = 0; j < rowVec.size(); j++) {
-        BaseType bt = (BaseType) rowVec.elementAt(j);
-        newVec.addElement((BaseType) cloneDAG(map, bt));
+    for (List<BaseType> row : allValues) {
+      List<BaseType> newRow = new ArrayList<>();
+      for (BaseType bt : row) {
+        BaseType btclone = (BaseType) cloneDAG(map, bt);
+        newRow.add(btclone);
       }
-      s.allValues.addElement(newVec);
+      s.allValues.add(newRow);
     }
     return s;
   }

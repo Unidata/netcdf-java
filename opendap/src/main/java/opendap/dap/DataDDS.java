@@ -43,7 +43,6 @@ package opendap.dap;
 import java.nio.charset.StandardCharsets;
 import opendap.dap.parsers.ParseException;
 import java.io.*;
-import java.util.Enumeration;
 import java.util.zip.DeflaterOutputStream;
 
 /**
@@ -107,35 +106,17 @@ public class DataDDS extends DDS {
    * @throws DAP2Exception if the OPeNDAP server returned an error.
    */
   public void readData(InputStream is, StatusUI statusUI) throws IOException, EOFException, DAP2Exception {
-
-    /*
-     * ByteArrayOutputStream bout = new ByteArrayOutputStream(50 * 1000);
-     * copy(is, bout);
-     * LogStream.dbg.printf(" readData size=%d %n",bout.size());
-     * LogStream.dbg.logflush();
-     * ByteArrayInputStream bufferedIS = new ByteArrayInputStream( bout.toByteArray());
-     */
-    // statusUI = new Counter();
-
     // Buffer the input stream for better performance
     BufferedInputStream bufferedIS = new BufferedInputStream(is);
     // Use a DataInputStream for deserialize
     DataInputStream dataIS = new DataInputStream(bufferedIS);
 
-    for (Enumeration e = getVariables(); e.hasMoreElements();) {
+    for (BaseType bt : variables) {
       if (statusUI != null && statusUI.userCancelled())
         throw new DataReadException("User cancelled");
-      ClientIO bt = (ClientIO) e.nextElement();
-
-      /*
-       * if (true) {
-       * BaseType btt = (BaseType) bt;
-       * System.out.printf("Deserializing: %s (%s) %n", btt.getEncodedName(), ((BaseType) bt).getTypeName());
-       * }
-       */
-      bt.deserialize(dataIS, ver, statusUI);
+      ClientIO client = (ClientIO) bt;
+      client.deserialize(dataIS, ver, statusUI);
     }
-    // LogStream.out.printf("Deserializing: total size = %s %n", counter);
 
     // notify GUI of finished download
     if (statusUI != null)
@@ -183,8 +164,7 @@ public class DataDDS extends DDS {
    * @param pw the <code>PrintWriter</code> to use.
    */
   public void printVal(PrintWriter pw) {
-    for (Enumeration e = getVariables(); e.hasMoreElements();) {
-      BaseType bt = (BaseType) e.nextElement();
+    for (BaseType bt : variables) {
       bt.printVal(pw, "", true);
       pw.flush();
     }
@@ -246,9 +226,9 @@ public class DataDDS extends DDS {
 
     // Use a DataOutputStream for serialize
     DataOutputStream dataOS = new DataOutputStream(bufferedOS);
-    for (Enumeration e = getVariables(); e.hasMoreElements();) {
-      ClientIO bt = (ClientIO) e.nextElement();
-      bt.externalize(dataOS);
+    for (BaseType bt : variables) {
+      ClientIO client = (ClientIO) bt;
+      client.externalize(dataOS);
     }
     // Note: for DeflaterOutputStream, flush() is not sufficient to flush
     // all buffered data

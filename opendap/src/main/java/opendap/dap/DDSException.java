@@ -44,7 +44,6 @@ package opendap.dap;
  * DDS exception. This is the root of all the DDS exception classes.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see DAP2Exception
  */
 public class DDSException extends DAP2Exception {

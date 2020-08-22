@@ -48,7 +48,6 @@ import org.jdom2.*;
 import org.jdom2.Attribute;
 import org.jdom2.input.SAXBuilder;
 import opendap.dap.*;
-import opendap.util.Debug;
 
 /**
  * <code>DDSXMLParser</code> is used to parse a DDX (the XML formatted persistent
@@ -107,7 +106,6 @@ public class DDSXMLParser {
     super();
     opendapNameSpace = Namespace.getNamespace(nameSpace);
     lastDoc = null;
-    _Debug = Debug.isSet("DDSXMLParser");
   }
 
 

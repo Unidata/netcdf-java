@@ -43,7 +43,6 @@ package opendap.dap;
 import java.nio.charset.StandardCharsets;
 import opendap.dap.parsers.DDSXMLParser;
 import java.io.*;
-import java.util.Enumeration;
 
 /**
  * This abstract class defines the basic data type features for the OPeNDAP data
@@ -77,8 +76,8 @@ public abstract class BaseType extends DAPNode {
    * instance of a BaseType variable. This is the repository for
    * "Semantic Metadata"
    */
-  private Attribute _attr;
-  private AttributeTable _attrTbl;
+  private Attribute attribute;
+  private AttributeTable attTable;
 
   /**
    * Constructs a new <code>BaseType</code> with no name.
@@ -95,8 +94,8 @@ public abstract class BaseType extends DAPNode {
    */
   public BaseType(String clearname) {
     super();
-    _attrTbl = new AttributeTable(getClearName());
-    _attr = new Attribute(getClearName(), _attrTbl);
+    attTable = new AttributeTable(getClearName());
+    attribute = new Attribute(getClearName(), attTable);
     setClearName(clearname);
   }
 
@@ -108,10 +107,10 @@ public abstract class BaseType extends DAPNode {
   @Override
   public void setClearName(String clearname) {
     super.setClearName(clearname);
-    if (_attr != null)
-      _attr.setClearName(clearname);
-    if (_attrTbl != null)
-      _attrTbl.setClearName(clearname);
+    if (attribute != null)
+      attribute.setClearName(clearname);
+    if (attTable != null)
+      attTable.setClearName(clearname);
   }
 
 
@@ -415,77 +414,68 @@ public abstract class BaseType extends DAPNode {
 
 
   public boolean hasAttributes() {
-
-
-    Enumeration e = _attrTbl.getNames();
-
-    if (e.hasMoreElements())
-      return (true);
-
-    return (false);
-
-
+    return attTable.size() > 0;
   }
 
 
   public Attribute getAttribute() {
-    return _attr;
+    return attribute;
   }
 
   public AttributeTable getAttributeTable() {
-    return _attrTbl;
+    return attTable;
   }
 
   public void addAttributeAlias(String alias, String attributeName) throws DASException {
-    _attrTbl.addAlias(alias, attributeName);
+    attTable.addAlias(alias, attributeName);
   }
 
   public void appendAttribute(String clearname, int type, String value, boolean check) throws DASException {
-    _attrTbl.appendAttribute(clearname, type, value, check);
+    attTable.appendAttribute(clearname, type, value, check);
   }
 
   public void appendAttribute(String clearname, int type, String value) throws DASException {
-    _attrTbl.appendAttribute(clearname, type, value);
+    attTable.appendAttribute(clearname, type, value);
   }
 
   public void addAttributeContainer(AttributeTable at) throws AttributeExistsException {
-    _attrTbl.addContainer(at.getClearName(), at);
+    attTable.addContainer(at.getClearName(), at);
   }
 
   public AttributeTable appendAttributeContainer(String clearname) {
-    return (_attrTbl.appendContainer(clearname));
+    return (attTable.appendContainer(clearname));
   }
 
   public void delAttribute(String clearname) {
-    _attrTbl.delAttribute(clearname);
+    attTable.delAttribute(clearname);
   }
 
   public void delAttribute(String clearname, int i) throws DASException {
-    _attrTbl.delAttribute(clearname, i);
+    attTable.delAttribute(clearname, i);
   }
 
   public Attribute getAttribute(String clearname) {
-    return (_attrTbl.getAttribute(clearname));
+    return (attTable.getAttribute(clearname));
   }
 
-  public Enumeration getAttributeNames() {
-    return (_attrTbl.getNames());
+  public Iterable<String> getAttributeNames() {
+    return attTable;
   }
 
   public void printAttributes(OutputStream os) {
-    _attrTbl.print(os);
+    attTable.print(os);
   }
 
   public void printAttributes(OutputStream os, String pad) {
-    _attrTbl.print(os, pad);
+    attTable.print(os, pad);
   }
 
   public void printAttributes(PrintWriter pw) {
-    _attrTbl.print(pw);
+    attTable.print(pw);
   }
 
   public void printAttributes(PrintWriter pw, String pad) {
-    _attrTbl.print(pw, pad);
+    attTable.print(pw, pad);
   }
 
   public void printXML(OutputStream os) {
@@ -507,29 +497,22 @@ public abstract class BaseType extends DAPNode {
   }
 
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
-
     pw.print(pad + "<" + getTypeName());
     if (_nameClear != null) {
       pw.print(" name=\"" + DDSXMLParser.normalizeToXML(_nameClear) + "\"");
     }
 
-    Enumeration e = getAttributeNames();
-    if (e.hasMoreElements()) {
+    if (attTable.size() > 0) {
       pw.println(">");
-      while (e.hasMoreElements()) {
-        String aName = (String) e.nextElement();
-
+      for (String aName : attTable) {
         Attribute a = getAttribute(aName);
         if (a != null)
           a.printXML(pw, pad + "\t", constrained);
-
       }
       pw.println(pad + "</" + getTypeName() + ">");
     } else {
       pw.println("/>");
     }
-
-
   }
 
   public void printConstraint(PrintWriter os) {
@@ -562,10 +545,10 @@ public abstract class BaseType extends DAPNode {
    */
   public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
     BaseType bt = (BaseType) super.cloneDAG(map);
-    if (this._attrTbl != null)
-      bt._attrTbl = (AttributeTable) cloneDAG(map, this._attrTbl);
-    if (this._attr != null)
-      bt._attr = new Attribute(getClearName(), bt._attrTbl);
+    if (this.attTable != null)
+      bt.attTable = (AttributeTable) cloneDAG(map, this.attTable);
+    if (this.attribute != null)
+      bt.attribute = new Attribute(getClearName(), bt.attTable);
     return bt;
   }
 

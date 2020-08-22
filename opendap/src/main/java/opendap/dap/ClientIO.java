@@ -52,7 +52,6 @@ import java.io.EOFException;
  * is responsible for sending variable type information (see <code>DDS</code>).
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  * @see DDS
  */
