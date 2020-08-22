@@ -36,11 +36,9 @@ import ucar.unidata.geoloc.projection.LambertConformal;
 public class ADASConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "ARPS/ADAS";
 
-  // private double originX = 0.0, originY = 0.0;
   private ProjectionCT projCT;
-  private static final boolean debugProj = false;
 
-  ADASConvention(NetcdfDataset.Builder datasetBuilder) {
+  ADASConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -50,10 +48,6 @@ public class ADASConvention extends CoordSystemBuilder {
     if (!rootGroup.findVariableLocal("x").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }
-
-    // old way without attributes
-    Attribute att = rootGroup.getAttributeContainer().findAttribute("MAPPROJ");
-    int projType = att.getNumericValue().intValue();
 
     double lat1 = rootGroup.getAttributeContainer().findAttributeDouble("TRUELAT1", Double.NaN);
     double lat2 = rootGroup.getAttributeContainer().findAttributeDouble("TRUELAT2", Double.NaN);
@@ -77,6 +71,8 @@ public class ADASConvention extends CoordSystemBuilder {
         lat2 = (att2.getLength() > 1) ? att2.getNumericValue(1).doubleValue() : lat1;
       }
     } else {
+      // old way without attributes
+      int projType = rootGroup.getAttributeContainer().findAttributeInteger("MAPPROJ", -1);
       if (projType == 2)
         projName = "lambert_conformal_conic";
     }
@@ -108,7 +104,7 @@ public class ADASConvention extends CoordSystemBuilder {
     }
 
     if (projCT != null) {
-      VariableDS.Builder v = makeCoordinateTransformVariable(projCT);
+      VariableDS.Builder<?> v = makeCoordinateTransformVariable(projCT);
       v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
       rootGroup.addVariable(v);
     }
@@ -129,7 +125,7 @@ public class ADASConvention extends CoordSystemBuilder {
     LatLonPoint lpt0 = LatLonPoint.create(lat_check, lon_check);
     ProjectionPoint ppt0 = proj.latLonToProj(lpt0);
 
-    VariableDS.Builder xstag = (VariableDS.Builder) rootGroup.findVariableLocal("x_stag")
+    VariableDS.Builder<?> xstag = (VariableDS.Builder<?>) rootGroup.findVariableLocal("x_stag")
         .orElseThrow(() -> new IllegalStateException("Must have x_stag Variable"));
     Variable xstagOrg = xstag.orgVar;
     int nxpts = (int) xstagOrg.getSize();
@@ -137,7 +133,7 @@ public class ADASConvention extends CoordSystemBuilder {
     float center_x = xstagData.get(nxpts - 1);
     double false_easting = center_x / 2000 - ppt0.getX() * 1000.0;
 
-    VariableDS.Builder ystag = (VariableDS.Builder) rootGroup.findVariableLocal("y_stag")
+    VariableDS.Builder<?> ystag = (VariableDS.Builder<?>) rootGroup.findVariableLocal("y_stag")
         .orElseThrow(() -> new IllegalStateException("Must have y_stag Variable"));
     Variable ystagOrg = ystag.orgVar;
     int nypts = (int) ystagOrg.getSize();
@@ -171,7 +167,7 @@ public class ADASConvention extends CoordSystemBuilder {
   }
 
   @Override
-  protected AxisType getAxisType(VariableDS.Builder vb) {
+  protected AxisType getAxisType(VariableDS.Builder<?> vb) {
     String vname = vb.shortName;
 
     if (vname.equalsIgnoreCase("x") || vname.equalsIgnoreCase("x_stag"))
@@ -224,7 +220,7 @@ public class ADASConvention extends CoordSystemBuilder {
     if (!rootGroup.findVariableLocal(name).isPresent()) {
       return;
     }
-    VariableDS.Builder stagV = (VariableDS.Builder) rootGroup.findVariableLocal(name).get();
+    VariableDS.Builder<?> stagV = (VariableDS.Builder<?>) rootGroup.findVariableLocal(name).get();
     Array data_stag = stagV.orgVar.read();
     int n = (int) data_stag.getSize() - 1;
     DataType dt = DataType.getType(data_stag);
@@ -238,7 +234,7 @@ public class ADASConvention extends CoordSystemBuilder {
 
     DataType dtype = DataType.getType(data);
     String units = stagV.getAttributeContainer().findAttributeString(CDM.UNITS, "m");
-    CoordinateAxis.Builder cb = CoordinateAxis1D.builder().setName(axisName).setDataType(dtype)
+    CoordinateAxis.Builder<?> cb = CoordinateAxis1D.builder().setName(axisName).setDataType(dtype)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(axisName).setUnits(units)
         .setDesc("synthesized non-staggered " + axisName + " coordinate");
     cb.setCachedData(data, true);
@@ -252,7 +248,7 @@ public class ADASConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new ADASConvention(datasetBuilder);
     }
   }

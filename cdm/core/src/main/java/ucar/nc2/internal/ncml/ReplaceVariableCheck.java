@@ -7,6 +7,6 @@ package ucar.nc2.internal.ncml;
 
 import ucar.nc2.Variable;
 
-public interface ReplaceVariableCheck {
+interface ReplaceVariableCheck {
   boolean replace(Variable v);
 }

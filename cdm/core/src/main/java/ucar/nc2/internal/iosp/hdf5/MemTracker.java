@@ -10,16 +10,10 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Track use of space in an HDF5 file
- *
- * @author caron
- * @since 6/27/12
- */
+/** Track use of space in an HDF5 file */
 public class MemTracker {
-  private List<Mem> memList = new ArrayList<>();
-
-  private long fileSize;
+  private final List<Mem> memList = new ArrayList<>();
+  private final long fileSize;
 
   public MemTracker(long fileSize) {
     this.fileSize = fileSize;

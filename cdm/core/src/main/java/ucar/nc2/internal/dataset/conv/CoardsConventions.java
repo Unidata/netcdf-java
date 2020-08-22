@@ -16,6 +16,7 @@ import ucar.nc2.util.CancelTask;
 
 /**
  * COARDS Convention. see http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html
+ * Obsolete, do not use for new data.
  */
 class CoardsConventions extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "COARDS";
@@ -27,7 +28,7 @@ class CoardsConventions extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new CoardsConventions(datasetBuilder);
     }
   }
@@ -48,12 +49,12 @@ class CoardsConventions extends CoordSystemBuilder {
    * time in such cases.
    */
 
-  CoardsConventions(NetcdfDataset.Builder datasetBuilder) {
+  CoardsConventions(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
 
-  boolean checkTimeVarForCalendar(VariableDS.Builder vb) {
+  boolean checkTimeVarForCalendar(VariableDS.Builder<?> vb) {
     boolean hasChanged = false;
     String unit = vb.getUnits();
     if (unit != null) {
@@ -72,9 +73,9 @@ class CoardsConventions extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    for (Variable.Builder vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
       if (vb instanceof VariableDS.Builder) {
-        checkTimeVarForCalendar((VariableDS.Builder) vb);
+        checkTimeVarForCalendar((VariableDS.Builder<?>) vb);
       }
     }
   }
@@ -84,7 +85,7 @@ class CoardsConventions extends CoordSystemBuilder {
   // we assume that coordinate axes get identified by being coordinate variables
   @Override
   @Nullable
-  protected AxisType getAxisType(VariableDS.Builder vb) {
+  protected AxisType getAxisType(VariableDS.Builder<?> vb) {
     String unit = vb.getUnits();
     if (unit == null) {
       return null;

@@ -17,7 +17,7 @@ import ucar.nc2.util.CancelTask;
 public class ATDRadarConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "ATDRadar";
 
-  ATDRadarConvention(NetcdfDataset.Builder datasetBuilder) {
+  ATDRadarConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -41,7 +41,7 @@ public class ATDRadarConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new ATDRadarConvention(datasetBuilder);
     }
   }

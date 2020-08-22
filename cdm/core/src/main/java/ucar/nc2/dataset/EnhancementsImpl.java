@@ -14,6 +14,7 @@ import java.util.*;
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.
  * Factored out so that it can be used as a 'mixin' in VariablesDS and StructureDS.
+ * TODO make immutable
  */
 class EnhancementsImpl {
   private final Variable forVar;

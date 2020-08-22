@@ -24,9 +24,7 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateFromString;
 import ucar.nc2.util.CancelTask;
 
-/**
- * Encapsulates a NetcdfFile that is a component of the aggregation.
- */
+/** Encapsulates a NetcdfFile that is a component of the aggregation. */
 class AggDatasetOuter extends AggDataset {
   private final AggregationOuter aggregationOuter;
   @Nullable

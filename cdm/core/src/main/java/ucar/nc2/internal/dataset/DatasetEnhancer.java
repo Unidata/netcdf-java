@@ -29,11 +29,11 @@ public class DatasetEnhancer {
     return false;
   }
 
-  private final NetcdfDataset.Builder dsBuilder;
+  private final NetcdfDataset.Builder<?> dsBuilder;
   private final Set<Enhance> wantEnhance;
   private final CancelTask cancelTask;
 
-  public DatasetEnhancer(NetcdfDataset.Builder ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
+  public DatasetEnhancer(NetcdfDataset.Builder<?> ds, Set<Enhance> wantEnhance, CancelTask cancelTask) {
     this.dsBuilder = ds;
     this.wantEnhance = wantEnhance == null ? EnumSet.noneOf(Enhance.class) : wantEnhance;
     this.cancelTask = cancelTask;
@@ -98,7 +98,7 @@ public class DatasetEnhancer {
    * Possible remove all direct access to Variable.enhance
    */
 
-  public NetcdfDataset.Builder enhance() throws IOException {
+  public NetcdfDataset.Builder<?> enhance() throws IOException {
     // CoordSystemBuilder may enhance dataset: add new variables, attributes, etc
     CoordSystemBuilder coordSysBuilder = null;
     if (wantEnhance.contains(Enhance.CoordSystems) && !dsBuilder.getEnhanceMode().contains(Enhance.CoordSystems)) {
@@ -130,13 +130,13 @@ public class DatasetEnhancer {
 
   private void enhanceGroup(Group.Builder group) {
 
-    for (Variable.Builder vb : group.vbuilders) {
+    for (Variable.Builder<?> vb : group.vbuilders) {
       if (vb instanceof StructureDS.Builder<?>) {
         enhanceStructure((StructureDS.Builder<?>) vb);
       } else if (vb instanceof SequenceDS.Builder<?>) {
         enhanceSequence((SequenceDS.Builder<?>) vb);
       } else if (vb instanceof VariableDS.Builder) {
-        enhanceVariable((VariableDS.Builder) vb);
+        enhanceVariable((VariableDS.Builder<?>) vb);
       } else {
         throw new IllegalStateException("Not a VariableDS " + vb);
       }
@@ -150,11 +150,11 @@ public class DatasetEnhancer {
   private void enhanceStructure(StructureDS.Builder<?> sdb) {
     for (Variable.Builder<?> vb : sdb.vbuilders) {
       if (vb instanceof StructureDS.Builder) {
-        enhanceStructure((StructureDS.Builder) vb);
+        enhanceStructure((StructureDS.Builder<?>) vb);
       } else if (vb instanceof SequenceDS.Builder) {
-        enhanceSequence((SequenceDS.Builder) vb);
+        enhanceSequence((SequenceDS.Builder<?>) vb);
       } else if (vb instanceof VariableDS.Builder) {
-        enhanceVariable((VariableDS.Builder) vb);
+        enhanceVariable((VariableDS.Builder<?>) vb);
       } else {
         throw new IllegalStateException("Not a VariableDS " + vb.shortName);
       }
@@ -164,18 +164,18 @@ public class DatasetEnhancer {
   private void enhanceSequence(SequenceDS.Builder<?> sdb) {
     for (Variable.Builder<?> vb : sdb.vbuilders) {
       if (vb instanceof StructureDS.Builder) {
-        enhanceStructure((StructureDS.Builder) vb);
+        enhanceStructure((StructureDS.Builder<?>) vb);
       } else if (vb instanceof SequenceDS.Builder) {
-        enhanceSequence((SequenceDS.Builder) vb);
+        enhanceSequence((SequenceDS.Builder<?>) vb);
       } else if (vb instanceof VariableDS.Builder) {
-        enhanceVariable((VariableDS.Builder) vb);
+        enhanceVariable((VariableDS.Builder<?>) vb);
       } else {
         throw new IllegalStateException("Not a VariableDS " + vb.shortName);
       }
     }
   }
 
-  private void enhanceVariable(VariableDS.Builder vb) {
+  private void enhanceVariable(VariableDS.Builder<?> vb) {
     Set<Enhance> varEnhance = EnumSet.copyOf(wantEnhance);
 
     // varEnhance will only contain enhancements not already applied to orgVar.

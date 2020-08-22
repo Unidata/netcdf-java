@@ -85,7 +85,7 @@ public abstract class Aggregation {
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
-  protected NetcdfDataset.Builder ncDataset; // the aggregation belongs to this dataset
+  protected NetcdfDataset.Builder<?> ncDataset; // the aggregation belongs to this dataset
   protected Type type; // the aggregation type
   protected Object spiObject = null; // not implemented in nested <netcdf> or <scan>
 
@@ -113,7 +113,7 @@ public abstract class Aggregation {
    * @param type the Aggregation.Type
    * @param recheckS how often to check if files have changes
    */
-  protected Aggregation(NetcdfDataset.Builder ncd, String dimName, Type type, String recheckS) {
+  protected Aggregation(NetcdfDataset.Builder<?> ncd, String dimName, Type type, String recheckS) {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
@@ -219,7 +219,7 @@ public abstract class Aggregation {
    * @return true if directory was rescanned and dataset may have been updated
    * @throws IOException on io error
    */
-  public synchronized boolean syncExtend() throws IOException {
+  public synchronized boolean syncExtend() {
     return false; // LOOK datasetManager.isScanNeeded() && _sync();
   }
 
@@ -357,7 +357,7 @@ public abstract class Aggregation {
    * @param cancelTask user can cancel
    * @throws IOException on i/o error
    */
-  protected void makeDatasets(CancelTask cancelTask) throws IOException {
+  protected void makeDatasets(CancelTask cancelTask) {
 
     // heres where the results will go
     datasets = new ArrayList<>();
@@ -476,7 +476,7 @@ public abstract class Aggregation {
    * @param newds containing dataset
    * @throws IOException on i/o error
    */
-  void setDatasetAcquireProxy(AggDataset typicalDataset, NetcdfDataset.Builder newds) throws IOException {
+  void setDatasetAcquireProxy(AggDataset typicalDataset, NetcdfDataset.Builder<?> newds) throws IOException {
     AggProxyReader proxy = new AggProxyReader(typicalDataset);
     setDatasetAcquireProxy(proxy, newds.rootGroup);
   }
@@ -484,8 +484,7 @@ public abstract class Aggregation {
   private void setDatasetAcquireProxy(AggProxyReader proxy, Group.Builder g) throws IOException {
 
     // all normal (non agg) variables must use a proxy to lock the file
-    for (Variable.Builder v : g.vbuilders) {
-
+    for (Variable.Builder<?> v : g.vbuilders) {
       if (v.proxyReader != v && v.proxyReader != null) {
         if (debugProxy)
           System.out.println(" debugProxy: hasProxyReader " + v.shortName);

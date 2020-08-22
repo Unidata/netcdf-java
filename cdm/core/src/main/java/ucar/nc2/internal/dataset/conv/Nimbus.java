@@ -33,12 +33,12 @@ public class Nimbus extends CoardsConventions {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new Nimbus(datasetBuilder);
     }
   }
 
-  private Nimbus(NetcdfDataset.Builder datasetBuilder) {
+  private Nimbus(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -66,7 +66,8 @@ public class Nimbus extends CoardsConventions {
     if (!hasTime) {
       rootGroup.findVariableLocal("time_offset").ifPresent(time -> {
         try {
-          VariableDS.Builder base = (VariableDS.Builder) rootGroup.findVariableLocal("base_time").get();
+          VariableDS.Builder<?> base = (VariableDS.Builder<?>) rootGroup.findVariableLocal("base_time")
+              .orElseThrow(() -> new IllegalStateException("Cant find variable base_time"));
           int base_time = base.orgVar.readScalarInt();
           DateUnit dunit = new DateUnit("seconds since 1970-01-01 00:00");
           String time_units = "seconds since " + dunit.makeStandardDateString(base_time);
@@ -83,7 +84,7 @@ public class Nimbus extends CoardsConventions {
     if (coordinates != null) {
       for (String vname : StringUtil2.split(coordinates)) {
         rootGroup.findVariableLocal(vname).ifPresent(v -> {
-          AxisType atype = getAxisType((VariableDS.Builder) v);
+          AxisType atype = getAxisType((VariableDS.Builder<?>) v);
           if (atype != null) {
             v.addAttribute(new Attribute(_Coordinate.AxisType, atype.name()));
           }

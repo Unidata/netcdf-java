@@ -13,11 +13,9 @@ import ucar.unidata.io.RandomAccessFile;
 import java.util.*;
 import java.io.IOException;
 
-/**
- * Netcdf version 3 header. Read-only version using Builders for immutablility.
- */
+/** Netcdf version 3 header. Read-only version using Builders for immutablility. */
 public class N3headerNew {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
 
   static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
   // 64-bit offset format : only affects the variable offset value
@@ -67,10 +65,10 @@ public class N3headerNew {
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
   boolean useLongOffset;
-  private N3iospNew n3iospNew;
+  private final N3iospNew n3iospNew;
   long nonRecordDataSize; // size of non-record variables
   Dimension udim; // the unlimited dimension
-  private List<Vinfo> vars = new ArrayList<>();
+  private final List<Vinfo> vars = new ArrayList<>();
   long dataStart = Long.MAX_VALUE; // where the data starts
 
   private final Charset valueCharset;
@@ -571,7 +569,7 @@ public class N3headerNew {
     Structure.Builder<?> recordStructure = Structure.builder().setName("record");
     recordStructure.setParentGroupBuilder(root).setDimensionsByName(udim.getShortName());
     for (Variable.Builder<?> v : uvars) {
-      Variable.Builder memberV = v.makeSliceBuilder(0, 0); // set unlimited dimension to 0
+      Variable.Builder<?> memberV = v.makeSliceBuilder(0, 0); // set unlimited dimension to 0
       recordStructure.addMemberVariable(memberV);
     }
     root.addVariable(recordStructure);

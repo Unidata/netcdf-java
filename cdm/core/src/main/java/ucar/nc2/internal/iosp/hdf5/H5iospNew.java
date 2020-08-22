@@ -12,13 +12,10 @@ import java.util.Optional;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
-import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
@@ -403,9 +400,10 @@ public class H5iospNew extends AbstractIOServiceProvider {
       H5headerNew.Vinfo vm = (H5headerNew.Vinfo) v2.getSPobject();
 
       // apparently each member may have seperate byte order (!!!??)
-      if (vm.typeInfo.endian >= 0)
+      if (vm.typeInfo.endian >= 0) {
         m.setDataObject(
             vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+      }
 
       // vm.dataPos : offset since start of Structure
       m.setDataParam((int) vm.dataPos);
@@ -533,24 +531,6 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
     // normal case
     return IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, convertChar);
-  }
-
-  // old way
-  private StructureData readStructure(Structure s, ArrayStructureW asw, long dataPos)
-      throws IOException, InvalidRangeException {
-    StructureDataW sdata = new StructureDataW(asw.getStructureMembers());
-    if (debug)
-      System.out.println(" readStructure " + s.getFullName() + " dataPos = " + dataPos);
-
-    for (Variable v2 : s.getVariables()) {
-      H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
-      if (debug)
-        System.out.println(" readStructureMember " + v2.getFullName() + " vinfo = " + vinfo);
-      Array dataArray = readData(v2, dataPos + vinfo.dataPos, v2.getShapeAsSection());
-      sdata.setMemberData(v2.getShortName(), dataArray);
-    }
-
-    return sdata;
   }
 
   //////////////////////////////////////////////////////////////////////////

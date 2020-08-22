@@ -32,19 +32,19 @@ public class FslWindProfiler extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new FslWindProfiler(datasetBuilder);
     }
   }
 
-  private FslWindProfiler(NetcdfDataset.Builder datasetBuilder) {
+  private FslWindProfiler(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
 
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
-    for (Variable.Builder v : rootGroup.vbuilders) {
+    for (Variable.Builder<?> v : rootGroup.vbuilders) {
       switch (v.shortName) {
         case "staName":
           v.addAttribute(new Attribute("standard_name", "station_name"));

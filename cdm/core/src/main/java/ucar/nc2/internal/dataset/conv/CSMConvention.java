@@ -17,22 +17,25 @@ import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
 
-/** CSM-1 Convention. Deprecated: use CF */
+/**
+ * CSM-1 Convention.
+ * Obsolete, do not use for new data.
+ */
 class CSMConvention extends CoardsConventions {
   private static final String CONVENTION_NAME = "NCAR-CSM";
 
-  CSMConvention(NetcdfDataset.Builder datasetBuilder) {
+  CSMConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    for (Variable.Builder vb : rootGroup.vbuilders) {
-      if (!(vb instanceof VariableDS.Builder)) {
+    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
+      if (!(vb instanceof VariableDS.Builder<?>)) {
         continue;
       }
-      VariableDS.Builder vds = (VariableDS.Builder) vb;
+      VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;
       String unit = vds.getUnits();
       if (unit != null && (unit.equalsIgnoreCase("hybrid_sigma_pressure") || unit.equalsIgnoreCase("sigma_level"))) {
         // both a coordinate axis and transform
@@ -65,7 +68,7 @@ class CSMConvention extends CoardsConventions {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new CSMConvention(datasetBuilder);
     }
   }

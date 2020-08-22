@@ -61,7 +61,7 @@ class N3headerWriter extends N3headerNew {
         throw new IllegalStateException();
       }
       // replace Variable's dimensions with unlimitedDim
-      for (Variable.Builder vb : rootb.vbuilders) {
+      for (Variable.Builder<?> vb : rootb.vbuilders) {
         if (vb.isUnlimited()) {
           if (!vb.replaceDimensionByName(this.unlimitedDim)) {
             throw new IllegalStateException();
@@ -484,31 +484,6 @@ class N3headerWriter extends N3headerNew {
   void setNumrecs(int n) {
     this.numrecs = n;
     this.unlimitedDim.setLength(n);
-  }
-
-  // TODO udim.setLength : need UnlimitedDimension extends Dimension?
-  synchronized boolean synchNumrecs() throws IOException {
-    // check number of records in the header
-    // gotta bypass the RAF buffer
-    int n = raf.readIntUnbuffered(4);
-    if (n == this.numrecs)
-      return false;
-    if (n < 0) // streaming
-      return false;
-
-    // update everything
-    this.numrecs = n;
-
-    // set it in the unlimited dimension
-    unlimitedDim.setLength(this.numrecs);
-
-    // set it in all of the record variables
-    for (Variable uvar : uvars) {
-      uvar.resetShape();
-      uvar.invalidateCache();
-    }
-
-    return true;
   }
 
   ///////////////////////////////////////////////////////////////////////////////

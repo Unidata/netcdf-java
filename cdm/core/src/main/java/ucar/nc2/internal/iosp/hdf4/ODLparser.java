@@ -51,7 +51,7 @@ import ucar.nc2.util.IO;
  * 
  */
 public class ODLparser {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
   private static boolean debug, showRaw, show;
 
   private Document doc;

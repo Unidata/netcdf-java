@@ -7,12 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
-/**
- * HDF5 diagnostic helper
- *
- * @author caron
- * @since 6/25/12
- */
+/** HDF5 diagnostic helper */
 public class H5diagNew {
   private final NetcdfFile ncfile;
   private final H5iospNew iosp;

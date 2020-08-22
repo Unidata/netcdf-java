@@ -28,8 +28,8 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param largeFile if want large file format
    * @throws java.io.IOException if I/O error
    */
-  void create(String filename, ucar.nc2.NetcdfFile.Builder ncfileb, int extra, long preallocateSize, boolean largeFile)
-      throws IOException;
+  void create(String filename, ucar.nc2.NetcdfFile.Builder<?> ncfileb, int extra, long preallocateSize,
+      boolean largeFile) throws IOException;
 
   /**
    * Open existing file and allow writing. Netcdf-4 writing is general. Netcdf-3 writing is restricted to writing data
@@ -40,7 +40,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if I/O error
    */
-  void openForWriting(RandomAccessFile raf, ucar.nc2.NetcdfFile.Builder ncfileb, CancelTask cancelTask)
+  void openForWriting(RandomAccessFile raf, ucar.nc2.NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask)
       throws IOException;
 
   /** Get the output file being written to. */

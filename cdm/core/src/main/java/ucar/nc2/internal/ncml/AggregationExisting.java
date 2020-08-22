@@ -40,12 +40,10 @@ import ucar.nc2.util.CancelTask;
  * "JoinExisting" Aggregation. Existing means that the dimension already exists in the component variables.
  * For every variable with that dimension, replace it with its "aggreation" whose dimensions lebgth is the
  * sum of the the component lengths. The dimensions must be the outer dimension.
- *
- * @author caron
  */
 class AggregationExisting extends AggregationOuter {
 
-  AggregationExisting(NetcdfDataset.Builder ncd, String dimName, String recheckS) {
+  AggregationExisting(NetcdfDataset.Builder<?> ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.joinExisting, recheckS);
   }
 
@@ -68,7 +66,7 @@ class AggregationExisting extends AggregationOuter {
       } else {
         // docs claim we can add the coord variable in the outer ncml, so make a fake one for now, make
         // sure it gets removed if user adds it outside of aggregation.
-        VariableDS.Builder fake = VariableDS.builder().setName(dimName).setDataType(DataType.INT)
+        VariableDS.Builder<?> fake = VariableDS.builder().setName(dimName).setDataType(DataType.INT)
             .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName);
         fake.setAutoGen(0, 1);
         rootGroup.addVariable(fake);
@@ -109,7 +107,7 @@ class AggregationExisting extends AggregationOuter {
       }
 
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(rootGroup, v.getParentGroup());
-      VariableDS.Builder vagg = VariableDS.builder().setName(v.getShortName()).setDataType(v.getDataType())
+      VariableDS.Builder<?> vagg = VariableDS.builder().setName(v.getShortName()).setDataType(v.getDataType())
           .setParentGroupBuilder(rootGroup).setDimensionsByName(v.getDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(v.attributes(), vagg.getAttributeContainer());
@@ -130,7 +128,7 @@ class AggregationExisting extends AggregationOuter {
       typicalDataset.close(typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on " + getLocation());
     }
-    VariableDS.Builder joinAggCoord = (VariableDS.Builder) joinAggCoordOpt.orElse(null);
+    VariableDS.Builder<?> joinAggCoord = (VariableDS.Builder<?>) joinAggCoordOpt.orElse(null);
 
     if (type == Type.joinExistingOne) {
       // replace aggregation coordinate variable

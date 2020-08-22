@@ -145,8 +145,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
    * @param isoDateString ISO date string
    * @return CalendarDate
+   * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
    */
-  public static CalendarDate parseISOformat(String calendarName, String isoDateString) {
+  public static CalendarDate parseISOformat(String calendarName, String isoDateString) throws IllegalArgumentException {
     Calendar cal = Calendar.get(calendarName);
     if (cal == null)
       cal = Calendar.getDefault();

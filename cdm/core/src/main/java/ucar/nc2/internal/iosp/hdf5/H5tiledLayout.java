@@ -5,6 +5,7 @@
 package ucar.nc2.internal.iosp.hdf5;
 
 import java.io.IOException;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
 import ucar.nc2.iosp.Layout;
@@ -15,17 +16,16 @@ import ucar.nc2.iosp.LayoutTiled;
  * This calculates byte offsets for HD5 chunked datasets.
  * Assumes that the data is stored in chunks, indexed by a Btree.
  * for unfiltered data only
- *
- * @author caron
  */
+@Immutable
 public class H5tiledLayout implements Layout {
-  private LayoutTiled delegate;
+  private static final boolean debug = false;
 
-  private Section want;
-  private int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
-  private int elemSize; // last dimension of the StorageLayout message
+  private final LayoutTiled delegate;
+  private final Section want;
+  private final int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
+  private final int elemSize; // last dimension of the StorageLayout message
 
-  private boolean debug;
 
   /**
    * Constructor.

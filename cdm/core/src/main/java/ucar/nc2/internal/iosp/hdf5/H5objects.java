@@ -21,14 +21,14 @@ import ucar.unidata.io.RandomAccessFile;
 
 /** The low-level HDF5 data objects. */
 public class H5objects {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5objects.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5objects.class);
 
   // debugging
-  private static boolean debugEnum, debugVlen;
-  private static boolean debug1, debugDetail, debugPos, debugHeap, debugV;
+  private static boolean debugEnum;
+  private static boolean debug1, debugDetail, debugPos, debugHeap;
   private static boolean debugGroupBtree, debugDataBtree, debugBtree2;
   private static boolean debugContinueMessage, debugTracker, debugSoftLink, debugHardLink, debugSymbolTable;
-  private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder, debugStructure;
+  private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder;
   private static boolean debugDimensionScales;
 
   private final H5headerNew header;
@@ -37,6 +37,7 @@ public class H5objects {
   private final PrintWriter debugOut;
   private final MemTracker memTracker;
   private final Map<Long, GlobalHeap> heapMap = new HashMap<>();
+  private final Map<Long, H5Group> hashGroups = new HashMap<>();
 
   H5objects(H5headerNew header, PrintWriter debugOut, MemTracker memTracker) {
     this.header = header;
@@ -537,9 +538,9 @@ public class H5objects {
 
   // type safe enum
   public static class MessageType {
-    private static int MAX_MESSAGE = 23;
-    private static Map<String, MessageType> hash = new HashMap<>(10);
-    private static MessageType[] mess = new MessageType[MAX_MESSAGE];
+    private static final int MAX_MESSAGE = 23;
+    private static final Map<String, MessageType> hash = new HashMap<>(10);
+    private static final MessageType[] mess = new MessageType[MAX_MESSAGE];
 
     public static final MessageType NIL = new MessageType("NIL", 0);
     public static final MessageType SimpleDataspace = new MessageType("SimpleDataspace", 1);
@@ -562,8 +563,8 @@ public class H5objects {
     public static final MessageType AttributeInfo = new MessageType("AttributeInfo", 21);
     public static final MessageType ObjectReferenceCount = new MessageType("ObjectReferenceCount", 22);
 
-    private String name;
-    private int num;
+    private final String name;
+    private final int num;
 
     private MessageType(String name, int num) {
       this.name = name;
@@ -2150,8 +2151,6 @@ public class H5objects {
     }
   }
 
-  private Map<Long, H5Group> hashGroups = new HashMap<>();
-
   private void readGroupOld(H5Group group, long btreeAddress, long nameHeapAddress) throws IOException {
     // track by address for hard links
     hashGroups.put(btreeAddress, group);
@@ -2188,7 +2187,7 @@ public class H5objects {
   class GroupBTree {
     protected String owner;
     protected int wantType;
-    private List<SymbolTableEntry> sentries = new ArrayList<>(); // list of type SymbolTableEntry
+    private final List<SymbolTableEntry> sentries = new ArrayList<>(); // list of type SymbolTableEntry
 
     GroupBTree(String owner, long address) throws IOException {
       this.owner = owner;
@@ -2486,7 +2485,7 @@ public class H5objects {
   }
 
   // the heap id is has already been read into a byte array at given pos
-  HeapIdentifier readHeapIdentifier(ByteBuffer bb, int pos) throws IOException {
+  HeapIdentifier readHeapIdentifier(ByteBuffer bb, int pos) {
     return new HeapIdentifier(bb, pos);
   }
 
@@ -2549,8 +2548,8 @@ public class H5objects {
   } // HeapIdentifier
 
   class RegionReference {
-    private long heapAddress;
-    private int index;
+    private final long heapAddress;
+    private final int index;
 
     RegionReference(long filePos) throws IOException {
       // header information is in le byte order
@@ -2592,9 +2591,9 @@ public class H5objects {
 
   // level 1E
   class GlobalHeap {
-    private byte version;
-    private int sizeBytes;
-    private Map<Short, GlobalHeap.HeapObject> hos = new HashMap<>();
+    private final byte version;
+    private final int sizeBytes;
+    private final Map<Short, GlobalHeap.HeapObject> hos = new HashMap<>();
 
     GlobalHeap(long address) throws IOException {
       // header information is in le byte order

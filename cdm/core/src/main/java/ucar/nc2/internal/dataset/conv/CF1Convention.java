@@ -29,7 +29,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 
 /**
- * CF-1 Convention. see http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html
+ * CF-1 Convention.
  * <p/>
  * <i>
  * "The CF conventions for climate and forecast metadata are designed to promote the processing and sharing of files
@@ -40,10 +40,7 @@ import ucar.nc2.util.CancelTask;
  * quantities are comparable,
  * and facilitates building applications with powerful extraction, regridding, and display capabilities."
  * </i>
- *
- * @author caron
  */
-
 public class CF1Convention extends CSMConvention {
   private static final String CONVENTION_NAME = "CF-1.X";
 
@@ -82,7 +79,6 @@ public class CF1Convention extends CSMConvention {
     }
   }
 
-
   /**
    * Guess the value of ZisPositive based on z axis name and units
    *
@@ -118,7 +114,7 @@ public class CF1Convention extends CSMConvention {
 
   private int cfVersion = 0;
 
-  protected CF1Convention(NetcdfDataset.Builder datasetBuilder) {
+  protected CF1Convention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
     String conv = rootGroup.getAttributeContainer().findAttributeString(CF.CONVENTIONS, null);
@@ -129,11 +125,11 @@ public class CF1Convention extends CSMConvention {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    augmentDataset(cancelTask, rootGroup);
+    augmentDataset(rootGroup);
     augmentSimpleGeometry();
 
     for (Group.Builder nested : rootGroup.gbuilders) {
-      augmentDataset(cancelTask, nested);
+      augmentDataset(nested);
     }
 
     // TODO remove this
@@ -145,7 +141,7 @@ public class CF1Convention extends CSMConvention {
     }
   }
 
-  private void augmentDataset(CancelTask cancelTask, Group.Builder group) throws IOException {
+  private void augmentDataset(Group.Builder group) {
     boolean got_grid_mapping = false;
 
     // look for transforms
@@ -154,14 +150,6 @@ public class CF1Convention extends CSMConvention {
       String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
       if (sname != null) {
         sname = sname.trim();
-
-        /*
-         * // TODO why isnt this with other Transforms?
-         * if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) {
-         * makeAtmLnCoordinate(vds);
-         * continue;
-         * }
-         */
 
         if (sname.equalsIgnoreCase(CF.TIME_REFERENCE)) {
           vb.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
@@ -193,7 +181,7 @@ public class CF1Convention extends CSMConvention {
         }
 
         // look for time variables and check to see if they have a calendar attribute. if not, add the default
-        checkTimeVarForCalendar((VariableDS.Builder) vb);
+        checkTimeVarForCalendar((VariableDS.Builder<?>) vb);
       }
 
       // look for horiz transforms. only ones that are referenced by another variable.
@@ -232,7 +220,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     if (!got_grid_mapping) { // see if there are any grid mappings anyway
-      for (Variable.Builder vds : group.vbuilders) {
+      for (Variable.Builder<?> vds : group.vbuilders) {
         String grid_mapping_name = vds.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
         if (grid_mapping_name != null) {
           vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
@@ -318,11 +306,11 @@ public class CF1Convention extends CSMConvention {
     }
   }
 
-  Attribute findAttributeIn(Variable.Builder coordsvar, String attName) {
+  Attribute findAttributeIn(Variable.Builder<?> coordsvar, String attName) {
     return new Attribute(attName, coordsvar.getAttributeContainer().findAttributeString(attName, ""));
   }
 
-  void addOptionalAttributeIn(Variable.Builder src, Variable.Builder dest, String attName) {
+  void addOptionalAttributeIn(Variable.Builder<?> src, Variable.Builder<?> dest, String attName) {
     Attribute att = src.getAttributeContainer().findAttribute(attName);
     if (att != null) {
       dest.addAttribute(att); // ok to share Immutable objects
@@ -447,7 +435,7 @@ public class CF1Convention extends CSMConvention {
    * CF.AXIS attributes
    */
   @Override
-  public AxisType getAxisType(VariableDS.Builder vb) {
+  public AxisType getAxisType(VariableDS.Builder<?> vb) {
     // standard names for unitless vertical coords
     String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
     if (sname != null) {
@@ -537,7 +525,7 @@ public class CF1Convention extends CSMConvention {
 
     try {
       String units = vb.getUnits();
-      CalendarDateUnit cd = CalendarDateUnit.of(null, units);
+      CalendarDateUnit.of(null, units);
       // parsed successfully, what could go wrong?
       return AxisType.Time;
     } catch (Throwable t) {
@@ -556,7 +544,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new CF1Convention(datasetBuilder);
     }
   }

@@ -33,14 +33,14 @@ public class MADISStation extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new MADISStation(datasetBuilder);
     }
   }
 
   /////////////////////////////////////////////////////////////////
 
-  private MADISStation(NetcdfDataset.Builder datasetBuilder) {
+  private MADISStation(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -61,7 +61,7 @@ public class MADISStation extends CoordSystemBuilder {
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
       if (rootGroup.findVariableLocal(vname).isPresent()) {
-        Variable.Builder v = rootGroup.findVariableLocal(vname).get();
+        Variable.Builder<?> v = rootGroup.findVariableLocal(vname).get();
         AxisType atype = count == 0 ? AxisType.Lat : count == 1 ? AxisType.Lon : AxisType.Height;
         v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));
       } else {

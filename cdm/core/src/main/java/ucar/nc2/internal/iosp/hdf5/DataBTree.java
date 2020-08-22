@@ -27,8 +27,6 @@ import java.util.List;
  * raw data chunks. Aside from that difference, internal nodes and leaf nodes are identical.
  *
  * @see "http://www.hdfgroup.org/HDF5/doc/H5.format.html#Btrees"
- * @author caron
- * @since 6/27/12
  */
 public class DataBTree {
   private static final boolean debugDataBtree = false;
@@ -75,8 +73,8 @@ public class DataBTree {
   // returns the actual data from the btree leaf (level 0) nodes.
   // used by H5tiledLayout, when there are no filters
   class DataChunkIteratorNoFilter implements LayoutTiled.DataChunkIterator {
-    private Node root;
-    private int nChunkDim;
+    private final Node root;
+    private final int nChunkDim;
 
     /**
      * Constructor
@@ -114,8 +112,8 @@ public class DataBTree {
   // returns the data chunck info from the btree leaf (level 0) nodes
   // used by H5tiledLayoutBB, when there are filters
   public class DataChunkIterator {
-    private Node root;
-    private int[] wantOrigin;
+    private final Node root;
+    private final int[] wantOrigin;
 
     /**
      * Constructor
@@ -140,8 +138,9 @@ public class DataBTree {
 
   // Btree nodes
   class Node {
-    private long address;
-    private int level, nentries;
+    private final long address;
+    private final int level;
+    private final int nentries;
     private Node currentNode;
 
     // level 0 only

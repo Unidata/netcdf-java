@@ -18,6 +18,7 @@ import java.nio.ShortBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -81,7 +82,7 @@ public class H5headerNew implements HdfHeaderIF {
   public static final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
 
   // debugging
-  private static boolean debugEnum, debugVlen;
+  private static boolean debugVlen;
   private static boolean debug1, debugDetail, debugPos, debugHeap, debugV;
   private static boolean debugGroupBtree, debugDataBtree, debugBtree2;
   private static boolean debugContinueMessage, debugTracker, debugSoftLink, debugHardLink, debugSymbolTable;
@@ -152,8 +153,8 @@ public class H5headerNew implements HdfHeaderIF {
    */
   private boolean isNetcdf4;
   private H5Group h5rootGroup;
-  private Map<String, DataObjectFacade> symlinkMap = new HashMap<>(200);
-  private Map<Long, DataObject> addressMap = new HashMap<>(200);
+  private final Map<String, DataObjectFacade> symlinkMap = new HashMap<>(200);
+  private final Map<Long, DataObject> addressMap = new HashMap<>(200);
   private java.text.SimpleDateFormat hdfDateParser;
 
   private H5objects h5objects;
@@ -488,7 +489,7 @@ public class H5headerNew implements HdfHeaderIF {
           log.debug("{}", facadeNested);
         }
 
-        Variable.Builder v = makeVariable(parentGroup, facadeNested);
+        Variable.Builder<?> v = makeVariable(parentGroup, facadeNested);
         if ((v != null) && (v.dataType != null)) {
           parentGroup.addVariable(v);
 
@@ -924,7 +925,7 @@ public class H5headerNew implements HdfHeaderIF {
 
       } else { // assign separate attribute for each member
         StructureMembers attMembers = attData.getStructureMembers();
-        for (Variable.Builder v : sb.vbuilders) {
+        for (Variable.Builder<?> v : sb.vbuilders) {
           // does the compound attribute have a member with same name as nested variable ?
           StructureMembers.Member sm = attMembers.findMember(v.shortName);
           if (null != sm) {
@@ -936,7 +937,7 @@ public class H5headerNew implements HdfHeaderIF {
 
         // look for unassigned members, add to the list
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
-          Variable.Builder vb = sb.findMemberVariable(sm.getName()).orElse(null);
+          Variable.Builder<?> vb = sb.findMemberVariable(sm.getName()).orElse(null);
           if (vb == null) {
             Array memberData = attData.extractMemberArray(sm);
             attContainer.addAttribute(Attribute.fromArray(matt.name + "." + sm.getName(), memberData));
@@ -1214,7 +1215,7 @@ public class H5headerNew implements HdfHeaderIF {
     while (values.hasNext()) {
       int ival;
       if (dataType == DataType.ENUM1)
-        ival = (int) DataType.unsignedByteToShort(values.nextByte());
+        ival = DataType.unsignedByteToShort(values.nextByte());
       else if (dataType == DataType.ENUM2)
         ival = DataType.unsignedShortToInt(values.nextShort());
       else
@@ -1227,7 +1228,7 @@ public class H5headerNew implements HdfHeaderIF {
     return result;
   }
 
-  private Variable.Builder makeVariable(Group.Builder parentGroup, DataObjectFacade facade) throws IOException {
+  private Variable.Builder<?> makeVariable(Group.Builder parentGroup, DataObjectFacade facade) throws IOException {
 
     Vinfo vinfo = new Vinfo(facade);
     if (vinfo.getNCDataType() == null) {
@@ -1278,8 +1279,8 @@ public class H5headerNew implements HdfHeaderIF {
       }
     }
 
-    Variable.Builder vb;
-    Structure.Builder sb = null;
+    Variable.Builder<?> vb;
+    Structure.Builder<?> sb = null;
     if (facade.dobj.mdt.type == 6) { // Compound
       String vname = facade.name;
       vb = sb = Structure.builder().setName(vname);
@@ -1412,7 +1413,7 @@ public class H5headerNew implements HdfHeaderIF {
   private void addMembersToStructure(Group.Builder parent, Structure.Builder<?> s, MessageDatatype mdt)
       throws IOException {
     for (StructureMember m : mdt.members) {
-      Variable.Builder v = makeVariableMember(parent, m.name, m.offset, m.mdt);
+      Variable.Builder<?> v = makeVariableMember(parent, m.name, m.offset, m.mdt);
       if (v != null) {
         s.addMemberVariable(v);
         if (debug1) {
@@ -1423,8 +1424,8 @@ public class H5headerNew implements HdfHeaderIF {
   }
 
   // Used for Structure Members
-  private Variable.Builder makeVariableMember(Group.Builder parentGroup, String name, long dataPos, MessageDatatype mdt)
-      throws IOException {
+  private Variable.Builder<?> makeVariableMember(Group.Builder parentGroup, String name, long dataPos,
+      MessageDatatype mdt) throws IOException {
 
     Vinfo vinfo = new Vinfo(mdt, null, dataPos); // LOOK need mds
     if (vinfo.getNCDataType() == null) {
@@ -1433,7 +1434,7 @@ public class H5headerNew implements HdfHeaderIF {
     }
 
     if (mdt.type == 6) {
-      Structure.Builder sb = Structure.builder().setName(name).setParentGroupBuilder(parentGroup);
+      Structure.Builder<?> sb = Structure.builder().setName(name).setParentGroupBuilder(parentGroup);
       makeVariableShapeAndType(parentGroup, sb, mdt, null, vinfo, null);
       addMembersToStructure(parentGroup, sb, mdt);
       sb.setElementSize(mdt.byteSize);
@@ -1443,7 +1444,7 @@ public class H5headerNew implements HdfHeaderIF {
       return sb;
 
     } else {
-      Variable.Builder vb = Variable.builder().setName(name).setParentGroupBuilder(parentGroup);
+      Variable.Builder<?> vb = Variable.builder().setName(name).setParentGroupBuilder(parentGroup);
       makeVariableShapeAndType(parentGroup, vb, mdt, null, vinfo, null);
 
       // special case of variable length strings
@@ -1522,7 +1523,7 @@ public class H5headerNew implements HdfHeaderIF {
   }
 
   // set the type and shape of the Variable
-  private boolean makeVariableShapeAndType(Group.Builder parent, Variable.Builder v, MessageDatatype mdt,
+  private boolean makeVariableShapeAndType(Group.Builder parent, Variable.Builder<?> v, MessageDatatype mdt,
       MessageDataspace msd, Vinfo vinfo, String dimNames) {
 
     int[] shape = makeVariableShape(mdt, msd, dimNames);
@@ -1577,7 +1578,7 @@ public class H5headerNew implements HdfHeaderIF {
 
   // Holder of all H5 specific information for a Variable, needed to do IO.
   public class Vinfo {
-    Variable.Builder owner; // debugging
+    Variable.Builder<?> owner; // debugging
     DataObjectFacade facade; // debugging
 
     long dataPos; // for regular variables, needs to be absolute, with baseAddress added if needed
@@ -1711,7 +1712,7 @@ public class H5headerNew implements HdfHeaderIF {
       this.typeInfo = calcNCtype(mdt);
     }
 
-    void setOwner(Variable.Builder owner) {
+    void setOwner(Variable.Builder<?> owner) {
       this.owner = owner;
       if (btree != null)
         btree.setOwner(owner);
@@ -2289,7 +2290,7 @@ public class H5headerNew implements HdfHeaderIF {
   // debug - hdf5Table
   public List<DataObject> getDataObjects() {
     ArrayList<DataObject> result = new ArrayList<>(addressMap.values());
-    result.sort((o1, o2) -> Long.compare(o1.address, o2.address));
+    result.sort(Comparator.comparingLong(o -> o.address));
     return result;
   }
 

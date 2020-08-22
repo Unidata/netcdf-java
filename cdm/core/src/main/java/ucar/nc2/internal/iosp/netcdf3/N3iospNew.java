@@ -30,12 +30,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
-/**
- * Netcdf 3 version iosp, using Builders for immutability.
- *
- * @author caron
- * @since 9/29/2019.
- */
+/** Netcdf 3 version iosp, using Builders for immutability. */
 public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
 
@@ -125,7 +120,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   }
 
   /** Create header for reading netcdf file. */
-  private N3headerNew createHeader() throws IOException {
+  private N3headerNew createHeader() {
     return new N3headerNew(this);
   }
 

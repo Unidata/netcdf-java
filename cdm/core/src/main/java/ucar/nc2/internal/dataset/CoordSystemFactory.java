@@ -32,8 +32,8 @@ public class CoordSystemFactory {
   // Place where resources can be placed, eg NcML files used to wrap datasets.
   public static final String resourcesDir = "resources/nj22/coords/";
 
-  private static List<Convention> conventionList = new ArrayList<>();
-  private static Map<String, String> ncmlHash = new HashMap<>();
+  private static final List<Convention> conventionList = new ArrayList<>();
+  private static final Map<String, String> ncmlHash = new HashMap<>();
   private static boolean useMaximalCoordSys = true;
 
   /**
@@ -80,7 +80,7 @@ public class CoordSystemFactory {
    * @throws ClassNotFoundException if class could not be loaded
    */
   public static void registerConvention(String conventionName, String className) throws ClassNotFoundException {
-    Class c = Class.forName(className);
+    Class<?> c = Class.forName(className);
 
     if (!(CoordSystemBuilderFactory.class.isAssignableFrom(c)))
       throw new IllegalArgumentException(c.getName() + " must implement CoordSystemBuilderFactory");
@@ -223,7 +223,7 @@ public class CoordSystemFactory {
    * @throws java.io.IOException on io error
    */
   @Nonnull
-  public static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder ds, CancelTask cancelTask)
+  public static Optional<CoordSystemBuilder> factory(NetcdfDataset.Builder<?> ds, CancelTask cancelTask)
       throws IOException {
 
     // look for the Conventions attribute

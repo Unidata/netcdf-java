@@ -57,8 +57,8 @@ import ucar.unidata.util.Parameter;
  * B. You could explicitly add it by overriding assignCoordinateTransforms()
  */
 public class CoordSystemBuilder {
-  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSystemBuilder.class);
-  private static boolean useMaximalCoordSys = true;
+  protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSystemBuilder.class);
+  private static final boolean useMaximalCoordSys = true;
   private static final String CONVENTION_NAME = _Coordinate.Convention;
 
   public static class Factory implements CoordSystemBuilderFactory {
@@ -68,7 +68,7 @@ public class CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new CoordSystemBuilder(datasetBuilder);
     }
   }
@@ -142,7 +142,7 @@ public class CoordSystemBuilder {
 
   protected List<VarProcess> varList = new ArrayList<>();
   // TODO Not processing coordinates attribute on Structures. See problem/kunicki.structs.nc4
-  protected List<StructureDS.Builder> structList = new ArrayList<>();
+  protected List<StructureDS.Builder<?>> structList = new ArrayList<>();
 
   // coordinate variables for Dimension (name)
   protected Multimap<Dimension, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
@@ -224,11 +224,11 @@ public class CoordSystemBuilder {
   }
 
   private void addVariables(Group.Builder group) {
-    for (Variable.Builder vb : group.vbuilders) {
+    for (Variable.Builder<?> vb : group.vbuilders) {
       if (vb instanceof VariableDS.Builder) {
-        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+        varList.add(new VarProcess(group, (VariableDS.Builder<?>) vb));
       } else if (vb instanceof StructureDS.Builder) {
-        addStructure(group, (StructureDS.Builder) vb);
+        addStructure(group, (StructureDS.Builder<?>) vb);
       }
     }
 
@@ -242,9 +242,9 @@ public class CoordSystemBuilder {
     List<Variable.Builder<?>> nested = structure.vbuilders;
     for (Variable.Builder<?> vb : nested) {
       if (vb instanceof VariableDS.Builder) {
-        varList.add(new VarProcess(group, (VariableDS.Builder) vb));
+        varList.add(new VarProcess(group, (VariableDS.Builder<?>) vb));
       } else if (vb instanceof StructureDS.Builder) { // LOOK the actual Structure isnt in the VarProcess list.
-        addStructure(group, (StructureDS.Builder) vb);
+        addStructure(group, (StructureDS.Builder<?>) vb);
       }
     }
   }
@@ -342,7 +342,7 @@ public class CoordSystemBuilder {
    * @return AxisType or null if unknown.
    */
   @Nullable
-  protected AxisType getAxisType(VariableDS.Builder vb) {
+  protected AxisType getAxisType(VariableDS.Builder<?> vb) {
     return null;
   }
 
@@ -574,7 +574,7 @@ public class CoordSystemBuilder {
     }
   }
 
-  protected CoordinateTransform.Builder makeCoordinateTransform(Variable.Builder<?> vb) {
+  protected CoordinateTransform.Builder<?> makeCoordinateTransform(Variable.Builder<?> vb) {
     return CoordinateTransform.builder().setName(vb.getFullName()).setAttributeContainer(vb.getAttributeContainer());
   }
 
@@ -656,7 +656,7 @@ public class CoordSystemBuilder {
           }
         }
         if (!axisTypesList.isEmpty()) {
-          for (CoordinateSystem.Builder cs : coords.coordSys) {
+          for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxisTypes(cs, axisTypesList)) {
               cs.addCoordinateTransformByName(vp.ct.name);
               parseInfo.format("***assign (implicit coordAxisType) coordTransform %s to CoordSys=  %s%n", vp.ct, cs);
@@ -723,8 +723,8 @@ public class CoordSystemBuilder {
    * @param ct based on the CoordinateTransform
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
-  public VariableDS.Builder makeCoordinateTransformVariable(CoordinateTransform ct) {
-    VariableDS.Builder v = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
+  public VariableDS.Builder<?> makeCoordinateTransformVariable(CoordinateTransform ct) {
+    VariableDS.Builder<?> v = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
     List<Parameter> params = ct.getParameters();
     for (Parameter p : params) {
       if (p.isString())
@@ -769,11 +769,11 @@ public class CoordSystemBuilder {
 
     // coord systems
     public boolean isCoordinateSystem;
-    public CoordinateSystem.Builder cs;
+    public CoordinateSystem.Builder<?> cs;
 
     // coord transform
     public boolean isCoordinateTransform;
-    public CoordinateTransform.Builder ct;
+    public CoordinateTransform.Builder<?> ct;
 
     /**
      * Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes.
@@ -865,13 +865,13 @@ public class CoordSystemBuilder {
      *
      * @return coordinate axis
      */
-    protected CoordinateAxis.Builder makeIntoCoordinateAxis() {
+    protected CoordinateAxis.Builder<?> makeIntoCoordinateAxis() {
       if (axis != null) {
         return axis;
       }
 
       if (vb instanceof CoordinateAxis.Builder) {
-        axis = (CoordinateAxis.Builder) vb;
+        axis = (CoordinateAxis.Builder<?>) vb;
       } else {
         // Create a CoordinateAxis out of this variable.
         vb = axis = CoordinateAxis.fromVariableDS(vb);
@@ -963,7 +963,7 @@ public class CoordSystemBuilder {
       if (addCoordVariables) {
         for (Dimension d : vb.getDimensions()) {
           for (VarProcess vp : coordVarsForDimension.get(d)) {
-            CoordinateAxis.Builder axis = vp.makeIntoCoordinateAxis();
+            CoordinateAxis.Builder<?> axis = vp.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) {
               axesList.add(axis);
             }
@@ -974,7 +974,7 @@ public class CoordSystemBuilder {
       return axesList;
     }
 
-    void addCoordinateTransform(CoordinateTransform.Builder ct) {
+    void addCoordinateTransform(CoordinateTransform.Builder<?> ct) {
       if (cs == null) {
         parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", vb.getFullName(), ct.name);
         return;

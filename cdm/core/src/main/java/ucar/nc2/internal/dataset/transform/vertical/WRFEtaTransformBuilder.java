@@ -20,9 +20,9 @@ import ucar.unidata.util.Parameter;
 /** Because the transform depends on NetcdfDataset and CoordinateSystem, must handle differently */
 public class WRFEtaTransformBuilder implements VerticalCTBuilder {
   private final CoordinatesHelper.Builder coords;
-  private final CoordinateSystem.Builder cs;
+  private final CoordinateSystem.Builder<?> cs;
 
-  public WRFEtaTransformBuilder(CoordinatesHelper.Builder coords, CoordinateSystem.Builder cs) {
+  public WRFEtaTransformBuilder(CoordinatesHelper.Builder coords, CoordinateSystem.Builder<?> cs) {
     this.coords = coords;
     this.cs = cs;
   }

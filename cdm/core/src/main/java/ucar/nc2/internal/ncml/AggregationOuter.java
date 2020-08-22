@@ -39,13 +39,7 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
 
-/**
- * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle
- *
- * @author caron
- * @since Aug 10, 2007
- */
-
+/** Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle */
 abstract class AggregationOuter extends Aggregation implements ProxyReader {
   protected static boolean debugCache, debugInvocation, debugStride;
   public static int invocation; // debugging

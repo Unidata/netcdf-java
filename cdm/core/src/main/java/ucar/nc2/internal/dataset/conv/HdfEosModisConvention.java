@@ -5,6 +5,7 @@
 
 package ucar.nc2.internal.dataset.conv;
 
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.util.Optional;
 import ucar.ma2.DataType;
@@ -32,10 +33,8 @@ import ucar.unidata.geoloc.projection.Sinusoidal;
 
 /**
  * HDF4-EOS TERRA MODIS
- *
- * @author caron
+ * 
  * @see "https://lpdaac.usgs.gov/products/modis_overview"
- * @since 2/23/13
  */
 public class HdfEosModisConvention extends CoordSystemBuilder {
   private static final String CRS = "Projection";
@@ -45,7 +44,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
   private static final String TIME_NAME = "time";
   private static final String CONVENTION_NAME = "HDF4-EOS-MODIS";
 
-  private HdfEosModisConvention(NetcdfDataset.Builder datasetBuilder) {
+  private HdfEosModisConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
     this.conventionName = CONVENTION_NAME;
   }
@@ -78,11 +77,11 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
       Variable crs = g.findVariableLocal(HdfEos.HDFEOS_CRS);
       Group dataG = g.findGroupLocal(DATA_GROUP);
       if (crs != null && dataG != null) {
-        Attribute att = crs.findAttribute(HdfEos.HDFEOS_CRS_Projection);
+        String att = crs.findAttributeString(HdfEos.HDFEOS_CRS_Projection, null);
         if (att == null) {
           return false;
         }
-        if (!att.getStringValue().equals("GCTP_SNSOID") && !att.getStringValue().equals("GCTP_GEO")) {
+        if (!att.equals("GCTP_SNSOID") && !att.equals("GCTP_GEO")) {
           return false;
         }
         return !(dataG.findDimensionLocal(DIMX_NAME) == null || dataG.findDimensionLocal(DIMY_NAME) == null);
@@ -97,7 +96,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     }
 
     @Override
-    public CoordSystemBuilder open(NetcdfDataset.Builder datasetBuilder) {
+    public CoordSystemBuilder open(NetcdfDataset.Builder<?> datasetBuilder) {
       return new HdfEosModisConvention(datasetBuilder);
     }
   }
@@ -133,7 +132,11 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
 
   private boolean addTimeCoordinate() {
     // add time coordinate by parsing the filename, of course.
-    CalendarDate cd = parseFilenameForDate(datasetBuilder.orgFile.getLocation());
+    NetcdfFile ncd = datasetBuilder.orgFile;
+    if (ncd == null) {
+      return false;
+    }
+    CalendarDate cd = parseFilenameForDate(ncd.getLocation());
     if (cd == null) {
       return false;
     }
@@ -145,7 +148,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
 
     // add the coordinate variable
     String units = "seconds since " + cd;
-    CoordinateAxis.Builder timeCoord = CoordinateAxis1D.builder().setName(TIME_NAME).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> timeCoord = CoordinateAxis1D.builder().setName(TIME_NAME).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName("").setUnits(units).setDesc("time coordinate");
     timeCoord.setAutoGen(0, 0);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -202,13 +205,12 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     Dimension dimY = dimYopt.get();
 
     g.findVariableLocal(HdfEos.HDFEOS_CRS).ifPresent(crs -> {
-      Attribute projAtt = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_Projection);
+      String projAtt = crs.getAttributeContainer().findAttributeString(HdfEos.HDFEOS_CRS_Projection, "");
       if (projAtt == null) {
         return;
       }
       Attribute upperLeft = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_UpperLeft);
       Attribute lowerRight = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_LowerRight);
-      Attribute projParams = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_ProjParams);
       if (upperLeft == null || lowerRight == null) {
         return;
       }
@@ -222,10 +224,12 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
       boolean hasProjection = false;
       String coordinates = null;
       ProjectionCT ct;
-      if (projAtt.getStringValue().equals("GCTP_SNSOID")) {
+      if (projAtt.equals("GCTP_SNSOID")) {
         hasProjection = true;
+        Attribute projParams = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_ProjParams);
+        Preconditions.checkNotNull(projParams, "Cant find attribute " + HdfEos.HDFEOS_CRS_ProjParams);
         ct = makeSinusoidalProjection(CRS, projParams);
-        VariableDS.Builder crss = makeCoordinateTransformVariable(ct);
+        VariableDS.Builder<?> crss = makeCoordinateTransformVariable(ct);
         crss.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
         dataG.addVariable(crss);
 
@@ -235,7 +239,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
             makeCoordAxis(dataG, DIMY_NAME, dimY.getLength(), minY, maxY, false));
         coordinates = addTimeCoord ? TIME_NAME + " " + DIMX_NAME + " " + DIMY_NAME : DIMX_NAME + " " + DIMY_NAME;
 
-      } else if (projAtt.getStringValue().equals("GCTP_GEO")) {
+      } else if (projAtt.equals("GCTP_GEO")) {
         datasetBuilder.replaceCoordinateAxis(dataG,
             makeLatLonCoordAxis(dataG, dimX.getLength(), minX * 1e-6, maxX * 1e-6, true));
         datasetBuilder.replaceCoordinateAxis(dataG,
@@ -243,7 +247,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
         coordinates = addTimeCoord ? TIME_NAME + " Lat Lon" : "Lat Lon";
       }
 
-      for (Variable.Builder v : dataG.vbuilders) {
+      for (Variable.Builder<?> v : dataG.vbuilders) {
         if (v.getRank() != 2) {
           continue;
         }
@@ -272,9 +276,9 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
    * • The LowerRightMtrs identifies the very lower right corner of the lower right pixel of the image data. These
    * projection coordinates are the only metadata that accurately reflect the extreme corners of the gridded image
    */
-  private CoordinateAxis.Builder makeCoordAxis(Group.Builder dataG, String name, int n, double start, double end,
+  private CoordinateAxis.Builder<?> makeCoordAxis(Group.Builder dataG, String name, int n, double start, double end,
       boolean isX) {
-    CoordinateAxis.Builder vb =
+    CoordinateAxis.Builder<?> vb =
         CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(dataG)
             .setDimensionsByName(name).setUnits("km").setDesc(isX ? "x coordinate" : "y coordinate");
 
@@ -292,12 +296,12 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
    * :UpperLeftPointMtrs = -1.8E8, 9.0E7; // double
    * :LowerRightMtrs = 1.8E8, -9.0E7; // double
    */
-  private CoordinateAxis.Builder makeLatLonCoordAxis(Group.Builder dataG, int n, double start, double end,
+  private CoordinateAxis.Builder<?> makeLatLonCoordAxis(Group.Builder dataG, int n, double start, double end,
       boolean isLon) {
     String name = isLon ? AxisType.Lon.toString() : AxisType.Lat.toString();
     String dimName = isLon ? DIMX_NAME : DIMY_NAME;
 
-    CoordinateAxis.Builder v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(dataG).setDimensionsByName(dimName).setUnits(isLon ? "degrees_east" : "degrees_north");
 
     double incr = (end - start) / n;
