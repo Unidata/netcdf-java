@@ -1,8 +1,11 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft.coverage;
+
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -173,25 +176,24 @@ public class TestCoverageCurvilinear {
     logger.debug("open {}", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      assertThat(cc).isNotNull();
+      assertThat(cc.getCoverageCollections().size()).isEqualTo(1);
       CoverageCollection gds = cc.getCoverageCollections().get(0);
-      Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
-      Assert.assertEquals(10, gds.getCoverageCount());
+      assertWithMessage(endpoint).that(gds).isNotNull();
+      assertThat(gds.getCoverageType()).isEqualTo(FeatureType.CURVILINEAR);
+      assertThat(gds.getCoverageCount()).isEqualTo(10);
 
       String covName = "hs";
       Coverage coverage = gds.findCoverage(covName);
-      Assert.assertNotNull(covName, coverage);
-
+      assertWithMessage(covName).that(coverage).isNotNull();
       CoverageCoordSys cs = coverage.getCoordSys();
-      Assert.assertNotNull("coordSys", cs);
+      assertWithMessage("coordSys").that(cs).isNotNull();
       HorizCoordSys hcs = cs.getHorizCoordSys();
-      Assert.assertNotNull("HorizCoordSys", hcs);
-      Assert.assertEquals("coordSys", 3, cs.getShape().length);
+      assertWithMessage("HorizCoordSys").that(hcs).isNotNull();
+      assertWithMessage("cordSys").that(cs.getShape().length).isEqualTo(3);
       logger.debug("org shape={}", Arrays.toString(cs.getShape()));
       int[] expectedOrgShape = new int[] {85, 151, 171};
-      Assert.assertArrayEquals(expectedOrgShape, cs.getShape());
+      assertThat(expectedOrgShape).isEqualTo(cs.getShape());
 
       LatLonRect bbox = new LatLonRect(LatLonPoint.create(43.489, -8.5353), LatLonPoint.create(43.371, -8.2420));
 
@@ -201,13 +203,19 @@ public class TestCoverageCurvilinear {
 
       Array data = geo.getData();
       logger.debug("data shape={}", Arrays.toString(data.getShape()));
-      Assert.assertArrayEquals(geo.getCoordSysForData().getShape(), data.getShape());
+      assertThat(geo.getCoordSysForData().getShape()).isEqualTo(data.getShape());
+
+      // make sure subset bounding box is contained in geoarray hcs.
+      assertThat(bbox.containedIn(geo.getCoordSysForData().getHorizCoordSys().calcLatLonBoundingBox()));
 
       int[] expectedShape = new int[] {1, 99, 105};
-      Assert.assertArrayEquals(expectedShape, data.getShape());
+      assertThat(expectedShape).isEqualTo(data.getShape());
+
+      // verified manually, both visually and by looking at the array using the indices associated with
+      // the closest grid point the lat lon value of the geogrid lat/lon value for index (0,0) and (11,0).
       Index ima = data.getIndex();
-      Assert2.assertNearlyEquals(1.781999945640564, data.getDouble(ima.set(0, 0, 0)));
-      Assert2.assertNearlyEquals(1.7690000534057617, data.getDouble(ima.set(0, 11, 0)));
+      assertThat(data.getDouble(ima.set(0, 0, 0))).isWithin(Misc.defaultMaxRelativeDiffDouble).of(1.7829999923706055);
+      assertThat(data.getDouble(ima.set(0, 11, 0))).isWithin(Misc.defaultMaxRelativeDiffDouble).of(1.7669999599456787);
     }
   }
 

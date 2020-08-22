@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage.writer;
@@ -53,6 +53,7 @@ public class CoverageAsPoint {
   private List<VarData> varData;
   private SubsetParams subset;
   private LatLonPoint latLonPoint;
+  private LatLonPoint nearestLatLonPoint;
   private CalendarDateUnit dateUnit;
 
   private class VarData {
@@ -91,6 +92,12 @@ public class CoverageAsPoint {
           CoverageCoordAxis timeAxis = csys.getTimeAxis();
           this.dateUnit = timeAxis.getCalendarDateUnit();
         }
+        if (nearestLatLonPoint == null) {
+          CoverageCoordSys subsetCs = varData.get(0).array.getCoordSysForData();
+          // single point subset, so only one lat/lon to grab, and this will be the lat/lon
+          // closest to the one requested in the subset
+          nearestLatLonPoint = subsetCs.getHorizCoordSys().getLatLon(0, 0);
+        }
       }
     }
   }
@@ -127,10 +134,10 @@ public class CoverageAsPoint {
     @Override
     protected StationHelper createStationHelper() {
       StationHelper helper = new StationHelper();
-      String name = String.format("GridPointAt[%s]", LatLonPoints.toString(latLonPoint, 3));
+      String name = String.format("GridPointRequestedAt[%s]", LatLonPoints.toString(latLonPoint, 3));
       name = StringUtil2.replace(name.trim(), ' ', "_");
-      helper.addStation(new MyStationFeature(name, name, null, latLonPoint.getLatitude(), latLonPoint.getLongitude(),
-          0.0, dateUnit, null, -1));
+      helper.addStation(new MyStationFeature(name, name, null, nearestLatLonPoint.getLatitude(),
+          nearestLatLonPoint.getLongitude(), 0.0, dateUnit, null, -1));
       return helper;
     }
 
