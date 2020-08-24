@@ -9,28 +9,16 @@ toc: false
 
 A <b>_NetcdfFile_</b> provides read-only access to datasets through the netCDF API (to write data, use <b>_NetcdfFileWriteable_</b>).
 Use the static <a href="netcdf_dataset.html">NetcdfFile</a>.open methods to open a netCDF file, an HDF5 file, or any other file which has an IOServiceProvider implementation that can read the file with the NetCDF API.
-Use NetcdfDataset.open for more general reading capabilities, including <b>_OPeNDAP</b>_, <b>_NcML</b>_, and <b>_THREDDS datasets</b>_.
+Use NetcdfDataset.open for more general reading capabilities, including <b>_OPeNDAP_</b>, <b>_NcML_</b>, and <b>_THREDDS datasets_</b>.
 
 ## Opening a NetcdfFile
 
 A simple way to open a NetcdfFile:
 
-~~~
-  String filename = "C:/data/my/file.nc";
-  NetcdfFile ncfile = null;
-  try {
-    ncfile = NetcdfFile.open(filename);
-    process( ncfile);
-  } catch (IOException ioe) {
-    log("trying to open " + filename, ioe);
-  } finally { 
-    if (null != ncfile) try {
-      ncfile.close();
-    } catch (IOException ioe) {
-      log("trying to close " + filename, ioe);
-    }
-  }
-~~~
+{% capture mdstr %}
+{% includecodeblock netcdf-java&cdm/core/src/test/java/examples/NCTutorial.java&openNCFileTutorial %}
+{% endcapture %}
+{{ mdstr | markdownify }}
 
 There is some boilerplate overhead in handling possible IOExceptions and ensuring that the file is properly closed, but these are very important when creating robust applications.
 
