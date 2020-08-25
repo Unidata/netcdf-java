@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage;
@@ -7,6 +7,7 @@ package ucar.nc2.ft2.coverage;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.RangeComposite;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -58,6 +59,7 @@ public class CoverageCoordAxisBuilder {
 
   // 2d only
   public int[] shape;
+  public List<RangeIterator> ranges; // like range, but for 2D subsets
   public Object userObject;
 
   public CoverageCoordAxisBuilder() {}
@@ -107,6 +109,7 @@ public class CoverageCoordAxisBuilder {
       LatLonAxis2D latlon = (LatLonAxis2D) from;
       this.shape = latlon.getShape();
       this.userObject = latlon.getUserObject();
+      this.ranges = latlon.getRanges();
     }
   }
 
