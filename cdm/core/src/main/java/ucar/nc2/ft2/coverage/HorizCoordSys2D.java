@@ -77,7 +77,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       }
     } else if (horizStride > 1) {
       try {
-        Range xRange = new Range(AxisType.GeoX.toString(), 0, ncols - 1, horizStride);;
+        Range xRange = new Range(AxisType.GeoX.toString(), 0, ncols - 1, horizStride);
         Range yRange = new Range(AxisType.GeoY.toString(), 0, nrows - 1, horizStride);
         lataxisSubset = latAxis2D.subset(xRange, yRange);
         lonaxisSubset = lonAxis2D.subset(xRange, yRange);
