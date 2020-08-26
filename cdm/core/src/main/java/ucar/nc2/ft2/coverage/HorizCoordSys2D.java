@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.AxisType;
 import java.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
@@ -42,6 +43,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
   public Optional<HorizCoordSys> subset(SubsetParams params, Formatter errLog) {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
+    LatLonPoint latlon = (LatLonPoint) params.get(SubsetParams.latlonPoint);
     Integer horizStride = (Integer) params.get(SubsetParams.horizStride);
     if (horizStride == null || horizStride < 1)
       horizStride = 1;
@@ -49,7 +51,20 @@ public class HorizCoordSys2D extends HorizCoordSys {
     LatLonAxis2D lataxisSubset = null, lonaxisSubset = null;
 
     Formatter errMessages = new Formatter();
-    if (llbb != null) {
+    if (latlon != null) {
+      Optional<CoordReturn> opt = findXYindexFromCoord(latlon.getLongitude(), latlon.getLatitude());
+      if (opt.isPresent()) {
+        CoordReturn ind = opt.get();
+        try {
+          Range xRange = new Range(AxisType.GeoX.toString(), ind.x, ind.x);
+          Range yRange = new Range(AxisType.GeoY.toString(), ind.y, ind.y);
+          lataxisSubset = latAxis2D.subset(xRange, yRange); // x, y
+          lonaxisSubset = lonAxis2D.subset(xRange, yRange);
+        } catch (InvalidRangeException e) {
+          errMessages.format("%s;%n", e.getMessage());
+        }
+      }
+    } else if (llbb != null) {
       Optional<List<RangeIterator>> opt = computeBounds(llbb, horizStride);
       if (opt.isPresent()) {
         List<RangeIterator> ranges = opt.get();
@@ -58,8 +73,10 @@ public class HorizCoordSys2D extends HorizCoordSys {
       }
     } else if (horizStride > 1) {
       try {
-        lataxisSubset = latAxis2D.subset(new Range(0, ncols - 1, horizStride), new Range(0, nrows - 1, horizStride));
-        lonaxisSubset = lonAxis2D.subset(new Range(0, ncols - 1, horizStride), new Range(0, nrows - 1, horizStride));
+        Range xRange = new Range(AxisType.GeoX.toString(), 0, ncols - 1, horizStride);
+        Range yRange = new Range(AxisType.GeoY.toString(), 0, nrows - 1, horizStride);
+        lataxisSubset = latAxis2D.subset(xRange, yRange);
+        lonaxisSubset = lonAxis2D.subset(xRange, yRange);
       } catch (InvalidRangeException e) {
         errMessages.format("%s;%n", e.getMessage());
       }
@@ -517,8 +534,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
       try {
         List<RangeIterator> list = new ArrayList<>();
-        list.add(new Range(minRow, maxRow - 1, horizStride));
-        list.add(new Range(minCol, maxCol - 1, horizStride));
+        list.add(new Range(AxisType.GeoY.toString(), minRow, maxRow - 1, horizStride));
+        list.add(new Range(AxisType.GeoX.toString(), minCol, maxCol - 1, horizStride));
         return Optional.of(list);
 
       } catch (InvalidRangeException e) {
