@@ -1937,18 +1937,26 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
         throw new IllegalStateException();
       }
       Object data = IospHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, true);
-      Array dataArray = Array.factory(dataType, shape, data);
 
-      // read and parse the ODL
       String result = "";
-      if (dataArray instanceof ArrayChar.D1) {
-        ArrayChar ca = (ArrayChar) dataArray;
-        result = ca.getString(); // common case only StructMetadata.0, avoid extra copy
-      } else if (dataArray instanceof ArrayObject.D0) {
-        ArrayObject ao = (ArrayObject) dataArray;
-        result = (String) ao.getObject(0);
+      if (data instanceof String) {
+        // Sometimes StructMetadata.0 is stored as a string,
+        // and IospHelper returns it directly as a string, so pass it along
+        result = (String) data;
       } else {
-        log.error("Unsupported array type {} for StructMetadata", dataArray.getElementType());
+        Array dataArray = Array.factory(dataType, shape, data);
+        // read and parse the ODL
+        if (dataArray instanceof ArrayChar.D1) {
+          ArrayChar ca = (ArrayChar) dataArray;
+          result = ca.getString(); // common case only StructMetadata.0, avoid extra copy
+        } else if (dataArray instanceof ArrayObject.D0) {
+          ArrayObject ao = (ArrayObject) dataArray;
+          result = (String) ao.getObject(0);
+        } else if (dataArray instanceof ArrayObject.D1) {
+          result = (String) dataArray.getObject(0);
+        } else {
+          log.error("Unsupported array type {} for StructMetadata", dataArray.getElementType());
+        }
       }
       return result;
     }
