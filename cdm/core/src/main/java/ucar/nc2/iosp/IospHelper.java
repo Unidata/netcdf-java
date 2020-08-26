@@ -149,6 +149,20 @@ public class IospHelper {
         raf.readFully(pa, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
       return pa;
+    } else if (dataType == DataType.STRING) {
+      int size = (int) layout.getTotalNelems();
+      int elemSize = layout.getElemSize();
+      StringBuilder sb = new StringBuilder(size);
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        if (chunk == null) {
+          continue;
+        }
+        for (int i = 0; i < chunk.getNelems(); i++) {
+          sb.append(raf.readString(elemSize));
+        }
+      }
+      return sb.toString();
     }
 
     throw new IllegalStateException("unknown type= " + dataType);
