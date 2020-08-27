@@ -8,9 +8,16 @@ module Jekyll
       else
         @projdir = arr[0].strip
         @path = arr[1].strip
-        @function = arr[2].strip
         ext = /\.[a-zA-Z]+/ =~ @path
         @lang = @path[ext+1..-1]
+        if arr.length < 4
+          @function = arr[2].strip
+          @startline = nil
+          @endline = nil
+        else
+          @startline = arr[2].strip.to_i
+          @endline = arr[3].strip.to_i
+        end
       end
     end
     def render(context)
@@ -18,45 +25,55 @@ module Jekyll
       projdir = @projdir
       dirIndex = /#{projdir}\// =~ Dir.pwd
       projpath = Dir.pwd[0..dirIndex + projdir.length]
-      filetext = File.read File.join projpath, @path
+      filestring = File.read File.join projpath, @path
+      codestring = filestring
 
-      # init function text
-      codetext = ""
+      # get start and stop lines
+      startline = @startline
+      endline = @endline
 
-      # find function start
-      startscan = /#{@function}\(.*\)\s*\{/ =~ filetext
+      if defined? @function
+        # init function text
+        codestring = ""
+        # find function start
+        startscan = /#{@function}\(.*\)\s*\{/ =~ filestring
 
-      # find function end
-      unless startscan.nil?
-        start = filetext.index("{", startscan)
-        i = start
-        brackets = ["{"]
-        while brackets.length > 0
-          i+=1
-          c = filetext[i]
-          if c == "{"
-            brackets.push(c)
-          elsif c == "}"
-            brackets.pop()
+        # find function end
+        unless startscan.nil?
+          start = filestring.index("{", startscan)
+          i = start
+          brackets = ["{"]
+          while brackets.length > 0
+            i+=1
+            c = filestring[i]
+            if c == "{"
+              brackets.push(c)
+            elsif c == "}"
+              brackets.pop
+            end
           end
+
+          codestring = filestring[start..i]
+          startline = 1
+          endline = -2
         end
-        codetext = format(filetext[start..i])
       end
+      # subset and format text
+      text = format(codestring, startline, endline)
 
       # include the text annotated with code syntax
-      "~~~" + @lang + "\n" + codetext + "\n~~~"
+      "~~~" + @lang + "\n" + text + "\n~~~"
     end
 
     ##
     # left align code block
-    def format(codestring)
-      lines = codestring.split("\n")
-      # remove first and last lines (function declaration and closing bracket)
-      codelines = lines[1..-2]
+    def format(codestring, startline, endline)
+      # split code into line array and subset
+      codelines = codestring.split("\n")[startline..endline]
       # remove fixed num of tab characters from each line
       offset = /\S/ =~ codelines[0]
       codelines.map! { |s| s[offset..-1]}
-      # rejoin and return
+      # join and return
       return  codelines.join("\n")
     end
   end
