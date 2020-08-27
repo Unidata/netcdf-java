@@ -349,3 +349,48 @@ Yes, this is ugly. First, we capture the raw text and store it as a string calle
 From there, the string is passed through two Liquid Filters - liquify and markdownify.
 `"liquify"` interprets the liquid tags in the file, and markidownify renders any markdown in the text.
 Note that the filters must be applied in this order.
+
+## Include code snippets contained elsewhere in the project
+
+To import code snippets directly from project files, use the `"includecodeblock"` tag.
+The tag takes the following arguments: 
+- name of the project home directory
+- path to the file containing the code snippet, relative to the home directory
+- either:
+    - name of a function to include
+    - first and last line numbers of code to include
+
+Arguments to the tag are separated by the '&' character.
+
+For example, including the function `openNCFileTutorial` from `netcdf-java/cdm/core/src/test/java/examples/tutorials/NCTutorial.java`
+would be written like this:
+
+~~~md
+{% raw %}
+{% capture rmd %}
+{% includecodeblock netcdf-java&cdm/core/src/test/java/examples/tutorials/NCTutorial.java&openNCFileTutorial %}
+{% endcapture %}
+{{ rmd | markdownify }}
+{% endraw %}
+~~~
+
+The markdownified text would look like this:
+{% capture rmd %}
+{% includecodeblock netcdf-java&cdm/core/src/test/java/examples/tutorials/NCTutorial.java&openNCFileTutorial %}
+{% endcapture %}
+{{ rmd | markdownify }}
+
+Alternatively, to include the same code snippet by line number:
+~~~md
+{% raw %}
+{% capture rmd %}
+{% includecodeblock netcdf-java&cdm/core/src/test/java/examples/tutorials/NCTutorial.java&18&23 %}
+{% endcapture %}
+{{ rmd | markdownify }}
+{% endraw %}
+~~~
+
+The include-by-line-numbers option is provided since not all documented code can be isolated in a function.
+However, when code blocks are included by function name, the blocks will update automatically
+if the code is edited such that the line numbers change; for code blocks included by line numbers,
+markdown files will need to be manually updated. 
