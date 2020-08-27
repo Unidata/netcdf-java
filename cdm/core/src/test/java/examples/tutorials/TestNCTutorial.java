@@ -7,6 +7,7 @@ import javax.tools.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class TestNCTutorial {
     };
 
     // test successful compile
-    assertThat(compiler.getTask(null, fileManager, diagnostics, null, null, null).call()).isEqualTo(true);
+    assertThat(compiler.getTask(null, fileManager, diagnostics, null, null, fileObjects).call()).isEqualTo(true);
 
     // test no warnings on compile
     List<Diagnostic<? extends JavaFileObject>> compileOutput = diagnostics.getDiagnostics();
@@ -70,7 +71,7 @@ public class TestNCTutorial {
     private ByteArrayOutputStream outputStream;
 
     protected JavaByteObject() {
-      super(null, null);
+      super(URI.create(""), Kind.CLASS);
       outputStream = new ByteArrayOutputStream();
     }
 
