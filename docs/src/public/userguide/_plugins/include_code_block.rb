@@ -23,7 +23,7 @@ module Jekyll
     def render(context)
       # read file
       projdir = @projdir
-      dirIndex = /#{projdir}\// =~ Dir.pwd
+      dirIndex = Dir.pwd.rindex(/#{projdir}\//)
       projpath = Dir.pwd[0..dirIndex + projdir.length]
       filestring = File.read File.join projpath, @path
       codestring = filestring
