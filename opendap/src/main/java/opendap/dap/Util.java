@@ -40,10 +40,8 @@
 
 package opendap.dap;
 
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * The Util class holds static methods used by this package.

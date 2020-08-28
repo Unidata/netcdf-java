@@ -131,7 +131,7 @@ public abstract class DConstructor extends BaseType {
     if (bt.hasAttributes())
       return (true);
     if (bt instanceof DConstructor) {
-      for (BaseType member : ((DConstructor)bt).getVariables()) {
+      for (BaseType member : ((DConstructor) bt).getVariables()) {
         foundit = foundit || someChildHasAttributes(member);
       }
     }

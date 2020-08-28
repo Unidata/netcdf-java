@@ -58,7 +58,7 @@ public class DStructure extends DConstructor implements ClientIO {
    * The variables in this <code>DStructure</code>, stored in a
    * <code>Vector</code> of <code>BaseType</code> objects.
    */
-  protected final ArrayList<BaseType> variables = new ArrayList<>();
+  protected ArrayList<BaseType> variables = new ArrayList<>();
 
   /**
    * Constructs a new <code>DStructure</code>.
@@ -312,6 +312,7 @@ public class DStructure extends DConstructor implements ClientIO {
    */
   public DStructure cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DStructure s = (DStructure) super.cloneDAG(map);
+    s.variables = new ArrayList<>();
     for (BaseType bt : variables) {
       BaseType btclone = (BaseType) cloneDAG(map, bt);
       s.variables.add(btclone);

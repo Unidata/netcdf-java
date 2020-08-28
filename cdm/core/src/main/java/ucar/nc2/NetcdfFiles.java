@@ -856,7 +856,7 @@ public class NetcdfFiles {
    * @param vname the escaped name
    * @return unescaped version of it
    */
-  static String makeNameUnescaped(String vname) {
+  public static String makeNameUnescaped(String vname) {
     return EscapeStrings.backslashUnescape(vname);
   }
 

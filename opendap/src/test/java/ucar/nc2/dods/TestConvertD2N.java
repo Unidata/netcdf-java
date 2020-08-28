@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
 
 /** Test ConvertD2N */
 public class TestConvertD2N {
@@ -93,9 +91,9 @@ public class TestConvertD2N {
     DodsV root = DodsV.parseDataDDS(dataDDS);
 
     ConvertD2N converter = new ConvertD2N();
-    try (DODSNetcdfFile dodsfile = DODSNetcdfFile.builder().build(urlName, null)) {
+    try (DodsNetcdfFile dodsfile = DodsNetcdfFile.builder().build(urlName, null)) {
       for (Variable v : dodsfile.getVariables()) {
-        String name = DODSNetcdfFile.getDODSConstraintName(v);
+        String name = DodsNetcdfFiles.getDODSConstraintName(v);
         DodsV dodsV = root.findByDodsShortName(name);
         if (dodsV == null) {
           System.out.println("Cant find " + name);
@@ -119,9 +117,7 @@ public class TestConvertD2N {
 
   static void showDDS(DataDDS dds, PrintWriter out) {
     out.println("DDS=" + dds.getEncodedName());
-    Enumeration e = dds.getVariables();
-    while (e.hasMoreElements()) {
-      BaseType bt = (BaseType) e.nextElement();
+    for (BaseType bt : dds.getVariables()) {
       showBT(bt, out, " ");
     }
   }
@@ -130,7 +126,7 @@ public class TestConvertD2N {
   static boolean useNC = false;
 
   static void testConvertDDS(String urlName, DataDDS dataDDS, PrintStream out) throws IOException, DAP2Exception {
-    try (DODSNetcdfFile dodsfile = DODSNetcdfFile.builder().build(urlName, null)) {
+    try (DodsNetcdfFile dodsfile = DodsNetcdfFile.builder().build(urlName, null)) {
       System.out.println(dodsfile.toString());
 
       if (useNC) {
@@ -178,10 +174,8 @@ public class TestConvertD2N {
     out.println(space + bt.getEncodedName() + " (" + bt.getClass().getName() + ")");
 
     if (bt instanceof DConstructor) {
-      Enumeration e = ((DConstructor) bt).getVariables();
       String nspace = space + " ";
-      while (e.hasMoreElements()) {
-        BaseType nbt = (BaseType) e.nextElement();
+      for (BaseType nbt : ((DConstructor) bt).getVariables()) {
         showBT(nbt, out, nspace);
       }
       out.println(space + "-----" + bt.getEncodedName());
@@ -198,9 +192,7 @@ public class TestConvertD2N {
     // for sequences, gotta look at the _rows_ (!)
     if (nrows > 0) {
       out.println(nspace + "Vector[" + nrows + "] allvalues; show first:");
-      Vector v = seq.getRow(0);
-      for (int i = 0; i < v.size(); i++) {
-        BaseType bt = (BaseType) v.elementAt(i);
+      for (BaseType bt : seq.getRow(0)) {
         showBT(bt, out, nspace + " ");
       }
     }
@@ -212,9 +204,7 @@ public class TestConvertD2N {
 
     out.print(" (");
     int count = 0;
-    Enumeration dims = a.getDimensions();
-    while (dims.hasMoreElements()) {
-      DArrayDimension dim = (DArrayDimension) dims.nextElement();
+    for (DArrayDimension dim : a.getDimensions()) {
       String name = dim.getEncodedName() == null ? "" : dim.getEncodedName() + "=";
       if (count > 0)
         out.print(",");

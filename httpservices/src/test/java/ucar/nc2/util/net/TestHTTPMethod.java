@@ -32,6 +32,8 @@
 
 package ucar.nc2.util.net;
 
+import static ucar.unidata.util.test.TestDir.locateThreddsRoot;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -40,11 +42,10 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 
-public class TestHTTPMethod extends UnitTestCommon {
+public class TestHTTPMethod {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   //////////////////////////////////////////////////
@@ -76,14 +77,13 @@ public class TestHTTPMethod extends UnitTestCommon {
 
   public TestHTTPMethod() {
     super();
-    setTitle("HTTP Method tests");
     HTTPSession.TESTING = true;
   }
 
   @Test
   public void testGetStream() throws Exception {
     String url = baseurl + "/" + testcase;
-    String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
+    String baseline = locateThreddsRoot() + relativebaseline + "/" + testcase;
 
     logger.debug("*** Testing: HTTPMethod");
     logger.debug("*** URL: {}", url);
@@ -103,7 +103,7 @@ public class TestHTTPMethod extends UnitTestCommon {
   @Test
   public void testGetStreamPartial() throws Exception {
     String url = baseurl + "/" + testcase;
-    String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
+    String baseline = locateThreddsRoot() + relativebaseline + "/" + testcase;
 
     logger.debug("*** Testing: HTTPMethod");
     logger.debug("*** URL: {}", url);

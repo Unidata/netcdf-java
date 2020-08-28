@@ -42,9 +42,9 @@ package opendap.dap;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Vector;
 import opendap.dap.parsers.DDSXMLParser;
 import java.io.*;
-import java.util.Vector;
 
 /**
  * This class holds a <code>DArray</code> and a set of "Map"
@@ -406,7 +406,7 @@ public class DGrid extends DConstructor implements ClientIO {
     arrayVar.printXML(pw, pad + "\t", constrained);
 
     for (BaseType bt : mapVars) {
-      DArray map = (DArray)bt ;
+      DArray map = (DArray) bt;
       map.printAsMapXML(pw, pad + "\t", constrained);
     }
 
@@ -418,10 +418,9 @@ public class DGrid extends DConstructor implements ClientIO {
     return arrayVar;
   }
 
-  public Vector<DArrayDimension> getArrayDims() {
-    return arrayVar.dimVector;
+  public ImmutableList<DArrayDimension> getArrayDims() {
+    return arrayVar.getDimensions();
   }
-
 
   /**
    * When projected (using whatever the current constraint provides in the way
@@ -511,8 +510,9 @@ public class DGrid extends DConstructor implements ClientIO {
   public DGrid cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DGrid g = (DGrid) super.cloneDAG(map);
     g.arrayVar = (DArray) cloneDAG(map, arrayVar);
+    g.mapVars = new ArrayList<>();
     for (int i = 0; i < mapVars.size(); i++) {
-      BaseType bt = (BaseType) mapVars.get(i);
+      BaseType bt = mapVars.get(i);
       BaseType btclone = (BaseType) cloneDAG(map, bt);
       g.mapVars.add(btclone);
     }

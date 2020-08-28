@@ -350,4 +350,54 @@ public class TestDir {
       throw new RuntimeException(e);
     }
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // from UnitTestCommon
+  // Look for these to verify we have found the thredds root
+  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm", "opendap", "dap4"};
+
+  public static String locateThreddsRoot() {
+    // Walk up the user.dir path looking for a node that has
+    // all the directories in SUBROOTS.
+
+    // It appears that under Jenkins, the Java property "user.dir" is
+    // set incorrectly for our purposes. In this case, we want
+    // to use the WORKSPACE environment variable set by Jenkins.
+    String workspace = System.getenv("WORKSPACE");
+    System.err.println("WORKSPACE=" + (workspace == null ? "null" : workspace));
+    System.err.flush();
+
+    String userdir = System.getProperty("user.dir");
+
+    String path = (workspace != null ? workspace : userdir); // Pick one
+
+    // clean up the path
+    path = path.replace('\\', '/'); // only use forward slash
+    if (path.endsWith("/"))
+      path = path.substring(0, path.length() - 1);
+
+    File prefix = new File(path);
+    for (; prefix != null; prefix = prefix.getParentFile()) {// walk up the tree
+      int found = 0;
+      String[] subdirs = prefix.list();
+      assert (subdirs != null);
+      for (String dirname : subdirs) {
+        for (String want : DEFAULTSUBDIRS) {
+          if (dirname.equals(want)) {
+            found++;
+            break;
+          }
+        }
+      }
+      if (found == DEFAULTSUBDIRS.length)
+        try {// Assume this is it
+          String root = prefix.getCanonicalPath();
+          // clean up the root path
+          root = root.replace('\\', '/'); // only use forward slash
+          return root;
+        } catch (IOException ignored) {
+        }
+    }
+    return null;
+  }
 }

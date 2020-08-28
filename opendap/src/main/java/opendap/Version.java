@@ -43,7 +43,6 @@ package opendap;
 import org.jdom2.Element;
 import org.jdom2.Text;
 
-
 /**
  * Holds the version number for the java implmentation of the OPeNDAP
  * DAP2 implmentation.

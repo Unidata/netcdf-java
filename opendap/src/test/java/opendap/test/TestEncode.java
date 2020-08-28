@@ -9,11 +9,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.httpservices.HTTPUtil;
-import ucar.nc2.util.EscapeStrings;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
+import ucar.nc2.internal.util.EscapeStrings;
 
 public class TestEncode {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -61,11 +60,6 @@ public class TestEncode {
     System.out.println("legal query characters = |" + legal + "|");
     System.out.println("illegal query characters = |" + illegal + "|");
     Assert.assertTrue("Query Illegals mismatch", QUERYILLEGAL.equals(illegal));
-  }
-
-  @Test
-  public void testOGC() {
-    EscapeStrings.testOGC();
   }
 
   public static void testB(String x) {

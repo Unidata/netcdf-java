@@ -6,13 +6,13 @@ package ucar.nc2.dods;
 
 import opendap.dap.*;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.io.IOException;
 import java.io.PrintStream;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.CDM;
 
 /**
@@ -41,7 +41,7 @@ import ucar.nc2.constants.CDM;
  */
 
 class DodsV implements Comparable {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsV.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsV.class);
   private static boolean debugAttributes = false;
 
   /**
@@ -55,8 +55,7 @@ class DodsV implements Comparable {
     DodsV root = new DodsV(null, null);
 
     // recursively get the Variables from the DDS
-    Enumeration variables = dds.getVariables();
-    parseVariables(root, variables);
+    parseVariables(root, dds.getVariables());
 
     // assign depth first sequence number
     root.assignSequence(root);
@@ -72,10 +71,8 @@ class DodsV implements Comparable {
    * @param parent of the tree
    * @param children list of BaseType
    */
-  private static void parseVariables(DodsV parent, Enumeration children) {
-    while (children.hasMoreElements()) {
-      opendap.dap.BaseType bt = (opendap.dap.BaseType) children.nextElement();
-
+  private static void parseVariables(DodsV parent, Iterable<BaseType> children) {
+    for (opendap.dap.BaseType bt : children) {
       if (bt instanceof DList) {
         String mess = "Variables of type " + bt.getClass().getName() + " are not supported.";
         logger.warn(mess);
@@ -86,15 +83,13 @@ class DodsV implements Comparable {
 
       if (bt instanceof DConstructor) {
         DConstructor dcon = (DConstructor) bt;
-        java.util.Enumeration enumerate2 = dcon.getVariables();
-        parseVariables(dodsV, enumerate2);
+        parseVariables(dodsV, dcon.getVariables());
 
       } else if (bt instanceof DArray) {
         DArray da = (DArray) bt;
 
         // Check to see if the array has any zero-length dimension; if so then ignore
-        for (Enumeration e = da.getDimensions(); e.hasMoreElements();) {
-          DArrayDimension dim = (DArrayDimension) e.nextElement();
+        for (DArrayDimension dim : da.getDimensions()) {
           if (dim.getSize() <= 0)
             return;
         }
@@ -111,8 +106,7 @@ class DodsV implements Comparable {
 
         if (elemType instanceof DStructure) { // note that for DataDDS, cant traverse this further to find the data.
           DConstructor dcon = (DConstructor) elemType;
-          java.util.Enumeration nestedVariables = dcon.getVariables();
-          parseVariables(dodsV, nestedVariables);
+          parseVariables(dodsV, dcon.getVariables());
         }
       }
 
@@ -132,8 +126,7 @@ class DodsV implements Comparable {
     DodsV root = new DodsV(null, null);
 
     // recursively get the Variables from the DDS
-    Enumeration variables = dds.getVariables();
-    parseDataVariables(root, variables);
+    parseDataVariables(root, dds.getVariables());
 
     // assign depth first sequence number
     root.assignSequence(root);
@@ -150,9 +143,8 @@ class DodsV implements Comparable {
    * @param children list of BaseType
    * @throws opendap.dap.NoSuchVariableException if children and parent are inconsistent
    */
-  private static void parseDataVariables(DodsV parent, Enumeration children) throws NoSuchVariableException {
-    while (children.hasMoreElements()) {
-      opendap.dap.BaseType bt = (opendap.dap.BaseType) children.nextElement();
+  private static void parseDataVariables(DodsV parent, Iterable<BaseType> children) throws NoSuchVariableException {
+    for (opendap.dap.BaseType bt : children) {
       DodsV dodsV = new DodsV(parent, bt);
       parent.children.add(dodsV);
 
@@ -167,8 +159,7 @@ class DodsV implements Comparable {
           dodsV.makeAllDimensions();
         }
 
-        java.util.Enumeration enumerate2 = dgrid.getVariables();
-        parseDataVariables(dodsV, enumerate2);
+        parseDataVariables(dodsV, dgrid.getVariables());
 
       } else if (bt instanceof DSequence) {
         DSequence dseq = (DSequence) bt;
@@ -179,14 +170,12 @@ class DodsV implements Comparable {
         }
         dodsV.makeAllDimensions();
 
-        java.util.Enumeration enumerate2 = dseq.getVariables();
-        parseDataVariables(dodsV, enumerate2);
+        parseDataVariables(dodsV, dseq.getVariables());
 
       } else if (bt instanceof DConstructor) {
         DStructure dcon = (DStructure) bt; // LOOK DConstructor != DStructure?
         dodsV.makeAllDimensions();
-        java.util.Enumeration enumerate2 = dcon.getVariables();
-        parseDataVariables(dodsV, enumerate2);
+        parseDataVariables(dodsV, dcon.getVariables());
 
       } else if (bt instanceof DArray) {
         dodsV.darray = (DArray) bt;
@@ -195,21 +184,17 @@ class DodsV implements Comparable {
         dodsV.bt = dodsV.elemType;
         if (dodsV.elemType instanceof DStructure) {
           DStructure dcon = (DStructure) dodsV.elemType;
-          java.util.Enumeration nestedVariables = dcon.getVariables();
-          parseDataVariables(dodsV, nestedVariables);
+          parseDataVariables(dodsV, dcon.getVariables());
         }
       } else {
         dodsV.makeAllDimensions();
       }
-
     }
   }
 
   private static void processDArray(DodsV dodsV) {
     DArray da = dodsV.darray;
-    Enumeration dims = da.getDimensions();
-    while (dims.hasMoreElements()) {
-      DArrayDimension dim = (DArrayDimension) dims.nextElement();
+    for (DArrayDimension dim : da.getDimensions()) {
       dodsV.dimensions.add(dim);
     }
     dodsV.makeAllDimensions(); // redo
@@ -243,7 +228,7 @@ class DodsV implements Comparable {
   DArray darray; // if its an array
   List<DArrayDimension> dimensions = new ArrayList<>();
   List<DArrayDimension> dimensionsAll = new ArrayList<>();
-  List<DODSAttribute> attributes = new ArrayList<>();
+  AttributeContainerMutable attributes;
 
   Array data; // preload
   boolean isDone; // nc var has been made
@@ -253,6 +238,7 @@ class DodsV implements Comparable {
     this.parent = parent;
     this.bt = bt;
     this.elemType = bt;
+    attributes = new AttributeContainerMutable(bt.getClearName());
   }
 
   public int compareTo(Object o) {
@@ -301,7 +287,7 @@ class DodsV implements Comparable {
   }
 
   String getNetcdfShortName() {
-    return DODSNetcdfFile.makeShortName(getClearName());
+    return DodsNetcdfFiles.makeShortName(getClearName());
   }
 
   String getType() {
@@ -312,9 +298,9 @@ class DodsV implements Comparable {
     if (bt == null)
       throw new IllegalStateException("DodsV.bt  == null");
     if (bt instanceof DGrid)
-      return DODSNetcdfFile.convertToNCType(elemType, isUnsigned());
+      return DodsNetcdfFiles.convertToNCType(elemType, isUnsigned());
     else
-      return DODSNetcdfFile.convertToNCType(bt, isUnsigned());
+      return DodsNetcdfFiles.convertToNCType(bt, isUnsigned());
   }
 
   public boolean isUnsigned() {
@@ -354,8 +340,8 @@ class DodsV implements Comparable {
     return shape;
   }
 
-  void addAttribute(DODSAttribute att) {
-    attributes.add(att);
+  void addAttribute(ucar.nc2.Attribute att) {
+    attributes.addAttribute(att);
   }
 
   void makeAllDimensions() {
@@ -435,7 +421,7 @@ class DodsV implements Comparable {
     fullName = fullName + "." + att.getEncodedName();
 
     if (!att.isContainer()) {
-      DODSAttribute ncatt = DODSAttribute.create(match ? att.getEncodedName() : fullName, att);
+      ucar.nc2.Attribute ncatt = DODSAttribute.create(match ? att.getEncodedName() : fullName, att);
       dodsV.addAttribute(ncatt);
       if (debugAttributes)
         System.out.println(" addAttribute " + ncatt.getShortName() + " to " + dodsV.getFullName());

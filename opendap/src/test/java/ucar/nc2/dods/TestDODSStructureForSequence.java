@@ -37,9 +37,9 @@ public class TestDODSStructureForSequence extends TestCase {
     String catAllowedDateRangeEndAttName = "DODS_Global.DODS_EndDate";
 
     // Connect to the DFS.
-    DODSNetcdfFile dfs = null;
+    DodsNetcdfFile dfs = null;
     try {
-      dfs = new DODSNetcdfFile(dfsURL);
+      dfs = DodsNetcdfFile.builder().build(dfsURL, null);
     } catch (IOException e) {
       assertTrue("Unexpected IOException connecting to JPL DODS File Server <" + dfsURL + ">: " + e.getMessage(),
           false);

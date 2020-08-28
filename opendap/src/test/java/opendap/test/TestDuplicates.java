@@ -37,11 +37,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.dods.DodsNetcdfFile;
 import ucar.nc2.write.CDLWriter;
-import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -85,7 +83,7 @@ public class TestDuplicates extends UnitTestCommon {
     boolean pass = true;
     for (Result result : results) {
       System.out.println("TestDuplicates: " + result.url);
-      try (DODSNetcdfFile ncfile = DODSNetcdfFile.builder().build(result.url, null)) {
+      try (DodsNetcdfFile ncfile = DodsNetcdfFile.builder().build(result.url, null)) {
         Formatter f = new Formatter();
         CDLWriter.writeCDL(ncfile, f, false, null);
 

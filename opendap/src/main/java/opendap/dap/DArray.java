@@ -39,10 +39,10 @@
 
 package opendap.dap;
 
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import opendap.dap.parsers.DDSXMLParser;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.Vector;
 
 /**
  * This class is used to hold arrays of other OPeNDAP data. The elements of the
@@ -86,10 +86,8 @@ import java.util.Vector;
  * @see BaseType
  */
 public class DArray extends DVector {
-  /**
-   * A Vector of DArrayDimension information (i.e. the shape)
-   */
-  protected Vector<DArrayDimension> dimVector;
+  /** A List of DArrayDimension information (i.e. the shape) */
+  protected ArrayList<DArrayDimension> dimVector = new ArrayList<>();
 
   /**
    * Constructs a new <code>DArray</code>.
@@ -105,7 +103,6 @@ public class DArray extends DVector {
    */
   public DArray(String n) {
     super(n);
-    dimVector = new Vector<DArrayDimension>();
   }
 
   /**
@@ -159,8 +156,7 @@ public class DArray extends DVector {
     // os.println("DArray.printDecl()");
 
     getPrimitiveVector().printDecl(os, space, false, constrained);
-    for (Enumeration e = dimVector.elements(); e.hasMoreElements();) {
-      DArrayDimension d = (DArrayDimension) e.nextElement();
+    for (DArrayDimension d : dimVector) {
       os.print("[");
       String name = d.getEncodedName();
       if (name != null && name.length() > 0)
@@ -198,8 +194,7 @@ public class DArray extends DVector {
     int dims = numDimensions();
     int shape[] = new int[dims];
     int i = 0;
-    for (Enumeration e = dimVector.elements(); e.hasMoreElements();) {
-      DArrayDimension d = (DArrayDimension) e.nextElement();
+    for (DArrayDimension d : dimVector) {
       shape[i++] = d.getSize();
     }
 
@@ -256,7 +251,7 @@ public class DArray extends DVector {
    */
   public void appendDim(int size, String name) {
     DArrayDimension newDim = new DArrayDimension(size, name);
-    dimVector.addElement(newDim);
+    dimVector.add(newDim);
     newDim.setContainer(this);
   }
 
@@ -277,11 +272,9 @@ public class DArray extends DVector {
    * @return an <code>Enumeration</code> of <code>DArrayDimension</code>s
    *         in this array.
    */
-  public final Enumeration getDimensions() {
-    return dimVector.elements();
+  public final ImmutableList<DArrayDimension> getDimensions() {
+    return ImmutableList.copyOf(dimVector);
   }
-
-
 
   /**
    * Returns the number of dimensions in this array.
@@ -307,28 +300,20 @@ public class DArray extends DVector {
    *
    */
   public void squeeze() {
-
     if (dimVector.size() == 1)
       return;
 
-
-    Vector<DArrayDimension> squeezeCandidates = new Vector<DArrayDimension>();
-
+    ArrayList<DArrayDimension> squeezeCandidates = new ArrayList<>();
     for (DArrayDimension dim : dimVector) {
       if (dim.getSize() == 1)
         squeezeCandidates.add(dim);
     }
 
-    if (squeezeCandidates.size() == dimVector.size())
+    if (squeezeCandidates.size() == dimVector.size()) {
       squeezeCandidates.remove(squeezeCandidates.size() - 1);
-
-
-    // LogStream.out.println("DArray.squeeze(): Removing "+
-    // squeezeCandidates.size()+" dimensions of size 1.");
-
+    }
 
     dimVector.removeAll(squeezeCandidates);
-
   }
 
   /**
@@ -400,9 +385,7 @@ public class DArray extends DVector {
 
     bt.setEncodedName(nameCache);
 
-    Enumeration dae = getDimensions();
-    while (dae.hasMoreElements()) {
-      DArrayDimension dad = (DArrayDimension) dae.nextElement();
+    for (DArrayDimension dad : dimVector) {
       int size = dad.getSize();
       String name = dad.getEncodedName();
       if (name == null) {
@@ -421,8 +404,7 @@ public class DArray extends DVector {
       os.print(".");
     }
     os.print(getEncodedName());
-    for (int i = 0; i < dimVector.size(); i++) {
-      DArrayDimension dim = (DArrayDimension) dimVector.get(i);
+    for (DArrayDimension dim : dimVector) {
       dim.printConstraint(os);
     }
   }
@@ -434,14 +416,13 @@ public class DArray extends DVector {
    * @param map track previously cloned nodes
    * @return a clone of this object.
    */
-  public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
+  public DArray cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DArray a = (DArray) super.cloneDAG(map);
-    a.dimVector = new Vector<DArrayDimension>();
-    for (int i = 0; i < dimVector.size(); i++) {
-      DArrayDimension d = dimVector.elementAt(i);
-      DArrayDimension dclone = (DArrayDimension) cloneDAG(map, d);
+    a.dimVector = new ArrayList<>();
+    for (DArrayDimension dim : dimVector) {
+      DArrayDimension dclone = (DArrayDimension) cloneDAG(map, dim);
       dclone.setContainer(a);
-      a.dimVector.addElement(dclone);
+      a.dimVector.add(dclone);
     }
     return a;
   }

@@ -19,7 +19,7 @@ public class TestDODSArrayPrimitiveTypes {
 
   @Test
   public void testArrays() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.02");
 
     Variable v = null;
     Array a = null;
@@ -192,7 +192,7 @@ public class TestDODSArrayPrimitiveTypes {
 
   @Test
   public void testStrides() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.02");
 
     DodsVariable v = null;
     Array a = null;

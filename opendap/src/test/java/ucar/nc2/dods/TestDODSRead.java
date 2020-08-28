@@ -19,14 +19,14 @@ public class TestDODSRead {
 
   public static boolean showFile = false, showFileDebug = false;
 
-  static DODSNetcdfFile open(String name) throws IOException {
+  static DodsNetcdfFile open(String name) throws IOException {
     String filename = TestSources.XURL1 + "/" + name;
     return openAbs(filename);
   }
 
-  static DODSNetcdfFile openAbs(String filename) throws IOException {
+  static DodsNetcdfFile openAbs(String filename) throws IOException {
     System.out.println("TestDODSRead = " + filename);
-    DODSNetcdfFile dodsfile = DODSNetcdfFile.builder().build(filename, null);
+    DodsNetcdfFile dodsfile = DodsNetcdfFile.builder().build(filename, null);
     if (showFileDebug)
       System.out.println(dodsfile.getDetailInfo());
     if (showFile)

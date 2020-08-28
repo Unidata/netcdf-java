@@ -44,6 +44,7 @@ import com.google.common.collect.ImmutableList;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * A <code>DSequence</code> in OPeNDAP can hold <em>N</em> sequentially accessed
@@ -577,11 +578,14 @@ public class DSequence extends DConstructor implements ClientIO {
    */
   public DSequence cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DSequence s = (DSequence) super.cloneDAG(map);
+
+    s.varTemplate = new ArrayList<>();
     for (BaseType bt : varTemplate) {
       BaseType btclone = (BaseType) cloneDAG(map, bt);
       s.varTemplate.add(btclone);
     }
 
+    s.allValues = new ArrayList<>();
     for (List<BaseType> row : allValues) {
       List<BaseType> newRow = new ArrayList<>();
       for (BaseType bt : row) {

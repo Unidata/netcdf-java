@@ -1,4 +1,4 @@
-package ucar.unidata.util.test;
+package opendap.test;
 
 
 // Diff -- text file difference utility.
@@ -39,7 +39,13 @@ package ucar.unidata.util.test;
  * inventing predecessor languages C and C+is also gratefully acknowledged.
  */
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;

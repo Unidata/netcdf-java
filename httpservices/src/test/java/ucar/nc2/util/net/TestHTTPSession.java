@@ -38,7 +38,6 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.message.BasicHeader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -46,11 +45,10 @@ import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-public class TestHTTPSession extends UnitTestCommon {
+public class TestHTTPSession {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   //////////////////////////////////////////////////
@@ -77,7 +75,6 @@ public class TestHTTPSession extends UnitTestCommon {
 
   public TestHTTPSession() {
     super();
-    setTitle("HTTP Session tests");
     HTTPSession.TESTING = true;
   }
 

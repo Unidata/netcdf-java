@@ -1,12 +1,13 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * See LICENSE for license information.
  */
 package ucar.nc2.dods;
 
 import ucar.nc2.internal.util.EscapeStrings;
 
-/** Escape utilities for DAP
+/**
+ * Escape utilities for DAP
  */
 public class EscapeStringsDap {
   private static final String _allowableInDAP =

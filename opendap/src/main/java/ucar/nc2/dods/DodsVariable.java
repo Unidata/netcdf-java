@@ -17,16 +17,17 @@ import java.util.*;
 class DodsVariable extends ucar.nc2.Variable {
 
   // use when a dods variable is a scalar
-  static DodsVariable.Builder<?> builder(String dodsShortName, DodsV dodsV) {
-    DodsVariable.Builder<?> builder = builder().setName(DODSNetcdfFile.makeShortName(dodsShortName))
+  static DodsVariable.Builder<?> builder(DodsBuilder<?> dodsBuilder, Group.Builder parentGroup, String dodsShortName,
+      DodsV dodsV) {
+    DodsVariable.Builder<?> builder = builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName))
         .setDataType(dodsV.getDataType()).setSPobject(dodsV);
 
     // check for netcdf char array
     Dimension strlenDim;
-    if ((builder.dataType == DataType.STRING) && (null != (strlenDim = dodsfile.getNetcdfStrlenDim(this)))) {
-      List<Dimension> dims = new ArrayList<Dimension>();
+    if ((builder.dataType == DataType.STRING) && (null != (strlenDim = dodsBuilder.getNetcdfStrlenDim(builder)))) {
+      List<Dimension> dims = new ArrayList<>();
       if (strlenDim.getLength() != 0)
-        dims.add(dodsfile.getSharedDimension(parentGroup, strlenDim));
+        dims.add(dodsBuilder.getSharedDimension(parentGroup, strlenDim));
       builder.setDimensions(dims);
       builder.setDataType(DataType.CHAR);
     }
@@ -35,18 +36,18 @@ class DodsVariable extends ucar.nc2.Variable {
   }
 
   // use when a dods variable is an Array, rank > 0
-  static DodsVariable.Builder<?> builder(String dodsShortName, DArray dodsArray, DodsV dodsV) {
-    DodsVariable.Builder<?> builder = builder().setName(DODSNetcdfFile.makeShortName(dodsShortName))
+  static DodsVariable.Builder<?> builder(DodsBuilder<?> dodsBuilder, Group.Builder parentGroup, String dodsShortName,
+      DArray dodsArray, DodsV dodsV) {
+    DodsVariable.Builder<?> builder = builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName))
         .setDataType(dodsV.getDataType()).setSPobject(dodsV);
 
-    List<Dimension> dims = dodsfile.constructDimensions(parentGroup, dodsArray);
+    List<Dimension> dims = dodsBuilder.constructDimensions(parentGroup, dodsArray);
 
     // check for netcdf char array
     Dimension strlenDim;
-    if ((builder.dataType == DataType.STRING) && (null != (strlenDim = dodsfile.getNetcdfStrlenDim(this)))) {
-
+    if ((builder.dataType == DataType.STRING) && (null != (strlenDim = dodsBuilder.getNetcdfStrlenDim(builder)))) {
       if (strlenDim.getLength() != 0)
-        dims.add(dodsfile.getSharedDimension(parentGroup, strlenDim));
+        dims.add(dodsBuilder.getSharedDimension(parentGroup, strlenDim));
       builder.setDataType(DataType.CHAR);
     }
 
@@ -92,13 +93,13 @@ class DodsVariable extends ucar.nc2.Variable {
   ////////////////////////////////////////////////////////
   private final String CE; // projection is allowed
   private final String dodsName;
-  private final DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
+  private final DodsNetcdfFile dodsfile; // so we dont have to cast everywhere
 
   protected DodsVariable(DodsVariable.Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
     this.CE = builder.CE;
     this.dodsName = builder.dodsName != null ? builder.dodsName : builder.shortName;
-    this.dodsfile = (DODSNetcdfFile) parentGroup.getNetcdfFile();
+    this.dodsfile = (DodsNetcdfFile) parentGroup.getNetcdfFile();
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
@@ -124,7 +125,8 @@ class DodsVariable extends ucar.nc2.Variable {
   }
 
   /** A builder of DodsVariable. */
-  public static abstract class Builder<T extends DodsVariable.Builder<T>> extends Variable.Builder<T> {
+  public static abstract class Builder<T extends DodsVariable.Builder<T>> extends Variable.Builder<T>
+      implements DodsVariableBuilder<T> {
     private boolean built;
     private String CE; // projection is allowed
     private String dodsName;

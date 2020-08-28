@@ -36,13 +36,13 @@ import java.lang.invoke.MethodHandles;
 public class TestDODSArrayOfStructureNested {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static DODSNetcdfFile dodsfile;
+  private static DodsNetcdfFile dodsfile;
 
   @BeforeClass
   public static void setUp() throws Exception {
-    DODSNetcdfFile.setPreload(false);
+    DodsNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.53");
-    DODSNetcdfFile.setPreload(true);
+    DodsNetcdfFile.setPreload(true);
   }
 
   @AfterClass

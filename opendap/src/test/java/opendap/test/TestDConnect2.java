@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Diff;
 import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.PrintStream;

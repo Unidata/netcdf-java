@@ -6,7 +6,6 @@ package ucar.nc2.dods;
 
 import opendap.dap.*;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
 import ucar.ma2.*;
@@ -14,7 +13,7 @@ import ucar.nc2.Variable;
 
 /** Convert Dods object tree to cdm objects. */
 class ConvertD2N {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsNetcdfFile.class);
 
   /*
    * Difficult cases.
@@ -579,18 +578,11 @@ class ConvertD2N {
   }
 
   private int[] makeShape(opendap.dap.DArray dodsArray) {
-    int count = 0;
-    Enumeration enumerate = dodsArray.getDimensions();
-    while (enumerate.hasMoreElements()) {
-      count++;
-      enumerate.nextElement();
-    }
+    int count = dodsArray.getDimensions().size();
 
     int[] shape = new int[count];
-    enumerate = dodsArray.getDimensions();
     count = 0;
-    while (enumerate.hasMoreElements()) {
-      opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
+    for (opendap.dap.DArrayDimension dad : dodsArray.getDimensions()) {
       shape[count++] = dad.getSize();
     }
 

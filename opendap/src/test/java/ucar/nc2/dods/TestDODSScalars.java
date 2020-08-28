@@ -18,7 +18,7 @@ public class TestDODSScalars {
 
   @Test
   public void testScalar() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.01");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.01");
 
     Variable v = null;
     Array a = null;
@@ -170,7 +170,7 @@ public class TestDODSScalars {
 
   @Test
   public void testStrings() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.02");
     Variable v = null;
 
     // string

@@ -59,14 +59,10 @@ import ucar.nc2.dods.EscapeStringsDap;
  * it should be removed when we quit using cloning.
  *
  * @author dmh (Dennis Heimbigner, Unidata)
- * @version $Revision: 22951 $
+ *         TODO remove implements Cloneable, Serializable
  */
-
 public class DAPNode implements Cloneable, Serializable {
-  //////////////////////////////////////////////////////////////////////////
   public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DAPNode.class);
-  //////////////////////////////////////////////////////////////////////////
-
   static final long serialVersionUID = 1;
 
   // Define a singleton value for which we can test with ==
@@ -223,8 +219,9 @@ public class DAPNode implements Cloneable, Serializable {
    * on all data inside the variable.
    *
    * @return a clone of this <code>DAPNode</code>.
+   * @deprecated do not use
    */
-
+  @Deprecated
   public Object clone() {
     try {
       CloneMap map = new CloneMap();
@@ -258,7 +255,9 @@ public class DAPNode implements Cloneable, Serializable {
    * @param map list of previously cloned nodes
    * @return the clone of the src node
    * @throws CloneNotSupportedException
+   * @deprecated do not use
    */
+  @Deprecated
   public static DAPNode cloneDAG(CloneMap map, DAPNode src) throws CloneNotSupportedException {
     DAPNode bt = map.nodes.get(src);
     if (bt == null)
@@ -272,7 +271,9 @@ public class DAPNode implements Cloneable, Serializable {
    * @param map list of previously cloned nodes
    * @return clone of this node
    * @throws CloneNotSupportedException
+   * @deprecated do not use
    */
+  @Deprecated
   public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DAPNode node = (DAPNode) super.clone(); // Object.clone
     map.nodes.put(this, node);
@@ -282,5 +283,4 @@ public class DAPNode implements Cloneable, Serializable {
       _myParent = tmp;
     return node;
   }
-
 }

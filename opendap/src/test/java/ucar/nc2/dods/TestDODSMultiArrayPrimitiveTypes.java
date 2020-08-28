@@ -19,7 +19,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
   @org.junit.Test
   public void testArrays() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.03");
 
     Variable v = null;
     Array a = null;
@@ -184,7 +184,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
   @Test
   public void testStride() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.03");
 
     DodsVariable v = null;
     Array a = null;
@@ -220,9 +220,9 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
   @Test
   public void testSection() throws IOException, InvalidRangeException {
-    DODSNetcdfFile.setPreload(false);
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
-    DODSNetcdfFile.setPreload(true);
+    DodsNetcdfFile.setPreload(false);
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.03");
+    DodsNetcdfFile.setPreload(true);
 
     DodsVariable v = null;
     Array a = null;

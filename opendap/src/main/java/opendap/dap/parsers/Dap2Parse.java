@@ -199,9 +199,9 @@ public abstract class Dap2Parse {
       for (Object o : (List<Object>) attrlist) {
         if (o instanceof Attribute) {
           Attribute a = (Attribute) o;
-          Iterator it = a.getValuesIterator();
+          Iterator<String> it = a.getValuesIterator();
           while (it.hasNext()) {
-            dasobject.appendAttribute(a.getEncodedName(), a.getType(), (String) it.next()); /* UGH */
+            dasobject.appendAttribute(a.getEncodedName(), a.getType(), it.next()); /* UGH */
           }
         } else if (o instanceof AttributeTable) {
           AttributeTable aset = (AttributeTable) o;
@@ -325,9 +325,9 @@ public abstract class Dap2Parse {
         if (o instanceof Attribute) {
           /* ugh, Attributetable needs an additional addAttribute fcn */
           Attribute a = (Attribute) o;
-          Iterator it = a.getValuesIterator();
+          Iterator<String> it = a.getValuesIterator();
           while (it.hasNext()) {
-            attset.appendAttribute(a.getClearName(), a.getType(), (String) it.next());
+            attset.appendAttribute(a.getClearName(), a.getType(), it.next());
           }
         } else if (o instanceof AttributeTable) {
           AttributeTable at = (AttributeTable) o;

@@ -35,8 +35,8 @@ public class TestDODSStructureScalars {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
-  public void testStructureRead() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
+  public void testStructureRead() throws IOException, InvalidRangeException {
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.04");
 
     Variable v = null;
     Array a = null;
@@ -44,13 +44,13 @@ public class TestDODSStructureScalars {
     assert null != (v = dodsfile.findVariable("types"));
     assert v instanceof Structure;
     Structure s = (Structure) v;
-    StructureData sdata = s.readStructure();
+    StructureData sdata = s.readStructure(0);
     checkSD(sdata);
   }
 
   @Test
   public void testRead() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.04");
 
     Variable v = null;
     Array a = null;
@@ -149,7 +149,7 @@ public class TestDODSStructureScalars {
 
   @Test
   public void testScalarRead() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.04");
 
     Variable v = null;
     assert null != (v = dodsfile.findVariable("types"));
@@ -159,9 +159,9 @@ public class TestDODSStructureScalars {
 
   @Test
   public void testScalarReadUncached() throws IOException {
-    DODSNetcdfFile.setPreload(false);
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
-    DODSNetcdfFile.setPreload(true);
+    DodsNetcdfFile.setPreload(false);
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.04");
+    DodsNetcdfFile.setPreload(true);
 
     Variable v = null;
     assert null != (v = dodsfile.findVariable("types"));
@@ -311,7 +311,7 @@ public class TestDODSStructureScalars {
 
   @Test
   public void testDODSwithDataset() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.04");
     NetcdfDataset ds = NetcdfDatasets.enhance(dodsfile, null, null);
 
     // bug in forming dods name
