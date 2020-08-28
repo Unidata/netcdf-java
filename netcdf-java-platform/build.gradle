@@ -45,6 +45,9 @@ dependencies {
     // apache httpclient
     api 'org.apache.httpcomponents:httpclient:4.5.12'
     api 'org.apache.httpcomponents:httpmime:4.5.12'
+    // version of httpcore matches the one used by httpclient
+    // so if updating httpclient, look in its pom for the version of http core to use
+    api 'org.apache.httpcomponents:httpcore:4.4.13'
     api "org.slf4j:jcl-over-slf4j:${depVersion.slf4j}"
 
     // waterml xml beans
