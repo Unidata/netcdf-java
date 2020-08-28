@@ -66,7 +66,7 @@ public class TestDODSnestedSequence {
 
   @org.junit.Test
   public void testNestedSequenceParent() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 
     Variable v = dodsfile.findVariable("person1");
     assert null != v;
@@ -102,7 +102,7 @@ public class TestDODSnestedSequence {
   }
 
   public void utestNestedSequence() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 
     Variable v = dodsfile.findVariable("person1");
     Structure s = (Structure) v;
@@ -154,7 +154,7 @@ public class TestDODSnestedSequence {
   }
 
   public void utestCE() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsFile = TestDODSRead.open("NestedSeq2");
+    DodsNetcdfFile dodsFile = TestDODSRead.open("NestedSeq2");
     Variable outerSequence = dodsFile.findVariable("person1");
 
     String CE = "person1.age,person1.stuff&person1.age=3";

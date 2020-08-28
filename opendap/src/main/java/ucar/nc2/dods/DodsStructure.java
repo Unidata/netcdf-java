@@ -14,8 +14,9 @@ import java.io.IOException;
 class DodsStructure extends ucar.nc2.Structure {
 
   // constructor called from DODSNetcdfFile.makeVariable() for scalar Structure or Sequence
-  static DodsStructure.Builder<?> builder(String dodsShortName, DodsV dodsV) throws IOException {
-    DodsStructure.Builder<?> builder = builder().setName(DODSNetcdfFile.makeShortName(dodsShortName))
+  static DodsStructure.Builder<?> builder(DodsBuilder<?> dodsBuilder, Group.Builder parentGroup, String dodsShortName,
+      DodsV dodsV) throws IOException {
+    DodsStructure.Builder<?> builder = builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName))
         .setDataType(dodsV.getDataType()).setSPobject(dodsV);
     builder.setConstructor((DConstructor) dodsV.bt);
 
@@ -24,17 +25,18 @@ class DodsStructure extends ucar.nc2.Structure {
     }
 
     for (DodsV nested : dodsV.children) {
-      dodsfile.addVariable(parentGroup, this, nested);
+      dodsBuilder.addVariable(parentGroup, builder, nested);
     }
 
     return builder;
   }
 
   // constructor called from DODSNetcdfFile.makeVariable() for array of Structure
-  static DodsStructure.Builder<?> builder(String dodsShortName, DArray dodsArray, DodsV dodsV) {
-    DodsStructure.Builder<?> builder = builder().setName(DODSNetcdfFile.makeShortName(dodsShortName))
+  static DodsStructure.Builder<?> builder(DodsBuilder<?> dodsBuilder, Group.Builder parentGroup, String dodsShortName,
+      DArray dodsArray, DodsV dodsV) {
+    DodsStructure.Builder<?> builder = builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName))
         .setDataType(dodsV.getDataType()).setSPobject(dodsV);
-    List<Dimension> dims = dodsfile.constructDimensions(parentGroup, dodsArray);
+    List<Dimension> dims = dodsBuilder.constructDimensions(parentGroup, dodsArray);
     builder.setDimensions(dims);
     return builder;
   }
@@ -102,7 +104,7 @@ class DodsStructure extends ucar.nc2.Structure {
 
   ////////////////////////////////////////////////////////
   private final DConstructor constructor;
-  private final DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
+  private final DodsNetcdfFile dodsfile; // so we dont have to cast everywhere
   private final String dodsName;
 
   protected DodsStructure(DodsStructure.Builder<?> builder, Group parentGroup) {
@@ -110,7 +112,7 @@ class DodsStructure extends ucar.nc2.Structure {
     this.constructor = builder.constructor;
     this.isVariableLength = builder.constructor instanceof DSequence;
     this.dodsName = builder.dodsName != null ? builder.dodsName : builder.shortName;
-    this.dodsfile = (DODSNetcdfFile) parentGroup.getNetcdfFile();
+    this.dodsfile = (DodsNetcdfFile) parentGroup.getNetcdfFile();
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
@@ -120,7 +122,8 @@ class DodsStructure extends ucar.nc2.Structure {
   }
 
   // Add local fields to the passed - in builder.
-  protected DodsStructure.Builder<?> addLocalFieldsToBuilder(DodsStructure.Builder<? extends DodsStructure.Builder<?>> b) {
+  protected DodsStructure.Builder<?> addLocalFieldsToBuilder(
+      DodsStructure.Builder<? extends DodsStructure.Builder<?>> b) {
     this.members.forEach(m -> b.addMemberVariable(m.toBuilder()));
     return (DodsStructure.Builder<?>) super.addLocalFieldsToBuilder(b);
   }
@@ -142,10 +145,12 @@ class DodsStructure extends ucar.nc2.Structure {
   }
 
   /** A builder of Structures. */
-  public static abstract class Builder<T extends DodsStructure.Builder<T>> extends Structure.Builder<T> {
+  public static abstract class Builder<T extends DodsStructure.Builder<T>> extends Structure.Builder<T>
+      implements DodsVariableBuilder<T> {
     private boolean built;
     private String dodsName;
     private DConstructor constructor;
+    private String CE; // projection is allowed
 
     public void setDodsName(String name) {
       this.dodsName = name;
@@ -153,6 +158,11 @@ class DodsStructure extends ucar.nc2.Structure {
 
     public void setConstructor(DConstructor constructor) {
       this.constructor = constructor;
+    }
+
+    public T setCE(String CE) {
+      this.CE = CE;
+      return self();
     }
 
     /** Normally this is only called by Group.build() */

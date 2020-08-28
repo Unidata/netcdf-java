@@ -39,7 +39,7 @@ import java.lang.invoke.MethodHandles;
 public class TestDODSStructureScalarsNested {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DODSNetcdfFile dodsfile;
+  private DodsNetcdfFile dodsfile;
 
   @org.junit.Test
   public void testScalarRead() throws IOException {
@@ -103,7 +103,7 @@ public class TestDODSStructureScalarsNested {
   }
 
   @Test
-  public void testStructureRead() throws IOException {
+  public void testStructureRead() throws IOException, InvalidRangeException {
     dodsfile = TestDODSRead.open("test.05");
 
     Structure s;
@@ -122,7 +122,7 @@ public class TestDODSStructureScalarsNested {
     assert (null != (v = types.findVariable("integers")));
     assert v instanceof Structure;
     s = (Structure) v;
-    StructureData sdata = s.readStructure();
+    StructureData sdata = s.readStructure(0);
 
     m = sdata.findMember("b");
     assert (null != m);
@@ -147,7 +147,7 @@ public class TestDODSStructureScalarsNested {
     assert (null != (v = types.findVariable("floats")));
     assert v instanceof Structure;
     s = (Structure) v;
-    sdata = s.readStructure();
+    sdata = s.readStructure(0);
 
     m = sdata.findMember("f32");
     assert (null != m);
@@ -160,7 +160,7 @@ public class TestDODSStructureScalarsNested {
     assert (null != (v = types.findVariable("strings")));
     assert v instanceof Structure;
     s = (Structure) v;
-    sdata = s.readStructure();
+    sdata = s.readStructure(0);
 
     m = sdata.findMember("s");
     assert (null != m);
@@ -169,7 +169,7 @@ public class TestDODSStructureScalarsNested {
 
 
   @Test
-  public void testStructureRead2() throws IOException {
+  public void testStructureRead2() throws IOException, InvalidRangeException {
     dodsfile = TestDODSRead.open("test.05");
 
     Structure s;
@@ -185,7 +185,7 @@ public class TestDODSStructureScalarsNested {
     assert v instanceof DodsStructure;
     types = (DodsStructure) v;
 
-    StructureData sdata = types.readStructure();
+    StructureData sdata = types.readStructure(0);
 
     assert (null != (m = sdata.findMember("integers")));
     Array arr = sdata.getArray(m);

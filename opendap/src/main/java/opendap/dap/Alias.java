@@ -39,8 +39,8 @@
 
 package opendap.dap;
 
-import java.util.Enumeration;
 import java.io.PrintWriter;
+import java.util.List;
 import opendap.dap.parsers.DDSXMLParser;
 
 /**
@@ -165,26 +165,15 @@ public class Alias extends Attribute {
   }
 
   private Attribute getMyAttribute() {
-
     return (targetAttribute);
-
   }
-
-  // private BaseType getMyVariable() {
-  // return (targetVariable);
-  // }
-
 
   /**
    * Returns the attribute type constant.
-   *
-   * @return the attribute type constant.
    */
   public int getType() {
-
-    return (getMyAttribute().getType());
+    return getMyAttribute().getType();
   }
-
 
   /**
    * Returns true if the attribute is a container.
@@ -249,8 +238,8 @@ public class Alias extends Attribute {
    *
    * @return an <code>Enumeration</code> of <code>String</code>.
    */
-  public Enumeration getValues() throws NoSuchAttributeException {
-    return (getMyAttribute().getValues());
+  public List<String> getValues() throws NoSuchAttributeException {
+    return getMyAttribute().getValues();
   }
 
   /**
@@ -260,7 +249,7 @@ public class Alias extends Attribute {
    * @return the attribute <code>String</code> at <code>index</code>.
    */
   public String getValueAt(int index) throws NoSuchAttributeException {
-    return (getMyAttribute().getValueAt(index));
+    return getMyAttribute().getValueAt(index);
   }
 
   /**
@@ -302,7 +291,6 @@ public class Alias extends Attribute {
         "It is illegal to remove values from an Alias. " + "Values can only be removed from an Attribute");
   }
 
-
   public void print(PrintWriter os, String pad) {
     os.println(pad + "Alias " + getEncodedName() + " " + getAliasedToAttributeField() + ";");
   }
@@ -325,8 +313,7 @@ public class Alias extends Attribute {
    * @param map track previously cloned nodes
    * @return a clone of this <code>Alias</code>.
    */
-
-  public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
+  public Alias cloneDAG(CloneMap map) throws CloneNotSupportedException {
     Alias a = (Alias) super.cloneDAG(map);
     a.aliasedToAttributeNamed = this.aliasedToAttributeNamed;
     a.targetAttribute = (Attribute) cloneDAG(map, this.targetAttribute);
@@ -334,33 +321,4 @@ public class Alias extends Attribute {
     return a;
   }
 
-
 }
-
-// $Log: Alias.java,v $
-//
-// Revision 1.1 2003/08/12 23:51:24 ndp
-// Mass check in to begin Java-OPeNDAP development work
-//
-// Revision 1.7 2011/01/09 dmh
-// change to cloneDAG
-//
-// Revision 1.6 2002/08/27 04:30:11 ndp
-//
-// Revision 1.5 2003/02/12 16:41:15 ndp
-// *** empty log message ***
-//
-// Revision 1.4 2002/12/03 22:44:15 ndp
-// *** empty log message ***
-//
-// Revision 1.3 2002/10/26 01:19:40 ndp
-// *** empty log message ***
-//
-// Revision 1.2 2003/09/02 17:49:34 ndp
-// *** empty log message ***
-//
-// Revision 1.1 2002/10/08 23:03:23 ndp
-// *** empty log message ***
-//
-
-

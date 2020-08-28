@@ -23,7 +23,7 @@ public class TestDODSStructureArray {
 
   @Test
   public void testArrays() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.21");
 
     Variable v = null;
     Array a = null;
@@ -85,10 +85,10 @@ public class TestDODSStructureArray {
   }
 
   @Test
-  public void testArray2() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
+  public void testArray2() throws IOException, InvalidRangeException {
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.21");
     DodsStructure exp = (DodsStructure) dodsfile.findVariable("exp");
-    StructureData sd = exp.readStructure();
+    StructureData sd = exp.readStructure(0);
 
     StructureMembers.Member m = null;
     Variable v = null;
@@ -146,10 +146,10 @@ public class TestDODSStructureArray {
   }
 
   @Test
-  public void testSARead() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
+  public void testSARead() throws IOException, InvalidRangeException {
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.21");
     DodsStructure exp = (DodsStructure) dodsfile.findVariable("exp");
-    StructureData data = exp.readStructure();
+    StructureData data = exp.readStructure(0);
 
     StructureMembers.Member m = data.findMember("f");
     assert m != null;

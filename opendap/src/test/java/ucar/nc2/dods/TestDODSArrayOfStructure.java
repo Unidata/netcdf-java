@@ -36,7 +36,7 @@ import java.lang.invoke.MethodHandles;
 public class TestDODSArrayOfStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DODSNetcdfFile dodsfile;
+  private DodsNetcdfFile dodsfile;
 
   @After
   public void after() throws IOException {
@@ -46,10 +46,10 @@ public class TestDODSArrayOfStructure {
 
   @Before
   public void setUp() throws Exception {
-    DODSNetcdfFile.setPreload(false);
+    DodsNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.50");
-    DODSNetcdfFile.setPreload(true);
-    DODSNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
+    DodsNetcdfFile.setPreload(true);
+    DodsNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
   }
 
   @Test

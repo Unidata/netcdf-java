@@ -66,7 +66,7 @@ public class TestDODSSequence {
 
   @org.junit.Test
   public void testReadSequence() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.07");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.07");
 
     Variable v = dodsfile.findVariable("person");
     assert null != v;

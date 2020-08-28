@@ -40,8 +40,7 @@
 
 package opendap.dap;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 import opendap.dap.parsers.*;
 import java.io.*;
 
@@ -257,7 +256,7 @@ public class DAS extends AttributeTable {
         if (thisA.isAlias()) {
           // Is Alias? Resolve it!
           resolveAlias((Alias) thisA);
-         } else if (thisA.isContainer()) {
+        } else if (thisA.isContainer()) {
           // Is AttributeTable (container)? Search it!
           resolveAliases(thisA.getContainer());
         }
@@ -288,13 +287,11 @@ public class DAS extends AttributeTable {
    */
 
   private void resolveAlias(Alias alias) throws MalformedAliasException, UnresolvedAliasException {
-
     // Get the crucial stuff out of the Alias
     String name = alias.getClearName();
     String attribute = alias.getAliasedToAttributeFieldAsClearString();
 
     // Get ready!
-    Enumeration e = null;
     currentAlias = alias;
     // see if we can find an Attribute within that DAS that matches the attribute field
     // in the Alias declartion. The Attribute field MAY NOT be empty.
@@ -302,16 +299,15 @@ public class DAS extends AttributeTable {
       throw new MalformedAliasException(
           "The attribute 'attribute' in the Alias " + "element must have a value other than an empty string.");
     }
-    // Tokenize the attribute field.
 
-    Vector aNames = opendap.dap.DDS.tokenizeAliasField(attribute);
+    // Tokenize the attribute field.
+    List<String> aNames = opendap.dap.DDS.tokenizeAliasField(attribute);
     opendap.dap.Attribute targetAT = null;
 
     // Absolute paths for attributes names must start with the dot character.
     boolean isAbsolutePath = aNames.get(0).equals(".");
 
     if (isAbsolutePath) { // Is it an absolute path?
-
       if (aNames.size() == 1) {
         throw new MalformedAliasException("Aliases must reference an Attribute. "
             + "An attribute field of dot (.) references the entire " + "DAS, which is not allowed.");
@@ -319,7 +315,6 @@ public class DAS extends AttributeTable {
         // Dump the dot from the vector of tokens and go try to find
         // the Attribute in the DAS.
         aNames.remove(0);
-
         targetAT = getAliasAttribute(this, aNames);
       }
     } else {
@@ -330,7 +325,6 @@ public class DAS extends AttributeTable {
     }
 
     alias.setMyAttribute(targetAT);
-
   }
 
 
@@ -347,7 +341,7 @@ public class DAS extends AttributeTable {
    * @param aNames The <code>Vector</code> of names to match to the nodes of <b>at</b>
    */
 
-  private opendap.dap.Attribute getAliasAttribute(AttributeTable att, Vector aNames)
+  private opendap.dap.Attribute getAliasAttribute(AttributeTable att, List<String> aNames)
       throws MalformedAliasException, UnresolvedAliasException {
 
     // Get the first node name form the vector.
@@ -398,8 +392,6 @@ public class DAS extends AttributeTable {
     // Nothing Matched, so this search failed.
     throw new UnresolvedAliasException("The alias `" + currentAlias.getEncodedName() + "` references the attribute: `"
         + aName + "` which cannot be found.");
-
-
   }
 
   /**

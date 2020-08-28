@@ -17,24 +17,12 @@ import ucar.nc2.util.CancelTask;
 
 /** A DODS dataset as seen through the Netcdf API. */
 @NotThreadSafe
-public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
-  static boolean debugCE = false;
-  static boolean debugServerCall = false;
-  static boolean debugOpenResult = false;
-  static boolean debugDataResult = false;
-  static boolean debugCharArray = false;
-  static boolean debugConvertData = false;
-  static boolean debugConstruct = false;
-  static boolean debugPreload = false;
-  static boolean debugTime = false;
-  static boolean showNCfile = false;
-  static boolean debugAttributes = false;
-  static boolean debugCached = false;
-  static boolean debugOpenTime = false;
+public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsNetcdfFile.class);
 
   static boolean accept_compress = false;
-  static boolean preload = true;
-  static int preloadCoordVarSize = 50000;
+  static private boolean preload = true;
+  static private int preloadCoordVarSize = 50000;
 
   /**
    * Set whether to allow sessions by allowing cookies. This only affects requests to the TDS.
@@ -49,25 +37,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   /**
    * Set whether to allow messages to be compressed.
    * LOOK why not true as default?
+   * 
    * @param b true or false.
    */
   public static void setAllowCompression(boolean b) {
     accept_compress = b;
-  }
-
-  /** Debugging */
-  public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-    debugCE = debugFlag.isSet("DODS/constraintExpression");
-    debugServerCall = debugFlag.isSet("DODS/serverCall");
-    debugOpenResult = debugFlag.isSet("DODS/debugOpenResult");
-    debugDataResult = debugFlag.isSet("DODS/debugDataResult");
-    debugCharArray = debugFlag.isSet("DODS/charArray");
-    debugConstruct = debugFlag.isSet("DODS/constructNetcdf");
-    debugPreload = debugFlag.isSet("DODS/preload");
-    debugTime = debugFlag.isSet("DODS/timeCalls");
-    showNCfile = debugFlag.isSet("DODS/showNCfile");
-    debugAttributes = debugFlag.isSet("DODS/attributes");
-    debugCached = debugFlag.isSet("DODS/cache");
   }
 
   /**
@@ -88,31 +62,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     preloadCoordVarSize = size;
   }
 
-  /**
-   * Create the canonical form of the URL.
-   * If the urlName starts with "http:" or "https:", change it to start with "dods:", otherwise
-   * leave it alone.
-   *
-   * @param urlName the url string
-   * @return canonical form
-   */
-  public static String canonicalURL(String urlName) {
-    if (urlName.startsWith("http:"))
-      return "dods:" + urlName.substring(5);
-    if (urlName.startsWith("https:"))
-      return "dods:" + urlName.substring(6);
-    return urlName;
-  }
-
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
-
   //////////////////////////////////////////////////////////////////////////////////
   private final ConvertD2N convertD2N = new ConvertD2N();
   private final DConnect2 dodsConnection;
   private final DDS dds;
   private final DAS das;
 
-  DODSNetcdfFile(DodsBuilder builder) throws IOException {
+  DodsNetcdfFile(DodsBuilder builder) throws IOException {
     super(builder);
     Preconditions.checkNotNull(builder.dodsConnection);
     Preconditions.checkNotNull(builder.dds);
@@ -122,15 +78,15 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     this.das = builder.das;
 
     // preload scalers, coordinate variables, strings, small arrays
-    if (DODSNetcdfFile.preload) {
+    if (DodsNetcdfFile.preload) {
       List<Variable> preloadList = new ArrayList<>();
       for (Variable dodsVar : getVariables()) {
         long size = dodsVar.getSize() * dodsVar.getElementSize();
-        if ((dodsVar.isCoordinateVariable() && size < DODSNetcdfFile.preloadCoordVarSize) || dodsVar.isCaching()
+        if ((dodsVar.isCoordinateVariable() && size < DodsNetcdfFile.preloadCoordVarSize) || dodsVar.isCaching()
             || dodsVar.getDataType() == DataType.STRING) {
           dodsVar.setCaching(true);
           preloadList.add(dodsVar);
-          if (DODSNetcdfFile.debugPreload)
+          if (DodsNetcdfFiles.debugPreload)
             System.out.printf("  preload (%6d) %s%n", size, dodsVar.getFullName());
         }
       }
@@ -147,190 +103,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     dodsConnection.close();
   }
 
-  /**
-   * Checks to see if this is netcdf char array.
-   *
-   * @param v must be type STRING
-   * @return string length dimension, else null
-   */
-  Dimension getNetcdfStrlenDim(DodsVariable v) {
-    AttributeTable table = das.getAttributeTableN(v.getFullName()); // LOOK this probably doesnt work for nested
-                                                                    // variables
-    if (table == null)
-      return null;
-
-    opendap.dap.Attribute dodsAtt = table.getAttribute("DODS");
-    if (dodsAtt == null)
-      return null;
-
-    AttributeTable dodsTable = dodsAtt.getContainerN();
-    if (dodsTable == null)
-      return null;
-
-    opendap.dap.Attribute att = dodsTable.getAttribute("strlen");
-    if (att == null)
-      return null;
-    String strlen = att.getValueAtN(0);
-
-    opendap.dap.Attribute att2 = dodsTable.getAttribute("dimName");
-    String dimName = (att2 == null) ? null : att2.getValueAtN(0);
-    if (debugCharArray)
-      System.out.println(v.getFullName() + " has strlen= " + strlen + " dimName= " + dimName);
-
-    int dimLength;
-    try {
-      dimLength = Integer.parseInt(strlen);
-    } catch (NumberFormatException e) {
-      logger
-          .warn("DODSNetcdfFile " + getLocation() + " var = " + v.getFullName() + " error on strlen attribute = " + strlen);
-      return null;
-    }
-
-    if (dimLength <= 0)
-      return null; // LOOK what about unlimited ??
-    return Dimension.builder(dimName, dimLength).setIsShared(dimName != null).build();
-  }
-
-  /**
-   * Return a variable name suitable for use in a DAP constraint expression.
-   * [Original code seemed wrong because structures can be nested and hence
-   * would have to use the full name just like non-structures]
-   *
-   * @param var The variable whose name will appear in the CE
-   * @return The name in a form suitable for use in a cE
-   */
-  public static String getDODSConstraintName(Variable var) {
-    String vname = ((DODSNode) var).getDODSName();
-    // The vname is backslash escaped, so we need to
-    // modify to use DAP %xx escapes.
-    return EscapeStringsDap.backslashToDAP(vname);
-  }
-
-  // full name
-
-  private String makeDODSname(DodsV dodsV) {
-    DodsV parent = dodsV.parent;
-    if (parent.bt != null)
-      return (makeDODSname(parent) + "." + dodsV.bt.getEncodedName());
-    return dodsV.bt.getEncodedName();
-  }
-
-  static String makeShortName(String name) {
-    String unescaped = EscapeStringsDap.unescapeDAPIdentifier(name);
-    int index = unescaped.lastIndexOf('/');
-    if (index < 0)
-      index = -1;
-    return unescaped.substring(index + 1, unescaped.length());
-  }
-
-  static String makeDODSName(String name) {
-    return EscapeStringsDap.unescapeDAPIdentifier(name);
-  }
-
-  /**
-   * Get the DODS data class corresponding to the Netcdf data type.
-   * This is the inverse of convertToNCType().
-   *
-   * @param dataType Netcdf data type.
-   * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
-   */
-  public static int convertToDODSType(DataType dataType) {
-    if (dataType == DataType.STRING)
-      return opendap.dap.Attribute.STRING;
-    if (dataType == DataType.BYTE)
-      return opendap.dap.Attribute.BYTE;
-    if (dataType == DataType.FLOAT)
-      return opendap.dap.Attribute.FLOAT32;
-    if (dataType == DataType.DOUBLE)
-      return opendap.dap.Attribute.FLOAT64;
-    if (dataType == DataType.SHORT)
-      return opendap.dap.Attribute.INT16;
-    if (dataType == DataType.USHORT)
-      return opendap.dap.Attribute.UINT16;
-    if (dataType == DataType.INT)
-      return opendap.dap.Attribute.INT32;
-    if (dataType == DataType.UINT)
-      return opendap.dap.Attribute.UINT32;
-    if (dataType == DataType.BOOLEAN)
-      return opendap.dap.Attribute.BYTE;
-    if (dataType == DataType.LONG)
-      return opendap.dap.Attribute.INT32; // LOOK no LONG type!
-
-    // shouldnt happen
-    return opendap.dap.Attribute.STRING;
-  }
-
-  /**
-   * Get the Netcdf data type corresponding to the DODS data type.
-   * This is the inverse of convertToDODSType().
-   *
-   * @param dodsDataType DODS type enum, from dods.dap.Attribute.XXXX.
-   * @return the corresponding netcdf DataType.
-   * @see #isUnsigned
-   */
-  public static DataType convertToNCType(int dodsDataType, boolean isUnsigned) {
-    switch (dodsDataType) {
-      case opendap.dap.Attribute.BYTE:
-        return isUnsigned ? DataType.UBYTE : DataType.BYTE;
-      case opendap.dap.Attribute.FLOAT32:
-        return DataType.FLOAT;
-      case opendap.dap.Attribute.FLOAT64:
-        return DataType.DOUBLE;
-      case opendap.dap.Attribute.INT16:
-        return DataType.SHORT;
-      case opendap.dap.Attribute.UINT16:
-        return DataType.USHORT;
-      case opendap.dap.Attribute.INT32:
-        return DataType.INT;
-      case opendap.dap.Attribute.UINT32:
-        return DataType.UINT;
-      default:
-        return DataType.STRING;
-    }
-  }
-
-  /**
-   * Get the Netcdf data type corresponding to the DODS BaseType class.
-   * This is the inverse of convertToDODSType().
-   *
-   * @param dtype DODS BaseType.
-   * @return the corresponding netcdf DataType.
-   * @see #isUnsigned
-   */
-  public static DataType convertToNCType(opendap.dap.BaseType dtype, boolean isUnsigned) {
-
-    if (dtype instanceof DString)
-      return DataType.STRING;
-    else if ((dtype instanceof DStructure) || (dtype instanceof DSequence) || (dtype instanceof DGrid))
-      return DataType.STRUCTURE;
-    else if (dtype instanceof DFloat32)
-      return DataType.FLOAT;
-    else if (dtype instanceof DFloat64)
-      return DataType.DOUBLE;
-    else if (dtype instanceof DUInt32)
-      return DataType.UINT;
-    else if (dtype instanceof DUInt16)
-      return DataType.USHORT;
-    else if (dtype instanceof DInt32)
-      return DataType.INT;
-    else if (dtype instanceof DInt16)
-      return DataType.SHORT;
-    else if (dtype instanceof DByte)
-      return isUnsigned ? DataType.UBYTE : DataType.BYTE;
-    else
-      throw new IllegalArgumentException("DODSVariable illegal type = " + dtype.getTypeName());
-  }
-
-  /**
-   * Get whether this is an unsigned type.
-   *
-   * @param dtype DODS BaseType.
-   * @return true if unsigned
-   */
-  public static boolean isUnsigned(opendap.dap.BaseType dtype) {
-    return (dtype instanceof DByte) || (dtype instanceof DUInt16) || (dtype instanceof DUInt32);
-  }
-
   /////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -345,11 +117,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @throws opendap.dap.DAP2Exception if you have otherwise been bad
    */
   DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.DAP2Exception {
-    if (debugServerCall)
+    if (DodsNetcdfFiles.debugServerCall)
       System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
 
     long start = 0;
-    if (debugTime)
+    if (DodsNetcdfFiles.debugTime)
       start = System.currentTimeMillis();
 
     if (!CE.startsWith("?"))
@@ -358,11 +130,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     synchronized (this) {
       data = dodsConnection.getData(CE, null);
     }
-    if (debugTime)
+    if (DodsNetcdfFiles.debugTime)
       System.out
           .println("DODSNetcdfFile.readDataDDSfromServer took = " + (System.currentTimeMillis() - start) / 1000.0);
 
-    if (debugDataResult) {
+    if (DodsNetcdfFiles.debugDataResult) {
       System.out.println(" dataDDS return:");
       data.print(System.out);
     }
@@ -467,13 +239,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           // requested variable, but from the parsed dds
           DodsV dataV = root.findDataV(ddsV);
           if (dataV != null) {
-            if (debugConvertData) {
-              System.out.println("readArray found dataV= " + makeDODSname(ddsV));
+            if (DodsNetcdfFiles.debugConvertData) {
+              System.out.println("readArray found dataV= " + DodsNetcdfFiles.makeDODSname(ddsV));
             }
             dataV.isDone = true;
             map.put(ddsV, dataV); // thread safe!
           } else {
-            logger.error("ERROR findDataV cant find " + makeDODSname(ddsV) + " on " + getLocation());
+            logger.error("ERROR findDataV cant find " + DodsNetcdfFiles.makeDODSname(ddsV) + " on " + getLocation());
           }
         }
       }
@@ -487,10 +259,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
         DodsV dataV = map.get(ddsV);
         if (dataV == null) {
-          logger.error("DODSNetcdfFile.readArrays cant find " + makeDODSname(ddsV) + " in dataDDS; " + getLocation());
+          logger.error("DODSNetcdfFile.readArrays cant find " + DodsNetcdfFiles.makeDODSname(ddsV) + " in dataDDS; "
+              + getLocation());
         } else {
-          if (debugConvertData) {
-            System.out.println("readArray converting " + makeDODSname(ddsV));
+          if (DodsNetcdfFiles.debugConvertData) {
+            System.out.println("readArray converting " + DodsNetcdfFiles.makeDODSname(ddsV));
           }
           dataV.isDone = true;
 
@@ -510,7 +283,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
           if (var.isCaching()) {
             var.setCachedData(data);
-            if (debugCached) {
+            if (DodsNetcdfFiles.debugCached) {
               System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
             }
           }
@@ -534,7 +307,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     // create the constraint expression
     StringBuilder buff = new StringBuilder(100);
     buff.setLength(0);
-    buff.append(getDODSConstraintName(v));
+    buff.append(DodsNetcdfFiles.getDODSConstraintName(v));
 
     // add the selector if not a Sequence
     if (!v.isVariableLength()) {
@@ -602,7 +375,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     List<Range> subSection = section.subList(start, start + s.getRank());
 
-    buff.append(getDODSConstraintName(s));
+    buff.append(DodsNetcdfFiles.getDODSConstraintName(s));
 
     if (!s.isVariableLength()) // have to get the whole thing for a sequence !!
       makeSelector(buff, subSection);
@@ -657,7 +430,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       return this;
     }
 
-    public DODSNetcdfFile build(String datasetUrl, CancelTask cancelTask) throws IOException {
+    public DodsNetcdfFile build(String datasetUrl, CancelTask cancelTask) throws IOException {
       return super.build(datasetUrl, cancelTask);
     }
   }

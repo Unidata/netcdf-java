@@ -33,15 +33,11 @@
 package ucar.nc2.util.net;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,8 +45,7 @@ import java.net.URISyntaxException;
 /**
  * Test HTTPUtil.parseToURI on a variety of input cases.
  */
-
-public class TestURIParse extends UnitTestCommon {
+public class TestURIParse {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static public boolean DEBUG = false;
@@ -75,12 +70,8 @@ public class TestURIParse extends UnitTestCommon {
   String datadir = null;
   String threddsroot = null;
 
-  public TestURIParse() {
-    setTitle("HTTPUtil.parseToURI tests");
-  }
-
   @Test
-  public void testParse() throws Exception {
+  public void testParse() {
     pass = true;
     for (int i = 0; i < httptests.length; i++) {
       boolean passthis = true;

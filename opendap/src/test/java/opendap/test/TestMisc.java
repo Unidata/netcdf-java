@@ -37,11 +37,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.dods.DodsNetcdfFile;
 import ucar.nc2.write.CDLWriter;
-import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -109,7 +107,7 @@ public class TestMisc extends UnitTestCommon {
 
   boolean process1(Testcase testcase) throws Exception {
     Formatter errs = new Formatter();
-    try (DODSNetcdfFile ncfile = DODSNetcdfFile.builder().build(testcase.url, null)) {
+    try (DodsNetcdfFile ncfile = DodsNetcdfFile.builder().build(testcase.url, null)) {
       CDLWriter.writeCDL(ncfile, errs, false, null);
       String captured = errs.toString();
       boolean pass = true;

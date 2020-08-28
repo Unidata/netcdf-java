@@ -36,18 +36,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 
 /**
  * Test interaction of multi-threading with httpservices.
  */
-public class TestThreading extends UnitTestCommon {
+public class TestThreading {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   ////////////////////////////////////////////////// .
@@ -79,7 +74,6 @@ public class TestThreading extends UnitTestCommon {
   //////////////////////////////////////////////////
 
   public TestThreading() {
-    setTitle("HTTP Threading tests");
     String sn = System.getProperty("nthreads");
     if (sn != null) {
       try {

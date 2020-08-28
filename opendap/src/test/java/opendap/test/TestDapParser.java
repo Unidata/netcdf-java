@@ -17,7 +17,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import java.io.File;
 import java.io.FileInputStream;

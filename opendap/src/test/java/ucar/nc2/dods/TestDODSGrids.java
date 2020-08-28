@@ -21,7 +21,7 @@ public class TestDODSGrids {
 
   @org.junit.Test
   public void testGrid() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.06");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.06");
 
     Variable v = null;
 

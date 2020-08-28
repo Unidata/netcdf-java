@@ -41,11 +41,11 @@
 package opendap.dap;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.Stack;
 import java.io.*;
+import java.util.Vector;
 import opendap.dap.parsers.*;
 import org.jdom2.Document;
 
@@ -498,10 +498,7 @@ public class DDS extends DStructure {
         } else { // copy an Attribute and it's values...
 
           int type = a.getType();
-
-          Enumeration vals = a.getValues();
-          while (vals.hasMoreElements()) {
-            String value = (String) vals.nextElement();
+          for (String value : a.getValues()) {
             looseEnds.appendAttribute(clearname, type, value, true);
           }
           countLooseAttributes++;
@@ -553,21 +550,16 @@ public class DDS extends DStructure {
   /**
    * This method just makes sure that the attribute field in each Aliases resolves correctly
    * if there ends up being a "looseEnds" Attribute Table at the top level.
-   *
-   * @param attribute
-   * @return
-   * @throws MalformedAliasException
    */
   private String convertDDSAliasFieldsToDASAliasFields(String attribute) throws MalformedAliasException {
 
     String prefix = "";
 
-    Vector aNames = tokenizeAliasField(attribute);
+    List<String> aNames = tokenizeAliasField(attribute);
 
     // We know that the first token should be a dot, we look at the
     // second token to see if it references a variable in the DDS.
-
-    String topName = (String) aNames.get(1);
+    String topName = aNames.get(1);
 
     boolean foundIt = false;
     for (BaseType bt : variables) {
@@ -583,23 +575,17 @@ public class DDS extends DStructure {
       // a special AttributeTable, this makes the Aliases that point to
       // any of these Attribute resolve correctly.
       prefix = "." + getLooseEndsTableName();
-
     }
 
     return (prefix + attribute);
-
   }
 
 
   /**
    * Make a name for an attribute table at the top level in which to
    * place any loose attributes at the top level.
-   *
-   * @return
-   * @see #getDAS
    */
   private String getLooseEndsTableName() {
-
     return (checkLooseEndsTableNameConflict(this.getClearName(), 0));
   }
 
@@ -607,12 +593,6 @@ public class DDS extends DStructure {
    * Make A helper function for <code>getLooseEndsTableName</code>
    * insures that there are no naming conflicts when creating a looseEnds
    * <code>AttributeTable</code>
-   *
-   * @param clearname
-   * @param attempt
-   * @return
-   * @see #getLooseEndsTableName
-   * @see #getDAS
    */
   private String checkLooseEndsTableNameConflict(String clearname, int attempt) {
     for (BaseType bt : variables) {
@@ -632,51 +612,31 @@ public class DDS extends DStructure {
         clearname = checkLooseEndsTableNameConflict(clearname, attempt);
       }
     }
-    return (clearname);
+    return clearname;
   }
 
   /**
    * A helper function for <code>checkLooseEndsTableNameConflict</code>
    * insures that there are no naming conflicts when creating a looseEnds
    * <code>AttributeTable</code>
-   *
-   * @param badName
-   * @param attempt
-   * @return
-   * @see #checkLooseEndsTableNameConflict
-   * @see #getLooseEndsTableName
-   * @see #getDAS
    */
   private String repairLooseEndsTableConflict(String badName, int attempt) {
-
     DAPNode.log.debug("Repairing toplevel attribute table name conflict. Attempt: " + attempt);
 
     String name = "";
-
-    switch (attempt) {
-
-      case 0:
-        name = badName + "_DatasetAttributes_0";
-        break;
-      default:
-        int last_ = badName.lastIndexOf("_");
-        name = badName.substring(0, last_) + "_" + attempt;
-        break;
+    if (attempt == 0) {
+      name = badName + "_DatasetAttributes_0";
+    } else {
+      int last_ = badName.lastIndexOf("_");
+      name = badName.substring(0, last_) + "_" + attempt;
     }
-
-    return (name);
-
+    return name;
   }
 
 
   /**
    * Builds AttributeTables (from BaseType variables) for us in
    * a DAS created by getDAS()
-   *
-   * @param bt
-   * @param atbl
-   * @throws DASException
-   * @see #getDAS()
    */
   private void buildDASAttributeTable(BaseType bt, AttributeTable atbl) throws DASException {
 
@@ -712,21 +672,10 @@ public class DDS extends DStructure {
         buildDASAttributeTable(nested, newAT);
       }
     }
-
-
   }
 
 
-  /**
-   * Builds AttributeTables (from BaseType variables) for us in
-   * a DAS created by getDAS()
-   *
-   * @param atTable
-   * @param attr
-   * @throws DASException
-   * @see #buildDASAttributeTable(BaseType, AttributeTable)
-   * @see #getDAS()
-   */
+  /** Builds AttributeTables (from BaseType variables) for us in a DAS created by getDAS() */
   private void populateAttributeTable(AttributeTable atTable, Attribute attr) throws DASException {
     // Always check for Aliases first! They return the values for their targets
     // when asked if they are containers!
@@ -764,9 +713,7 @@ public class DDS extends DStructure {
       // push it's contents into the AttributeTable that we are building.
       int type = attr.getType();
       String name = attr.getEncodedName();
-      Enumeration v = attr.getValues();
-      while (v.hasMoreElements()) {
-        String value = (String) v.nextElement();
+      for (String value : attr.getValues()) {
         if (_Debug)
           DAPNode.log.debug("AtributeTable: " + atTable.getEncodedName() + " Appending Attribute name: " + name
               + "  type: " + type + " value: " + value);
@@ -775,12 +722,7 @@ public class DDS extends DStructure {
     }
   }
 
-
-  /**
-   * Print a DAS constructed from this DDS and it's BaseType variables.
-   *
-   * @param os The <code>OutputStream</code> to print to.
-   */
+  /** Print a DAS constructed from this DDS and it's BaseType variables. */
   public void printDAS(OutputStream os) {
     PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)));
     printDAS(pw);
@@ -788,15 +730,9 @@ public class DDS extends DStructure {
   }
 
 
-  /**
-   * Print a DAS constructed from this DDS and it's BaseType variables.
-   *
-   * @param pw The <code>PrintWriter</code> to print to.
-   */
+  /** Print a DAS constructed from this DDS and it's BaseType variables. */
   public void printDAS(PrintWriter pw) {
-
-    DAS myDAS = null;
-
+    DAS myDAS;
     try {
       myDAS = this.getDAS();
       myDAS.print(pw);
@@ -1324,7 +1260,6 @@ public class DDS extends DStructure {
    */
 
   private void resolveAlias(Alias alias) throws MalformedAliasException, UnresolvedAliasException {
-
     // Get the crucial stuff out of the Alias
     String name = alias.getEncodedName();
     String attribute = alias.getAliasedToAttributeFieldAsClearString();
@@ -1334,7 +1269,7 @@ public class DDS extends DStructure {
           + "') must have a value other than an empty string.");
     }
     // Tokenize the attribute field.
-    Vector aNames = tokenizeAliasField(attribute);
+    List<String> aNames = tokenizeAliasField(attribute);
 
     // The variable reference is the first part of the attribute field.
     // Let's go find it...
@@ -1355,16 +1290,12 @@ public class DDS extends DStructure {
           + " the value of the attribute 'attribute' contains only the character dot (.). "
           + "The value of the 'attribute' field must always reference an Attribute using an absolute path name from the "
           + "top level of the DAS, and must reference an attribute within the DAS. A simple dot is not allowed.");
-
     }
 
     aNames.remove(0); // Remove the first token, which by now we know is a single dot.
-
-
     targetBT = getDeepestMatchingVariable(this, aNames);
 
     if (targetBT == null) { // No matching BaseType?
-
       // Then assume the attribute field references a
       // top (Dataset) level Attribute.
       targetBT = this;
@@ -1377,13 +1308,11 @@ public class DDS extends DStructure {
     // see if we can find an Attribute within that targetBT that matches the attribute field
     // in the Alias decleration.
 
-    Attribute targetAT = null;
-
+    Attribute targetAT;
     if (aNames.size() == 0) {
       // If there are no remaining tokens in the attribute field then
       // we are referencing the attribute container of the targetBT.
       targetAT = targetBT.getAttribute();
-
     } else {
       // Go try to find the Attribute in the targetBT.
       targetAT = getAttribute(targetBT.getAttributeTable(), aNames);
@@ -1391,10 +1320,7 @@ public class DDS extends DStructure {
 
     alias.setMyVariable(targetBT);
     alias.setMyAttribute(targetAT);
-
-
   }
-
 
   /**
    * This method executes a (recursive) search of the <code>AttributeTable</code>
@@ -1409,7 +1335,7 @@ public class DDS extends DStructure {
    * @param aNames The <code>Vector</code> of names to match to the nodes of <b>at</b>
    */
 
-  private opendap.dap.Attribute getAttribute(AttributeTable at, Vector aNames)
+  private opendap.dap.Attribute getAttribute(AttributeTable at, List<String> aNames)
       throws MalformedAliasException, UnresolvedAliasException {
 
     // Get the first node name form the vector.
@@ -1478,26 +1404,20 @@ public class DDS extends DStructure {
    * @param vNames The <code>Vector</code> of names to match to the nodes of <b>at</b>
    */
 
-  private BaseType getDeepestMatchingVariable(DConstructor dcBT, Vector vNames) {
-
+  private BaseType getDeepestMatchingVariable(DConstructor dcBT, List<String> vNames) {
     // Get the first name from the Vector
-    String vName = (String) vNames.get(0);
+    String vName = vNames.get(0);
 
     // Get all of the child variables from the Dconstructor
     for (BaseType bt : dcBT.getVariables()) {
-
       // Get and normalize it's name.
       String normName = normalize(bt.getClearName());
 
       // Compare the names
       if (normName.equals(vName)) {
-
         // They match!
-
         // Remove the name from the vector.
         vNames.remove(0);
-
-
         if (vNames.size() == 0) { // are there more names?
           // Nope! We Found it!
           return bt;
@@ -1507,19 +1427,16 @@ public class DDS extends DStructure {
           // If there are more names then this thing better be a container
           // recursively search it for the remaining names...
           BaseType nextBT = getDeepestMatchingVariable((DConstructor) bt, vNames);
-
-          if (nextBT != null)
+          if (nextBT != null) {
             return (nextBT);
-
+          }
           return (bt);
         }
-
         return (bt);
       }
     }
     return (null);
   }
-
 
   /**
    * The <code>normalize</code> method is used to normalize variable and
@@ -1586,15 +1503,14 @@ public class DDS extends DStructure {
    * @return The tokenized string.
    * @throws MalformedAliasException
    */
-  public static Vector tokenizeAliasField(String field) throws MalformedAliasException {
-
+  public static List<String> tokenizeAliasField(String field) throws MalformedAliasException {
     boolean Debug = false;
 
     // find the index of the last element in the field.
     int lastIndex = field.length() - 1;
 
     // make a place to put the tokens.
-    Vector tokens = new Vector();
+    ArrayList<String> tokens = new ArrayList<>();
 
     // Coverity[DEADCODE]
     if (Debug) {
@@ -1618,11 +1534,8 @@ public class DDS extends DStructure {
       boolean escaped = false;
 
       // search for the quote
-
       for (int i = 1; i <= lastIndex || !done; i++) {
         char c = field.charAt(i);
-        // LogStream.out.println("Checking for clear quote on char: "+c+" escaped="+escaped+" done="+done);
-
         // Was this character escaped (with a slash)?
         if (escaped) {
           // then ignore it and unset the escaped flag
@@ -1634,9 +1547,6 @@ public class DDS extends DStructure {
             // the set the escaoed flag to true.
             escaped = true;
           } else if (c == quote) { // if it's not an escape (slash) then is it a quote?
-
-            // LogStream.out.println("Found quote!");
-
             end = i;
             done = true;
           }
@@ -1671,31 +1581,23 @@ public class DDS extends DStructure {
 
       // if there is more stuff, then tokenize it.
       if (end < lastIndex) {
-
         // get the rest of the stuff
         String theRest = field.substring(end + 2);
 
         // tokenize it and add each of the returned tokens to
         // this tokens Vector.
         // Recursive call.
-        Enumeration tkns = tokenizeAliasField(theRest).elements();
-        while (tkns.hasMoreElements())
-          tokens.add(tkns.nextElement());
+        List<String> tkns = tokenizeAliasField(theRest);
+        tokens.addAll(tkns);
       }
-
-      return (tokens);
-
-
+      return tokens;
     }
 
     // Find the first dot. This simplistic search is appropriate because
     // if this field contained a dot as part of it's name it should have
     // been encased in quotes and handled by the previous logic.
-
     int firstDot = field.indexOf(dot);
-
     if (firstDot == 0) { // Does this thing start with dot?
-
       // Then it must be an absolute path.
       // NOTE: This should be true ONLY for the first token
       // in the list. By that I mean that a leading dot in
@@ -1711,12 +1613,8 @@ public class DDS extends DStructure {
       if (lastIndex > 0) {
         String theRest = field.substring(1);
         // Recursive call
-        Enumeration tkns = tokenizeAliasField(theRest).elements();
-
-        // Take the tokens from the rest of the fields and
-        // add them to this token vector.
-        while (tkns.hasMoreElements())
-          tokens.add(tkns.nextElement());
+        List<String> tkns = tokenizeAliasField(theRest);
+        tokens.addAll(tkns);
       }
       return (tokens);
     }
@@ -1736,14 +1634,9 @@ public class DDS extends DStructure {
 
       // Get the rest of the field string
       String theRest = field.substring(firstDot + 1);
-
-      // tokenize it, and add it's tokens to this token Vector.
-      Enumeration tkns = tokenizeAliasField(theRest).elements();
-      while (tkns.hasMoreElements())
-        tokens.add(tkns.nextElement());
-
-      return (tokens);
-
+      List<String> tkns = tokenizeAliasField(theRest);
+      tokens.addAll(tkns);
+      return tokens;
     }
 
     // This field string might be the final token, if we
@@ -1751,8 +1644,6 @@ public class DDS extends DStructure {
     tokens.add(field);
 
     return (tokens);
-
-
   }
 
   /**
@@ -1779,7 +1670,6 @@ public class DDS extends DStructure {
    *        only the projected variables of the DDX to be printed .
    */
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
-
     pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
     pw.print("<Dataset");
@@ -1811,7 +1701,6 @@ public class DDS extends DStructure {
       pw.println(pad + "\t" + "<dataBLOB href=\"" + DDSXMLParser.normalizeToXML(_dataBlobID) + "\"/>");
     }
     pw.println(pad + "</Dataset>");
-
   }
 
 
@@ -1827,68 +1716,32 @@ public class DDS extends DStructure {
    */
   public void ingestDAS(DAS das) {
     try {
-
       ingestAttributeTable(das, this);
       resolveAliases();
-
     } catch (DASException de) {
-
       DAPNode.log.error("DDS.ingestDAS(): " + de.getMessage());
     }
-
   }
 
-  /**
-   * A helper methods for ingestDAS().
-   *
-   * @param a
-   * @param bt
-   * @throws DASException
-   * @see #ingestDAS(DAS)
-   * @see #ingestAttribute(Attribute, BaseType)
-   * @see #ingestAttributeTable(AttributeTable, BaseType)
-   * @see #ingestAttributeTable(AttributeTable, DConstructor)
-   */
   private void ingestAttribute(Attribute a, BaseType bt) throws DASException {
-
-
     if (a.isAlias()) { // copy an alias.
       String name = a.getEncodedName();
       String attribute = ((Alias) a).getAliasedToAttributeFieldAsClearString();
-
       bt.addAttributeAlias(name, attribute);
 
     } else if (a.isContainer()) {
       AttributeTable at = a.getContainer();
       ingestAttributeTable(at, bt);
 
-
     } else { // copy an Attribute and it's values...
-
       String name = a.getEncodedName();
       int type = a.getType();
-
-      Enumeration vals = a.getValues();
-      while (vals.hasMoreElements()) {
-        String value = (String) vals.nextElement();
+      for (String value : a.getValues()) {
         bt.appendAttribute(name, type, value, true);
       }
-
     }
-
   }
 
-
-  /**
-   * A helper methods for ingestDAS().
-   *
-   * @param at
-   * @param dc
-   * @throws DASException
-   * @see #ingestDAS(DAS)
-   * @see #ingestAttribute(Attribute, BaseType)
-   * @see #ingestAttributeTable(AttributeTable, BaseType)
-   */
   private void ingestAttributeTable(AttributeTable at, DConstructor dc) throws DASException {
     for (String attName : at) {
       Attribute a = at.getAttribute(attName);
@@ -1914,44 +1767,25 @@ public class DDS extends DStructure {
     }
   }
 
-  /**
-   * A helper methods for ingestDAS().
-   *
-   * @see #ingestDAS(DAS)
-   * @see #ingestAttribute(Attribute, BaseType)
-   * @see #ingestAttributeTable(AttributeTable, DConstructor)
-   */
   private void ingestAttributeTable(AttributeTable at, BaseType bt) throws DASException {
-
-
     try {
-
       String atName = at.getEncodedName();
       String bName = bt.getEncodedName();
-      // LogStream.out.println("ingestATTbl: atName:"+atName+" bName: "+bName);
-
       if (bName.equals(atName)) {
-
-        // LogStream.out.println("adding each attribute!");
         for (String attName : at) {
           Attribute a = at.getAttribute(attName);
           ingestAttribute(a, bt);
         }
       } else {
-        // LogStream.out.println("addingcontainer!");
         bt.addAttributeContainer(at);
       }
     } catch (AttributeExistsException ase) {
-
       for (String attName : at) {
         Attribute a = at.getAttribute(attName);
         ingestAttribute(a, bt);
       }
-
     }
-
   }
-
 
   /**
    * Check for name conflicts. In the XML representation
@@ -1977,7 +1811,6 @@ public class DDS extends DStructure {
    * @param dc The <code>DConstructor</code> to search for name conflicts.
    */
   private void checkForAttributeNameConflict(DConstructor dc) throws BadSemanticsException {
-
     if (_Debug) {
       DAPNode.log.debug("Checking " + dc.getTypeName() + " " + dc.getClearName() + " for name conflicts.");
     }
@@ -1998,12 +1831,8 @@ public class DDS extends DStructure {
         // Recursive call!!
         checkForAttributeNameConflict((DConstructor) bt);
       }
-
     }
-
-
   }
-
 
   /**
    * This a wrapper method for <code>DDS.print()</code>.
@@ -2040,6 +1869,7 @@ public class DDS extends DStructure {
    */
   public DDS cloneDAG(CloneMap map) throws CloneNotSupportedException {
     DDS d = (DDS) super.cloneDAG(map);
+    d.variables = new ArrayList<>();
     for (BaseType element : variables) {
       BaseType elementClone = (BaseType) cloneDAG(map, element);
       d.variables.add(elementClone);

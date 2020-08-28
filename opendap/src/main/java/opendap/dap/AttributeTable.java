@@ -37,7 +37,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-
 package opendap.dap;
 
 import java.nio.charset.StandardCharsets;
@@ -53,11 +52,9 @@ import java.io.*;
  * It is an Iterable< that returns the attribute names in insert order.
  *
  * @author jehamby
- *
- *      Modified 1/9/2011 Dennis Heimbigner
- *      - Make subclass of BaseType for uniformity
+ *         Modified 1/9/2011 Dennis Heimbigner
+ *         - Make subclass of DAPNode for uniformity
  */
-
 public class AttributeTable extends DAPNode implements Iterable<String> {
   /** A table of Attributes with their names as a key. */
   private LinkedHashMap<String, Attribute> attributes;

@@ -7,7 +7,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.util.CancelTask;
 
-public class DODSNetcdfFileProvider implements NetcdfFileProvider {
+public class DodsNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public String getProtocol() {
@@ -21,6 +21,6 @@ public class DODSNetcdfFileProvider implements NetcdfFileProvider {
 
   @Override
   public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-    return DODSNetcdfFile.builder().build(location, cancelTask);
+    return DodsNetcdfFile.builder().build(location, cancelTask);
   }
 }

@@ -16,18 +16,18 @@ import java.util.*;
 class DodsGrid extends DodsVariable {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsGrid.class);
 
-  static DodsGrid.Builder builder(String dodsShortName, DodsV dodsV) {
-    DodsGrid.Builder<?> builder = builder().setName(DODSNetcdfFile.makeShortName(dodsShortName))
+  static DodsGrid.Builder builder(Group.Builder parentGroup, String dodsShortName, DodsV dodsV) {
+    DodsGrid.Builder<?> builder = builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName))
         .setDataType(dodsV.getDataType()).setSPobject(dodsV);
 
     DodsV array = dodsV.children.get(0);
     // the common case is that the map vectors already exist as top level variables
-    List<Dimension> dims = new ArrayList<Dimension>();
+    List<Dimension> dims = new ArrayList<>();
     Formatter sbuff = new Formatter();
     for (int i = 1; i < dodsV.children.size(); i++) {
       DodsV map = dodsV.children.get(i);
-      String name = DODSNetcdfFile.makeShortName(map.bt.getEncodedName());
-      Dimension dim = parentGroup.findDimension(name);
+      String name = DodsNetcdfFiles.makeShortName(map.bt.getEncodedName());
+      Dimension dim = parentGroup.findDimension(name).orElse(null);
       if (dim == null) {
         logger.warn("DODSGrid cant find dimension = <" + name + ">");
       } else {
@@ -38,7 +38,7 @@ class DodsGrid extends DodsVariable {
 
     builder.setDimensions(dims);
     builder.setDataType(array.getDataType());
-    DODSAttribute att = new DODSAttribute(_Coordinate.Axes, sbuff.toString());
+    Attribute att = new Attribute(_Coordinate.Axes, sbuff.toString());
     builder.addAttribute(att);
 
     return builder;
