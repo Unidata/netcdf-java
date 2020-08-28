@@ -73,7 +73,7 @@ if (project in publishedProjects) {
   // ain't nobody got time for that
   publishing {
     publications {
-      mavenJava(MavenPublication) {
+      mavenSources(MavenPublication) {
         pom.withXml {
           Node pomNode = asNode()
           pomNode.dependencies.'*'.findAll() {
