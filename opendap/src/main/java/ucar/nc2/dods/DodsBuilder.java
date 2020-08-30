@@ -29,7 +29,7 @@ import opendap.dap.DInt32;
 import opendap.dap.DSequence;
 import opendap.dap.DString;
 import opendap.dap.DStructure;
-import opendap.util.RC;
+import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -42,9 +42,12 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
 
-/** DODSNetcdfFile builder */
+/**
+ * DODSNetcdfFile builder
+ */
 @NotThreadSafe
 abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<T> {
+
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsBuilder.class);
 
   HashSet<Dimension> sharedDimensions = new HashSet<>();
@@ -75,39 +78,45 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       System.out.println("DConnect to = <" + urlName + ">");
     }
     dodsConnection = new DConnect2(urlName, DodsNetcdfFile.accept_compress);
-    if (cancelTask != null && cancelTask.isCancel())
+    if (cancelTask != null && cancelTask.isCancel()) {
       return;
+    }
 
     // fetch the DDS and DAS
     try {
       dds = dodsConnection.getDDS();
-      if (DodsNetcdfFiles.debugServerCall)
+      if (DodsNetcdfFiles.debugServerCall) {
         System.out.println("DodsBuilder readDDS");
+      }
       if (DodsNetcdfFiles.debugOpenResult) {
         System.out.println("DDS = ");
         dds.print(System.out);
       }
-      if (cancelTask != null && cancelTask.isCancel())
+      if (cancelTask != null && cancelTask.isCancel()) {
         return;
+      }
 
       das = dodsConnection.getDAS();
-      if (DodsNetcdfFiles.debugServerCall)
+      if (DodsNetcdfFiles.debugServerCall) {
         System.out.println("DodsBuilder readDAS");
+      }
       if (DodsNetcdfFiles.debugOpenResult) {
         System.out.println("DAS = ");
         das.print(System.out);
       }
-      if (cancelTask != null && cancelTask.isCancel())
+      if (cancelTask != null && cancelTask.isCancel()) {
         return;
+      }
 
-      if (DodsNetcdfFiles.debugOpenResult)
+      if (DodsNetcdfFiles.debugOpenResult) {
         System.out.println("dodsVersion = " + dodsConnection.getServerVersion());
+      }
 
     } catch (DAP2Exception dodsE) {
       // dodsE.printStackTrace();
-      if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE)
+      if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE) {
         throw new FileNotFoundException(dodsE.getMessage());
-      else {
+      } else {
         dodsE.printStackTrace(System.err);
         throw new IOException("DodsBuilder url=" + this.location, dodsE);
       }
@@ -120,24 +129,28 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     // Parse the dds and das and get a tree of DodsV with root rootDodsV
     DodsV rootDodsV = DodsV.parseDDS(dds);
     rootDodsV.parseDAS(das);
-    if (cancelTask != null && cancelTask.isCancel())
+    if (cancelTask != null && cancelTask.isCancel()) {
       return;
+    }
 
     // LOOK why do we want to do the primitives seperate from compounds?
     constructTopVariables(rootDodsV, cancelTask);
-    if (cancelTask != null && cancelTask.isCancel())
+    if (cancelTask != null && cancelTask.isCancel()) {
       return;
+    }
 
     // preload(dodsVlist, cancelTask); LOOK not using preload yet
     // if (cancelTask != null && cancelTask.isCancel()) return;
 
     constructConstructors(rootDodsV, cancelTask);
-    if (cancelTask != null && cancelTask.isCancel())
+    if (cancelTask != null && cancelTask.isCancel()) {
       return;
+    }
 
     parseGlobalAttributes(das, rootDodsV);
-    if (cancelTask != null && cancelTask.isCancel())
+    if (cancelTask != null && cancelTask.isCancel()) {
       return;
+    }
 
     /*
      * if (RC.getUseGroups()) { TODO
@@ -165,8 +178,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     int pos;
     if (0 <= (pos = urlName.indexOf('?'))) {
       String datasetName = urlName.substring(0, pos);
-      if (DodsNetcdfFiles.debugServerCall)
+      if (DodsNetcdfFiles.debugServerCall) {
         System.out.println(" reconnect to = <" + datasetName + ">");
+      }
       dodsConnection = new DConnect2(datasetName, DodsNetcdfFile.accept_compress);
 
       // parse the CE for projections
@@ -175,15 +189,17 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       while (stoke.hasMoreTokens()) {
         String proj = stoke.nextToken();
         int subsetPos = proj.indexOf('[');
-        if (DodsNetcdfFiles.debugCE)
+        if (DodsNetcdfFiles.debugCE) {
           System.out.println(" CE = " + proj + " " + subsetPos);
+        }
         if (subsetPos > 0) {
           String vname = proj.substring(0, subsetPos);
           String vCE = proj.substring(subsetPos);
-          if (DodsNetcdfFiles.debugCE)
+          if (DodsNetcdfFiles.debugCE) {
             System.out.println(" vCE = <" + vname + "><" + vCE + ">");
+          }
           Variable.Builder<?> var =
-              rootGroup.findVariableNested(vname).orElseThrow(() -> new IOException("Variable not found: " + vname));
+              rootGroup.findVariable(vname).orElseThrow(() -> new IOException("Variable not found: " + vname));
 
           DodsVariableBuilder<?> dodsVar = (DodsVariableBuilder<?>) var;
           dodsVar.setCE(vCE);
@@ -192,11 +208,13 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       }
     }
 
-    if (DodsNetcdfFiles.showNCfile)
+    if (DodsNetcdfFiles.showNCfile) {
       System.out.println("DODS nc file = " + this);
+    }
     long took = System.currentTimeMillis() - start;
-    if (DodsNetcdfFiles.debugOpenTime)
+    if (DodsNetcdfFiles.debugOpenTime) {
       System.out.printf(" took %d msecs %n", took);
+    }
   }
 
   private void parseGlobalAttributes(DAS das, DodsV root) {
@@ -207,8 +225,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     // loop over attribute tables, collect global attributes
     for (String tableName : das) {
       AttributeTable attTable = das.getAttributeTableN(tableName);
-      if (attTable == null)
+      if (attTable == null) {
         continue; // should probably never happen
+      }
 
       if (tableName.equals("DODS_EXTRA")) {
         for (String attName : attTable) {
@@ -216,8 +235,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
             opendap.dap.Attribute att = attTable.getAttribute(attName);
             Attribute ncatt = DODSAttribute.create(attName, att);
             setUnlimited(ncatt.getStringValue());
-          } else
+          } else {
             logger.warn(" Unknown DODS_EXTRA attribute = " + attName + " " + location);
+          }
         }
 
       } else if (tableName.equals("EXTRA_DIMENSION")) {
@@ -234,11 +254,13 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
   private void constructTopVariables(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
     List<DodsV> topVariables = rootDodsV.children;
     for (DodsV dodsV : topVariables) {
-      if (dodsV.bt instanceof DConstructor)
+      if (dodsV.bt instanceof DConstructor) {
         continue;
+      }
       addVariable(rootGroup, null, dodsV);
-      if (cancelTask != null && cancelTask.isCancel())
+      if (cancelTask != null && cancelTask.isCancel()) {
         return;
+      }
     }
   }
 
@@ -268,14 +290,13 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     Variable.Builder<?> v = makeVariable(parentGroup, parentStructure, dodsV);
     if (v != null) {
       addAttributes(v, dodsV);
-      if (parentStructure != null)
+      if (parentStructure != null) {
         parentStructure.addMemberVariable(v);
-      else {
+      } else {
         parentGroup = computeGroup(v, parentGroup);
         parentGroup.addVariable(v);
       }
       dodsV.isDone = true;
-      parentGroup.addVariable(v);
     }
     return v;
   }
@@ -285,8 +306,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       throws IOException {
     BaseType dodsBT = dodsV.bt;
     String dodsShortName = dodsBT.getClearName();
-    if (DodsNetcdfFiles.debugConstruct)
+    if (DodsNetcdfFiles.debugConstruct) {
       System.out.print("DODSNetcdf makeVariable try to init <" + dodsShortName + "> :");
+    }
 
     // Strings
     if (dodsBT instanceof DString) {
@@ -320,24 +342,26 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
 
     if (dodsBT instanceof DGrid) {
       if (dodsV.darray == null) {
-        if (DodsNetcdfFiles.debugConstruct)
+        if (DodsNetcdfFiles.debugConstruct) {
           System.out.println(" assigned to DGrid <" + dodsShortName + ">");
+        }
 
         // common case is that the map vectors already exist as top level variables
-        // this is how the netccdf servers do it
+        // this is how the netcdf servers do it
         for (int i = 1; i < dodsV.children.size(); i++) {
           DodsV map = dodsV.children.get(i);
           String shortName = DodsNetcdfFiles.makeShortName(map.bt.getEncodedName());
           Variable.Builder<?> mapV = parentGroup.findVariableLocal(shortName).orElse(null); // LOOK WRONG
           if (mapV == null) { // if not, add it LOOK need to compare values
             mapV = addVariable(parentGroup, parentStructure, map);
-            // TODO makeCoordinateVariable(parentGroup, mapV, map.data);
+            makeCoordinateVariable(parentGroup, mapV, map.data);
           }
         }
         return DodsGrid.builder(parentGroup, dodsShortName, dodsV);
       } else {
-        if (DodsNetcdfFiles.debugConstruct)
+        if (DodsNetcdfFiles.debugConstruct) {
           System.out.println(" ERROR! array of DGrid <" + dodsShortName + ">");
+        }
         return null;
       }
     }
@@ -360,26 +384,17 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       DStructure dstruct = (DStructure) dodsBT;
       if (dodsV.darray == null) {
         if (RC.getUseGroups() && (parentStructure == null) && isGroup(dstruct)) { // turn into a group
-          if (DodsNetcdfFiles.debugConstruct)
-            System.out.println(" assigned to Group <" + dodsShortName + ">");
           Group.Builder gnested = Group.builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName));
           addAttributes(gnested, dodsV);
           parentGroup.addGroup(gnested);
-
           for (DodsV nested : dodsV.children) {
             addVariable(gnested, null, nested);
           }
           return null;
         } else {
-          if (DodsNetcdfFiles.debugConstruct) {
-            System.out.println(" assigned to DStructure <" + dodsShortName + ">");
-          }
           return DodsStructure.builder(this, parentGroup, dodsShortName, dodsV);
         }
-      } else {
-        if (DodsNetcdfFiles.debugConstruct) {
-          System.out.println(" assigned to Array of DStructure <" + dodsShortName + "> ");
-        }
+      } else { // darray not null
         return DodsStructure.builder(this, parentGroup, dodsShortName, dodsV.darray, dodsV);
       }
     }
@@ -389,48 +404,46 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     return null;
   }
 
-  /*
-   * TODO
-   * private void makeCoordinateVariable(Group.Builder parentGroup, Variable.Builder<?> v, Array data) {
-   * String name = v.shortName;
-   * 
-   * // replace in Variable
-   * Dimension oldDimension = v.getDimension(0);
-   * Dimension newDimension = new Dimension(name, oldDimension.getLength());
-   * // newDimension.setCoordinateAxis( v); calcCoordinateVaribale will do this
-   * v.setDimension(0, newDimension);
-   * 
-   * // replace old (if it exists) in Group with shared dimension
-   * Dimension old = parentGroup.findDimension(name);
-   * parentGroup.remove(old);
-   * parentGroup.addDimension(newDimension);
-   * 
-   * // might as well cache the data
-   * if (data != null) {
-   * v.setCachedData(data, false);
-   * if (DodsNetcdfFiles.debugCached)
-   * System.out.println(" cache for <" + name + "> length =" + data.getSize());
-   * }
-   * }
-   */
+  private void makeCoordinateVariable(Group.Builder parentGroup, Variable.Builder<?> v, Array data) {
+    String name = v.shortName;
+
+    // replace in Variable
+    ArrayList<Dimension> dims = new ArrayList<>(v.getDimensions());
+    Dimension oldDimension = dims.get(0);
+    Dimension newDimension = new Dimension(name, oldDimension.getLength());
+    dims.set(0, newDimension);
+    v.setDimensions(dims);
+
+    // replace old (if it exists) in Group with shared dimension
+    parentGroup.replaceDimension(newDimension);
+
+    // might as well cache the data
+    if (data != null) {
+      v.setCachedData(data, false);
+    }
+  }
 
   private void constructConstructors(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
     List<DodsV> topVariables = rootDodsV.children;
     // do non-grids first
     for (DodsV dodsV : topVariables) {
-      if (dodsV.isDone)
+      if (dodsV.isDone) {
         continue;
-      if (dodsV.bt instanceof DGrid)
+      }
+      if (dodsV.bt instanceof DGrid) {
         continue;
+      }
       addVariable(rootGroup, null, dodsV);
-      if (cancelTask != null && cancelTask.isCancel())
+      if (cancelTask != null && cancelTask.isCancel()) {
         return;
+      }
     }
 
     // then do the grids
     for (DodsV dodsV : topVariables) {
-      if (dodsV.isDone)
+      if (dodsV.isDone) {
         continue;
+      }
       // If using groups, then if the grid does not have a group name
       // and its array does, then transfer the group name.
       if (RC.getUseGroups() && dodsV.bt instanceof DGrid) {
@@ -460,8 +473,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
         }
       }
       addVariable(rootGroup, null, dodsV);
-      if (cancelTask != null && cancelTask.isCancel())
+      if (cancelTask != null && cancelTask.isCancel()) {
         return;
+      }
     }
   }
 
@@ -491,18 +505,21 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
     path = path.trim();
     path = path.replace("//", "/");
     boolean isabsolute = (path.charAt(0) == '/');
-    if (isabsolute)
+    if (isabsolute) {
       path = path.substring(1);
+    }
 
     // iteratively create path
     String[] pieces = path.split("/");
-    if (ignorelast)
+    if (ignorelast) {
       pieces[pieces.length - 1] = null;
+    }
 
     Group.Builder current = isabsolute ? rootGroup : parent;
     for (String name : pieces) {
-      if (name == null)
+      if (name == null) {
         continue;
+      }
       String clearname = NetcdfFiles.makeNameUnescaped(name); // ??
       Group.Builder next = current.findGroupLocal(clearname).orElse(null);
       if (next == null) {
@@ -517,10 +534,12 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
   // make a structure into a group if its scalar and all parents are groups
   private boolean isGroup(DStructure dstruct) {
     BaseType parent = (BaseType) dstruct.getParent();
-    if (parent == null)
+    if (parent == null) {
       return true;
-    if (parent instanceof DStructure)
+    }
+    if (parent instanceof DStructure) {
       return isGroup((DStructure) parent);
+    }
     return true;
   }
 
@@ -557,26 +576,31 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
   Dimension getNetcdfStrlenDim(DodsVariable.Builder<?> v) {
     AttributeTable table = das.getAttributeTableN(v.getFullName()); // LOOK this probably doesnt work for nested
     // variables
-    if (table == null)
+    if (table == null) {
       return null;
+    }
 
     opendap.dap.Attribute dodsAtt = table.getAttribute("DODS");
-    if (dodsAtt == null)
+    if (dodsAtt == null) {
       return null;
+    }
 
     AttributeTable dodsTable = dodsAtt.getContainerN();
-    if (dodsTable == null)
+    if (dodsTable == null) {
       return null;
+    }
 
     opendap.dap.Attribute att = dodsTable.getAttribute("strlen");
-    if (att == null)
+    if (att == null) {
       return null;
+    }
     String strlen = att.getValueAtN(0);
 
     opendap.dap.Attribute att2 = dodsTable.getAttribute("dimName");
     String dimName = (att2 == null) ? null : att2.getValueAtN(0);
-    if (DodsNetcdfFiles.debugCharArray)
+    if (DodsNetcdfFiles.debugCharArray) {
       System.out.println(v.getFullName() + " has strlen= " + strlen + " dimName= " + dimName);
+    }
 
     int dimLength;
     try {
@@ -586,8 +610,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       return null;
     }
 
-    if (dimLength <= 0)
+    if (dimLength <= 0) {
       return null; // LOOK what about unlimited ??
+    }
     return Dimension.builder(dimName, dimLength).setIsShared(dimName != null).build();
   }
 
@@ -600,16 +625,19 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
    * @return equivilent shared dimension or d.
    */
   Dimension getSharedDimension(Group.Builder group, Dimension d) {
-    if (d.getShortName() == null)
+    if (d.getShortName() == null) {
       return d;
+    }
 
     boolean has = sharedDimensions.contains(d);
 
-    if (group == null)
+    if (group == null) {
       group = rootGroup;
+    }
     for (Dimension sd : group.getDimensions()) {
-      if (sd.getShortName().equals(d.getShortName()) && sd.getLength() == d.getLength())
+      if (sd.getShortName().equals(d.getShortName()) && sd.getLength() == d.getLength()) {
         return sd;
+      }
     }
 
     // TODO d.setShared(true);
@@ -619,14 +647,16 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
 
   // construct list of dimensions to use
   List<Dimension> constructDimensions(Group.Builder group, DArray dodsArray) {
-    if (group == null)
+    if (group == null) {
       group = rootGroup;
+    }
 
     List<Dimension> dims = new ArrayList<Dimension>();
     for (DArrayDimension dad : dodsArray.getDimensions()) {
       String name = dad.getEncodedName();
-      if (name != null)
+      if (name != null) {
         name = StringUtil2.unescape(name);
+      }
 
       Dimension myd;
 
@@ -668,8 +698,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
   protected abstract T self();
 
   DodsNetcdfFile build(String datasetUrl, CancelTask cancelTask) throws IOException {
-    if (built)
+    if (built) {
       throw new IllegalStateException("already built");
+    }
     built = true;
     connect(datasetUrl, cancelTask);
     return new DodsNetcdfFile(this);

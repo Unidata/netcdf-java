@@ -42,7 +42,6 @@ package opendap.dap;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Vector;
 import opendap.dap.parsers.DDSXMLParser;
 import java.io.*;
 
@@ -244,17 +243,18 @@ public class DGrid extends DConstructor implements ClientIO {
   }
 
 
-  /**
-   * Get the number of contained variables (for use with getVar()
-   * 
-   * @return the number of contained variables
-   */
+  /** Get the number of contained variables (array plus maps) */
   public int getVarCount() {
     return mapVars.size() + 1;
   }
 
   public ImmutableList<BaseType> getVariables() {
-    return ImmutableList.of();
+    ImmutableList.Builder<BaseType> builder = ImmutableList.builder();
+    if (arrayVar != null) {
+      builder.add(arrayVar);
+    }
+    builder.addAll(mapVars);
+    return builder.build();
   }
 
   /**
@@ -423,12 +423,33 @@ public class DGrid extends DConstructor implements ClientIO {
   }
 
   /**
+   * How many projected components of this Grid object?
+   *
+   * @return The number of projected components.
+   */
+  public int projectedComponents(boolean constrained) {
+    int comp;
+
+    if (constrained) {
+      comp = arrayVar.isProject() ? 1 : 0;
+
+      for (BaseType bt : mapVars) {
+        if (bt.isProject())
+          comp++;
+      }
+    } else {
+      comp = 1 + mapVars.size();
+    }
+
+    return comp;
+  }
+
+  /**
    * When projected (using whatever the current constraint provides in the way
    * of a projection) am I still a Grid?
    *
    * @return True if projected grid is still a grid. False otherwise.
    */
-
   public boolean projectionYieldsGrid(boolean constrained) {
 
     if (!constrained)

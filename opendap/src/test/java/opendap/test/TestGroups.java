@@ -32,48 +32,32 @@
 
 package opendap.test;
 
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import java.util.Formatter;
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DodsNetcdfFile;
 import ucar.nc2.dods.RC;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.TestDir;
-import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestGroups extends UnitTestCommon {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  // Collect results locally
-  static private class Testcase {
-    String title;
-    String url;
-    String cdl;
-
-    public Testcase(String title, String url, String cdl) {
-      this.title = title;
-      this.url = url;
-      this.cdl = cdl;
-    }
-  }
-
   boolean usegroups = RC.getUseGroups();
   String testserver = null;
   List<Testcase> testcases = null;
 
-  public TestGroups() throws Exception {
+  public TestGroups() {
     super("DAP Group tests");
     // Check if user specified server.
     testserver = TestDir.dap2TestServer;
-    definetestcases();
+    defineTestcases();
   }
 
-  void definetestcases() {
+  void defineTestcases() {
     String threddsRoot = getThreddsroot();
     testcases = new ArrayList<>();
     if (false) {// use this arm to do debugging
@@ -91,90 +75,27 @@ public class TestGroups extends UnitTestCommon {
       testcases.add(new Testcase("Duplicate coordinate variable names in Grid",
           "dods://" + testserver + "/dts/docExample", "netcdf dods://" + testserver
               + "/dts/docExample {\n dimensions:\n lat = 180;\n lon = 360;\n time = 404;\n variables:\n double lat(lat=180);\n :fullName = \"latitude\";\n :units = \"degrees North\";\n double lon(lon=360);\n :fullName = \"longitude\";\n :units = \"degrees East\";\n double time(time=404);\n :units = \"seconds\";\n int sst(time=404, lat=180, lon=360);\n :_CoordinateAxes = \"time lat lon \";\n :fullName = \"Sea Surface Temperature\";\n :units = \"degrees centigrade\";\n}\n"));
-      /*
-       * Not currently available
-       * testcases.add(new Testcase("External user provided group example",
-       * "http://" + testserver + "/thredds/dodsC/testdods/K1VHR.nc",
-       * "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR.cdl")
-       * );
-       * 
-       * /* Not currently available
-       * testcases.add(new Testcase("TestTDSLocal Failure",
-       * "http://" + testserver + "/thredds/dodsC/ExampleNcML/Agg.nc",
-       * ""));
-       * testcases.add(new Testcase("TestTDSLocal Failure",
-       * "http://localhost:8080/dts/structdupname",
-       * ""));
-       */
-
     }
   }
 
   @Test
+  @Ignore("Needs usegroups")
   public void testGroup() throws Exception {
     // Run with usegroups == true
-    if (!usegroups)
-      Assert.assertTrue("TestGroups: Group Support not enabled", false);
+    assertWithMessage("usegroups must be on").that(usegroups).isTrue();
     System.out.println("TestGroups:");
     for (Testcase testcase : testcases) {
       System.out.println("url: " + testcase.url);
-      boolean pass = process1(testcase);
-      if (!pass)
-        Assert.assertTrue("Testing " + testcase.title, pass);
+      doOne(testcase);
     }
   }
 
-  boolean process1(Testcase testcase) throws Exception {
-    Formatter errs = new Formatter();
+  void doOne(TestMisc.Testcase testcase) throws Exception {
+    Formatter cdl = new Formatter();
     try (DodsNetcdfFile ncfile = DodsNetcdfFile.builder().build(testcase.url, null)) {
-      CDLWriter.writeCDL(ncfile, errs, false, null);
-      visual(testcase.title, errs.toString());
-    }
-
-    // See if the cdl is in a file or a string.
-    Reader baserdr = null;
-    if (testcase.cdl.startsWith("file://")) {
-      File f = new File(testcase.cdl.substring("file://".length(), testcase.cdl.length()));
-      try {
-        baserdr = new FileReader(f);
-      } catch (Exception e) {
-        return false;
-      }
-    } else {
-      baserdr = new StringReader(testcase.cdl);
-    }
-    StringReader resultrdr = new StringReader(errs.toString());
-    // Diff the two files
-    Diff diff = new Diff("Testing " + testcase.title);
-    boolean pass = !diff.doDiff(baserdr, resultrdr);
-    baserdr.close();
-    resultrdr.close();
-    return pass;
-  }
-
-  /**
-   * Remove any _lastModified attributes
-   *
-   * @param s The string to be modified
-   * @return The modified string
-   */
-  String nolastmodified(String s) {
-    StringReader sr = new StringReader(s);
-    StringWriter sw = new StringWriter();
-    BufferedReader br = new BufferedReader(sr);
-    String line;
-    try {
-      while ((line = br.readLine()) != null) {
-        if (line.contains("odified"))
-          continue;
-        sw.write(line + "\n");
-      }
-      br.close();
-      sr.close();
-      sw.close();
-      return sw.toString();
-    } catch (IOException ioe) {
-      return null;
+      CDLWriter.writeCDL(ncfile, cdl, false, null);
+      String captured = cdl.toString();
+      assertThat(captured).isEqualTo(baseline(testcase));
     }
   }
 

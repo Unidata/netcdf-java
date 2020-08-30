@@ -14,20 +14,12 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 
-// Test that the DDS parsing is correct
+// Test that the DAG cloning is correct
 public class TestClone extends TestFiles {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   static final int ISDAS = 1;
   static final int ISDDS = 2;
   static final int ISERR = 3;
-
-  String[] testfilenames = null;
-
-  boolean debug = false;
   static final String TITLE = "DAP DDS  and DAS Clone Tests";
-
-  String extension = null;
 
   String[] xfailtests = null;
 
@@ -40,7 +32,6 @@ public class TestClone extends TestFiles {
     compare(dastestfiles, dasxfails, ISDAS, ".das");
     compare(ddstestfiles, ddsxfails, ISDDS, ".dds");
   }
-
 
   public void compare(String[] testfilenames, String[] xfails, int kind, String extension) throws Exception {
     // override the test cases
@@ -141,16 +132,6 @@ public class TestClone extends TestFiles {
     }
     System.out.flush();
     System.err.flush();
-  }
-
-  @Test
-  public void testStuff() throws Exception {
-    new TestClone().test();
-  }
-
-  // @Test
-  public void testOne() throws Exception {
-    new TestClone().compareOne("C:/dev/github/netcdf-java/opendap/src/test/data/testdata1/123.nc.dds", ISDDS);
   }
 
 }

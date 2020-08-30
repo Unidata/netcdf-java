@@ -1,20 +1,13 @@
 package opendap.test;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
+// seems to be a helper class rather than any direct testing?
 public class TestSources extends TestFiles {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  //////////////////////////////////////////////////
-  // Remote test info
-
   /* Use this for experimenting with new URLS */
   static public final String XURL1 = "http://" + TestDir.dap2TestServer + "/dts";
 
@@ -46,11 +39,11 @@ public class TestSources extends TestFiles {
   static final String[] REMOTEC2 = {"NAM_CONUS_12km_20100628_1200.grib2;01;Wind_speed[0][0][0][0]"};
 
 
-  static enum TestSetEnum {
+  enum TestSetEnum {
     Standard1, Long1, Constrained1, Constrained2, Remote2, Experimental;
   }
 
-  static enum TestPart {
+  enum TestPart {
     DAS, DDS, DATADDS;
   }
 

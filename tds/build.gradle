@@ -1,0 +1,41 @@
+description = 'Lightweight server for testing'
+ext.title = 'TDS-lite'
+ext.url = 'https://www.unidata.ucar.edu/software/tds/'
+
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java-library.gradle"
+apply from: "$rootDir/gradle/any/gretty.gradle"
+
+dependencies {
+  api enforcedPlatform(project(':netcdf-java-platform'))
+
+  api project(':cdm:cdm-core')
+  api project(':httpservices')
+  api project(':opendap')
+
+  implementation 'com.google.guava:guava'
+
+  compile 'org.jdom:jdom2'
+  compile 'com.google.code.findbugs:jsr305'
+  compile 'org.slf4j:slf4j-api'
+
+  compile "org.springframework:spring-core:5.2.6.RELEASE"
+  compile "org.springframework:spring-context:5.2.6.RELEASE"
+  compile "org.springframework:spring-beans:5.2.6.RELEASE"
+  compile "org.springframework:spring-web:5.2.6.RELEASE"
+  compile "org.springframework:spring-webmvc:5.2.6.RELEASE"
+
+  testImplementation project(':cdm-test-utils')
+  testImplementation 'com.google.truth:truth'
+
+  testImplementation 'pl.pragmatists:JUnitParams'
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+
+  testCompile "javax.servlet:javax.servlet-api:3.1.0"
+  testCompile "org.springframework:spring-test:5.2.6.RELEASE"
+}
+
+test {
+  dependsOn('farmBeforeIntegrationTest')
+  finalizedBy('farmAfterIntegrationTest')
+}

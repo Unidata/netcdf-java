@@ -5,29 +5,49 @@
 package ucar.nc2.dods;
 
 import org.junit.Ignore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
+import org.junit.Test;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
-/**
- * Describe
- *
- * @author caron
- * @since 1/28/2015
- */
 public class TestHyraxServer {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  // https://opendap.jpl.nasa.gov/opendap/hyrax/ (Hyrax 1.16.0)
+  @Test
+  public void testHyraxJpl() throws IOException {
+    String url =
+        "https://opendap.jpl.nasa.gov/opendap/hyrax/SeaIce/quikscat/preview/L3/byu_scp/sea_ice_age/arctic/v1/2009/001/qscat_seaice_age_0012009.nc.gz";
+    try (DodsNetcdfFile dodsfile = TestDODSRead.openAbs(url)) {
+      System.out.printf("%s%n", dodsfile);
+    }
+  }
 
-  @Ignore("server not running")
-  @org.junit.Test
-  public void testGrid() throws IOException, InvalidRangeException {
-    try (DodsNetcdfFile dodsfile = TestDODSRead
-        .openAbs("http://data.nodc.noaa.gov/opendap/pathfinder/Version5.0_Climatologies/Monthly/Day/month01_day.hdf")) {
+  // https://aura.gesdisc.eosdis.nasa.gov/opendap/ (Hyrax 1.15.1)
+  @Test
+  @Ignore("permission failure")
+  public void testHyraxGedsisc() throws IOException {
+    String url =
+        "https://aura.gesdisc.eosdis.nasa.gov/opendap/Aura_OMI_Level2/OMAERO.003/2020/001/OMI-Aura_L2-OMAERO_2020m0101t0117-o82246_v003-2020m0101t073900.he5";
+    try (DodsNetcdfFile dodsfile = TestDODSRead.openAbs(url)) {
+      System.out.printf("%s%n", dodsfile);
+    }
+  }
 
-      // should test that we get grids
-      // see note1 in DODNetcdfFile
+  // https://oceandata.sci.gsfc.nasa.gov/opendap/ (Hyrax 1.12.1)
+  @Test
+  @Ignore("permission failure")
+  public void testHyraxGsfc() throws IOException {
+    String url =
+        "https://oceandata.sci.gsfc.nasa.gov/opendap/SeaWiFS/L3SMI/2010/001/S2010001.L3m_DAY_BIOS4_chlor_a_4km.nc";
+    try (DodsNetcdfFile dodsfile = TestDODSRead.openAbs(url)) {
+      System.out.printf("%s%n", dodsfile);
+    }
+  }
+
+  // https://hydro1.gesdisc.eosdis.nasa.gov/dods/ (GrADS 2.0)
+  @Test
+  @Ignore("permission failure")
+  public void testGradsHydro1() throws IOException {
+    String url = "https://hydro1.gesdisc.eosdis.nasa.gov/dods/GLDAS_NOAH025_3H.2.0";
+    try (DodsNetcdfFile dodsfile = TestDODSRead.openAbs(url)) {
+      System.out.printf("%s%n", dodsfile);
     }
   }
 }

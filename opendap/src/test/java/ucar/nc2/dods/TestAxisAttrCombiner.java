@@ -5,15 +5,10 @@ package ucar.nc2.dods;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants._Coordinate;
-import java.lang.invoke.MethodHandles;
 
 public class TestAxisAttrCombiner extends TestCase {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   @Test
   public void testAxisAttrCombineSame() {
     Attribute attr1 = new Attribute(_Coordinate.Axes, "abe bec cid dave");

@@ -23,6 +23,7 @@ dependencies {
   compile 'com.google.code.findbugs:jsr305'
   compile 'org.slf4j:slf4j-api'
 
+  testImplementation 'com.google.truth:truth'
   testImplementation project(':cdm-test-utils')
   testImplementation 'pl.pragmatists:JUnitParams'
   testRuntimeOnly 'ch.qos.logback:logback-classic'

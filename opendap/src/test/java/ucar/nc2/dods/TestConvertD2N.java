@@ -4,10 +4,11 @@
  */
 package ucar.nc2.dods;
 
+import java.util.ArrayList;
 import opendap.dap.*;
-import opendap.dap.parsers.ParseException;
-import opendap.test.TestSources;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -17,6 +18,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Variable;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.http.ReadFromUrl;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsMa2Test;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -25,11 +27,55 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /** Test ConvertD2N */
+@RunWith(Parameterized.class)
 public class TestConvertD2N {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // debugging
+  static public final String server = "http://" + TestDir.dap2TestServer + "/dts/";
+
+  @Parameterized.Parameters(name = "{0}")
+  static public List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
+    result.add(new Object[] {"test.01", ""}); // scalars
+    result.add(new Object[] {"test.02", ""}); // 1D arrays
+    result.add(new Object[] {"test.03", ""}); // 3D arrays
+    result.add(new Object[] {"test.04", ""}); // Structure with scalars
+    result.add(new Object[] {"test.05", ""}); // nested Structures with scalars
+    result.add(new Object[] {"test.07a", ""}); // Structure
+    result.add(new Object[] {"test.21", ""}); // Structure with multidim fields
+    result.add(new Object[] {"test.50", ""}); // array of structures
+    result.add(new Object[] {"test.53", ""}); // array of structures with nested scalar structure
+    result.add(new Object[] {"test.06", ""}); // Grids
+    result.add(new Object[] {"test.06a", ""}); // Grids
+
+    result.add(new Object[] {"b31", ""}); // top Sequence
+    result.add(new Object[] {"test.07", ""}); // top Sequence
+    result.add(new Object[] {"test.56", ""}); // top Sequence with multidim field
+    result.add(new Object[] {"test.31", ""}); // top Sequence with nested Structure, Grid //
+
+    result.add(new Object[] {"NestedSeq", ""});
+    result.add(new Object[] {"NestedSeq2", ""});
+    result.add(new Object[] {"NestedSeq2", "person1.age,person1.stuff&person1.age=3"}); // with CE
+
+    result.add(new Object[] {"test.22", ""}); // Structure with nested Structure, Grid
+    // result.add(new Object[] {"test.23", ""}); // Structure with nested Sequence TODO fails
+    result.add(new Object[] {"test.31", ""}); // Structure with nested Structure, Grid
+
+    return result;
+  }
+
+  @Parameterized.Parameter(0)
+  public String url;
+
+  @Parameterized.Parameter(1)
+  public String CE;
+
+  @Test
+  public void test() throws IOException, DAP2Exception, InvalidRangeException {
+    testDataDDSfromServer(server + url, CE);
+    testArray(server + url);
+  }
+
   static DataDDS testDataDDSfromServer(String urlName, String CE)
       throws IOException, opendap.dap.DAP2Exception, InvalidRangeException {
 
@@ -80,7 +126,6 @@ public class TestConvertD2N {
   }
 
   static void testArray(String urlName) throws IOException, opendap.dap.DAP2Exception {
-
     System.out.println("checkArray =" + urlName);
     DConnect2 dodsConnection = new DConnect2(urlName, true);
 
@@ -235,9 +280,7 @@ public class TestConvertD2N {
     if (a instanceof ArrayStructure) {
       ArrayStructure sa = (ArrayStructure) a;
       StructureMembers sm = sa.getStructureMembers();
-      List memlist = sm.getMembers();
-      for (int i = 0; i < memlist.size(); i++) {
-        StructureMembers.Member member = (StructureMembers.Member) memlist.get(i);
+      for (StructureMembers.Member member : sm.getMembers()) {
         out.print(space + " " + member.getDataType() + " " + member.getName());
         showShape(member.getShape(), out);
         out.println();
@@ -262,49 +305,4 @@ public class TestConvertD2N {
     out.print(")");
   }
 
-  static private void test(String url) throws IOException, ParseException, DAP2Exception, InvalidRangeException {
-    testDataDDSfromServer(url, "");
-    testArray(url);
-  }
-
-  @Test
-  public void testStuff() throws IOException, DAP2Exception, InvalidRangeException {
-
-    /*
-     * test(server+"test.01"); // scalars
-     * test(server+"test.02"); // 1D arrays
-     * test(server+"test.03"); // 3D arrays
-     * 
-     * test(server+"test.04"); // Structure with scalars
-     * test(server+"test.05"); // nested Structures with scalars
-     * test(server+"test.07a"); // Structure
-     * test(server+"test.21"); // Structure with multidim fields
-     * test(server+"test.50"); // array of structures
-     * 
-     * test(server+"test.53"); // array of structures with nested scalar structure
-     * 
-     * test(server+"test.06"); // Grids
-     * test(server+"test.06a"); // Grids
-     * 
-     * 
-     * test(server+"b31"); // top Sequence
-     * test(server+"test.07"); // top Sequence
-     * test(server+"test.56"); // top Sequence with multidim field
-     * test(server+"test.31"); // top Sequence with nested Structure, Grid //
-     */
-
-    // test(server+"NestedSeq"); // nested Seq
-    // test(server+"NestedSeq2"); // nested Seq */
-
-    testDataDDSfromServer(TestSources.XURL1 + "/NestedSeq2", "person1.age,person1.stuff&person1.age=3"); // nested Seq
-    // testDataDDSfromServer("http://dapper.pmel.noaa.gov/dapper/epic/woce_sl_time_monthly.cdp","location.profile&location._id=3");
-    // // nested Seq
-
-    // testDataDDSfromServer("http://dapper.pmel.noaa.gov/dapper/argo/argo_all.cdp", ""); // Sequence
-
-    // testDataDDSfromServer(server+"test.22", ""); // Structure with nested Structure, Grid
-    // testDataDDSfromServer(server+"test.23", ""); // Structure with nested Sequence, Grid
-    // testDataDDSfromServer(server+"test.31", ""); // Sequence with nested Structure, Grid
-    // testDataDDSfromServer(server+"NestedSeq2", "");
-  }
 }

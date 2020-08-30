@@ -34,7 +34,7 @@ import ucar.unidata.util.StringUtil2;
  */
 public class CDLWriter {
   /**
-   * Write CDL to a PrintStream.
+   * Write CDL to a PrintStream (legacy)
    * 
    * @deprecated do not use
    */
@@ -325,7 +325,7 @@ public class CDLWriter {
   }
 
   private void writeCDL(Structure s, Indent indent, boolean useFullName) {
-    out.format("%n%s%s {%n", indent, s.getDataType());
+    out.format("%s%s {%n", indent, s.getDataType());
 
     indent.incr();
     for (Variable v : s.getVariables()) {
@@ -350,7 +350,6 @@ public class CDLWriter {
         out.format(" // %s", att.getDataType());
       out.format("%n");
     }
-    out.format("%n");
   }
 
 }

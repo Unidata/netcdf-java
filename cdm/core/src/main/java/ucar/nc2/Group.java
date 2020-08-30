@@ -767,6 +767,66 @@ public class Group {
     }
 
     /**
+     * Find a Variable, with the specified (escaped full) name.
+     * It may possibly be nested in multiple groups and/or structures.
+     * An embedded "." is interpreted as structure.member.
+     * An embedded "/" is interpreted as group/variable.
+     * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
+     * Any other chars may also be escaped, as they are removed before testing.
+     *
+     * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
+     * @return Optional<Variable.Builder>
+     * @see {@link NetcdfFile#findVariable(String fullNameEscaped)}
+     */
+    public Optional<Variable.Builder<?>> findVariable(String fullNameEscaped) {
+      if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
+        return Optional.empty();
+      }
+
+      Group.Builder group = this;
+      String vars = fullNameEscaped;
+
+      // break into group/group and var.var
+      int pos = fullNameEscaped.lastIndexOf('/');
+      if (pos >= 0) {
+        String groupNames = fullNameEscaped.substring(0, pos);
+        vars = fullNameEscaped.substring(pos + 1);
+        group = findGroupNested(groupNames).orElse(null);
+      }
+      if (group == null) {
+        return Optional.empty();
+      }
+
+      // heres var.var - tokenize respecting the possible escaped '.'
+      List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
+      if (snames.isEmpty()) {
+        return Optional.empty();
+      }
+
+      String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
+      Variable.Builder<?> v = group.findVariableLocal(varShortName).orElse(null);
+      if (v == null) {
+        return Optional.empty();
+      }
+
+      int memberCount = 1;
+      while (memberCount < snames.size()) {
+        if (!(v instanceof Structure.Builder<?>)) {
+          return Optional.empty();
+        }
+        Structure.Builder<?> sb = (Structure.Builder<?>) v;
+        String name = NetcdfFiles.makeNameUnescaped(snames.get(memberCount));
+        v = sb.findMemberVariable(name).orElse(null);
+        if (v == null) {
+          return Optional.empty();
+        }
+        memberCount++;
+      }
+
+      return Optional.of(v);
+    }
+
+    /**
      * Find the Variable with the specified (short) name in this group or a parent group.
      *
      * @param varShortName short name of Variable.

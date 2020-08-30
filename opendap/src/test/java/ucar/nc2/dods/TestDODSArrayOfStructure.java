@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Test nc2 dods in the JUnit framework.
  * Dataset {
  * Structure {
  * Byte b;
@@ -38,18 +37,18 @@ public class TestDODSArrayOfStructure {
 
   private DodsNetcdfFile dodsfile;
 
-  @After
-  public void after() throws IOException {
-    dodsfile.close();
-    H5headerNew.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
-  }
-
   @Before
   public void setUp() throws Exception {
     DodsNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.50");
     DodsNetcdfFile.setPreload(true);
     DodsNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
+  }
+
+  @After
+  public void after() throws IOException {
+    dodsfile.close();
+    DodsNetcdfFile.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
   @Test
@@ -80,7 +79,6 @@ public class TestDODSArrayOfStructure {
 
   @Test
   public void testReadScalarMemberVariable() throws IOException {
-
     Variable v = dodsfile.findVariable("types.i32");
     assert v != null;
     assert v.getRank() == 0;

@@ -79,14 +79,13 @@ class DodsGrid extends DodsVariable {
 
   /** A builder of Structures. */
   public static abstract class Builder<T extends DodsGrid.Builder<T>> extends DodsVariable.Builder<T> {
-    private static boolean built;
+    private boolean built;
 
     /** Normally this is only called by Group.build() */
     public DodsGrid build(Group parentGroup) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.STRUCTURE);
       return new DodsGrid(this, parentGroup);
     }
   }

@@ -74,7 +74,7 @@ public class DodsNetcdfFiles {
    * @return The name in a form suitable for use in a cE
    */
   static String getDODSConstraintName(Variable var) {
-    String vname = ((DODSNode) var).getDODSName();
+    String vname = ((DodsNode) var).getDodsName();
     // The vname is backslash escaped, so we need to
     // modify to use DAP %xx escapes.
     return EscapeStringsDap.backslashToDAP(vname);
