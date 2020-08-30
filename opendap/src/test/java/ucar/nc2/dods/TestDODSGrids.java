@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -13,27 +14,25 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 
 /** Test nc2 dods in the JUnit framework. */
 public class TestDODSGrids {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  @org.junit.Test
+  @Test
   public void testGrid() throws IOException {
     DodsNetcdfFile dodsfile = TestDODSRead.open("test.06");
 
-    Variable v = null;
-
-    assert (null != (v = dodsfile.findVariable("OneD")));
+    Variable v;
+    assertThat(v = dodsfile.findVariable("OneD")).isNotNull();
     checkVariable(v);
-    assert (null != (v = dodsfile.findVariable("x")));
+    assertThat(v = dodsfile.findVariable("x")).isNotNull();
     checkVariable(v);
-    assert (null != (v = dodsfile.findVariable("y")));
+    assertThat(v = dodsfile.findVariable("y")).isNotNull();
     checkVariable(v);
-
-    assert (null != (v = dodsfile.findVariable("FourD")));
-    assert v instanceof DodsGrid;
+    assertThat(v = dodsfile.findVariable("FourD")).isNotNull();
+    assertThat(v).isInstanceOf(DodsGrid.class);
     checkVariable2(v);
   }
 

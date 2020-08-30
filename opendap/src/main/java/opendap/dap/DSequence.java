@@ -44,7 +44,6 @@ import com.google.common.collect.ImmutableList;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * A <code>DSequence</code> in OPeNDAP can hold <em>N</em> sequentially accessed
@@ -246,12 +245,10 @@ public class DSequence extends DConstructor implements ClientIO {
    *         exist in this container.
    */
   public BaseType getVar(int index) throws NoSuchVariableException {
-
     if (index < varTemplate.size())
       return varTemplate.get(index);
     else
       throw new NoSuchVariableException("DSequence.getVariable(" + index + " - 1)");
-
   }
 
   /**

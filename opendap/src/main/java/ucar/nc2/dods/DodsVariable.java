@@ -14,7 +14,7 @@ import java.util.*;
  * it might have type boolean or long. Note that DODS DUInt32 widened to long and
  * DODS DUInt16 widened to int.
  */
-class DodsVariable extends ucar.nc2.Variable {
+class DodsVariable extends ucar.nc2.Variable implements DodsNode {
 
   // use when a dods variable is a scalar
   static DodsVariable.Builder<?> builder(DodsBuilder<?> dodsBuilder, Group.Builder parentGroup, String dodsShortName,

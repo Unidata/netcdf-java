@@ -238,8 +238,6 @@ public class DAS extends AttributeTable {
    *
    * @param at The <code>AttributeTable</code> in which to search for and resolve Alias members
    */
-
-
   private void resolveAliases(AttributeTable at)
       throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException {
 

@@ -11,11 +11,12 @@ import java.util.*;
 import java.io.IOException;
 
 /** A DODS Structure. */
-class DodsStructure extends ucar.nc2.Structure {
+class DodsStructure extends ucar.nc2.Structure implements DodsNode {
 
   // constructor called from DODSNetcdfFile.makeVariable() for scalar Structure or Sequence
   static DodsStructure.Builder<?> builder(DodsBuilder<?> dodsBuilder, Group.Builder parentGroup, String dodsShortName,
       DodsV dodsV) throws IOException {
+
     DodsStructure.Builder<?> builder = builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName))
         .setDataType(dodsV.getDataType()).setSPobject(dodsV);
     builder.setConstructor((DConstructor) dodsV.bt);
@@ -27,15 +28,24 @@ class DodsStructure extends ucar.nc2.Structure {
     for (DodsV nested : dodsV.children) {
       dodsBuilder.addVariable(parentGroup, builder, nested);
     }
+    builder.setSPobject(dodsV);
 
     return builder;
   }
 
-  // constructor called from DODSNetcdfFile.makeVariable() for array of Structure
+  // constructor called from DodsBuilder.makeVariable() for array of Structure
   static DodsStructure.Builder<?> builder(DodsBuilder<?> dodsBuilder, Group.Builder parentGroup, String dodsShortName,
-      DArray dodsArray, DodsV dodsV) {
+      DArray dodsArray, DodsV dodsV) throws IOException {
+
     DodsStructure.Builder<?> builder = builder().setName(DodsNetcdfFiles.makeShortName(dodsShortName))
         .setDataType(dodsV.getDataType()).setSPobject(dodsV);
+    builder.setConstructor((DConstructor) dodsV.bt);
+
+    for (DodsV nested : dodsV.children) {
+      dodsBuilder.addVariable(parentGroup, builder, nested);
+    }
+    builder.setSPobject(dodsV);
+
     List<Dimension> dims = dodsBuilder.constructDimensions(parentGroup, dodsArray);
     builder.setDimensions(dims);
     return builder;
@@ -45,7 +55,7 @@ class DodsStructure extends ucar.nc2.Structure {
     return this.constructor;
   }
 
-  protected String getDodsName() {
+  public String getDodsName() {
     return dodsName;
   }
 

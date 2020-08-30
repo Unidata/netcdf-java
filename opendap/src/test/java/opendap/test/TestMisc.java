@@ -32,126 +32,59 @@
 
 package opendap.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.util.Formatter;
-import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DodsNetcdfFile;
 import ucar.nc2.write.CDLWriter;
 import ucar.unidata.util.test.TestDir;
-import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestMisc extends UnitTestCommon {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  // Collect testcases locally
-  static public class Testcase {
-    String title;
-    String url;
-    String cdl;
-
-    public Testcase(String title, String url, String cdl) {
-      this.title = title;
-      this.url = url;
-      this.cdl = cdl;
-    }
-  }
-
-  String testserver = null;
+  String testserver;
   List<Testcase> testcases = null;
 
   public TestMisc() {
     setTitle("DAP Misc tests");
     // Check if we are running against remote or localhost, or what.
     testserver = TestDir.dap2TestServer;
-    definetestcases();
+    defineTestcases();
   }
 
-  void definetestcases() {
+  void defineTestcases() {
     String threddsRoot = getThreddsroot();
-    testcases = new ArrayList<Testcase>();
+    testcases = new ArrayList<>();
     if (false) { // use this arm for debugging individual cases
       testcases.add(new Testcase("TestDODSArrayPrimitiveExample", "dods://" + testserver + "/dts/test.02",
           "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl"));
     } else {
-      // This test changes too often and I no longer remember why it is here.
-      // testcases.add(new Testcase("TestBennoGrid Example",
-      // "dods://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods",
-      // "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/dods.cdl")
-      // );
       testcases
           .add(new Testcase("Constrained access", "dods://" + testserver + "/dts/test.22?exp.ThreeD[5:1:7][5:8][1:3]",
               "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.22ce.cdl"));
       testcases.add(new Testcase("TestDODSArrayPrimitiveExample", "dods://" + testserver + "/dts/test.02",
           "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl"));
-
     }
   }
-
 
   @Test
   public void testMisc() throws Exception {
     System.out.println("TestMisc:");
     for (Testcase testcase : testcases) {
       System.out.println("url: " + testcase.url);
-      boolean pass = process1(testcase);
-      if (!pass) {
-        Assert.assertTrue("Testing " + testcase.title, pass);
-      }
+      doOne(testcase);
     }
   }
 
-  boolean process1(Testcase testcase) throws Exception {
-    Formatter errs = new Formatter();
+  void doOne(Testcase testcase) throws Exception {
+    Formatter cdl = new Formatter();
     try (DodsNetcdfFile ncfile = DodsNetcdfFile.builder().build(testcase.url, null)) {
-      CDLWriter.writeCDL(ncfile, errs, false, null);
-      String captured = errs.toString();
-      boolean pass = true;
-      visual(testcase.title, captured);
-      if (System.getProperty("baseline") != null) {
-        baseline(testcase, captured);
-      } else
-        pass = diff(testcase, captured);
-      return pass;
+      CDLWriter.writeCDL(ncfile, cdl, false, null);
+      String captured = cdl.toString();
+      assertThat(captured).isEqualTo(baseline(testcase));
     }
-  }
-
-  boolean diff(Testcase testcase, String captured) throws Exception {
-    // See if the cdl is in a file or a string.
-    if (System.getProperty("nodiff") != null)
-      return true;
-    Reader baserdr = null;
-    if (testcase.cdl.startsWith("file://")) {
-      File f = new File(testcase.cdl.substring("file://".length(), testcase.cdl.length()));
-      baserdr = new FileReader(f);
-    } else
-      baserdr = new StringReader(testcase.cdl);
-    StringReader resultrdr = new StringReader(captured);
-    // Diff the two files
-    Diff diff = new Diff("Testing " + testcase.title);
-    boolean pass = !diff.doDiff(baserdr, resultrdr);
-    baserdr.close();
-    resultrdr.close();
-    return pass;
-  }
-
-  protected void baseline(Testcase testcase, String output) {
-    try {
-      // See if the cdl is in a file or a string.
-      if (!testcase.cdl.startsWith("file://"))
-        return;
-      File f = new File(testcase.cdl.substring("file://".length(), testcase.cdl.length()));
-      Writer w = new FileWriter(f);
-      w.write(output);
-      w.close();
-    } catch (IOException ioe) {
-      System.err.println("IOException");
-    }
-
   }
 
 }

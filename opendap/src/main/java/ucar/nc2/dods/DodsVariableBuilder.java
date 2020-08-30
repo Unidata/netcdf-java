@@ -5,9 +5,7 @@
 
 package ucar.nc2.dods;
 
-/**
- * Describe {@link Class}
- */
+/** Common methods across Dods variable buidlers */
 public interface DodsVariableBuilder<T> {
 
   T setCE(String CE);

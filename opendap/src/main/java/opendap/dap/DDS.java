@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.io.*;
-import java.util.Vector;
 import opendap.dap.parsers.*;
 import org.jdom2.Document;
 
@@ -1088,12 +1087,21 @@ public class DDS extends DStructure {
     }
   }
 
+  @Override
+  public String toString() {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(bos, StandardCharsets.UTF_8)));
+    print(pw);
+    pw.flush();
+    try {
+      return bos.toString(StandardCharsets.UTF_8.name());
+    } catch (UnsupportedEncodingException e) {
+      // cant happen
+      throw new RuntimeException(e);
+    }
+  }
 
-  /**
-   * Print the <code>DDS</code> on the given <code>PrintWriter</code>.
-   *
-   * @param os the <code>PrintWriter</code> to use for output.
-   */
+  /** Print the <code>DDS</code> on the given <code>PrintWriter</code>. */
   public void print(PrintWriter os) {
     os.println("Dataset {");
     for (BaseType bt : variables) {
@@ -1105,18 +1113,12 @@ public class DDS extends DStructure {
     os.println(";");
   }
 
-  /**
-   * Print the <code>DDS</code> on the given <code>OutputStream</code>.
-   *
-   * @param os the <code>OutputStream</code> to use for output.
-   * @see DDS#print(PrintWriter)
-   */
+  /** Print the <code>DDS</code> on the given <code>OutputStream</code>. */
   public final void print(OutputStream os) {
     PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)));
     print(pw);
     pw.flush();
   }
-
 
   /**
    * Before the DDS can be used all of the Aliases in the various

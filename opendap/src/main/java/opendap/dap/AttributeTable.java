@@ -238,6 +238,20 @@ public class AttributeTable extends DAPNode implements Iterable<String> {
     }
   }
 
+  @Override
+  public String toString() {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(bos, StandardCharsets.UTF_8)));
+    print(pw);
+    pw.flush();
+    try {
+      return bos.toString(StandardCharsets.UTF_8.name());
+    } catch (UnsupportedEncodingException e) {
+      // cant happen
+      throw new RuntimeException(e);
+    }
+  }
+
   /**
    * Print the attribute table on the given <code>PrintWriter</code>.
    *

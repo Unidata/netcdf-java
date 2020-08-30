@@ -28,7 +28,7 @@ public class RC {
   public static final String VERIFYSERVERKEY = "ucar.nc2.net.verifyserver";
   public static final String ALLOWSELFSIGNEDKEY = "ucar.nc2.net.allowselfsigned";
 
-  protected static boolean useGroups = true;
+  protected static boolean useGroups = false; // TODO change back to true
   protected static boolean verifyServer;
   protected static boolean allowSelfSigned = true;
 

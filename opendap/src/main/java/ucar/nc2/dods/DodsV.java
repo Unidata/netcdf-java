@@ -39,7 +39,6 @@ import ucar.nc2.constants.CDM;
  * array of DGrid, DSequence: (not sure how to interpret)
  * DSequence: values = Vector (rows) containing Vector (fields)
  */
-
 class DodsV implements Comparable {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsV.class);
   private static boolean debugAttributes = false;
@@ -238,7 +237,8 @@ class DodsV implements Comparable {
     this.parent = parent;
     this.bt = bt;
     this.elemType = bt;
-    attributes = new AttributeContainerMutable(bt.getClearName());
+    String name = bt == null ? null : bt.getClearName();
+    attributes = new AttributeContainerMutable(name);
   }
 
   public int compareTo(Object o) {
@@ -459,14 +459,6 @@ class DodsV implements Comparable {
       }
       if (name.equals(dodsV.bt.getEncodedName()))
         return dodsV;
-    }
-    return null;
-  }
-
-  DodsV findByNetcdfShortName(String ncname) {
-    for (DodsV child : children) {
-      if (ncname.equals(child.getNetcdfShortName()))
-        return child;
     }
     return null;
   }

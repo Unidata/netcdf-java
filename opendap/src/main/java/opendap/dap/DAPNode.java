@@ -59,7 +59,6 @@ import ucar.nc2.dods.EscapeStringsDap;
  * it should be removed when we quit using cloning.
  *
  * @author dmh (Dennis Heimbigner, Unidata)
- *         TODO remove implements Cloneable, Serializable
  */
 public class DAPNode implements Cloneable, Serializable {
   public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DAPNode.class);
