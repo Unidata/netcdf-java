@@ -92,6 +92,7 @@ import ucar.nc2.internal.util.EscapeStrings;
  * if some kind of special processing of the incoming request is needed
  * to ascertain the OPeNDAP URL information.
  */
+// TODO probably not override HttpServlet?
 public abstract class AbstractServlet extends HttpServlet {
   static final boolean debug = false;
 

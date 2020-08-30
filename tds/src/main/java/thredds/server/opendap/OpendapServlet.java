@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -88,12 +87,11 @@ public class OpendapServlet extends AbstractServlet {
   private URI baseURI = null;
   private boolean debugSession = false;
 
-  @PostConstruct
-  public void init() throws javax.servlet.ServletException {
+  // TODO removed @PostConstruct, what replaces it? probably not override HttpServlet?
+  public void init() {
     logServerStartup.info(getClass().getName() + " initialization start");
     logServerStartup.info(getClass().getName() + " version= " + opendapVersionString + " ascLimit = " + opendapAscLimit
         + " binLimit = " + opendapBinLimit);
-
     logServerStartup.info(getClass().getName() + " initialization done");
   }
 
