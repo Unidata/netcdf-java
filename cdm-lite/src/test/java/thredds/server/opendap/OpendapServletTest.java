@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
 import javax.servlet.ServletConfig;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml"}, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
+@Ignore("not ready")
 public class OpendapServletTest {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
