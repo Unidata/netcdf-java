@@ -31,7 +31,6 @@ netcdf4/** @DennisHeimbigner
 **/iosp/nids/** @dopplershift
 
 **/opendap/** @DennisHeimbigner
-**/dap4/** @DennisHeimbigner
 
 ######################
 # general file types #

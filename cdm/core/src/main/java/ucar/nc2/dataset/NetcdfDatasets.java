@@ -407,7 +407,7 @@ public class NetcdfDatasets {
    * <ol>
    * <li>local filename (with a file: prefix or no prefix) for netCDF (version 3), hdf5 files, or any file type
    * registered with NetcdfFile.registerIOProvider().
-   * <li>OpenDAP dataset URL (with a dods:, dap4:, or http: prefix).
+   * <li>OpenDAP dataset URL (with a dods: or http: prefix).
    * <li>NcML file or URL if the location ends with ".xml" or ".ncml"
    * <li>NetCDF file through an HTTP server (http: prefix)
    * <li>thredds dataset (thredds: prefix), see DataFactory.openDataset(String location, ...));

@@ -8,46 +8,22 @@ package opendap.test;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.io.LineReader;
-import com.google.re2j.Matcher;
-import com.google.re2j.Pattern;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Formatter;
-import java.util.List;
-import java.util.Set;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.write.Ncdump;
-import ucar.unidata.util.test.SysStreamLogger;
 import ucar.unidata.util.test.TestDir;
 
 public abstract class UnitTestCommon {
   static final boolean DEBUG = false;
 
   // Look for these to verify we have found the thredds root
-  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm", "opendap", "dap4"};
+  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm", "opendap"};
 
   static String threddsroot;
   static String threddsServer;
