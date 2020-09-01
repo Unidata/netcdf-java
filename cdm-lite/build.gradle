@@ -68,8 +68,3 @@ war {
     expand properties
   }
 }
-
-test {
-  dependsOn('farmBeforeIntegrationTest')
-  finalizedBy('farmAfterIntegrationTest')
-}
