@@ -1,16 +1,18 @@
-package examples.tutorials;
+package examples;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
+import ucar.unidata.util.test.TestLogger;
+
 import java.io.IOException;
 
 public class NCTutorial {
   // logs error/info message in memory and can be accessed from test functions
-  static TestLogger logger = TestLogger.TestLoggerFactory.getLogger();
+  public static TestLogger logger = TestLogger.TestLoggerFactory.getLogger();
 
   ////////////////////////////
   // constant string messages for tests
-  static final String yourOpenNetCdfFileErrorMsgTxt = "exception while opening Netcdf file";
+  public static final String yourOpenNetCdfFileErrorMsgTxt = "exception while opening Netcdf file";
 
   ////////////////////////////
   // Netcdf tutorial functions
@@ -22,7 +24,7 @@ public class NCTutorial {
    * @param pathToYourFileAsStr: relative path to locally stored file
    */
   public static void openNCFileTutorial(String pathToYourFileAsStr) {
-    try (NetcdfFile ncfile = NetcdfFiles.open(pathToYourFileAsStr)) {
+    try (NetcdfFile ncfile = NetcdfFile.open(pathToYourFileAsStr)) {
       // Do cool stuff here
     } catch (IOException ioe) {
       // Handle less-cool exceptions here
