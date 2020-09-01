@@ -16,19 +16,10 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Variable;
 
-/**
- * Wraps a netcdf scalar short variable.
- *
- * @author jcaron
- */
+/** Wraps a netcdf scalar short variable. */
 public class NcSDInt16 extends SDInt16 implements HasNetcdfVariable {
-  private Variable ncVar;
+  private final Variable ncVar;
 
-  /**
-   * Constructor
-   *
-   * @param v : the netcdf Variable
-   */
   NcSDInt16(Variable v) {
     super(v.getShortName());
     this.ncVar = v;
@@ -38,9 +29,7 @@ public class NcSDInt16 extends SDInt16 implements HasNetcdfVariable {
     return ncVar;
   }
 
-  /**
-   * Read the value (parameters are ignored).
-   */
+  /** Read the value (parameters are ignored). */
   public boolean read(String datasetName, Object specialO) throws IOException {
     setData(ncVar.read());
     return (false);

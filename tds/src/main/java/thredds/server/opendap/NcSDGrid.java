@@ -5,23 +5,17 @@
 
 // $Id: NcSDGrid.java 51 2006-07-12 17:13:13Z caron $
 
-
 package thredds.server.opendap;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import opendap.dap.BaseType;
 import opendap.dap.DGrid;
 import opendap.dap.NoSuchVariableException;
 import thredds.server.opendap.servers.SDArray;
 import thredds.server.opendap.servers.SDGrid;
 
-/**
- * Wraps a netcdf variable with rank > 0, whose dimensions all
- * have coordinate variables, as an SDGrid.
- *
- * @author jcaron
- */
+/** Wraps a netcdf variable with rank > 0, whose dimensions all have coordinate variables, as an SDGrid. */
 public class NcSDGrid extends SDGrid {
 
   /**
@@ -30,12 +24,12 @@ public class NcSDGrid extends SDGrid {
    * @param name of the Grid
    * @param list of the variables, first data then maps
    */
-  public NcSDGrid(String name, ArrayList list) {
+  public NcSDGrid(String name, List<BaseType> list) {
     super(name);
-    addVariable((BaseType) list.get(0), DGrid.ARRAY);
+    addVariable(list.get(0), DGrid.ARRAY);
 
     for (int i = 1; i < list.size(); i++) {
-      addVariable((BaseType) list.get(i), DGrid.MAPS);
+      addVariable(list.get(i), DGrid.MAPS);
     }
   }
 

@@ -53,15 +53,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dods.DodsNetcdfFiles;
 import ucar.nc2.internal.util.EscapeStrings;
 
-/**
- * THREDDS opendap server.
- *
- * @author jcaron
- * @author Nathan David Potter
- * @since Apr 27, 2009 (branched)
- */
+/** THREDDS opendap server. */
 @Controller
-@RequestMapping("/dodsC")
+@RequestMapping("/dods")
 public class OpendapServlet extends AbstractServlet {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
   static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
@@ -271,7 +265,6 @@ public class OpendapServlet extends AbstractServlet {
       writer.toASCII(pw, dds, ds);
       pw.flush();
     }
-
   }
 
   @Override
@@ -526,12 +519,7 @@ public class OpendapServlet extends AbstractServlet {
     return this.getClass().getName();
   }
 
-  /**
-   * ************************************************************************ Prints the OPeNDAP Server help page to the
-   * passed PrintWriter
-   *
-   * @param pw PrintWriter stream to which to dump the help page.
-   */
+  /** Prints the OPeNDAP Server help page to the passed PrintWriter */
   private void printHelpPage(PrintWriter pw) {
     pw.println("<h3>OPeNDAP Server Help</h3>");
     pw.println("To access most of the features of this OPeNDAP server, append");
@@ -570,11 +558,7 @@ public class OpendapServlet extends AbstractServlet {
 
   }
 
-  /**
-   * Prints the Bad URL Page page to the passed PrintWriter
-   *
-   * @param pw PrintWriter stream to which to dump the bad URL page.
-   */
+  /** Prints the Bad URL Page page to the passed PrintWriter */
   @Override
   protected void printBadURLPage(PrintWriter pw) {
     pw.println("<h3>Error in URL</h3>");

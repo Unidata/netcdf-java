@@ -22,23 +22,20 @@ import ucar.nc2.dataset.NetcdfDataset;
 /**
  * NcDDS is a specialization of ServerDDS for netcdf files.
  * This creates a ServerDDS from the netcdf file.
- *
- * @author jcaron
  */
-
 public class NcDDS extends ServerDDS {
 
   // Handle the case of potential grids when the array has duplicate dims
   static protected final boolean HANDLE_DUP_DIM_GRIDS = true;
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
 
   // private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordinate variables
   // Track various subsets of the variables
   private Map<String, Variable> coordvars = new HashMap<>(50);
   private List<Variable> ddsvars = new ArrayList<>(50); // list of currently active variables
-  private Map<String, Variable> gridarrays = new HashMap<>(50);
-  private Map<String, Variable> used = new HashMap<>(50);
+  private final Map<String, Variable> gridarrays = new HashMap<>(50);
+  private final Map<String, Variable> used = new HashMap<>(50);
 
   private Variable findVariable(String name) {
     for (Variable v : ddsvars) {
@@ -116,24 +113,10 @@ public class NcDDS extends ServerDDS {
         }
       }
     }
-    // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
-    // for(Variable v: used.values()) ddsvars.remove(v);
 
     // Create the set of variables
-    for (Object o1 : ddsvars) {
-      Variable cv = (Variable) o1;
-      BaseType bt;
-
-      /*
-       * if (false && cv.isCoordinateVariable()) {
-       * if ((cv.getDataType() == DataType.CHAR))
-       * bt = (cv.getRank() > 1) ? new NcSDCharArray(cv) : new NcSDString(cv);
-       * else
-       * bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
-       * }
-       */
-      // if (bt == null)
-      bt = createVariable(ncfile, cv);
+    for (Variable cv : ddsvars) {
+      BaseType bt = createVariable(ncfile, cv);
       addVariable(bt);
     }
   }
@@ -197,8 +180,9 @@ public class NcDDS extends ServerDDS {
 
   private BaseType createVariable(NetcdfFile ncfile, Variable v) {
     BaseType bt;
-    if (v.getRank() == 0) // scalar
+    if (v.getRank() == 0) { // scalar
       bt = createScalarVariable(ncfile, v);
+    }
 
     else if (v.getDataType() == DataType.CHAR) {
       if (v.getRank() > 1)
@@ -212,8 +196,9 @@ public class NcDDS extends ServerDDS {
       else
         bt = new NcSDArray(v, new NcSDString(v));
 
-    } else // non-char multidim array
+    } else { // non-char multidim array
       bt = createArray(ncfile, v);
+    }
 
     return bt;
 

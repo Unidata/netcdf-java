@@ -9,7 +9,6 @@
 package thredds.server.opendap;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import opendap.dap.AttributeExistsException;
 import opendap.dap.DASException;
@@ -30,7 +29,7 @@ import ucar.nc2.dods.DodsNetcdfFiles;
 public class NcDAS extends opendap.dap.DAS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDAS.class);
 
-  private Map<String, Dimension> usedDims = new HashMap<>(50);
+  private final Map<String, Dimension> usedDims = new HashMap<>(50);
 
   /**
    * Create a DAS for this netcdf file
@@ -38,9 +37,7 @@ public class NcDAS extends opendap.dap.DAS {
   NcDAS(NetcdfFile ncfile) {
 
     // Variable attributes
-    Iterator iter = ncfile.getVariables().iterator();
-    while (iter.hasNext()) {
-      Variable v = (Variable) iter.next();
+    for (Variable v : ncfile.getVariables()) {
       doVariable(v, null);
     }
 
@@ -55,9 +52,7 @@ public class NcDAS extends opendap.dap.DAS {
       }
 
     // unlimited dimension
-    iter = ncfile.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension d = (Dimension) iter.next();
+    for (Dimension d : ncfile.getDimensions()) {
       if (d.isUnlimited()) {
         opendap.dap.AttributeTable table = new opendap.dap.AttributeTable("DODS_EXTRA");
         try {
@@ -72,9 +67,7 @@ public class NcDAS extends opendap.dap.DAS {
 
     // unused dimensions
     opendap.dap.AttributeTable dimTable = null;
-    iter = ncfile.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension d = (Dimension) iter.next();
+    for (Dimension d : ncfile.getDimensions()) {
       if (null == usedDims.get(d.getShortName())) {
         if (dimTable == null)
           dimTable = new opendap.dap.AttributeTable("EXTRA_DIMENSION");
@@ -91,7 +84,6 @@ public class NcDAS extends opendap.dap.DAS {
       } catch (AttributeExistsException e) {
         log.error("Cant add EXTRA_DIMENSION", e);
       }
-
   }
 
   private void doVariable(Variable v, opendap.dap.AttributeTable parentTable) {
@@ -168,8 +160,9 @@ public class NcDAS extends opendap.dap.DAS {
               dods_type = opendap.dap.Attribute.INT16;
           }
 
-          for (int i = 0; i < att.getLength(); i++)
+          for (int i = 0; i < att.getLength(); i++) {
             table.appendAttribute(attName, dods_type, att.getNumericValue(i).toString());
+          }
         }
         count++;
 

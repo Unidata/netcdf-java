@@ -16,8 +16,6 @@ import thredds.server.opendap.servers.CEEvaluator;
 import thredds.server.opendap.servers.DAP2ServerSideException;
 import thredds.server.opendap.servers.SDStructure;
 import thredds.server.opendap.servers.ServerMethods;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
@@ -26,14 +24,9 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /**
- * Wraps a netcdf Structure, as an SDStructure.
- *
- * @author jcaron
+ * Wraps a netcdf Structure, as an SDStructure.2
  */
-
 public class NcSDStructure extends SDStructure {
-  static private Logger log = LoggerFactory.getLogger(NcSDStructure.class);
-
   private Structure ncVar = null;
   protected List<BaseType> memberBTlist;
 
@@ -70,7 +63,7 @@ public class NcSDStructure extends SDStructure {
   public boolean read(String datasetName, Object specialO) throws NoSuchVariableException, IOException {
 
     // read the scalar structure into memory
-    StructureData sdata = null;
+    StructureData sdata;
     try {
       sdata = ncVar.readStructure(0);
     } catch (InvalidRangeException e) {

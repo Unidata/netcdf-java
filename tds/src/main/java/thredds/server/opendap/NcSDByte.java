@@ -16,19 +16,10 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Variable;
 
-/**
- * Wraps a netcdf scalar byte variable.
- *
- * @author jcaron
- */
+/** Wraps a netcdf scalar byte variable. */
 public class NcSDByte extends SDByte implements HasNetcdfVariable {
-  private Variable ncVar;
+  private final Variable ncVar;
 
-  /**
-   * Constructor
-   *
-   * @param ncVar : the netcdf Variable
-   */
   NcSDByte(Variable ncVar) {
     super(ncVar.getShortName());
     this.ncVar = ncVar;

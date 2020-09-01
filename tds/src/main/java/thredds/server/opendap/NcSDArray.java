@@ -6,9 +6,9 @@
 package thredds.server.opendap;
 
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import opendap.dap.BaseType;
 import opendap.dap.DArrayDimension;
@@ -28,15 +28,12 @@ import ucar.nc2.Variable;
 /**
  * Wraps a netcdf variable with rank > 0 as an SDArray.
  * For char arrays, use NcSDString (rank 0 or 1) or NcSDCharArray (rank > 1).
- *
- * @author jcaron
- * @see NcSDCharArray
  */
 public class NcSDArray extends SDArray implements HasNetcdfVariable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDArray.class);
-
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDArray.class);
   private static final boolean debug = false, debugRead = false;
-  private Variable ncVar = null;
+
+  private final Variable ncVar;
 
   /**
    * Constructor: Wraps a netcdf variable in a DODS SDArray.
@@ -56,7 +53,6 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     // this seems to be how you set the type
     // it creates the "primitive vector"
     addVariable(bt);
-    // ignore this.elemType = bt;
   }
 
   public Variable getVariable() {
@@ -70,8 +66,6 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
    * @param datasetName not used
    * @param specialO not used
    * @return false (no more data to be read)
-   * @throws IOException
-   * @throws EOFException
    */
   public boolean read(String datasetName, Object specialO) throws IOException {
     long tstart = System.currentTimeMillis();
@@ -125,11 +119,11 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 
   private String getRequestedRange() {
     try {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append("NcSDArray read " + ncVar.getFullName());
+      Formatter sbuff = new Formatter();
+      sbuff.format("NcSDArray read %s", ncVar.getFullName());
       for (int i = 0; i < numDimensions(); i++) {
         DArrayDimension d = getDimension(i);
-        sbuff.append(" " + d.getEncodedName() + "(" + getStart(i) + "," + getStride(i) + "," + getStop(i) + ")");
+        sbuff.format(" %s(%d,%d,%d)", d.getEncodedName(), getStart(i), getStride(i), getStop(i));
       }
       return sbuff.toString();
 
@@ -170,7 +164,6 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       pv.setInternalStorage(dodsBT);
 
     } else {
-
       // copy the data into the PrimitiveVector
       // this is optimized to (possibly) eliminate the copy
       Object pa = data.get1DJavaArray(data.getElementType());

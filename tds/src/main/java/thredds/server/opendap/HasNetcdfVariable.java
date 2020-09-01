@@ -15,20 +15,15 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Variable;
 
-/**
- * Tag that Object has a netcdf variable, and the data can be set externally by an Array.
- *
- * @version $Revision: 51 $
- * @author jcaron
- */
+/** An Object that has a netcdf variable, and the data can be set externally by an Array. */
 public interface HasNetcdfVariable {
 
   /** reset the underlying proxy */
-  public void setData(Array data);
+  void setData(Array data);
 
   /** get the underlying proxy */
-  public Variable getVariable();
+  Variable getVariable();
 
   // for structure members
-  public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException;
+  void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException;
 }

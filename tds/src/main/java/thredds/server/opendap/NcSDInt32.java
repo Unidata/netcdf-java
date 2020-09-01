@@ -18,17 +18,10 @@ import ucar.nc2.Variable;
 
 /**
  * Wraps a netcdf scalar int variable.
- *
- * @author jcaron
  */
 public class NcSDInt32 extends SDInt32 implements HasNetcdfVariable {
-  private Variable ncVar;
+  private final Variable ncVar;
 
-  /**
-   * Constructor
-   *
-   * @param v : the netcdf Variable
-   */
   NcSDInt32(Variable v) {
     super(v.getShortName());
     this.ncVar = v;
@@ -38,9 +31,7 @@ public class NcSDInt32 extends SDInt32 implements HasNetcdfVariable {
     return ncVar;
   }
 
-  /**
-   * Read the value (parameters are ignored).
-   */
+  /** Read the value (parameters are ignored). */
   public boolean read(String datasetName, Object specialO) throws IOException {
     setData(ncVar.read());
     return (false);

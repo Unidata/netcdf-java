@@ -16,19 +16,10 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Variable;
 
-/**
- * Wraps a netcdf scalar double variable.
- *
- * @author jcaron
- */
+/** Wraps a netcdf scalar double variable. */
 public class NcSDFloat64 extends SDFloat64 implements HasNetcdfVariable {
-  private Variable ncVar;
+  private final Variable ncVar;
 
-  /**
-   * Constructor
-   *
-   * @param v : the netcdf Variable
-   */
   NcSDFloat64(Variable v) {
     super(v.getShortName());
     this.ncVar = v;

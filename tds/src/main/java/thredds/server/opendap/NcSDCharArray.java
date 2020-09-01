@@ -9,7 +9,6 @@
 package thredds.server.opendap;
 
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +28,15 @@ import ucar.nc2.Variable;
 
 /**
  * Wraps a netcdf char variable with rank > 1 as an SDArray.
- *
- * @author jcaron
  */
 public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDCharArray.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDCharArray.class);
 
   private static final boolean debugRead = false, debugReadDetail = false;
-  private Variable ncVar = null;
+  private final Variable ncVar;
   private int strLen = 1;
 
-  /**
-   * Constructor: Wraps a netcdf char variable (rank > 1) in a DODS SDArray.
-   *
-   * @param v : netcdf Variable
-   */
+  /** Constructor: Wraps a netcdf char variable (rank > 1) in a DODS SDArray. */
   NcSDCharArray(Variable v) {
     super(v.getShortName());
     this.ncVar = v;
@@ -51,13 +44,13 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
       throw new IllegalArgumentException("NcSDCharArray: rank must be > 1, var = " + v.getFullName());
 
     // set dimensions, eliminate last one
-    List dims = v.getDimensions();
-    for (int i = 0; i < dims.size(); i++) {
-      Dimension dim = (Dimension) dims.get(i);
-      if (i < dims.size() - 1)
+    int count = 0;
+    for (Dimension dim : v.getDimensions()) {
+      if (count < v.getRank() - 1)
         appendDim(dim.getLength(), dim.getShortName());
       else
         strLen = dim.getLength();
+      count++;
     }
 
     // set String type
@@ -76,14 +69,11 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
    * @param datasetName not used
    * @param specialO not used
    * @return false (no more data to be read)
-   * @throws IOException
-   * @throws EOFException
    */
   public boolean read(String datasetName, Object specialO) throws IOException {
     boolean hasStride = false;
     Array a;
     try {
-
       if (debugRead) {
         System.out.println("NcSDCharArray read " + ncVar.getFullName());
         for (int i = 0; i < numDimensions(); i++) {
