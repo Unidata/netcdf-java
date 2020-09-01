@@ -1,5 +1,5 @@
 description = 'Lightweight server for testing'
-ext.title = 'TDS-lite'
+ext.title = 'CDM-lite'
 ext.url = 'https://www.unidata.ucar.edu/software/tds/'
 
 apply plugin: 'war'

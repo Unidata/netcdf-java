@@ -22,13 +22,14 @@ include 'httpservices'
 include 'netcdf-java-bom'
 include 'netcdf-java-platform'
 include 'opendap'
-include 'tds'
 include 'udunits'
 include 'uibase'
 include 'uicdm'
 // include 'visad:mcidas'
 // include 'visad:vis5d'
 include 'waterml'
+
+include 'cdm-lite'
 
 // Set name of cdm submodules
 project(':cdm:core').name = 'cdm-core'
