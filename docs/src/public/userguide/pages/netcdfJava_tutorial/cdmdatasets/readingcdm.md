@@ -16,7 +16,7 @@ Use NetcdfDataset.open for more general reading capabilities, including <b>_OPeN
 A simple way to open a NetcdfFile:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&cdm/core/src/test/java/examples/tutorials/NCTutorial.java&openNCFileTutorial %}
+{% includecodeblock netcdf-java&cdm/docs/src/test/java/examples/NCTutorial.java&openNCFileTutorial %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
