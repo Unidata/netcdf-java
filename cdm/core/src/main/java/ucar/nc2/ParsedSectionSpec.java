@@ -14,35 +14,30 @@ import java.util.List;
 
 /**
  * A String expression for denoting a section of a Variable to be read.
- * Allows nesting for subsetting of Structure member variables.
+ * Parse a section specification String. These have the form:
  *
- * @author caron
- * @since May 8, 2008
- * @see <a href=
- *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+ * <pre>
+ *  section specification := selector | selector '.' selector
+ *  selector := varName ['(' dims ')']
+ *  varName := ESCAPED_STRING
+ * <p/>
+ *   dims := dim | dim, dims
+ *   dim := ':' | slice | start ':' end | start ':' end ':' stride
+ *   slice := INTEGER
+ *   start := INTEGER
+ *   stride := INTEGER
+ *   end := INTEGER
+ *   ESCAPED_STRING : must escape characters = ".("
+ * </pre>
+ * <p/>
+ * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
+ * Optional components are enclosed between square braces '[' and ']'.
  */
 public class ParsedSectionSpec {
   private static final boolean debugSelector = false;
 
   /**
-   * Parse a section specification String. These have the form:
-   * 
-   * <pre>
-   *  section specification := selector | selector '.' selector
-   *  selector := varName ['(' dims ')']
-   *  varName := ESCAPED_STRING
-   * <p/>
-   *   dims := dim | dim, dims
-   *   dim := ':' | slice | start ':' end | start ':' end ':' stride
-   *   slice := INTEGER
-   *   start := INTEGER
-   *   stride := INTEGER
-   *   end := INTEGER
-   *   ESCAPED_STRING : must escape characters = ".("
-   * </pre>
-   * <p/>
-   * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
-   * Optional components are enclosed between square braces '[' and ']'.
+   * Parse a section specification String.
    *
    * @param ncfile look for variable in here
    * @param variableSection the string to parse, eg "record(12).wind(1:20,:,3)"
@@ -57,13 +52,13 @@ public class ParsedSectionSpec {
       throw new IllegalArgumentException("empty sectionSpec = " + variableSection);
 
     String selector = tokes.get(0);
-    ParsedSectionSpec outerV = parseVariableSelector(ncfile, selector);
+    ParsedSectionSpec outerV = parseSelector(ncfile, selector);
 
     // parse each selector, find the inner variable
     ParsedSectionSpec current = outerV;
     for (int i = 1; i < tokes.size(); i++) {
       selector = tokes.get(i);
-      current.child = parseVariableSelector(current.getVariable(), selector);
+      current.child = parseSelector(current.getVariable(), selector);
       current = current.child;
     }
 
@@ -72,7 +67,7 @@ public class ParsedSectionSpec {
 
   // selector := varFullNameEsc(indexSelect) or memberNameEsc(indexSelect)
   // parse variable name and index selector out of the selector String. variable name must be escaped
-  private static ParsedSectionSpec parseVariableSelector(Object parent, String selector) throws InvalidRangeException {
+  private static ParsedSectionSpec parseSelector(Object parent, String selector) throws InvalidRangeException {
     String varNameEsc, indexSelect = null;
 
     int pos1 = EscapeStrings.indexOf(selector, '(');
@@ -100,6 +95,37 @@ public class ParsedSectionSpec {
 
     if (v.getDataType() == DataType.SEQUENCE)
       indexSelect = null; // ignore whatever was sent
+
+    // get the selected Ranges, or all, and add to the list
+    Section section;
+    if (indexSelect != null) {
+      section = new Section(indexSelect);
+      section = Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
+    } else {
+      section = v.getShapeAsSection(); // all
+    }
+
+    return new ParsedSectionSpec(v, section);
+  }
+
+  public static ParsedSectionSpec makeFromVariable(Variable v, String selector) throws InvalidRangeException {
+    String varNameEsc;
+    String indexSelect = null;
+
+    int pos1 = EscapeStrings.indexOf(selector, '(');
+    if (pos1 < 0) { // no index
+      varNameEsc = selector;
+    } else {
+      varNameEsc = selector.substring(0, pos1);
+      int pos2 = selector.indexOf(')', pos1 + 1);
+      indexSelect = selector.substring(pos1, pos2);
+    }
+    if (debugSelector)
+      System.out.println(" parseVariableSection <" + selector + "> = <" + varNameEsc + ">, <" + indexSelect + ">");
+
+    if (v.getDataType() == DataType.SEQUENCE) {
+      indexSelect = null; // ignore whatever was sent
+    }
 
     // get the selected Ranges, or all, and add to the list
     Section section;

@@ -26,6 +26,7 @@ include 'uicdm'
 include 'waterml'
 
 include 'cdm-lite'
+include 'cdmr'
 
 // Set name of cdm submodules
 project(':cdm:core').name = 'cdm-core'

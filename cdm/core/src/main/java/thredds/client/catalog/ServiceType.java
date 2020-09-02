@@ -4,15 +4,11 @@
  */
 package thredds.client.catalog;
 
-/**
- * Service Type enums
- *
- * @author caron
- * @since 1/7/2015
- */
+/** Service Type enums */
 public enum ServiceType {
   ADDE, // not used
   Catalog("Provide subsetting and HTML conversion services for THREDDS catalogs.", AccessType.Catalog, null), //
+  Cdmr("Provides index subsetting on remote CDM datasets, using cdmremote protocol.", AccessType.DataAccess, "cdmr"), //
   CdmRemote("Provides index subsetting on remote CDM datasets, using ncstream.", AccessType.DataAccess, "cdmremote"), //
   CdmrFeature("Provides coordinate subsetting on remote CDM Feature Datasets, using ncstream.", AccessType.DataAccess,
       "cdmrFeature"), //

@@ -1239,15 +1239,20 @@ public class ToolsUI extends JPanel {
       if ((null == message) && (ioe instanceof EOFException)) {
         message = "Premature End of File";
       }
-      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + location + "%n" + message);
+      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + location + "\n" + message);
       if (!(ioe instanceof FileNotFoundException)) {
         ioe.printStackTrace();
       }
       ncfile = null;
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + location + "%n" + e.getMessage());
+      StringWriter sw = new StringWriter(5000);
+      if (e.getCause() != null) {
+        e.getCause().printStackTrace(new PrintWriter(sw));
+      } else {
+        e.printStackTrace(new PrintWriter(sw));
+      }
+      JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + location + "\n" + sw.toString());
       log.error("NetcdfDatasets.open cannot open " + location, e);
-      e.printStackTrace();
 
       try {
         if (ncfile != null) {
