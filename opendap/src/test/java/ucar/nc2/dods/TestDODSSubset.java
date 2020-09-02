@@ -19,7 +19,7 @@ public class TestDODSSubset {
 
   @Test
   public void testArraySubset() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.02?i32[1:10],f64[2:2:10]");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.02?i32[1:10],f64[2:2:10]");
 
     Variable v = null;
     Array a = null;
@@ -77,7 +77,7 @@ public class TestDODSSubset {
 
   @Test
   public void testSubset() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.05?types.integers");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.05?types.integers");
 
     Variable v = null;
     Array a = null;

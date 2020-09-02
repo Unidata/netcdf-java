@@ -44,6 +44,19 @@ import org.junit.Test;
 
 public class UIntTest {
 
+  @Test
+  public void testReadWriteToStream() throws Exception {
+    File outFile = File.createTempFile("UIntTest", "bin");
+
+    UIntTest b = new UIntTest();
+    try (FileOutputStream fp = new FileOutputStream(outFile); DataOutputStream sink = new DataOutputStream(fp)) {
+      b.sendIt(sink);
+    }
+    try (FileInputStream ifp = new FileInputStream(outFile); DataInputStream source = new DataInputStream(ifp)) {
+      b.getIt(source);
+    }
+  }
+
   private void sendIt(DataOutputStream fp) throws Exception {
     short s;
     byte b;
@@ -69,9 +82,7 @@ public class UIntTest {
     DAPNode.log.debug("\nInt assigned to 4294967298. System thinks of it as: " + i);
     fp.writeInt(i);
     DAPNode.log.debug("Wrote it to disk. ");
-
   }
-
 
   private void getIt(DataInputStream fp) throws Exception {
     short s;
@@ -109,19 +120,6 @@ public class UIntTest {
     DAPNode.log.debug("Converted int to long: " + l);
     l = l & 0xFFFFFFFFL;
     DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
-  }
-
-  @Test
-  public void testStuff() throws Exception {
-    File outFile = File.createTempFile("UIntTest", "bin");
-
-    UIntTest b = new UIntTest();
-    try (FileOutputStream fp = new FileOutputStream(outFile); DataOutputStream sink = new DataOutputStream(fp)) {
-      b.sendIt(sink);
-    }
-    try (FileInputStream ifp = new FileInputStream(outFile); DataInputStream source = new DataInputStream(ifp)) {
-      b.getIt(source);
-    }
   }
 
 }

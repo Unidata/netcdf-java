@@ -13,12 +13,11 @@ import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Test nc2 dods in the JUnit framework.
  * Dataset {
  * Structure {
  * Byte b;
@@ -36,20 +35,20 @@ import java.lang.invoke.MethodHandles;
 public class TestDODSArrayOfStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DODSNetcdfFile dodsfile;
+  private DodsNetcdfFile dodsfile;
+
+  @Before
+  public void setUp() throws Exception {
+    DodsNetcdfFile.setPreload(false);
+    dodsfile = TestDODSRead.open("test.50");
+    DodsNetcdfFile.setPreload(true);
+    DodsNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
+  }
 
   @After
   public void after() throws IOException {
     dodsfile.close();
-    H5headerNew.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
-  }
-
-  @Before
-  public void setUp() throws Exception {
-    DODSNetcdfFile.setPreload(false);
-    dodsfile = TestDODSRead.open("test.50");
-    DODSNetcdfFile.setPreload(true);
-    DODSNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
+    DodsNetcdfFile.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
   @Test
@@ -80,7 +79,6 @@ public class TestDODSArrayOfStructure {
 
   @Test
   public void testReadScalarMemberVariable() throws IOException {
-
     Variable v = dodsfile.findVariable("types.i32");
     assert v != null;
     assert v.getRank() == 0;
@@ -109,11 +107,11 @@ public class TestDODSArrayOfStructure {
   public void testReadArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     Array data = struct.read();
     assert data.getRank() == 1;
     assert data.getElementType().equals(StructureData.class);
@@ -129,11 +127,11 @@ public class TestDODSArrayOfStructure {
   public void testRead1DArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     for (int i = 0; i < struct.getSize(); i++) {
       StructureData sd = struct.readStructure(i);
 
@@ -146,11 +144,11 @@ public class TestDODSArrayOfStructure {
   public void testReadIteratorArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     try (StructureDataIterator iter = struct.getStructureIterator()) {
       while (iter.hasNext()) {
         StructureData sd = iter.next();

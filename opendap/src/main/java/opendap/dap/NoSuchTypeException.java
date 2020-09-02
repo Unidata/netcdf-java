@@ -44,7 +44,6 @@ package opendap.dap;
  * Thrown when an attempt is made to access a variable that does not exist.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  */
 public class NoSuchTypeException extends DDSException {
   /**

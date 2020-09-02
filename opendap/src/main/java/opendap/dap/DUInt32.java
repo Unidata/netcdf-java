@@ -45,7 +45,6 @@ import java.io.*;
  * Holds a OPeNDAP <code>UInt32</code> value.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  */
 public class DUInt32 extends DInt32 {

@@ -40,8 +40,8 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPMethodStream;
 import ucar.httpservices.HTTPSession;
+import ucar.nc2.util.IO;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 
@@ -56,7 +56,7 @@ import java.nio.charset.Charset;
  * 4. test local session handling.
  */
 
-public class TestState extends UnitTestCommon {
+public class TestState {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   //////////////////////////////////////////////////
@@ -70,11 +70,6 @@ public class TestState extends UnitTestCommon {
   //////////////////////////////////////////////////
   boolean verbose = false;
   boolean pass = false;
-
-  public TestState() {
-    setTitle("HTTP Session and Method State tests");
-  }
-
 
   @Test
   public void testState() throws Exception {
@@ -133,7 +128,7 @@ public class TestState extends UnitTestCommon {
     String body = method.getResponseAsString();// will close stream
     try {
       stream = (HTTPMethodStream) method.getResponseBodyAsStream();
-      readbinaryfile(stream);
+      IO.readContentsToByteArray(stream);
       logger.debug("Stream not closed.");
       Assert.assertFalse(stream.isClosed());
     } catch (Exception e) {

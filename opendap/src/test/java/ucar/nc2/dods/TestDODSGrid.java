@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -29,15 +30,15 @@ import static org.junit.Assert.assertEquals;
 public class TestDODSGrid {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testGrid() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.06a");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.06a");
 
     Variable v = null;
 
     // arrays
     assert (null != (v = dodsfile.findVariable("OneD")));
-    assert v instanceof DODSVariable;
+    assert v instanceof DodsVariable;
     checkArray(v);
 
     // map

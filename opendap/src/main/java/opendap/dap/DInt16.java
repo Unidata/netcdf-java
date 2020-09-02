@@ -47,7 +47,6 @@ import java.io.*;
  * Holds a OPeNDAP <code>Int16</code> value.
  *
  * @author ndp
- * @version $Revision: 15901 $
  * @see BaseType
  */
 public class DInt16 extends DPrimitive implements ClientIO {

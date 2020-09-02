@@ -45,7 +45,6 @@ import java.io.*;
  * A vector of booleans.
  *
  * @author ndp
- * @version $Revision: 15901 $
  * @see PrimitiveVector
  */
 public class BooleanPrimitiveVector extends PrimitiveVector {

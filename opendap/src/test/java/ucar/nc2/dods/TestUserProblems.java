@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -12,38 +13,26 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DebugFlags;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-/**
- * Test nc2 dods in the JUnit framework.
- * Dataset {
- * Grid {
- * ARRAY:
- * Float64 amp[10];
- * MAPS:
- * Float64 x[10];
- * } OneD;
- * } Simple;
- */
 public class TestUserProblems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testGrid() throws IOException, InvalidRangeException {
     System.setProperty("httpservices.urlencode", "false");
-    try (DODSNetcdfFile dodsfile =
+    try (DodsNetcdfFile dodsfile =
         TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods")) {
 
       Variable dataV = null;
 
       // array
       assert (null != (dataV = dodsfile.findVariable("olr")));
-      assert dataV instanceof DODSVariable;
+      assert dataV instanceof DodsVariable;
 
       // maps
       Variable v = null;
@@ -58,21 +47,18 @@ public class TestUserProblems {
     System.setProperty("httpservices.urlencode", "true");
   }
 
-  // ucar.nc2.dods.TestUserProblems > testNomads STANDARD_ERROR
-  // opendap.dap.DAP2Exception: Method failed:HTTP/1.1 403 Forbidden on URL=
-  // http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2.dods?Temperature[0:1:744][0:1:0][0:1:575][0:1:1151]
-  // @org.junit.Test
+  @Test
   public void testNomads() throws InvalidRangeException {
     // This server is running TDS v4.2, and there appears to be an issue with encoded urls?
     System.setProperty("httpservices.urlencode", "false");
-    DODSNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
+    DodsNetcdfFile.setDebugFlags(DebugFlags.create("DODS/serverCall"));
     /* The temperature is recorded */
     String testfile = "http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2";
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(testfile, null)) {
       System.out.printf("The GRIB file %s, temperature is displayed.", testfile);
       System.out.println();
 
-      Variable V2 = ncfile.findVariableByAttribute(null, "units", "K");
+      Variable V2 = ncfile.getRootGroup().findVariableByAttribute("units", "K");
 
       List<Dimension> newdim = V2.getDimensions();
       int num_of_dimension = newdim.size();

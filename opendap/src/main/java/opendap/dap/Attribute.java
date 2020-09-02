@@ -40,15 +40,16 @@
 package opendap.dap;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import opendap.dap.parsers.DDSXMLParser;
-import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.dods.EscapeStringsDap;
 import java.io.BufferedWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * An <code>Attribute</code> holds information about a single attribute in an
@@ -60,7 +61,6 @@ import java.util.Vector;
  * type, including container.
  *
  * @author jehamby
- * @version $Revision: 22638 $
  * @see AttributeTable
  */
 public class Attribute extends DAPNode {
@@ -137,7 +137,8 @@ public class Attribute extends DAPNode {
   /**
    * Either an AttributeTable or a Vector of String.
    */
-  private Object attr;
+  private AttributeTable attrTable;
+  private List<String> attr;
 
   /**
    * Construct a container attribute.
@@ -147,7 +148,7 @@ public class Attribute extends DAPNode {
    */
   public Attribute(AttributeTable container) {
     type = CONTAINER;
-    attr = container;
+    attrTable = container;
   }
 
   /**
@@ -166,37 +167,13 @@ public class Attribute extends DAPNode {
    *         member of type
    */
   public Attribute(int type, String clearname, String value, boolean check) throws AttributeBadValueException {
-
     super(clearname);
     if (check)
       value = forceValue(type, value);
 
     this.type = type;
-    attr = new Vector();
-    ((Vector) attr).addElement(value);
-  }
-
-  /**
-   * Construct an <code>Attribute</code> with the given type and initial
-   * value. Checks the value of the attribute and throws an exception if
-   * it's not valid.
-   *
-   * @param type the type of attribute to create. Use one of the type
-   *        constants defined by this class.
-   * @param clearname the name of the attribute.
-   * @param value the initial value of this attribute. Use the
-   *        <code>appendValue</code> method to create a vector of values.
-   * @throws AttributeBadValueException thrown if the value is not a legal
-   *         member of type
-   */
-  public Attribute(int type, String clearname, String value) throws AttributeBadValueException {
-
-    super(clearname);
-    value = forceValue(type, value);
-
-    this.type = type;
-    attr = new Vector();
-    ((Vector) attr).addElement(value);
+    attr = new ArrayList<>();
+    attr.add(value);
   }
 
   /**
@@ -207,9 +184,8 @@ public class Attribute extends DAPNode {
   public Attribute(String clearname, AttributeTable container) {
     super(clearname);
     type = CONTAINER;
-    attr = container;
+    attrTable = container;
   }
-
 
   /**
    * Construct an empty attribute with the given type.
@@ -227,7 +203,7 @@ public class Attribute extends DAPNode {
     if (type == CONTAINER)
       throw new IllegalArgumentException("Can't construct an Attribute(CONTAINER)");
     else
-      attr = new Vector();
+      attr = new ArrayList<>();
   }
 
   /**
@@ -341,8 +317,9 @@ public class Attribute extends DAPNode {
    *
    * @return the <code>AttributeTable</code> container, or null if not a container.
    */
+  @Nullable
   public AttributeTable getContainerN() {
-    return (attr instanceof AttributeTable) ? (AttributeTable) attr : null;
+    return attrTable;
   }
 
   /**
@@ -351,57 +328,36 @@ public class Attribute extends DAPNode {
    *
    * @return an <code>Enumeration</code> of <code>String</code>.
    */
-  public Enumeration getValues() throws NoSuchAttributeException {
+  public List<String> getValues() throws NoSuchAttributeException {
     checkVectorUsage();
-    return ((Vector) attr).elements();
+    return attr;
   }
 
-  /**
-   * Returns the values of this attribute as an <code>Enumeration</code> of <code>String</code>.
-   *
-   * @return an <code>Iterator<String></code> of String </code>, or null if a container..
-   */
-  public Iterator getValuesIterator() {
-    return (attr instanceof Vector) ? ((Vector) attr).iterator() : null;
+  /** Returns the values of this attribute as an <code>Iterator</code> of <code>String</code>. */
+  public Iterator<String> getValuesIterator() {
+    return (attr != null) ? attr.iterator() : null;
   }
 
-  /**
-   * Returns the nummber of values held in this attribute.
-   *
-   * @return the attribute <code>String</code> at <code>index</code>.
-   */
+  /** Returns the nummber of values held in this attribute. */
   public int getNumVal() throws NoSuchAttributeException {
     checkVectorUsage();
-    return ((Vector) attr).size();
+    return attr.size();
   }
 
-  /**
-   * Returns the attribute value at <code>index</code>.
-   *
-   * @param index the index of the attribute value to return.
-   * @return the attribute <code>String</code> at <code>index</code>.
-   */
+  /** Returns the attribute value at <code>index</code>. */
   public String getValueAt(int index) throws NoSuchAttributeException {
     checkVectorUsage();
-    return (String) ((Vector) attr).elementAt(index);
+    return attr.get(index);
   }
 
-  /**
-   * Returns the attribute value at <code>index</code>.
-   *
-   * @param index the index of the attribute value to return.
-   * @return the attribute <code>String</code> at <code>index</code>, or null if a container..
-   */
+  /** Returns the attribute value at <code>index</code>, or null if a container */
+  @Nullable
   public String getValueAtN(int index) {
-    if (!(attr instanceof Vector))
-      return null;
-    return (String) ((Vector) attr).elementAt(index);
+    return (attr == null) ? null : attr.get(index);
   }
 
-
   /**
-   * Append a value to this attribute. Always checks the validity of the
-   * attribute's value.
+   * Append a value to this attribute. Always checks the validity of the attribute's value.
    *
    * @param value the attribute <code>String</code> to add.
    * @throws AttributeBadValueException thrown if the value is not a legal
@@ -427,7 +383,7 @@ public class Attribute extends DAPNode {
     if (check)
       value = forceValue(type, value);
 
-    ((Vector) attr).addElement(value);
+    attr.add(value);
   }
 
   /**
@@ -437,7 +393,7 @@ public class Attribute extends DAPNode {
    */
   public void deleteValueAt(int index) throws AttributeBadValueException, NoSuchAttributeException {
     checkVectorUsage();
-    ((Vector) attr).removeElementAt(index);
+    attr.remove(index);
   }
 
   /**
@@ -668,82 +624,32 @@ public class Attribute extends DAPNode {
     }
   }
 
-  /*
-   * NOTE: THis method is flawed think of a better way to do this
-   * BEFORE you uncomment it!! The valueOf() method for
-   * Boolean returns true if and only if the string passed
-   * is equal to (ignoring case) to "true"
-   * Otherwise it returns false... A lousy test., UNLESS
-   * the JAVA implementation of a Boolean string works for
-   * you.
-   * 
-   * Check if string is a valid Boolean.
-   * 
-   * @param s the <code>String</code> to check.
-   * 
-   * @return true if the value is legal.
-   * 
-   * private static final boolean checkBoolean(String s) {
-   * try {
-   * Boolean.valueOf(s);
-   * return true;
-   * }
-   * catch (NumberFormatException e) {
-   * return false;
-   * }
-   * }
-   * 
-   */
-
-
   private void checkVectorUsage() throws NoSuchAttributeException {
-
-    if (!(attr instanceof Vector)) {
+    if (attr == null) {
       throw new NoSuchAttributeException(
           "The Attribute '" + getEncodedName() + "' is a container. " + "It's contents are Attribues, not values.");
     }
   }
 
   private void checkContainerUsage() throws NoSuchAttributeException {
-
-    if (_Debug) {
-      DAPNode.log.debug("Attribute.checkContainerUsage(): ");
-    }
-
-    if (!(attr instanceof AttributeTable)) {
+    if (attrTable == null) {
       throw new NoSuchAttributeException("The Attribute '" + getEncodedName() + "' is not a container (AttributeTable)."
           + "It's content is made up of values, not other Attributes.");
-    }
-    if (_Debug) {
-      DAPNode.log.debug("The Attribute is a container");
     }
   }
 
 
   public void print(PrintWriter os, String pad) {
-
-    if (_Debug)
-      os.println("Entered Attribute.print()");
-
-    if (this.attr instanceof AttributeTable) {
-
-      if (_Debug)
-        os.println("  Attribute \"" + _nameClear + "\" is a Container.");
-
-      ((AttributeTable) this.attr).print(os, pad);
+    if (this.attrTable != null) {
+      this.attrTable.print(os, pad);
 
     } else {
-      if (_Debug)
-        os.println("    Printing Attribute \"" + _nameClear + "\".");
-
       os.print(pad + getTypeString() + " " + getEncodedName() + " ");
 
-      Enumeration es = ((Vector) this.attr).elements();
-
-
-      while (es.hasMoreElements()) {
-        String val = (String) es.nextElement();
-
+      int count = 0;
+      for (String val : this.attr) {
+        if (count > 0)
+          os.print(", ");
         /*
          * Base quoting on type
          * boolean useQuotes = false;
@@ -763,16 +669,15 @@ public class Attribute extends DAPNode {
          * os.print(val);
          */
         if (this.type == Attribute.STRING) {
-          String quoted = "\"" + EscapeStrings.backslashEscapeDapString(val) + "\"";
+          String quoted = "\"" + EscapeStringsDap.backslashEscapeDapString(val) + "\"";
           for (int i = 0; i < quoted.length(); i++) {
             os.print((char) ((int) quoted.charAt(i)));
           }
           // os.print(quoted);
-        } else
+        } else {
           os.print(val);
-
-        if (es.hasMoreElements())
-          os.print(", ");
+        }
+        count++;
       }
       os.println(";");
     }
@@ -830,46 +735,17 @@ public class Attribute extends DAPNode {
   }
 
   public void printXML(PrintWriter pw, String pad, boolean constrained) {
-
-
-    if (_Debug)
-      pw.println("Entered Attribute.printXML()");
-
-    if (this.attr instanceof AttributeTable) {
-
-      if (_Debug)
-        pw.println("  Attribute \"" + _nameClear + "\" is a Container.");
-
-      ((AttributeTable) this.attr).printXML(pw, pad, constrained);
-
+    if (this.attrTable != null) {
+      this.attrTable.printXML(pw, pad, constrained);
     } else {
-      if (_Debug)
-        pw.println("    Printing Attribute \"" + _nameClear + "\".");
-
       pw.println(pad + "<Attribute name=\"" + DDSXMLParser.normalizeToXML(getEncodedName()) + "\" type=\""
           + getTypeString() + "\">");
-
-      Enumeration es = ((Vector) this.attr).elements();
-      while (es.hasMoreElements()) {
-        String val = (String) es.nextElement();
+      for (String val : this.attr) {
         pw.println(pad + "\t" + "<value>" + DDSXMLParser.normalizeToXML(val) + "</value>");
       }
       pw.println(pad + "</Attribute>");
     }
-    if (_Debug)
-      pw.println("Leaving Attribute.print()");
     pw.flush();
-
-  }
-
-
-  static String fixnan(String value) {
-    /* Check for hyrax error */
-    if (value.equalsIgnoreCase("nan."))
-      value = "nan";
-    else if (value.equalsIgnoreCase("inf."))
-      value = "inf";
-    return value;
   }
 
   /**
@@ -879,57 +755,14 @@ public class Attribute extends DAPNode {
    * @param map track previously cloned nodes
    * @return a clone of this <code>Attribute</code>.
    */
-  public DAPNode cloneDAG(CloneMap map) throws CloneNotSupportedException {
+  public Attribute cloneDAG(CloneMap map) throws CloneNotSupportedException {
     Attribute a = (Attribute) super.cloneDAG(map);
     // assume type, is_alias, and aliased_to have been cloned already
     if (type == CONTAINER)
-      a.attr = (AttributeTable) cloneDAG(map, ((AttributeTable) attr));
+      a.attrTable = (AttributeTable) cloneDAG(map, attrTable);
     else
-      a.attr = ((Vector) attr).clone(); // ok, attr is a vector of strings
+      a.attr = new ArrayList<>(attr); // ok, attr is a vector of strings
     return a;
   }
 
 }
-
-// $Log: Attribute.java,v $
-// Revision 1.2 2003/09/02 17:49:34 ndp
-// *** empty log message ***
-//
-// Revision 1.1 2003/08/12 23:51:25 ndp
-// Mass check in to begin Java-OPeNDAP development work
-//
-// Revision 1.11 2011/01/09 Dennis Heimbigner
-// - Make subclass of BaseType for uniformity
-//
-// Revision 1.10 2003/04/16 21:50:53 caron
-// turn off debug flag
-//
-// Revision 1.9 2003/04/07 22:12:32 jchamber
-// added serialization
-//
-// Revision 1.8 2003/02/12 16:41:15 ndp
-// *** empty log message ***
-//
-// Revision 1.7 2002/10/08 21:59:18 ndp
-// Added XML functionality to the core. This includes the new DDS code (aka DDX)
-// for parsing XML representations of the dataset description ( that's a DDX)
-// Also BaseType has been modified to hold Attributes and methods added to DDS
-// to ingest DAS's (inorder to add Attributes to variables) and to get the DAS
-// object from the DDS. Geturl and DConnect hav been modified to provide client
-// access to this new set of functionalites. ndp 10/8/2002
-//
-// Revision 1.6 2002/08/27 04:30:11 ndp
-// AttributeTable added to BaseType
-// Interfaces for AttributeTable implmented in BaseType, DConstructor, and DDS
-// Methods added to DDS to print DAS and to return a DAS object.
-// XMLParser updated to populate BaseType AttributeTables.
-//
-// Revision 1.5 2002/05/30 23:24:58 jimg
-// I added methods that provide a way to add attribute values without checking
-// their type/value validity. This provides a way to add bad values in a
-// *_dods_error attribute container so that attributes that are screwed up won't
-// be lost (because they might make sense to a person, for example) or cause the
-// whole DAS to break. The DAS parser (DASParser.jj) uses this new code.
-//
-
-

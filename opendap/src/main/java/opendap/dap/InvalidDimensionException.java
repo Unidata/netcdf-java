@@ -45,7 +45,6 @@ package opendap.dap;
  * Used to indicate that one of the dimension sizes is incorrect.
  *
  * @author ndp
- * @version $Revision: 15901 $
  */
 public class InvalidDimensionException extends DAP2Exception {
   /**

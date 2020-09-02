@@ -4,6 +4,10 @@
  */
 package ucar.nc2.dods;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import org.junit.Ignore;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -64,14 +68,14 @@ import ucar.nc2.write.Ncdump;
 public class TestDODSnestedSequence {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @org.junit.Test
+  @Test
   public void testNestedSequenceParent() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 
     Variable v = dodsfile.findVariable("person1");
     assert null != v;
     assert v instanceof Structure;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.isVariableLength();
 
@@ -101,16 +105,15 @@ public class TestDODSnestedSequence {
 
   }
 
-  public void utestNestedSequence() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
+  @Test
+  @Ignore("error reading inner sequence: is this legal? I dont think so")
+  public void testNestedSequence() throws IOException {
+    DodsNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 
-    Variable v = dodsfile.findVariable("person1");
-    Structure s = (Structure) v;
-
-    v = s.findVariable("stuff");
+    Variable v = dodsfile.findVariable("person1.stuff");
     assert null != v;
     assert v instanceof Structure;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.isVariableLength();
 
@@ -153,8 +156,9 @@ public class TestDODSnestedSequence {
 
   }
 
-  public void utestCE() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsFile = TestDODSRead.open("NestedSeq2");
+  @Test
+  public void testCE() throws IOException {
+    DodsNetcdfFile dodsFile = TestDODSRead.open("NestedSeq2");
     Variable outerSequence = dodsFile.findVariable("person1");
 
     String CE = "person1.age,person1.stuff&person1.age=3";
@@ -172,57 +176,12 @@ public class TestDODSnestedSequence {
     assert innerMembers.findMember("foo") != null;
     assert innerMembers.findMember("bar") != null;
 
-    assert asInner.getSize() == 3 : asInner.getSize();
+    assertThat(asInner.getSize()).isEqualTo(1);
 
     StructureData firstInner = asInner.getStructureData(0);
     StructureMembers firstMembers = firstInner.getStructureMembers();
     assert firstMembers.findMember("foo") != null;
     assert firstMembers.findMember("bar") != null;
-
-    // StructureMembers.Member timeMember = innerMembers.findMember(timeVar.getShortName());
-
   }
-
-
-  // server+"NestedSeq2", "person1.age,person1.stuff&person1.age=3"
-
-  /*
-   * boolean show = false;
-   * public void testReadNestedSequence() throws IOException {
-   * 
-   * DODSNetcdfFile dodsfile = TestDODSRead.open("test.23");
-   * 
-   * DODSStructure struct = dodsfile.findStructure("exp");
-   * assert null != struct;
-   * 
-   * DODSStructure datas = struct.read();
-   * 
-   * DODSSequence seq = (DODSSequence) datas.findStructureByShortName("ComplexSequence");
-   * assert null != seq;
-   * 
-   * int count = 0;
-   * Iterator iter = seq.getSequenceIterator(null);
-   * while (iter.hasNext()) {
-   * if (debug) System.out.println(" testReadStructure row = "+ count);
-   * count++;
-   * DODSStructure data = (DODSStructure) iter.next();
-   * 
-   * DODSGrid profile = (DODSGrid) data.findStructureByShortName("profile");
-   * assert profile != null;
-   * DODSVariable v = profile.findVariableByShortName("depth");
-   * assert v != null;
-   * assert v.hasCachedData();
-   * Array a = v.read();
-   * assert a.getRank() == 1;
-   * 
-   * Dimension d = dodsfile.findDimension("exp.ComplexSequence.profile.depth");
-   * assert d != null;
-   * assert d.getLength() == a.getSize();
-   * 
-   * if (debug) System.out.println(profile.getName()+" == \n"+profile);
-   * break;
-   * }
-   * }
-   */
 
 }

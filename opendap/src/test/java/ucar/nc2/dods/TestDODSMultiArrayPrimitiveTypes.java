@@ -19,7 +19,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
   @org.junit.Test
   public void testArrays() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.03");
 
     Variable v = null;
     Array a = null;
@@ -184,13 +184,13 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
   @Test
   public void testStride() throws IOException, InvalidRangeException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.03");
 
-    DODSVariable v = null;
+    DodsVariable v = null;
     Array a = null;
 
     // uint32
-    assert (null != (v = (DODSVariable) dodsfile.findVariable("b")));
+    assert (null != (v = (DodsVariable) dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
@@ -220,15 +220,15 @@ public class TestDODSMultiArrayPrimitiveTypes {
 
   @Test
   public void testSection() throws IOException, InvalidRangeException {
-    DODSNetcdfFile.setPreload(false);
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
-    DODSNetcdfFile.setPreload(true);
+    DodsNetcdfFile.setPreload(false);
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.03");
+    DodsNetcdfFile.setPreload(true);
 
-    DODSVariable v = null;
+    DodsVariable v = null;
     Array a = null;
 
     // uint32
-    assert (null != (v = (DODSVariable) dodsfile.findVariable("b")));
+    assert (null != (v = (DodsVariable) dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;

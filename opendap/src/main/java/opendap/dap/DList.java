@@ -49,7 +49,6 @@ package opendap.dap;
  * DDS parser.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  * @see DVector
  */

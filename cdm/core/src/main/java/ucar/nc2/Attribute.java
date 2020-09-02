@@ -12,7 +12,6 @@ import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
-import ucar.ma2.ForbiddenConversionException;
 import ucar.ma2.Index;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;

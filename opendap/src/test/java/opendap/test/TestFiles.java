@@ -5,19 +5,12 @@
 
 package opendap.test;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.invoke.MethodHandles;
 
-// WARNING: assumes we are operating inside module directory
-// when invoked
-
-abstract public class TestFiles extends UnitTestCommon {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
+// WARNING: assumes we are operating inside module directory when invoked
+// TODO change to Parameterized
+class TestFiles extends UnitTestCommon {
   static final boolean DEBUG = false;
 
   // Following are with respect to threddsRoot

@@ -52,7 +52,6 @@ import java.io.*;
  * and <code>DList</code>s of compound types.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  * @see DVector
  */

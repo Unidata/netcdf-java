@@ -19,7 +19,7 @@ public class TestDODSArrayPrimitiveTypes {
 
   @Test
   public void testArrays() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.02");
 
     Variable v = null;
     Array a = null;
@@ -192,13 +192,13 @@ public class TestDODSArrayPrimitiveTypes {
 
   @Test
   public void testStrides() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.02");
 
-    DODSVariable v = null;
+    DodsVariable v = null;
     Array a = null;
 
     // byte
-    assert (null != (v = (DODSVariable) dodsfile.findVariable("b")));
+    assert (null != (v = (DodsVariable) dodsfile.findVariable("b")));
     assert v.getShortName().equals("b");
     assert v.getRank() == 1;
     assert v.getSize() == 25;

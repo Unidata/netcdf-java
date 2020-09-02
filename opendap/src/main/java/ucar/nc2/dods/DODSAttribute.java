@@ -6,24 +6,17 @@ package ucar.nc2.dods;
 
 import ucar.ma2.*;
 import java.util.*;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * Adapter for dods.dap.Attribute into a ucar.nc2.Attribute.
  * Byte attributes are widened to short because DODS has Bytes as unsigned,
  * but in Java they are signed.
- *
- * @author caron
- * @see ucar.nc2.Attribute
  */
+class DODSAttribute {
 
-// Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
-class DODSAttribute extends ucar.nc2.Attribute {
-
-  static DODSAttribute create(String rawName, opendap.dap.Attribute att) {
-
+  static ucar.nc2.Attribute create(String rawName, opendap.dap.Attribute att) {
     // LOOK dont know if attribute is unsigned byte
-    DataType ncType = DODSNetcdfFile.convertToNCType(att.getType(), false);
+    DataType ncType = DodsNetcdfFiles.convertToNCType(att.getType(), false);
 
     // count number
     int nvals = 0;
@@ -58,42 +51,9 @@ class DODSAttribute extends ucar.nc2.Attribute {
       }
     }
 
-    String name = DODSNetcdfFile.makeShortName(rawName);
-    String dodsName = DODSNetcdfFile.makeDODSName(rawName);
-    return new DODSAttribute(name, data, dodsName);
-  }
-
-  private DODSAttribute(String name, Array values, String dodsName) {
-    // super(name, values); // TODO should be
-    super(name, "values"); // fake
-    setDODSName(dodsName);
-  }
-
-  DODSAttribute(String dodsName, String val) {
-    super(DODSNetcdfFile.makeShortName(dodsName), val);
-    setDODSName(DODSNetcdfFile.makeDODSName(dodsName));
-  }
-
-  private static String[] escapeAttributeStrings = {"\\", "\""};
-  private static String[] substAttributeStrings = {"\\\\", "\\\""};
-
-  private String unescapeAttributeStringValues(String value) {
-    return StringUtil2.substitute(value, substAttributeStrings, escapeAttributeStrings);
-  }
-
-  //////////////////////////////////////////////////
-  // DODSNode Interface
-  String dodsName = null;
-
-  public void setDODSName(String name) {
-    this.dodsName = name;
-  }
-
-  public String getDODSName() {
-    if (dodsName == null)
-      return getShortName();
-    else
-      return this.dodsName;
+    String name = DodsNetcdfFiles.makeShortName(rawName);
+    String dodsName = DodsNetcdfFiles.makeDODSName(rawName); // LOOK
+    return ucar.nc2.Attribute.builder(name).setValues(data).build();
   }
 
 }

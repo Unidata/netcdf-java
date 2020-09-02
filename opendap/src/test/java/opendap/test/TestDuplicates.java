@@ -32,41 +32,19 @@
 
 package opendap.test;
 
-import org.junit.Assert;
+import static com.google.common.truth.Truth.assertThat;
+
+import java.util.Formatter;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.dods.DodsNetcdfFile;
 import ucar.nc2.write.CDLWriter;
-import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.UnitTestCommon;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestDuplicates extends UnitTestCommon {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   public TestDuplicates() {
     setTitle("DAP duplicate names tests");
-  }
-
-  // Collect results locally
-  static public class Result {
-    String title;
-    String url;
-    String cdl;
-
-    public Result(String title, String url, String cdl) {
-      this.title = title;
-      this.url = url;
-      this.cdl = cdl;
-    }
   }
 
   @Test
@@ -74,56 +52,31 @@ public class TestDuplicates extends UnitTestCommon {
     // Check if we are running against remote or localhost, or what.
     String testserver = TestDir.dap2TestServer;
 
-    List<Result> results = new ArrayList<Result>();
-    if (true) {
-      results.add(new Result("Top and field vars have same names", "http://" + testserver + "/dts/structdupname",
-          "netcdf dods://" + testserver + "/dts/structdupname {\n" + " variables:\n" + "   int time;\n"
-              + "Structure {\n" + "   float time;\n" + "} record;\n" + "}"));
-    }
-    if (true) {
-      results.add(new Result("TestFailure", "http://" + testserver + "/dts/simplestruct", "netcdf dods://" + testserver
-          + "/dts/simplestruct {\n" + " variables:\n" + "Structure {\n" + "   int i32;\n" + "} types;\n" + "}"));
-    }
-    boolean pass = true;
-    for (Result result : results) {
+    List<Testcase> results = new ArrayList<>();
+    results.add(new Testcase("Top and field vars have same names", "http://" + testserver + "/dts/structdupname",
+        String.format("netcdf dods://%s/dts/structdupname {%n" + "  variables:%n" + "    int time;%n" + "%n"
+            + "    Structure {%n" + "      float time;%n" + "    } record;%n" + "%n" + "}%n", testserver)));
+    results.add(new Testcase("TestFailure", "http://" + testserver + "/dts/simplestruct",
+        String.format("netcdf dods://%s/dts/simplestruct {%n" + "  variables:%n" + "    Structure {%n"
+            + "      int i32;%n" + "    } types;%n" + "%n" + "}%n", testserver)));
+
+    for (Testcase result : results) {
       System.out.println("TestDuplicates: " + result.url);
-      boolean localpass = true;
-      try {
-        DODSNetcdfFile ncfile = new DODSNetcdfFile(result.url);
-        if (ncfile == null)
-          throw new Exception("Cannot read: " + result.url);
-        StringWriter ow = new StringWriter();
-        PrintWriter pw = new PrintWriter(ow);
-        CDLWriter.writeCDL(ncfile, pw, false);
-        try {
-          pw.close();
-          ow.close();
-        } catch (IOException ioe) {
-        } ;
-        StringReader baserdr = new StringReader(result.cdl);
-        String captured = ow.toString();
-        StringReader resultrdr = new StringReader(captured);
-        // Diff the two files
-        Diff diff = new Diff("Testing " + result.title);
-        localpass = !diff.doDiff(baserdr, resultrdr);
-        baserdr.close();
-        resultrdr.close();
+      try (DodsNetcdfFile ncfile = DodsNetcdfFile.builder().build(result.url, null)) {
+        Formatter cdl = new Formatter();
+        CDLWriter.writeCDL(ncfile, cdl, false, null);
+
+        assertThat(cdl.toString()).isEqualTo(baseline(result));
+
         // Dump the output for visual comparison
         if (System.getProperty("visual") != null) {
           System.out.println("Testing " + result.title + " visual:");
           System.out.println("---------------");
-          System.out.print(captured);
+          System.out.print(cdl.toString());
           System.out.println("---------------");
         }
-      } catch (IllegalArgumentException e) {
-        localpass = false;
       }
-      if (!localpass)
-        pass = false;
     }
-    System.out.flush();
-    System.err.flush();
-    Assert.assertTrue("Testing " + getTitle(), pass);
   }
 
 

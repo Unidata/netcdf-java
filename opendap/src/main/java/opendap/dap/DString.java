@@ -46,7 +46,6 @@ import java.io.*;
  * Holds a OPeNDAP <code>String</code> value.
  *
  * @author jehamby
- * @version $Revision: 21071 $
  * @see BaseType
  */
 public class DString extends DPrimitive implements ClientIO {

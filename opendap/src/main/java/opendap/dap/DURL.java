@@ -44,7 +44,6 @@ package opendap.dap;
  * Holds a OPeNDAP <code>URL</code> value.
  *
  * @author jehamby
- * @version $Revision: 15901 $
  * @see BaseType
  */
 public class DURL extends DString {

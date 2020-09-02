@@ -12,7 +12,6 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class TestDODSStructureArray {
 
   @Test
   public void testArrays() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.21");
 
     Variable v = null;
     Array a = null;
@@ -86,10 +85,10 @@ public class TestDODSStructureArray {
   }
 
   @Test
-  public void testArray2() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
-    DODSStructure exp = (DODSStructure) dodsfile.findVariable("exp");
-    StructureData sd = exp.readStructure();
+  public void testArray2() throws IOException, InvalidRangeException {
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.21");
+    DodsStructure exp = (DodsStructure) dodsfile.findVariable("exp");
+    StructureData sd = exp.readStructure(0);
 
     StructureMembers.Member m = null;
     Variable v = null;
@@ -147,10 +146,10 @@ public class TestDODSStructureArray {
   }
 
   @Test
-  public void testSARead() throws IOException {
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
-    DODSStructure exp = (DODSStructure) dodsfile.findVariable("exp");
-    StructureData data = exp.readStructure();
+  public void testSARead() throws IOException, InvalidRangeException {
+    DodsNetcdfFile dodsfile = TestDODSRead.open("test.21");
+    DodsStructure exp = (DodsStructure) dodsfile.findVariable("exp");
+    StructureData data = exp.readStructure(0);
 
     StructureMembers.Member m = data.findMember("f");
     assert m != null;

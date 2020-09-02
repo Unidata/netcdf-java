@@ -36,13 +36,13 @@ import java.lang.invoke.MethodHandles;
 public class TestDODSArrayOfStructureNested {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static DODSNetcdfFile dodsfile;
+  private static DodsNetcdfFile dodsfile;
 
   @BeforeClass
   public static void setUp() throws Exception {
-    DODSNetcdfFile.setPreload(false);
+    DodsNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.53");
-    DODSNetcdfFile.setPreload(true);
+    DodsNetcdfFile.setPreload(true);
   }
 
   @AfterClass
@@ -111,11 +111,11 @@ public class TestDODSArrayOfStructureNested {
   public void testReadArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     Array data = struct.read();
     assert data.getRank() == 1;
     assert data.getElementType().equals(StructureData.class);
@@ -131,11 +131,11 @@ public class TestDODSArrayOfStructureNested {
   public void testRead1DArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
-    assert v instanceof DODSStructure;
+    assert v instanceof DodsStructure;
     assert v.getRank() == 1;
     assert v.getDataType() == DataType.STRUCTURE;
 
-    DODSStructure struct = (DODSStructure) v;
+    DodsStructure struct = (DodsStructure) v;
     for (int i = 0; i < struct.getSize(); i++) {
       StructureData sd = struct.readStructure(i);
 

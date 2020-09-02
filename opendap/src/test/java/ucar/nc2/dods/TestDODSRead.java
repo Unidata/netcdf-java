@@ -4,60 +4,67 @@
  */
 package ucar.nc2.dods;
 
+import java.util.ArrayList;
+import java.util.List;
 import opendap.test.TestSources;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /**
  * Test nc2 dods in the JUnit framework.
  * Open and read various test datasets from the dts server.
  */
+@RunWith(Parameterized.class)
 public class TestDODSRead {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  public static boolean showFile = true, showFileDebug = true;
 
-  public static boolean showFile = false, showFileDebug = false;
+  @Parameterized.Parameters(name = "{0}")
+  static public List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
+    result.add(new Object[] {"test.01", ""}); // scalars
+    result.add(new Object[] {"test.02", ""}); // 1D arrays
+    result.add(new Object[] {"test.03", ""}); // 3D arrays
+    result.add(new Object[] {"test.04", ""}); // Structure with scalars
+    result.add(new Object[] {"test.05", ""}); // nested Structures with scalars
+    result.add(new Object[] {"test.06", ""}); // Grids
+    result.add(new Object[] {"test.06a", ""}); // Grids
+    result.add(new Object[] {"test.07", ""}); // Structure
+    result.add(new Object[] {"test.07a", ""}); // Structure
+    result.add(new Object[] {"test.21", ""}); // Structure with multidim fields
+    result.add(new Object[] {"test.22", ""}); // array of structures
+    result.add(new Object[] {"test.50", ""}); // array of structures with nested scalar structure
+    result.add(new Object[] {"test.53", ""}); // array of structures with nested scalar structure
+    result.add(new Object[] {"test.vs5", ""}); // structure array
 
-  static DODSNetcdfFile open(String name) throws IOException {
+    return result;
+  }
+
+  @Parameterized.Parameter(0)
+  public String url;
+
+  @Parameterized.Parameter(1)
+  public String CE;
+
+  @Test
+  public void run() throws IOException {
+    open(url);
+  }
+
+  public static DodsNetcdfFile open(String name) throws IOException {
     String filename = TestSources.XURL1 + "/" + name;
     return openAbs(filename);
   }
 
-  static DODSNetcdfFile openAbs(String filename) throws IOException {
+  public static DodsNetcdfFile openAbs(String filename) throws IOException {
     System.out.println("TestDODSRead = " + filename);
-    DODSNetcdfFile dodsfile = new DODSNetcdfFile(filename);
+    DodsNetcdfFile dodsfile = DodsNetcdfFile.builder().build(filename, null);
     if (showFileDebug)
       System.out.println(dodsfile.getDetailInfo());
     if (showFile)
       System.out.println(dodsfile.toString());
     return dodsfile;
-  }
-
-  @org.junit.Test
-  public void testRead() throws IOException {
-    // simple
-    open("test.01");
-    open("test.02");
-    open("test.03");
-    open("test.04");
-    open("test.05");
-    open("test.06");
-    open("test.06a");
-    open("test.07");
-    open("test.07a");
-
-    // nested
-    open("test.21");
-    open("test.22");
-    // open( "test.23");
-    // open( "test.31");
-    // open( "test.32");
-
-    open("test.50"); // structure array
-    open("test.53"); // nested structure in structure array
-    open("test.vs5"); // structure array */
-
   }
 
 }
