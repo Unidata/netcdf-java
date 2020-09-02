@@ -61,8 +61,8 @@ public class CdmrNetcdfFile extends NetcdfFile {
   @Override
   public Array readSection(String variableSection) throws IOException {
     if (showRequest)
-      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n",
-          variableSection, this.remoteURI, this.path);
+      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", variableSection,
+          this.remoteURI, this.path);
 
     DataRequest request = DataRequest.newBuilder().setLocation(getLocation()).setVariableSpec(variableSection).build();
     try {
@@ -220,7 +220,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
           // fall through
         }
         e.printStackTrace();
-        throw new RuntimeException("Cant open CdmRemote url "+ this.remoteURI, e);
+        throw new RuntimeException("Cant open CdmRemote url " + this.remoteURI, e);
       }
     }
 

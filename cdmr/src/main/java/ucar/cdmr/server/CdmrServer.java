@@ -72,10 +72,8 @@ public class CdmrServer {
     @Override
     public void getHeader(HeaderRequest req, StreamObserver<Header> responseObserver) {
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
-        Header.Builder reply = Header.newBuilder()
-            .setLocation(req.getLocation())
-            .setRoot(CdmToProto.encodeGroup(ncfile.getRootGroup(), 100)
-            .build());
+        Header.Builder reply = Header.newBuilder().setLocation(req.getLocation())
+            .setRoot(CdmToProto.encodeGroup(ncfile.getRootGroup(), 100).build());
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
         logger.info("CdmrServer getHeader " + req.getLocation());
@@ -88,7 +86,8 @@ public class CdmrServer {
     public void getData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
       // LOOK cache ncfile
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
-        DataResponse.Builder reply = DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
+        DataResponse.Builder reply =
+            DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         try {
           ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
           Array data = ncfile.readSection(req.getVariableSpec());
