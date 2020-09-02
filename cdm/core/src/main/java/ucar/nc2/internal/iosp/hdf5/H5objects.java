@@ -675,8 +675,6 @@ public class H5objects {
       } else {
         type = raf.readByte();
         size = DataType.unsignedShortToInt(raf.readShort());
-        // if (size > Short.MAX_VALUE)
-        // log.debug("HEY");
 
         headerMessageFlags = raf.readByte();
         header_length = 4;

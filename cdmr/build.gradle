@@ -27,9 +27,12 @@ dependencies {
 
     runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
 
-    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+    testImplementation project(':cdm-test-utils')
+    testImplementation 'com.google.truth:truth'
     testImplementation "junit:junit:4.12"
+    testImplementation 'commons-io:commons-io'
     testImplementation "org.mockito:mockito-core:2.28.2"
+    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
 }
 
 protobuf {

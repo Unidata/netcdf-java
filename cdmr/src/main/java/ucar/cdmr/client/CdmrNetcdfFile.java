@@ -33,7 +33,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
   public static final String PROTOCOL = "cdmr";
   public static final String SCHEME = PROTOCOL + ":";
 
-  private static boolean showRequest = true;
+  private static boolean showRequest = false;
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
