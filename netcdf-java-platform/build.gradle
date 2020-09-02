@@ -20,7 +20,7 @@ dependencies {
     // see https://github.com/google/auto/blob/master/value/userguide/index.md
     api "com.google.auto.value:auto-value-annotations:1.7.4"
 
-    // netcdf4, dap4:d4lib
+    // netcdf4
     // Tricky dependency here. We need to make sure that we keep in-line with the version
     // that chronicle-map uses in the TDS, or else we see bad things happen on the TDS side.
     api 'net.java.dev.jna:jna:5.4.0'

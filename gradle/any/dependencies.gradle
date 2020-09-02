@@ -26,7 +26,7 @@ repositories {
   // Hosted release repositories.
   maven {
     // For visad (edu.ucar:cdm-vis5d) and jj2000 (:grib).
-    // Also for releases of dtswar (dap2) and d4ts (dap4) (used to stand up local servers for tests)
+    // Also for releases of dtswar (dap2) (used to stand up local servers for tests)
     url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
   }
   maven {

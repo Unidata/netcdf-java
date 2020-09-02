@@ -14,7 +14,6 @@ dependencies {
   // compile project(':cdm:cdm-misc')     // misc iosps
   // compile project(':cdm:cdm-radial')   // radial data
   compile project(':bufr')
-  // compile project(':dap4:d4cdm')
   compile project(':grib')
   compile project(':httpservices')
   // compile project(':netcdf4')

@@ -19,7 +19,7 @@ Most of what we need in the `any/` directory can be found in these two script pl
      * `gradle/any/testing.gradle`
      * `gradle/any/coverage.gradle`
 
-     Currently, two gradle subprojects use this - `dap4:d4tests` and `cdm-test`.
+     Currently, the gradle subprojects that use this are `cdm-test`.
 
 `gretty/`: Contains configuration files related to the `gretty` plugin (logging, cert for testing, etc.)
 

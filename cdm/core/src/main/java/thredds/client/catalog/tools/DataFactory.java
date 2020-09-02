@@ -463,60 +463,10 @@ public class DataFactory {
     NetcdfDataset ncd = acquire ? NetcdfDatasets.acquireDataset(durl, true, task)
         : NetcdfDatasets.openDataset(durl, null, -1, task, null);
 
-    /*
-     * String prefix = null;
-     * if ((serviceType == ServiceType.OPENDAP)|| (serviceType == ServiceType.DODS))
-     * prefix = "dods:";
-     * else if(serviceType == ServiceType.DAP4)
-     * prefix = "dap4:";
-     * 
-     * boolean enhanceMode = true;
-     * if (prefix != null) {
-     * String curl = datasetLocation;
-     * if (curl.startsWith("http:")) {
-     * curl = prefix + datasetLocation.substring(5);
-     * } else if (curl.startsWith("https:")) {
-     * curl = prefix + curl.substring(6);
-     * }
-     * ncd = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl,
-     * enhanceMode, task);
-     * }
-     * 
-     * // open CdmRemote
-     * else if (serviceType == ServiceType.CdmRemote) {
-     * String curl = CdmRemote.canonicalURL(datasetLocation);
-     * ncd = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl,
-     * enhanceMode, task);
-     * }
-     * 
-     * // open HTTPServer
-     * else if (serviceType == ServiceType.HTTPServer) {
-     * String curl = (datasetLocation.startsWith("http:")) ? "httpserver:" + datasetLocation.substring(5) :
-     * datasetLocation;
-     * ncd = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl,
-     * enhanceMode, task);
-     * }
-     * 
-     * else {
-     * // open through NetcdfDataset API
-     * ncd = acquire ? NetcdfDataset.acquireDataset(datasetLocation, enhanceMode, task) :
-     * NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
-     * }
-     */
-
     result.accessUsed = access;
     // ncd.setId(datasetId);
     // ncd.setTitle(title);
     // TODO annotate(ds, ncd);
-
-    /*
-     * see if there's NcML metadata LOOK whats this
-     * List<Metadata> list = ds.getMetadata(Metadata.Type.NcML);
-     * if (list != null && list.size() > 0) {
-     * Metadata ncmlMetadata = list.get(0);
-     * NcMLReader.wrapNcML(ds, ncmlMetadata.getXlinkHref(), null);
-     * }
-     */
 
     return ncd;
   }
