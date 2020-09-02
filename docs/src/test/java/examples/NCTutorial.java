@@ -24,7 +24,7 @@ public class NCTutorial {
    * @param pathToYourFileAsStr: relative path to locally stored file
    */
   public static void openNCFileTutorial(String pathToYourFileAsStr) {
-    try (NetcdfFile ncfile = NetcdfFile.open(pathToYourFileAsStr)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(pathToYourFileAsStr)) {
       // Do cool stuff here
     } catch (IOException ioe) {
       // Handle less-cool exceptions here
