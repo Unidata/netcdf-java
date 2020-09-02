@@ -11,15 +11,18 @@ import java.util.Formatter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /** Test {@link CdmrNetcdfFile} */
 @RunWith(Parameterized.class)
+@Category(NeedsExternalResource.class) // Needs CmdrServer to be started up
 public class TestCdmrNetcdfFile {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
