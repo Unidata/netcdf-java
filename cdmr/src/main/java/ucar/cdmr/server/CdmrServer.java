@@ -12,7 +12,7 @@ import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
 import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
-import ucar.cdmr.CdmToProto;
+import ucar.cdmr.CdmToProtobuf;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -73,7 +73,7 @@ public class CdmrServer {
     public void getHeader(HeaderRequest req, StreamObserver<Header> responseObserver) {
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
         Header.Builder reply = Header.newBuilder().setLocation(req.getLocation())
-            .setRoot(CdmToProto.encodeGroup(ncfile.getRootGroup(), 100).build());
+            .setRoot(CdmToProtobuf.encodeGroup(ncfile.getRootGroup(), 100).build());
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
         logger.info("CdmrServer getHeader " + req.getLocation());
@@ -91,8 +91,8 @@ public class CdmrServer {
         try {
           ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
           Array data = ncfile.readSection(req.getVariableSpec());
-          reply.setSection(CdmToProto.encodeSection(cer.getSection()));
-          reply.setData(CdmToProto.encodeData(data.getDataType(), data));
+          reply.setSection(CdmToProtobuf.encodeSection(cer.getSection()));
+          reply.setData(CdmToProtobuf.encodeData(data.getDataType(), data));
         } catch (Throwable t) {
           reply.setError(CdmRemoteProto.Error.newBuilder().setMessage(t.getMessage()).build());
         }

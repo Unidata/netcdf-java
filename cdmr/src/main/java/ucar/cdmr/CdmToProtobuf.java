@@ -30,7 +30,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /** Convert between CdmRemote Protos and Netcdf objects. */
-public class CdmToProto {
+public class CdmToProtobuf {
   public static CdmRemoteProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     CdmRemoteProto.Group.Builder groupBuilder = CdmRemoteProto.Group.newBuilder();
     groupBuilder.setName(g.getShortName());
@@ -150,7 +150,7 @@ public class CdmToProto {
 
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure)
-        builder.addStructs(CdmToProto.encodeStructure((Structure) v));
+        builder.addStructs(CdmToProtobuf.encodeStructure((Structure) v));
       else
         builder.addVars(encodeVar(v, -1));
     }
@@ -245,19 +245,19 @@ public class CdmToProto {
   public static void decodeGroup(CdmRemoteProto.Group proto, Group.Builder g) {
 
     for (CdmRemoteProto.Dimension dim : proto.getDimsList())
-      g.addDimension(CdmToProto.decodeDim(dim)); // always added to group? what if private ??
+      g.addDimension(CdmToProtobuf.decodeDim(dim)); // always added to group? what if private ??
 
     for (CdmRemoteProto.Attribute att : proto.getAttsList())
-      g.addAttribute(CdmToProto.decodeAtt(att));
+      g.addAttribute(CdmToProtobuf.decodeAtt(att));
 
     for (CdmRemoteProto.EnumTypedef enumType : proto.getEnumTypesList())
-      g.addEnumTypedef(CdmToProto.decodeEnumTypedef(enumType));
+      g.addEnumTypedef(CdmToProtobuf.decodeEnumTypedef(enumType));
 
     for (CdmRemoteProto.Variable var : proto.getVarsList())
-      g.addVariable(CdmToProto.decodeVar(var));
+      g.addVariable(CdmToProtobuf.decodeVar(var));
 
     for (CdmRemoteProto.Structure s : proto.getStructsList())
-      g.addVariable(CdmToProto.decodeStructure(s));
+      g.addVariable(CdmToProtobuf.decodeStructure(s));
 
     for (CdmRemoteProto.Group gp : proto.getGroupsList()) {
       Group.Builder ng = Group.builder().setName(gp.getName());

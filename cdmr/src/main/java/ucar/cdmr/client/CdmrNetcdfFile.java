@@ -16,7 +16,7 @@ import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
 import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
-import ucar.cdmr.CdmToProto;
+import ucar.cdmr.CdmToProtobuf;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
@@ -70,8 +70,8 @@ public class CdmrNetcdfFile extends NetcdfFile {
       if (response.hasError()) {
         throw new IOException(response.getError().getMessage());
       }
-      Section sectionReturned = CdmToProto.decodeSection(response.getSection());
-      return CdmToProto.decodeData(response.getData(), sectionReturned.getShape());
+      Section sectionReturned = CdmToProtobuf.decodeSection(response.getSection());
+      return CdmToProtobuf.decodeData(response.getData(), sectionReturned.getShape());
 
     } catch (StatusRuntimeException e) {
       log.warn("readSection requestData failed failed: " + e.getStatus());
@@ -93,9 +93,9 @@ public class CdmrNetcdfFile extends NetcdfFile {
       if (response.hasError()) {
         throw new IOException(response.getError().getMessage());
       }
-      Section sectionReturned = CdmToProto.decodeSection(response.getSection());
+      Section sectionReturned = CdmToProtobuf.decodeSection(response.getSection());
       Preconditions.checkArgument(sectionReturned.equals(sectionWanted));
-      return CdmToProto.decodeData(response.getData(), sectionReturned.getShape());
+      return CdmToProtobuf.decodeData(response.getData(), sectionReturned.getShape());
 
     } catch (StatusRuntimeException e) {
       log.warn("readSection readData failed failed: " + e.getStatus());
@@ -233,7 +233,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
       setLocation(SCHEME + response.getLocation());
 
       this.rootGroup = Group.builder().setName("");
-      CdmToProto.decodeGroup(response.getRoot(), this.rootGroup);
+      CdmToProtobuf.decodeGroup(response.getRoot(), this.rootGroup);
     }
 
   }
