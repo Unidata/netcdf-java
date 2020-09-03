@@ -649,8 +649,6 @@ public class CompareNetcdf2 {
 
   private boolean compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne)
       throws IOException {
-    if (var1.getShortName().equals("lat"))
-      System.out.printf("HEY%n");
     Array data1 = var1.read();
     Array data2 = var2.read();
 

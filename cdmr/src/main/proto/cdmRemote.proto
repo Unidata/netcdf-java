@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+option java_package = "ucar.cdmr";
+option java_outer_classname = "CdmRemoteProto";
+
+service CdmRemote {
+  rpc GetHeader (HeaderRequest) returns (Header) {}
+  rpc GetData (DataRequest) returns (DataResponse) {}
+}
+
+message HeaderRequest {
+  string location = 1;
+}
+
+message DataRequest {
+  string location = 1;
+  string variableSpec = 2;
+}
+
+message Attribute {
+  string name = 1;
+  DataType dataType = 2;   // cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
+  uint32 length = 3;
+  Data data = 4;
+}
+
+enum DataType {
+  UNDEFINED = 0;
+  BYTE = 1;
+  SHORT = 2;
+  INT = 3;
+  LONG = 4;
+  FLOAT = 5;
+  DOUBLE = 6;
+  STRING = 7;
+  STRUCTURE = 8;
+  SEQUENCE = 9;
+  ENUM1 = 10;
+  ENUM2 = 11;
+  ENUM4 = 12;
+  OPAQUE = 13;
+
+  UBYTE = 14;
+  USHORT = 15;
+  UINT = 16;
+  ULONG = 17;
+
+  CHAR = 18; // prefer String
+}
+
+message Dimension {
+  string name = 1;   // short name - optional when private
+  uint64 length = 2; // optional when vlen, may be zero if unlimited
+  bool isUnlimited = 3;
+  bool isVlen = 4;
+  bool isPrivate = 5;
+}
+
+message Variable {
+  string name = 1; // short name
+  DataType dataType = 2;
+  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  string enumType = 5;   // EnumTypedef name, only for enum types
+  Data data = 6;        // "immediate" - store small data in header
+}
+
+message Structure {
+  string name = 1;                // short name
+  DataType dataType = 2;          // STRUCTURE or SEQUENCE
+  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  repeated Variable vars = 5;     // members that are not structs
+  repeated Structure structs = 6; // struct members that are srtructs
+}
+
+message EnumTypedef {
+  message EnumType {
+    uint32 code = 1;
+    string value = 2;
+  }
+  string name = 1;
+  repeated EnumType map = 2;
+}
+
+message Group {
+  string name = 1;                // short name
+  repeated Dimension dims = 2;
+  repeated Variable vars = 3;
+  repeated Structure structs = 4;
+  repeated Attribute atts = 5;
+  repeated Group groups = 6;
+  repeated EnumTypedef enumTypes = 7;
+}
+
+message Header {
+  string location = 1;
+  string title = 2;  // ??
+  string id = 3;    // ??
+  uint32 version = 4;
+  Group root = 5;
+  Error error = 6;
+}
+
+//////////////////////////////////
+
+message Error {
+  string message = 1;
+  uint32 code = 2;
+}
+
+enum Compress {
+  NONE = 0;
+  DEFLATE = 1;
+}
+
+message Range {
+  uint64 start = 1;
+  uint64 size = 2;
+  uint64 stride = 3;
+}
+
+message Section {
+  repeated Range range = 1;
+}
+
+////////////////////////////////////////////////////////
+// Data version 1
+
+message DataResponse {
+  string location = 1;
+  string variableSpec = 2;
+  uint32 version = 3;          // version=2 for proto2, >=3 for proto3 (v5.0+)
+
+  string varName = 4;          // full escaped name.
+  Section section = 6;         // redundant with spec?
+  Data data = 7;
+  Error error = 8;
+}
+
+message Data {
+  // oneof cant have repeated data, so use dataType to choose
+  DataType dataType = 1;
+  bytes bdata = 2;
+  repeated sint32 idata = 3;
+  repeated uint32 uidata = 4;
+  repeated sint64 ldata = 5;
+  repeated uint64 uldata = 6;
+  repeated float fdata = 7;
+  repeated double ddata = 8;
+  repeated string sdata = 9;
+}

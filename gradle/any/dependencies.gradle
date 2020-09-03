@@ -13,6 +13,8 @@ apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 //================================================ Repositories ================================================//
 
 repositories {
+  maven { // The google mirror is less flaky than mavenCentral()
+    url "https://maven-central.storage-download.googleapis.com/maven2/" }
   // Prefer JCenter to Maven Central. See
   // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
   jcenter()

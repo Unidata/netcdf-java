@@ -32,7 +32,7 @@ public class DatasetUrl {
   private static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   private static final String slashalpha = "\\/" + alpha;
 
-  private static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
+  private static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml", "cdmr"};
   private static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
       ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
 
@@ -219,6 +219,8 @@ public class DatasetUrl {
         return ServiceType.OPENDAP;
       if (protocol.equalsIgnoreCase("dap4"))
         return ServiceType.DAP4;
+      if (protocol.equalsIgnoreCase("cdmr"))
+        return ServiceType.Cdmr;
       if (protocol.equalsIgnoreCase("cdmremote"))
         return ServiceType.CdmRemote;
       if (protocol.equalsIgnoreCase("thredds"))
@@ -328,6 +330,8 @@ public class DatasetUrl {
         return ServiceType.HTTPServer;
       case "cdmremote":
         return ServiceType.CdmRemote;
+      case "cdmr":
+        return ServiceType.Cdmr;
       case "thredds":
         return ServiceType.THREDDS;
     }
