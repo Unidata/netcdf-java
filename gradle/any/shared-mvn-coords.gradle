@@ -14,11 +14,14 @@ ext {
   buildPlugins.grgit = 'org.ajoberstar.grgit:grgit-core:4.0.2'
   buildPlugins.protobuf = 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
 
-  // slf4j version is declared in a place where we cannot use the tds-platform project to handle resolving versions
+  // slf4j version is declared in a place where we cannot use the netcdf-java-platform project to handle resolving versions
   // (e.g. gradle/any/dependencies.gradle, for transitive dependency replacement purposes)
   // best we can do is define the version here, which can then be applied in all of the places we need the full maven
   // coords.
   depVersion = [:]
   depVersion.slf4j = '1.7.28'
+  depVersion.junit = '4.12'
+  depVersion.mockito = '2.28.2'
   depVersion.protobuf = '3.12.4'
+  depVersion.grpc = '1.31.1'
 }
