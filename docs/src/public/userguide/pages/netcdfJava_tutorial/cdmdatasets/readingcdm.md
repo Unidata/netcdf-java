@@ -8,38 +8,24 @@ toc: false
 ## Tutorial: Working with NetcdfFile
 
 A <b>_NetcdfFile_</b> provides read-only access to datasets through the netCDF API (to write data, use <b>_NetcdfFileWriteable_</b>).
-Use the static <a href="netcdf_dataset.html">NetcdfFile</a>.open methods to open a netCDF file, an HDF5 file, or any other file which has an IOServiceProvider implementation that can read the file with the NetCDF API.
-Use NetcdfDataset.open for more general reading capabilities, including <b>_OPeNDAP</b>_, <b>_NcML</b>_, and <b>_THREDDS datasets</b>_.
+Use the static <a href="netcdf_dataset.html">NetcdfFiles</a>.open methods to open a netCDF file, an HDF5 file, or any other file which has an IOServiceProvider implementation that can read the file with the NetCDF API.
+Use NetcdfDataset.open for more general reading capabilities, including <b>_OPeNDAP_</b>, <b>_NcML_</b>, and <b>_THREDDS datasets_</b>.
 
 ## Opening a NetcdfFile
 
 A simple way to open a NetcdfFile:
 
-~~~
-  String filename = "C:/data/my/file.nc";
-  NetcdfFile ncfile = null;
-  try {
-    ncfile = NetcdfFile.open(filename);
-    process( ncfile);
-  } catch (IOException ioe) {
-    log("trying to open " + filename, ioe);
-  } finally { 
-    if (null != ncfile) try {
-      ncfile.close();
-    } catch (IOException ioe) {
-      log("trying to close " + filename, ioe);
-    }
-  }
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/NCTutorial.java&openNCFileTutorial %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
-There is some boilerplate overhead in handling possible IOExceptions and ensuring that the file is properly closed, but these are very important when creating robust applications.
-
-The <b>_NetcdfFile_</b> class will open local files for which an <b>_IOServiceProvider_</b> implementation exists.
+The <b>_NetcdfFiles_</b> class will open local files for which an <b>_IOServiceProvider_</b> implementation exists.
 The current set of files that can be opened by the CDM are <a href="file_types.html">here</a>.
 
 When you open any of these files, the IOSP populates the <b>_NetcdfFile_</b> with a set of <b>_Variable_</b>, <b>_Dimension_</b>, Attribute_</b>, and possibly <b>_Group_</b>, <b>_Structure_</b>, and <b>_EnumTypedef_</b> objects that describe what data is available for reading from the file. These objects are called the <b>_structural metadata_</b> of the dataset, and they are read into memory at the time the file is opened. The data itself is not read until requested.
 
-If NetcdfFile.open_</b> is given a filename that ends with "<b>_.Z_</b>", "<b>_.zip_</b>", "<b>_.gzip_</b>", "<b>_.gz_</b>", or "<b>_.bz2_</b>", it will uncompress the file before opening, preferably in the same directory as the original file. See <a href="#writing-temporary-files-to-the-disk-cache">DiskCache</a> for more details.
+If NetcdfFiles.open_</b> is given a filename that ends with "<b>_.Z_</b>", "<b>_.zip_</b>", "<b>_.gzip_</b>", "<b>_.gz_</b>", or "<b>_.bz2_</b>", it will uncompress the file before opening, preferably in the same directory as the original file. See <a href="#writing-temporary-files-to-the-disk-cache">DiskCache</a> for more details.
  
 #### Using ToolsUI to browse the metadata of a dataset
 

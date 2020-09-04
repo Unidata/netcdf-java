@@ -4,8 +4,22 @@ plugins {
 }
 
 //////////////////////////////////////////////// Javadoc ////////////////////////////////////////////////
-
 apply from: "$rootDir/gradle/any/javadoc.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+
+dependencies {
+  testCompile project(':cdm:cdm-core')
+  testCompile project(':cdm-test-utils')
+  testCompile 'org.slf4j:slf4j-api'
+  testCompile 'junit:junit'
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+  testCompile 'com.google.truth:truth'
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
 
@@ -224,4 +238,12 @@ task deleteCurrentDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTas
     password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
     return true
   }
+}
+
+// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
+tasks.withType(JavaCompile).all {
+  options.encoding = 'UTF-8'
+
+  // show deprecation details
+  options.compilerArgs = ['-Xlint:deprecation']
 }
