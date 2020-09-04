@@ -57,7 +57,7 @@ entries:
       url: /reading_cdm.html
       output: web, pdf
 
-    - title: NetcdfDataset - enahnced files, coordinate systems
+    - title: NetcdfDataset - enhanced files, coordinate systems
       url: /netcdf_dataset.html
       output: web, pdf
 
