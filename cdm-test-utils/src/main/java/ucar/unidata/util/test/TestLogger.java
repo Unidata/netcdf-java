@@ -9,6 +9,10 @@ public class TestLogger {
     this.logMessages = new Stack<String>();
   }
 
+  public void log(String msg) {
+    this.logMessages.push(msg);
+  }
+
   public void log(String msg, Throwable t) {
     this.logMessages.push(msg);
   }
