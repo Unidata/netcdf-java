@@ -4,19 +4,21 @@
  */
 package ucar.cdmr.client;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
 import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
-import ucar.cdmr.CdmToProtobuf;
+import ucar.cdmr.CdmRemoteProto.HeaderResponse;
+import ucar.cdmr.CdmrConverter;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
@@ -29,80 +31,65 @@ import ucar.nc2.Variable;
 /** A remote CDM dataset, using cdmremote protocol to communicate. */
 public class CdmrNetcdfFile extends NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrNetcdfFile.class);
+  private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
 
   public static final String PROTOCOL = "cdmr";
   public static final String SCHEME = PROTOCOL + ":";
-
-  private static boolean showRequest = false;
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
   }
 
-  /**
-   * Create the canonical form of the URL.
-   * If the urlName starts with "http:", change it to start with "cdmremote:", otherwise
-   * leave it alone.
-   *
-   * @param urlName the url string
-   * @return canonical form
-   */
-  public static String canonicalURL(String urlName) {
-    if (urlName.startsWith("http:")) {
-      return SCHEME + urlName.substring(5);
-    } else if (urlName.startsWith("https:")) {
-      return SCHEME + urlName.substring(6);
-    }
-    return urlName;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
+  private static boolean showRequest = true;
 
   @Override
   public Array readSection(String variableSection) throws IOException {
     if (showRequest)
       System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", variableSection,
           this.remoteURI, this.path);
+    final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    DataRequest request = DataRequest.newBuilder().setLocation(getLocation()).setVariableSpec(variableSection).build();
+    Array result = null; // LOOK must combine
+    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(variableSection).build();
     try {
-      DataResponse response = blockingStub.getData(request);
-      if (response.hasError()) {
-        throw new IOException(response.getError().getMessage());
+      Iterator<DataResponse> responses = blockingStub.withDeadlineAfter(15, TimeUnit.SECONDS).getData(request);
+      while (responses.hasNext()) {
+        DataResponse response = responses.next();
+        if (response.hasError()) {
+          throw new IOException(response.getError().getMessage());
+        }
+        Section sectionReturned = CdmrConverter.decodeSection(response.getSection());
+        if (response.getIsVariableLength()) {
+          result = CdmrConverter.decodeVlenData(response.getData(), sectionReturned);
+        } else {
+          result = CdmrConverter.decodeData(response.getData(), sectionReturned);
+        }
       }
-      Section sectionReturned = CdmToProtobuf.decodeSection(response.getSection());
-      return CdmToProtobuf.decodeData(response.getData(), sectionReturned.getShape());
 
     } catch (StatusRuntimeException e) {
-      log.warn("readSection requestData failed failed: " + e.getStatus());
+      log.warn("readSection requestData failed failed: ", e);
       throw new IOException(e);
+
+    } catch (Throwable t) {
+      System.out.printf(" ** failed after %s%n", stopwatch);
+      log.warn("readSection requestData failed failed: ", t);
+      throw new IOException(t);
     }
+
+    if (result != null) {
+      System.out.printf(" ** size=%d took=%s%n", result.getSize(), stopwatch.stop());
+    }
+
+    return result;
   }
 
   @Override
   protected Array readData(Variable v, Section sectionWanted) throws IOException {
-    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
-
-    if (showRequest)
-      System.out.printf("CdmrNetcdfFile data request for variable: '%s' spec=(%s)%n url='%s'%n path='%s'%n",
-          v.getFullName(), spec, this.remoteURI, this.path);
-
-    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
-    try {
-      DataResponse response = blockingStub.getData(request);
-      if (response.hasError()) {
-        throw new IOException(response.getError().getMessage());
-      }
-      Section sectionReturned = CdmToProtobuf.decodeSection(response.getSection());
-      Preconditions.checkArgument(sectionReturned.equals(sectionWanted));
-      return CdmToProtobuf.decodeData(response.getData(), sectionReturned.getShape());
-
-    } catch (StatusRuntimeException e) {
-      log.warn("readSection readData failed failed: " + e.getStatus());
-      throw new IOException(e);
-    }
+    String variableSection = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
+    return readSection(variableSection);
   }
 
+  @Override
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     throw new UnsupportedOperationException();
   }
@@ -204,7 +191,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
       this.channel = ManagedChannelBuilder.forTarget(target)
           // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
           // needing certificates.
-          .usePlaintext().build();
+          .usePlaintext().enableFullStreamDecompression().maxInboundMessageSize(MAX_MESSAGE).build();
       try {
         this.blockingStub = CdmRemoteGrpc.newBlockingStub(channel);
         readHeader(path);
@@ -227,13 +214,18 @@ public class CdmrNetcdfFile extends NetcdfFile {
     private void readHeader(String location) {
       log.info("CdmrNetcdfFile request header for " + location);
       HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
-      Header response = blockingStub.getHeader(request);
-      setId(response.getId());
-      setTitle(response.getTitle());
-      setLocation(SCHEME + response.getLocation());
+      HeaderResponse response = blockingStub.getHeader(request);
+      if (response.hasError()) {
+        throw new RuntimeException(response.getError().getMessage());
+      } else {
+        Header header = response.getHeader();
+        setId(header.getId());
+        setTitle(header.getTitle());
+        setLocation(SCHEME + header.getLocation());
 
-      this.rootGroup = Group.builder().setName("");
-      CdmToProtobuf.decodeGroup(response.getRoot(), this.rootGroup);
+        this.rootGroup = Group.builder().setName("");
+        CdmrConverter.decodeGroup(header.getRoot(), this.rootGroup);
+      }
     }
 
   }

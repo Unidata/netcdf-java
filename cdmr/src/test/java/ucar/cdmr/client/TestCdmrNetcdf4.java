@@ -6,8 +6,8 @@ package ucar.cdmr.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Formatter;
+import java.util.List;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,17 +18,19 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /** Test {@link CdmrNetcdfFile} */
 @RunWith(Parameterized.class)
-@Category(NeedsExternalResource.class) // Needs CmdrServer to be started up
-public class TestCdmrNetcdfFile {
+@Category({NeedsExternalResource.class, NeedsCdmUnitTest.class}) // Needs CmdrServer to be started up
+public class TestCdmrNetcdf4 {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir, new SuffixFileFilter(".nc"), result, true);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/netcdf4", new SuffixFileFilter(".nc4"), result,
+          false);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -38,7 +40,7 @@ public class TestCdmrNetcdfFile {
   private final String filename;
   private final String cdmrUrl;
 
-  public TestCdmrNetcdfFile(String filename) {
+  public TestCdmrNetcdf4(String filename) {
     this.filename = filename;
     // LOOK kludge for now. Also, need to auto start up CmdrServer
     this.cdmrUrl = "cdmr://localhost:16111/" + filename;
@@ -46,7 +48,6 @@ public class TestCdmrNetcdfFile {
 
   @Test
   public void doOne() throws Exception {
-    System.out.printf("TestCdmrNetcdfFile %s%n", filename);
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 

@@ -1,6 +1,5 @@
 package ucar.cdmr.client;
 
-import java.io.IOException;
 import thredds.client.catalog.ServiceType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;

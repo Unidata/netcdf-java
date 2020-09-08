@@ -7,20 +7,33 @@ package ucar.cdmr;
 import static ucar.nc2.iosp.IospHelper.convertByteToChar;
 import static ucar.nc2.iosp.IospHelper.convertCharToByte;
 
+import com.google.common.base.Preconditions;
+import com.google.common.primitives.Ints;
 import com.google.protobuf.ByteString;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import ucar.cdmr.CdmRemoteProto.Data;
+import ucar.cdmr.CdmRemoteProto.StructureMemberProto;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
+import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataW;
+import ucar.ma2.StructureMembers;
+import ucar.ma2.StructureMembers.Member;
+import ucar.ma2.StructureMembers.MemberBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -30,7 +43,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /** Convert between CdmRemote Protos and Netcdf objects. */
-public class CdmToProtobuf {
+public class CdmrConverter {
   public static CdmRemoteProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     CdmRemoteProto.Group.Builder groupBuilder = CdmRemoteProto.Group.newBuilder();
     groupBuilder.setName(g.getShortName());
@@ -97,6 +110,7 @@ public class CdmToProtobuf {
     CdmRemoteProto.EnumTypedef.Builder builder = CdmRemoteProto.EnumTypedef.newBuilder();
 
     builder.setName(enumType.getShortName());
+    builder.setBaseType(convertDataType(enumType.getBaseType()));
     Map<Integer, String> map = enumType.getMap();
     CdmRemoteProto.EnumTypedef.EnumType.Builder b2 = CdmRemoteProto.EnumTypedef.EnumType.newBuilder();
     for (int code : map.keySet()) {
@@ -150,7 +164,7 @@ public class CdmToProtobuf {
 
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure)
-        builder.addStructs(CdmToProtobuf.encodeStructure((Structure) v));
+        builder.addStructs(CdmrConverter.encodeStructure((Structure) v));
       else
         builder.addVars(encodeVar(v, -1));
     }
@@ -171,12 +185,13 @@ public class CdmToProtobuf {
     switch (dataType) {
       case CHAR:
         byte[] cdata = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
-        builder.setBdata(ByteString.copyFrom(cdata));
+        builder.addBdata(ByteString.copyFrom(cdata));
         break;
       case ENUM1:
+      case UBYTE:
       case BYTE:
-        byte[] bdata = (byte[]) data.get1DJavaArray(DataType.BYTE);
-        builder.setBdata(ByteString.copyFrom(bdata));
+        byte[] bdata = (byte[]) data.get1DJavaArray(DataType.UBYTE);
+        builder.addBdata(ByteString.copyFrom(bdata));
         break;
       case SHORT:
       case INT:
@@ -217,6 +232,86 @@ public class CdmToProtobuf {
           builder.addSdata((String) iiter.getObjectNext());
         }
         break;
+      case OPAQUE:
+        while (iiter.hasNext()) {
+          ByteBuffer bb = (ByteBuffer) iiter.getObjectNext();
+          builder.addBdata(ByteString.copyFrom(bb.array()));
+        }
+        break;
+      default:
+        throw new IllegalStateException("Unkown datatype " + dataType);
+    }
+    return builder.build();
+  }
+
+  public static CdmRemoteProto.Data encodeVlenData(DataType dataType, ArrayObject data) {
+    CdmRemoteProto.Data.Builder builder = CdmRemoteProto.Data.newBuilder();
+    builder.setDataType(convertDataType(dataType));
+    IndexIterator objectIterator = data.getIndexIterator();
+    while (objectIterator.hasNext()) {
+      Array array = (Array) objectIterator.next();
+      builder.addVlen((int) array.getSize());
+      IndexIterator iiter = array.getIndexIterator();
+
+      switch (dataType) {
+        case CHAR:
+          byte[] cdata = convertCharToByte((char[]) array.get1DJavaArray(DataType.CHAR));
+          builder.addBdata(ByteString.copyFrom(cdata));
+          break;
+        case ENUM1:
+        case UBYTE:
+        case BYTE:
+          byte[] bdata = (byte[]) array.get1DJavaArray(DataType.UBYTE);
+          builder.addBdata(ByteString.copyFrom(bdata));
+          break;
+        case SHORT:
+        case INT:
+          while (iiter.hasNext()) {
+            builder.addIdata(iiter.getIntNext());
+          }
+          break;
+        case ENUM2:
+        case ENUM4:
+        case USHORT:
+        case UINT:
+          while (iiter.hasNext()) {
+            builder.addUidata(iiter.getIntNext());
+          }
+          break;
+        case LONG:
+          while (iiter.hasNext()) {
+            builder.addLdata(iiter.getLongNext());
+          }
+          break;
+        case ULONG:
+          while (iiter.hasNext()) {
+            builder.addUldata(iiter.getLongNext());
+          }
+          break;
+        case FLOAT:
+          while (iiter.hasNext()) {
+            builder.addFdata(iiter.getFloatNext());
+          }
+          break;
+        case DOUBLE:
+          while (iiter.hasNext()) {
+            builder.addDdata(iiter.getDoubleNext());
+          }
+          break;
+        case STRING:
+          while (iiter.hasNext()) {
+            builder.addSdata((String) iiter.getObjectNext());
+          }
+          break;
+        case OPAQUE:
+          while (iiter.hasNext()) {
+            ByteBuffer bb = (ByteBuffer) iiter.getObjectNext();
+            builder.addBdata(ByteString.copyFrom(bb.array()));
+          }
+          break;
+        default:
+          throw new IllegalStateException("Unkown datatype " + dataType);
+      }
     }
     return builder.build();
   }
@@ -233,6 +328,33 @@ public class CdmToProtobuf {
     return sbuilder.build();
   }
 
+  public static CdmRemoteProto.Data encodeArrayStructureData(ArrayStructure arrayStructure) {
+    CdmRemoteProto.Data.Builder builder = CdmRemoteProto.Data.newBuilder();
+    builder.setDataType(convertDataType(DataType.STRUCTURE));
+
+    StructureMembers sm = arrayStructure.getStructureMembers();
+    for (Member member : sm.getMembers()) {
+      StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
+          .setDataType(convertDataType(member.getDataType())).addAllShape(Ints.asList(member.getShape()));
+      builder.addMembers(smBuilder);
+    }
+
+    // row oriented
+    for (StructureData sdata : arrayStructure) {
+      builder.addRows(encodeStructureData(sdata));
+    }
+    return builder.build();
+  }
+
+  public static CdmRemoteProto.StructureDataProto encodeStructureData(StructureData structData) {
+    CdmRemoteProto.StructureDataProto.Builder builder = CdmRemoteProto.StructureDataProto.newBuilder();
+    for (Member member : structData.getMembers()) {
+      Array data = structData.getArray(member);
+      builder.addStructData(encodeData(member.getDataType(), data));
+    }
+    return builder.build();
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static Dimension decodeDim(CdmRemoteProto.Dimension dim) {
@@ -245,19 +367,19 @@ public class CdmToProtobuf {
   public static void decodeGroup(CdmRemoteProto.Group proto, Group.Builder g) {
 
     for (CdmRemoteProto.Dimension dim : proto.getDimsList())
-      g.addDimension(CdmToProtobuf.decodeDim(dim)); // always added to group? what if private ??
+      g.addDimension(CdmrConverter.decodeDim(dim)); // always added to group? what if private ??
 
     for (CdmRemoteProto.Attribute att : proto.getAttsList())
-      g.addAttribute(CdmToProtobuf.decodeAtt(att));
+      g.addAttribute(CdmrConverter.decodeAtt(att));
 
     for (CdmRemoteProto.EnumTypedef enumType : proto.getEnumTypesList())
-      g.addEnumTypedef(CdmToProtobuf.decodeEnumTypedef(enumType));
+      g.addEnumTypedef(CdmrConverter.decodeEnumTypedef(enumType));
 
     for (CdmRemoteProto.Variable var : proto.getVarsList())
-      g.addVariable(CdmToProtobuf.decodeVar(var));
+      g.addVariable(CdmrConverter.decodeVar(var));
 
     for (CdmRemoteProto.Structure s : proto.getStructsList())
-      g.addVariable(CdmToProtobuf.decodeStructure(s));
+      g.addVariable(CdmrConverter.decodeStructure(s));
 
     for (CdmRemoteProto.Group gp : proto.getGroupsList()) {
       Group.Builder ng = Group.builder().setName(gp.getName());
@@ -272,7 +394,8 @@ public class CdmToProtobuf {
     for (CdmRemoteProto.EnumTypedef.EnumType et : list) {
       map.put(et.getCode(), et.getValue());
     }
-    return new EnumTypedef(enumType.getName(), map);
+    DataType basetype = convertDataType(enumType.getBaseType());
+    return new EnumTypedef(enumType.getName(), map, basetype);
   }
 
   public static Attribute decodeAtt(CdmRemoteProto.Attribute attp) {
@@ -297,7 +420,7 @@ public class CdmToProtobuf {
         return Attribute.fromArray(attp.getName(), data);
       }
     } else {
-      Array array = decodeData(attp.getData(), new int[] {len});
+      Array array = decodeData(attp.getData(), Section.builder().appendRange(len).build());
       return Attribute.fromArray(attp.getName(), array);
     }
   }
@@ -325,8 +448,7 @@ public class CdmToProtobuf {
       ncvar.addAttribute(decodeAtt(att));
 
     if (var.hasData()) {
-      int[] shape = section.build().getShape();
-      Array data = decodeData(var.getData(), shape);
+      Array data = decodeData(var.getData(), section.build());
       ncvar.setCachedData(data, true);
     }
 
@@ -377,23 +499,25 @@ public class CdmToProtobuf {
         }
 
       } catch (InvalidRangeException e) {
-        throw new RuntimeException("Bad Section in ncstream", e);
+        throw new RuntimeException("Bad Section in CdmRemote", e);
       }
     }
     return section.build();
   }
 
   // Note that this converts to Objects, so not very efficient ??
-  public static Array decodeData(CdmRemoteProto.Data data, int[] shape) {
+  public static Array decodeData(CdmRemoteProto.Data data, Section section) {
     DataType dataType = convertDataType(data.getDataType());
+    int[] shape = section.getShape();
     switch (dataType) {
       case CHAR: {
-        byte[] array = data.getBdata().toByteArray();
+        byte[] array = data.getBdata(0).toByteArray();
         return Array.factory(dataType, shape, convertByteToChar(array));
       }
       case ENUM1:
+      case UBYTE:
       case BYTE: {
-        byte[] array = data.getBdata().toByteArray();
+        byte[] array = data.getBdata(0).toByteArray();
         return Array.factory(dataType, shape, array);
       }
       case SHORT: {
@@ -470,10 +594,148 @@ public class CdmToProtobuf {
         }
         return Array.factory(dataType, shape, array);
       }
-
+      case SEQUENCE:
+      case STRUCTURE: {
+        return decodeArrayStructureData(data, new Section(shape));
+      }
+      case OPAQUE: {
+        int i = 0;
+        Object[] array = new Object[data.getBdataCount()];
+        for (ByteString val : data.getBdataList()) {
+          array[i++] = ByteBuffer.wrap(val.toByteArray());
+        }
+        return Array.factory(dataType, shape, array);
+      }
       default:
         throw new IllegalStateException("Unkown datatype " + dataType);
     }
+  }
+
+  public static Array decodeVlenData(CdmRemoteProto.Data data, Section section) {
+    Preconditions.checkArgument(data.getVlenCount() > 0);
+    int[] shape = section.toBuilder().removeLast().build().getShape();
+    int length = (int) Index.computeSize(shape);
+    Preconditions.checkArgument(length == data.getVlenCount());
+    Array[] storage = new Array[length];
+    DataType dataType = convertDataType(data.getDataType());
+
+    int innerStart = 0;
+    for (int index = 0; index < length; index++) {
+      int innerLength = data.getVlen(index);
+      int innerEnd = innerStart + innerLength;
+      int[] innerShape = new int[] {innerLength};
+      switch (dataType) {
+        case CHAR: {
+          byte[] array = data.getBdata(index).toByteArray();
+          storage[index] = Array.factory(dataType, innerShape, convertByteToChar(array));
+          break;
+        }
+        case ENUM1:
+        case UBYTE:
+        case BYTE: {
+          byte[] array = data.getBdata(index).toByteArray();
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case SHORT: {
+          int i = 0;
+          short[] array = new short[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = (short) data.getIdata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case INT: {
+          int i = 0;
+          int[] array = new int[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = data.getIdata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case ENUM2:
+        case USHORT: {
+          int i = 0;
+          short[] array = new short[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = (short) data.getUidata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case ENUM4:
+        case UINT: {
+          int i = 0;
+          int[] array = new int[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = data.getUidata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case LONG: {
+          int i = 0;
+          long[] array = new long[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = data.getLdata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case ULONG: {
+          int i = 0;
+          long[] array = new long[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = data.getUldata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case FLOAT: {
+          int i = 0;
+          float[] array = new float[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = data.getFdata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case DOUBLE: {
+          int i = 0;
+          double[] array = new double[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = data.getDdata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case STRING: {
+          int i = 0;
+          Object[] array = new Object[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            array[i++] = data.getSdata(innerIndex);
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        case OPAQUE: {
+          int i = 0;
+          Object[] array = new Object[innerLength];
+          for (int innerIndex = innerStart; innerIndex < innerEnd; innerIndex++) {
+            ByteString val = data.getBdata(innerIndex);
+            array[i++] = ByteBuffer.wrap(val.toByteArray());
+          }
+          storage[index] = Array.factory(dataType, innerShape, array);
+          break;
+        }
+        default:
+          throw new IllegalStateException("Unkown datatype " + dataType);
+      }
+      innerStart = innerEnd;
+    }
+    return Array.makeVlenArray(shape, storage);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -560,6 +822,42 @@ public class CdmToProtobuf {
         return DataType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
+  }
+
+  public static ArrayStructure decodeArrayStructureData(CdmRemoteProto.Data arrayStructureProto, Section section) {
+    int nrows = arrayStructureProto.getRowsCount();
+    Preconditions.checkArgument(nrows > 0);
+    Preconditions.checkArgument(section.getSize() == nrows);
+
+    StructureMembers.Builder membersb = StructureMembers.builder();
+    for (StructureMemberProto memberProto : arrayStructureProto.getMembersList()) {
+      MemberBuilder memberb = StructureMembers.memberBuilder();
+      memberb.setName(memberProto.getName());
+      memberb.setDataType(convertDataType(memberProto.getDataType()));
+      memberb.setShape(Ints.toArray(memberProto.getShapeList()));
+      membersb.addMember(memberb);
+    }
+    StructureMembers members = membersb.build();
+
+    ArrayStructureW result = new ArrayStructureW(members, section.getShape());
+    // row oriented
+    int index = 0;
+    for (CdmRemoteProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
+      result.setStructureData(decodeStructureData(row, members), index);
+      index++;
+    }
+    return result;
+  }
+
+  public static StructureData decodeStructureData(CdmRemoteProto.StructureDataProto structDataProto,
+      StructureMembers members) {
+    StructureDataW sdata = new StructureDataW(members);
+    for (int i = 0; i < structDataProto.getStructDataCount(); i++) {
+      Data data = structDataProto.getStructData(i);
+      Member member = members.getMember(i);
+      sdata.setMemberData(member, decodeData(data, new Section(member.getShape())));
+    }
+    return sdata;
   }
 
 }
