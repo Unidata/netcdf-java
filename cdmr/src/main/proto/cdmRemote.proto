@@ -4,18 +4,39 @@ option java_package = "ucar.cdmr";
 option java_outer_classname = "CdmRemoteProto";
 
 service CdmRemote {
-  rpc GetHeader (HeaderRequest) returns (Header) {}
-  rpc GetData (DataRequest) returns (DataResponse) {}
+  rpc GetHeader (HeaderRequest) returns (HeaderResponse) {}
+  rpc GetData (DataRequest) returns (stream DataResponse) {}
 }
 
 message HeaderRequest {
   string location = 1;
 }
 
+message HeaderResponse {
+  Error error = 1;  // non-empty on error
+  uint32 version = 2; // response version
+
+  Header header = 3;
+}
+
 message DataRequest {
   string location = 1;
   string variableSpec = 2;
 }
+
+message DataResponse {
+  Error error = 1;    // non-empty on error
+  uint32 version = 2; // response version
+
+  string location = 3;
+  string variableSpec = 4;     // the requested variable and optionally, its section
+  string varFullName = 5;      // Variable full name
+  Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
+  bool isVariableLength = 7;
+  Data data = 8;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 
 message Attribute {
   string name = 1;
@@ -56,31 +77,14 @@ message Dimension {
   bool isPrivate = 5;
 }
 
-message Variable {
-  string name = 1; // short name
-  DataType dataType = 2;
-  repeated Dimension shape = 3;   // actual dimension instead of reference
-  repeated Attribute atts = 4;
-  string enumType = 5;   // EnumTypedef name, only for enum types
-  Data data = 6;        // "immediate" - store small data in header
-}
-
-message Structure {
-  string name = 1;                // short name
-  DataType dataType = 2;          // STRUCTURE or SEQUENCE
-  repeated Dimension shape = 3;   // actual dimension instead of reference
-  repeated Attribute atts = 4;
-  repeated Variable vars = 5;     // members that are not structs
-  repeated Structure structs = 6; // struct members that are srtructs
-}
-
 message EnumTypedef {
   message EnumType {
     uint32 code = 1;
     string value = 2;
   }
   string name = 1;
-  repeated EnumType map = 2;
+  DataType baseType = 2;
+  repeated EnumType map = 3;
 }
 
 message Group {
@@ -96,10 +100,27 @@ message Group {
 message Header {
   string location = 1;
   string title = 2;  // ??
-  string id = 3;    // ??
-  uint32 version = 4;
-  Group root = 5;
-  Error error = 6;
+  string id = 3;     // ??
+
+  Group root = 4;
+}
+
+message Structure {
+  string name = 1;                // short name
+  DataType dataType = 2;          // STRUCTURE or SEQUENCE
+  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  repeated Variable vars = 5;     // members that are not structs
+  repeated Structure structs = 6; // struct members that are srtructs
+}
+
+message Variable {
+  string name = 1; // short name
+  DataType dataType = 2;
+  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  string enumType = 5;   // EnumTypedef name, only for enum types
+  Data data = 6;        // "immediate" - store small data in header
 }
 
 //////////////////////////////////
@@ -124,29 +145,34 @@ message Section {
   repeated Range range = 1;
 }
 
-////////////////////////////////////////////////////////
-// Data version 1
+message Data {
+  DataType dataType = 1;
 
-message DataResponse {
-  string location = 1;
-  string variableSpec = 2;
-  uint32 version = 3;          // version=2 for proto2, >=3 for proto3 (v5.0+)
+  // oneof, depends on dataType
+  repeated bytes bdata = 2;   // CHAR, ENUM1, BYTE, OPAQUE
+  repeated sint32 idata = 3;  // SHORT, INT
+  repeated uint32 uidata = 4; // ENUM2, USHORT, ENUM4, UINT
+  repeated sint64 ldata = 5;  // LONG
+  repeated uint64 uldata = 6; // ULONG
+  repeated float fdata = 7;   // FLOAT
+  repeated double ddata = 8;  // DOUBLE
+  repeated string sdata = 9;  // STRING
 
-  string varName = 4;          // full escaped name.
-  Section section = 6;         // redundant with spec?
-  Data data = 7;
-  Error error = 8;
+  // STRUCTURE, SEQUENCE
+  repeated StructureMemberProto members = 10;
+  repeated StructureDataProto rows = 11;  // row oriented: one for each row
+  repeated Data cols = 12;  // col oriented: one for each member
+
+  // VLEN
+  repeated uint32 vlen = 13; // length of variable length arrays
 }
 
-message Data {
-  // oneof cant have repeated data, so use dataType to choose
-  DataType dataType = 1;
-  bytes bdata = 2;
-  repeated sint32 idata = 3;
-  repeated uint32 uidata = 4;
-  repeated sint64 ldata = 5;
-  repeated uint64 uldata = 6;
-  repeated float fdata = 7;
-  repeated double ddata = 8;
-  repeated string sdata = 9;
+message StructureDataProto {
+  repeated Data structData = 1;  // one for each memeber
+}
+
+message StructureMemberProto {
+  string name = 1;
+  DataType dataType = 2;
+  repeated int32 shape = 3;
 }

@@ -4,19 +4,18 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import java.net.URI;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
-import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
+import ucar.cdmr.CdmRemoteProto.HeaderResponse;
 
 /** A simple client that makes a request from CdmrServer. */
 public class CdmrClient {
-  private static final Logger logger = Logger.getLogger(CdmrClient.class.getName());
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmrClient.class);
+  private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
 
   private final CdmRemoteGrpc.CdmRemoteBlockingStub blockingStub;
 
@@ -30,27 +29,30 @@ public class CdmrClient {
   }
 
   public void getHeader(String location) {
-    logger.info("Header request " + location);
+    System.out.printf("Header request %s%n", location);
     HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
-    Header response;
+    HeaderResponse response;
     try {
       response = blockingStub.getHeader(request);
-      logger.info("getHeader response: " + response);
+      System.out.printf("Header response %s%n", response);
     } catch (StatusRuntimeException e) {
-      logger.log(Level.WARNING, "getHeader failed: {0}", e.getStatus());
+      logger.warn("getHeader failed: " + location, e);
       e.printStackTrace();
     }
   }
 
   public void getData(String location, String varSpec) {
-    logger.info("Data request " + varSpec);
+    System.out.printf("Data request %s%n", varSpec);
     DataRequest request = DataRequest.newBuilder().setLocation(location).setVariableSpec(varSpec).build();
-    DataResponse response;
+    Iterator<DataResponse> responses;
     try {
-      response = blockingStub.getData(request);
-      logger.info("getData response: " + response);
+      responses = blockingStub.getData(request);
+      while (responses.hasNext()) {
+        DataResponse response = responses.next();
+        System.out.printf("Data reponse %s%n", response.getSection());
+      }
     } catch (StatusRuntimeException e) {
-      logger.log(Level.WARNING, "getData failed: {0}", e.getStatus());
+      logger.warn("getData failed: " + location, e);
       e.printStackTrace();
     }
   }
@@ -60,7 +62,9 @@ public class CdmrClient {
    * greeting. The second argument is the target server.
    */
   public static void main(String[] args) throws Exception {
-    String location = "C:/dev/github/netcdf-java/cdm/core/src/test/data/testWrite.nc";
+    String location2 = "C:/dev/github/netcdf-java/cdm/core/src/test/data/testWrite.nc";
+    String location =
+        "D:/testData/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
     // Access a service running on the local machine on port 50051
     String target = "localhost:16111";
     // Allow passing in the user and target strings as command line arguments
@@ -77,21 +81,15 @@ public class CdmrClient {
       target = args[1];
     }
 
-    String url = "cdmr://localhost:16111/C:/dev/github/netcdf-java/cdm/core/src/test/data/testWrite.nc";
-    URI what = java.net.URI.create(url);
-    System.out.printf("%s%n", what);
-
     // Create a communication channel to the server, known as a Channel. Channels are thread-safe
     // and reusable. It is common to create channels at the beginning of your application and reuse
     // them until the application shuts down.
-    ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
-        // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
-        // needing certificates.
-        .usePlaintext().build();
+    ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().enableFullStreamDecompression()
+        .maxInboundMessageSize(MAX_MESSAGE).usePlaintext().build();
     try {
       CdmrClient client = new CdmrClient(channel);
       client.getHeader(location);
-      client.getData(location, "bvar(0:4:2)");
+      client.getData(location, "DELP(0:0, 0:71, 0:720, 0:1151)");
     } finally {
       // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
       // resources the channel should be shut down when it will no longer be used. If it may be used

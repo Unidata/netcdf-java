@@ -4,49 +4,34 @@
  */
 package ucar.cdmr.client;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Formatter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /** Test {@link CdmrNetcdfFile} */
-@RunWith(Parameterized.class)
-@Category(NeedsExternalResource.class) // Needs CmdrServer to be started up
-public class TestCdmrNetcdfFile {
-  @Parameterized.Parameters(name = "{0}")
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>(500);
-    try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir, new SuffixFileFilter(".nc"), result, true);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return result;
-  }
+@Category({NeedsExternalResource.class, NeedsCdmUnitTest.class}) // Needs CmdrServer to be started up
+public class TestCdmrProblemNeeds {
 
   private final String filename;
   private final String cdmrUrl;
 
-  public TestCdmrNetcdfFile(String filename) {
-    this.filename = filename;
+  public TestCdmrProblemNeeds() {
+    String localFilename = "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
+    this.filename = TestDir.cdmUnitTestDir + localFilename;
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.cdmrUrl = "cdmr://localhost:16111/" + filename;
+    this.cdmrUrl = "cdmr://localhost:16111/" + TestDir.cdmUnitTestDir + localFilename;
   }
 
   @Test
   public void doOne() throws Exception {
-    System.out.printf("TestCdmrNetcdfFile %s%n", filename);
+    System.out.printf("TestCdmrProblem %s%n", filename);
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 

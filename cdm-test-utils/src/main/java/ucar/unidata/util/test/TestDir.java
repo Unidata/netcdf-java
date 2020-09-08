@@ -85,6 +85,9 @@ public class TestDir {
   /** The cdm-core local test data, use from cdm-test submodule. */
   public static String cdmLocalFromTestDataDir = "../cdm/core/src/test/data/";
 
+  /** The cdm-core local test data, use from cdm-test submodule. */
+  public static String cdmLocalFromTop = "cdm/core/src/test/data/";
+
   /** The module local test directory. Assumes pwd = top of module. TODO used in cdm-radial */
   @Deprecated
   public static String localTestDataDir = "src/test/data/";
