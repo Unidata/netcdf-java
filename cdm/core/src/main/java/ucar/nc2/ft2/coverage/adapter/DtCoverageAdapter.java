@@ -406,7 +406,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     RangeComposite comp = (RangeComposite) rangeIters.get(n - 1);
     for (RangeIterator ri : comp.getRanges()) {
       // read the data
-      ranges.set(n - 1, (Range) ri.setName(comp.getName())); // add last
+      ranges.set(n - 1, (Range) ri.copyWithName(comp.getName())); // add last
       Section want = new Section(ranges);
       if (debug)
         System.out.printf("  composite read section=%s%n", want);

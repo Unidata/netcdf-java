@@ -22,10 +22,7 @@ package ucar.ma2;
  * </pre>
  * <p/>
  * Note that canonical order may not be physical order.
- *
- * @author caron
  */
-
 public interface IndexIterator {
 
   /**

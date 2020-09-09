@@ -4,12 +4,7 @@
  */
 package ucar.ma2;
 
-/**
- * Specialization of Index for rank 0 arrays, ie scalars.
- *
- * @see Index
- * @author caron
- */
+/** Specialization of Index for rank 0 arrays, ie scalars. */
 public class Index0D extends Index {
 
   Index0D() {

@@ -13,9 +13,6 @@ import java.util.List;
  * A Section composed of List<RangeIterator> instead of List<Range>.
  * SectionIterable knows the fullShape of which it is a section.
  * The iteration is over the elements in the section, returning 1D index into the full shape.
- *
- * @author John
- * @since 8/23/2015
  */
 @Immutable
 public class SectionIterable implements Iterable<java.lang.Integer> {
@@ -105,11 +102,12 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
   }
 
   public class SectionIterator implements Iterator<java.lang.Integer> {
-    private int[] odo = new int[getRank()]; // odometer - the current element LOOK could use Index, but must upgrade to
-                                            // using Range
-    private List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
-    private int[] stride = new int[getRank()];
-    private long done, total;
+    private final int[] odo = new int[getRank()]; // odometer - the current element LOOK could use Index, but must
+                                                  // upgrade to using Range
+    private final List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
+    private final int[] stride = new int[getRank()];
+    private final long total;
+    private long done;
 
     SectionIterator() {
       int ss = 1;

@@ -10,9 +10,6 @@ import java.util.*;
 /**
  * A Composite of other RangeIterators.
  * Iterate over them in sequence.
- *
- * @author John
- * @since 8/19/2015
  */
 @Immutable
 public class RangeComposite implements RangeIterator {
@@ -33,15 +30,6 @@ public class RangeComposite implements RangeIterator {
     return ranges;
   }
 
-  /** @deprecated use copyWithName() */
-  @Deprecated
-  @Override
-  public RangeIterator setName(String name) {
-    if (name.equals(this.getName()))
-      return this;
-    return new RangeComposite(name, ranges);
-  }
-
   @Override
   public RangeIterator copyWithName(String name) {
     if (name.equals(this.getName()))
@@ -51,9 +39,7 @@ public class RangeComposite implements RangeIterator {
 
   @Override
   public java.util.Iterator<Integer> iterator() {
-    Collection<Iterable<Integer>> iters = new ArrayList<>();
-    iters.addAll(ranges);
-
+    Collection<Iterable<Integer>> iters = new ArrayList<>(ranges);
     return new CompositeIterator<>(iters);
   }
 

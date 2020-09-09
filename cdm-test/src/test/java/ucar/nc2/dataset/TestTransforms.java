@@ -247,7 +247,7 @@ public class TestTransforms {
     VariableDS v = (VariableDS) ncd.findVariable(varName);
     assert v != null;
     System.out.printf(" data variable = %s%n", v);
-    Section varSection = new Section(v.getShapeAsSection());
+    Section varSection = v.getShapeAsSection();
 
     List cList = v.getCoordinateSystems();
     assert cList != null;

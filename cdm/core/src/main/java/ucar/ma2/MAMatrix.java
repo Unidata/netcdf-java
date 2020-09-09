@@ -5,18 +5,19 @@
 
 package ucar.ma2;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Abstraction for matrix operations.
  * A matrix is a rank-2 Array: m[rows, cols].
- * All operations done in double precision
- *
- * @author @caron
+ * All operations done in double precision.
  */
-
+@Immutable
 public class MAMatrix {
-  private Array a;
-  private int nrows, ncols;
-  private Index ima;
+  private final Array a;
+  private final int nrows;
+  private final int ncols;
+  private final Index ima;
 
   /**
    * Create an MAMatrix of the given shape.
@@ -62,31 +63,22 @@ public class MAMatrix {
     a.setDouble(ima.set(i, j), val);
   }
 
-  /**
-   * Create a new MAMatrix that is the same as this one, with a copy of the backing store.
-   */
+  /** Create a new MAMatrix that is the same as this one, with a copy of the backing store. */
   public MAMatrix copy() {
     return new MAMatrix(a.copy());
   }
 
-  /**
-   * Create a MAMatrix that is the transpose of this one, with the same backing store.
-   * Use copy() to get a copy.
-   */
+  /** Create a MAMatrix that is the transpose of this one, with the same backing store. Use copy() to get a copy. */
   public MAMatrix transpose() {
     return new MAMatrix(a.transpose(0, 1));
   }
 
-  /**
-   * Get the jth column, return as a MAVector: same backing store.
-   */
+  /** Get the jth column, return as a MAVector: same backing store. */
   public MAVector column(int j) {
     return new MAVector(a.slice(1, j));
   }
 
-  /**
-   * Get the ith row, return as a MAVector: same backing store.
-   */
+  /** Get the ith row, return as a MAVector: same backing store. */
   public MAVector row(int i) {
     return new MAVector(a.slice(0, i));
   }
@@ -171,7 +163,6 @@ public class MAMatrix {
    * @exception IllegalArgumentException if nrows != diag.getNelems().
    */
   public void preMultiplyDiagonal(MAVector diag) {
-
     if (nrows != diag.getNelems())
       throw new IllegalArgumentException("MAMatrix.preMultiplyDiagonal " + nrows + " != " + diag.getNelems());
 

@@ -4,12 +4,7 @@
  */
 package ucar.ma2;
 
-/**
- * Specialization of Index for rank 1 arrays.
- *
- * @see Index
- * @author caron
- */
+/** Specialization of Index for rank 1 arrays. */
 public class Index1D extends Index {
 
   /** current element's indices */

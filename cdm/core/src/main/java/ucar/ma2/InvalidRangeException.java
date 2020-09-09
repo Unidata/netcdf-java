@@ -4,13 +4,7 @@
  */
 package ucar.ma2;
 
-/**
- * Thrown if an attempt is made to use an invalid
- * Range to index an array.
- *
- * @author caron
- */
-
+/** Thrown if an attempt is made to use an invalid Range to index an array. */
 public class InvalidRangeException extends Exception {
   public InvalidRangeException() {}
 

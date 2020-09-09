@@ -5,29 +5,25 @@
 
 package ucar.ma2;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Abstraction for vector operations.
  * A vector is a rank-1 Array.
  * All operations done in double precision
- *
- * @author @caron
  */
-
+@Immutable
 public class MAVector {
-  private Array a;
-  private int nelems;
-  private Index ima;
+  private final Array a;
+  private final int nelems;
+  private final Index ima;
 
-  /**
-   * Create an MAVector out of a double array
-   */
+  /** Create an MAVector out of a double array */
   public MAVector(double[] values) {
     this(Array.makeFromJavaArray(values, false));
   }
 
-  /**
-   * Create an MAVector of the given length.
-   */
+  /** Create an MAVector of the given length. */
   public MAVector(int nelems) {
     this.a = new ArrayDouble.D1(nelems);
     this.nelems = nelems;

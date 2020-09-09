@@ -8,14 +8,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import ucar.nc2.util.Misc;
 
-/**
- * Element by element algebra on Arrays
- *
- * @author caron
- * @see Index
- */
+/** Element by element algebra on Arrays */
 public class MAMath {
-
   /**
    * Add elements of two arrays together, allocating the result array.
    * The result type and the operation type are taken from the type of a.
