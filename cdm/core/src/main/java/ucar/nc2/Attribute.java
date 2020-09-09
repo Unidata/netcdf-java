@@ -595,8 +595,9 @@ public class Attribute {
       if (DataType.getType(arr) == DataType.OBJECT)
         throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
 
-      if (arr.getRank() > 1)
+      if (arr.getRank() > 1) {
         arr = arr.reshape(new int[] {(int) arr.getSize()}); // make sure 1D
+      }
 
       this.values = arr;
       this.nelems = (int) arr.getSize();

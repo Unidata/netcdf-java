@@ -500,13 +500,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
       start = System.currentTimeMillis();
     }
 
-    /*
-     * if (unlocked) {
-     * String info = cache.getInfo(this);
-     * throw new IllegalStateException("File is unlocked - cannot use\n" + info);
-     * }
-     */
-
     if (iosp == null) {
       throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
     }
