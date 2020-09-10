@@ -22,6 +22,8 @@ dependencies {
   testImplementation 'commons-io:commons-io'
   testImplementation "org.mockito:mockito-core:${depVersion.mockito}"
   testImplementation "io.grpc:grpc-testing:${depVersion.grpc}"
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
 protobuf {
