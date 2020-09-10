@@ -116,11 +116,14 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         timeVar.setCachedData(data, false);
       }
 
-      Variable.Builder<?> lat = rootGroup.findVariableLocal("Lat").orElse(rootGroup.findVariableLocal("GEO_lat")
-          .orElseThrow(() -> new IllegalStateException("Cant find variable Lat or GEO_lat")));
+      // in java 9 can use .or
+      Variable.Builder<?> lat =
+          rootGroup.findVariableLocal("Lat").orElseGet(() -> rootGroup.findVariableLocal("GEO_lat")
+              .orElseThrow(() -> new IllegalStateException("Cant find variable Lat or GEO_lat")));
       lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      Variable.Builder<?> lon = rootGroup.findVariableLocal("Lon").orElse(rootGroup.findVariableLocal("GEO_lon")
-          .orElseThrow(() -> new IllegalStateException("Cant find variable Lon or GEO_lon")));
+      Variable.Builder<?> lon =
+          rootGroup.findVariableLocal("Lon").orElseGet(() -> rootGroup.findVariableLocal("GEO_lon")
+              .orElseThrow(() -> new IllegalStateException("Cant find variable Lon or GEO_lon")));
       lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       Variable.Builder<?> alt = rootGroup.findVariableLocal("MSL_alt")
           .orElseThrow(() -> new IllegalStateException("Cant find variable MSL_alt"));
