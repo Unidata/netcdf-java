@@ -1235,7 +1235,10 @@ public class Section {
      * @param stride stride
      */
     public Builder appendRange(int first, int last, int stride) throws InvalidRangeException {
-      ranges.add(new Range(first, last, stride));
+      if (last < 0)
+        ranges.add(Range.VLEN);
+      else
+        ranges.add(new Range(first, last, stride));
       return this;
     }
 
@@ -1248,7 +1251,10 @@ public class Section {
      * @param stride stride
      */
     public Builder appendRange(String name, int first, int last, int stride) throws InvalidRangeException {
-      ranges.add(new Range(name, first, last, stride));
+      if (last < 0)
+        ranges.add(Range.VLEN);
+      else
+        ranges.add(new Range(name, first, last, stride));
       return this;
     }
 

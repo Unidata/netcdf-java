@@ -178,4 +178,8 @@ public class ParsedSectionSpec {
   public String toString() {
     return "ParsedSectionSpec{" + "v=" + v.getFullName() + ", section=" + section + ", child=" + child + '}';
   }
+
+  public String makeSectionSpecString() {
+    return ParsedSectionSpec.makeSectionSpecString(this.v, this.section.getRanges());
+  }
 }
