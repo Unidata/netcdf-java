@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.ma;
+package ucar.array;
 
 import com.google.common.base.Preconditions;
 import java.util.HashSet;
@@ -36,38 +36,18 @@ public class Strides implements Iterable<Integer> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public int get(int v0) {
-    Preconditions.checkArgument(this.rank == 1);
-    return offset + v0 * stride[0];
-  }
-
-  public int get(int v0, int v1) {
-    Preconditions.checkArgument(this.rank == 2);
-    return offset + v0 * stride[0] + v1 * stride[1];
-  }
-
-  public int get(int v0, int v1, int v2) {
-    Preconditions.checkArgument(this.rank == 3);
-    return offset + v0 * stride[0] + v1 * stride[1] + v2 * stride[2];
-  }
-
-  public int get(int v0, int v1, int v2, int v3) {
-    Preconditions.checkArgument(this.rank == 4);
-    return offset + v0 * stride[0] + v1 * stride[1] + v2 * stride[2] + v3 * stride[3];
-  }
-
-  public int get(int v0, int v1, int v2, int v3, int v4) {
-    Preconditions.checkArgument(this.rank == 5);
-    return offset + v0 * stride[0] + v1 * stride[1] + v2 * stride[2] + v3 * stride[3] + v4 * stride[4];
-  }
-
-  public int get(int[] element) {
-    Preconditions.checkArgument(this.rank == element.length);
+  /**
+   * Get the 1-d index indicated by the list of multidimensional indices.
+   * 
+   * @param index list of indices, one for each dimension. For vlen, the last is ignored.
+   */
+  public int get(int... index) {
+    Preconditions.checkArgument(this.rank == index.length);
     int value = offset;
-    for (int ii = 0; ii < rank; ii++) { // general rank
+    for (int ii = 0; ii < rank; ii++) {
       if (shape[ii] < 0)
         break;// vlen
-      value += element[ii] * stride[ii];
+      value += index[ii] * stride[ii];
     }
     return value;
   }
@@ -175,10 +155,6 @@ public class Strides implements Iterable<Integer> {
    */
   Strides section(List<Range> ranges) throws InvalidRangeException {
     Preconditions.checkArgument(ranges.size() == rank);
-
-    // check ranges are valid
-    if (ranges.size() != rank)
-      throw new InvalidRangeException("Bad ranges [] length");
     for (int ii = 0; ii < rank; ii++) {
       Range r = ranges.get(ii);
       if (r == null)
@@ -238,10 +214,6 @@ public class Strides implements Iterable<Integer> {
    */
   Strides sectionNoReduce(List<Range> ranges) throws InvalidRangeException {
     Preconditions.checkArgument(ranges.size() == rank);
-
-    // check ranges are valid
-    if (ranges.size() != rank)
-      throw new InvalidRangeException("Bad ranges [] length");
     for (int ii = 0; ii < rank; ii++) {
       Range r = ranges.get(ii);
       if (r == null)

@@ -17,7 +17,7 @@ import ucar.cdmr.CdmRemoteProto.HeaderRequest;
 import ucar.cdmr.CdmRemoteProto.HeaderResponse;
 import ucar.cdmr.CdmRemoteProto.Variable;
 import ucar.cdmr.CdmrDataToMa;
-import ucar.ma.Array;
+import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
 
