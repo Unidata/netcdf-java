@@ -5,6 +5,7 @@
 package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import java.util.Formatter;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -35,7 +36,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     this.name = name;
     this.authority = authority;
     this.transformType = transformType;
-    this.params = ImmutableList.copyOf(params);
+    this.params = new ArrayList<>(params);
   }
 
   /**
@@ -145,10 +146,9 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
-
   protected String name, authority;
   protected final TransformType transformType;
-  protected List<Parameter> params;
+  protected List<Parameter> params = new ArrayList<>();
   private AttributeContainerMutable attributeContainer;
 
   // LOOK this is wrong, should create a ProjectionCT or a VerticalCT.
