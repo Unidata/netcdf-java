@@ -1228,7 +1228,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
           list.add(Range.VLEN); // LOOK vlen not named
         }
       }
-      this.shapeAsSection = new Section(list).makeImmutable();
+      this.shapeAsSection = new Section(list);
       this.shape = shapeAsSection.getShape();
 
     } catch (InvalidRangeException e) {

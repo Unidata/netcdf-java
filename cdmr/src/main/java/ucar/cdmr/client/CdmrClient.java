@@ -1,16 +1,25 @@
 package ucar.cdmr.client;
 
+import com.google.common.base.Stopwatch;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
+import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
 import ucar.cdmr.CdmRemoteProto.HeaderResponse;
+import ucar.cdmr.CdmRemoteProto.Variable;
+import ucar.cdmr.CdmrDataToMa;
+import ucar.ma.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.Section;
 
 /** A simple client that makes a request from CdmrServer. */
 public class CdmrClient {
@@ -28,32 +37,43 @@ public class CdmrClient {
     blockingStub = CdmRemoteGrpc.newBlockingStub(channel);
   }
 
-  public void getHeader(String location) {
+  public Header getHeader(String location) {
     System.out.printf("Header request %s%n", location);
     HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
     HeaderResponse response;
     try {
       response = blockingStub.getHeader(request);
-      System.out.printf("Header response %s%n", response);
+      // System.out.printf("Header response %s%n", response);
+      return response.getHeader();
     } catch (StatusRuntimeException e) {
       logger.warn("getHeader failed: " + location, e);
       e.printStackTrace();
     }
+    return null;
   }
 
-  public void getData(String location, String varSpec) {
-    System.out.printf("Data request %s%n", varSpec);
-    DataRequest request = DataRequest.newBuilder().setLocation(location).setVariableSpec(varSpec).build();
+  public Array<?> getData(String location, Variable v) {
+    DataType dataType = CdmrDataToMa.convertDataType(v.getDataType());
+    Section section = CdmrDataToMa.decodeSection(v);
+    System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
+    if (dataType != DataType.DOUBLE && dataType != DataType.FLOAT) {
+      System.out.printf("***skip%n");
+      return null;
+    }
+    DataRequest request = DataRequest.newBuilder().setLocation(location).setVariableSpec(v.getName()).build();
     Iterator<DataResponse> responses;
     try {
       responses = blockingStub.getData(request);
+      List<Array> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
-        System.out.printf("Data reponse %s%n", response.getSection());
+        results.add(CdmrDataToMa.decodeData(response.getData(), response.getSection()));
       }
-    } catch (StatusRuntimeException e) {
+      return Array.factoryCopy(dataType, section.getShape(), results);
+    } catch (Throwable e) {
       logger.warn("getData failed: " + location, e);
       e.printStackTrace();
+      return null;
     }
   }
 
@@ -87,9 +107,17 @@ public class CdmrClient {
     ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().enableFullStreamDecompression()
         .maxInboundMessageSize(MAX_MESSAGE).usePlaintext().build();
     try {
+      Stopwatch stopwatch = Stopwatch.createStarted();
       CdmrClient client = new CdmrClient(channel);
-      client.getHeader(location);
-      client.getData(location, "DELP(0:0, 0:71, 0:720, 0:1151)");
+      Header header = client.getHeader(location);
+      for (Variable v : header.getRoot().getVarsList()) {
+        Array<?> data = client.getData(location, v);
+        if (data != null) {
+          Stopwatch s2 = Stopwatch.createStarted();
+          System.out.printf(" sum=%s took=%s%n", data.sum(), s2.stop());
+        }
+      }
+      System.out.printf("That took %s%n", stopwatch.stop());
     } finally {
       // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
       // resources the channel should be shut down when it will no longer be used. If it may be used

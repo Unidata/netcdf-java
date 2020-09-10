@@ -22,7 +22,7 @@ class SectionReader implements ProxyReader {
   // section must be filled
   SectionReader(Variable orgClient, Section section) {
     this.orgClient = orgClient;
-    this.orgSection = section.isImmutable() ? section : new Section(section.getRanges());
+    this.orgSection = section;
   }
 
   @Override

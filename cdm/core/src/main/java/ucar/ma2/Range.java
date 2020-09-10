@@ -180,19 +180,6 @@ public class Range implements RangeIterator {
     return new Range(this.first(), this.last(), stride);
   }
 
-  /** @deprecated use copyWithName() */
-  @Deprecated
-  @Override
-  public Range setName(String name) {
-    if (name.equals(this.getName()))
-      return this;
-    try {
-      return new Range(name, first, last, stride, length);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
-  }
-
   /** Make a copy with a different name. */
   @Override
   public Range copyWithName(String name) {

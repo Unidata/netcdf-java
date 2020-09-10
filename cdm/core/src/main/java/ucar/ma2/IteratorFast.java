@@ -7,15 +7,12 @@ package ucar.ma2;
 
 /**
  * A "fast" iterator that can be used when the data is in canonical order.
- *
- * @author caron
+ * the idea is IteratorFast can do the iteration without an Index.
  */
-/* the idea is IteratorFast can do the iteration without an Index */
 public class IteratorFast implements IndexIterator {
-
-  private int currElement = -1;
   private final Array maa;
-  private long size;
+  private final long size;
+  private int currElement = -1;
 
   IteratorFast(long size, Array maa) {
     this.size = size;

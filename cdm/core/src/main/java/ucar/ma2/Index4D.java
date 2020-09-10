@@ -4,14 +4,8 @@
  */
 package ucar.ma2;
 
-/**
- * Specialization of Index for rank 4 arrays.
- *
- * @see Index
- * @author caron
- */
+/** Specialization of Index for rank 4 arrays. */
 public class Index4D extends Index {
-
   /** current element's indices */
   private int curr0, curr1, curr2, curr3;
   /** array strides */

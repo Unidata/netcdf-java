@@ -5,19 +5,22 @@
 
 package ucar.ma2;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A section of multidimensional array indices.
  * Represented as List<Range>.
- * Immutable if makeImmutable() was called.
- * TODO Will be immutable in ver6.
  * TODO evaluate use of null in ver7
- *
- * @author caron
  */
+@Immutable
 public class Section {
   public static final Section SCALAR = new Section(Range.ONE);
 
@@ -71,8 +74,8 @@ public class Section {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  private List<Range> list; // TODO make Immutable List in ver6
-  private boolean immutable;
+  // Cant use ImmutableList because doesnt allow nulls.
+  private final List<Range> ranges;
 
   /**
    * Create Section from a shape array, assumes 0 origin.
@@ -80,16 +83,17 @@ public class Section {
    * @param shape array of lengths for each Range. 0 = EMPTY, < 0 = VLEN
    */
   public Section(int[] shape) {
-    list = new ArrayList<>();
+    ArrayList<Range> builder = new ArrayList<>();
     for (int aShape : shape) {
       if (aShape > 0)
-        list.add(new Range(aShape));
+        builder.add(new Range(aShape));
       else if (aShape == 0)
-        list.add(Range.EMPTY);
+        builder.add(Range.EMPTY);
       else {
-        list.add(Range.VLEN);
+        builder.add(Range.VLEN);
       }
     }
+    this.ranges = Collections.unmodifiableList(builder);
   }
 
   /**
@@ -100,16 +104,17 @@ public class Section {
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
-    list = new ArrayList<>();
+    ArrayList<Range> builder = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] > 0)
-        list.add(new Range(origin[i], origin[i] + shape[i] - 1));
+        builder.add(new Range(origin[i], origin[i] + shape[i] - 1));
       else if (shape[i] == 0)
-        list.add(Range.EMPTY);
+        builder.add(Range.EMPTY);
       else {
-        list.add(Range.VLEN);
+        builder.add(Range.VLEN);
       }
     }
+    this.ranges = Collections.unmodifiableList(builder);
   }
 
   /**
@@ -121,57 +126,57 @@ public class Section {
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
-    list = new ArrayList<>();
+    ArrayList<Range> builder = new ArrayList<>();
     for (int i = 0; i < size.length; i++) {
       if (size[i] > 0)
-        list.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
+        builder.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
       else if (size[i] == 0)
-        list.add(Range.EMPTY);
+        builder.add(Range.EMPTY);
       else {
-        list.add(Range.VLEN);
+        builder.add(Range.VLEN);
       }
     }
+    this.ranges = Collections.unmodifiableList(builder);
   }
 
-  /**
-   * Create Section from a List<Range>.
-   *
-   * @param from the list of Range
-   */
+  /** Create Section from a List<Range>. */
   public Section(List<Range> from) {
-    list = new ArrayList<>(from);
+    this.ranges = Collections.unmodifiableList(new ArrayList<>(from));
   }
 
-  /**
-   * Create Section from a variable length list of Ranges
-   *
-   * @param ranges the list
-   */
+  /** Create Section from a variable length argument list of Ranges */
   public Section(Range... ranges) {
-    list = new ArrayList<>();
-    Collections.addAll(list, ranges);
+    this.ranges = Collections.unmodifiableList(Arrays.asList(ranges));
   }
 
   /**
-   * Copy Constructor.
-   * Returned copy is mutable
-   *
-   * @param from the Section to copy
-   */
-  public Section(Section from) {
-    list = new ArrayList<>(from.getRanges());
-  }
-
-  /**
-   * Create Section from a List<Range>.
+   * Create Section from a List<Range>, filling in nulls with shape.
    *
    * @param from the list of Range
    * @param shape use this as default shape if any of the ranges are null.
    * @throws InvalidRangeException if shape and range list dont match
    */
   public Section(List<Range> from, int[] shape) throws InvalidRangeException {
-    list = new ArrayList<>(from);
-    setDefaults(shape);
+    if (shape.length != from.size())
+      throw new InvalidRangeException(" shape[] must have same rank as list of ranges");
+    ArrayList<Range> builder = new ArrayList<>();
+
+    // check that any individual Range is null
+    for (int i = 0; i < shape.length; i++) {
+      Range r = from.get(i);
+      if (r == null) {
+        if (shape[i] > 0)
+          builder.add(new Range(shape[i]));
+        else if (shape[i] == 0)
+          builder.add(Range.EMPTY);
+        else {
+          builder.add(Range.VLEN);
+        }
+      } else {
+        builder.add(r);
+      }
+    }
+    this.ranges = Collections.unmodifiableList(builder);
   }
 
   /**
@@ -205,16 +210,16 @@ public class Section {
    */
   public Section(String sectionSpec) throws InvalidRangeException {
 
-    list = new ArrayList<>();
+    ArrayList<Range> builder = new ArrayList<>();
     Range range;
 
     StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),"); // LOOK deal with scatterRange {1,2,3}
     while (stoke.hasMoreTokens()) {
       String s = stoke.nextToken().trim();
-      if (s.equals(":"))
+      if (s.equals(":")) {
         range = null; // all
 
-      else if (s.indexOf(':') < 0) { // just a number : slice
+      } else if (s.indexOf(':') < 0) { // just a number : slice
         try {
           int index = Integer.parseInt(s);
           range = new Range(index, index);
@@ -236,9 +241,9 @@ public class Section {
           throw new IllegalArgumentException(" illegal selector: " + s + " part of <" + sectionSpec + ">");
         }
       }
-      list.add(range);
+      builder.add(range);
     }
-
+    this.ranges = Collections.unmodifiableList(builder);
   }
 
   /**
@@ -250,36 +255,11 @@ public class Section {
    */
   public Section compact() throws InvalidRangeException {
     List<Range> results = new ArrayList<>(getRank());
-    for (Range r : list) {
+    for (Range r : ranges) {
       results.add(r.compact());
     }
     return new Section(results);
   }
-
-
-  /*
-   * Create a new Section by compacting each Range.
-   * first = first/stride, last=last/stride, stride=1.
-   *
-   * @return compacted Section
-   * 
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
-   *
-   * public Section removeVlen() throws InvalidRangeException {
-   * boolean need = false;
-   * for (Range r : list) {
-   * if (r == Range.VLEN) need = true;
-   * }
-   * if (!need) return this;
-   * 
-   * List<Range> results = new ArrayList<>(getRank());
-   * for (Range r : list) {
-   * if (r != Range.VLEN) results.add(r);
-   * }
-   * return new Section(results);
-   * }
-   */
-
 
   /**
    * Create a new Section by composing with a Section that is reletive to this Section.
@@ -299,8 +279,8 @@ public class Section {
 
     // check individual nulls
     List<Range> results = new ArrayList<>(getRank());
-    for (int j = 0; j < list.size(); j++) {
-      Range base = list.get(j);
+    for (int j = 0; j < ranges.size(); j++) {
+      Range base = ranges.get(j);
       Range r = want.getRange(j);
 
       if (r == null)
@@ -325,8 +305,8 @@ public class Section {
 
     // check individual nulls
     List<Range> results = new ArrayList<>(getRank());
-    for (int j = 0; j < list.size(); j++) {
-      Range base = list.get(j);
+    for (int j = 0; j < ranges.size(); j++) {
+      Range base = ranges.get(j);
       Range r = other.getRange(j);
       results.add(base.intersect(r));
     }
@@ -346,8 +326,8 @@ public class Section {
 
     int result = 0;
     int stride = 1;
-    for (int j = list.size() - 1; j >= 0; j--) {
-      Range base = list.get(j);
+    for (int j = ranges.size() - 1; j >= 0; j--) {
+      Range base = ranges.get(j);
       Range r = intersect.getRange(j);
       int offset = base.index(r.first());
       result += offset * stride;
@@ -369,8 +349,8 @@ public class Section {
       throw new InvalidRangeException("Invalid Section rank");
 
     List<Range> results = new ArrayList<>(getRank());
-    for (int j = 0; j < list.size(); j++) {
-      Range base = list.get(j);
+    for (int j = 0; j < ranges.size(); j++) {
+      Range base = ranges.get(j);
       Range r = other.getRange(j);
       results.add(base.union(r));
     }
@@ -392,8 +372,8 @@ public class Section {
 
     // check individual nulls
     List<Range> results = new ArrayList<>(getRank());
-    for (int j = 0; j < list.size(); j++) {
-      Range base = list.get(j);
+    for (int j = 0; j < ranges.size(); j++) {
+      Range base = ranges.get(j);
       Range r = newOrigin.getRange(j);
       results.add(base.shiftOrigin(r.first()));
     }
@@ -406,8 +386,8 @@ public class Section {
       throw new InvalidRangeException("Invalid Section rank");
 
     List<Range> results = new ArrayList<>(getRank());
-    for (int j = 0; j < list.size(); j++) {
-      Range base = list.get(j);
+    for (int j = 0; j < ranges.size(); j++) {
+      Range base = ranges.get(j);
       results.add(base.shiftOrigin(-newOrigin[j]));
     }
 
@@ -426,8 +406,8 @@ public class Section {
     if (!compatibleRank(other))
       throw new InvalidRangeException("Invalid Section rank");
 
-    for (int j = 0; j < list.size(); j++) {
-      Range base = list.get(j);
+    for (int j = 0; j < ranges.size(); j++) {
+      Range base = ranges.get(j);
       Range r = other.getRange(j);
       if (base == Range.VLEN || r == Range.VLEN)
         continue;
@@ -450,8 +430,8 @@ public class Section {
     if (other.getRank() != getRank())
       return false;
 
-    for (int j = 0; j < list.size(); j++) {
-      Range base = list.get(j);
+    for (int j = 0; j < ranges.size(); j++) {
+      Range base = ranges.get(j);
       Range r = other.getRange(j);
       if (base.first() > r.first())
         return false;
@@ -471,8 +451,8 @@ public class Section {
    */
   public String toString() {
     Formatter sbuff = new Formatter();
-    for (int i = 0; i < list.size(); i++) {
-      Range r = list.get(i);
+    for (int i = 0; i < ranges.size(); i++) {
+      Range r = ranges.get(i);
       if (i > 0)
         sbuff.format(",");
       if (r == null)
@@ -486,8 +466,8 @@ public class Section {
 
   public String show() {
     Formatter sbuff = new Formatter();
-    for (int i = 0; i < list.size(); i++) {
-      Range r = list.get(i);
+    for (int i = 0; i < ranges.size(); i++) {
+      Range r = ranges.get(i);
       if (i > 0)
         sbuff.format("%n");
       if (r == null)
@@ -505,267 +485,44 @@ public class Section {
    * No-arg Constructor
    */
   public Section() {
-    list = new ArrayList<>();
-  }
-
-  ///////////////////////////////////////////////////////
-  // these make it mutable
-
-  /**
-   * Append a null Range to the Section - meaning "all"
-   *
-   * @return this
-   * @deprecated use builder().appendNullRange()
-   */
-  @Deprecated
-  public Section appendRange() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.add(null);
-    return this;
-  }
-
-  /**
-   * Append a Range to the Section
-   *
-   * @return this
-   * @deprecated use builder().appendRange(r)
-   */
-  @Deprecated
-  public Section appendRange(Range r) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.add(r);
-    return this;
-  }
-
-  /**
-   * Append a new Range(0,size-1) to the Section
-   *
-   * @param size add this Range
-   * @return this
-   * @deprecated use builder().appendRange(size)
-   */
-  @Deprecated
-  public Section appendRange(int size) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (size > 0)
-      list.add(new Range(size));
-    else if (size == 0)
-      list.add(Range.EMPTY);
-    else
-      list.add(Range.VLEN);
-    return this;
-  }
-
-  /**
-   * Append a new Range(first, last) to the Section
-   *
-   * @param first starting index
-   * @param last last index, inclusive
-   * @return this
-   * @throws InvalidRangeException if last < first
-   * @deprecated use builder().appendRange
-   */
-  @Deprecated
-  public Section appendRange(int first, int last) throws InvalidRangeException {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (last < 0)
-      list.add(Range.VLEN);
-    else
-      list.add(new Range(first, last));
-    return this;
-  }
-
-  /**
-   * Append a new Range(first,last,stride) to the Section
-   *
-   * @param first starting index
-   * @param last last index, inclusive
-   * @param stride stride
-   * @return this
-   * @throws InvalidRangeException if last < first
-   * @deprecated use builder().appendRange
-   */
-  @Deprecated
-  public Section appendRange(int first, int last, int stride) throws InvalidRangeException {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.add(new Range(first, last, stride));
-    return this;
-  }
-
-  /**
-   * Append a new Range(name,first,last,stride) to the Section
-   *
-   * @param name name of Range
-   * @param first starting index
-   * @param last last index, inclusive
-   * @param stride stride
-   * @return this
-   * @throws InvalidRangeException if last < first
-   * @deprecated use builder().appendRange
-   */
-  @Deprecated
-  public Section appendRange(String name, int first, int last, int stride) throws InvalidRangeException {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.add(new Range(name, first, last, stride));
-    return this;
-  }
-
-  /**
-   * Insert a range at the specified index in the list.
-   *
-   * @param index insert here in the list, existing ranges at or after this index get shifted by one
-   * @param r insert this Range
-   * @return this
-   * @throws IndexOutOfBoundsException if bad index
-   * @deprecated use builder().insertRange
-   */
-  @Deprecated
-  public Section insertRange(int index, Range r) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.add(index, r);
-    return this;
-  }
-
-  /**
-   * Remove a range at the specified index in the list.
-   *
-   * @param index remove here in the list, existing ranges after this index get shifted by one
-   * @return this
-   * @throws IndexOutOfBoundsException if bad index
-   * @deprecated use builder().removeRange
-   */
-  @Deprecated
-  public Section removeRange(int index) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.remove(index);
-    return this;
-  }
-
-  /**
-   * Set the range at the specified index in the list, previous Range is discarded
-   *
-   * @param index list index, must be in interval [0,size).
-   * @param r insert this Range
-   * @return this
-   * @throws IndexOutOfBoundsException if bad index
-   * @deprecated use builder().setRange
-   */
-  @Deprecated
-  public Section setRange(int index, Range r) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.set(index, r);
-    return this;
-  }
-
-  /**
-   * Replace a range at the specified index in the list.
-   *
-   * @param index replace here in the list.
-   * @param r use this Range
-   * @return this
-   * @throws IndexOutOfBoundsException if bad index
-   * @deprecated use builder().replaceRange
-   */
-  @Deprecated
-  public Section replaceRange(int index, Range r) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    list.set(index, r);
-    return this;
+    ranges = new ArrayList<>();
   }
 
   /**
    * Remove any ranges of length 1
-   *
+   * 
    * @return new Section if any Ranges needed replacement, else this
    */
   public Section reduce() {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
     boolean needed = false;
-    for (Range r : list) {
+    for (Range r : ranges) {
       if (r.length() == 1)
         needed = true;
     }
     if (!needed)
       return this;
 
-    List<Range> newList = list.stream().filter(r -> r.length() > 1).collect(Collectors.toList());
+    List<Range> newList = ranges.stream().filter(r -> r.length() > 1).collect(Collectors.toList());
     return new Section(newList);
   }
 
-  /**
-   * If any of the ranges are null, which means "all", set the Range from the
-   * corresponding length in shape[].
-   *
-   * @param shape default length for each Range; must have matching rank.
-   * @throws InvalidRangeException if rank is wrong
-   */
-  public void setDefaults(int[] shape) throws InvalidRangeException {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
-    if (shape.length != list.size())
-      throw new InvalidRangeException(" shape[] must have same rank as Section");
-
-    // check that any individual Range is null
-    for (int i = 0; i < shape.length; i++) {
-      Range r = list.get(i);
-      if (r == null) {
-        if (shape[i] > 0)
-          list.set(i, new Range(shape[i]));
-        else if (shape[i] == 0)
-          list.set(i, Range.EMPTY);
-        else {
-          list.set(i, Range.VLEN);
-        }
-      }
-    }
-  }
-
-  /**
-   * Makes the object immutable, so can be safely shared
-   * 
-   * @return this Section
-   * @deprecated use builder()
-   */
-  @Deprecated
-  public Section makeImmutable() {
-    if (immutable)
-      return this;
-    immutable = true;
-    list = Collections.unmodifiableList(list);
-    return this;
-  }
-
-  /////////////////////////////////// end mutable methods
-  // replace with these:
-
 
   public Section subSection(int fromIndex, int endExclusive) {
-    return new Section(list.subList(fromIndex, endExclusive));
+    return new Section(ranges.subList(fromIndex, endExclusive));
   }
 
   /** @deprecated use builder().removeLast() */
   @Deprecated
   public Section removeLast() {
-    int size = list.size();
+    int size = ranges.size();
     return subSection(size - 2, size - 1);
   }
 
   /** @deprecated use builder().removeVlen() */
   @Deprecated
   public Section removeVlen() {
-    int size = list.size();
-    if (list.get(size - 1) == Range.VLEN)
+    int size = ranges.size();
+    if (ranges.get(size - 1) == Range.VLEN)
       return removeLast();
     else
       return this;
@@ -773,10 +530,10 @@ public class Section {
 
   public Section removeFirst(Section parentSection) {
     int parentSize = parentSection.getRank();
-    assert parentSize <= list.size();
-    if (parentSize == list.size())
+    assert parentSize <= ranges.size();
+    if (parentSize == ranges.size())
       return new Section(); // scalar
-    return subSection(parentSize, list.size());
+    return subSection(parentSize, ranges.size());
   }
 
   public Section prepend(Section parentSection) {
@@ -787,12 +544,8 @@ public class Section {
     return new Section(ranges);
   }
 
-  public boolean isImmutable() {
-    return immutable;
-  }
-
   public boolean isVariableLength() {
-    for (Range aFrom : list)
+    for (Range aFrom : ranges)
       if (aFrom == Range.VLEN)
         return true;
     return false;
@@ -803,7 +556,7 @@ public class Section {
    */
   @Deprecated
   public boolean isStrided() {
-    for (Range r : list) {
+    for (Range r : ranges) {
       if (r != null && r.stride() != 1)
         return false;
     }
@@ -816,9 +569,9 @@ public class Section {
    * @return int[] shape
    */
   public int[] getShape() {
-    int[] result = new int[list.size()];
-    for (int i = 0; i < list.size(); i++) {
-      result[i] = list.get(i).length();
+    int[] result = new int[ranges.size()];
+    for (int i = 0; i < ranges.size(); i++) {
+      result[i] = ranges.get(i).length();
     }
     return result;
   }
@@ -829,9 +582,9 @@ public class Section {
    * @return int[] origin
    */
   public int[] getOrigin() {
-    int[] result = new int[list.size()];
-    for (int i = 0; i < list.size(); i++) {
-      result[i] = list.get(i).first();
+    int[] result = new int[ranges.size()];
+    for (int i = 0; i < ranges.size(); i++) {
+      result[i] = ranges.get(i).first();
     }
     return result;
   }
@@ -843,9 +596,9 @@ public class Section {
    * @deprecated dont assume evenly strided
    */
   public int[] getStride() {
-    int[] result = new int[list.size()];
-    for (int i = 0; i < list.size(); i++) {
-      result[i] = list.get(i).stride();
+    int[] result = new int[ranges.size()];
+    for (int i = 0; i < ranges.size(); i++) {
+      result[i] = ranges.get(i).stride();
     }
     return result;
   }
@@ -857,7 +610,7 @@ public class Section {
    * @return origin of ith Range
    */
   public int getOrigin(int i) {
-    return list.get(i).first();
+    return ranges.get(i).first();
   }
 
   /**
@@ -867,7 +620,7 @@ public class Section {
    * @return length of ith Range
    */
   public int getShape(int i) {
-    return list.get(i).length();
+    return ranges.get(i).length();
   }
 
   /**
@@ -878,7 +631,7 @@ public class Section {
    * @deprecated dont assume evenly strided
    */
   public int getStride(int i) {
-    return list.get(i).stride();
+    return ranges.get(i).stride();
   }
 
   public long getSize() {
@@ -891,11 +644,12 @@ public class Section {
    * @return rank
    */
   public int getRank() {
-    return list.size();
+    return ranges.size();
   }
 
   /**
    * Compare this section with another upto the vlen in either
+   * TODO something smarter
    */
   public boolean compatibleRank(Section other) {
     return (getRank() == other.getRank());
@@ -918,7 +672,7 @@ public class Section {
    */
   public long computeSize() {
     long product = 1;
-    for (Range r : list) {
+    for (Range r : ranges) {
       if (r == Range.VLEN)
         continue;
       product *= r.length();
@@ -934,9 +688,9 @@ public class Section {
     return product;
   }
 
-  /** Get the list of Ranges. */
+  /** Get the immutable list of Ranges. */
   public List<Range> getRanges() {
-    return new ArrayList(list); // defensive copy. Cant use ImmutableList because of nulls.
+    return ranges;
   }
 
   /**
@@ -946,7 +700,7 @@ public class Section {
    * @return ith Range
    */
   public Range getRange(int i) {
-    return list.get(i);
+    return ranges.get(i);
   }
 
   /**
@@ -957,26 +711,11 @@ public class Section {
    */
   @Nullable
   public Range find(String rangeName) {
-    for (Range r : list) {
+    for (Range r : ranges) {
       if (rangeName.equals(r.getName()))
         return r;
     }
     return null;
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public Section addRangeNames(List<String> rangeNames) throws InvalidRangeException {
-    if (rangeNames.size() != getRank())
-      throw new InvalidRangeException("Invalid number of Range Names");
-
-    int count = 0;
-    Section result = new Section();
-    for (Range r : getRanges()) {
-      Range nr = r.setName(rangeNames.get(count++));
-      result.appendRange(nr);
-    }
-    return result;
   }
 
   /**
@@ -988,11 +727,11 @@ public class Section {
    * @return error message if illegal, null if all ok
    */
   public String checkInRange(int[] shape) {
-    if (list.size() != shape.length)
-      return "Number of ranges in section (" + list.size() + ") must be = " + shape.length;
+    if (ranges.size() != shape.length)
+      return "Number of ranges in section (" + ranges.size() + ") must be = " + shape.length;
 
-    for (int i = 0; i < list.size(); i++) {
-      Range r = list.get(i);
+    for (int i = 0; i < ranges.size(); i++) {
+      Range r = ranges.get(i);
       if (r == null)
         continue;
       if (r == Range.VLEN)
@@ -1022,8 +761,8 @@ public class Section {
     if (getRank() != shape.length)
       throw new InvalidRangeException("Invalid Section rank");
 
-    for (int i = 0; i < list.size(); i++) {
-      Range r = list.get(i);
+    for (int i = 0; i < ranges.size(); i++) {
+      Range r = ranges.get(i);
       if (r == null)
         continue;
       if (r.first() != 0)
@@ -1088,7 +827,7 @@ public class Section {
    */
   public int hashCode() {
     int result = 17;
-    for (Range r : list)
+    for (Range r : ranges)
       if (r != null)
         result += 37 * result + r.hashCode();
     return result;
@@ -1109,11 +848,12 @@ public class Section {
   }
 
   public class Iterator {
-    private int[] odo = new int[getRank()]; // odometer - the current element LOOK could use Index, but must upgrade to
-                                            // using Range
-    private List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
-    private int[] stride = new int[getRank()];
-    private long done, total;
+    private final int[] odo = new int[getRank()]; // odometer - the current element LOOK could use Index, but must
+                                                  // upgrade to using Range
+    private final List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
+    private final int[] stride = new int[getRank()];
+    private final long total;
+    private long done;
 
     Iterator(int[] shape) {
       int ss = 1;
@@ -1132,11 +872,7 @@ public class Section {
       total = Index.computeSize(getShape()); // total in the section
     }
 
-    /**
-     * Return true if there are more elements
-     *
-     * @return true if there are more elements
-     */
+    /** Return true if there are more elements */
     public boolean hasNext() {
       return done < total;
     }
@@ -1193,7 +929,7 @@ public class Section {
   }
 
   public static class Builder {
-    List<Range> ranges = new ArrayList<Range>();
+    List<Range> ranges = new ArrayList<>();
 
     /** Append a Range to the Section meaning "all" */
     public Builder appendRangeAll() {

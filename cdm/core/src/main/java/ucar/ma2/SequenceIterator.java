@@ -5,14 +5,7 @@
 
 package ucar.ma2;
 
-/**
- * Creates a StructureDataIterator by wrapping a section of a ArrayStructure.
- *
- * @author caron
- * @since Nov 16, 2009
- */
-
-
+/** Creates a StructureDataIterator by wrapping a section of a ArrayStructure. */
 public class SequenceIterator implements StructureDataIterator {
   private int start, size, count;
   private ArrayStructure abb;

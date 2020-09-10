@@ -19,6 +19,6 @@ dependencies {
   compile 'com.google.guava:guava'
 
   testImplementation project(':cdm-test-utils')
-
   testImplementation 'com.google.truth:truth'
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

@@ -142,7 +142,7 @@ public class Grib2Index extends GribIndex {
       logger.debug(" read {} records", records.size());
 
     } catch (NegativeArraySizeException | IOException e) {
-      logger.error("GribIndex failed on " + filename, e);
+      logger.error("Grib2Index error on " + filename, e);
       return false;
     }
 

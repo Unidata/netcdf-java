@@ -1,8 +1,13 @@
 package ucar.cdmr.server;
 
 import com.google.common.base.Stopwatch;
+import io.grpc.Metadata;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerCall;
+import io.grpc.ServerCall.Listener;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +41,10 @@ public class CdmrServer {
   private void start() throws IOException {
     /* The port on which the server should run */
     int port = 16111;
-    server = ServerBuilder.forPort(port).addService(new CdmRemoteImpl()).build().start();
+    server = ServerBuilder.forPort(port) //
+        .addService(new CdmRemoteImpl()) //
+        // .intercept(new MyServerInterceptor())
+        .build().start();
     logger.info("Server started, listening on " + port);
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
@@ -72,6 +80,19 @@ public class CdmrServer {
     final CdmrServer server = new CdmrServer();
     server.start();
     server.blockUntilShutdown();
+  }
+
+  static class MyServerInterceptor implements ServerInterceptor {
+    @Override
+    public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata requestHeaders,
+        ServerCallHandler<ReqT, RespT> next) {
+      System.out.printf("***ServerCall %s%n", call);
+      System.out.printf("   Attributes %s%n", call.getAttributes());
+      System.out.printf("   MethodDesc %s%n", call.getMethodDescriptor());
+      System.out.printf("   Authority %s%n", call.getAuthority());
+      System.out.printf("   Metadata %s%n", requestHeaders);
+      return next.startCall(call, requestHeaders);
+    }
   }
 
   static class CdmRemoteImpl extends CdmRemoteImplBase {

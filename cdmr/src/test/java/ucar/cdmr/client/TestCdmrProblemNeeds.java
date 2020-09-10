@@ -4,6 +4,7 @@
  */
 package ucar.cdmr.client;
 
+import com.google.common.base.Stopwatch;
 import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,6 +33,7 @@ public class TestCdmrProblemNeeds {
   @Test
   public void doOne() throws Exception {
     System.out.printf("TestCdmrProblem %s%n", filename);
+    Stopwatch stopwatch = Stopwatch.createStarted();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
@@ -42,5 +44,6 @@ public class TestCdmrProblemNeeds {
       }
       Assert.assertTrue(ok);
     }
+    System.out.printf("*** That took %s%n", stopwatch.stop());
   }
 }

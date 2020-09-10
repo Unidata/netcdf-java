@@ -39,6 +39,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +80,8 @@ public class TestHTTPSession {
   }
 
   @Test
+  @Ignore("flaky")
   public void testAgent() throws Exception {
-
     logger.debug("*** Testing: User Agent");
     logger.debug("*** URL: {}", TESTURL1);
     logger.debug("Test: HTTPSession.setGlobalUserAgent({})", GLOBALAGENT);
@@ -134,6 +135,7 @@ public class TestHTTPSession {
 
   // Verify that other configuration parameters Can at least be set.
   @Test
+  @Ignore("flaky")
   public void testConfigure() throws Exception {
     try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
       logger.debug("Test: HTTPSession: Configuration");

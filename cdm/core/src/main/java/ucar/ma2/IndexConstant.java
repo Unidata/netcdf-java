@@ -9,10 +9,8 @@ import java.util.List;
 /**
  * An Index into an Array that always returns 0. It can have any shape, so it allows you to create a
  * constant Array of any shape.
- * 
- * @author caron
  */
-// LOOK : need to override section, etc !!
+// TODO : need to override section, etc !!
 public class IndexConstant extends Index {
 
   protected IndexConstant(int rank) {
@@ -96,10 +94,9 @@ public class IndexConstant extends Index {
   }
 
   private static class IteratorConstant implements IndexIterator {
-
-    private int currElement = -1;
     private final Array maa;
-    private long size;
+    private final long size;
+    private int currElement = -1;
 
     IteratorConstant(long size, Array maa) {
       this.size = size;

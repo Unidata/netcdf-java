@@ -59,7 +59,7 @@ public class RuntimeConfigParser {
           } catch (ClassNotFoundException e) {
             errlog.format("IOServiceProvider class %s not found; check your classpath%n", className);
           } catch (Exception e) {
-            errlog.format("IOServiceProvider %s failed='%s'%n", className, e.getMessage());
+            errlog.format("IOServiceProvider %s error='%s'%n", className, e.getMessage());
           }
           break;
         }
@@ -73,7 +73,7 @@ public class RuntimeConfigParser {
           } catch (ClassNotFoundException e) {
             errlog.format("CoordSystemBuilderFactory class '%s' not found; check your classpath%n", className);
           } catch (Exception e) {
-            errlog.format("CoordSystemBuilderFactory %s failed='%s'%n", className, e.getMessage());
+            errlog.format("CoordSystemBuilderFactory %s error='%s'%n", className, e.getMessage());
           }
           break;
         }
@@ -87,7 +87,7 @@ public class RuntimeConfigParser {
           } catch (ClassNotFoundException e) {
             errlog.format("CoordTransBuilder class %s not found; check your classpath%n", className);
           } catch (Exception e) {
-            errlog.format("CoordTransBuilder %s failed='%s'%n", className, e.getMessage());
+            errlog.format("CoordTransBuilder %s error='%s'%n", className, e.getMessage());
           }
           break;
         }
@@ -103,12 +103,12 @@ public class RuntimeConfigParser {
           try {
             boolean ok = FeatureDatasetFactoryManager.registerFactory(featureType, className);
             if (!ok) {
-              errlog.format("FeatureDatasetFactory %s failed; check your classpath%n", className);
+              errlog.format("FeatureDatasetFactory %s not loaded; check your classpath%n", className);
             } else {
               errlog.format("FeatureDatasetFactory added %s%n", className);
             }
           } catch (Exception e) {
-            errlog.format("FeatureDatasetFactory %s failed='%s'%n", className, e.getMessage());
+            errlog.format("FeatureDatasetFactory %s error='%s'%n", className, e.getMessage());
           }
           break;
         }
@@ -137,7 +137,7 @@ public class RuntimeConfigParser {
 
           } catch (Exception e) {
             e.printStackTrace();
-            errlog.format("GribParameterTable.addParameterTable() failed='%s'%n", e.getMessage());
+            errlog.format("GribParameterTable.addParameterTable() error='%s'%n", e.getMessage());
           }
           break;
         }
@@ -155,7 +155,7 @@ public class RuntimeConfigParser {
 
             } catch (Exception e) {
               e.printStackTrace();
-              errlog.format("Grib1ParamTables.setStrict() failed='%s'%n", e.getMessage());
+              errlog.format("Grib1ParamTables.setStrict() error='%s'%n", e.getMessage());
             }
             continue;
           }
@@ -172,13 +172,13 @@ public class RuntimeConfigParser {
             Method m = c.getMethod("addParameterTableLookup", String.class);
             Boolean ok = (Boolean) m.invoke(null, filename);
             if (!ok) {
-              errlog.format("GribParameterTable.addParameterTableLookup() failed to open the file%n", filename);
+              errlog.format("GribParameterTable.addParameterTableLookup() can't open the file%n", filename);
             } else {
               errlog.format("GribParameterTable.addParameterTableLookup() added %s%n", filename);
             }
 
           } catch (Exception e) {
-            errlog.format("GribParameterTable.addParameterTableLookup() failed='%s'%n", e.getMessage());
+            errlog.format("GribParameterTable.addParameterTableLookup() error='%s'%n", e.getMessage());
           }
           break;
         }
@@ -211,7 +211,7 @@ public class RuntimeConfigParser {
             errlog.format("BufrTables.addLookupFile() added %s%n", filename);
 
           } catch (Throwable e) {
-            errlog.format("BufrTables.addLookupFile failed='%s'%n", e.getCause().getMessage());
+            errlog.format("BufrTables.addLookupFile error='%s'%n", e.getCause().getMessage());
           }
           break;
         }
@@ -236,14 +236,14 @@ public class RuntimeConfigParser {
             try {
               nc4IospClass = RuntimeConfigParser.class.getClassLoader().loadClass(nc4IospClassName);
             } catch (Throwable e) {
-              errlog.format("Nc4Iosp failed to load='%s'; check class path%n", e.getMessage());
+              errlog.format("Nc4Iosp was not loaded='%s'; check class path%n", e.getMessage());
               break;
             }
             try {
               Method method = nc4IospClass.getMethod("setLibraryAndPath", String.class, String.class);
               method.invoke(null, path, name); // static method has null for object
             } catch (Throwable e) {
-              errlog.format("Nc4Iosp.setLibraryAndPath failed='%s'%n", e.getMessage());
+              errlog.format("Nc4Iosp.setLibraryAndPath error='%s'%n", e.getMessage());
             }
           }
           boolean useForReading = Boolean.parseBoolean(elem.getChildText("useForReading"));

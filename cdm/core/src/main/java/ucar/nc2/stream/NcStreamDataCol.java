@@ -690,11 +690,12 @@ public class NcStreamDataCol {
     DataType dataType = NcStream.convertDataType(memberData.getDataType());
     Section section = NcStream.decodeSection(memberData.getSection());
     assert memberData.getIsVlen() || memberData.getNelems() == section.computeSize();
+
     // the dproto section includes parents, remove them
     Section msection = section.toBuilder().removeFirst(parentSection.getRank()).build();
-
-    if (memberData.getIsVlen())
-      msection = msection.appendRange(Range.VLEN);
+    if (memberData.getIsVlen()) {
+      msection = msection.toBuilder().appendRange(Range.VLEN).build();
+    }
 
     StructureMembers.MemberBuilder result = members.addMember(name, null, null, dataType, msection.getShape());
     Array data = decode(memberData, parentSection);

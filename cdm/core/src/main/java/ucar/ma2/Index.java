@@ -13,11 +13,7 @@ import java.util.List;
  * to do the index arithmetic to translate an n-dim index into a 1-dim index.
  * The user obtains this by calling getIndex() on an Array.
  * The set() and seti() routines are convenience routines for 1-7 dim arrays.
- *
- * @author caron
- * @see Array
  */
-
 public class Index implements Cloneable {
   public static final Index0D scalarIndexImmutable = new Index0D(); // immutable, so can be shared
 
@@ -859,37 +855,11 @@ public class Index implements Cloneable {
     return i;
   }
 
-  //////////////////////////////////////////////////////////////
-  /*
-   * Set the name of one of the indices.
-   *
-   * @param dim which index?
-   * 
-   * @param indexName name of index
-   *
-   * public void setIndexName(int dim, String indexName) {
-   * if (name == null) name = new String[rank];
-   * name[dim] = indexName;
-   * }
-   * 
-   * /*
-   * Get the name of one of the indices.
-   *
-   * @param dim which index?
-   * 
-   * @return name of index, or null if none.
-   *
-   * public String getIndexName(int dim) {
-   * if (name == null) return null;
-   * return name[dim];
-   * }
-   */
-
   private class IteratorImpl implements IndexIterator {
     private int count;
     private int currElement;
-    private Index counter;
-    private Array maa;
+    private final Index counter;
+    private final Array maa;
 
     private IteratorImpl(Array maa) {
       this.maa = maa;
