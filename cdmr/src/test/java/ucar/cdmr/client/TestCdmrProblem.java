@@ -16,7 +16,7 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NotJenkins;
 
 /** Test {@link CdmrNetcdfFile} */
-@Category(NotJenkins.class) // Needs CmdrServer to be started up
+@Category({NeedsExternalResource.class, NotJenkins.class}) // Needs CmdrServer to be started up
 public class TestCdmrProblem {
 
   private final String filename;

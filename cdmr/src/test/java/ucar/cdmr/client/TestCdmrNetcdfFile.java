@@ -23,7 +23,7 @@ import ucar.unidata.util.test.category.NotJenkins;
 
 /** Test {@link CdmrNetcdfFile} */
 @RunWith(Parameterized.class)
-@Category(NotJenkins.class) // Needs CmdrServer to be started up
+@Category({NeedsExternalResource.class, NotJenkins.class}) // Needs CmdrServer to be started up
 public class TestCdmrNetcdfFile {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
