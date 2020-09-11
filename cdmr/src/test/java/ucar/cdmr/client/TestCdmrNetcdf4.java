@@ -20,10 +20,11 @@ import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.category.NotJenkins;
 
 /** Test {@link CdmrNetcdfFile} */
 @RunWith(Parameterized.class)
-@Category({NeedsExternalResource.class, NeedsCdmUnitTest.class}) // Needs CmdrServer to be started up
+@Category({NotJenkins.class, NeedsCdmUnitTest.class}) // Needs CmdrServer to be started up
 public class TestCdmrNetcdf4 {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
