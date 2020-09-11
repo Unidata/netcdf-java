@@ -22,7 +22,7 @@ dependencies {
     api project(':cdm-test-utils')
     api project(':grib')
     api project(':httpservices')
-//    api project(':netcdf4')
+    api project(':netcdf4')
 //    api project(':opendap')
     api project(':udunits')
     api project(':uibase')

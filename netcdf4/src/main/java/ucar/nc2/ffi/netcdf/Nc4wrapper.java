@@ -1,13 +1,16 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
+ *  See LICENSE for license information.
  */
 
-package ucar.nc2.jni.netcdf;
+package ucar.nc2.ffi.netcdf;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
+import ucar.nc2.jni.netcdf.Nc4prototypes;
+import ucar.nc2.jni.netcdf.SizeT;
+import ucar.nc2.jni.netcdf.SizeTByReference;
 
 /**
  * JNA access to Netcdf-4 C Library, using JNI to shared C library. Just the functions actually
@@ -18,15 +21,11 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author dmh
  * @since June 11, 2018
- * @deprecated do not use directly.
  */
-@Deprecated
-public class Nc4wrapper implements Nc4prototypes {
-  public static boolean TRACE;
-
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4wrapper.class);
-
-  static int counter;
+class Nc4wrapper implements Nc4prototypes {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4wrapper.class);
+  private static final boolean TRACE = false;
+  private static int counter = 0;
 
   private static void trace(Object ret, String fcn, Object... args) {
     if (!TRACE) {
@@ -62,7 +61,9 @@ public class Nc4wrapper implements Nc4prototypes {
     counter = 0;
   }
 
-  private Nc4prototypes nc4;
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private final Nc4prototypes nc4;
 
   public Nc4wrapper(Nc4prototypes nc4) {
     this.nc4 = nc4;
