@@ -11,7 +11,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
-import ucar.nc2.jni.netcdf.Nc4wrapper;
 
 /** Static methods to load the netcdf C library. */
 public class NetcdfClibrary {
