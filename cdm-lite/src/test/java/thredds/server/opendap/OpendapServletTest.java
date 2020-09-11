@@ -35,7 +35,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 public class OpendapServletTest {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Autowired
+  // @Autowired
   private ServletConfig servletConfig;
 
   private OpendapServlet opendapServlet;
