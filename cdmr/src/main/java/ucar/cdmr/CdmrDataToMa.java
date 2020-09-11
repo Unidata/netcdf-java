@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import ucar.cdmr.CdmRemoteProto.Data;
-import ucar.ma.Array;
+import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;

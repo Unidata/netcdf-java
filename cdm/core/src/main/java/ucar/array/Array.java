@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.ma;
+package ucar.array;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,20 +114,18 @@ public abstract class Array<T> implements Iterable<T> {
   // Something to touch every element
   public abstract T sum();
 
-  public abstract T get();
+  /**
+   * Get the element indicated by the list of multidimensional indices.
+   * 
+   * @param index list of indices, one for each dimension. For vlen, the last is ignored.
+   */
+  public abstract T get(int... index);
 
-  public abstract T get(int v0);
-
-  public abstract T get(int v0, int v1);
-
-  public abstract T get(int v0, int v1, int v2);
-
-  public abstract T get(int v0, int v1, int v2, int v3);
-
-  public abstract T get(int v0, int v1, int v2, int v3, int v4);
-
-  public abstract T get(int[] element);
-
+  /**
+   * Get the element indicated by Index.
+   * 
+   * @param index list of indices, one for each dimension. For vlen, the last is ignored.
+   */
   public abstract T get(Index index);
 
   /**
@@ -184,9 +182,9 @@ public abstract class Array<T> implements Iterable<T> {
   }
 
   /**
-   * create new Array with given Index and the same backing store
+   * Create new Array with given Strides and the same backing store
    *
-   * @param index use this Index
+   * @param index use this Strides
    * @return a view of the Array using the given Index
    */
   abstract Array<T> createView(Strides index);
