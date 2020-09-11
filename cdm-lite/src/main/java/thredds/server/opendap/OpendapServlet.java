@@ -31,6 +31,7 @@ import opendap.dap.DString;
 import opendap.dap.DStructure;
 import opendap.dap.NoSuchTypeException;
 import opendap.dap.parsers.ParseException;
+import org.springframework.beans.factory.InitializingBean;
 import thredds.server.opendap.servers.CEEvaluator;
 import thredds.server.opendap.servers.SDArray;
 import thredds.server.opendap.servers.ServerDDS;
@@ -56,23 +57,23 @@ import ucar.nc2.internal.util.EscapeStrings;
 /** THREDDS opendap server. */
 @Controller
 @RequestMapping("/dods")
-public class OpendapServlet extends AbstractServlet {
+public class OpendapServlet extends AbstractServlet implements InitializingBean {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
   static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  @Autowired
+  // @Autowired
   int opendapAscLimit = 50; // MB
 
-  @Autowired
+  // @Autowired
   int opendapBinLimit = 500; // MB
 
-  @Autowired
+  // @Autowired
   String opendapVersionString = "opendap/3.7";
 
-  @Autowired
+  // @Autowired
   private String serverContactName = "UNKNOWN";
 
-  @Autowired
+  // @Autowired
   private String serverContactEmail = "UNKNOWN";
 
   private boolean allowSessions = false;
@@ -82,7 +83,7 @@ public class OpendapServlet extends AbstractServlet {
   private boolean debugSession = false;
 
   // TODO removed @PostConstruct, what replaces it? probably not override HttpServlet?
-  public void init() {
+  public void afterPropertiesSet() {
     logServerStartup.info(getClass().getName() + " initialization start");
     logServerStartup.info(getClass().getName() + " version= " + opendapVersionString + " ascLimit = " + opendapAscLimit
         + " binLimit = " + opendapBinLimit);

@@ -39,11 +39,11 @@ public class GetHTMLInterfaceHandler2 {
   private static final boolean _Debug = false;
   private String helpLocation = "http://www.opendap.org/online_help_files/";
 
-  @Autowired
+  // @Autowired
   private String serverContactName = "UNKNOWN";
-  @Autowired
+  // @Autowired
   private String serverContactEmail = "UNKNOWN";
-  @Autowired
+  // @Autowired
   private String odapSupportEmail = "support@opendap.org";
 
   /**

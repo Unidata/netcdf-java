@@ -15,8 +15,6 @@ dependencies {
   api project(':httpservices')
   api project(':opendap')
 
-  implementation 'com.google.guava:guava'
-
   compile 'com.google.guava:guava'
   compile 'org.jdom:jdom2'
   compile 'com.google.code.findbugs:jsr305'
@@ -67,4 +65,24 @@ war {
     into 'docs'
     expand properties
   }
+}
+
+// make the cdm-lite server available for tests
+import org.akhikhl.gretty.AppBeforeIntegrationTestTask
+import org.akhikhl.gretty.AppAfterIntegrationTestTask
+
+task('AppWarBeforeIntegrationTest', type: AppBeforeIntegrationTestTask) {
+  inplace = false
+  integrationTestTask 'test'
+}
+task('AppWarAfterIntegrationTest', type: AppAfterIntegrationTestTask) {
+  integrationTestTask 'test'
+}
+
+AppWarBeforeIntegrationTest.dependsOn assemble
+AppWarAfterIntegrationTest.mustRunAfter AppWarBeforeIntegrationTest
+
+gretty {
+  httpPort = 8080
+  contextPath = '/'
 }

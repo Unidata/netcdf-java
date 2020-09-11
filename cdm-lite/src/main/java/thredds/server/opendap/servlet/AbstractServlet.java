@@ -121,7 +121,7 @@ public abstract class AbstractServlet extends HttpServlet {
   }
 
   /** path to the root of the servlet in tomcat webapps directory */
-  @Autowired
+  // @Autowired
   String servletRootPath = "";
 
   protected boolean allowDeflate = true;
