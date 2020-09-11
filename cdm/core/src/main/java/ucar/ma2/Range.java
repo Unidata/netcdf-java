@@ -27,15 +27,13 @@ import java.util.Iterator;
  *    ...
  *  }
  * </pre>
- *
- * @author caron
  */
 
 @Immutable
 public class Range implements RangeIterator {
   public static final Range EMPTY = new Range(); // used for unlimited dimension = 0
-  public static final Range ONE = new Range(1);
-  public static final Range VLEN = new Range(-1);
+  public static final Range ONE = new Range("ONE", 1);
+  public static final Range VLEN = new Range("VLEN", -1);
 
   public static Range make(String name, int len) {
     try {
@@ -61,15 +59,23 @@ public class Range implements RangeIterator {
   private final int stride; // stride, must be >= 1
   private final String name; // optional name
 
-  /**
-   * Used for EMPTY
-   */
+  /** Used for EMPTY */
   private Range() {
     this.length = 0;
     this.first = 0;
     this.last = 0;
     this.stride = 1;
-    this.name = null;
+    this.name = "EMPTY";
+  }
+
+  /** Used for ONE, VLEN */
+  private Range(String name, int length) {
+    assert (length != 0);
+    this.name = name;
+    this.first = 0;
+    this.last = length - 1;
+    this.stride = 1;
+    this.length = length;
   }
 
   /**
