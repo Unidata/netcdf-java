@@ -13,6 +13,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.Variable.Builder;
 import ucar.nc2.dataset.NetcdfDatasets;
 // import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.stream.NcStreamWriter;
@@ -185,16 +186,11 @@ public class DatasetWriter extends JPanel {
     }
 
     NestedTable t = nestedTableList.get(0);
-    List beans = t.table.getBeans();
-
-    for (Object bean1 : beans) {
-      VariableBean bean = (VariableBean) bean1;
+    for (VariableBean bean : t.table.getBeans()) {
       boolean isChunked = chunker.isChunked(bean.vs);
-
       bean.setChunked(isChunked);
-
       if (isChunked) {
-        bean.setChunkArray(chunker.computeChunking(bean.vs));
+        bean.setChunkArray(chunker.getChunking(bean.vs));
       } else {
         bean.setChunkArray(null);
       }
@@ -532,7 +528,7 @@ public class DatasetWriter extends JPanel {
     int level;
     PreferencesExt myPrefs;
 
-    BeanTable table; // always the left component
+    BeanTable<VariableBean> table; // always the left component
     JSplitPane split; // right component (if exists) is the nested dataset.
     int splitPos = 100;
     boolean isShowing;
@@ -652,7 +648,6 @@ public class DatasetWriter extends JPanel {
   }
 
   public static class BeanChunker implements Nc4Chunking {
-
     Map<String, VariableBean> map;
     int deflate;
     boolean shuffle;
@@ -673,18 +668,28 @@ public class DatasetWriter extends JPanel {
     }
 
     @Override
-    public long[] computeChunking(Variable v) {
+    public boolean isChunked(Builder<?> vb) {
+      return false;
+    }
+
+    @Override
+    public long[] getChunking(Variable v) {
       VariableBean bean = map.get(v.getFullName());
       return (bean == null) ? new long[0] : bean.chunked;
     }
 
     @Override
-    public int getDeflateLevel(Variable v) {
+    public long[] computeChunking(Builder<?> vb) {
+      return new long[0];
+    }
+
+    @Override
+    public int getDeflateLevel(Builder<?> vb) {
       return deflate;
     }
 
     @Override
-    public boolean isShuffle(Variable v) {
+    public boolean isShuffle(Builder<?> vb) {
       return shuffle;
     }
   }
@@ -837,7 +842,7 @@ public class DatasetWriter extends JPanel {
     public void setChunked(boolean chunked) {
       isChunked = chunked;
       if (chunked) {
-        setChunkArray(chunker.computeChunking(vs));
+        setChunkArray(chunker.getChunking(vs));
       } else {
         setChunkArray(null);
       }

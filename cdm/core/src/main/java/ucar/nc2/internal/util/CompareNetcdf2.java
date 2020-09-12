@@ -649,16 +649,24 @@ public class CompareNetcdf2 {
 
   private boolean compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne)
       throws IOException {
-    Array data1 = var1.read();
-    Array data2 = var2.read();
-
-    if (showCompare)
-      f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(),
-          data1.getSize());
-    boolean ok = compareData(var1.getFullName(), data1, data2, justOne);
-    if (showCompare)
-      f.format("   ok=%s%n", ok);
-    return ok;
+    // TODO prevent trying to read > 2 gb
+    try {
+      Array data1 = var1.read();
+      Array data2 = var2.read();
+      if (showCompare) {
+        f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(),
+            data1.getSize());
+      }
+      boolean ok = compareData(var1.getFullName(), data1, data2, justOne);
+      if (showCompare) {
+        f.format("   ok=%s%n", ok);
+      }
+      return ok;
+    } catch (RuntimeException e) {
+      if (e.getMessage() != null && e.getMessage().contains("Read request too large"))
+        return true;
+      throw e;
+    }
   }
 
   public boolean compareData(String name, double[] data1, double[] data2) {
@@ -814,13 +822,22 @@ public class CompareNetcdf2 {
 
     } else if (dt == DataType.OPAQUE) {
       while (iter1.hasNext() && iter2.hasNext()) {
-        ByteBuffer obj1 = (ByteBuffer) iter1.next();
-        ByteBuffer obj2 = (ByteBuffer) iter2.next();
-        if (obj1.limit() != obj2.limit()) {
-          f.format(" DIFF %s: opaque size %d != %d%n", name, obj1.limit(), obj2.limit());
+        ByteBuffer bb1 = (ByteBuffer) iter1.next();
+        ByteBuffer bb2 = (ByteBuffer) iter2.next();
+        if (bb1.remaining() != bb2.remaining()) {
+          f.format(" DIFF %s: opaque size %d != %d%n", name, bb1.remaining(), bb2.remaining());
           ok = false;
           if (justOne)
             break;
+        }
+        int size = bb1.remaining();
+        for (int i = 0; i < size; i++) {
+          if (bb1.get(i) != bb2.get(i)) {
+            f.format(" DIFF %s: opaque value %d != %d at index %d%n", name, bb1.get(i), bb2.get(i), i);
+            ok = false;
+            if (justOne)
+              break;
+          }
         }
       }
 

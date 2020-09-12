@@ -19,24 +19,17 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
-/**
- * Test JNI netcdf-4 iosp
- * Compare reading with native java reading
- *
- * @author caron
- * @since 7/3/12
- */
+/** Test JNI netcdf-4 iosp. Compare reading with native java reading */
 @Category(NeedsCdmUnitTest.class)
-public class TestNc4IospReading {
+public class TestNc4reader {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
@@ -83,9 +76,6 @@ public class TestNc4IospReading {
   public void testReadSubsection() throws IOException, InvalidRangeException {
     String location = TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4";
     try (NetcdfFile ncfile = NetcdfFiles.open(location); NetcdfFile jni = openJni(location)) {
-
-      jni.setLocation(location + " (jni)");
-
       // float salinity(time=1, depth=40, lat=667, lon=622);
       Array data1 = read(ncfile, "salinity", "0,11:12,22,:");
       // NCdumpW.printArray(data1);
@@ -162,8 +152,6 @@ public class TestNc4IospReading {
   static boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData)
       throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(location); NetcdfFile jni = openJni(location)) {
-      jni.setLocation(location + " (jni)");
-
       Formatter f = new Formatter();
       CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
       boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter());
@@ -176,11 +164,9 @@ public class TestNc4IospReading {
   }
 
   static NetcdfFile openJni(String location) throws IOException {
-    Nc4Iosp iosp = new Nc4Iosp();
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
+    Nc4reader iosp = new Nc4reader();
     RandomAccessFile raf = new RandomAccessFile(location, "r");
-    iosp.open(raf, ncfile, null);
-    return ncfile;
+    return NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
   }
 
 }

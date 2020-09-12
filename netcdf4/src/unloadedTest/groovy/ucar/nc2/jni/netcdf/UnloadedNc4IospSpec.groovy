@@ -16,7 +16,7 @@ class UnloadedNc4IospSpec extends Specification {
     
     def "flush in define mode, without C lib loaded"() {
         setup:
-        Nc4Iosp nc4Iosp = new Nc4Iosp()
+        Nc4reader nc4Iosp = new Nc4reader()
         
         when: "flush while still in define mode"
         nc4Iosp.flush()
@@ -27,7 +27,7 @@ class UnloadedNc4IospSpec extends Specification {
     
     def "updateAttribute in define mode, without C lib loaded"() {
         setup:
-        Nc4Iosp nc4Iosp = new Nc4Iosp()
+        Nc4reader nc4Iosp = new Nc4reader()
         
         when: "updateAttribute while still in define mode"
         nc4Iosp.updateAttribute(null, new Attribute("foo", "bar"))

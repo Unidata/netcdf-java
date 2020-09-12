@@ -17,16 +17,21 @@ public interface Nc4Chunking {
   /** Should this variable be chunked? */
   boolean isChunked(Variable v);
 
+  boolean isChunked(Variable.Builder<?> vb);
+
+  // Get the existing chunking from the attribute CDM.CHUNK_SIZES
+  long[] getChunking(Variable v);
+
   /** Compute the chunk size for this Variable. */
-  long[] computeChunking(Variable v);
+  long[] computeChunking(Variable.Builder<?> vb);
 
   /** Get the deflation level. 0 corresponds to no compression and 9 to maximum compression. */
-  int getDeflateLevel(Variable v);
+  int getDeflateLevel(Variable.Builder<?> vb);
 
   /**
    * Set true to turn shuffling on which may improve compression. This option is ignored unless a non-zero deflation
    * level is specified.
    */
-  boolean isShuffle(Variable v);
+  boolean isShuffle(Variable.Builder<?> vb);
 
 }

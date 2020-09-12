@@ -5,6 +5,8 @@
 
 package ucar.nc2.write;
 
+import com.google.common.collect.ImmutableList;
+import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 
 /**
@@ -30,7 +32,17 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
   }
 
   @Override
-  public long[] computeChunking(Variable v) {
+  public boolean isChunked(Variable.Builder<?> vb) {
+    if (vb.isUnlimited())
+      return true;
+    // if (getChunkAttribute(v) != null) return true;
+
+    int n = vb.getRank();
+    return n >= 2 && vb.getSize() * vb.getElementSize() > getMinVariableSize();
+  }
+
+  @Override
+  public long[] computeChunking(Variable.Builder<?> v) {
     /*
      * check attribute
      * int[] resultFromAtt = computeChunkingFromAttribute(v);
@@ -57,15 +69,17 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
   }
 
 
-  private int[] computeChunkingGrib(Variable v) {
+  private int[] computeChunkingGrib(Variable.Builder<?> v) {
     int n = v.getRank();
     int[] result = new int[n];
     if (n < 2) {
       result[0] = 1; // Unlimited variable with rank 1
 
     } else {
-      for (int i = 0; i < n; i++)
-        result[i] = (i < n - 2) ? 1 : v.getDimension(i).getLength();
+      ImmutableList<Dimension> dims = v.getDimensions();
+      for (int i = 0; i < n; i++) {
+        result[i] = (i < n - 2) ? 1 : dims.get(i).getLength();
+      }
     }
     return result;
   }

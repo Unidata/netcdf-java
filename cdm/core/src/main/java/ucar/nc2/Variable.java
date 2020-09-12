@@ -1289,8 +1289,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     protected Group.Builder parentBuilder;
     protected Structure.Builder<?> parentStructureBuilder;
-    private ArrayList<Dimension> dimensions = new ArrayList<>(); // The dimension's group is ignored; replaced when
-                                                                 // build()
+    private ArrayList<Dimension> dimensions = new ArrayList<>();
     public Object spiObject;
     public ProxyReader proxyReader;
     public Cache cache = new Cache(); // cache cannot be null
@@ -1441,8 +1440,17 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
+    // Convenience routines
     public int getRank() {
       return dimensions.size();
+    }
+
+    public int[] getShape() {
+      return Dimensions.makeShape(dimensions);
+    }
+
+    public long getSize() {
+      return Dimensions.getSize(dimensions);
     }
 
     public T setDataType(DataType dataType) {

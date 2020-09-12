@@ -30,12 +30,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.*;
 
-/**
- * Test miscellaneous netcdf4 writing
- *
- * @author caron
- * @since 7/30/13
- */
+/** Test miscellaneous netcdf4 writing */
 public class TestNc4Misc {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -52,7 +47,7 @@ public class TestNc4Misc {
   }
 
   @Test
-  @Ignore("openExisting nor working yet")
+  @Ignore("openExisting not working yet")
   public void testUnlimitedDimension() throws IOException, InvalidRangeException {
     String location = tempFolder.newFile().getAbsolutePath();
 
@@ -253,7 +248,7 @@ public class TestNc4Misc {
   }
 
   @Test
-  @Ignore("Netcdf-4 rename not working yet")
+  @Ignore("Netcdf-3 rename not working yet")
   public void testAttributeChangeNc3() throws IOException {
     Path source = Paths.get(TestDir.cdmLocalFromTestDataDir + "dataset/testRename.nc3");
     Path target = tempFolder.newFile().toPath();

@@ -19,12 +19,12 @@ class Nc4IospSpec extends Specification {
         // Ignore this class's tests if NetCDF-4 isn't present.
         // We're using setup() because it shows these tests as being ignored.
         // setupSpec() shows them as *non-existent*, which is not what we want.
-        Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+        Assume.assumeTrue("NetCDF-4 C library not present.", Nc4reader.isClibraryPresent());
     }
     
     def "flush in define mode, with C lib loaded"() {
         setup:
-        Nc4Iosp nc4Iosp = new Nc4Iosp()
+        Nc4reader nc4Iosp = new Nc4reader()
         
         when: "flush while still in define mode"
         nc4Iosp.flush()
@@ -35,7 +35,7 @@ class Nc4IospSpec extends Specification {
     
     def "updateAttribute in define mode, with C lib loaded"() {
         setup:
-        Nc4Iosp nc4Iosp = new Nc4Iosp()
+        Nc4reader nc4Iosp = new Nc4reader()
     
         when: "updateAttribute while still in define mode"
         nc4Iosp.updateAttribute(null, new Attribute("foo", "bar"))

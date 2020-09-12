@@ -309,7 +309,7 @@ public class NetcdfFormatWriter implements Closeable {
     this.chunker = builder.chunker;
 
     // This is what we want the file to look like. Once we call build(), it is complete.
-    NetcdfFile.Builder ncfileb = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location);
+    NetcdfFile.Builder<?> ncfileb = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location);
 
     // read existing file to get the format
     if (!isNewFile) {
@@ -322,7 +322,7 @@ public class NetcdfFormatWriter implements Closeable {
 
     this.useJna = builder.useJna || format.isNetdf4format();
     if (useJna) {
-      String className = "ucar.nc2.jni.netcdf.Nc4Iosp";
+      String className = "ucar.nc2.jni.netcdf.Nc4writer";
       IOServiceProviderWriter spi;
       try {
         Class iospClass = this.getClass().getClassLoader().loadClass(className);
@@ -332,6 +332,7 @@ public class NetcdfFormatWriter implements Closeable {
         Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
         method.invoke(spi, chunker);
       } catch (Throwable e) {
+        e.printStackTrace();
         throw new IllegalArgumentException(className + " cannot use JNI/C library err= " + e.getMessage());
       }
       spiw = spi;

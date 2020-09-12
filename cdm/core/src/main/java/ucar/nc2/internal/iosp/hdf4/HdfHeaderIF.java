@@ -9,8 +9,10 @@ public interface HdfHeaderIF {
 
   Group.Builder getRootGroup();
 
+  // Need to set the Vinfo on a Variable that may get added by HdsEos.
   void makeVinfoForDimensionMapVariable(Group.Builder parent, Variable.Builder<?> v);
 
+  // Need to read the struct metadata before we have a Variable
   String readStructMetadata(Variable.Builder<?> structMetadataVar) throws IOException;
 
 }

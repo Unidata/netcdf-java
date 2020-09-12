@@ -11,6 +11,8 @@
 
 package ucar.nc2.jni.netcdf;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -31,11 +33,10 @@ import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
-import ucar.unidata.util.test.UnitTestCommon;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-public class TestCharFillValue extends UnitTestCommon {
+public class TestCharFillValue {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -61,7 +62,7 @@ public class TestCharFillValue extends UnitTestCommon {
     String filename = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filename, null);
     Dimension charDim = writerb.addDimension("charDim", 3);
-    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
+    Variable.Builder<?> charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
     // this works
     Array charArray = ArrayChar.makeFromString(charFillValue, 1);
     charVar.addAttribute(Attribute.fromArray("charAttrName", charArray));
@@ -106,7 +107,7 @@ public class TestCharFillValue extends UnitTestCommon {
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filename, null);
 
     Dimension charDim = writerb.addDimension("charDim", 3);
-    Variable.Builder charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
+    Variable.Builder<?> charVar = writerb.addVariable(charVarName, DataType.CHAR, charDim.getShortName());
     Array charArrayFillValue = ArrayChar.makeFromString(charNullFillValue, 1);
     Attribute charAttrFillValue;
     charAttrFillValue = Attribute.fromArray("_FillValue", charArrayFillValue);
@@ -133,7 +134,7 @@ public class TestCharFillValue extends UnitTestCommon {
       }
       logger.debug("|");
       for (int i = 0; i < s.length(); i++) {
-        Assert.assertTrue("position " + i, charNullFillValue.charAt(0) == s.charAt(i));
+        assertWithMessage("position " + i).that(charNullFillValue.charAt(0)).isEqualTo(s.charAt(i));
       }
     }
   }
