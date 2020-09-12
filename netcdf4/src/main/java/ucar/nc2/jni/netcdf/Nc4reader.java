@@ -102,7 +102,8 @@ public class Nc4reader extends AbstractIOServiceProvider {
   private int format; // from nc_inq_format
   private boolean isEos;
 
-  Nc4reader() {
+  // no-arg constructor for NetcdfFiles.open()
+  public Nc4reader() {
     this(NetcdfFileFormat.NETCDF4);
   }
 
