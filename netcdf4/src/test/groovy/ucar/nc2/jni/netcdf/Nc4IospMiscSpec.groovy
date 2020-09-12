@@ -40,14 +40,14 @@ class Nc4IospMiscSpec extends Specification {
         assert file.exists()
         
         and: "open it as a NetcdfFile using Nc4Iosp"
-        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
+        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4reader.class.canonicalName, -1, null, null)
         
         and: "grab the Nc4Iosp instance within so that we can test Nc4Iosp.readDataSection()"
-        Nc4Iosp nc4Iosp = ncFile.iosp as Nc4Iosp
+        Nc4reader nc4Iosp = ncFile.iosp as Nc4reader
         
         when: "read all of var's data using readDataSection()"
         Variable var = ncFile.findVariable(varName)
-        Nc4Iosp.Vinfo vinfo = var.SPobject as Nc4Iosp.Vinfo
+        Nc4reader.Vinfo vinfo = var.SPobject as Nc4reader.Vinfo
         Array array = nc4Iosp.readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, var.shapeAsSection);
         
         then: "actual data equals expected data"
@@ -77,7 +77,7 @@ class Nc4IospMiscSpec extends Specification {
         assert file.exists()
     
         and: "open it as a NetcdfFile using Nc4Iosp"
-        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
+        NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4reader.class.canonicalName, -1, null, null)
     
         and: "find unlimited dimensions"
         Dimension primary1Dim = ncFile.findDimension("/group1/primary")

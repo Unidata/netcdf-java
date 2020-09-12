@@ -81,7 +81,7 @@ public class TestNc4EnumWriting {
       fail();
     }
 
-    boolean ok = TestNc4IospReading.doCompare(filenameOut, true, true, true);
+    boolean ok = TestNc4reader.doCompare(filenameOut, true, true, true);
     assertThat(ok).isTrue();
   }
 }

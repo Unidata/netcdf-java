@@ -5,17 +5,13 @@
 
 package ucar.nc2.write;
 
+import javax.annotation.Nullable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Abstract superclass for netcdf-4 chunking strategy.
- * 
- * @author caron
- * @since 11/14/12
- */
+/** Abstract superclass for netcdf-4 chunking strategy. */
 @Immutable
 public abstract class Nc4ChunkingStrategy implements Nc4Chunking {
 
@@ -38,12 +34,8 @@ public abstract class Nc4ChunkingStrategy implements Nc4Chunking {
     throw new IllegalArgumentException("Illegal Nc4Chunking.Standard " + type);
   }
 
-  ////////////////////////////////////////////////////
-
   private final int deflateLevel;
   private final boolean shuffle;
-
-  ////////////////////////
 
   protected Nc4ChunkingStrategy(int deflateLevel, boolean shuffle) {
     this.deflateLevel = deflateLevel;
@@ -51,31 +43,35 @@ public abstract class Nc4ChunkingStrategy implements Nc4Chunking {
   }
 
   @Override
-  public int getDeflateLevel(Variable v) {
+  public int getDeflateLevel(Variable.Builder<?> vb) {
     return deflateLevel;
   }
 
   @Override
-  public boolean isShuffle(Variable v) {
+  public boolean isShuffle(Variable.Builder<?> vb) {
     return shuffle;
   }
 
-  protected Attribute getChunkAttribute(Variable v) {
-    Attribute att = v.findAttribute(CDM.CHUNK_SIZES);
-    if (att != null && att.getDataType().isIntegral() && att.getLength() == v.getRank())
-      return att;
-    return null;
-  }
-
-  protected int[] computeChunkingFromAttribute(Variable v) {
+  @Nullable
+  public long[] getChunking(Variable v) {
     Attribute att = getChunkAttribute(v); // use CHUNK_SIZES attribute if it exists
     if (att != null) {
-      int[] result = new int[v.getRank()];
-      for (int i = 0; i < v.getRank(); i++)
-        result[i] = att.getNumericValue(i).intValue();
+      long[] result = new long[v.getRank()];
+      for (int i = 0; i < v.getRank(); i++) {
+        result[i] = att.getNumericValue(i).longValue();
+      }
       return result;
     }
 
+    return null;
+  }
+
+  @Nullable
+  protected Attribute getChunkAttribute(Variable v) {
+    Attribute att = v.findAttribute(CDM.CHUNK_SIZES);
+    if (att != null && att.getDataType().isIntegral() && att.getLength() == v.getRank()) {
+      return att;
+    }
     return null;
   }
 }

@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
@@ -23,18 +21,10 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
-/**
- * Test writing structure data into netcdf4.
- *
- * @author caron
- * @since 5/12/14
- */
+/** Test writing structure data into netcdf4. */
 @Category(NeedsCdmUnitTest.class)
 public class TestNc4Structures {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -65,7 +55,7 @@ public class TestNc4Structures {
       try (NetcdfFile ncfileOut = copier.write(cancel)) {
         // empty
       } finally {
-        cancel.setDone(true);
+        cancel.cancel();
         System.out.printf("%s%n", cancel);
       }
 
@@ -73,7 +63,7 @@ public class TestNc4Structures {
       System.out.printf("%s = %s %n", ex.getClass().getName(), ex.getMessage());
     }
 
-    cancel.setDone(true);
+    cancel.cancel();
     System.out.printf("%s%n", cancel);
   }
 
@@ -152,7 +142,7 @@ public class TestNc4Structures {
       // Read the file back in and make sure that what we wrote is what we're getting back.
       try (NetcdfFile ncFileIn = NetcdfFiles.open(outFile.getAbsolutePath())) {
         Structure struct = (Structure) ncFileIn.getRootGroup().findVariableLocal("outer");
-        StructureData outerStructureData = struct.readStructure();
+        StructureData outerStructureData = struct.readStructure(0);
         StructureData innerStructureData = outerStructureData.getScalarStructure("inner");
         int foo = innerStructureData.getScalarInt("foo");
 

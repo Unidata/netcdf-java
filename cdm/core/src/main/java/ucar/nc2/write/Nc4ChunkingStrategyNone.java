@@ -15,12 +15,17 @@ public class Nc4ChunkingStrategyNone extends Nc4ChunkingDefault {
   }
 
   @Override
-  public int getDeflateLevel(Variable v) {
+  public boolean isChunked(Variable.Builder<?> vb) {
+    return vb.isUnlimited();
+  }
+
+  @Override
+  public int getDeflateLevel(Variable.Builder<?> v) {
     return 0;
   }
 
   @Override
-  public boolean isShuffle(Variable v) {
+  public boolean isShuffle(Variable.Builder<?> v) {
     return false;
   }
 }
