@@ -1565,7 +1565,7 @@ public class H5headerNew implements HdfHeaderIF {
 
   @Override
   public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
-    // this is a self contained variable, doesnt need any extra info
+    // this is a self contained variable, doesnt need any extra info, just make a dummy.
     Vinfo vinfo = new Vinfo();
     vinfo.owner = v;
   }

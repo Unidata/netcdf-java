@@ -90,6 +90,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
   boolean rewriteHeader(boolean largeFile) throws IOException;
 
   /**
+   * TODO review this
    * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
    * You cannot make an attribute longer, or change the number of values.
    * For strings: truncate if longer, zero fill if shorter. Strings are padded to 4 byte boundaries, ok to use padding

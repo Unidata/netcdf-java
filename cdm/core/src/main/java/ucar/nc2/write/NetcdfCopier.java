@@ -161,6 +161,7 @@ public class NetcdfCopier {
     }
   }
 
+  // TODO: why arent we just using toBuilder() to make the copy ??
   private Group.Builder copyGroup(Group oldGroup, Group.Builder parent) throws IOException {
     Group.Builder newGroup = Group.builder().setParentGroup(parent).setName(oldGroup.getShortName());
     if (debug) {

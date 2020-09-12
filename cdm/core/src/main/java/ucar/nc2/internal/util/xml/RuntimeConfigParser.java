@@ -218,7 +218,7 @@ public class RuntimeConfigParser {
         case "Netcdf4Clibrary":
           // cdm does not have a dependency on netcdf4 (and we don't want to introduce one),
           // so we cannot refer to the Nc4Iosp.class object.
-          String nc4IospClassName = "ucar.nc2.jni.netcdf.Nc4Iosp";
+          String nc4IospClassName = "ucar.nc2.ffi.netcdf.NetcdfClibrary";
           /*
            * <Netcdf4Clibrary>
            * <libraryPath>/usr/local/lib</libraryPath>
@@ -239,7 +239,7 @@ public class RuntimeConfigParser {
               break;
             }
             try {
-              Method method = nc4IospClass.getMethod("setLibraryAndPath", String.class, String.class);
+              Method method = nc4IospClass.getMethod("setLibraryNameAndPath", String.class, String.class);
               method.invoke(null, path, name); // static method has null for object
             } catch (Throwable e) {
               errlog.format("Nc4Iosp.setLibraryAndPath error='%s'%n", e.getMessage());
