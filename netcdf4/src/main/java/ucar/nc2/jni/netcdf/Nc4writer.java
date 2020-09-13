@@ -47,8 +47,10 @@ import ucar.nc2.internal.iosp.IOServiceProviderWriter;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
+import ucar.unidata.io.RandomAccessFile;
 
 /** IOSP for writing netcdf files through JNA interface to netcdf C library */
 public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
@@ -85,10 +87,10 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
   }
 
   @Override
-  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb,
-      ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask)
+      throws IOException {
+    build(raf, ncfileb.rootGroup, cancelTask);
     this.ncfile = ncfileb.build();
-    // TODO _open(raf, this.ncfile, false);
   }
 
   // * Create new file, populate it from the objects in ncfileb.
@@ -418,8 +420,17 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
   // compound types
 
   /*
-   * Compound data types can be defined for netCDF-4/HDF5 format files. A compound datatype is similar to a struct in C
-   * and contains a collection of one or more
+   * These are pretty serious restrictions, are they current?
+   * Implication is that Netcdf-4 cant carry the full CDM model:
+   * Fixed size - no vlen as members?
+   * member can have up to 4 fixed-size dimensions.
+   * Perhaps we have to change the CDM model ?? Or theres a workaround ??
+   */
+
+  /*
+   * Originally from http://www.hdfgroup.org/HDF5/doc/H5.intro.html#Intro-PMCreateCompound, no longer exists.
+   * Compound data types can be defined for netCDF-4/HDF5 format files.
+   * A compound datatype is similar to a struct in C and contains a collection of one or more
    * atomic or user-defined types. The netCDF-4 compound data must comply with the properties and constraints of the
    * HDF5 compound data type in terms of which it is implemented.
    *
@@ -434,8 +445,8 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
    * Each member has a fixed byte offset, which is the first byte (smallest byte address) of that member in the compound
    * datatype.
    * In addition to other other user-defined data types or atomic datatypes, a member can be a small fixed-size array of
-   * any type with up to
-   * four fixed-size dimensions (not associated with named netCDF dimensions).
+   * any type
+   * with up to four fixed-size dimensions (not associated with named netCDF dimensions).
    *
    * Create a compound type. Provide an ncid, a name, and a total size (in bytes) of one element of the completed
    * compound type.
@@ -444,7 +455,7 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
    */
   private void createCompoundType(Group4 g4, Structure.Builder<?> s) throws IOException {
     IntByReference typeidp = new IntByReference();
-    long size = s.getElementSize();
+    long size = s.calcElementSize();
     String name = s.shortName + "_t";
     int ret = nc4.nc_def_compound(g4.grpid, new SizeT(size), name, typeidp);
     if (ret != 0)
@@ -691,8 +702,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     }
 
     // dont propagate these - handled internally
-    if (att.getShortName().equals(H5headerNew.HDF5_CLASS))
-      return;
     if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_LIST))
       return;
     if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_SCALE))
@@ -703,9 +712,8 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       return;
     if (att.getShortName().equals(CDM.COMPRESS))
       return;
-    if (att.getShortName().equals(CDM.NCPROPERTIES))
-      return;
-    if (att.getShortName().equals(CDM.ISNETCDF4))
+
+    if (CDM.NETCDF4_SPECIAL_ATTS.contains(att.getShortName()))
       return;
 
     int ret = 0;

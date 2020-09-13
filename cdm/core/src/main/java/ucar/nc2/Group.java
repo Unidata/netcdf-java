@@ -587,8 +587,9 @@ public class Group {
       return Optional.empty();
     }
 
+    // Unmodifiable iterator
     public Iterable<Dimension> getDimensions() {
-      return dimensions;
+      return ImmutableList.copyOf(dimensions);
     }
 
     /** Add a nested Group. */
