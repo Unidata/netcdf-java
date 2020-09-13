@@ -161,6 +161,10 @@ public enum NetcdfFileFormat {
     return this == NETCDF4 || this == NCSTREAM;
   }
 
+  public boolean isClassicModel() {
+    return this == NETCDF3 || this == NETCDF3_64BIT_OFFSET || this == NETCDF4_CLASSIC || this == NETCDF3_64BIT_DATA;
+  }
+
   // this converts old NetcdfFileWriter.Version string.
   @Nullable
   public static NetcdfFileFormat convertVersionToFormat(String netcdfFileWriterVersion) {
