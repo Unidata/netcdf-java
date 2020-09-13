@@ -235,7 +235,7 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     int count = 0;
     for (Dimension d : v.getDimensions()) {
       int dimid;
-      if (!d.isShared()) {
+      if (!d.isShared()) { // LOOK can Netcdf4 support non-shared dimensions ?
         dimid = addDimension(g4.grpid, v.shortName + "_Dim" + count, d.getLength());
       } else {
         dimid = findDimensionId(g4, d);
