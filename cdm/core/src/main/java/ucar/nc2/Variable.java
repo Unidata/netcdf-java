@@ -1363,6 +1363,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return (idx >= 0);
     }
 
+    /** Replace the ith dimension. */
+    public void replaceDimension(int idx, Dimension dim) {
+      dimensions.set(idx, dim);
+    }
+
     /** Set dimensions by name. If not empty, the parent group builder must be set. */
     public T setDimensionsByName(String dimString) {
       if (dimString == null || dimString.isEmpty()) {
@@ -1549,8 +1554,16 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
+    public T resetAutoGen() {
+      this.autoGen = null;
+      return self();
+    }
+
     public T resetCache() {
       this.cache.data = null;
+      this.cache.isMetadata = false;
+      this.cache.cachingSet = false;
+      this.cache.isCaching = false;
       return self();
     }
 

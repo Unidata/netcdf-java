@@ -505,6 +505,14 @@ public class Structure extends Variable {
       return wasPresent;
     }
 
+    public long calcElementSize() {
+      int total = 0;
+      for (Variable.Builder<?> v : vbuilders) {
+        total += v.getElementSize() * v.getSize();
+      }
+      return total;
+    }
+
     public Optional<Variable.Builder<?>> findMemberVariable(String name) {
       return vbuilders.stream().filter(d -> d.shortName.equals(name)).findFirst();
     }
