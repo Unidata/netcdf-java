@@ -150,12 +150,13 @@ public class TestNc4IospWriting {
     System.out.printf("TestNc4IospWriting copy %s to %s%n", datasetIn, datasetOut);
     try (NetcdfFile ncfileIn = ucar.nc2.NetcdfFiles.open(datasetIn, null)) {
       NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.builder().setLocation(datasetOut).setFormat(format);
-      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, writer);
-      try (NetcdfFile ncfileOut = copier.write(null)) {
+      try (NetcdfCopier copier = NetcdfCopier.create(ncfileIn, writer)) {
+        copier.write(null);
+      }
+      try (NetcdfFile ncfileOut = ucar.nc2.NetcdfFiles.open(datasetOut, null)) {
         compare(ncfileIn, ncfileOut, false, false, true);
       }
     }
-    // System.out.println("NetcdfFile written = " + ncfileOut);
     return true;
   }
 

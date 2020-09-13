@@ -6,6 +6,8 @@
 package ucar.nc2.ui.op;
 
 import static ucar.nc2.internal.util.CompareNetcdf2.IDENTITY_FILTER;
+
+import com.google.common.base.Stopwatch;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -245,24 +247,21 @@ public class DatasetWriter extends JPanel {
         BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
         NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format)
             .setLocation(data.outputFilename).setChunker(bc);
-        NetcdfCopier copier = NetcdfCopier.create(ds, builder);
-
-        double start = System.nanoTime();
-        // write returns the open file that was just written, so we just need to close it.
-        try (NetcdfFile result = copier.write(this)) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (NetcdfCopier copier = NetcdfCopier.create(ds, builder)) {
+          // write returns the open file that was just written, so we just need to close it.
+          copier.write(this);
         }
 
-        double took = (System.nanoTime() - start) / 1000 / 1000 / 1000;
         File oldFile = new File(ds.getLocation());
         File newFile = new File(data.outputFilename);
 
         double r = (double) newFile.length() / oldFile.length();
 
         logger.debug("Rewrite from {} {} to {} {} format = {} ratio = {} took= {} secs", ds.getLocation(),
-            oldFile.length(), data.outputFilename, newFile.length(), data.format, r, took);
-
+            oldFile.length(), data.outputFilename, newFile.length(), data.format, r, stopwatch);
         JOptionPane.showMessageDialog(DatasetWriter.this,
-            "File successfully written took=" + took + " secs ratio=" + r);
+            "File successfully written took=" + stopwatch.stop() + " secs ratio=" + r);
       } catch (Exception ioe) {
         JOptionPane.showMessageDialog(DatasetWriter.this, "ERROR: " + ioe.getMessage());
         ioe.printStackTrace();

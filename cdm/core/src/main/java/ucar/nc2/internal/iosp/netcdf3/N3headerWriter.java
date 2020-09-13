@@ -136,7 +136,8 @@ class N3headerWriter extends N3headerNew {
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       if (dim.isUnlimited()) {
         udim = dim; // needed?
-        unlimitedDim = (UnlimitedDimension) dim;
+        unlimitedDim = dim instanceof UnlimitedDimension ? (UnlimitedDimension) dim
+            : new UnlimitedDimension(dim.getShortName(), dim.getLength());
       }
     }
 

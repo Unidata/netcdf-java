@@ -17,7 +17,7 @@ public class AttributeContainerMutable implements AttributeContainer {
   }
 
   private @Nullable String name;
-  private List<Attribute> atts;
+  private ArrayList<Attribute> atts;
 
   /** Constructor with container name. */
   public AttributeContainerMutable(@Nullable String name) {
@@ -169,6 +169,11 @@ public class AttributeContainerMutable implements AttributeContainer {
     Attribute newAtt = a.toBuilder().setName(newName).build();
     addAttribute(newAtt);
     return ok;
+  }
+
+  public AttributeContainerMutable clear() {
+    atts.clear();
+    return this;
   }
 
   /**

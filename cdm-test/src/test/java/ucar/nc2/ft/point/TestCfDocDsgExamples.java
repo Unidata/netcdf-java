@@ -147,9 +147,8 @@ public class TestCfDocDsgExamples {
 
       try (NetcdfFile ncfileIn = NetcdfDatasets.openFile(inputFilePath, null)) {
         NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(outputFilePath);
-        NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
-        try (NetcdfFile ncout2 = copier.write(null)) {
-          // empty
+        try (NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder)) {
+          copier.write(null);
         }
       }
     }

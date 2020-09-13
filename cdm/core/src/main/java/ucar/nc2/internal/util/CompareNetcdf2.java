@@ -18,27 +18,31 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Formatter;
 import java.util.ArrayList;
+import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
 
 /**
  * Compare two NetcdfFile.
  * Doesnt fail (eg doesnt use assert), places results in Formatter.
- * 
- * TODO will move to test classes in ver6.
  */
 public class CompareNetcdf2 {
   public static final ObjFilter IDENTITY_FILTER = new ObjFilter() {};
 
   public interface ObjFilter {
-    // if true, compare attribute, else skip comparision
-    default boolean attCheckOk(Variable v, Attribute att) {
+    // if true, compare attribute, else skip comparision. Variable may be null.
+    default boolean attCheckOk(Attribute att) {
       return true;
     }
 
-    // override att comparision if needed
+    // override attribute comparision if needed
     default boolean attsAreEqual(Attribute att1, Attribute att2) {
       return att1.equals(att2);
+    }
+
+    // override dimension comparision if needed
+    default boolean dimsAreEqual(Dimension dim1, Dimension dim2) {
+      return dim1.equals(dim2);
     }
 
     // if true, compare variable, else skip comparision
@@ -59,9 +63,16 @@ public class CompareNetcdf2 {
 
   public static class Netcdf4ObjectFilter implements ObjFilter {
 
-    public boolean attCheckOk(Variable v, Attribute att) {
+    public boolean attCheckOk(Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getShortName();
+
+      if (name.equals(H5headerNew.HDF5_DIMENSION_LIST))
+        return false;
+      if (name.equals(H5headerNew.HDF5_DIMENSION_SCALE))
+        return false;
+      if (name.equals(H5headerNew.HDF5_DIMENSION_LABELS))
+        return false;
 
       // added by cdm
       if (name.equals(CDM.CHUNK_SIZES))
@@ -69,6 +80,9 @@ public class CompareNetcdf2 {
       if (name.equals(CDM.FILL_VALUE))
         return false;
       if (name.equals("_lastModified"))
+        return false;
+
+      if (CDM.NETCDF4_SPECIAL_ATTS.contains(name))
         return false;
 
       // hidden by nc4
@@ -83,7 +97,6 @@ public class CompareNetcdf2 {
 
       // not implemented yet
       // if (att.getDataType().isEnum()) return false;
-
     }
 
     @Override
@@ -100,6 +113,17 @@ public class CompareNetcdf2 {
       }
       return att1.equals(att2);
     }
+
+    // override dimension comparision if needed
+    public boolean dimsAreEqual(Dimension dim1, Dimension dim2) {
+      boolean unshared1 = dim1.getShortName() != null && (dim1.getShortName().contains("_Dim"));
+      boolean unshared2 = dim2.getShortName() != null && (dim2.getShortName().contains("_Dim"));
+      if (unshared1 || unshared2) { // only test length
+        return dim1.getLength() == dim2.getLength();
+      }
+      return dim1.equals(dim2);
+    }
+
   }
 
   public static boolean compareData(String name, Array data1, Array data2) {
@@ -249,7 +273,7 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  private boolean compareGroups(Group org, Group copy, ObjFilter objFilter) {
+  private boolean compareGroups(Group org, Group copy, ObjFilter filter) {
     if (showCompare)
       f.format("compare Group '%s' to '%s' %n", org.getShortName(), copy.getShortName());
     boolean ok = true;
@@ -260,13 +284,13 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    if (objFilter.checkDimensionsForFile(org.getNetcdfFile().getLocation())) {
-      ok &= checkGroupDimensions(org, copy, "copy");
-      ok &= checkGroupDimensions(copy, org, "org");
+    if (filter.checkDimensionsForFile(org.getNetcdfFile().getLocation())) {
+      ok &= checkGroupDimensions(org, copy, "copy", filter);
+      ok &= checkGroupDimensions(copy, org, "org", filter);
     }
 
     // attributes
-    ok &= checkAttributes(null, org.attributes(), copy.attributes(), objFilter);
+    ok &= checkAttributes(org.getFullName(), org.attributes(), copy.attributes(), filter);
 
     // enums
     ok &= checkEnums(org, copy);
@@ -279,7 +303,7 @@ public class CompareNetcdf2 {
         f.format(" ** cant find variable %s in 2nd file%n", orgV.getFullName());
         ok = false;
       } else {
-        ok &= compareVariables(orgV, copyVar, objFilter, compareData, true);
+        ok &= compareVariables(orgV, copyVar, filter, compareData, true);
       }
     }
 
@@ -298,7 +322,7 @@ public class CompareNetcdf2 {
     for (int i = 0; i < groups.size(); i += 2) {
       Group orgGroup = (Group) groups.get(i);
       Group copyGroup = (Group) groups.get(i + 1);
-      ok &= compareGroups(orgGroup, copyGroup, objFilter);
+      ok &= compareGroups(orgGroup, copyGroup, filter);
     }
 
     return ok;
@@ -325,11 +349,11 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), copy.getFullName() + " copy");
-    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), org.getFullName() + " org");
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions(), copy.getFullName() + " copy", filter);
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions(), org.getFullName() + " org", filter);
 
     // attributes
-    ok &= checkAttributes(org, org.attributes(), copy.attributes(), filter);
+    ok &= checkAttributes(org.getFullName(), org.attributes(), copy.attributes(), filter);
 
     // data !!
     if (compareData) {
@@ -445,18 +469,20 @@ public class CompareNetcdf2 {
   // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
-  private boolean checkAttributes(Variable v, AttributeContainer list1, AttributeContainer list2, ObjFilter objFilter) {
+  private boolean checkAttributes(String name, AttributeContainer list1, AttributeContainer list2,
+      ObjFilter objFilter) {
     boolean ok = true;
 
-    String name = v == null ? "global" : "variable " + v.getFullName();
     for (Attribute att1 : list1) {
-      if (objFilter.attCheckOk(v, att1))
+      if (objFilter.attCheckOk(att1)) {
         ok &= checkAtt(name, att1, "file1", list1, "file2", list2, objFilter);
+      }
     }
 
     for (Attribute att2 : list2) {
-      if (objFilter.attCheckOk(v, att2))
+      if (objFilter.attCheckOk(att2)) {
         ok &= checkAtt(name, att2, "file2", list2, "file1", list1, objFilter);
+      }
     }
 
     return ok;
@@ -466,12 +492,12 @@ public class CompareNetcdf2 {
   // are not properly moved up (eg dim BAND_250M is in both root and Data_Fields).
   // So we are going to allow that to be ok (until proven otherwise) but we have to adjust
   // dimension comparision. Currently Dimension.equals() checks the Group.
-  private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2, String where) {
+  private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2, String where, ObjFilter filter) {
     boolean ok = true;
 
     for (Dimension d1 : list1) {
       if (d1.isShared()) {
-        boolean hasit = listContains(list2, d1);
+        boolean hasit = listContains(list2, d1, filter);
         if (!hasit) {
           f.format("  ** Missing Variable dim '%s' not in %s %n", d1, where);
         }
@@ -483,33 +509,37 @@ public class CompareNetcdf2 {
   }
 
   // Check contains not using Group
-  private boolean listContains(List<Dimension> list, Dimension d2) {
+  private boolean listContains(List<Dimension> list, Dimension d2, ObjFilter filter) {
     for (Dimension d1 : list) {
-      if (equalInValue(d1, d2)) {
+      if (equalInValue(d1, d2, filter)) {
         return true;
       }
     }
     return false;
   }
 
-  public Dimension findDimension(Group g, Dimension dim) {
+  public Dimension findDimension(Group g, Dimension dim, ObjFilter filter) {
     if (dim == null) {
       return null;
     }
     for (Dimension d : g.getDimensions()) {
-      if (equalInValue(d, dim)) {
+      if (equalInValue(d, dim, filter)) {
         return d;
       }
     }
     Group parent = g.getParentGroup();
     if (parent != null) {
-      return findDimension(parent, dim);
+      return findDimension(parent, dim, filter);
     }
     return null;
   }
 
+  private boolean equalInValue(Dimension d1, Dimension other, ObjFilter filter) {
+    return filter.dimsAreEqual(d1, other);
+  }
+
   // values equal, not using Group
-  private boolean equalInValue(Dimension d1, Dimension other) {
+  private boolean equalInValueOld(Dimension d1, Dimension other) {
     if ((d1.getShortName() == null) && (other.getShortName() != null))
       return false;
     if ((d1.getShortName() != null) && !d1.getShortName().equals(other.getShortName()))
@@ -518,17 +548,20 @@ public class CompareNetcdf2 {
         && (d1.isVariableLength() == other.isVariableLength()) && (d1.isShared() == other.isShared());
   }
 
-  private boolean checkGroupDimensions(Group group1, Group group2, String where) {
+  private boolean checkGroupDimensions(Group group1, Group group2, String where, ObjFilter filter) {
     boolean ok = true;
     for (Dimension d1 : group1.getDimensions()) {
       if (d1.isShared()) {
         if (!group2.getDimensions().contains(d1)) {
           // not in local, is it in a parent?
-          if (findDimension(group2, d1) != null) {
+          if (findDimension(group2, d1, filter) != null) {
             f.format("  ** Dimension '%s' found in parent group of %s %s%n", d1, where, group2.getFullName());
           } else {
-            f.format("  ** Missing Group dim '%s' not in %s %s%n", d1, where, group2.getFullName());
-            ok = false;
+            boolean unshared1 = d1.getShortName() != null && (d1.getShortName().contains("_Dim"));
+            if (!unshared1) {
+              f.format("  ** Missing Group dim '%s' not in %s %s%n", d1, where, group2.getFullName());
+              ok = false;
+            }
           }
         }
       }
@@ -633,6 +666,7 @@ public class CompareNetcdf2 {
     boolean ok = true;
     Attribute found = list2.findAttributeIgnoreCase(want.getShortName());
     if (found == null) {
+      boolean check = objFilter.attCheckOk(want);
       f.format("  ** %s: %s (%s) not in %s %n", what, want, name1, name2);
       ok = false;
     } else {

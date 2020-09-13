@@ -50,13 +50,9 @@ public class TestNc4Structures {
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
       NetcdfFormatWriter.Builder builder =
           NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, datasetOut, null);
-      NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder);
 
-      try (NetcdfFile ncfileOut = copier.write(cancel)) {
-        // empty
-      } finally {
-        cancel.cancel();
-        System.out.printf("%s%n", cancel);
+      try (NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder)) {
+        copier.write(cancel);
       }
 
     } catch (Exception ex) {

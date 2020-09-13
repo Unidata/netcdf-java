@@ -7,6 +7,8 @@ package ucar.nc2.jni.netcdf;
 
 import static ucar.nc2.ffi.netcdf.NetcdfClibrary.isLibraryPresent;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
+
+import com.google.common.collect.ImmutableList;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -67,28 +69,8 @@ public class Nc4reader extends AbstractIOServiceProvider {
     useHdfEos = val;
   }
 
-  ///////////////////////////////////////////////
-  // Moved from Attribute
-
-  private static final String SPECIALPREFIX = "_";
-  private static final String[] SPECIALS =
-      {CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION, CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX};
-
-  public static boolean isspecial(Attribute a) {
-    String nm = a.getShortName();
-    if (nm.startsWith(SPECIALPREFIX)) {
-      /* Check for selected special attributes */
-      for (String s : SPECIALS) {
-        if (nm.startsWith(s))
-          return true; /* is special */
-      }
-    }
-    return false; /* is not special */
-  }
-
   //////////////////////////////////////////////////
   // Instance Variables
-
   Nc4prototypes nc4;
   // TODO set version from file that's read in
   NetcdfFileFormat version; // can use c library to create these different version files

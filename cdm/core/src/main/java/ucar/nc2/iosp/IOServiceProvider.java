@@ -45,8 +45,7 @@ public interface IOServiceProvider {
   boolean isValidFile(RandomAccessFile raf) throws IOException;
 
   /**
-   * Open existing file, and populate it. Note that you cannot reference the NetcdfFile within this routine.
-   * This is the bridge to immutable objects that will be used exclusively in version 6.
+   * Open existing file, and populate rootGroup. Note that you cannot reference the NetcdfFile within this routine.
    *
    * @param raf the file to work on, it has already passed the isValidFile() test.
    * @param rootGroup add objects to the root group.
