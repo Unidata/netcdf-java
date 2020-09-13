@@ -192,7 +192,7 @@ public class NetcdfCopier implements Closeable {
       }
     }
 
-    // classic model does not support unshared dimensions
+    // classic model does not support unshared dimensions. LOOK neither does netcdf4 ??
     if (!extended) {
       int count = 0;
       for (Dimension dim : vb.getDimensions()) {
