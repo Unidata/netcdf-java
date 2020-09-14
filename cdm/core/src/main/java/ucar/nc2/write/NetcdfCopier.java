@@ -104,8 +104,6 @@ public class NetcdfCopier implements Closeable {
       if (cancel.isCancel()) {
         return;
       }
-
-      ncwriter.flush();
       System.out.format("FileCopier done: total bytes written = %d, number of variables = %d%n", counter.bytes,
           counter.countVars);
     }

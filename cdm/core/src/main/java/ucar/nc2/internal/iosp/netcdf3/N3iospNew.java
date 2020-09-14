@@ -186,12 +186,6 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  public void flush() throws java.io.IOException {
-    if (raf != null) {
-      raf.flush();
-    }
-  }
-
   @Override
   public void close() throws java.io.IOException {
     if (raf != null) {
@@ -257,6 +251,11 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   @Override
   public String getFileTypeDescription() {
     return "NetCDF-3/CDM";
+  }
+
+  @Override
+  public String getFileTypeVersion() {
+    return "1";
   }
 
   /**

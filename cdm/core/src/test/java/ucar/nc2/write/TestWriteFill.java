@@ -112,7 +112,6 @@ public class TestWriteFill {
 
       ima = rA.getIndex();
       int[] rshape = rA.getShape();
-
       for (int i = 0; i < rshape[1]; i++) {
         for (int j = rshape[2] / 2 + 1; j < rshape[2]; j++) {
           assert (rA.getDouble(ima.set(0, i, j)) == -9999.0) : rA.getDouble(ima);

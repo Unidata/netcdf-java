@@ -28,7 +28,7 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Test Sequences constructed when reading NLDN datasets. */
-public class TestSequence {
+public class TestNldmSequence {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test

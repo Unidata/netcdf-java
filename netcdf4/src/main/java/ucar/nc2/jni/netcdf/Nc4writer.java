@@ -43,17 +43,15 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.internal.iosp.IOServiceProviderWriter;
+import ucar.nc2.internal.iosp.IospFileCreator;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
-import ucar.unidata.io.RandomAccessFile;
 
 /** IOSP for writing netcdf files through JNA interface to netcdf C library */
-public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
+public class Nc4writer extends Nc4reader implements IospFileCreator {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4writer.class);
 
   // Define reserved attributes (see Nc4DSP)
@@ -81,28 +79,16 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       this.chunker = chunker;
   }
 
-  @Override
-  public NetcdfFile getOutputFile() {
-    return this.ncfile;
-  }
-
-  @Override
-  public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask)
-      throws IOException {
-    build(raf, ncfileb.rootGroup, cancelTask);
-    this.ncfile = ncfileb.build();
-  }
-
   // * Create new file, populate it from the objects in ncfileb.
   @Override
-  public void create(String filename, NetcdfFile.Builder<?> ncfileb, int extra, long preallocateSize, boolean largeFile)
+  public NetcdfFile create(String filename, Group.Builder rootGroup, int extra, long preallocateSize, boolean largeFile)
       throws IOException {
     if (!isLibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
     this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
-    this.rootGroup = ncfileb.rootGroup;
+    this.rootGroup = rootGroup;
 
     // create new file
     log.debug("create {}", this.location);
@@ -131,9 +117,10 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     if (debugWrite)
       System.out.printf("create done%n%n");
 
+    NetcdfFile.Builder<?> ncfileb = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(filename);
     this.ncfile = ncfileb.build();
+    return this.ncfile;
   }
-
 
   /*
    * cmode The creation mode flag. The following flags are available:
@@ -627,7 +614,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     }
   }
 
-  @Override
   public void flush() throws IOException {
     if (nc4 == null || ncid < 0)
       return; // not open yet
@@ -666,13 +652,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
   }
 
   @Override
-  public boolean rewriteHeader(boolean largeFile) throws IOException {
-    // Rewriting just the header is not possible in NetCDF-4, so always return false.
-    // This will cause NetcdfFileWriter.setRedefineMode(false) to rewrite the entire file instead.
-    return false;
-  }
-
-  @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
     if (nc4 == null || ncid < 0)
       return; // not open yet
@@ -683,6 +662,11 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       Vinfo vinfo = (Vinfo) v2.getSPobject();
       writeAttribute(vinfo.g4.grpid, vinfo.varid, att, v2.toBuilder()); // LOOK
     }
+  }
+
+  @Override
+  public void updateAttribute(Group g, Attribute att) throws IOException {
+    // LOOK
   }
 
   private void writeAttribute(int grpid, int varid, Attribute att, Variable.Builder<?> v) throws IOException {

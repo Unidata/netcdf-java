@@ -68,7 +68,7 @@ public class TestNc4IospWriting {
 
   // enum not ready
 
-  // @Test
+  @Test
   @Category(NeedsCdmUnitTest.class)
   public void writeHdf5Samples() throws IOException {
     int count = 0;
@@ -76,7 +76,7 @@ public class TestNc4IospWriting {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  // @Test
+  @Test
   @Category(NeedsCdmUnitTest.class)
   public void writeHdf5Support() throws IOException {
     int count = 0;
@@ -84,7 +84,7 @@ public class TestNc4IospWriting {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  // @Test
+  @Test
   @Category(NeedsCdmUnitTest.class)
   public void writeNetcdf4Tst() throws IOException {
     int count = 0;
@@ -109,7 +109,7 @@ public class TestNc4IospWriting {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  // @Test
+  @Test
   @Category(NeedsCdmUnitTest.class)
   public void writeAllNetcdf3() throws IOException {
     int count = 0;

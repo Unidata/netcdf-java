@@ -4,12 +4,10 @@
  */
 package ucar.nc2.internal.iosp.netcdf3;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -17,7 +15,6 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.write.UnlimitedDimension;
 import ucar.unidata.io.RandomAccessFile;
@@ -26,12 +23,9 @@ import ucar.unidata.io.RandomAccessFile;
 class N3headerWriter extends N3headerNew {
   private static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
-  private NetcdfFile ncfile;
-  private ImmutableList<Variable> uvars; // vars that have the unlimited dimension
+  private Group rootGroup;
   private long globalAttsPos; // global attributes start here - used for update
   private UnlimitedDimension unlimitedDim; // the unlimited dimension
-  // TODO change back to using Variable.getSPObject()
-  HashMap<Variable, N3headerNew.Vinfo> vinfoMap = new HashMap<>();
 
   /**
    * Constructor.
@@ -69,11 +63,6 @@ class N3headerWriter extends N3headerNew {
         }
       }
     }
-
-  }
-
-  public void setNcfile(NetcdfFile ncfile) {
-    this.ncfile = ncfile;
   }
 
   /**
@@ -81,31 +70,32 @@ class N3headerWriter extends N3headerNew {
    *
    * @param extra if > 0, pad header with extra bytes
    * @param largeFile if large file format
-   * @param fout debugging output sent to here
    * @throws IOException on write error
    */
-  // TODO need to work with Builder in order to set Variable.getSPObject()
-  void create(int extra, boolean largeFile, Formatter fout) throws IOException {
-    writeHeader(extra, largeFile, false, fout);
+  void create(Group.Builder rootGroup, int extra, boolean largeFile) throws IOException {
+    writeHeader(rootGroup, extra, largeFile, false);
+  }
+
+  void setRootGroup(Group rootGroup) {
+    this.rootGroup = rootGroup;
   }
 
   /**
    * Sneaky way to make the header bigger, if there is room for it
    *
    * @param largeFile is large file format
-   * @param fout put debug messages here, mnay be null
    * @return true if it worked
    */
-  boolean rewriteHeader(boolean largeFile, Formatter fout) throws IOException {
+  boolean rewriteHeader(boolean largeFile) throws IOException {
     int want = sizeHeader(largeFile);
     if (want > dataStart)
       return false;
 
-    writeHeader(0, largeFile, true, fout);
+    // writeHeader(0, largeFile, true, fout);
     return true;
   }
 
-  void writeHeader(int extra, boolean largeFile, boolean keepDataStart, Formatter fout) throws IOException {
+  void writeHeader(Group.Builder rootGroup, int extra, boolean largeFile, boolean keepDataStart) throws IOException {
     this.useLongOffset = largeFile;
     this.nonRecordDataSize = 0; // length of non-record data
     recsize = 0; // length of single record
@@ -119,8 +109,8 @@ class N3headerWriter extends N3headerNew {
     raf.writeInt(0);
 
     // dims
-    List<Dimension> dims = ncfile.getRootGroup().getDimensions();
-    int numdims = dims.size();
+    Iterable<Dimension> dims = rootGroup.getDimensions();
+    int numdims = Iterables.size(dims);
     if (numdims == 0) {
       raf.writeInt(0);
       raf.writeInt(0);
@@ -128,10 +118,7 @@ class N3headerWriter extends N3headerNew {
       raf.writeInt(N3headerNew.MAGIC_DIM);
       raf.writeInt(numdims);
     }
-    for (int i = 0; i < numdims; i++) {
-      Dimension dim = dims.get(i);
-      if (fout != null)
-        fout.format("  dim %d pos %d%n", i, raf.getFilePointer());
+    for (Dimension dim : dims) {
       writeString(dim.getShortName());
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       if (dim.isUnlimited()) {
@@ -143,20 +130,18 @@ class N3headerWriter extends N3headerNew {
 
     // global attributes
     globalAttsPos = raf.getFilePointer(); // position where global attributes start
-    writeAtts(ncfile.getRootGroup().attributes(), fout);
+    writeAtts(rootGroup.getAttributeContainer());
 
-    // variables
-    List<Variable> vars = ncfile.getVariables();
+    //// variables
 
     // Track record variables.
-    ImmutableList.Builder<Variable> uvarb = ImmutableList.builder();
-    for (Variable curVar : vars) {
+    ArrayList<Variable.Builder<?>> uvarb = new ArrayList<>();
+    for (Variable.Builder<?> curVar : rootGroup.vbuilders) {
       if (curVar.isUnlimited()) {
         uvarb.add(curVar);
       }
     }
-    uvars = uvarb.build();
-    writeVars(vars, largeFile, fout);
+    writeVars(rootGroup, uvarb, largeFile);
 
     // now calculate where things go
     if (!keepDataStart) {
@@ -167,22 +152,20 @@ class N3headerWriter extends N3headerNew {
     long pos = dataStart;
 
     // non-record variable starting positions
-    for (Variable var : vars) {
-      N3headerNew.Vinfo vinfo = vinfoMap.get(var);
+    for (Variable.Builder<?> var : rootGroup.vbuilders) {
+      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) var.spiObject;
       if (!vinfo.isRecord) {
         raf.seek(vinfo.begin);
 
-        if (largeFile)
+        if (largeFile) {
           raf.writeLong(pos);
-        else {
+        } else {
           if (pos > Integer.MAX_VALUE)
             throw new IllegalArgumentException("Variable starting pos=" + pos + " may not exceed " + Integer.MAX_VALUE);
           raf.writeInt((int) pos);
         }
 
         vinfo.begin = pos;
-        if (fout != null)
-          fout.format("  %s begin at = %d end= %d%n", var.getFullName(), vinfo.begin, (vinfo.begin + vinfo.vsize));
         pos += vinfo.vsize;
 
         // track how big each record is
@@ -193,8 +176,8 @@ class N3headerWriter extends N3headerNew {
     recStart = pos; // record variables start here
 
     // record variable starting positions
-    for (Variable var : vars) {
-      N3headerNew.Vinfo vinfo = vinfoMap.get(var);
+    for (Variable.Builder<?> var : rootGroup.vbuilders) {
+      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) var.spiObject;
       if (vinfo.isRecord) {
         raf.seek(vinfo.begin);
 
@@ -204,8 +187,6 @@ class N3headerWriter extends N3headerNew {
           raf.writeInt((int) pos);
 
         vinfo.begin = pos;
-        if (fout != null)
-          fout.format(" %s record begin at = %d%n", var.getFullName(), dataStart);
         pos += vinfo.vsize;
 
         // track how big each record is
@@ -216,7 +197,7 @@ class N3headerWriter extends N3headerNew {
 
     if (nonRecordDataSize > 0) // if there are non-record variables
       nonRecordDataSize -= dataStart;
-    if (uvars.isEmpty()) // if there are no record variables
+    if (uvarb.isEmpty()) // if there are no record variables
       recStart = 0;
   }
 
@@ -227,16 +208,16 @@ class N3headerWriter extends N3headerNew {
 
     // dims
     size += 8; // magic, ndims
-    for (Dimension dim : ncfile.getRootGroup().getDimensions()) {
+    for (Dimension dim : rootGroup.getDimensions()) {
       size += sizeString(dim.getShortName()) + 4; // name, len
     }
 
     // global attributes
-    size += sizeAtts(ncfile.getGlobalAttributes());
+    size += sizeAtts(rootGroup.attributes());
 
     // variables
     size += 8; // magic, nvars
-    for (Variable var : ncfile.getVariables()) {
+    for (Variable var : rootGroup.getVariables()) {
       size += sizeString(var.getShortName());
 
       // dimensions
@@ -253,7 +234,7 @@ class N3headerWriter extends N3headerNew {
     return size;
   }
 
-  private void writeAtts(Iterable<Attribute> atts, Formatter fout) throws IOException {
+  private void writeAtts(Iterable<Attribute> atts) throws IOException {
 
     int n = Iterables.size(atts);
     if (n == 0) {
@@ -266,9 +247,6 @@ class N3headerWriter extends N3headerNew {
 
     int count = 0;
     for (Attribute att : atts) {
-      if (fout != null)
-        fout.format("***att %d pos= %d%n", count, raf.getFilePointer());
-
       writeString(att.getShortName());
       int type = getType(att.getDataType());
       raf.writeInt(type);
@@ -282,11 +260,7 @@ class N3headerWriter extends N3headerNew {
         for (int j = 0; j < nelems; j++)
           nbytes += writeAttributeValue(att.getNumericValue(j));
         pad(nbytes, (byte) 0);
-        if (fout != null)
-          fout.format(" end write val pos= %d%n", raf.getFilePointer());
       }
-      if (fout != null)
-        fout.format("  %s%n", att);
     }
   }
 
@@ -315,9 +289,9 @@ class N3headerWriter extends N3headerNew {
 
   private void writeStringValues(Attribute att) throws IOException {
     int n = att.getLength();
-    if (n == 1)
+    if (n == 1) {
       writeString(att.getStringValue());
-    else {
+    } else {
       StringBuilder values = new StringBuilder();
       for (int i = 0; i < n; i++)
         values.append(att.getStringValue(i));
@@ -386,8 +360,9 @@ class N3headerWriter extends N3headerNew {
     throw new IllegalStateException("unknown attribute type == " + numValue.getClass().getName());
   }
 
-  private void writeVars(List<Variable> vars, boolean largeFile, Formatter fout) throws IOException {
-    int n = vars.size();
+  private void writeVars(Group.Builder rootGroup, ArrayList<Variable.Builder<?>> uvarb, boolean largeFile)
+      throws IOException {
+    int n = rootGroup.vbuilders.size();
     if (n == 0) {
       raf.writeInt(0);
       raf.writeInt(0);
@@ -396,15 +371,15 @@ class N3headerWriter extends N3headerNew {
       raf.writeInt(n);
     }
 
-    for (Variable var : vars) {
-      writeString(var.getShortName());
+    for (Variable.Builder<?> var : rootGroup.vbuilders) {
+      writeString(var.shortName);
 
       // dimensions
-      long vsize = var.getDataType().getSize(); // works for all netcdf-3 data types
+      long vsize = var.dataType.getSize(); // works for all netcdf-3 data types
       List<Dimension> dims = var.getDimensions();
       raf.writeInt(dims.size());
       for (Dimension dim : dims) {
-        int dimIndex = findDimensionIndex(ncfile, dim);
+        int dimIndex = findDimensionIndex(rootGroup, dim);
         raf.writeInt(dimIndex);
 
         if (!dim.isUnlimited())
@@ -415,10 +390,10 @@ class N3headerWriter extends N3headerNew {
 
       // variable attributes
       long varAttsPos = raf.getFilePointer();
-      writeAtts(var.attributes(), fout);
+      writeAtts(var.getAttributeContainer());
 
       // data type, variable size, beginning file position
-      DataType dtype = var.getDataType();
+      DataType dtype = var.dataType;
       int type = getType(dtype);
       raf.writeInt(type);
 
@@ -436,13 +411,12 @@ class N3headerWriter extends N3headerNew {
       // byte, or short type, no padding is used between data values.
       // 2/15/2011: we will continue to write the (incorrect) padded vsize into the header, but we will use the unpadded
       // size to read/write
-      if (uvars.size() == 1 && uvars.get(0) == var) {
+      if (uvarb.size() == 1 && uvarb.get(0) == var) {
         if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
           vsize = unpaddedVsize;
         }
       }
-      // TODO change back to using Variable.getSPObject(), need to have a builder here
-      vinfoMap.put(var, new N3headerNew.Vinfo(var.getShortName(), vsize, pos, var.isUnlimited(), varAttsPos));
+      var.setSPobject(new N3headerNew.Vinfo(var.shortName, vsize, pos, var.isUnlimited(), varAttsPos));
     }
   }
 
@@ -459,12 +433,12 @@ class N3headerWriter extends N3headerNew {
     return size + padding(s.length());
   }
 
-  private int findDimensionIndex(NetcdfFile ncfile, Dimension wantDim) {
-    List<Dimension> dims = ncfile.getRootGroup().getDimensions();
-    for (int i = 0; i < dims.size(); i++) {
-      Dimension dim = dims.get(i);
+  private int findDimensionIndex(Group.Builder rootGroup, Dimension wantDim) {
+    int count = 0;
+    for (Dimension dim : rootGroup.getDimensions()) {
       if (dim.equals(wantDim))
-        return i;
+        return count;
+      count++;
     }
     throw new IllegalStateException("unknown Dimension == " + wantDim);
   }
@@ -495,7 +469,7 @@ class N3headerWriter extends N3headerNew {
     if (v2 == null)
       pos = findAtt(globalAttsPos, att.getShortName());
     else {
-      N3headerNew.Vinfo vinfo = vinfoMap.get(v2);
+      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) v2.getSPobject();
       pos = findAtt(vinfo.attsPos, att.getShortName());
     }
 

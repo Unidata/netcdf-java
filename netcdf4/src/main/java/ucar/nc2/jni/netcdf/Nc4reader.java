@@ -8,7 +8,6 @@ package ucar.nc2.jni.netcdf;
 import static ucar.nc2.ffi.netcdf.NetcdfClibrary.isLibraryPresent;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
-import com.google.common.collect.ImmutableList;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -145,6 +144,12 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   @Override
+  public String getFileTypeVersion() {
+    // TODO this only works for files writtten by netcdf4 c library. what about plain hdf5?
+    return ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, "N/A");
+  }
+
+  @Override
   public void close() throws IOException {
     if (isClosed)
       return;
@@ -174,6 +179,26 @@ public class Nc4reader extends AbstractIOServiceProvider {
     }
     return null;
   }
+
+  private class HdfEosHeader implements HdfHeaderIF {
+
+    @Override
+    public Builder getRootGroup() {
+      return rootGroup;
+    }
+
+    @Override
+    public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
+      // TODO
+    }
+
+    @Override
+    public String readStructMetadata(Variable.Builder<?> structMetadataVar) throws IOException {
+      // TODO
+      return null;
+    }
+  }
+
 
   /////////////////////////////////////////////////////////////////////////////////
   // NetcdfFile building
@@ -229,25 +254,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
           log.warn(" HdfEos.amendFromODL failed");
         }
       });
-    }
-  }
-
-  private class HdfEosHeader implements HdfHeaderIF {
-
-    @Override
-    public Builder getRootGroup() {
-      return rootGroup;
-    }
-
-    @Override
-    public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
-      // TODO
-    }
-
-    @Override
-    public String readStructMetadata(Variable.Builder<?> structMetadataVar) throws IOException {
-      // TODO
-      return null;
     }
   }
 
@@ -941,7 +947,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   private void makeVariables(Group4 g4) throws IOException {
-
     IntByReference nvarsp = new IntByReference();
     int ret = nc4.nc_inq_nvars(g4.grpid, nvarsp);
     if (ret != 0)

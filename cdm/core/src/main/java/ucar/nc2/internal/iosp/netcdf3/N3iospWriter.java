@@ -20,13 +20,14 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
+import ucar.nc2.internal.iosp.IospFileUpdater;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.internal.iosp.IOServiceProviderWriter;
+import ucar.nc2.internal.iosp.IospFileCreator;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
@@ -35,17 +36,17 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 /** IOServiceProviderWriter for Netcdf3 files. */
-public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
+public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFileUpdater {
   private boolean fill = true;
   private final IOServiceProvider iosp;
   private N3headerWriter headerw;
 
   public N3iospWriter(IOServiceProvider iosp) {
-    this.iosp = iosp; // WTF ?
+    this.iosp = iosp; // WHY ?
   }
 
   @Override
-  public void create(String filename, NetcdfFile.Builder<?> ncfileb, int extra, long preallocateSize, boolean largeFile)
+  public NetcdfFile create(String filename, Group.Builder rootGroup, int extra, long preallocateSize, boolean largeFile)
       throws IOException {
 
     raf = new ucar.unidata.io.RandomAccessFile(filename, "rw");
@@ -56,19 +57,25 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       myRaf.setLength(preallocateSize);
     }
 
-    this.ncfile = ncfileb.build();
-
     this.headerw = new N3headerWriter(this, raf);
-    headerw.setNcfile(this.ncfile);
-    headerw.create(extra, largeFile, null);
+    // The rootGroup is modified to be specific to the output file.
+    headerw.create(rootGroup, extra, largeFile);
     this.header = headerw;
+
+    // LOOK this cant be right, the variables dont have the right Vinfo....
+    NetcdfFile.Builder<?> ncfileb = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(filename);
+    this.ncfile = ncfileb.build();
+    headerw.setRootGroup(this.ncfile.getRootGroup());
 
     if (fill)
       fillNonRecordVariables();
     // else
     // raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
+
+    return this.ncfile;
   }
 
+  // LOOK
   @Override
   public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask) {
     // Cant call superclass open, so some duplicate code here
@@ -87,11 +94,11 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     this.header = headerw;
 
     this.ncfile = ncfileb.build();
-    headerw.setNcfile(this.ncfile);
+    // headerw.setNcfile(this.ncfile);
 
-    for (Variable v : this.ncfile.getVariables()) {
-      headerw.vinfoMap.put(v, (Vinfo) v.getSPobject());
-    }
+    // for (Variable v : this.ncfile.getVariables()) {
+    // headerw.vinfoMap.put(v, (Vinfo) v.getSPobject());
+    // }
   }
 
   @Override
@@ -104,9 +111,8 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     this.fill = fill;
   }
 
-  @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
-    return ((N3headerWriter) header).rewriteHeader(largeFile, null);
+    return ((N3headerWriter) header).rewriteHeader(largeFile);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +120,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
 
   @Override
   public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
-    N3headerNew.Vinfo vinfo = headerw.vinfoMap.get(v2);
+    N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
     if (v2.isUnlimited()) {
@@ -136,16 +142,6 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       writeRecordData((Structure) v2, section, (ArrayStructure) values);
 
     } else {
-      if (vinfo == null || header == null) {
-        // DEBUGGING
-        N3headerNew.Vinfo vinfo3 = headerw.vinfoMap.get(v2);
-        for (Variable v : headerw.vinfoMap.keySet()) {
-          System.out.printf("GET %s %d%n", v.getShortName(), v.hashCode());
-          System.out.printf("HAVE %d%n", v2.hashCode());
-        }
-        System.out.printf("HAVE %d%n", v2.hashCode());
-        throw new IllegalStateException("vinfo or header missing for variable" + v2);
-      }
       Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
           : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
       writeData(values, layout, dataType);
@@ -190,7 +186,7 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
       }
 
       // layout of the destination
-      N3headerNew.Vinfo vinfo = headerw.vinfoMap.get(vm);
+      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) vm.getSPobject();
       long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
       Section memberSection = vm.getShapeAsSection();
       Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
@@ -318,12 +314,22 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
   }
 
   @Override
+  public void updateAttribute(Group g, Attribute att) throws IOException {
+    // LOOK
+  }
+
   public void flush() throws java.io.IOException {
     if (raf != null) {
       raf.flush();
       ((N3headerWriter) header).writeNumrecs();
       raf.flush();
     }
+  }
+
+  @Override
+  public void close() throws java.io.IOException {
+    flush();
+    super.close();
   }
 
   /////////////////////////////////////////////////////////////

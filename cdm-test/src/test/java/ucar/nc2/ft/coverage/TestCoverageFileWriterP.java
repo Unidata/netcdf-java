@@ -101,7 +101,7 @@ public class TestCoverageFileWriterP {
         Assert.assertNotNull(covName, gcs.findCoverage(covName));
 
       NetcdfFormatWriter.Builder writer =
-          NetcdfFormatWriter.builder().setNewFile(true).setLocation(tempFile.getPath()).setFormat(version);
+          NetcdfFormatWriter.builder().setLocation(tempFile.getPath()).setFormat(version);
       CFGridCoverageWriter.Result result = CFGridCoverageWriter.write(gcs, covList, params, false, writer, -1);
       if (!result.wasWritten())
         throw new InvalidRangeException("Request failed: " + result.getErrorMessage());

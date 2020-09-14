@@ -58,6 +58,11 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   @Override
+  public String getFileTypeVersion() {
+    return header.version;
+  }
+
+  @Override
   public String getFileTypeDescription() {
     return "Hierarchical Data Format, version 4";
   }

@@ -5,13 +5,13 @@
 
 package ucar.nc2.jni.netcdf;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import com.google.common.collect.ImmutableList;
-import java.util.Optional;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -23,12 +23,9 @@ import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
-import ucar.unidata.util.test.Assert2;
-import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.*;
 
 /** Test miscellaneous netcdf4 writing */
 public class TestNc4Misc {
@@ -44,36 +41,6 @@ public class TestNc4Misc {
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
     Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
-  }
-
-  @Test
-  @Ignore("openExisting not working yet")
-  public void testUnlimitedDimension() throws IOException, InvalidRangeException {
-    String location = tempFolder.newFile().getAbsolutePath();
-
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, location, null);
-    System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());
-
-    Dimension timeDim = writerb.addUnlimitedDimension("time");
-    writerb.addVariable("time", DataType.DOUBLE, ImmutableList.of(timeDim));
-
-    Array data = Array.makeFromJavaArray(new double[] {0, 1, 2, 3});
-    try (NetcdfFormatWriter writer = writerb.build()) {
-      writer.write("time", data);
-    }
-
-    NetcdfFormatWriter.Builder existingb = NetcdfFormatWriter.openExisting(location);
-    try (NetcdfFormatWriter existing = existingb.build()) {
-      Variable time = existing.findVariable("time");
-      int[] origin = new int[1];
-      origin[0] = (int) time.getSize();
-      existing.write("time", origin, data);
-    }
-
-    try (NetcdfFile file = NetcdfFiles.open(location)) {
-      Variable time = file.findVariable("time");
-      assert time.getSize() == 8 : "failed to append to unlimited dimension";
-    }
   }
 
   // from Jeff Johnson jeff.m.johnson@noaa.gov 5/2/2014
@@ -156,7 +123,6 @@ public class TestNc4Misc {
         // write a record
         writer.write("time", origin, timeArray);
       }
-
     }
 
     File resultFile = new File(location);
@@ -191,107 +157,28 @@ public class TestNc4Misc {
    * > > at NetCDFTest.main(NetCDFTest.java:39)
    */
   @Test
-  public void testInvalidCfdid() throws Exception {
-    testInvalidCfdid(NetcdfFileFormat.NETCDF3);
-    testInvalidCfdid(NetcdfFileFormat.NETCDF4);
+  public void testFileType3() throws Exception {
+    testFileType(NetcdfFileFormat.NETCDF3);
   }
 
-  private void testInvalidCfdid(NetcdfFileFormat format) throws Exception {
+  @Test
+  public void testFileType4() throws Exception {
+    testFileType(NetcdfFileFormat.NETCDF4);
+  }
 
-    logger.debug("Writing version {}", format);
-
-    /**
-     * Create the file writer and reserve some extra space in the header
-     * so that we can switch between define mode and write mode without
-     * copying the file (this may work or may not).
-     */
+  private void testFileType(NetcdfFileFormat format) throws Exception {
     String fileName = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.builder().setFormat(format).setLocation(fileName);
-    writerb.setExtraHeader(64 * 1024); // LOOK: why?
-
-    /**
-     * Create a variable in the root group.
-     */
     writerb.addVariable("coord_ref", DataType.INT, "");
-
-    /**
-     * Now create the file and close it.
-     */
     try (NetcdfFormatWriter writer = writerb.build()) {
-      //
     }
 
-    logger.debug("File written {}", fileName);
-
-    /**
-     * Now we're going to detect the file format using the HDF 5 library.
-     */
-    // LOOK wheres the beef?
-
-    /**
-     * Now delete the file, getting ready for the next format.
-     */
-    File file = new File(fileName);
-    logger.debug("file.exists() = {}", file.exists());
-    logger.debug("file.length() = {}", file.length());
-    logger.debug("file.delete() = {}", file.delete());
-
-  } // for
-
-  @Test
-  @Ignore("Netcdf-4 rename not working yet")
-  public void testAttributeChangeNc4() throws IOException {
-    Path source = Paths.get(TestDir.cdmLocalFromTestDataDir + "dataset/testRename.nc4");
-    Path target = tempFolder.newFile().toPath();
-    Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-    doRename(target.toString());
-  }
-
-  @Test
-  @Ignore("Netcdf-3 rename not working yet")
-  public void testAttributeChangeNc3() throws IOException {
-    Path source = Paths.get(TestDir.cdmLocalFromTestDataDir + "dataset/testRename.nc3");
-    Path target = tempFolder.newFile().toPath();
-    Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-    doRename(target.toString());
-  }
-
-  private void doRename(String filename) throws IOException {
-    logger.debug("Rename {}", filename);
-    // old and new name of variable
-    String oldVarName = "Pressure_reduced_to_MSL_msl";
-    String newVarName = "Pressure_MSL";
-    // name and value of attribute to change
-    String attrToChange = "long_name";
-    String newAttrValue = "Long name changed!";
-    Array orgData;
-
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.openExisting(filename).setFill(false);
-    Optional<Variable.Builder<?>> newVar = writerb.renameVariable(oldVarName, newVarName);
-    newVar.ifPresent(vb -> vb.addAttribute(new Attribute(attrToChange, newAttrValue)));
-
-    // write the above changes to the file
-    try (NetcdfFormatWriter writer = writerb.build()) {
-      Variable var = writer.findVariable(newVarName);
-      orgData = var.read();
-    }
-
-    // check that it worked
-    try (NetcdfFile ncd = NetcdfFiles.open(filename)) {
-      Variable var = ncd.findVariable(newVarName);
-      Assert.assertNotNull(var);
-      String attValue = var.findAttributeString(attrToChange, "");
-      Assert.assertEquals(attValue, newAttrValue);
-
-      Array data = var.read();
-      logger.debug("{}", data);
-      orgData.resetLocalIterator();
-      data.resetLocalIterator();
-      while (data.hasNext() && orgData.hasNext()) {
-        float val = data.nextFloat();
-        float orgval = orgData.nextFloat();
-        Assert2.assertNearlyEquals(orgval, val);
-      }
+    /** open the file and see what format. */
+    try (NetcdfFile ncfile = NetcdfFiles.open(fileName)) {
+      assertThat(ncfile.getFileTypeId()).ignoringCase().isEqualTo(format.formatName());
+      System.out.printf(" FileTypeId= '%s'%n", ncfile.getFileTypeId());
+      System.out.printf(" FileTypeDescription= '%s'%n", ncfile.getFileTypeDescription());
+      System.out.printf(" FileTypeVersion= '%s'%n%n", ncfile.getFileTypeVersion());
     }
   }
 

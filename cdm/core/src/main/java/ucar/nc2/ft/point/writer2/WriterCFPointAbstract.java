@@ -128,7 +128,7 @@ abstract class WriterCFPointAbstract implements Closeable {
     this.altUnits = altUnits;
     this.config = config;
     this.isExtendedModel = config.getFormat().isExtendedModel();
-    this.writerb = NetcdfFormatWriter.builder().setNewFile(true).setFormat(config.getFormat()).setLocation(fileOut)
+    this.writerb = NetcdfFormatWriter.builder().setFormat(config.getFormat()).setLocation(fileOut)
         .setChunker(config.getChunking()).setFill(false);
 
     addGlobalAtts(atts);
