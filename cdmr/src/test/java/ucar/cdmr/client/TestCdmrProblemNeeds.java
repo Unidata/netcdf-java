@@ -15,11 +15,11 @@ import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.category.NotJenkins;
 
 /** Test {@link CdmrNetcdfFile} */
-@Category({NeedsExternalResource.class, NeedsCdmUnitTest.class}) // Needs CmdrServer to be started up
+@Category({NeedsExternalResource.class, NotJenkins.class, NeedsCdmUnitTest.class}) // Needs CmdrServer to be started up
 public class TestCdmrProblemNeeds {
-
   private final String filename;
   private final String cdmrUrl;
 

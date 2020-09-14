@@ -80,7 +80,6 @@ public class TestHTTPSession {
   }
 
   @Test
-  @Ignore("flaky")
   public void testAgent() throws Exception {
     logger.debug("*** Testing: User Agent");
     logger.debug("*** URL: {}", TESTURL1);
@@ -135,7 +134,6 @@ public class TestHTTPSession {
 
   // Verify that other configuration parameters Can at least be set.
   @Test
-  @Ignore("flaky")
   public void testConfigure() throws Exception {
     try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
       logger.debug("Test: HTTPSession: Configuration");
