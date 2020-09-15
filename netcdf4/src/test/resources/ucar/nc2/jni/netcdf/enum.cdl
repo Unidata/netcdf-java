@@ -1,0 +1,9 @@
+netcdf writeEnumFromCdl {
+  types:
+    short enum dessertType_t {dirt = 0, pie = 18, donut = 268, cake = 3284};
+  dimensions:
+    time = UNLIMITED;
+  variables:
+    dessertType_t dessert(time);
+    dessertType_t dessert2(time);
+}

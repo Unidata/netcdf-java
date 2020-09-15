@@ -74,8 +74,54 @@ public class TestNc4JniWriteProblem {
   }
 
   @Test
-  public void problemWithEnum() throws IOException {
+  public void problemWithEnumHdf() throws IOException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/samples/enum.h5";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
+    copyFile(fileIn, fileOut, NetcdfFileFormat.NETCDF4);
+  }
+
+  /*
+   * netcdf D:/testData/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/hdf5/support/cenum.h5 {
+   * types:
+   * enum color_name { 'RED' = 0, 'GREEN' = 1, 'BLUE' = 2, 'WHITE' = 3, 'BLACK' = 4};
+   * variables:
+   * Structure {
+   * enum color_name color_name;
+   * } enum(10);
+   * }
+   */
+  @Test
+  @Ignore("not ready")
+  public void problemWithEnumMember() throws IOException {
+    String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/support/cenum.h5";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
+    copyFile(fileIn, fileOut, NetcdfFileFormat.NETCDF4);
+  }
+
+  /*
+   * netcdf D:/testData/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/hdf5/support/bitop.h5 {
+   * group: typetests {
+   * variables:
+   * byte bitfield_1(32);
+   * short bitfield_2(16);
+   * opaque opaque_1(32);
+   * :_opaqueDesc = "testing 1-byte opaque type";
+   * opaque opaque_2(8);
+   * :_opaqueDesc = "testing 4-byte opaque type";
+   * }
+   * }
+   */
+  @Test
+  @Ignore("not ready")
+  public void problemWithOpaqueHdf5() throws IOException {
+    String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/support/bitop.h5";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
+    copyFile(fileIn, fileOut, NetcdfFileFormat.NETCDF4);
+  }
+
+  @Test
+  public void problemWithEnumNc4() throws IOException {
+    String fileIn = TestDir.cdmUnitTestDir + "formats/netcdf4/tst/tst_enums.nc";
     String fileOut = tempFolder.newFile().getAbsolutePath();
     copyFile(fileIn, fileOut, NetcdfFileFormat.NETCDF4);
   }

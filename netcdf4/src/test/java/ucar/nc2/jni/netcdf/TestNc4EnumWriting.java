@@ -8,13 +8,13 @@ package ucar.nc2.jni.netcdf;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,6 +33,7 @@ import ucar.nc2.write.NetcdfFormatWriter;
 
 /** Test copying files with enums to netcdf4. */
 public class TestNc4EnumWriting {
+
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
@@ -46,11 +47,44 @@ public class TestNc4EnumWriting {
     Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
   }
 
-  @Test
-  @Ignore("See issue #352")
+  /*
+   * ncdump C:/temp/writeEnumType.nc4
+   * netcdf C\:/temp/writeEnumType {
+   * types:
+   * short enum dessertType {pie = 18, cake = 3284, donut = 268} ;
+   * dimensions:
+   * time = UNLIMITED ; // (3 currently)
+   * variables:
+   * dessertType dessert(time) ;
+   * data:
+   *
+   * dessert = pie, donut, cake ;
+   * }
+   *
+   * netcdf writeEnumType {
+   * types:
+   * short enum dessertType { 'pie' = 18, 'donut' = 268, 'cake' = 3284};
+   * enum dessert { 'pie' = 18, 'donut' = 268, 'cake' = 3284};
+   *
+   * dimensions:
+   * time = UNLIMITED; // (3 currently)
+   * variables:
+   * enum dessert dessert(time=3);
+   * :_ChunkSizes = 4096U; // uint
+   *
+   * // global attributes:
+   *
+   * data:
+   * dessert =
+   * {18, 268, 3284}
+   * }
+   *
+   */
+
+
+  @Test // "See issue #352")
   public void writeEnumType() throws IOException {
-    // File outFile = File.createTempFile("writeEnumType", ".nc");
-    String filenameOut = "C:/temp/writeEnumType.nc4";
+    String filenameOut = File.createTempFile("writeEnumType", ".nc").getAbsolutePath();
     NetcdfFormatWriter.Builder writerb =
         NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filenameOut, new Nc4ChunkingStrategyNone());
 
@@ -69,7 +103,7 @@ public class TestNc4EnumWriting {
     writerb.getRootGroup().addEnumTypedef(dessertType);
 
     // Create Variable of type dessertType.
-    Variable.Builder dessert = writerb.addVariable("dessert", DataType.ENUM2, "time");
+    Variable.Builder<?> dessert = writerb.addVariable("dessert", DataType.ENUM2, "time");
     dessert.setEnumTypeName(dessertType.getShortName());
 
     try (NetcdfFormatWriter writer = writerb.build()) {
@@ -81,41 +115,7 @@ public class TestNc4EnumWriting {
       fail();
     }
 
-    boolean ok = TestNc4reader.doCompare(filenameOut, true, true, true);
+    boolean ok = TestNc4reader.doCompare(filenameOut, false, false, true);
     assertThat(ok).isTrue();
   }
 }
-
-/*
- * ncdump C:/temp/writeEnumType.nc4
- * netcdf C\:/temp/writeEnumType {
- * types:
- * short enum dessertType {pie = 18, cake = 3284, donut = 268} ;
- * dimensions:
- * time = UNLIMITED ; // (3 currently)
- * variables:
- * dessertType dessert(time) ;
- * data:
- * 
- * dessert = pie, donut, cake ;
- * }
- * 
- * netcdf writeEnumType {
- * types:
- * short enum dessertType { 'pie' = 18, 'donut' = 268, 'cake' = 3284};
- * enum dessert { 'pie' = 18, 'donut' = 268, 'cake' = 3284};
- * 
- * dimensions:
- * time = UNLIMITED; // (3 currently)
- * variables:
- * enum dessert dessert(time=3);
- * :_ChunkSizes = 4096U; // uint
- * 
- * // global attributes:
- * 
- * data:
- * dessert =
- * {18, 268, 3284}
- * }
- * 
- */

@@ -22,10 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -64,6 +62,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
 
   private boolean fill = true;
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
+  private Map<EnumTypedef, UserType> enumUserTypes = new HashMap<>();
 
   public Nc4writer() {
     super(NetcdfFileFormat.NETCDF4);
@@ -243,7 +242,10 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     } else if (v.dataType.isEnum()) {
       EnumTypedef en = g4.g.findEnumeration(v.getEnumTypeName())
           .orElseThrow(() -> new IllegalStateException("Cant find enum " + v.getEnumTypeName()));
-      UserType ut = (UserType) annotation(en, UserType.class);
+      UserType ut = enumUserTypes.get(en);
+      if (ut == null) {
+        throw new IllegalStateException("Cant find UserType for enum " + v.getEnumTypeName());
+      }
       typid = ut.typeid;
       vinfo = new Vinfo(g4, -1, typid);
 
@@ -290,12 +292,11 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
         chunking = new SizeT[v.getRank()];
       }
 
-      ret = nc4.nc_def_var_chunking(g4.grpid, varid, storage, chunking);
-      if (ret != 0) {
-        throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
-      }
-
       if (isChunked) {
+        ret = nc4.nc_def_var_chunking(g4.grpid, varid, storage, chunking);
+        if (ret != 0) {
+          throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
+        }
         int deflateLevel = chunker.getDeflateLevel(v);
         int deflate = deflateLevel > 0 ? 1 : 0;
         int shuffle = chunker.isShuffle(v) ? 1 : 0;
@@ -399,7 +400,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     // keep track of the User Defined types
     UserType ut = new UserType(g4.grpid, typeid, name, ent.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
     userTypes.put(typeid, ut);
-    annotate(ent, UserType.class, ut); // dont know the varid yet
+    enumUserTypes.put(ent, ut);
   }
 
   /////////////////////////////////////
@@ -930,18 +931,16 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
   }
 
   private int writeEnumData(Variable v, UserType userType, int grpid, int varid, int typeid, Section section,
-      Array values) throws IOException, InvalidRangeException {
-    int ret = 0;
+      Array values) {
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
-    boolean isUnsigned = isUnsigned(typeid);
     int sectionLen = (int) section.computeSize();
-
     assert values.getSize() == sectionLen;
 
     int[] secStride = section.getStride();
     boolean stride1 = isStride1(secStride);
 
+    int ret;
     ByteBuffer bb = values.getDataAsByteBuffer(ByteOrder.nativeOrder());
     byte[] data = bb.array();
     if (stride1) {
@@ -953,34 +952,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     return ret;
   }
 
-
-  /*
-   * Here is an example of using nc_put_vars_float to write – from an internal array – every other point of a netCDF
-   * variable named rh which is described by the C declaration float rh[4][6] (note the size of the dimensions):
-   *
-   * #include <netcdf.h>
-   * ...
-   * #define NDIM 2 /* rank of netCDF variable
-   * int ncid; /* netCDF ID
-   * int status; /* error status *
-   * int rhid; /* variable ID *
-   * static size_t start[NDIM] /* netCDF variable start point: *
-   * = {0, 0}; /* first element *
-   * static size_t count[NDIM] /* size of internal array: entire *
-   * = {2, 3}; /* (subsampled) netCDF variable *
-   * static ptrdiff_t stride[NDIM] /* variable subsampling intervals: *
-   * = {2, 2}; /* access every other netCDF element *
-   * float rh[2][3]; /* note subsampled sizes for netCDF variable dimensions LOOK [][] not [,]
-   * ...
-   * status = nc_open("foo.nc", NC_WRITE, &ncid);
-   * if (status != NC_NOERR) handle_error(status);
-   * ...
-   * status = nc_inq_varid(ncid, "rh", &rhid);
-   * if (status != NC_NOERR) handle_error(status);
-   * ...
-   * status = nc_put_vars_float(ncid, rhid, start, count, stride, rh);
-   * if (status != NC_NOERR) handle_error(status);
-   */
   private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section,
       ArrayStructure values) throws IOException, InvalidRangeException {
 
@@ -1200,35 +1171,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     return dimid;
   }
 
-  HashMap<Object, List<Annotation>> annotations = new HashMap<>();
-
-  void annotate(Object elem, Object key, Object value) {
-    List<Annotation> list = annotations.computeIfAbsent(elem, k -> new ArrayList<>());
-    Iterator<Annotation> iter = list.iterator();
-    while (iter.hasNext()) {
-      Annotation ann = iter.next();
-      if (ann.key.equals(key)) {
-        iter.remove();
-        break;
-      }
-    }
-    list.add(new Annotation(key, value));
-  }
-
-  @Nullable
-  private Object annotation(Object elem, Object key) {
-    List<Annotation> list = annotations.get(elem);
-    if (list == null) {
-      return null;
-    }
-    for (Annotation ann : list) {
-      if (ann.key.equals(key))
-        return ann.value;
-    }
-    return null;
-  }
-
-
   private void updateDimensions(Group g) throws IOException {
     int grpid = groupBuilderHash.get(g);
 
@@ -1285,7 +1227,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     if (strides == null)
       return true;
     for (int stride : strides) {
-      if (stride != 1)
+      if (stride != 1) // LOOK seems fishy
         return false;
     }
     return true;

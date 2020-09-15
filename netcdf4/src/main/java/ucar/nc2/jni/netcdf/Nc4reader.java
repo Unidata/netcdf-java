@@ -62,7 +62,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
   //////////////////////////////////////////////////
   // Instance Variables
   Nc4prototypes nc4;
-  // TODO set version from file that's read in
   NetcdfFileFormat version; // can use c library to create these different version files
   int ncid = -1; // file id
   boolean markReserved;
@@ -365,7 +364,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   // follow what happens in the Java side
-  private String makeAttString(byte[] b) throws IOException {
+  private String makeAttString(byte[] b) {
     // null terminates
     int count = 0;
     while (count < b.length) {
@@ -376,7 +375,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     return new String(b, 0, count, StandardCharsets.UTF_8); // all strings are considered to be UTF-8 unicode.
   }
 
-  private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable.Builder v) throws IOException {
+  private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable.Builder<?> v) throws IOException {
     List<Attribute> result = new ArrayList<>(natts);
 
     for (int attnum = 0; attnum < natts; attnum++) {
@@ -649,7 +648,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    Array data = null;
+    Array data;
     if (false) {
       /*
        * This is incorrect; CDM technically does not support
@@ -1655,7 +1654,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   // opaques use ArrayObjects of ByteBuffer
-  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException, InvalidRangeException {
+  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException {
     int ret;
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
@@ -1746,7 +1745,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   private static class ConvertedType {
     DataType dt;
-    // boolean isUnsigned;
     boolean isVlen;
 
     ConvertedType(DataType dt) {
@@ -1990,9 +1988,8 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     @Override
     public String toString() {
-      String sb = "UserType" + "{grpid=" + grpid + ", typeid=" + typeid + ", name='" + name + '\'' + ", size=" + size
+      return "UserType" + "{grpid=" + grpid + ", typeid=" + typeid + ", name='" + name + '\'' + ", size=" + size
           + ", baseTypeid=" + baseTypeid + ", nfields=" + nfields + ", typeClass=" + typeClass + ", e=" + e + '}';
-      return sb;
     }
 
     void readFields() throws IOException {
@@ -2134,49 +2131,5 @@ public class Nc4reader extends AbstractIOServiceProvider {
       return v;
     }
   }
-
-  /////////////////////////////////////////////////////////////////////////
-  // TODO eliminate
-
-  static class Annotation {
-    Object key;
-    Object value;
-
-    public Annotation(Object key, Object value) {
-      this.key = key;
-      this.value = value;
-    }
-  }
-
-  private static void dumpbytes(byte[] bytes, int start, int len, String tag) {
-    System.err.println("++++++++++ " + tag + " ++++++++++ ");
-    int stop = start + len;
-    try {
-      for (int i = 0; i < stop; i++) {
-        byte b = bytes[i];
-        int ib = (int) b;
-        int ub = (ib & 0xFF);
-        char c = (char) ub;
-        String s = Character.toString(c);
-        if (c == '\r')
-          s = "\\r";
-        else if (c == '\n')
-          s = "\\n";
-        else if (c < ' ')
-          s = "?";
-        System.err.printf("[%03d] %02x %03d %4d '%s'", i, ub, ub, ib, s);
-        System.err.println();
-        System.err.flush();
-      }
-
-    } catch (Exception e) {
-      System.err.println("failure:" + e);
-    } finally {
-      System.err.println("++++++++++ " + tag + " ++++++++++ ");
-      System.err.flush();
-    }
-  }
-
-
 
 }
