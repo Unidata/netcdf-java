@@ -65,7 +65,7 @@ public class TestNc4JniWriteCompare {
         return false;
       }
       if (pathname.getName().contains("enumcmpnd")) {
-       return false;
+        return false;
       }
       if (pathname.getName().contains("cenum")) {
         return false;
