@@ -1,6 +1,8 @@
 /* Copyright Unidata */
 package ucar.nc2.internal.iosp.netcdf3;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -26,6 +28,7 @@ import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
@@ -219,6 +222,9 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
       // LOOK does this work? must be sent before construction????
       this.useRecordStructure = true;
       return Boolean.TRUE;
+    }
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      return header.useLongOffset ? NetcdfFileFormat.NETCDF3_64BIT_OFFSET : NetcdfFileFormat.NETCDF3;
     }
     return super.sendIospMessage(message);
   }

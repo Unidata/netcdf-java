@@ -62,13 +62,13 @@ public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFile
     headerw.create(rootGroup, extra, largeFile);
     this.header = headerw;
 
-    // LOOK this cant be right, the variables dont have the right Vinfo....
     NetcdfFile.Builder<?> ncfileb = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(filename);
     this.ncfile = ncfileb.build();
     headerw.setRootGroup(this.ncfile.getRootGroup());
 
-    if (fill)
+    if (fill) {
       fillNonRecordVariables();
+    }
     // else
     // raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
 
@@ -77,10 +77,11 @@ public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFile
 
   // LOOK
   @Override
-  public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask) {
-    // Cant call superclass open, so some duplicate code here
-    this.raf = raf;
-    this.location = raf.getLocation();
+  public void openForWriting(String location, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+
+    this.location = location;
+    this.raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
+    raf.order(RandomAccessFile.BIG_ENDIAN);
 
     if (location != null && !location.startsWith("http:")) {
       File file = new File(location);
@@ -88,17 +89,13 @@ public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFile
         lastModified = file.lastModified();
     }
 
-    raf.order(RandomAccessFile.BIG_ENDIAN);
     this.headerw = new N3headerWriter(this, raf);
-    headerw.initFromExisting((N3iospNew) this.iosp, ncfileb.rootGroup); // hack-a-whack
+    headerw.initFromExisting((N3iospNew) this.iosp, rootGroup); // hack-a-whack
     this.header = headerw;
 
+    NetcdfFile.Builder<?> ncfileb = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(location);
     this.ncfile = ncfileb.build();
-    // headerw.setNcfile(this.ncfile);
-
-    // for (Variable v : this.ncfile.getVariables()) {
-    // headerw.vinfoMap.put(v, (Vinfo) v.getSPobject());
-    // }
+    headerw.setRootGroup(this.ncfile.getRootGroup());
   }
 
   @Override

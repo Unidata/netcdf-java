@@ -94,18 +94,22 @@ import ucar.nc2.write.NcmlWriter;
  */
 @Immutable
 public class NetcdfFile implements FileCacheable, Closeable {
+
   private static final Logger log = LoggerFactory.getLogger(NetcdfFile.class);
 
   @Deprecated
   public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
   public static final String IOSP_MESSAGE_GET_IOSP = "IOSP";
+  public static final String IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT = "NetcdfFileFormat";
 
   static boolean debugSPI, debugCompress;
   static boolean debugStructureIterator;
   private static boolean showRequest;
 
-  /** @deprecated do not use */
+  /**
+   * @deprecated do not use
+   */
   @Deprecated
   public static void setDebugFlags(DebugFlags debugFlag) {
     debugSPI = debugFlag.isSet("NetcdfFile/debugSPI");
@@ -119,9 +123,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Close all resources (files, sockets, etc) associated with this file.
-   * If the underlying file was acquired, it will be released, otherwise closed.
-   * if isClosed() already, nothing will happen
+   * Close all resources (files, sockets, etc) associated with this file. If the underlying file was acquired, it will
+   * be released,
+   * otherwise closed. if isClosed() already, nothing will happen
    *
    * @throws IOException if error when closing
    */
@@ -144,13 +148,13 @@ public class NetcdfFile implements FileCacheable, Closeable {
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Find an attribute, with the specified (escaped full) name.
-   * It may possibly be nested in multiple groups and/or structures.
-   * An embedded "." is interpreted as structure.member.
-   * An embedded "/" is interpreted as group/group or group/variable.
-   * An embedded "@" is interpreted as variable@attribute
-   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
-   * Any other chars may also be escaped, as they are removed before testing.
+   * Find an attribute, with the specified (escaped full) name. It may possibly be nested in multiple groups and/or
+   * structures. An embedded
+   * "." is interpreted as structure.member. An embedded "/" is interpreted as group/group or group/variable. An
+   * embedded "@" is interpreted
+   * as variable@attribute If the name actually has a ".", you must escape it (call
+   * NetcdfFiles.makeValidPathName(varname)) Any other chars
+   * may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
    * @return Attribute or null if not found.
@@ -212,10 +216,13 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Finds a Dimension with the specified full name. It may be nested in multiple groups.
-   * An embedded "/" is interpreted as a group separator. A leading slash indicates the root group. That slash may be
-   * omitted, but the {@code fullName} will be treated as if it were there. In other words, the first name token in
-   * {@code fullName} is treated as the short name of a Group or Dimension, relative to the root group.
+   * Finds a Dimension with the specified full name. It may be nested in multiple groups. An embedded "/" is interpreted
+   * as a group
+   * separator. A leading slash indicates the root group. That slash may be omitted, but the {@code fullName} will be
+   * treated as if it were
+   * there. In other words, the first name token in {@code fullName} is treated as the short name of a Group or
+   * Dimension, relative to the
+   * root group.
    *
    * @param fullName Dimension full name, e.g. "/group/subgroup/dim".
    * @return the Dimension or {@code null} if it wasn't found.
@@ -280,9 +287,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Find a Group, with the specified (full) name.
-   * A full name should start with a '/'. For backwards compatibility, we accept full names that omit the leading '/'.
-   * An embedded '/' separates subgroup names.
+   * Find a Group, with the specified (full) name. A full name should start with a '/'. For backwards compatibility, we
+   * accept full names
+   * that omit the leading '/'. An embedded '/' separates subgroup names.
    *
    * @param fullName eg "/group/subgroup/wantGroup". Null or empty string returns the root group.
    * @return Group or null if not found.
@@ -304,12 +311,12 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Find a Variable, with the specified (escaped full) name.
-   * It may possibly be nested in multiple groups and/or structures.
-   * An embedded "." is interpreted as structure.member.
-   * An embedded "/" is interpreted as group/variable.
-   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname))
-   * Any other chars may also be escaped, as they are removed before testing.
+   * Find a Variable, with the specified (escaped full) name. It may possibly be nested in multiple groups and/or
+   * structures. An embedded
+   * "." is interpreted as structure.member. An embedded "/" is interpreted as group/variable. If the name actually has
+   * a ".", you must
+   * escape it (call NetcdfFiles.makeValidPathName(varname)) Any other chars may also be escaped, as they are removed
+   * before testing.
    *
    * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
@@ -359,7 +366,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return v;
   }
 
-  /** Get all shared Dimensions used in this file. */
+  /**
+   * Get all shared Dimensions used in this file.
+   */
   public ImmutableList<Dimension> getDimensions() {
     return allDimensions;
   }

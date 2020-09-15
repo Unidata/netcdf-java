@@ -25,7 +25,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.util.CompareNetcdf2;
 
 /** NetcdfFormatWriter tests */
-@Ignore("not ready")
 public class TestNetcdfFormatUpdater {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

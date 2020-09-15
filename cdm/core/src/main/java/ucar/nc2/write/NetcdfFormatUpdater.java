@@ -4,15 +4,15 @@
  */
 package ucar.nc2.write;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import com.google.common.base.Preconditions;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
@@ -29,12 +29,13 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.internal.iosp.IospFileCreator;
+import ucar.nc2.internal.iosp.IospFileUpdater;
 import ucar.nc2.internal.iosp.hdf5.H5iospNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.NetcdfFileFormat;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
@@ -51,8 +52,6 @@ import ucar.nc2.iosp.NetcdfFileFormat;
  */
 public class NetcdfFormatUpdater implements Closeable {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatUpdater.class);
-  private static Set<DataType> validN3types =
-      EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT, DataType.DOUBLE, DataType.FLOAT);
 
   /**
    * Open an existing Netcdf format file for writing data.
@@ -69,42 +68,12 @@ public class NetcdfFormatUpdater implements Closeable {
           iosp instanceof N3iospNew || iosp instanceof H5iospNew || iosp.getClass().getName().endsWith("Nc4reader"),
           "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();
-      return builder().setRootGroup(root).setLocation(location).setIosp(iosp).setNewFile(false).setFormat(null);
+      NetcdfFileFormat format = (NetcdfFileFormat) iosp.sendIospMessage(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT);
+      if (format == null && !format.isNetdf3format() && !format.isNetdf4format()) {
+        throw new IllegalArgumentException(String.format("%s is not a netcdf-3 or netcdf-4 file", format));
+      }
+      return builder().setRootGroup(root).setLocation(location).setIosp(iosp).setFormat(format);
     }
-  }
-
-  /**
-   * Create a new Netcdf3 file.
-   *
-   * @param location name of new file to open; if it exists, will overwrite it.
-   * @return new NetcdfFormatWriter
-   */
-  public static NetcdfFormatUpdater.Builder createNewNetcdf3(String location) {
-    return builder().setNewFile(true).setFormat(NetcdfFileFormat.NETCDF3).setLocation(location);
-  }
-
-  /**
-   * Create a new Netcdf4 file, with default chunker.
-   *
-   * @param location name of new file to open; if it exists, will overwrite it.
-   * @return new NetcdfFormatWriter
-   */
-  public static NetcdfFormatUpdater.Builder createNewNetcdf4(String location) {
-    return builder().setFormat(NetcdfFileFormat.NETCDF4).setNewFile(true).setLocation(location)
-        .setChunker(new Nc4ChunkingDefault());
-  }
-
-  /**
-   * Create a new Netcdf4 file.
-   *
-   * @param format One of the netcdf-4 NetcdfFileFormat.
-   * @param location name of new file to open; if it exists, will overwrite it.
-   * @param chunker used only for netcdf4, or null for default chunking algorithm
-   * @return new NetcdfFormatWriter
-   */
-  public static NetcdfFormatUpdater.Builder createNewNetcdf4(NetcdfFileFormat format, String location,
-      @Nullable Nc4Chunking chunker) {
-    return builder().setNewFile(true).setFormat(format).setLocation(location).setChunker(chunker);
   }
 
   /** Obtain a Builder to set custom options */
@@ -115,7 +84,6 @@ public class NetcdfFormatUpdater implements Closeable {
   public static class Builder {
     private String location;
     private NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
-    private boolean isNewFile = true;
     private boolean fill = true;
     private int extraHeaderBytes;
     private long preallocateSize;
@@ -132,7 +100,6 @@ public class NetcdfFormatUpdater implements Closeable {
 
     public Builder setIosp(IOServiceProvider iosp) {
       this.iosp = iosp;
-      this.isNewFile = false;
       return this;
     }
 
@@ -148,12 +115,6 @@ public class NetcdfFormatUpdater implements Closeable {
 
     public NetcdfFileFormat getFormat() {
       return this.format;
-    }
-
-    /** True if its a new file, false if its an existing file. Default true. */
-    public Builder setNewFile(boolean newFile) {
-      isNewFile = newFile;
-      return this;
     }
 
     /**
@@ -202,7 +163,7 @@ public class NetcdfFormatUpdater implements Closeable {
 
     /** Add a global attribute */
     public Builder addAttribute(Attribute att) {
-      if (!isNewFile && !useJna) {
+      if (!useJna) {
         throw new UnsupportedOperationException("Cant add attribute to existing netcdf-3 files");
       }
       rootGroup.addAttribute(att);
@@ -216,7 +177,7 @@ public class NetcdfFormatUpdater implements Closeable {
 
     /** Add a dimension to the root group. */
     public Dimension addDimension(Dimension dim) {
-      if (!isNewFile && !useJna) {
+      if (!useJna) {
         throw new UnsupportedOperationException("Cant add dimension to existing netcdf-3 files");
       }
       Dimension useDim = dim;
@@ -248,7 +209,7 @@ public class NetcdfFormatUpdater implements Closeable {
 
     /** Add a Variable to the root group. */
     public Variable.Builder<?> addVariable(String shortName, DataType dataType, String dimString) {
-      if (!isNewFile && !useJna) {
+      if (!useJna) {
         throw new UnsupportedOperationException("Cant add variable to existing netcdf-3 files");
       }
       Variable.Builder<?> vb = Variable.builder().setName(shortName).setDataType(dataType)
@@ -259,7 +220,7 @@ public class NetcdfFormatUpdater implements Closeable {
 
     /** Add a Variable to the root group. */
     public Variable.Builder<?> addVariable(String shortName, DataType dataType, List<Dimension> dims) {
-      if (!isNewFile && !useJna) {
+      if (!useJna) {
         throw new UnsupportedOperationException("Cant add variable to existing netcdf-3 files");
       }
       Variable.Builder<?> vb = Variable.builder().setName(shortName).setDataType(dataType)
@@ -270,7 +231,7 @@ public class NetcdfFormatUpdater implements Closeable {
 
     /** Add a Structure to the root group. */
     public Structure.Builder<?> addStructure(String shortName, String dimString) {
-      if (!isNewFile && !useJna) {
+      if (!useJna) {
         throw new UnsupportedOperationException("Cant add structure to existing netcdf-3 files");
       }
       Structure.Builder<?> vb =
@@ -299,7 +260,6 @@ public class NetcdfFormatUpdater implements Closeable {
   ////////////////////////////////////////////////////////////////////////////////
   private final String location;
   private final NetcdfFileFormat format;
-  private final boolean isNewFile;
   private final boolean fill;
   private final int extraHeaderBytes;
   private final long preallocateSize;
@@ -308,14 +268,12 @@ public class NetcdfFormatUpdater implements Closeable {
 
   private final Group rootGroup;
   private final NetcdfFile ncout;
-  private final IospFileCreator spiw;
-  private final ucar.unidata.io.RandomAccessFile existingRaf;
+  private final IospFileUpdater spiw;
 
   private boolean isClosed = false;
 
   private NetcdfFormatUpdater(Builder builder) throws IOException {
     this.location = builder.location;
-    this.isNewFile = builder.isNewFile;
     this.fill = builder.fill;
     this.extraHeaderBytes = builder.extraHeaderBytes;
     this.preallocateSize = builder.preallocateSize;
@@ -326,21 +284,17 @@ public class NetcdfFormatUpdater implements Closeable {
     // NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location);
 
     // read existing file to get the format
-    if (!isNewFile) {
-      existingRaf = new ucar.unidata.io.RandomAccessFile(location, "rw");
+    try (RandomAccessFile existingRaf = new ucar.unidata.io.RandomAccessFile(location, "r")) {
       this.format = NetcdfFileFormat.findNetcdfFormatType(existingRaf);
-    } else {
-      existingRaf = null;
-      this.format = builder.format;
     }
 
     this.useJna = builder.useJna || format.isNetdf4format();
     if (useJna) {
-      String className = "ucar.nc2.jni.netcdf.Nc4writer";
-      IospFileCreator spi;
+      String className = "ucar.nc2.jni.netcdf.Nc4updater";
+      IospFileUpdater spi;
       try {
         Class iospClass = this.getClass().getClassLoader().loadClass(className);
-        Constructor<IospFileCreator> ctor = iospClass.getConstructor(format.getClass());
+        Constructor<IospFileUpdater> ctor = iospClass.getConstructor(format.getClass());
         spi = ctor.newInstance(format);
 
         Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
@@ -354,35 +308,18 @@ public class NetcdfFormatUpdater implements Closeable {
       spiw = new N3iospWriter(builder.getIosp());
     }
 
-    // If anything fails, make sure that resources are closed.
     try {
-      // ncfileb has the metadata of the file to be created.
-      this.ncout = spiw.create(location, builder.rootGroup, extraHeaderBytes, preallocateSize, false);
+      // ncfileb has the metadata of the file to be written to. NC3 doesnt allow additions, NC4 should. So this is
+      // messed up here.
+      // NC3 can only write to existing variables and extend along the record dimension.
+      spiw.openForWriting(location, builder.rootGroup, null);
       spiw.setFill(fill);
     } catch (Throwable t) {
       spiw.close();
       throw t;
     }
 
-    /*
-     * try {
-     * if (!isNewFile) {
-     * // ncfileb has the metadata of the file to be written to. NC3 doesnt allow additions, NC4 should. So this is
-     * // messed up here.
-     * // NC3 can only write to existing variables and extend along the record dimension.
-     * spiw.openForWriting(existingRaf, ncfileb, null);
-     * } else {
-     * // ncfileb has the metadata of the file to be created.
-     * spiw.create(location, ncfileb, extraHeaderBytes, preallocateSize, false);
-     * }
-     * spiw.setFill(fill);
-     * } catch (Throwable t) {
-     * spiw.close();
-     * throw t;
-     * }
-     */
-
-    // this.ncout = spiw.getOutputFile();
+    this.ncout = spiw.getOutputFile();
     this.rootGroup = this.ncout.getRootGroup();
   }
 
@@ -408,53 +345,6 @@ public class NetcdfFormatUpdater implements Closeable {
   @Nullable
   public Attribute findGlobalAttribute(String attName) {
     return this.ncout.getRootGroup().findAttribute(attName);
-  }
-
-  /*
-   * LOOK how to check if file is too large and convert ??
-   * After you have added all of the Dimensions, Variables, and Attributes,
-   * call create() to actually create the new file, or open the existing file.
-   *
-   * @param netcdfOut Contains the metadata of the file to be written. Caller must write data with write().
-   * 
-   * @param maxBytes if > 0, only create the file if sizeToBeWritten < maxBytes.
-   * 
-   * @return return Result indicating sizeToBeWritten and if it was created.
-   *
-   * public Result create(NetcdfFile netcdfOut, long maxBytes) throws IOException {
-   * Preconditions.checkArgument(isNewFile, "can only call create on a new file");
-   * 
-   * long sizeToBeWritten = calcSize(netcdfOut.getRootGroup());
-   * if (maxBytes > 0 && sizeToBeWritten > maxBytes) {
-   * return Result.create(sizeToBeWritten, false, String.format("Too large, max size = %d", maxBytes));
-   * }
-   * //this.ncout = netcdfOut;
-   * spiw.setFill(fill);
-   * 
-   * if (!isNewFile) {
-   * spiw.openForWriting(existingRaf, this.ncout, null);
-   * } else {
-   * spiw.create(location, this.ncout, extraHeaderBytes, preallocateSize, testIfLargeFile());
-   * }
-   * 
-   * return Result.create(sizeToBeWritten, true, null);
-   * }
-   */
-
-  private boolean testIfLargeFile() {
-    if (format == NetcdfFileFormat.NETCDF3_64BIT_OFFSET) {
-      return true;
-    }
-
-    if (format == NetcdfFileFormat.NETCDF3) {
-      long totalSizeOfVars = calcSize(ncout.getRootGroup());
-      long maxSize = Integer.MAX_VALUE;
-      if (totalSizeOfVars > maxSize) {
-        log.debug("Request size = {} Mbytes", totalSizeOfVars / 1000 / 1000);
-        return true;
-      }
-    }
-    return false;
   }
 
   public long calcSize() {

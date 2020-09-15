@@ -5,6 +5,7 @@
 
 package ucar.nc2.jni.netcdf;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
 import static ucar.nc2.ffi.netcdf.NetcdfClibrary.isLibraryPresent;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
@@ -44,16 +45,6 @@ import java.util.*;
  */
 public class Nc4reader extends AbstractIOServiceProvider {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4reader.class);
-
-  public static final boolean DEBUG = false;
-
-  // Define reserved attributes (see Nc4DSP)
-  public static final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
-
-  // IOSP messages
-  public static final String TRANSLATECONTROL = "ucar.translate";
-  public static final String TRANSLATE_NONE = "none";
-  public static final String TRANSLATE_NC4 = "nc4";
 
   private static final boolean debugCompoundAtt = false;
   private static final boolean debugUserTypes = false;
@@ -161,27 +152,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     isClosed = true;
   }
 
-  @Override
-  public Object sendIospMessage(Object message) {
-    if (message instanceof Map) {
-      Map<String, String> map = (Map<String, String>) message;
-      // See if we can extract some controls
-      for (String key : map.keySet()) {
-        if (key.equalsIgnoreCase(TRANSLATECONTROL)) {
-          String value = map.get(key).toString();
-          if (value.equalsIgnoreCase(TRANSLATE_NONE)) {
-            this.markReserved = false;
-          } else if (value.equalsIgnoreCase(TRANSLATE_NC4)) {
-            this.markReserved = true;
-          } // else ignore
-        } // else ignore
-      }
-    }
-    return null;
-  }
-
   private class HdfEosHeader implements HdfHeaderIF {
-
     @Override
     public Builder getRootGroup() {
       return rootGroup;
@@ -199,6 +170,13 @@ public class Nc4reader extends AbstractIOServiceProvider {
     }
   }
 
+  @Override
+  public Object sendIospMessage(Object message) {
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      return version;
+    }
+    return super.sendIospMessage(message);
+  }
 
   /////////////////////////////////////////////////////////////////////////////////
   // NetcdfFile building
@@ -1051,8 +1029,9 @@ public class Nc4reader extends AbstractIOServiceProvider {
     if (dtype.isEnum()) {
       v.setEnumTypeName(utype.name);
     } else if (dtype == DataType.OPAQUE) {
+      // TODO whats the problem with knowing the size?? Needed to read properly??
       if (this.markReserved) {
-        annotate(v, UCARTAGOPAQUE, utype.size);
+        // annotate(v, UCARTAGOPAQUE, utype.size);
       }
     }
 
@@ -1685,8 +1664,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     byte[] bbuff = new byte[len * size];
     ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
-    if (DEBUG)
-      dumpbytes(bbuff, 0, bbuff.length, "readOpaque");
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int[] intshape;
@@ -2169,22 +2146,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
       this.key = key;
       this.value = value;
     }
-  }
-
-  HashMap<Object, List<Annotation>> annotations = new HashMap<>();
-
-  void annotate(Object elem, Object key, Object value) {
-    List<Annotation> list = annotations.computeIfAbsent(elem, k -> new ArrayList<>());
-    int index = -1;
-    Iterator<Annotation> iter = list.iterator();
-    while (iter.hasNext()) {
-      Annotation ann = iter.next();
-      if (ann.key.equals(key)) {
-        iter.remove();
-        break;
-      }
-    }
-    list.add(new Annotation(key, value));
   }
 
   private static void dumpbytes(byte[] bytes, int start, int len, String tag) {

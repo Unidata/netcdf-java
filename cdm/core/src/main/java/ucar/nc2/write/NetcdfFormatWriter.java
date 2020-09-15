@@ -9,10 +9,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
@@ -34,7 +32,7 @@ import ucar.nc2.internal.iosp.IospFileCreator;
 import ucar.nc2.iosp.NetcdfFileFormat;
 
 /**
- * Writes Netcdf 3 or 4 formatted files to disk.
+ * Writes new Netcdf 3 or 4 formatted files to disk.
  *
  * <pre>
  * NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
@@ -47,24 +45,20 @@ import ucar.nc2.iosp.NetcdfFileFormat;
  */
 public class NetcdfFormatWriter implements Closeable {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatWriter.class);
-  private static Set<DataType> validN3types =
-      EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT, DataType.DOUBLE, DataType.FLOAT);
 
   /**
    * Create a new Netcdf3 file.
    *
    * @param location name of new file to open; if it exists, will overwrite it.
-   * @return new NetcdfFormatWriter
    */
   public static NetcdfFormatWriter.Builder createNewNetcdf3(String location) {
     return builder().setFormat(NetcdfFileFormat.NETCDF3).setLocation(location);
   }
 
   /**
-   * Create a new Netcdf4 file, with default chunker.
+   * Create a new NetcdfFileFormat.NETCDF4 file, with default chunker.
    *
    * @param location name of new file to open; if it exists, will overwrite it.
-   * @return new NetcdfFormatWriter
    */
   public static NetcdfFormatWriter.Builder createNewNetcdf4(String location) {
     return builder().setFormat(NetcdfFileFormat.NETCDF4).setLocation(location).setChunker(new Nc4ChunkingDefault());
@@ -76,7 +70,6 @@ public class NetcdfFormatWriter implements Closeable {
    * @param format One of the netcdf-4 NetcdfFileFormat.
    * @param location name of new file to open; if it exists, will overwrite it.
    * @param chunker used only for netcdf4, or null for default chunking algorithm
-   * @return new NetcdfFormatWriter
    */
   public static NetcdfFormatWriter.Builder createNewNetcdf4(NetcdfFileFormat format, String location,
       @Nullable Nc4Chunking chunker) {
@@ -161,7 +154,7 @@ public class NetcdfFormatWriter implements Closeable {
 
     /**
      * Set if you want to use JNA / netcdf c library to do the writing. Default is false.
-     * JNA must be used for Netcdf-4. This is used to write to Netcdf-3 format.
+     * JNA must be used for Netcdf-4. This is used to write to Netcdf-3 format with jna.
      */
     public Builder setUseJna(boolean useJna) {
       this.useJna = useJna;

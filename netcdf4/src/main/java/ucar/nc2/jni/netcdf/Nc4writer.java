@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -237,9 +238,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     Vinfo vinfo; // TODO vinfo is from the input file; we act here as if its the outut file.
     if (v instanceof Structure.Builder<?>) { // vinfo and typid was stored in vinfo in createCompoundType
       vinfo = (Vinfo) v.spiObject;
-      if (vinfo == null) {
-        System.out.printf("HEY%n");
-      }
       typid = vinfo.typeid;
 
     } else if (v.dataType.isEnum()) {
@@ -250,6 +248,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
       vinfo = new Vinfo(g4, -1, typid);
 
     } else if (v.dataType == DataType.OPAQUE) {
+      // nc_def_opaque(ncid, BASE_SIZE, TYPE_NAME, &xtype)
       typid = convertDataType(v.dataType);
       if (typid < 0) {
         log.warn("Skipping Opaque Type");
@@ -266,12 +265,13 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
       vinfo = new Vinfo(g4, -1, typid);
     }
 
-    if (debugWrite)
+    if (debugWrite) {
       System.out.printf("adding variable %s (typeid %d) %n", v.shortName, typid);
+    }
     IntByReference varidp = new IntByReference();
     int ret = nc4.nc_def_var(g4.grpid, v.shortName, new SizeT(typid), dimids.length, dimids, varidp);
     if (ret != 0)
-      throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
+      throw new IOException("nc_def_var ret= " + ret + " err= '" + nc4.nc_strerror(ret) + "' on " + v);
     int varid = varidp.getValue();
     vinfo.varid = varid;
     if (debugWrite)
@@ -371,10 +371,13 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
    * After calling this function, fill out the type with repeated calls to nc_insert_enum.
    * Call nc_insert_enum once for each (id,int) you wish to insert into the enum.
    */
-  private void createEnumType(Group4 g4, EnumTypedef en) throws IOException {
+  private void createEnumType(Group4 g4, EnumTypedef ent) throws IOException {
     IntByReference typeidp = new IntByReference();
-    String name = en.getShortName();
-    DataType enumbase = en.getBaseType();
+    String name = ent.getShortName();
+    if (!name.endsWith("_t")) {
+      name = name + "_t";
+    }
+    DataType enumbase = ent.getBaseType();
     int basetype = NC_NAT;
     if (enumbase == DataType.ENUM1)
       basetype = Nc4prototypes.NC_BYTE;
@@ -384,23 +387,19 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
       basetype = Nc4prototypes.NC_INT;
     int ret = nc4.nc_def_enum(g4.grpid, basetype, name, typeidp);
     if (ret != 0)
-      throw new IOException(nc4.nc_strerror(ret) + " on\n" + en);
+      throw new IOException(nc4.nc_strerror(ret) + " on\n" + ent);
     int typeid = typeidp.getValue();
-    if (DEBUG)
-      System.out.printf("added enum type %s (typeid %d)%n", name, typeid);
-    Map<Integer, String> emap = en.getMap();
+    Map<Integer, String> emap = ent.getMap();
     for (Map.Entry<Integer, String> entry : emap.entrySet()) {
       IntByReference val = new IntByReference(entry.getKey());
       ret = nc4.nc_insert_enum(g4.grpid, typeid, entry.getValue(), val);
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + entry.getValue());
-      if (DEBUG)
-        System.out.printf(" added enum type member %s: %d%n", entry.getValue(), entry.getKey());
     }
     // keep track of the User Defined types
-    UserType ut = new UserType(g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
+    UserType ut = new UserType(g4.grpid, typeid, name, ent.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
     userTypes.put(typeid, ut);
-    annotate(en, UserType.class, ut); // dont know the varid yet
+    annotate(ent, UserType.class, ut); // dont know the varid yet
   }
 
   /////////////////////////////////////
@@ -491,7 +490,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
   }
 
   private void createCompoundMemberAtts(int grpid, int varid, Structure.Builder<?> s) throws IOException {
-
     // count size of attribute values
     int sizeAtts = 0;
     for (Variable.Builder<?> m : s.vbuilders) {
@@ -1202,6 +1200,20 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     return dimid;
   }
 
+  HashMap<Object, List<Annotation>> annotations = new HashMap<>();
+
+  void annotate(Object elem, Object key, Object value) {
+    List<Annotation> list = annotations.computeIfAbsent(elem, k -> new ArrayList<>());
+    Iterator<Annotation> iter = list.iterator();
+    while (iter.hasNext()) {
+      Annotation ann = iter.next();
+      if (ann.key.equals(key)) {
+        iter.remove();
+        break;
+      }
+    }
+    list.add(new Annotation(key, value));
+  }
 
   @Nullable
   private Object annotation(Object elem, Object key) {

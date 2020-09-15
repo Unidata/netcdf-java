@@ -244,6 +244,7 @@ public class NetcdfCopier implements Closeable {
       } else {
         copySome(ncwriter, oldVar, newVar, maxSize, cancel);
       }
+      counter.countVars++;
     }
 
     for (Group nestedIn : groupIn.getGroups()) {

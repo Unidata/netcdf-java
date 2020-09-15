@@ -113,7 +113,6 @@ public class H5headerNew implements HdfHeaderIF {
 
   private static final byte[] magic = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
   private static final String magicString = new String(magic, StandardCharsets.UTF_8);
-  private static final long maxHeaderPos = 50000; // header's gotta be within this
   private static final boolean transformReference = true;
 
   public static boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -170,16 +169,12 @@ public class H5headerNew implements HdfHeaderIF {
     valueCharset = h5iosp.getValueCharset().orElse(StandardCharsets.UTF_8);
   }
 
-  /**
-   * Return defined {@link Charset value charset} that
-   * will be used by reading HDF5 header.
-   *
-   * @return {@link Charset charset}
-   */
+  /** Return defined {@link Charset value charset} that will be used when reading HDF5 header. */
   protected Charset getValueCharset() {
     return valueCharset;
   }
 
+  // Public for debugging
   public void read(PrintWriter debugPS) throws IOException {
     if (debugPS != null) {
       debugOut = debugPS;
@@ -1549,6 +1544,7 @@ public class H5headerNew implements HdfHeaderIF {
       // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
       EnumTypedef enumTypedef = parent.findEnumeration(mdt.enumTypeName).orElse(null);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
+        parent.findEnumeration(mdt.enumTypeName); // LOOK
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
         parent.addEnumTypedef(enumTypedef);
       }
@@ -2273,6 +2269,10 @@ public class H5headerNew implements HdfHeaderIF {
 
   boolean isNetcdf4() {
     return isNetcdf4;
+  }
+
+  boolean isClassic() {
+    return false; // TODO
   }
 
   public void close() {

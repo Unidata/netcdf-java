@@ -45,6 +45,11 @@ public class CompareNetcdf2 {
       return dim1.equals(dim2);
     }
 
+    // override dimension comparision if needed
+    default boolean enumsAreEqual(EnumTypedef enum1, EnumTypedef enum2) {
+      return enum1.equals(enum2);
+    }
+
     // if true, compare variable, else skip comparision
     default boolean varDataTypeCheckOk(Variable v) {
       return true;
@@ -122,6 +127,20 @@ public class CompareNetcdf2 {
         return dim1.getLength() == dim2.getLength();
       }
       return dim1.equals(dim2);
+    }
+
+    public boolean enumsAreEqual(EnumTypedef enum1, EnumTypedef enum2) {
+      String name1 = enum1.getShortName();
+      String name2 = enum2.getShortName();
+      if (name1.endsWith("_t")) {
+        name1 = name1.substring(0, name1.length() - 2);
+      }
+      if (name2.endsWith("_t")) {
+        name2 = name2.substring(0, name2.length() - 2);
+      }
+      return com.google.common.base.Objects.equal(name1, name2)
+          && com.google.common.base.Objects.equal(enum1.getMap(), enum2.getMap())
+          && enum1.getBaseType() == enum2.getBaseType();
     }
 
   }
@@ -293,7 +312,7 @@ public class CompareNetcdf2 {
     ok &= checkAttributes(org.getFullName(), org.attributes(), copy.attributes(), filter);
 
     // enums
-    ok &= checkEnums(org, copy);
+    ok &= checkEnums(org, copy, filter);
 
     // variables
     // cant use object equality, just match on short name
@@ -534,6 +553,22 @@ public class CompareNetcdf2 {
     return null;
   }
 
+  public EnumTypedef findEnum(Group g, EnumTypedef typedef, ObjFilter filter) {
+    if (typedef == null) {
+      return null;
+    }
+    for (EnumTypedef other : g.getEnumTypedefs()) {
+      if (filter.enumsAreEqual(typedef, other)) {
+        return other;
+      }
+    }
+    Group parent = g.getParentGroup();
+    if (parent != null) {
+      return findEnum(parent, typedef, filter);
+    }
+    return null;
+  }
+
   private boolean equalInValue(Dimension d1, Dimension other, ObjFilter filter) {
     return filter.dimsAreEqual(d1, other);
   }
@@ -569,40 +604,31 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  // make sure each object in each list are in the other list, using equals().
-  // return an arrayList of paired objects.
-
-  private boolean checkEnums(Group org, Group copy) {
+  private boolean checkEnums(Group org, Group copy, ObjFilter filter) {
     boolean ok = true;
 
     for (EnumTypedef enum1 : org.getEnumTypedefs()) {
       if (showCompare)
         f.format("compare Enum %s%n", enum1.getShortName());
-      EnumTypedef enum2 = copy.findEnumeration(enum1.getShortName());
+      EnumTypedef enum2 = findEnum(copy, enum1, filter);
       if (enum2 == null) {
+        findEnum(org, enum1, filter);
         f.format("  ** Enum %s not in file2 %n", enum1.getShortName());
         ok = false;
         continue;
       }
-      if (!enum1.equals(enum2)) {
-        f.format("  ** Enum %s not equal%n  %s%n  %s%n", enum1.getShortName(), enum1, enum2);
-        ok = false;
-      }
     }
 
     for (EnumTypedef enum2 : copy.getEnumTypedefs()) {
-      EnumTypedef enum1 = org.findEnumeration(enum2.getShortName());
+      EnumTypedef enum1 = findEnum(org, enum2, filter);
       if (enum1 == null) {
+        findEnum(org, enum2, filter);
         f.format("  ** Enum %s not in file1 %n", enum2.getShortName());
         ok = false;
       }
     }
     return ok;
   }
-
-
-  // make sure each object in each list are in the other list, using equals().
-  // return an arrayList of paired objects.
 
   private boolean checkAll(String what, List list1, List list2, List result) {
     boolean ok = true;

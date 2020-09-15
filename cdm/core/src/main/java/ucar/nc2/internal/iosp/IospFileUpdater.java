@@ -25,12 +25,11 @@ public interface IospFileUpdater extends Closeable {
    * Netcdf-3 writing is restricted to writing data into existing variables, including extending the record dimension.
    * Netcdf-4 writing is general, can change and delete metadata etc.
    *
-   * @param raf the file to work on.
-   * @param ncfileb has the metadata of the existing file when this method returns. User can modify if its netcdf4.
-   * @param cancelTask used to monitor user cancellation; may be null.
+   * @param location the existing file
+   * @param rootGroup has the metadata of the file to be created. It is then modified, do not reuse.
    * @throws IOException if I/O error
    */
-  void openForWriting(RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask) throws IOException;
+  void openForWriting(String location, Group.Builder rootGroup, CancelTask cancelTask) throws IOException;
 
   /** Get the output file being written to. */
   NetcdfFile getOutputFile();
