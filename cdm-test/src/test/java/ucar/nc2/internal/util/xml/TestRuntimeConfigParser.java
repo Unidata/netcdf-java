@@ -20,7 +20,7 @@ public class TestRuntimeConfigParser {
       + "   <featureDatasetFactory featureType='SIMPLE_GEOMETRY' class='ucar.nc2.ft.SimpleGeometryStandardFactory'/>\n"
       + "   <gribParameterTable edition='1' center='58' subcenter='-1' version='128'>resources/grib1/ncep/ncepGrib1-130.xml</gribParameterTable>\n"
       + "   <gribParameterTableLookup edition='1'>resources/grib1/dss/lookupTables.txt</gribParameterTableLookup>\n"
-      + "   <bufrtable filename='resource:/resources/bufrTables/local/tableLookup.csv' />\n"
+      + "   <bufrtable filename='resource:/resources/bufrTables/local/tablelookup.csv' />\n"
       + "   <grib1Table strict='false'/>\n" + "   <Netcdf4Clibrary>\n"
       + "     <libraryPath>/usr/local/lib</libraryPath>\n" + "     <libraryName>netcdf</libraryName>\n"
       + "     <useForReading>false</useForReading>\n" + "   </Netcdf4Clibrary>\n" + " </runtimeConfig>";
