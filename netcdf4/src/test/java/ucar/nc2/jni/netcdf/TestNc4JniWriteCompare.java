@@ -100,6 +100,9 @@ public class TestNc4JniWriteCompare {
       try (NetcdfFile ncfileOut = ucar.nc2.NetcdfFiles.open(fileout, null)) {
         compare(ncfileIn, ncfileOut, false, false, true);
       }
+      try (NetcdfFile jni = TestNc4reader.openJni(fileout)) {
+        compare(ncfileIn, jni, false, false, true);
+      }
     }
   }
 
@@ -109,9 +112,12 @@ public class TestNc4JniWriteCompare {
     boolean ok = tc.compare(nc1, nc2, new CompareNetcdf2.Netcdf4ObjectFilter());
     System.out.printf(" %s compare %s to %s ok = %s%n", ok ? "" : "***", nc1.getLocation(), nc2.getLocation(), ok);
     if (!ok) {
+      fail();
       System.out.printf(" %s%n", f);
     }
     return ok;
   }
+
+  private void fail() {}
 
 }

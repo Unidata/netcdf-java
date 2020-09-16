@@ -75,7 +75,7 @@ public class TestNc4JniWriteProblem {
 
   @Test
   public void problemWithEnumHdf() throws IOException {
-    String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/samples/enum.h5";
+    String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/support/enum.h5";
     String fileOut = tempFolder.newFile().getAbsolutePath();
     copyFile(fileIn, fileOut, NetcdfFileFormat.NETCDF4);
   }
@@ -144,6 +144,9 @@ public class TestNc4JniWriteProblem {
       try (NetcdfFile ncfileOut = ucar.nc2.NetcdfFiles.open(datasetOut, null)) {
         compare(ncfileIn, ncfileOut, false, false, true);
       }
+      try (NetcdfFile jni = TestNc4reader.openJni(datasetOut)) {
+        compare(ncfileIn, jni, false, false, true);
+      }
     }
     return true;
   }
@@ -154,10 +157,13 @@ public class TestNc4JniWriteProblem {
     boolean ok = tc.compare(nc1, nc2, new CompareNetcdf2.Netcdf4ObjectFilter());
     System.out.printf(" %s compare %s to %s ok = %s%n", ok ? "" : "***", nc1.getLocation(), nc2.getLocation(), ok);
     if (!ok) {
+      fail();
       System.out.printf(" %s%n", f);
     }
     return ok;
   }
+
+  private void fail() {}
 
 }
 

@@ -1423,6 +1423,10 @@ public class Nc4reader extends AbstractIOServiceProvider {
               return Array.factory(DataType.SHORT, shape, bb);
             case Nc4prototypes.NC_USHORT:
               return Array.factory(DataType.USHORT, shape, bb);
+            case Nc4prototypes.NC_INT:
+              return Array.factory(DataType.INT, shape, bb);
+            case Nc4prototypes.NC_UINT:
+              return Array.factory(DataType.UINT, shape, bb);
           }
           throw new IOException("unknown type " + userType.baseTypeid);
         } else if (userType.typeClass == Nc4prototypes.NC_VLEN) {
