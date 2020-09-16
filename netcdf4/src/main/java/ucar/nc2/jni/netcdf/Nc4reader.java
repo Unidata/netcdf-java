@@ -17,11 +17,8 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.Group.Builder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.internal.iosp.hdf4.HdfEos;
-import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -53,12 +50,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
   // need to transcode any string read into netCDf-Java via netCDF-C
   private static final boolean transcodeStrings = Charset.defaultCharset() != StandardCharsets.UTF_8;
 
-  private static boolean useHdfEos;
-
-  public static void useHdfEos(boolean val) {
-    useHdfEos = val;
-  }
-
   //////////////////////////////////////////////////
   // Instance Variables
   Nc4prototypes nc4;
@@ -66,12 +57,11 @@ public class Nc4reader extends AbstractIOServiceProvider {
   int ncid = -1; // file id
   boolean markReserved;
   boolean isClosed;
+  private int format; // from nc_inq_format
 
   final Map<Integer, UserType> userTypes = new HashMap<>(); // hash by typeid
   final Map<Group.Builder, Integer> groupBuilderHash = new HashMap<>(); // TODO group.builder -> nc4 grpid
 
-  private int format; // from nc_inq_format
-  private boolean isEos;
 
   // no-arg constructor for NetcdfFiles.open()
   public Nc4reader() {
@@ -128,8 +118,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   @Override
   public String getFileTypeId() {
-    if (isEos)
-      return "HDF5-EOS";
     return version.isNetdf4format() ? DataFormatType.NETCDF4.getDescription() : DataFormatType.HDF5.getDescription();
   }
 
@@ -151,24 +139,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
     isClosed = true;
   }
 
-  private class HdfEosHeader implements HdfHeaderIF {
-    @Override
-    public Builder getRootGroup() {
-      return rootGroup;
-    }
-
-    @Override
-    public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
-      // TODO
-    }
-
-    @Override
-    public String readStructMetadata(Variable.Builder<?> structMetadataVar) throws IOException {
-      // TODO
-      return null;
-    }
-  }
-
   @Override
   public Object sendIospMessage(Object message) {
     if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
@@ -185,7 +155,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
-    boolean readOnly = true;
     this.rootGroup = rootGroup;
 
     if (!isLibraryPresent()) {
@@ -202,7 +171,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     log.debug("open {}", location);
 
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
+    int ret = nc4.nc_open(location, NC_NOWRITE, ncidp);
     if (ret != 0) {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     }
@@ -221,17 +190,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     // read root group
     makeGroup(new Group4(ncid, rootGroup, null));
-
-    // TODO: check if its an HDF5-EOS file; we dont have an HdfHeaderIF, because we opened with JNA
-    if (useHdfEos) {
-      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
-        try {
-          isEos = HdfEos.amendFromODL(this.location, new HdfEosHeader(), eosGroup);
-        } catch (IOException e) {
-          log.warn(" HdfEos.amendFromODL failed");
-        }
-      });
-    }
   }
 
   private void makeGroup(Group4 g4) throws IOException {

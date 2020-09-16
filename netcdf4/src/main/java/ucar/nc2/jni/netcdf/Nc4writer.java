@@ -62,7 +62,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
 
   private boolean fill = true;
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
-  private Map<EnumTypedef, UserType> enumUserTypes = new HashMap<>();
+  private final Map<EnumTypedef, UserType> enumUserTypes = new HashMap<>();
 
   public Nc4writer() {
     super(NetcdfFileFormat.NETCDF4);
@@ -93,17 +93,17 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     // create new file
     log.debug("create {}", this.location);
 
-    /*
-     * IntByReference oldFormat = new IntByReference();
-     * int ret = nc4.nc_set_default_format(defineFormat(), oldFormat);
-     * if (ret != 0)
-     * throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-     */
+    IntByReference oldFormat = new IntByReference();
+    int ret = nc4.nc_set_default_format(defineFormat(), oldFormat);
+    if (ret != 0) {
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+    }
 
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_create(filename, createMode(), ncidp);
-    if (ret != 0)
+    ret = nc4.nc_create(filename, createMode(), ncidp);
+    if (ret != 0) {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+    }
 
     isClosed = false;
     ncid = ncidp.getValue();
@@ -143,7 +143,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
         ret |= NC_NETCDF4 | NC_CLASSIC_MODEL;
         break;
     }
-
     return ret;
   }
 
@@ -357,8 +356,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     }
     throw new IllegalArgumentException("unimplemented type == " + dt);
   }
-
-
 
   /////////////////////////////////////
   // Enum types
@@ -601,7 +598,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
       } // loop over atts
     } // loop over vars */
 
-
     // now write that attribute on the variable
     String attName = "_field_atts";
     ret = nc4.nc_put_att(grpid, varid, attName, typeid, new SizeT(1), bb.array());
@@ -623,11 +619,6 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
 
     // TODO reread dimension in case unlimited has grown
     // updateDimensions(ncfile.getRootGroup());
-  }
-
-  public Nc4reader setAddReserved(boolean tf) {
-    this.markReserved = tf;
-    return this;
   }
 
   @Override
