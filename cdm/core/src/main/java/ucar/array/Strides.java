@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.ma2.Section;
 
 /** Strides for Multidimensional arrays. Translate between multidimensional index and 1d arrays. */
 @Immutable
@@ -38,11 +39,14 @@ public class Strides implements Iterable<Integer> {
 
   /**
    * Get the 1-d index indicated by the list of multidimensional indices.
-   * 
+   *
    * @param index list of indices, one for each dimension. For vlen, the last is ignored.
    */
   public int get(int... index) {
     Preconditions.checkArgument(this.rank == index.length);
+    for (int i = 0; i < rank; i++) {
+      Preconditions.checkArgument(index[i] >= 0 && index[i] < shape[i]);
+    }
     int value = offset;
     for (int ii = 0; ii < rank; ii++) {
       if (shape[ii] < 0)
@@ -55,6 +59,15 @@ public class Strides implements Iterable<Integer> {
   /** Get the number of dimensions in the array. */
   public int getRank() {
     return rank;
+  }
+
+  /** Get the shape: length of array in each dimension. */
+  public Section getSection() {
+    try {
+      return new Section(odometer(offset), shape); // LOOK strides
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   /** Get the shape: length of array in each dimension. */
@@ -71,7 +84,11 @@ public class Strides implements Iterable<Integer> {
   }
 
   public Iterator<Integer> iterator() {
-    return new IteratorImpl();
+    return new Odometer();
+  }
+
+  public Iterator<Integer> iterator(int start, long length) {
+    return new Odometer(start, length);
   }
 
   boolean isCanonicalOrder() {
@@ -144,67 +161,7 @@ public class Strides implements Iterable<Integer> {
   }
 
   /**
-   * create a new Index based on a subsection of this one, with rank reduction if
-   * dimension length == 1.
-   *
-   * @param ranges array of Ranges that specify the array subset.
-   *        Must be same rank as original Array.
-   *        A particular Range: 1) may be a subset; 2) may be null, meaning use entire Range.
-   * @return new Index, with same or smaller rank as original.
-   * @throws InvalidRangeException if ranges dont match current shape
-   */
-  Strides section(List<Range> ranges) throws InvalidRangeException {
-    Preconditions.checkArgument(ranges.size() == rank);
-    for (int ii = 0; ii < rank; ii++) {
-      Range r = ranges.get(ii);
-      if (r == null)
-        continue;
-      if (r == Range.VLEN)
-        continue;
-      if ((r.first() < 0) || (r.first() >= shape[ii]))
-        throw new InvalidRangeException("Bad range starting value at index " + ii + " == " + r.first());
-      if ((r.last() < 0) || (r.last() >= shape[ii]))
-        throw new InvalidRangeException("Bad range ending value at index " + ii + " == " + r.last());
-    }
-
-    int reducedRank = rank;
-    for (Range r : ranges) {
-      if ((r != null) && (r.length() == 1))
-        reducedRank--;
-    }
-    Strides.Builder newindex = builder(reducedRank);
-    newindex.offset = offset;
-    int[] newstride = new int[reducedRank];
-
-    // calc shape, size, and index transformations
-    // calc strides into original (backing) store
-    int newDim = 0;
-    for (int ii = 0; ii < rank; ii++) {
-      Range r = ranges.get(ii);
-      if (r == null) { // null range means use the whole original dimension
-        newindex.shape[newDim] = shape[ii];
-        newstride[newDim] = stride[ii];
-        // if (name != null) newindex.name[newDim] = name[ii];
-        newDim++;
-      } else if (r.length() != 1) {
-        newindex.shape[newDim] = r.length();
-        newstride[newDim] = stride[ii] * r.stride();
-        newindex.offset += stride[ii] * r.first();
-        // if (name != null) newindex.name[newDim] = name[ii];
-        newDim++;
-      } else {
-        newindex.offset += stride[ii] * r.first(); // constant due to rank reduction
-      }
-    }
-    newindex.setStride(newstride);
-
-    // if equal, then its not a real subset, so can still use fastIterator
-    newindex.canonicalOrder = canonicalOrder && (computeSize(newindex.shape) == size);
-    return newindex.build();
-  }
-
-  /**
-   * create a new Index based on a subsection of this one, without rank reduction.
+   * Create a new Strides based on a subsection of this one.
    *
    * @param ranges list of Ranges that specify the array subset.
    *        Must be same rank as original Array.
@@ -212,7 +169,7 @@ public class Strides implements Iterable<Integer> {
    * @return new Index, with same rank as original.
    * @throws InvalidRangeException if ranges dont match current shape
    */
-  Strides sectionNoReduce(List<Range> ranges) throws InvalidRangeException {
+  Strides section(List<Range> ranges) throws InvalidRangeException {
     Preconditions.checkArgument(ranges.size() == rank);
     for (int ii = 0; ii < rank; ii++) {
       Range r = ranges.get(ii);
@@ -323,6 +280,19 @@ public class Strides implements Iterable<Integer> {
     return newIndex.build();
   }
 
+  public String toString() {
+    StringBuilder sbuff = new StringBuilder();
+    boolean first = true;
+    for (int i : this) {
+      if (!first) {
+        sbuff.append(", ");
+      }
+      sbuff.append(i);
+      first = false;
+    }
+    return sbuff.toString();
+  }
+
   public static Builder builder(int rank) {
     return new Builder(rank);
   }
@@ -416,25 +386,51 @@ public class Strides implements Iterable<Integer> {
     }
   }
 
-  private class IteratorImpl implements Iterator<Integer> {
+  /** what is the odometer for element? */
+  private int[] odometer(long element) {
+    int[] odometer = new int[rank];
+    for (int dim = 0; dim < rank; dim++) {
+      odometer[dim] = (int) (element / stride[dim]);
+      element -= odometer[dim] * stride[dim];
+    }
+    return odometer;
+  }
+
+  private class Odometer implements Iterator<Integer> {
+    private final long nelems;
+    private final int[] current;
     private int count = 0;
-    private final int[] current = new int[rank];
+    private int nextIndex;
+
+    private Odometer() {
+      nelems = size; // all elements
+      current = new int[rank]; // starts at 0
+      nextIndex = get(current);
+    }
+
+    private Odometer(int startElement, long nelems) {
+      this.nelems = nelems; // this many elements
+      current = odometer(startElement); // starts here
+      nextIndex = get(current);
+    }
 
     public boolean hasNext() {
-      return count++ < size;
+      return count++ < nelems;
     }
 
     public Integer next() {
-      return incr();
+      int result = nextIndex;
+      nextIndex = incr();
+      return result;
     }
 
     private int incr() {
       int digit = rank - 1;
       while (digit >= 0) {
-        if (shape[digit] < 0) {
+        if (shape[digit] < 0) { // do not increment vlen
           current[digit] = -1;
           continue;
-        } // do not increment vlen
+        }
         current[digit]++;
         if (current[digit] < shape[digit])
           break; // normal exit

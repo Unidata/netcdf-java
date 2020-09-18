@@ -6,36 +6,36 @@ package ucar.array;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 
-/**
- * Concrete implementation of Array specialized for doubles.
- * Data storage is with 1D java array of doubles.
- */
+/** Concrete implementation of Array specialized for floats. */
+@Immutable
 public class ArrayFloat extends Array<Float> {
   private final Storage<Float> storageF;
 
+  // TODO whats the point if you cant change the storage?
   /** Create an empty Array of type double and the given shape. */
   public ArrayFloat(int[] shape) {
     super(DataType.FLOAT, shape);
-    storageF = Storage.factory(DataType.FLOAT, new float[(int) indexCalc.getSize()]);
+    storageF = new StorageF(new float[(int) indexCalc.getSize()]);
   }
 
   /** Create an Array of type double and the given shape and storage. */
   public ArrayFloat(int[] shape, Storage<Float> storageF) {
     super(DataType.DOUBLE, shape);
-    Preconditions.checkArgument(indexCalc.getSize() == storageF.getLength());
+    Preconditions.checkArgument(indexCalc.getSize() <= storageF.getLength());
     this.storageF = storageF;
   }
 
   /** Create an Array of type double and the given shape and storage. */
   private ArrayFloat(Strides shape, Storage<Float> storageF) {
     super(DataType.FLOAT, shape);
+    Preconditions.checkArgument(indexCalc.getSize() <= storageF.getLength());
     this.storageF = storageF;
   }
 
@@ -49,13 +49,8 @@ public class ArrayFloat extends Array<Float> {
     return indexCalc.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
   }
 
-  public Float sum() {
-    return (float) Streams.stream(() -> fastIterator()).mapToDouble(d -> d).sum();
-  }
-
   @Override
   public Float get(int... index) {
-    Preconditions.checkArgument(this.rank == index.length);
     return storageF.get(indexCalc.get(index));
   }
 
@@ -64,8 +59,23 @@ public class ArrayFloat extends Array<Float> {
     return get(index.getCurrentIndex());
   }
 
-  Object getPrimitiveArray() {
-    return storageF.getPrimitiveArray();
+  @Override
+  void arraycopy(int srcPos, Object dest, int destPos, long length) {
+    if (indexCalc.isCanonicalOrder()) {
+      storageF.arraycopy(srcPos, dest, destPos, length);
+    } else {
+      float[] ddest = (float[]) dest;
+      int destIndex = destPos;
+      Iterator<Integer> iter = indexCalc.iterator(srcPos, length);
+      while (iter.hasNext()) {
+        ddest[destIndex++] = storageF.get(iter.next());
+      }
+    }
+  }
+
+  @Override
+  Storage<Float> storage() {
+    return storageF;
   }
 
   /** create new Array with given indexImpl and the same backing store */
@@ -89,7 +99,8 @@ public class ArrayFloat extends Array<Float> {
     }
   }
 
-  static class StorageF extends Storage<Float> {
+  @Immutable
+  static class StorageF implements Storage<Float> {
     private final float[] storage;
 
     StorageF(float[] storage) {
@@ -97,7 +108,7 @@ public class ArrayFloat extends Array<Float> {
     }
 
     @Override
-    long getLength() {
+    public long getLength() {
       return storage.length;
     }
 
@@ -107,17 +118,17 @@ public class ArrayFloat extends Array<Float> {
     }
 
     @Override
+    public void arraycopy(int srcPos, Object dest, int destPos, long length) {
+      System.arraycopy(storage, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
     public Iterator<Float> iterator() {
       return new StorageFIter();
     }
 
-    @Override
-    Object getPrimitiveArray() {
-      return storage;
-    }
-
     private final class StorageFIter implements Iterator<Float> {
-      int count = 0;
+      private int count = 0;
 
       @Override
       public final boolean hasNext() {
@@ -131,18 +142,19 @@ public class ArrayFloat extends Array<Float> {
     }
   }
 
-  static class StorageFM extends Storage<Float> {
-    private final ImmutableList<float[]> dataArrays;
+  @Immutable
+  static class StorageFM implements Storage<Float> {
+    private final ImmutableList<Storage<Float>> dataArrays;
     private final long[] arrayEdge;
     private final long totalLength;
 
-    StorageFM(List<Array> dataArrays) {
-      ImmutableList.Builder<float[]> builder = ImmutableList.builder();
+    StorageFM(List<Array<?>> dataArrays) {
+      ImmutableList.Builder<Storage<Float>> builder = ImmutableList.builder();
       List<Long> edge = new ArrayList<>();
       edge.add(0L);
       long total = 0L;
       for (Array<?> dataArray : dataArrays) {
-        builder.add((float[]) dataArray.getPrimitiveArray());
+        builder.add(((Array<Float>) dataArray).storage());
         total += dataArray.getSize();
         edge.add(total);
       }
@@ -152,16 +164,35 @@ public class ArrayFloat extends Array<Float> {
     }
 
     @Override
-    long getLength() {
+    public long getLength() {
       return totalLength;
     }
 
     @Override
     public Float get(long elem) {
       int search = Arrays.binarySearch(arrayEdge, elem);
-      int arrayIndex = (search < 0) ? -search - 1 : search;
-      float[] array = dataArrays.get(arrayIndex);
-      return array[(int) (elem - arrayEdge[arrayIndex])];
+      int arrayIndex = (search < 0) ? -search - 2 : search;
+      Storage<Float> storage = dataArrays.get(arrayIndex);
+      return storage.get((int) (elem - arrayEdge[arrayIndex]));
+    }
+
+    @Override
+    public void arraycopy(int srcPos, Object dest, int destPos, long length) {
+      long needed = length;
+      int startDst = destPos;
+
+      int search = Arrays.binarySearch(arrayEdge, srcPos);
+      int startIndex = (search < 0) ? -search - 2 : search;
+      int startSrc = (int) (srcPos - arrayEdge[startIndex]);
+
+      for (int index = startIndex; index < dataArrays.size(); index++) {
+        Storage<Float> storage = dataArrays.get(index);
+        int have = (int) Math.min(storage.getLength() - startSrc, needed);
+        storage.arraycopy(startSrc, dest, startDst, have);
+        needed -= have;
+        startDst += have;
+        startSrc = 0;
+      }
     }
 
     @Override
@@ -169,15 +200,10 @@ public class ArrayFloat extends Array<Float> {
       return new StorageFMIter();
     }
 
-    @Override
-    Object getPrimitiveArray() {
-      return dataArrays;
-    }
-
     final class StorageFMIter implements Iterator<Float> {
-      int count = 0;
-      int arrayIndex = 0;
-      float[] array = dataArrays.get(0);
+      private int count = 0;
+      private int arrayIndex = 0;
+      Storage<Float> storage = dataArrays.get(0);
 
       @Override
       public final boolean hasNext() {
@@ -188,9 +214,9 @@ public class ArrayFloat extends Array<Float> {
       public final Float next() {
         if (count >= arrayEdge[arrayIndex + 1]) {
           arrayIndex++;
-          array = dataArrays.get(arrayIndex);
+          storage = dataArrays.get(arrayIndex);
         }
-        float val = array[(int) (count - arrayEdge[arrayIndex])];
+        float val = storage.get((int) (count - arrayEdge[arrayIndex]));
         count++;
         return val;
       }

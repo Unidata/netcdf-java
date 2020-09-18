@@ -23,8 +23,12 @@ public class TestStrides {
     assertThat(index.get(0, 0, 2)).isEqualTo(2);
     assertThat(index.get(0, 1, 2)).isEqualTo(5);
 
-    // Note that this doesnt fail, though is out of bounds.
-    assertThat(index.get(0, 2, 2)).isEqualTo(8);
+    try {
+      assertThat(index.get(0, 2, 2)).isEqualTo(8);
+      fail();
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(IllegalArgumentException.class);
+    }
 
     try {
       assertThat(index.get(0, 1)).isEqualTo(4);
@@ -32,7 +36,20 @@ public class TestStrides {
     } catch (Exception e) {
       assertThat(e).isInstanceOf(IllegalArgumentException.class);
     }
+  }
 
+  @Test
+  public void testFlip() {
+    int[] shape = new int[] {1, 2, 3};
+    Strides index = Strides.builder(shape).build();
+    assertThat(index.toString()).isEqualTo("0, 1, 2, 3, 4, 5");
+
+    Strides indexf1 = index.flip(1);
+    assertThat(index.toString()).isEqualTo("0, 1, 2, 3, 4, 5");
+    assertThat(indexf1.toString()).isEqualTo("3, 4, 5, 0, 1, 2");
+
+    Strides indexf2 = index.flip(2);
+    assertThat(indexf2.toString()).isEqualTo("2, 1, 0, 5, 4, 3");
   }
 
 }

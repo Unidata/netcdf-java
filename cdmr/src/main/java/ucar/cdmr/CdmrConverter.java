@@ -42,7 +42,7 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
-/** Convert between CdmRemote Protos and Netcdf objects. */
+/** Convert between CdmRemote Protos and Netcdf objects, using ucar.ma2.Array for data. */
 public class CdmrConverter {
   public static CdmRemoteProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     CdmRemoteProto.Group.Builder groupBuilder = CdmRemoteProto.Group.newBuilder();
@@ -350,7 +350,7 @@ public class CdmrConverter {
     CdmRemoteProto.StructureDataProto.Builder builder = CdmRemoteProto.StructureDataProto.newBuilder();
     for (Member member : structData.getMembers()) {
       Array data = structData.getArray(member);
-      builder.addStructData(encodeData(member.getDataType(), data));
+      builder.addMemberData(encodeData(member.getDataType(), data));
     }
     return builder.build();
   }
@@ -852,8 +852,8 @@ public class CdmrConverter {
   public static StructureData decodeStructureData(CdmRemoteProto.StructureDataProto structDataProto,
       StructureMembers members) {
     StructureDataW sdata = new StructureDataW(members);
-    for (int i = 0; i < structDataProto.getStructDataCount(); i++) {
-      Data data = structDataProto.getStructData(i);
+    for (int i = 0; i < structDataProto.getMemberDataCount(); i++) {
+      Data data = structDataProto.getMemberData(i);
       Member member = members.getMember(i);
       sdata.setMemberData(member, decodeData(data, new Section(member.getShape())));
     }

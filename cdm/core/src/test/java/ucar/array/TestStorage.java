@@ -15,7 +15,7 @@ public class TestStorage {
 
   @Test
   public void testStorage() {
-    Storage<Double> store = Storage.factory(DataType.DOUBLE, new double[] {1, 2, 3});
+    Storage<Double> store = new ArrayDouble.StorageD(new double[] {1, 2, 3});
     assertThat(store.get(0)).isEqualTo(1);
     assertThat(store.get(1)).isEqualTo(2);
     assertThat(store.get(2)).isEqualTo(3);
