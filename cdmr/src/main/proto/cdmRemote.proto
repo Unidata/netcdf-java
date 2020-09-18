@@ -111,7 +111,7 @@ message Structure {
   repeated Dimension shape = 3;   // actual dimension instead of reference
   repeated Attribute atts = 4;
   repeated Variable vars = 5;     // members that are not structs
-  repeated Structure structs = 6; // struct members that are srtructs
+  repeated Structure structs = 6; // struct members that are structs
 }
 
 message Variable {
@@ -168,7 +168,7 @@ message Data {
 }
 
 message StructureDataProto {
-  repeated Data structData = 1;  // one for each memeber
+  repeated Data memberData = 1;  // one for each memeber
 }
 
 message StructureMemberProto {

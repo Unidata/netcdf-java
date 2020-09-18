@@ -11,14 +11,14 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.ma2.DataType;
 
-/** Test {@link ArrayDouble} */
-public class TestArrayDouble {
+/** Test {@link ArrayFloat} */
+public class TestArrayFloat {
 
   @Test
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
-    Storage<Double> store = new ArrayDouble.StorageD(new double[] {1, 2, 3, 4, 5, 6});
-    ArrayDouble array = new ArrayDouble(shape, store);
+    Storage<Float> store = new ArrayFloat.StorageF(new float[] {1, 2, 3, 4, 5, 6});
+    ArrayFloat array = new ArrayFloat(shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -28,7 +28,7 @@ public class TestArrayDouble {
     assertThat(array.get(0, 1, 2)).isEqualTo(6);
 
     int count = 0;
-    for (double val : array) {
+    for (float val : array) {
       assertThat(val).isEqualTo(count + 1);
       count++;
     }
@@ -48,37 +48,37 @@ public class TestArrayDouble {
       assertThat(e).isInstanceOf(IllegalArgumentException.class);
     }
 
-    double[] result = new double[3];
+    float[] result = new float[3];
     array.arraycopy(1, result, 0, 3);
-    assertThat(result).isEqualTo(new double[] {2, 3, 4});
+    assertThat(result).isEqualTo(new float[] {2, 3, 4});
   }
 
   @Test
   public void testNonCanonicalOrder() {
     int[] shape = new int[] {1, 2, 3};
-    Storage<Double> store = new ArrayDouble.StorageD(new double[] {1, 2, 3, 4, 5, 6});
-    Array<Double> array = new ArrayDouble(shape, store);
+    Storage<Float> store = new ArrayFloat.StorageF(new float[] {1, 2, 3, 4, 5, 6});
+    Array<Float> array = new ArrayFloat(shape, store);
     array = Arrays.flip(array, 1);
-    double[] expected = new double[] {4, 5, 6, 1, 2, 3};
+    float[] expected = new float[] {4, 5, 6, 1, 2, 3};
     int count = 0;
-    for (double val : array) {
+    for (float val : array) {
       assertThat(val).isEqualTo(expected[count]);
       count++;
     }
 
-    double[] result = new double[3];
+    float[] result = new float[3];
     array.arraycopy(1, result, 0, 3);
-    assertThat(result).isEqualTo(new double[] {5, 6, 1});
+    assertThat(result).isEqualTo(new float[] {5, 6, 1});
   }
 
   @Test
   public void testFactoryCopy() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Double> array1 = Arrays.factory(DataType.DOUBLE, shape1, new double[] {1, 2, 3, 4, 5, 6});
-    Array<Double> array2 = Arrays.factory(DataType.DOUBLE, shape1, new double[] {7, 8, 9, 10, 11, 12});
+    Array<Float> array1 = Arrays.factory(DataType.FLOAT, shape1, new float[] {1, 2, 3, 4, 5, 6});
+    Array<Float> array2 = Arrays.factory(DataType.FLOAT, shape1, new float[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Double> array = Arrays.factoryCopy(DataType.DOUBLE, shape, ImmutableList.of(array1, array2));
+    Array<Float> array = Arrays.factoryCopy(DataType.FLOAT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -94,7 +94,7 @@ public class TestArrayDouble {
     assertThat(array.get(1, 1, 2)).isEqualTo(12);
 
     int count = 0;
-    for (double val : array) {
+    for (float val : array) {
       assertThat(val).isEqualTo(count + 1);
       count++;
     }
@@ -103,11 +103,11 @@ public class TestArrayDouble {
   @Test
   public void testFactoryArrays() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Double> array1 = Arrays.factory(DataType.DOUBLE, shape1, new double[] {1, 2, 3, 4, 5, 6});
-    Array<Double> array2 = Arrays.factory(DataType.DOUBLE, shape1, new double[] {7, 8, 9, 10, 11, 12});
+    Array<Float> array1 = Arrays.factory(DataType.FLOAT, shape1, new float[] {1, 2, 3, 4, 5, 6});
+    Array<Float> array2 = Arrays.factory(DataType.FLOAT, shape1, new float[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Double> array = Arrays.factoryArrays(DataType.DOUBLE, shape, ImmutableList.of(array1, array2));
+    Array<Float> array = Arrays.factoryArrays(DataType.FLOAT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -123,7 +123,7 @@ public class TestArrayDouble {
     assertThat(array.get(1, 1, 2)).isEqualTo(12);
 
     int count = 0;
-    for (double val : array) {
+    for (float val : array) {
       assertThat(val).isEqualTo(count + 1);
       count++;
     }
@@ -142,9 +142,9 @@ public class TestArrayDouble {
       assertThat(e).isInstanceOf(IllegalArgumentException.class);
     }
 
-    double[] result = new double[5];
+    float[] result = new float[5];
     array.arraycopy(4, result, 0, 5);
-    assertThat(result).isEqualTo(new double[] {5, 6, 7, 8, 9});
+    assertThat(result).isEqualTo(new float[] {5, 6, 7, 8, 9});
   }
 
 }

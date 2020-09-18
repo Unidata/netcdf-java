@@ -25,22 +25,6 @@ public class Index {
   }
 
   /**
-   * Set the current element's index.
-   *
-   * @param index set current value to these values
-   * @return this, so you can use A.get(i.set(i))
-   * @throws ArrayIndexOutOfBoundsException if index.length != rank.
-   */
-  public Index set(int[] index) {
-    if (index.length > current.length)
-      throw new ArrayIndexOutOfBoundsException();
-    if (current.length == 0)
-      return this;
-    System.arraycopy(index, 0, current, 0, index.length);
-    return this;
-  }
-
-  /**
    * set current element at dimension dim to v
    *
    * @param dim set this dimension
@@ -94,66 +78,18 @@ public class Index {
     return this;
   }
 
-  /** set current element at dimension 0 to v0 */
-  public Index set(int v0) {
-    setDim(0, v0);
-    return this;
-  }
-
-  /** set current element at dimension 0,1 to v0,v1 */
-  public Index set(int v0, int v1) {
-    setDim(0, v0);
-    setDim(1, v1);
-    return this;
-  }
-
-  /** set current element at dimension 0,1,2 to v0,v1,v2 */
-  public Index set(int v0, int v1, int v2) {
-    setDim(0, v0);
-    setDim(1, v1);
-    setDim(2, v2);
-    return this;
-  }
-
-  /** set current element at dimension 0,1,2,3 to v0,v1,v2,v3 */
-  public Index set(int v0, int v1, int v2, int v3) {
-    setDim(0, v0);
-    setDim(1, v1);
-    setDim(2, v2);
-    setDim(3, v3);
-    return this;
-  }
-
-  /** set current element at dimension 0,1,2,3,4 to v0,v1,v2,v3,v4 */
-  public Index set(int v0, int v1, int v2, int v3, int v4) {
-    setDim(0, v0);
-    setDim(1, v1);
-    setDim(2, v2);
-    setDim(3, v3);
-    setDim(4, v4);
-    return this;
-  }
-
-  /** set current element at dimension 0,1,2,3,4,5 to v0,v1,v2,v3,v4,v5 */
-  public Index set(int v0, int v1, int v2, int v3, int v4, int v5) {
-    setDim(0, v0);
-    setDim(1, v1);
-    setDim(2, v2);
-    setDim(3, v3);
-    setDim(4, v4);
-    setDim(5, v5);
-    return this;
-  }
-
-  /** set current element at dimension 0,1,2,3,4,5,6 to v0,v1,v2,v3,v4,v5,v6 */
-  public Index set(int v0, int v1, int v2, int v3, int v4, int v5, int v6) {
-    setDim(0, v0);
-    setDim(1, v1);
-    setDim(2, v2);
-    setDim(3, v3);
-    setDim(4, v4);
-    setDim(5, v5);
-    setDim(6, v6);
+  /**
+   * Set the current element's index.
+   *
+   * @param index set current value to these values, number of values must be equal to the rank.
+   * @throws ArrayIndexOutOfBoundsException if index.length != rank.
+   */
+  public Index set(int... index) {
+    if (index.length != current.length)
+      throw new ArrayIndexOutOfBoundsException();
+    if (current.length == 0)
+      return this;
+    System.arraycopy(index, 0, current, 0, index.length);
     return this;
   }
 
