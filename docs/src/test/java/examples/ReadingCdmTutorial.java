@@ -240,7 +240,7 @@ public class ReadingCdmTutorial {
    * @throws IOException
    */
   public static double indexIterator(Variable v) throws IOException, InvalidRangeException {
-    Array data = v.read("0:-1:5,0:-1:5,0:-1:5");
+    Array data = v.read();
     double sum = 0.0;
 
     IndexIterator ii = data.getIndexIterator();
