@@ -206,7 +206,6 @@ public class RuntimeConfigParser {
             Method method = bufrTablesClass.getMethod("addLookupFile", params);
             Object[] args = new Object[1];
             args[0] = filename;
-            // TODO this only loads the table, we should open it so that it fails if not present
             method.invoke(null, args); // static method has null for object
             errlog.format("BufrTables.addLookupFile() added %s%n", filename);
 
