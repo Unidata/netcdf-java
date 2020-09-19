@@ -74,11 +74,11 @@ public class TestH5eos {
     try (NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5")) {
       Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data_Fields/Elevation_Angle");
       assertThat(v).isNotNull();
-      assertThat(v.getRank()).isEqualTo(4);
-      assertThat(v.getDimension(0).getShortName()).isEqualTo("MaF");
-      assertThat(v.getDimension(1).getShortName()).isEqualTo("MiF");
-      assertThat(v.getDimension(2).getShortName()).isEqualTo("CR");
-      assertThat(v.getDimension(3).getShortName()).isEqualTo("CC");
+      assertThat( v.getRank()).isEqualTo(4);
+      assertThat( v.getDimension(0).getShortName()).isEqualTo("MaF");
+      assertThat( v.getDimension(1).getShortName()).isEqualTo("MiF");
+      assertThat( v.getDimension(2).getShortName()).isEqualTo("CR");
+      assertThat( v.getDimension(3).getShortName()).isEqualTo("CC");
     }
   }
 
