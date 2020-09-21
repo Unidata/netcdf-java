@@ -22,7 +22,8 @@ public class TestStructureMembers {
     builder.setName("name");
     builder.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
     MemberBuilder mbuilder = StructureMembers.memberBuilder();
-    mbuilder.setName("mname2").setDesc( "mdesc2").setUnits("munits2").setDataType(DataType.UBYTE).setShape(new int[] {7, 11});
+    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setDataType(DataType.UBYTE)
+        .setShape(new int[] {7, 11});
     builder.addMember(mbuilder);
     MemberBuilder mbuilder3 = StructureMembers.memberBuilder();
     mbuilder3.setName("mname3").setDataType(DataType.SHORT);
@@ -73,7 +74,8 @@ public class TestStructureMembers {
     }
 
     assertThat(sm.getStructureSize()).isEqualTo(200);
-    assertThat(sm.toString()).isEqualTo("StructureMembers{name=name, members=[mname1, mname3, mname2], structureSize=200}");
+    assertThat(sm.toString())
+        .isEqualTo("StructureMembers{name=name, members=[mname1, mname3, mname2], structureSize=200}");
     assertThat(sm.toBuilder().build()).isEqualTo(sm);
   }
 
@@ -81,17 +83,19 @@ public class TestStructureMembers {
   public void testNestedStructureMembers() {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("nested");
-    builder.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[]{11, 11});
+    builder.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
     MemberBuilder mbuilder = StructureMembers.memberBuilder();
-    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setDataType(DataType.UBYTE).setShape(new int[]{7, 11});
+    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setDataType(DataType.UBYTE)
+        .setShape(new int[] {7, 11});
     builder.addMember(mbuilder);
     StructureMembers nested = builder.build();
 
     builder = StructureMembers.builder();
     builder.setName("top");
-    builder.addMember("nname1", "ndesc1", "nunits1", DataType.DOUBLE, new int[]{11});
-    builder.addMember("nname2", "ndesc2", "nunits2", DataType.INT, new int[]{3,3,3});
-    MemberBuilder nbuilder = StructureMembers.memberBuilder().setName("struct").setStructureMembers(nested).setDataType(DataType.STRUCTURE);
+    builder.addMember("nname1", "ndesc1", "nunits1", DataType.DOUBLE, new int[] {11});
+    builder.addMember("nname2", "ndesc2", "nunits2", DataType.INT, new int[] {3, 3, 3});
+    MemberBuilder nbuilder =
+        StructureMembers.memberBuilder().setName("struct").setStructureMembers(nested).setDataType(DataType.STRUCTURE);
     builder.addMember(nbuilder);
 
     StructureMembers sm = builder.build();

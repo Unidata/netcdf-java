@@ -72,9 +72,8 @@ public final class StructureMembers {
       return false;
     }
     StructureMembers that = (StructureMembers) o;
-    return structureSize == that.structureSize &&
-        Objects.equal(name, that.name) &&
-        Objects.equal(members, that.members);
+    return structureSize == that.structureSize && Objects.equal(name, that.name)
+        && Objects.equal(members, that.members);
   }
 
   @Override
@@ -201,15 +200,9 @@ public final class StructureMembers {
         return false;
       }
       Member member = (Member) o;
-      return index == member.index &&
-          size == member.size &&
-          isVariableLength == member.isVariableLength &&
-          Objects.equal(name, member.name) &&
-          Objects.equal(desc, member.desc) &&
-          Objects.equal(units, member.units) &&
-          dtype == member.dtype &&
-          Objects.equal(shape, member.shape) &&
-          Objects.equal(members, member.members);
+      return index == member.index && size == member.size && isVariableLength == member.isVariableLength
+          && Objects.equal(name, member.name) && Objects.equal(desc, member.desc) && Objects.equal(units, member.units)
+          && dtype == member.dtype && Objects.equal(shape, member.shape) && Objects.equal(members, member.members);
     }
 
     @Override
