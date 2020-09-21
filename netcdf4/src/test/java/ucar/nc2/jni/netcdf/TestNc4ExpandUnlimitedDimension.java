@@ -5,17 +5,16 @@
 
 package ucar.nc2.jni.netcdf;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -31,7 +30,6 @@ import ucar.nc2.write.NetcdfFormatWriter;
 
 /** Test writing multiple unlimited dimensions to netcdf4. */
 public class TestNc4ExpandUnlimitedDimension {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -127,6 +125,7 @@ public class TestNc4ExpandUnlimitedDimension {
 
     try (NetcdfFile ncFile = NetcdfFiles.open(outFile.getAbsolutePath())) {
       Variable v = ncFile.getRootGroup().findVariableLocal("table");
+      assertThat(v).isNotNull();
       Array actualVals = v.read();
 
       int fill = -2147483647; // See EnhanceScaleMissingImpl.NC_FILL_INT

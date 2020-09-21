@@ -5,7 +5,10 @@
 package ucar.nc2.write;
 
 import com.google.common.base.Preconditions;
+import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
 import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
@@ -15,9 +18,8 @@ import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
-import ucar.nc2.Dimensions;
-import ucar.nc2.EnumTypedef;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
@@ -26,19 +28,18 @@ import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
 
 /**
- * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
+ * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 file.
  * This handles the entire CDM model (groups, etc) if you are writing to netcdf-4.
  * If copying from an extended model to classic model, Strings are converted to Chars; nested groups are not allowed.
  * <p/>
  * The fileIn may be an NcML file which has a referenced dataset in the location URL, the underlying data (modified by
  * the NcML) is written to the new file. If the NcML does not have a referenced dataset, then the new file is filled
- * with
- * fill values, like ncgen.
+ * with fill values, like ncgen.
  * <p/>
  * Use Nccopy for a command line interface.
  * Use NetcdfFormatWriter object for a lower level API.
  */
-public class NetcdfCopier {
+public class NetcdfCopier implements Closeable {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCopier.class);
   private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
   private static boolean debug, debugWrite;
@@ -74,163 +75,107 @@ public class NetcdfCopier {
     return writerb.getFormat();
   }
 
-  /*
-   * /////////////////////////////////////////////////////////////////////////////////////////////
-   * // might be better to push these next up into NetcdfCFWriter, but we want to use copyVarData
-   *
-   * Specify which variable will get written
-   *
-   * @param oldVar add this variable, and all parent groups
-   * 
-   * @return new Variable.
-   *
-   * public Variable addVariable(Variable oldVar) {
-   * List<Dimension> newDims = getNewDimensions(oldVar);
-   * 
-   * Variable newVar;
-   * if ((oldVar.getDataType() == DataType.STRING) && (!getFormat().isExtendedModel())) {
-   * newVar = ncwriter.addStringVariable(null, oldVar, newDims);
-   * } else {
-   * newVar = ncwriter.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
-   * }
-   * varMap.put(oldVar, newVar);
-   * varList.add(oldVar);
-   * 
-   * for (Attribute orgAtt : oldVar.attributes())
-   * ncwriter.addVariableAttribute(newVar, convertAttribute(orgAtt));
-   * 
-   * return newVar;
-   * }
-   * 
-   * private List<Dimension> getNewDimensions(Variable oldVar) {
-   * List<Dimension> result = new ArrayList<>(oldVar.getRank());
-   * 
-   * // dimensions
-   * for (Dimension oldD : oldVar.getDimensions()) {
-   * Dimension newD = gdimHash.get(oldD.getShortName());
-   * if (newD == null) {
-   * newD = ncwriter.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-   * oldD.isUnlimited(), oldD.isVariableLength());
-   * gdimHash.put(oldD.getShortName(), newD);
-   * if (debug)
-   * System.out.println("add dim= " + newD);
-   * }
-   * result.add(newD);
-   * }
-   * return result;
-   * }
-   */
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-
   /**
    * Write the input file to the output file.
    *
    * @param cancel allow user to cancel; may be null.
-   * @return the open output file. User must close it.
    */
-  public NetcdfFile write(@Nullable CancelTask cancel) throws IOException {
+  public void write(@Nullable CancelTask cancel) throws IOException {
     if (cancel == null) {
       cancel = CancelTask.create();
     }
 
-    Group.Builder root = copyGroup(fileIn.getRootGroup(), null);
+    Group.Builder root = fileIn.getRootGroup().toBuilder();
+    convertGroup(root);
     writerb.setRootGroup(root);
 
     if (cancel.isCancel()) {
-      return null;
+      return;
     }
 
     // create and write to the file
     try (NetcdfFormatWriter ncwriter = writerb.build()) {
       if (cancel.isCancel()) {
-        return null;
+        return;
       }
 
       Count counter = new Count();
       copyVariableData(ncwriter, fileIn.getRootGroup(), ncwriter.getOutputFile().getRootGroup(), counter, cancel);
       if (cancel.isCancel()) {
-        return null;
+        return;
       }
 
       ncwriter.flush();
       System.out.format("FileCopier done: total bytes written = %d, number of variables = %d%n", counter.bytes,
           counter.countVars);
-
-      return ncwriter.getOutputFile();
     }
   }
 
-  private Group.Builder copyGroup(Group oldGroup, Group.Builder parent) throws IOException {
-    Group.Builder newGroup = Group.builder().setParentGroup(parent).setName(oldGroup.getShortName());
-    if (debug) {
-      System.out.println("add group= " + oldGroup.getShortName());
+  private Attribute convertAttribute(Attribute org) {
+    if (extended) {
+      return org;
+    }
+    if (org.isString() && org.getLength() > 1) {
+      Formatter f = new Formatter();
+      for (int count = 0; count < org.getLength(); count++) {
+        if (count > 0) {
+          f.format(", ");
+        }
+        f.format("%s", org.getStringValue(count));
+      }
+      return Attribute.builder().setName(org.getShortName()).setStringValue(f.toString()).build();
     }
 
-    // attributes
-    for (Attribute att : oldGroup.attributes()) {
-      newGroup.addAttribute(convertAttribute(att));
-      if (debug) {
-        System.out.println("add groupAtt= " + att);
-      }
+    if (!org.getDataType().isUnsigned()) {
+      return org;
     }
 
-    // typedefs
-    for (EnumTypedef td : oldGroup.getEnumTypedefs()) {
-      newGroup.addEnumTypedef(td); // td are immutable
-      if (debug) {
-        System.out.println("add typedef= " + td);
-      }
-    }
-
-    // dimensions
-    for (Dimension oldD : oldGroup.getDimensions()) {
-      Dimension newDim;
-      if (oldD.isUnlimited()) {
-        newDim = new UnlimitedDimension(oldD.getShortName(), 0);
-      } else {
-        newDim = Dimension.builder().setName(oldD.getShortName()).setIsShared(oldD.isShared())
-            .setIsVariableLength(oldD.isVariableLength()).setLength(oldD.getLength()).build();
-      }
-      newGroup.addDimension(newDim);
-      if (debug) {
-        System.out.println("add dim= " + newDim);
-      }
-    }
-
-    // Variables
-    for (Variable oldVar : oldGroup.getVariables()) {
-      Variable.Builder newVar = copyVariable(newGroup, oldVar);
-      if (debug) {
-        System.out.println("add var= " + oldVar.getShortName());
-      }
-      newGroup.addVariable(newVar);
-    }
-
-    // nested groups
-    for (Group nested : oldGroup.getGroups()) {
-      newGroup.addGroup(copyGroup(nested, newGroup));
-    }
-    return newGroup;
+    Array orgValues = org.getValues();
+    Array nc3Values = Array.makeFromJavaArray(orgValues.getStorage(), false);
+    return Attribute.builder().setName(org.getShortName()).setValues(nc3Values).build();
   }
 
-  private Variable.Builder copyVariable(Group.Builder parent, Variable oldVar) throws IOException {
-    Variable.Builder vb;
-    DataType newType = oldVar.getDataType();
-    String dimNames = Dimensions.makeDimensionsString(oldVar.getDimensions());
+  private void convertAttributes(AttributeContainerMutable atts) {
+    ArrayList<Attribute> newAtts = new ArrayList<>();
+    for (Attribute att : atts) {
+      newAtts.add(convertAttribute(att));
+    }
+    atts.clear().addAll(newAtts);
+  }
 
-    if (newType == DataType.STRUCTURE) {
-      Structure oldStruct = (Structure) oldVar;
-      Structure.Builder sb = Structure.builder().setName(oldVar.getShortName());
-      for (Variable nested : oldStruct.getVariables()) {
-        sb.addMemberVariable(copyVariable(parent, nested));
+  private void convertGroup(Group.Builder group) throws IOException {
+    convertAttributes(group.getAttributeContainer());
+
+    for (Variable.Builder<?> var : group.vbuilders) {
+      convertVariable(group, var);
+    }
+
+    for (Group.Builder nested : group.gbuilders) {
+      if (!extended) {
+        throw new RuntimeException("Cant write nested groups to classic netcdf");
       }
-      vb = sb;
+      convertGroup(nested);
+    }
+  }
+
+  private void convertVariable(Group.Builder parent, Variable.Builder<?> vb) throws IOException {
+    // decouple from input
+    vb.setSPobject(null);
+    vb.setProxyReader(null);
+    vb.resetCache();
+    vb.resetAutoGen();
+
+    convertAttributes(vb.getAttributeContainer());
+
+    if (vb.dataType == DataType.STRUCTURE) {
+      Structure.Builder<?> sb = (Structure.Builder<?>) vb;
+      for (Variable.Builder<?> nested : sb.vbuilders) {
+        convertVariable(parent, nested);
+      }
     } else {
-      vb = Variable.builder().setName(oldVar.getShortName()).setDataType(newType);
-      if (!extended && newType == DataType.STRING) {
+      if (!extended && vb.dataType == DataType.STRING) {
         // find maximum length
-        Array data = oldVar.read();
+        Array data = readDataFromOriginal(vb);
         IndexIterator ii = data.getIndexIterator();
         int max_len = 0;
         while (ii.hasNext()) {
@@ -239,40 +184,41 @@ public class NetcdfCopier {
         }
 
         // add last dimension
-        String strlenDimName = oldVar.getShortName() + "_strlen";
-        parent.addDimension(Dimension.builder(strlenDimName, max_len).setIsShared(false).build());
-
-        newType = DataType.CHAR;
+        String strlenDimName = vb.shortName + "_strlen";
+        Dimension strlenDim = Dimension.builder(strlenDimName, max_len).setIsShared(false).build();
+        parent.addDimension(strlenDim);
+        vb.addDimension(strlenDim);
         vb.setDataType(DataType.CHAR);
-        dimNames += " " + strlenDimName;
-      }
-    }
-    vb.setParentGroupBuilder(parent).setDimensionsByName(dimNames);
-
-    if (newType.isEnum()) {
-      EnumTypedef en = oldVar.getEnumTypedef();
-      vb.setEnumTypeName(en.getShortName());
-    }
-
-    // attributes
-    for (Attribute att : oldVar.attributes()) {
-      vb.addAttribute(convertAttribute(att));
-      if (debug) {
-        System.out.println("add varAtt= " + att);
       }
     }
 
-    return vb;
+    // classic model does not support unshared dimensions. LOOK neither does netcdf4 ??
+    if (!extended) {
+      int count = 0;
+      for (Dimension dim : vb.getDimensions()) {
+        if (!dim.isShared()) {
+          String dimName = vb.shortName + "_Dim" + count; // LOOK could turn these back into unshared dimensions when
+                                                          // reading.
+          Dimension sharedDim = Dimension.builder(dimName, dim.getLength()).setIsShared(false).build();
+          parent.addDimension(sharedDim);
+          vb.replaceDimension(count, sharedDim);
+        }
+        count++;
+      }
+    }
   }
 
-  // LOOK munge attribute if needed
-  private Attribute convertAttribute(Attribute org) {
-    if (extended || !org.getDataType().isUnsigned()) {
-      return org;
+  private Array readDataFromOriginal(Variable.Builder<?> vb) throws IOException {
+    Variable v = fileIn.findVariable(vb.getFullName());
+    if (v == null) {
+      throw new RuntimeException("Cant find variable" + vb.getFullName());
     }
-    Array orgValues = org.getValues();
-    Array nc3Values = Array.makeFromJavaArray(orgValues.getStorage(), false);
-    return Attribute.fromArray(org.getShortName(), nc3Values);
+    return v.read();
+  }
+
+  @Override
+  public void close() throws IOException {
+
   }
 
   private static class Count {

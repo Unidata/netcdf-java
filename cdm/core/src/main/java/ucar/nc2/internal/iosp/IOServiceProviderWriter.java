@@ -21,8 +21,8 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * Create new file, populate it from the objects in ncfileb.
    *
    * @param filename name of file to create.
-   * @param ncfileb has the metadata of the file to be created
-   * @param extra if > 0, pad header with extra bytes
+   * @param ncfileb has the metadata of the file to be created when this method is entered.
+   * @param extra if > 0, pad header with extra bytes (netcdf3 only).
    * @param preallocateSize if > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous
    *        storage.
    * @param largeFile if want large file format
@@ -32,11 +32,12 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
       boolean largeFile) throws IOException;
 
   /**
-   * Open existing file and allow writing. Netcdf-4 writing is general. Netcdf-3 writing is restricted to writing data
-   * into existing variables.
+   * Open existing file, and populate rootGroup. Allow user to modify the rootGroup (which is why its a Builder).
+   * Netcdf-3 writing is restricted to writing data into existing variables, including extending the record dimension.
+   * Netcdf-4 writing is general, can change and delete metadata etc.
    *
    * @param raf the file to work on.
-   * @param ncfileb has the metadata of the file to be written to.
+   * @param ncfileb has the metadata of the existing file when this method returns. User can modify if its netcdf4.
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if I/O error
    */
@@ -83,6 +84,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
 
 
   /**
+   * TODO review this
    * if theres room before data, rewrite header without moving the data. netcdf3 only
    * 
    * @return true if it worked
@@ -90,6 +92,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
   boolean rewriteHeader(boolean largeFile) throws IOException;
 
   /**
+   * TODO review this
    * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
    * You cannot make an attribute longer, or change the number of values.
    * For strings: truncate if longer, zero fill if shorter. Strings are padded to 4 byte boundaries, ok to use padding
@@ -101,9 +104,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    */
   void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException;
 
-  /**
-   * Flush all data buffers to disk.
-   */
+  /** Flush all data buffers to disk. */
   void flush() throws IOException;
 
 }

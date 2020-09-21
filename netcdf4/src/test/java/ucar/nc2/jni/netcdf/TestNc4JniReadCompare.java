@@ -12,32 +12,21 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.io.RandomAccessFile;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Compare reading through jni with native java reading
- *
- * @author caron
- * @since 10/22/13
- */
+/** Compare reading netcdf through jni with native java reading */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestNc4JniReadCompare {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Before
   public void setLibrary() {
@@ -49,7 +38,7 @@ public class TestNc4JniReadCompare {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
-    FileFilter ff = TestDir.FileFilterSkipSuffix("cdl ncml");
+    FileFilter ff = TestDir.FileFilterSkipSuffix("cdl ncml IntTimSciSamp.nc");
     List<Object[]> result = new ArrayList<Object[]>(500);
     try {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);
@@ -74,15 +63,13 @@ public class TestNc4JniReadCompare {
 
   @Test
   public void compareDatasets() throws IOException {
-
-    try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfFile jni = openJni(filename)) {
-      jni.setLocation(filename + " (jni)");
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfFile jni = TestNc4reader.openJni(filename)) {
       System.err.println("Test input: " + ncfile.getLocation());
       System.err.println("Baseline: " + jni.getLocation());
       System.err.flush();
 
       Formatter f = new Formatter();
-      CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, false);
+      CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
       boolean ok = mind.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter());
       if (!ok) {
         fail++;
@@ -94,14 +81,6 @@ public class TestNc4JniReadCompare {
       }
       Assert.assertTrue(filename, ok);
     }
-  }
-
-  private NetcdfFile openJni(String location) throws IOException {
-    Nc4Iosp iosp = new Nc4Iosp();
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
-    RandomAccessFile raf = new RandomAccessFile(location, "r");
-    iosp.open(raf, ncfile, null);
-    return ncfile;
   }
 
 }

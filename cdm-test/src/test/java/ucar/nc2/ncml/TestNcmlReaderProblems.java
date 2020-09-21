@@ -87,7 +87,7 @@ public class TestNcmlReaderProblems {
 
   public static class CoordsObjFilter implements ObjFilter {
     @Override
-    public boolean attCheckOk(Variable v, Attribute att) {
+    public boolean attCheckOk(Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder) && !att.getShortName().equals(CDM.NCPROPERTIES);
     }
 

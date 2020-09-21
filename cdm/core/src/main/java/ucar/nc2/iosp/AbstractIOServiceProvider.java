@@ -51,10 +51,10 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   // That argues for open() changing to a builder.
   protected NetcdfFile ncfile;
 
-  // TODO this is misused, probably should be in a constructor?
+  // TODO this is misused, should be in a constructor?
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
-    this.location = (raf != null) ? raf.getLocation() : null;
+    this.location = (raf != null) ? raf.getLocation() : ncfile != null ? ncfile.getLocation() : null;
     this.ncfile = ncfile; // LOOK do we need this? why ?
   }
 

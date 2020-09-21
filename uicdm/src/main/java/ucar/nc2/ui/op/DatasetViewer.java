@@ -174,12 +174,12 @@ public class DatasetViewer extends JPanel {
       NetcdfFormatWriter.Builder builder =
           NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format).setLocation(data.outputFilename)
               .setChunker(Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
-      NetcdfCopier copier = NetcdfCopier.create(ds, builder);
 
-      // write() return the open file that was just written, so we just need to close it.
-      try (NetcdfFile result = copier.write(null)) {
+      try (NetcdfCopier copier = NetcdfCopier.create(ds, builder)) {
+        copier.write(null);
+        JOptionPane.showMessageDialog(this, "File successfully written");
       }
-      JOptionPane.showMessageDialog(this, "File successfully written");
+
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
       ioe.printStackTrace();
@@ -256,7 +256,7 @@ public class DatasetViewer extends JPanel {
 
   public static class CoordsObjFilter implements ObjFilter {
     @Override
-    public boolean attCheckOk(Variable v, Attribute att) {
+    public boolean attCheckOk(Attribute att) {
       return !att.getShortName().equals(_Coordinate._CoordSysBuilder);
     }
   }

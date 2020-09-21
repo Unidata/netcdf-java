@@ -485,7 +485,7 @@ public class Group {
     private NetcdfFile ncfile; // set by NetcdfFile.build()
     private final AttributeContainerMutable attributes = new AttributeContainerMutable("");
     private final List<Dimension> dimensions = new ArrayList<>();
-    private final List<EnumTypedef> enumTypedefs = new ArrayList<>();
+    public final List<EnumTypedef> enumTypedefs = new ArrayList<>();
     private boolean built;
 
     public Builder setParentGroup(@Nullable Group.Builder parentGroup) {
@@ -587,8 +587,9 @@ public class Group {
       return Optional.empty();
     }
 
+    // Unmodifiable iterator
     public Iterable<Dimension> getDimensions() {
-      return dimensions;
+      return ImmutableList.copyOf(dimensions);
     }
 
     /** Add a nested Group. */

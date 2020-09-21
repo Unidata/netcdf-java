@@ -9,20 +9,13 @@ import ucar.ma2.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import java.util.List;
+import ucar.nc2.Variable.Builder;
 
-/**
- * Default chunking strategy.
- *
- * @author caron
- * @since 5/10/14
- */
+/** Default chunking strategy. */
 public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
-
   private static final int DEFAULT_CHUNKSIZE_BYTES = (int) Math.pow(2, 18); // 256K
   private static final int MIN_VARIABLE_BYTES = (int) Math.pow(2, 16); // 65K
   private static final int MIN_CHUNKSIZE_BYTES = (int) Math.pow(2, 13); // 8K
-
-  ////////////////////////////////////////////////////
 
   private int defaultChunkSize = DEFAULT_CHUNKSIZE_BYTES;
   private int minVariableSize = MIN_VARIABLE_BYTES;
@@ -64,14 +57,22 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
   public boolean isChunked(Variable v) {
     if (v.isUnlimited())
       return true;
-    // if (getChunkAttribute(v) != null) return true;
 
     long size = v.getSize() * v.getElementSize();
     return (size > minVariableSize);
   }
 
   @Override
-  public long[] computeChunking(Variable v) {
+  public boolean isChunked(Builder<?> vb) {
+    if (vb.isUnlimited())
+      return true;
+
+    long size = vb.getSize() * vb.getElementSize();
+    return (size > minVariableSize);
+  }
+
+  @Override
+  public long[] computeChunking(Variable.Builder<?> vb) {
     /*
      * check attribute
      * int[] resultFromAtt = computeChunkingFromAttribute(v);
@@ -79,16 +80,16 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
      * return convertToLong(resultFromAtt);
      */
 
-    int maxElements = defaultChunkSize / v.getElementSize();
+    int maxElements = defaultChunkSize / vb.getElementSize();
 
     // no unlimited dimensions
-    if (!v.isUnlimited()) {
-      int[] result = fillRightmost(v.getShape(), maxElements);
+    if (!vb.isUnlimited()) {
+      int[] result = fillRightmost(vb.getShape(), maxElements);
       return convertToLong(result);
     }
 
     // unlimited case
-    int[] result = computeUnlimitedChunking(v.getDimensions(), v.getElementSize());
+    int[] result = computeUnlimitedChunking(vb.getDimensions(), vb.getElementSize());
     return convertToLong(result);
   }
 
