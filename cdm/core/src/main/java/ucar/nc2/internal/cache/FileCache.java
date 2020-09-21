@@ -317,16 +317,17 @@ public class FileCache implements FileCacheIF {
     }
 
     if (needHard) {
-      if (debugCleanup)
-        System.out.println("CleanupTask due to hard limit time=" + new Date().getTime()); // +"
-                                                                                          // Thread="+Thread.currentThread().hashCode()
+      if (debugCleanup) {
+        System.out.println("CleanupTask due to hard limit time=" + CalendarDate.present());
+      }
       cleanup(hardLimit);
 
     } else if (needSoft) {
       schedule(new CleanupTask(), 100); // immediate cleanup in 100 msec
 
-      if (debugCleanup)
-        System.out.println("CleanupTask scheduled due to soft limit time=" + new Date());
+      if (debugCleanup) {
+        System.out.println("CleanupTask scheduled due to soft limit time=" + CalendarDate.present());
+      }
     }
 
     return ncfile;

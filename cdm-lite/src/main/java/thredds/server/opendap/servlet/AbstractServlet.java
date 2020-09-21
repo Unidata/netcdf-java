@@ -15,7 +15,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -33,6 +32,7 @@ import thredds.server.opendap.servers.CEEvaluator;
 import thredds.server.opendap.servers.ServerDDS;
 import org.springframework.beans.factory.annotation.Autowired;
 import ucar.nc2.internal.util.EscapeStrings;
+import ucar.nc2.time.CalendarDate;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP servers.
@@ -983,7 +983,7 @@ public abstract class AbstractServlet extends HttpServlet {
     pw.println("<title>System Properties</title>");
     pw.println("<hr>");
     pw.println("<body><h2>System Properties</h2>");
-    pw.println("<h3>Date: " + new Date() + "</h3>");
+    pw.println("<h3>Date: " + CalendarDate.present() + "</h3>");
 
     Properties sysp = System.getProperties();
     Enumeration e = sysp.propertyNames();

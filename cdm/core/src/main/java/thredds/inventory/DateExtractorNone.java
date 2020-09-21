@@ -7,13 +7,10 @@ package thredds.inventory;
 import ucar.nc2.time.CalendarDate;
 import java.util.Date;
 
-/**
- * Always returns null
- *
- * @author caron
- * @since Jan 15, 2010
- */
+/** Always returns null */
 public class DateExtractorNone implements DateExtractor {
+  /** @deprecated use getCalendarDate() */
+  @Deprecated
   public Date getDate(MFile mfile) {
     return null;
   }

@@ -12,10 +12,11 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.PointConfigXML;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class SimpleTrajectory extends TableConfigurerImpl {
   private static String elevVarName = "altitude";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    List list = ds.getRootGroup().getDimensions();
+    List<Dimension> list = ds.getRootGroup().getDimensions();
 
     // should have only one dimension
     if (list.size() != 1) {
@@ -45,54 +46,62 @@ public class SimpleTrajectory extends TableConfigurerImpl {
     }
 
     // dimension name should be "time"
-    Dimension d = (Dimension) list.get(0);
+    Dimension d = list.get(0);
     if (!d.getShortName().equals(timeDimName)) {
       return false;
     }
 
     // Check that have variable time(time) with units that are udunits time
-    Variable var = ds.getRootGroup().findVariableLocal(timeVarName);
-    if (var == null) {
+    Variable timeVar = ds.getRootGroup().findVariableLocal(timeVarName);
+    if (timeVar == null) {
       return false;
     }
-    list = var.getDimensions();
+    list = timeVar.getDimensions();
     if (list.size() != 1) {
       return false;
     }
-    d = (Dimension) list.get(0);
+    d = list.get(0);
     if (!d.getShortName().equals(timeDimName)) {
       return false;
     }
-    String units = var.findAttribute("units").getStringValue();
-    Date date = DateUnit.getStandardDate("0 " + units); // leave this as it doesnt throw an exception on failure
-    if (date == null) {
+    String units = timeVar.findAttributeString("units", "");
+    try {
+      CalendarDateUnit.withCalendar(null, units);
+    } catch (IllegalArgumentException e) {
       return false;
     }
+    /*
+     * was
+     * Date date = DateUnit.getStandardDate("0 " + units); // leave this as it doesnt throw an exception on failure
+     * if (date == null) {
+     * return false;
+     * }
+     */
 
     // Check for variable latitude(time) with units of "deg".
-    var = ds.getRootGroup().findVariableLocal(latVarName);
-    if (var == null) {
+    Variable latVar = ds.getRootGroup().findVariableLocal(latVarName);
+    if (latVar == null) {
       return false;
     }
-    list = var.getDimensions();
+    list = latVar.getDimensions();
     if (list.size() != 1) {
       return false;
     }
-    d = (Dimension) list.get(0);
+    d = list.get(0);
     if (!d.getShortName().equals(timeDimName)) {
       return false;
     }
-    units = var.findAttribute("units").getStringValue();
+    units = latVar.findAttribute("units").getStringValue();
     if (!SimpleUnit.isCompatible(units, "degrees_north")) {
       return false;
     }
 
     // Check for variable longitude(time) with units of "deg".
-    var = ds.getRootGroup().findVariableLocal(lonVarName);
-    if (var == null) {
+    Variable lonVar = ds.getRootGroup().findVariableLocal(lonVarName);
+    if (lonVar == null) {
       return false;
     }
-    list = var.getDimensions();
+    list = lonVar.getDimensions();
     if (list.size() != 1) {
       return false;
     }
@@ -100,18 +109,18 @@ public class SimpleTrajectory extends TableConfigurerImpl {
     if (!d.getShortName().equals(timeDimName)) {
       return false;
     }
-    units = var.findAttribute("units").getStringValue();
+    units = lonVar.findAttribute("units").getStringValue();
     if (!SimpleUnit.isCompatible(units, "degrees_east")) {
       return false;
     }
 
 
     // Check for variable altitude(time) with units of "m".
-    var = ds.getRootGroup().findVariableLocal(elevVarName);
-    if (var == null) {
+    Variable elevVar = ds.getRootGroup().findVariableLocal(elevVarName);
+    if (elevVar == null) {
       return false;
     }
-    list = var.getDimensions();
+    list = elevVar.getDimensions();
     if (list.size() != 1) {
       return false;
     }
@@ -119,9 +128,8 @@ public class SimpleTrajectory extends TableConfigurerImpl {
     if (!d.getShortName().equals(timeDimName)) {
       return false;
     }
-    units = var.findAttribute("units").getStringValue();
+    units = elevVar.findAttribute("units").getStringValue();
     return SimpleUnit.isCompatible(units, "meters");
-
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {

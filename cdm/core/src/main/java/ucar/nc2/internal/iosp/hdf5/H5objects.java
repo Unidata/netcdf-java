@@ -7,7 +7,6 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +16,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 /** The low-level HDF5 data objects. */
@@ -2022,7 +2022,7 @@ public class H5objects {
     }
 
     public String toString() {
-      return new Date((long) secs * 1000).toString();
+      return CalendarDate.of((long) secs * 1000).toString();
     }
 
     public String getName() {

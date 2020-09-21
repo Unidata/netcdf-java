@@ -311,10 +311,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       }
     }
 
-    Date now = new Date();
-    Date lastCheckedDate = new Date(getLastScanned());
-    Date need = recheck.add(lastCheckedDate);
-    if (now.before(need)) {
+    CalendarDate now = CalendarDate.present();
+    CalendarDate lastCheckedDate = CalendarDate.of(getLastScanned());
+    CalendarDate need = CalendarDate.of(recheck.add(lastCheckedDate.toDate())); // LOOK
+    if (now.isBefore(need)) {
       logger.debug("{}: scan not needed, last scanned={}, now={}", collectionName, lastCheckedDate, now);
       return false;
     }
@@ -404,8 +404,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     boolean changed = (nnew > 0) || (ndelete > 0) || (nchange > 0);
     if (changed) {
       if (logger.isInfoEnabled())
-        logger.info("{}: scan found changes {}: nnew={}, nchange={}, ndelete={}", collectionName, new Date(), nnew,
-            nchange, ndelete);
+        logger.info("{}: scan found changes {}: nnew={}, nchange={}, ndelete={}", collectionName,
+            CalendarDate.present(), nnew, nchange, ndelete);
 
       map = newMap;
       this.lastScanned = System.currentTimeMillis();

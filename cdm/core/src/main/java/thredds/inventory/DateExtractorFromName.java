@@ -10,8 +10,6 @@ import ucar.nc2.units.DateFromString;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-import thredds.inventory.DateExtractor;
-import thredds.inventory.MFile;
 
 /**
  * Extract Date from filename, using DateFromString.getDateUsingSimpleDateFormat on the name or path
@@ -35,6 +33,8 @@ public class DateExtractorFromName implements DateExtractor {
     this.useName = useName;
   }
 
+  /** @deprecated use getCalendarDate() */
+  @Deprecated
   @Override
   public Date getDate(MFile mfile) {
     if (useName)

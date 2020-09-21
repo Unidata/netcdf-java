@@ -16,7 +16,7 @@ import java.util.Calendar;
 /**
  * Handles Units that are time durations, eg in seconds, hours, days, years.
  * It keeps track of the original unit name, rather than converting to canonical "seconds".
- * The unit name never changes, but the value may.
+ * The unit name never changes, but the value may (will be Immutable in ver7)
  * <p>
  * This is a wrapper around ucar.units.
  * The underlying ucar.units.Unit always has a value of "1.0", ie is a base unit.
@@ -167,7 +167,7 @@ public class TimeUnit extends SimpleUnit {
    * 
    * @param d add to this Date
    * @return Date with getValueInSeconds() added to it.
-   * @deprecated use {@link ucar.nc2.time.CalendarDate#add(CalendarPeriod)}
+   * @deprecated use {@link ucar.nc2.time.CalendarDate#add(CalendarPeriod)}, will be removed in ver7.
    */
   @Deprecated
   public Date add(Date d) {

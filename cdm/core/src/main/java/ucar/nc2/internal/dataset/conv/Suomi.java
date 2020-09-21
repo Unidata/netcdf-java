@@ -6,9 +6,6 @@
 package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -18,6 +15,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 
@@ -63,13 +61,18 @@ public class Suomi extends CoordSystemBuilder {
     if (start_date == null)
       return;
 
-    SimpleDateFormat df = new SimpleDateFormat("yyyy.DDD.HH.mm.ss"); // "2006.105.00.00.00"
-    Date start;
-    try {
-      start = df.parse(start_date);
-    } catch (ParseException e) {
-      throw new RuntimeException("Cant read start_date=" + start_date);
-    }
+    CalendarDateFormatter formatter = new CalendarDateFormatter("yyyy.DDD.HH.mm.ss"); // "2006.105.00.00.00"
+    CalendarDate start = formatter.parse(start_date);
+    /*
+     * was
+     * SimpleDateFormat df = new SimpleDateFormat("yyyy.DDD.HH.mm.ss"); // "2006.105.00.00.00"
+     * Date start;
+     * try {
+     * start = df.parse(start_date);
+     * } catch (ParseException e) {
+     * throw new RuntimeException("Cant read start_date=" + start_date);
+     * }
+     */
 
     rootGroup.findVariableLocal("time_offset").ifPresent(v -> v
         .addAttribute(new Attribute(CDM.UNITS, "seconds since " + CalendarDateFormatter.toDateTimeString(start))));

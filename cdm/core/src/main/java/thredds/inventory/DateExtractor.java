@@ -15,6 +15,8 @@ import java.util.Date;
  * @since Jun 26, 2009
  */
 public interface DateExtractor {
+  /** @deprecated use getCalendarDate() */
+  @Deprecated
   Date getDate(MFile mfile); // deprecate
 
   CalendarDate getCalendarDate(MFile mfile);

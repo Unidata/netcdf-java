@@ -3,7 +3,6 @@ package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.List;
@@ -20,6 +19,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.internal.ncml.Aggregation.Type;
 import ucar.nc2.internal.ncml.AggregationOuter.CacheVar;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateFromString;
 import ucar.nc2.util.CancelTask;
@@ -29,7 +29,7 @@ class AggDatasetOuter extends AggDataset {
   private final AggregationOuter aggregationOuter;
   @Nullable
   final String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank seperated
-  final Date coordValueDate; // if its a date
+  final CalendarDate coordValueDate; // if its a date
   final boolean isStringValued; // if coordinat is a String
 
   // not final because of deffered read
@@ -123,7 +123,8 @@ class AggDatasetOuter extends AggDataset {
 
     if (null != aggregationOuter.dateFormatMark) {
       String filename = cd.getName(); // LOOK operates on name, not path
-      coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, aggregationOuter.dateFormatMark, '#');
+      coordValueDate =
+          CalendarDate.of(DateFromString.getDateUsingDemarkatedCount(filename, aggregationOuter.dateFormatMark, '#'));
       coordValueS = CalendarDateFormatter.toDateTimeStringISO(coordValueDate);
       if (Aggregation.debugDateParse)
         System.out.println("  adding " + cd.getPath() + " date= " + coordValueS);
@@ -149,12 +150,9 @@ class AggDatasetOuter extends AggDataset {
     return coordValue;
   }
 
-  /**
-   * Get the coordinate value as a Date for this Dataset; may be null
-   *
-   * @return the coordinate value as a Date, or null
-   */
-  public Date getCoordValueDate() {
+  /** Get the coordinate value as a CalendarDate for this Dataset; may be null */
+  @Nullable
+  public CalendarDate getCoordValueDate() {
     return coordValueDate;
   }
 

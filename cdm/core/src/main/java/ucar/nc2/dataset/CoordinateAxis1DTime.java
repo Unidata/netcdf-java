@@ -301,8 +301,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   /**
    * Does not handle non-standard Calendars
    * 
-   * @deprecated use getCalendarDates() to correctly interpret calendars
+   * @deprecated use getCalendarDates().
    */
+  @Deprecated
   public java.util.Date[] getTimeDates() {
     List<CalendarDate> cdates = getCalendarDates();
     Date[] timeDates = new Date[cdates.size()];

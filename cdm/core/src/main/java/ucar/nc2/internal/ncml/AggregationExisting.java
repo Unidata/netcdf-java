@@ -14,7 +14,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 
 /**
@@ -270,7 +270,7 @@ class AggregationExisting extends AggregationOuter {
 
       if (logger.isDebugEnabled()) {
         logger.debug("Aggregation persisted = " + cacheFile.getPath() + " lastModified= "
-            + new Date(datasetManager.getLastScanned()));
+            + CalendarDate.of(datasetManager.getLastScanned()));
       }
     }
   }

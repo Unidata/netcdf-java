@@ -14,8 +14,9 @@ import java.util.Date;
  * A RadialDataset in which the radials can be grouped into sweeps.
  * A sweep has the same gate geometry for all radials in the sweep, and has a RadialDatasetSweep.Type.
  *
- * @author yuan
+ * @deprecated do not use - will be replaced
  */
+@Deprecated
 public interface RadialDatasetSweep extends FeatureDataset {
   /**
    * @return radar id

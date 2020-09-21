@@ -211,25 +211,22 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     return (ncd != null) ? ncd.getLocation() : "";
   }
 
-  /**
-   * @deprecated use getCalendarDateRange
-   */
+  /** @deprecated use getCalendarDateRange */
+  @Deprecated
   public DateRange getDateRange() {
     CalendarDateRange cdr = getCalendarDateRange();
     return (cdr != null) ? cdr.toDateRange() : null;
   }
 
-  /**
-   * @deprecated use getStartCalendarDate
-   */
+  /** @deprecated use getStartCalendarDate */
+  @Deprecated
   public Date getStartDate() {
     DateRange dr = getDateRange();
     return (dr != null) ? dr.getStart().getDate() : null;
   }
 
-  /**
-   * @deprecated use getEndCalendarDate
-   */
+  /** @deprecated use getEndCalendarDate */
+  @Deprecated
   public Date getEndDate() {
     DateRange dr = getDateRange();
     return (dr != null) ? dr.getEnd().getDate() : null;
