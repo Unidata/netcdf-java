@@ -5,9 +5,11 @@
 package ucar.array;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.HashSet;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
@@ -61,6 +63,25 @@ public final class StructureMembers {
         .add("structureSize", structureSize).toString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    StructureMembers that = (StructureMembers) o;
+    return structureSize == that.structureSize &&
+        Objects.equal(name, that.name) &&
+        Objects.equal(members, that.members);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(name, members, structureSize);
+  }
+
   /** A member of a StructureData. */
   @Immutable
   public final static class Member {
@@ -72,54 +93,36 @@ public final class StructureMembers {
     private final StructureMembers members; // only if member is type Structure
     private final boolean isVariableLength;
 
-    // optional, use depends on ArrayStructure subclass TODO get rid of?
-    private final ucar.ma2.Array dataArray;
-    private final Object dataObject;
-    private final int dataParam;
-
     private Member(MemberBuilder builder, int index) {
       this.name = Preconditions.checkNotNull(builder.name);
       this.desc = builder.desc;
       this.units = builder.units;
       this.dtype = Preconditions.checkNotNull(builder.dtype);
       this.index = index;
-      this.shape = builder.shape;
+      this.shape = builder.shape != null ? builder.shape : new int[0];
       this.members = builder.members;
-      this.dataArray = builder.dataArray;
-      this.dataObject = builder.dataObject;
-      this.dataParam = builder.dataParam;
 
       this.size = (int) ucar.ma2.Index.computeSize(shape);
       this.isVariableLength = (shape.length > 0 && shape[shape.length - 1] < 0);
     }
 
     /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
-    public MemberBuilder toBuilder(boolean wantsData) {
+    public MemberBuilder toBuilder() {
       MemberBuilder b = new MemberBuilder().setName(this.name).setDesc(this.desc).setUnits(this.units)
           .setDataType(this.dtype).setShape(this.shape);
-      if (wantsData) {
-        b.setDataArray(this.dataArray).setDataObject(this.dataObject).setDataParam(this.dataParam)
-            .setStructureMembers(this.members);
-      } else if (this.members != null) {
-        b.setStructureMembers(this.members.toBuilder(wantsData).build());
+      if (this.members != null) {
+        b.setStructureMembers(this.members.toBuilder().build());
       }
       return b;
     }
 
+    @Nullable
     public StructureMembers getStructureMembers() {
       return members;
     }
 
-    /** Get the StructureMembers name. */
+    /** Get the StructureMember's name. */
     public String getName() {
-      return name;
-    }
-
-    public String getFullNameEscaped() {
-      return name;
-    }
-
-    public String getFullName() {
       return name;
     }
 
@@ -188,6 +191,31 @@ public final class StructureMembers {
     public String toString() {
       return name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Member member = (Member) o;
+      return index == member.index &&
+          size == member.size &&
+          isVariableLength == member.isVariableLength &&
+          Objects.equal(name, member.name) &&
+          Objects.equal(desc, member.desc) &&
+          Objects.equal(units, member.units) &&
+          dtype == member.dtype &&
+          Objects.equal(shape, member.shape) &&
+          Objects.equal(members, member.members);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(name, desc, units, dtype, index, size, shape, members, isVariableLength);
+    }
   }
 
   public static class MemberBuilder {
@@ -197,15 +225,10 @@ public final class StructureMembers {
     private StructureMembers members; // only if member is type Structure
     private boolean built;
 
-    // TODO get rid of ?
-    // optional, use depends on ArrayStructure subclass
-    private ucar.ma2.Array dataArray;
-    private Object dataObject;
-    private int dataParam;
-
     private MemberBuilder() {}
 
     public MemberBuilder setName(String name) {
+      Preconditions.checkNotNull(name);
       this.name = name;
       return this;
     }
@@ -221,22 +244,8 @@ public final class StructureMembers {
     }
 
     public MemberBuilder setDataType(DataType dtype) {
+      Preconditions.checkNotNull(dtype);
       this.dtype = dtype;
-      return this;
-    }
-
-    public MemberBuilder setDataArray(ucar.ma2.Array data) {
-      this.dataArray = data;
-      return this;
-    }
-
-    public MemberBuilder setDataObject(Object o) {
-      this.dataObject = o;
-      return this;
-    }
-
-    public MemberBuilder setDataParam(int dataParam) {
-      this.dataParam = dataParam;
       return this;
     }
 
@@ -267,8 +276,14 @@ public final class StructureMembers {
   private StructureMembers(Builder builder) {
     this.name = builder.name == null ? "" : builder.name;
     ImmutableList.Builder<Member> list = ImmutableList.builder();
+    HashSet<String> nameSet = new HashSet<>();
     int count = 0;
     for (MemberBuilder mbuilder : builder.members) {
+      if (nameSet.contains(mbuilder.name)) {
+        throw new IllegalStateException("Duplicate member name in " + name);
+      } else {
+        nameSet.add(mbuilder.name);
+      }
       list.add(mbuilder.build(count++));
     }
     this.members = list.build();
@@ -284,9 +299,9 @@ public final class StructureMembers {
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build(wantsData) to copy. */
-  public Builder toBuilder(boolean wantsData) {
+  public Builder toBuilder() {
     Builder b = builder().setName(this.name).setStructureSize(this.structureSize);
-    this.members.forEach(m -> b.addMember(m.toBuilder(wantsData)));
+    this.members.forEach(m -> b.addMember(m.toBuilder()));
     return b;
   }
 
@@ -325,6 +340,8 @@ public final class StructureMembers {
     }
 
     public MemberBuilder addMember(String name, String desc, String units, DataType dtype, int[] shape) {
+      Preconditions.checkNotNull(name);
+      Preconditions.checkNotNull(dtype);
       MemberBuilder m =
           new MemberBuilder().setName(name).setDesc(desc).setUnits(units).setDataType(dtype).setShape(shape);
       addMember(m);
@@ -332,7 +349,13 @@ public final class StructureMembers {
     }
 
     public boolean hasMember(String memberName) {
-      return members.stream().anyMatch(m -> m.name.equals(memberName));
+      Preconditions.checkNotNull(memberName);
+      for (MemberBuilder mb : members) {
+        if (memberName.equals(mb.name)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     public Builder setStructureSize(int structureSize) {
