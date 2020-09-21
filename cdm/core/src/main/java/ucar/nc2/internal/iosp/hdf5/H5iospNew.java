@@ -4,6 +4,8 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,6 +22,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -27,6 +30,7 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutRegular;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
@@ -74,20 +78,28 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
   @Override
   public String getFileTypeId() {
-    if (isEos)
+    if (isEos) {
       return "HDF5-EOS";
-    if (header.isNetcdf4())
+    }
+    if (header.isNetcdf4()) {
       return DataFormatType.NETCDF4.getDescription();
+    }
     return DataFormatType.HDF5.getDescription();
   }
 
   @Override
   public String getFileTypeDescription() {
-    return "Hierarchical Data Format, version 5";
+    return "Hierarchical Data Format 5";
   }
 
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
+  }
+
+  @Override
+  public String getFileTypeVersion() {
+    // TODO this only works for files writtten by netcdf4 c library. what about plain hdf5?
+    return ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, "N/A");
   }
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -121,6 +133,12 @@ public class H5iospNew extends AbstractIOServiceProvider {
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
       setValueCharset((Charset) message);
+    }
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      if (!header.isNetcdf4()) {
+        return null;
+      }
+      return header.isClassic() ? NetcdfFileFormat.NETCDF4_CLASSIC : NetcdfFileFormat.NETCDF4;
     }
     return super.sendIospMessage(message);
   }

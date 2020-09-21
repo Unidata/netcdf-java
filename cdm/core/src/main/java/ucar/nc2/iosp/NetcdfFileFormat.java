@@ -117,9 +117,9 @@ import javax.annotation.Nullable;
 /** Enumeration of the kinds of NetCDF file formats. NETCDF3_64BIT_DATA is not currently supported in this library. */
 public enum NetcdfFileFormat {
   INVALID(0, "Invalid"), //
-  NETCDF3(1, "netcdf-3"), //
+  NETCDF3(1, "NetCDF-3"), //
   NETCDF3_64BIT_OFFSET(2, "netcdf-3 64bit-offset"), //
-  NETCDF4(3, "netcdf-4"), // This is really just HDF-5, dont know yet if its written by netcdf4.
+  NETCDF4(3, "NetCDF-4"), // This is really just HDF-5, dont know yet if its written by netcdf4.
   NETCDF4_CLASSIC(4, "netcdf-4 classic"), // psuedo format I think
   NETCDF3_64BIT_DATA(5, "netcdf-5"), // from PnetCDF project
 

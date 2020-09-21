@@ -302,7 +302,7 @@ public class NcmlEditor extends JPanel {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(text), null, null)) {
       NetcdfFormatWriter.Builder writer = NetcdfFormatWriter.builder().setFormat(data.format)
-          .setChunker(Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle)).setNewFile(true)
+          .setChunker(Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle))
           .setLocation(data.outputFilename);
 
       try (NetcdfCopier copier = NetcdfCopier.create(ncd, writer)) {

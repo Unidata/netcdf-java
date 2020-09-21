@@ -319,7 +319,7 @@ public class TestWrite {
 
   @Test
   public void testNC3WriteExisting() throws IOException, InvalidRangeException {
-    try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(writerLocation).build()) {
+    try (NetcdfFormatUpdater writer = NetcdfFormatUpdater.openExisting(writerLocation).build()) {
       Variable v = writer.findVariable("temperature");
       Assert.assertNotNull(v);
       int[] shape = v.getShape();

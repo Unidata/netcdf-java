@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.annotation.Nullable;
@@ -32,7 +33,7 @@ import ucar.unidata.io.RandomAccessFile;
  * IOServiceProvider class (until one returns true, which means it can read the file).</li>
  * <li>the open() method on the resulting IOServiceProvider class is handed the file.</li>
  */
-public interface IOServiceProvider {
+public interface IOServiceProvider extends Closeable {
 
   /**
    * Check if this is a valid file for this IOServiceProvider.
@@ -45,7 +46,8 @@ public interface IOServiceProvider {
   boolean isValidFile(RandomAccessFile raf) throws IOException;
 
   /**
-   * Open existing file, and populate rootGroup. Note that you cannot reference the NetcdfFile within this routine.
+   * Read an existing RandomAccessFile, and populate rootGroup.
+   * Note that you cannot reference the NetcdfFile within this routine, since it hasnt been created yet.
    *
    * @param raf the file to work on, it has already passed the isValidFile() test.
    * @param rootGroup add objects to the root group.
@@ -134,7 +136,8 @@ public interface IOServiceProvider {
    */
   void reacquire() throws IOException;
 
-  // public long getLastModified(); LOOK: dont add this for backwards compatibility. Probably add back in in version 5
+  /** Get last time the file was modified. */
+  long getLastModified();
 
   /**
    * A way to communicate arbitrary information to and from an iosp.

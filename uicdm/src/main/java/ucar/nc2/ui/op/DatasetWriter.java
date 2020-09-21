@@ -245,8 +245,8 @@ public class DatasetWriter extends JPanel {
       try {
         List beans = nestedTableList.get(0).table.getBeans();
         BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
-        NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format)
-            .setLocation(data.outputFilename).setChunker(bc);
+        NetcdfFormatWriter.Builder builder =
+            NetcdfFormatWriter.builder().setFormat(data.format).setLocation(data.outputFilename).setChunker(bc);
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (NetcdfCopier copier = NetcdfCopier.create(ds, builder)) {
           // write returns the open file that was just written, so we just need to close it.

@@ -172,7 +172,7 @@ public class DatasetViewer extends JPanel {
 
     try {
       NetcdfFormatWriter.Builder builder =
-          NetcdfFormatWriter.builder().setNewFile(true).setFormat(data.format).setLocation(data.outputFilename)
+          NetcdfFormatWriter.builder().setFormat(data.format).setLocation(data.outputFilename)
               .setChunker(Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle));
 
       try (NetcdfCopier copier = NetcdfCopier.create(ds, builder)) {

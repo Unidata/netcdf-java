@@ -5,10 +5,10 @@
 
 package ucar.nc2.jni.netcdf;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
 import static ucar.nc2.ffi.netcdf.NetcdfClibrary.isLibraryPresent;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
-import com.google.common.collect.ImmutableList;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -17,11 +17,8 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.Group.Builder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.internal.iosp.hdf4.HdfEos;
-import ucar.nc2.internal.iosp.hdf4.HdfHeaderIF;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -46,16 +43,6 @@ import java.util.*;
 public class Nc4reader extends AbstractIOServiceProvider {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4reader.class);
 
-  public static final boolean DEBUG = false;
-
-  // Define reserved attributes (see Nc4DSP)
-  public static final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
-
-  // IOSP messages
-  public static final String TRANSLATECONTROL = "ucar.translate";
-  public static final String TRANSLATE_NONE = "none";
-  public static final String TRANSLATE_NC4 = "nc4";
-
   private static final boolean debugCompoundAtt = false;
   private static final boolean debugUserTypes = false;
 
@@ -63,26 +50,18 @@ public class Nc4reader extends AbstractIOServiceProvider {
   // need to transcode any string read into netCDf-Java via netCDF-C
   private static final boolean transcodeStrings = Charset.defaultCharset() != StandardCharsets.UTF_8;
 
-  private static boolean useHdfEos;
-
-  public static void useHdfEos(boolean val) {
-    useHdfEos = val;
-  }
-
   //////////////////////////////////////////////////
   // Instance Variables
   Nc4prototypes nc4;
-  // TODO set version from file that's read in
   NetcdfFileFormat version; // can use c library to create these different version files
   int ncid = -1; // file id
   boolean markReserved;
   boolean isClosed;
+  private int format; // from nc_inq_format
 
   final Map<Integer, UserType> userTypes = new HashMap<>(); // hash by typeid
   final Map<Group.Builder, Integer> groupBuilderHash = new HashMap<>(); // TODO group.builder -> nc4 grpid
 
-  private int format; // from nc_inq_format
-  private boolean isEos;
 
   // no-arg constructor for NetcdfFiles.open()
   public Nc4reader() {
@@ -139,9 +118,13 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   @Override
   public String getFileTypeId() {
-    if (isEos)
-      return "HDF5-EOS";
     return version.isNetdf4format() ? DataFormatType.NETCDF4.getDescription() : DataFormatType.HDF5.getDescription();
+  }
+
+  @Override
+  public String getFileTypeVersion() {
+    // TODO this only works for files writtten by netcdf4 c library. what about plain hdf5?
+    return ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, "N/A");
   }
 
   @Override
@@ -158,21 +141,10 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   @Override
   public Object sendIospMessage(Object message) {
-    if (message instanceof Map) {
-      Map<String, String> map = (Map<String, String>) message;
-      // See if we can extract some controls
-      for (String key : map.keySet()) {
-        if (key.equalsIgnoreCase(TRANSLATECONTROL)) {
-          String value = map.get(key).toString();
-          if (value.equalsIgnoreCase(TRANSLATE_NONE)) {
-            this.markReserved = false;
-          } else if (value.equalsIgnoreCase(TRANSLATE_NC4)) {
-            this.markReserved = true;
-          } // else ignore
-        } // else ignore
-      }
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      return version;
     }
-    return null;
+    return super.sendIospMessage(message);
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +155,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
-    boolean readOnly = true;
     this.rootGroup = rootGroup;
 
     if (!isLibraryPresent()) {
@@ -200,7 +171,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     log.debug("open {}", location);
 
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
+    int ret = nc4.nc_open(location, NC_NOWRITE, ncidp);
     if (ret != 0) {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     }
@@ -219,36 +190,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     // read root group
     makeGroup(new Group4(ncid, rootGroup, null));
-
-    // TODO: check if its an HDF5-EOS file; we dont have an HdfHeaderIF, because we opened with JNA
-    if (useHdfEos) {
-      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
-        try {
-          isEos = HdfEos.amendFromODL(this.location, new HdfEosHeader(), eosGroup);
-        } catch (IOException e) {
-          log.warn(" HdfEos.amendFromODL failed");
-        }
-      });
-    }
-  }
-
-  private class HdfEosHeader implements HdfHeaderIF {
-
-    @Override
-    public Builder getRootGroup() {
-      return rootGroup;
-    }
-
-    @Override
-    public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
-      // TODO
-    }
-
-    @Override
-    public String readStructMetadata(Variable.Builder<?> structMetadataVar) throws IOException {
-      // TODO
-      return null;
-    }
   }
 
   private void makeGroup(Group4 g4) throws IOException {
@@ -381,7 +322,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   // follow what happens in the Java side
-  private String makeAttString(byte[] b) throws IOException {
+  private String makeAttString(byte[] b) {
     // null terminates
     int count = 0;
     while (count < b.length) {
@@ -392,7 +333,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     return new String(b, 0, count, StandardCharsets.UTF_8); // all strings are considered to be UTF-8 unicode.
   }
 
-  private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable.Builder v) throws IOException {
+  private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable.Builder<?> v) throws IOException {
     List<Attribute> result = new ArrayList<>(natts);
 
     for (int attnum = 0; attnum < natts; attnum++) {
@@ -665,7 +606,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    Array data = null;
+    Array data;
     if (false) {
       /*
        * This is incorrect; CDM technically does not support
@@ -941,7 +882,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   private void makeVariables(Group4 g4) throws IOException {
-
     IntByReference nvarsp = new IntByReference();
     int ret = nc4.nc_inq_nvars(g4.grpid, nvarsp);
     if (ret != 0)
@@ -1046,8 +986,9 @@ public class Nc4reader extends AbstractIOServiceProvider {
     if (dtype.isEnum()) {
       v.setEnumTypeName(utype.name);
     } else if (dtype == DataType.OPAQUE) {
+      // TODO whats the problem with knowing the size?? Needed to read properly??
       if (this.markReserved) {
-        annotate(v, UCARTAGOPAQUE, utype.size);
+        // annotate(v, UCARTAGOPAQUE, utype.size);
       }
     }
 
@@ -1440,6 +1381,10 @@ public class Nc4reader extends AbstractIOServiceProvider {
               return Array.factory(DataType.SHORT, shape, bb);
             case Nc4prototypes.NC_USHORT:
               return Array.factory(DataType.USHORT, shape, bb);
+            case Nc4prototypes.NC_INT:
+              return Array.factory(DataType.INT, shape, bb);
+            case Nc4prototypes.NC_UINT:
+              return Array.factory(DataType.UINT, shape, bb);
           }
           throw new IOException("unknown type " + userType.baseTypeid);
         } else if (userType.typeClass == Nc4prototypes.NC_VLEN) {
@@ -1671,7 +1616,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   // opaques use ArrayObjects of ByteBuffer
-  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException, InvalidRangeException {
+  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException {
     int ret;
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
@@ -1680,8 +1625,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     byte[] bbuff = new byte[len * size];
     ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
-    if (DEBUG)
-      dumpbytes(bbuff, 0, bbuff.length, "readOpaque");
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int[] intshape;
@@ -1764,7 +1707,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   private static class ConvertedType {
     DataType dt;
-    // boolean isUnsigned;
     boolean isVlen;
 
     ConvertedType(DataType dt) {
@@ -2008,9 +1950,8 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     @Override
     public String toString() {
-      String sb = "UserType" + "{grpid=" + grpid + ", typeid=" + typeid + ", name='" + name + '\'' + ", size=" + size
+      return "UserType" + "{grpid=" + grpid + ", typeid=" + typeid + ", name='" + name + '\'' + ", size=" + size
           + ", baseTypeid=" + baseTypeid + ", nfields=" + nfields + ", typeClass=" + typeClass + ", e=" + e + '}';
-      return sb;
     }
 
     void readFields() throws IOException {
@@ -2152,65 +2093,5 @@ public class Nc4reader extends AbstractIOServiceProvider {
       return v;
     }
   }
-
-  /////////////////////////////////////////////////////////////////////////
-  // TODO eliminate
-
-  static class Annotation {
-    Object key;
-    Object value;
-
-    public Annotation(Object key, Object value) {
-      this.key = key;
-      this.value = value;
-    }
-  }
-
-  HashMap<Object, List<Annotation>> annotations = new HashMap<>();
-
-  void annotate(Object elem, Object key, Object value) {
-    List<Annotation> list = annotations.computeIfAbsent(elem, k -> new ArrayList<>());
-    int index = -1;
-    Iterator<Annotation> iter = list.iterator();
-    while (iter.hasNext()) {
-      Annotation ann = iter.next();
-      if (ann.key.equals(key)) {
-        iter.remove();
-        break;
-      }
-    }
-    list.add(new Annotation(key, value));
-  }
-
-  private static void dumpbytes(byte[] bytes, int start, int len, String tag) {
-    System.err.println("++++++++++ " + tag + " ++++++++++ ");
-    int stop = start + len;
-    try {
-      for (int i = 0; i < stop; i++) {
-        byte b = bytes[i];
-        int ib = (int) b;
-        int ub = (ib & 0xFF);
-        char c = (char) ub;
-        String s = Character.toString(c);
-        if (c == '\r')
-          s = "\\r";
-        else if (c == '\n')
-          s = "\\n";
-        else if (c < ' ')
-          s = "?";
-        System.err.printf("[%03d] %02x %03d %4d '%s'", i, ub, ub, ib, s);
-        System.err.println();
-        System.err.flush();
-      }
-
-    } catch (Exception e) {
-      System.err.println("failure:" + e);
-    } finally {
-      System.err.println("++++++++++ " + tag + " ++++++++++ ");
-      System.err.flush();
-    }
-  }
-
-
 
 }

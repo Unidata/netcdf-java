@@ -24,7 +24,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -43,17 +42,15 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.internal.iosp.IOServiceProviderWriter;
+import ucar.nc2.internal.iosp.IospFileCreator;
 import ucar.nc2.internal.iosp.hdf5.H5headerNew;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
-import ucar.unidata.io.RandomAccessFile;
 
 /** IOSP for writing netcdf files through JNA interface to netcdf C library */
-public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
+public class Nc4writer extends Nc4reader implements IospFileCreator {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4writer.class);
 
   // Define reserved attributes (see Nc4DSP)
@@ -65,6 +62,7 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
 
   private boolean fill = true;
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
+  private final Map<EnumTypedef, UserType> enumUserTypes = new HashMap<>();
 
   public Nc4writer() {
     super(NetcdfFileFormat.NETCDF4);
@@ -81,43 +79,31 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       this.chunker = chunker;
   }
 
-  @Override
-  public NetcdfFile getOutputFile() {
-    return this.ncfile;
-  }
-
-  @Override
-  public void openForWriting(RandomAccessFile raf, NetcdfFile.Builder<?> ncfileb, CancelTask cancelTask)
-      throws IOException {
-    build(raf, ncfileb.rootGroup, cancelTask);
-    this.ncfile = ncfileb.build();
-  }
-
   // * Create new file, populate it from the objects in ncfileb.
   @Override
-  public void create(String filename, NetcdfFile.Builder<?> ncfileb, int extra, long preallocateSize, boolean largeFile)
+  public NetcdfFile create(String filename, Group.Builder rootGroup, int extra, long preallocateSize, boolean largeFile)
       throws IOException {
     if (!isLibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
     this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
-    this.rootGroup = ncfileb.rootGroup;
+    this.rootGroup = rootGroup;
 
     // create new file
     log.debug("create {}", this.location);
 
-    /*
-     * IntByReference oldFormat = new IntByReference();
-     * int ret = nc4.nc_set_default_format(defineFormat(), oldFormat);
-     * if (ret != 0)
-     * throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-     */
+    IntByReference oldFormat = new IntByReference();
+    int ret = nc4.nc_set_default_format(defineFormat(), oldFormat);
+    if (ret != 0) {
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+    }
 
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_create(filename, createMode(), ncidp);
-    if (ret != 0)
+    ret = nc4.nc_create(filename, createMode(), ncidp);
+    if (ret != 0) {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+    }
 
     isClosed = false;
     ncid = ncidp.getValue();
@@ -131,9 +117,10 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     if (debugWrite)
       System.out.printf("create done%n%n");
 
+    NetcdfFile.Builder<?> ncfileb = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(filename);
     this.ncfile = ncfileb.build();
+    return this.ncfile;
   }
-
 
   /*
    * cmode The creation mode flag. The following flags are available:
@@ -156,7 +143,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
         ret |= NC_NETCDF4 | NC_CLASSIC_MODEL;
         break;
     }
-
     return ret;
   }
 
@@ -250,19 +236,20 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     Vinfo vinfo; // TODO vinfo is from the input file; we act here as if its the outut file.
     if (v instanceof Structure.Builder<?>) { // vinfo and typid was stored in vinfo in createCompoundType
       vinfo = (Vinfo) v.spiObject;
-      if (vinfo == null) {
-        System.out.printf("HEY%n");
-      }
       typid = vinfo.typeid;
 
     } else if (v.dataType.isEnum()) {
       EnumTypedef en = g4.g.findEnumeration(v.getEnumTypeName())
           .orElseThrow(() -> new IllegalStateException("Cant find enum " + v.getEnumTypeName()));
-      UserType ut = (UserType) annotation(en, UserType.class);
+      UserType ut = enumUserTypes.get(en);
+      if (ut == null) {
+        throw new IllegalStateException("Cant find UserType for enum " + v.getEnumTypeName());
+      }
       typid = ut.typeid;
       vinfo = new Vinfo(g4, -1, typid);
 
     } else if (v.dataType == DataType.OPAQUE) {
+      // nc_def_opaque(ncid, BASE_SIZE, TYPE_NAME, &xtype)
       typid = convertDataType(v.dataType);
       if (typid < 0) {
         log.warn("Skipping Opaque Type");
@@ -279,12 +266,13 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       vinfo = new Vinfo(g4, -1, typid);
     }
 
-    if (debugWrite)
+    if (debugWrite) {
       System.out.printf("adding variable %s (typeid %d) %n", v.shortName, typid);
+    }
     IntByReference varidp = new IntByReference();
     int ret = nc4.nc_def_var(g4.grpid, v.shortName, new SizeT(typid), dimids.length, dimids, varidp);
     if (ret != 0)
-      throw new IOException("ret=" + ret + " err='" + nc4.nc_strerror(ret) + "' on\n" + v);
+      throw new IOException("nc_def_var ret= " + ret + " err= '" + nc4.nc_strerror(ret) + "' on " + v);
     int varid = varidp.getValue();
     vinfo.varid = varid;
     if (debugWrite)
@@ -303,12 +291,11 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
         chunking = new SizeT[v.getRank()];
       }
 
-      ret = nc4.nc_def_var_chunking(g4.grpid, varid, storage, chunking);
-      if (ret != 0) {
-        throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
-      }
-
       if (isChunked) {
+        ret = nc4.nc_def_var_chunking(g4.grpid, varid, storage, chunking);
+        if (ret != 0) {
+          throw new IOException(nc4.nc_strerror(ret) + " nc_def_var_chunking on variable " + v.getFullName());
+        }
         int deflateLevel = chunker.getDeflateLevel(v);
         int deflate = deflateLevel > 0 ? 1 : 0;
         int shuffle = chunker.isShuffle(v) ? 1 : 0;
@@ -370,8 +357,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     throw new IllegalArgumentException("unimplemented type == " + dt);
   }
 
-
-
   /////////////////////////////////////
   // Enum types
 
@@ -384,10 +369,13 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
    * After calling this function, fill out the type with repeated calls to nc_insert_enum.
    * Call nc_insert_enum once for each (id,int) you wish to insert into the enum.
    */
-  private void createEnumType(Group4 g4, EnumTypedef en) throws IOException {
+  private void createEnumType(Group4 g4, EnumTypedef ent) throws IOException {
     IntByReference typeidp = new IntByReference();
-    String name = en.getShortName();
-    DataType enumbase = en.getBaseType();
+    String name = ent.getShortName();
+    if (!name.endsWith("_t")) {
+      name = name + "_t";
+    }
+    DataType enumbase = ent.getBaseType();
     int basetype = NC_NAT;
     if (enumbase == DataType.ENUM1)
       basetype = Nc4prototypes.NC_BYTE;
@@ -397,23 +385,19 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       basetype = Nc4prototypes.NC_INT;
     int ret = nc4.nc_def_enum(g4.grpid, basetype, name, typeidp);
     if (ret != 0)
-      throw new IOException(nc4.nc_strerror(ret) + " on\n" + en);
+      throw new IOException(nc4.nc_strerror(ret) + " on\n" + ent);
     int typeid = typeidp.getValue();
-    if (DEBUG)
-      System.out.printf("added enum type %s (typeid %d)%n", name, typeid);
-    Map<Integer, String> emap = en.getMap();
+    Map<Integer, String> emap = ent.getMap();
     for (Map.Entry<Integer, String> entry : emap.entrySet()) {
       IntByReference val = new IntByReference(entry.getKey());
       ret = nc4.nc_insert_enum(g4.grpid, typeid, entry.getValue(), val);
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + entry.getValue());
-      if (DEBUG)
-        System.out.printf(" added enum type member %s: %d%n", entry.getValue(), entry.getKey());
     }
     // keep track of the User Defined types
-    UserType ut = new UserType(g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
+    UserType ut = new UserType(g4.grpid, typeid, name, ent.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
     userTypes.put(typeid, ut);
-    annotate(en, UserType.class, ut); // dont know the varid yet
+    enumUserTypes.put(ent, ut);
   }
 
   /////////////////////////////////////
@@ -504,7 +488,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
   }
 
   private void createCompoundMemberAtts(int grpid, int varid, Structure.Builder<?> s) throws IOException {
-
     // count size of attribute values
     int sizeAtts = 0;
     for (Variable.Builder<?> m : s.vbuilders) {
@@ -615,7 +598,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       } // loop over atts
     } // loop over vars */
 
-
     // now write that attribute on the variable
     String attName = "_field_atts";
     ret = nc4.nc_put_att(grpid, varid, attName, typeid, new SizeT(1), bb.array());
@@ -627,7 +609,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     }
   }
 
-  @Override
   public void flush() throws IOException {
     if (nc4 == null || ncid < 0)
       return; // not open yet
@@ -638,11 +619,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
 
     // TODO reread dimension in case unlimited has grown
     // updateDimensions(ncfile.getRootGroup());
-  }
-
-  public Nc4reader setAddReserved(boolean tf) {
-    this.markReserved = tf;
-    return this;
   }
 
   @Override
@@ -666,13 +642,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
   }
 
   @Override
-  public boolean rewriteHeader(boolean largeFile) throws IOException {
-    // Rewriting just the header is not possible in NetCDF-4, so always return false.
-    // This will cause NetcdfFileWriter.setRedefineMode(false) to rewrite the entire file instead.
-    return false;
-  }
-
-  @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
     if (nc4 == null || ncid < 0)
       return; // not open yet
@@ -683,6 +652,11 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
       Vinfo vinfo = (Vinfo) v2.getSPobject();
       writeAttribute(vinfo.g4.grpid, vinfo.varid, att, v2.toBuilder()); // LOOK
     }
+  }
+
+  @Override
+  public void updateAttribute(Group g, Attribute att) throws IOException {
+    // LOOK
   }
 
   private void writeAttribute(int grpid, int varid, Attribute att, Variable.Builder<?> v) throws IOException {
@@ -948,18 +922,16 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
   }
 
   private int writeEnumData(Variable v, UserType userType, int grpid, int varid, int typeid, Section section,
-      Array values) throws IOException, InvalidRangeException {
-    int ret = 0;
+      Array values) {
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
-    boolean isUnsigned = isUnsigned(typeid);
     int sectionLen = (int) section.computeSize();
-
     assert values.getSize() == sectionLen;
 
     int[] secStride = section.getStride();
     boolean stride1 = isStride1(secStride);
 
+    int ret;
     ByteBuffer bb = values.getDataAsByteBuffer(ByteOrder.nativeOrder());
     byte[] data = bb.array();
     if (stride1) {
@@ -971,34 +943,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     return ret;
   }
 
-
-  /*
-   * Here is an example of using nc_put_vars_float to write – from an internal array – every other point of a netCDF
-   * variable named rh which is described by the C declaration float rh[4][6] (note the size of the dimensions):
-   *
-   * #include <netcdf.h>
-   * ...
-   * #define NDIM 2 /* rank of netCDF variable
-   * int ncid; /* netCDF ID
-   * int status; /* error status *
-   * int rhid; /* variable ID *
-   * static size_t start[NDIM] /* netCDF variable start point: *
-   * = {0, 0}; /* first element *
-   * static size_t count[NDIM] /* size of internal array: entire *
-   * = {2, 3}; /* (subsampled) netCDF variable *
-   * static ptrdiff_t stride[NDIM] /* variable subsampling intervals: *
-   * = {2, 2}; /* access every other netCDF element *
-   * float rh[2][3]; /* note subsampled sizes for netCDF variable dimensions LOOK [][] not [,]
-   * ...
-   * status = nc_open("foo.nc", NC_WRITE, &ncid);
-   * if (status != NC_NOERR) handle_error(status);
-   * ...
-   * status = nc_inq_varid(ncid, "rh", &rhid);
-   * if (status != NC_NOERR) handle_error(status);
-   * ...
-   * status = nc_put_vars_float(ncid, rhid, start, count, stride, rh);
-   * if (status != NC_NOERR) handle_error(status);
-   */
   private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section,
       ArrayStructure values) throws IOException, InvalidRangeException {
 
@@ -1218,21 +1162,6 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     return dimid;
   }
 
-
-  @Nullable
-  private Object annotation(Object elem, Object key) {
-    List<Annotation> list = annotations.get(elem);
-    if (list == null) {
-      return null;
-    }
-    for (Annotation ann : list) {
-      if (ann.key.equals(key))
-        return ann.value;
-    }
-    return null;
-  }
-
-
   private void updateDimensions(Group g) throws IOException {
     int grpid = groupBuilderHash.get(g);
 
@@ -1289,7 +1218,7 @@ public class Nc4writer extends Nc4reader implements IOServiceProviderWriter {
     if (strides == null)
       return true;
     for (int stride : strides) {
-      if (stride != 1)
+      if (stride != 1) // LOOK seems fishy
         return false;
     }
     return true;

@@ -7,16 +7,16 @@ package ucar.nc2.write;
 
 import ucar.nc2.Variable;
 
-/** No chunking is done, except for unlimited variables. */
+/** No chunking is done. */
 public class Nc4ChunkingStrategyNone extends Nc4ChunkingDefault {
   @Override
   public boolean isChunked(Variable v) {
-    return v.isUnlimited();
+    return false;
   }
 
   @Override
   public boolean isChunked(Variable.Builder<?> vb) {
-    return vb.isUnlimited();
+    return false;
   }
 
   @Override

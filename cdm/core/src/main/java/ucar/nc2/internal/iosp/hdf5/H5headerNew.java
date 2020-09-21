@@ -113,7 +113,6 @@ public class H5headerNew implements HdfHeaderIF {
 
   private static final byte[] magic = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
   private static final String magicString = new String(magic, StandardCharsets.UTF_8);
-  private static final long maxHeaderPos = 50000; // header's gotta be within this
   private static final boolean transformReference = true;
 
   public static boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -170,16 +169,12 @@ public class H5headerNew implements HdfHeaderIF {
     valueCharset = h5iosp.getValueCharset().orElse(StandardCharsets.UTF_8);
   }
 
-  /**
-   * Return defined {@link Charset value charset} that
-   * will be used by reading HDF5 header.
-   *
-   * @return {@link Charset charset}
-   */
+  /** Return defined {@link Charset value charset} that will be used when reading HDF5 header. */
   protected Charset getValueCharset() {
     return valueCharset;
   }
 
+  // Public for debugging
   public void read(PrintWriter debugPS) throws IOException {
     if (debugPS != null) {
       debugOut = debugPS;
@@ -470,6 +465,39 @@ public class H5headerNew implements HdfHeaderIF {
 
     createDimensions(parentGroup, h5group);
 
+    // process types first
+    for (DataObjectFacade facadeNested : h5group.nestedObjects) {
+      if (facadeNested.isTypedef) {
+        if (debugReference && facadeNested.dobj.mdt.type == 7) {
+          log.debug("{}", facadeNested);
+        }
+
+        if (facadeNested.dobj.mdt.map != null) {
+          EnumTypedef enumTypedef = parentGroup.findEnumeration(facadeNested.name).orElse(null);
+          if (enumTypedef == null) {
+            DataType basetype;
+            switch (facadeNested.dobj.mdt.byteSize) {
+              case 1:
+                basetype = DataType.ENUM1;
+                break;
+              case 2:
+                basetype = DataType.ENUM2;
+                break;
+              default:
+                basetype = DataType.ENUM4;
+                break;
+            }
+            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
+            parentGroup.addEnumTypedef(enumTypedef);
+          }
+        }
+        if (debugV) {
+          log.debug("  made enumeration {}", facadeNested.name);
+        }
+      }
+
+    } // loop over typedefs
+
     // nested objects - groups and variables
     for (DataObjectFacade facadeNested : h5group.nestedObjects) {
 
@@ -514,34 +542,6 @@ public class H5headerNew implements HdfHeaderIF {
           if (debugV) {
             log.debug("  made Variable " + v.shortName + "  vinfo= " + vinfo + "\n" + v);
           }
-        }
-
-      } else if (facadeNested.isTypedef) {
-        if (debugReference && facadeNested.dobj.mdt.type == 7) {
-          log.debug("{}", facadeNested);
-        }
-
-        if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = parentGroup.findEnumeration(facadeNested.name).orElse(null);
-          if (enumTypedef == null) {
-            DataType basetype;
-            switch (facadeNested.dobj.mdt.byteSize) {
-              case 1:
-                basetype = DataType.ENUM1;
-                break;
-              case 2:
-                basetype = DataType.ENUM2;
-                break;
-              default:
-                basetype = DataType.ENUM4;
-                break;
-            }
-            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
-            parentGroup.addEnumTypedef(enumTypedef);
-          }
-        }
-        if (debugV) {
-          log.debug("  made enumeration {}", facadeNested.name);
         }
       }
 
@@ -1549,7 +1549,8 @@ public class H5headerNew implements HdfHeaderIF {
       // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
       EnumTypedef enumTypedef = parent.findEnumeration(mdt.enumTypeName).orElse(null);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
-        enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        enumTypedef = parent.enumTypedefs.stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
         parent.addEnumTypedef(enumTypedef);
       }
       v.setEnumTypeName(enumTypedef.getShortName());
@@ -2273,6 +2274,10 @@ public class H5headerNew implements HdfHeaderIF {
 
   boolean isNetcdf4() {
     return isNetcdf4;
+  }
+
+  boolean isClassic() {
+    return false; // TODO
   }
 
   public void close() {

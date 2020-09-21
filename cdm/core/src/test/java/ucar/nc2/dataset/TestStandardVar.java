@@ -27,8 +27,7 @@ public class TestStandardVar {
 
   @Test
   public void testWriteStandardVar() throws Exception {
-    NetcdfFormatWriter.Builder writerb =
-        NetcdfFormatWriter.builder().setNewFile(true).setLocation(filename).setFill(false);
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.builder().setLocation(filename).setFill(false);
 
     // define dimensions
     Dimension latDim = writerb.addDimension("lat", 2);

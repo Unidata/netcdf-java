@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.write;
+package ucar.nc2.grib;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +39,8 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-/**
- * Describe
- *
- * @author caron
- * @since 8/29/2014
- */
-public class Grib2JpegEncoder {
+/** TODO rewrite in test framwwork */
+public class TestGrib2JpegEncoder {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /**
@@ -103,7 +98,7 @@ public class Grib2JpegEncoder {
   int nbits;
   boolean debug;
 
-  public Grib2JpegEncoder(int nbits, boolean debug) {
+  public TestGrib2JpegEncoder(int nbits, boolean debug) {
     this.nbits = nbits;
     this.debug = debug;
   }

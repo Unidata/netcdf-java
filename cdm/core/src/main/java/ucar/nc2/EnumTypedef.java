@@ -140,6 +140,18 @@ public class EnumTypedef {
         && basetype == that.basetype;
   }
 
+  // Needed for netCDF4 wierdness
+  public boolean equalsMapOnly(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    EnumTypedef that = (EnumTypedef) o;
+    return com.google.common.base.Objects.equal(map, that.map);
+  }
+
   @Override
   public int hashCode() {
     return com.google.common.base.Objects.hashCode(name, map, basetype);
