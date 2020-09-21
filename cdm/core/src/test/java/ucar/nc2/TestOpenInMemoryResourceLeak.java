@@ -1,12 +1,13 @@
 package ucar.nc2;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.unidata.util.test.TestDir;
@@ -34,23 +35,20 @@ public class TestOpenInMemoryResourceLeak {
     Files.copy(ncfileToCopy, tempFile, StandardCopyOption.REPLACE_EXISTING);
   }
 
-  /**
-   * Test for leak using NetcdfFile.openInMemory(URI)
-   */
+  /** Test for leak using NetcdfFile.openInMemory(URI) */
   @Test
   public void inputStreamNetcdfFileLeak() throws IOException {
-
     /*
      * Read the file into a NetcdfFile. try-with-resources ensures that the NetcdfFile's close()
      * method is called, so all resources with it are released.
      */
     try (NetcdfFile ncfile = NetcdfFiles.openInMemory(tempFile.toUri())) {
       // prove it's opened
-      Assert.assertTrue(ncfile.getFileTypeId().equalsIgnoreCase("netcdf"));
+      assertThat(ncfile.getFileTypeId()).isEqualTo("NetCDF-3");
     }
 
     /*
-     * Try to delete the temp file with Files.delete(). When this fails, it will due so with an exception like:
+     * Try to delete the temp file with Files.delete(). When this fails, it will throw an exception like:
      *
      * java.nio.file.FileSystemException:
      * C:\Users\\username\AppData\Local\Temp\file8726442302596323190.nc: The process cannot access
@@ -59,26 +57,21 @@ public class TestOpenInMemoryResourceLeak {
     Files.delete(tempFile);
   }
 
-  /**
-   * Test for leak using NetcdfFiles.openInMemory(URI)
-   */
+  /** Test for leak using NetcdfFiles.openInMemory(URI) */
   @Test
   public void inputStreamNetcdfFilesLeak() throws IOException {
-
     try (NetcdfFile ncfile = NetcdfFiles.openInMemory(tempFile.toUri())) {
       // prove it's opened
-      Assert.assertTrue(ncfile.getFileTypeId().equalsIgnoreCase("netcdf"));
+      assertThat(ncfile.getFileTypeId()).isEqualTo("NetCDF-3");
     }
 
     Files.delete(tempFile);
   }
 
-  /**
-   * Check that the temp file has been deleted after each test
-   */
+  /** Check that the temp file has been deleted after each test */
   @After
   public void reallyDeleted() {
-    Assert.assertTrue(Files.notExists(tempFile));
+    assertThat(Files.notExists(tempFile)).isTrue();
   }
 
 }
