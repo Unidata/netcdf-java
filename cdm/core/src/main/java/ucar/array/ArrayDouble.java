@@ -6,17 +6,15 @@ package ucar.array;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 
-/**
- * Concrete implementation of Array specialized for doubles.
- * Data storage is with 1D java array of doubles.
- */
+/** Concrete implementation of Array specialized for doubles. */
+@Immutable
 public class ArrayDouble extends ucar.array.Array<Double> {
 
   private final Storage<Double> storageD;
@@ -24,19 +22,20 @@ public class ArrayDouble extends ucar.array.Array<Double> {
   /** Create an empty Array of type double and the given shape. */
   public ArrayDouble(int[] shape) {
     super(DataType.DOUBLE, shape);
-    storageD = Storage.factory(DataType.DOUBLE, new double[(int) indexCalc.getSize()]);
+    storageD = new StorageD(new double[(int) indexCalc.getSize()]);
   }
 
   /** Create an Array of type double and the given shape and storage. */
   public ArrayDouble(int[] shape, Storage<Double> storageD) {
     super(DataType.DOUBLE, shape);
-    Preconditions.checkArgument(indexCalc.getSize() == storageD.getLength());
+    Preconditions.checkArgument(indexCalc.getSize() <= storageD.getLength());
     this.storageD = storageD;
   }
 
   /** Create an Array of type double and the given shape and storage. */
   private ArrayDouble(Strides shape, Storage<Double> storageD) {
     super(DataType.DOUBLE, shape);
+    Preconditions.checkArgument(indexCalc.getSize() <= storageD.getLength());
     this.storageD = storageD;
   }
 
@@ -50,13 +49,8 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     return indexCalc.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
   }
 
-  public Double sum() {
-    return Streams.stream(() -> fastIterator()).mapToDouble(d -> d).sum();
-  }
-
   @Override
   public Double get(int... index) {
-    Preconditions.checkArgument(this.rank == index.length);
     return storageD.get(indexCalc.get(index));
   }
 
@@ -66,8 +60,22 @@ public class ArrayDouble extends ucar.array.Array<Double> {
   }
 
   @Override
-  Object getPrimitiveArray() {
-    return storageD.getPrimitiveArray();
+  void arraycopy(int srcPos, Object dest, int destPos, long length) {
+    if (indexCalc.isCanonicalOrder()) {
+      storageD.arraycopy(srcPos, dest, destPos, length);
+    } else {
+      double[] ddest = (double[]) dest;
+      int destIndex = destPos;
+      Iterator<Integer> iter = indexCalc.iterator(srcPos, length);
+      while (iter.hasNext()) {
+        ddest[destIndex++] = storageD.get(iter.next());
+      }
+    }
+  }
+
+  @Override
+  Storage<Double> storage() {
+    return storageD;
   }
 
   /** create new Array with given indexImpl and the same backing store */
@@ -76,8 +84,8 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     return new ArrayDouble(index, storageD);
   }
 
+  // used when the data is not in canonical order
   private class CanonicalIterator implements Iterator<Double> {
-    // used when the data is not in canonical order
     private final Iterator<Integer> iter = indexCalc.iterator();
 
     @Override
@@ -91,7 +99,9 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     }
   }
 
-  static class StorageD extends Storage<Double> {
+  // standard storage using double[] primitive array
+  @Immutable
+  static class StorageD implements Storage<Double> {
     private final double[] storage;
 
     StorageD(double[] storage) {
@@ -99,7 +109,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     }
 
     @Override
-    long getLength() {
+    public long getLength() {
       return storage.length;
     }
 
@@ -109,17 +119,17 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     }
 
     @Override
+    public void arraycopy(int srcPos, Object dest, int destPos, long length) {
+      System.arraycopy(storage, srcPos, dest, destPos, (int) length);
+    }
+
+    @Override
     public Iterator<Double> iterator() {
       return new StorageDIter();
     }
 
-    @Override
-    Object getPrimitiveArray() {
-      return storage;
-    }
-
     private final class StorageDIter implements Iterator<Double> {
-      int count = 0;
+      private int count = 0;
 
       @Override
       public final boolean hasNext() {
@@ -133,18 +143,20 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     }
   }
 
-  static class StorageDM extends Storage<Double> {
-    private final ImmutableList<double[]> dataArrays;
+  // experimental storage using List of Storage<Double>
+  @Immutable
+  static class StorageDM implements Storage<Double> {
+    private final ImmutableList<Storage<Double>> dataArrays;
     private final long[] arrayEdge;
     private final long totalLength;
 
-    StorageDM(List<Array> dataArrays) {
-      ImmutableList.Builder<double[]> builder = ImmutableList.builder();
+    StorageDM(List<Array<?>> dataArrays) {
+      ImmutableList.Builder<Storage<Double>> builder = ImmutableList.builder();
       List<Long> edge = new ArrayList<>();
       edge.add(0L);
       long total = 0L;
       for (Array<?> dataArray : dataArrays) {
-        builder.add((double[]) dataArray.getPrimitiveArray());
+        builder.add(((Array<Double>) dataArray).storage());
         total += dataArray.getSize();
         edge.add(total);
       }
@@ -154,16 +166,35 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     }
 
     @Override
-    long getLength() {
+    public long getLength() {
       return totalLength;
     }
 
     @Override
     public Double get(long elem) {
       int search = Arrays.binarySearch(arrayEdge, elem);
-      int arrayIndex = (search < 0) ? -search - 1 : search;
-      double[] array = dataArrays.get(arrayIndex);
-      return array[(int) (elem - arrayEdge[arrayIndex])];
+      int arrayIndex = (search < 0) ? -search - 2 : search;
+      Storage<Double> array = dataArrays.get(arrayIndex);
+      return array.get((int) (elem - arrayEdge[arrayIndex]));
+    }
+
+    @Override
+    public void arraycopy(int srcPos, Object dest, int destPos, long length) {
+      long needed = length;
+      int startDst = destPos;
+
+      int search = Arrays.binarySearch(arrayEdge, srcPos);
+      int startIndex = (search < 0) ? -search - 2 : search;
+      int startSrc = (int) (srcPos - arrayEdge[startIndex]);
+
+      for (int index = startIndex; index < dataArrays.size(); index++) {
+        Storage<Double> storage = dataArrays.get(index);
+        int have = (int) Math.min(storage.getLength() - startSrc, needed);
+        storage.arraycopy(startSrc, dest, startDst, have);
+        needed -= have;
+        startDst += have;
+        startSrc = 0;
+      }
     }
 
     @Override
@@ -171,14 +202,10 @@ public class ArrayDouble extends ucar.array.Array<Double> {
       return new StorageDMIter();
     }
 
-    Object getPrimitiveArray() {
-      return dataArrays;
-    }
-
     private final class StorageDMIter implements Iterator<Double> {
-      int count = 0;
-      int arrayIndex = 0;
-      double[] array = dataArrays.get(0);
+      private int count = 0;
+      private int arrayIndex = 0;
+      private Storage<Double> array = dataArrays.get(0);
 
       @Override
       public final boolean hasNext() {
@@ -191,7 +218,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
           arrayIndex++;
           array = dataArrays.get(arrayIndex);
         }
-        double val = array[(int) (count - arrayEdge[arrayIndex])];
+        double val = array.get((int) (count - arrayEdge[arrayIndex]));
         count++;
         return val;
       }

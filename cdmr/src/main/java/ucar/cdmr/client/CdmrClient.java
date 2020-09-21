@@ -1,5 +1,7 @@
 package ucar.cdmr.client;
 
+import static ucar.cdmr.CdmrDataToMa.decodeSection;
+
 import com.google.common.base.Stopwatch;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import ucar.array.Arrays;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
@@ -54,7 +57,7 @@ public class CdmrClient {
 
   public Array<?> getData(String location, Variable v) {
     DataType dataType = CdmrDataToMa.convertDataType(v.getDataType());
-    Section section = CdmrDataToMa.decodeSection(v);
+    Section section = decodeSection(v);
     System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
     if (dataType != DataType.DOUBLE && dataType != DataType.FLOAT) {
       System.out.printf("***skip%n");
@@ -64,12 +67,12 @@ public class CdmrClient {
     Iterator<DataResponse> responses;
     try {
       responses = blockingStub.getData(request);
-      List<Array> results = new ArrayList<>();
+      List<Array<?>> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
-        results.add(CdmrDataToMa.decodeData(response.getData(), response.getSection()));
+        results.add(CdmrDataToMa.decodeData(response.getData(), decodeSection(response.getSection())));
       }
-      return Array.factoryCopy(dataType, section.getShape(), results);
+      return Arrays.factoryCopy(dataType, section.getShape(), results);
     } catch (Throwable e) {
       logger.warn("getData failed: " + location, e);
       e.printStackTrace();
@@ -114,7 +117,7 @@ public class CdmrClient {
         Array<?> data = client.getData(location, v);
         if (data != null) {
           Stopwatch s2 = Stopwatch.createStarted();
-          System.out.printf(" sum=%s took=%s%n", data.sum(), s2.stop());
+          System.out.printf(" took=%s%n", s2.stop());
         }
       }
       System.out.printf("That took %s%n", stopwatch.stop());
