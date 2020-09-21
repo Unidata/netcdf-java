@@ -38,16 +38,20 @@ public class TestRuntimeConfigParser {
       + "   </Netcdf4Clibrary>\n" + " </runtimeConfig>";
 
 
-  private final String failure2 = "<?xml version='1.0' encoding='UTF-8'?>\n" + " <runtimeConfig>\n"
-      + "   <ioServiceProvider  class='edu.univ.ny.stuff.FooFiles'/>\n"
-      + "   <coordSystemBuilderFactory convention='foo' class='test.Foo'/>\n"
-      + "   <coordTransBuilder name='atmos_ln_sigma_coordinates' type='vertical' class='my.stuff.atmosSigmaLog'/>\n"
-      + "   <featureDatasetFactory featureType='Point' class='gov.noaa.obscure.file.Flabulate'/>\n"
-      + "   <gribParameterTable edition='1' centeer='58' subcenter='-1' version='128'/>\n"
-      + "   <gribParameterTableLookup edition='1'/>\n" + "   <bufrtable filesname='C:/my/files/lookup.txt' />\n"
-      + "   <grib1Table strict='true'/>\n" + "   <Netcdf4Clibrary>\n"
-      + "     <libraryPath>/usr/local/lib</libraryPath>\n" + "     <libraryName>netcdf</libraryName>\n"
-      + "     <useForReading>false</useForReading>\n" + "   </Netcdf4Clibrary>\n" + " </runtimeConfig>";
+  private final String failure2 = "<?xml version='1.0' encoding='UTF-8'?>\n" + " <runtimeConfig>\n" //
+      + "   <ioServiceProvider  class='edu.univ.ny.stuff.FooFiles'/>\n" //
+      + "   <coordSystemBuilderFactory convention='foo' class='test.Foo'/>\n" //
+      + "   <coordTransBuilder name='atmos_ln_sigma_coordinates' type='vertical' class='my.stuff.atmosSigmaLog'/>\n" //
+      + "   <featureDatasetFactory featureType='Point' class='gov.noaa.obscure.file.Flabulate'/>\n" //
+      + "   <gribParameterTable edition='1' centeer='58' subcenter='-1' version='128'/>\n" //
+      + "   <gribParameterTableLookup edition='1'/>\n" //
+      + "   <bufrtable filesname='C:/my/files/lookup.txt' />\n" //
+      + "   <grib1Table strict='true'/>\n" + "   <Netcdf4Clibrary>\n" //
+      + "     <libraryPath>/usr/local/lib</libraryPath>\n" //
+      + "     <libraryName>netcdf</libraryName>\n" //
+      + "     <useForReading>false</useForReading>\n" //
+      + "   </Netcdf4Clibrary>\n" //
+      + " </runtimeConfig>"; //
 
   @Test
   public void testConfig() throws IOException {

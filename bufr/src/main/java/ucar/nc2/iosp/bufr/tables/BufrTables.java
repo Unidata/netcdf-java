@@ -127,38 +127,36 @@ public class BufrTables {
   static final String RESOURCE_PATH = "/resources/bufrTables/";
   private static final String canonicalLookup = "resource:" + RESOURCE_PATH + "local/tablelookup.csv";
   private static final int latestVersion = 19;
+  private static boolean canonicalTableRead = false;
 
   private static final boolean showTables = false;
   private static final boolean showReadErrs = true;
 
-  private static List<TableConfig> tables;
+  private static final List<TableConfig> tables = new ArrayList<>();;
   private static final Map<String, TableB> tablesB = new ConcurrentHashMap<>();
   private static final Map<String, TableD> tablesD = new ConcurrentHashMap<>();
 
-  private static List<String> lookups;
-
   // Called with reflection from RuntimeConfigParser
-  public static synchronized void addLookupFile(String filename) throws FileNotFoundException {
-    if (lookups == null)
-      lookups = new ArrayList<>();
+  public static synchronized void addLookupFile(String filename) throws IOException {
     if (!filename.startsWith("resource:")) {
       File f = new File(filename);
-      if (!f.exists())
+      if (!f.exists()) {
         throw new FileNotFoundException(filename + " not found");
+      }
     }
-    lookups.add(filename);
+    try {
+      readLookupTable(filename);
+    } catch (Throwable t) {
+      throw new IOException(filename + " got error", t);
+    }
   }
 
-  private static synchronized void readLookupTable() {
-    tables = new ArrayList<>();
-    if (lookups != null) {
-      lookups.add(canonicalLookup);
-      for (String fname : lookups) {
-        readLookupTable(fname);
-      }
-    } else {
-      readLookupTable(canonicalLookup);
+  private static synchronized void readCanonicalLookup() {
+    if (canonicalTableRead) {
+      return;
     }
+    readLookupTable(canonicalLookup);
+    canonicalTableRead = true;
   }
 
   // center,subcenter,master,local,cat,tableB,tableBformat,tableD,tableDformat, mode
@@ -176,8 +174,7 @@ public class BufrTables {
 
         String[] flds = line.split(",");
         if (flds.length < 8) {
-          if (showReadErrs)
-            System.out.printf("%d BAD line == %s%n", count, line);
+          log.warn(String.format("%d BAD line == '%s' filename=%s%n", count, line, filename));
           continue;
         }
 
@@ -211,13 +208,13 @@ public class BufrTables {
             System.out.printf("Added table == %s%n", table);
 
         } catch (Exception e) {
-          if (showReadErrs)
-            System.out.printf("%d %d BAD line == %s (%s)%n", count, fldidx, line, e.getMessage());
+          log.warn(String.format("%d %d BAD line == '%s' filename=%s (%s)%n", count, fldidx, line, filename,
+              e.getMessage()));
         }
       }
 
     } catch (IOException ioe) {
-      String mess = "Need BUFR tables in path; looking for " + filename;
+      String mess = "BUFR readLookupTable failed on " + filename;
       throw new RuntimeException(mess, ioe);
     }
   }
@@ -287,22 +284,18 @@ public class BufrTables {
   }
 
   public static List<TableConfig> getTables() {
-    if (tables == null)
-      readLookupTable();
+    readCanonicalLookup();
     return tables;
   }
 
   public static TableConfig[] getTableConfigsAsArray() {
-    if (tables == null)
-      readLookupTable();
+    readCanonicalLookup();
     TableConfig[] result = new TableConfig[tables.size()];
     return tables.toArray(result);
   }
 
   private static TableConfig matchTableConfig(int center, int subcenter, int master, int local, int cat) {
-    if (tables == null)
-      readLookupTable();
-
+    readCanonicalLookup();
     for (TableConfig tc : tables) {
       if (tc.matches(center, subcenter, master, local, cat))
         return tc;
@@ -879,8 +872,9 @@ public class BufrTables {
 
   public static TableD getWmoTableD(int masterTableVersion) throws IOException {
     TableConfig tc = matchTableConfig(0, 0, masterTableVersion, 0, -1);
-    if (tc != null)
+    if (tc != null) {
       return readTableD(tc.tableDname, tc.tableDformat, false);
+    }
     return null;
   }
 
