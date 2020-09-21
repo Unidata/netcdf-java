@@ -23,11 +23,11 @@ import java.lang.invoke.MethodHandles;
 /** Test HDF5 Eos files */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5eos {
+
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testStructMetadata() throws IOException {
-    // NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
     try (NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5")) {
 
       Group root = ncfile.getRootGroup();
@@ -82,13 +82,11 @@ public class TestH5eos {
     }
   }
 
-  /*
-   * @Test
-   * public void testNetcdf4() throws IOException {
-   * try (NetcdfFile ncfile =
-   * NetcdfFiles.open("C:/Users/snake/Downloads/VNP10A1_A2018001_h31v11_001_2019126193423_HEGOUT.nc")) {
-   * }
-   * }
-   */
+  @Test
+  public void testNetcdf4() throws IOException {
+    try (NetcdfFile ncfile =
+        NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/netcdf4/VNP10A1_A2018001_h31v11_001_2019126193423_HEGOUT.nc")) {
+    }
+  }
 
 }
