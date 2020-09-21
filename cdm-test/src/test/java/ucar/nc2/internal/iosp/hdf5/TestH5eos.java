@@ -84,8 +84,8 @@ public class TestH5eos {
 
   @Test
   public void testNetcdf4() throws IOException {
-    try (NetcdfFile ncfile =
-        NetcdfFiles.open(TestDir.cdmUnitTestDir + "formats/netcdf4/VNP10A1_A2018001_h31v11_001_2019126193423_HEGOUT.nc")) {
+    try (NetcdfFile ncfile = NetcdfFiles
+        .open(TestDir.cdmUnitTestDir + "formats/netcdf4/VNP10A1_A2018001_h31v11_001_2019126193423_HEGOUT.nc")) {
     }
   }
 
