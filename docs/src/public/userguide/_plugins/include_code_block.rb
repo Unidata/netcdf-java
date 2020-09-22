@@ -39,7 +39,9 @@ module Jekyll
         startscan = /#{@function}\(.*\).*\{/m =~ filestring
 
         # find function end
-        unless startscan.nil?
+        if startscan.nil?
+          raise "Function name "+ @function + " not found in file " + File.basename(@path)
+        else
           start = filestring.index("{", startscan)
           i = start
           brackets = ["{"]

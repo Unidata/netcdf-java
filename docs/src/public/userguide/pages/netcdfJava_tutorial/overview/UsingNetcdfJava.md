@@ -62,20 +62,9 @@ dependencies {
 ~~~
 
 There are optional modules add support for reading (and sometimes writing) various scientific data formats.
-The formats associated with each module are:
+To see which optionals you need for your data format, see [here](file_types.html).
 
-* `bufr`: BUFR
-* `cdm-image`: GINI and FYSAT
-* `cdm-radial`: Radial (eg radar) datasets
-* `cdm-s3`: Enable RandomAccessFile level access to CDM datasets stored on AWS S3
-* `cdm-misc` : Miscellaneous formats (see [here](#cdm-misc-module) for a list)
-* `grib`: GRIB-1 and GRIB-2
-* `netcdf4`: NetCDF-4. Writing requires the NetCDF-4 C library to be installed.
-* `opendap`: OPeNDAP
-* `cdm-mcidas`: GEMPAK grid, station, and sounding; McIDAS grid; and ADDE image and station
-* `cdm-vis5d` : Vis5d grids
-
-You can include any number of the above components.
+You can include any number of the optional components.
 For example, in Maven and Gradle:
 
 ~~~xml
@@ -134,25 +123,6 @@ dependencies {
   runtime "edu.ucar:cdm-mcidas:${netcdfJavaVersion}"
 }
 ~~~
-
-## cdm-misc module
-
-The `cdm-misc` module contains the following miscellaneous IOSPs:
-
- * Defense Meteorological Satellite Program (DMSP) format
- * GrADS:
-   * raw lat/lon binary grid files (DTYPE not defined)
-   * ensembles defined by NAMES in one file or as a template
-   * time templates
-   * gaussian latitudes
- * GTOPO Topograpic data
- * NLDN Lightning
- * NMC legacy (pre-BUFR) obs data
- * USPLN Lightning
- * NCEI
-   * Global Historical Climatology Network Monthly (GHCNM)
-   * Integrated Global Radiosonde Archive
-
 ## Building with netcdfAll
 
 This is the appropriate option if you’re not using a dependency management tool like Maven or Gradle and you don’t care about jar size or compatibility with other libraries. Simply include netcdfAll-${netcdfJavaVersion}.jar on the classpath when you run your program.

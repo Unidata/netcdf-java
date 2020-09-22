@@ -11,6 +11,9 @@ A `NetcdfFile` provides read-only access to datasets through the netCDF API (to 
 Use the static `NetcdfFiles.open` methods to open a netCDF file, an HDF5 file, or any other file which has an &nbsp;[`IOServiceProvider`](writing_iosp.html) implementation that can read the file with the NetCDF API.
 Use [`NetcdfDataset.openFile`](netcdf_dataset.html) for more general reading capabilities, including **OPeNDAP**, **NcML**, and **THREDDS** datasets.
 
+Read access for some file types is provided through optional modules and must be included in your netCDF build as [artifacts](using_netcdf_java_artifacts.html).
+To see what module you will need to include for your data, read more about [CDM file types](file_types.html).
+
 ## Opening a NetcdfFile
 
 A simple way to open a NetcdfFile:

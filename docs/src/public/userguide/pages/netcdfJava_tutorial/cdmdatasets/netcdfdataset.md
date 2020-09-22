@@ -15,7 +15,7 @@ The `ucar.nc2.dataset` classes are an extension to the NetCDF API that provide s
 * remote access to OpenDAP, ADDE and THREDDS datasets.
 
 NcML is an XML document format that allows you to create "virtual" netCDF datasets, including combining multiple netCDF files into one dataset. 
-A [later section](basic_ncml_tutorial.html) of the tutorial explains NcML and how to create virtual datasets.
+The [NcML](basic_ncml_tutorial.html) section of the tutorial explains how to create virtual datasets.
 
 #### Using NetcdfDataset.openFile to open a NetcdfFile
 
@@ -66,7 +66,7 @@ You can test for missing values with the `VariableDS.isMissing(value)` method.
 To open a `NetcdfDataset` in enhanced mode in Tools UI, toggle the enhance button 
 {% include inline_image.html file="netcdf-java/tutorial/cdmdatasets/enhanceButton.jpg" alt="Enhance button" %} on the ToolsUI Viewer tab to ON.
 
-#### Coordinate Systems
+#### Coordinate systems
 
 `NetcdfDataset` will try to identify the coordinate systems in the dataset by calling a `CoordSystemBuilder` class that knows how to interpret the `Conventions` for that dataset. 
 The information is placed in `Coordinate` objects that follow this abstract model (see the javadoc for the specifics):
