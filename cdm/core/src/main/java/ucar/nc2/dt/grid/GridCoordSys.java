@@ -58,7 +58,6 @@ import ucar.unidata.geoloc.VerticalTransform;
  *
  * @author caron
  */
-
 public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCoordSystem {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordSys.class);
   private static final boolean warnUnits = false;
@@ -1468,6 +1467,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @return date range
    * @deprecated use getCalendarDateRange
    */
+  @Deprecated
   public DateRange getDateRange() {
     Date[] dates = getTimeDates();
     if (dates.length > 0)
@@ -1482,6 +1482,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @return array of java.util.Date, or Date[0].
    * @deprecated use getCalendarDates
    */
+  @Deprecated
   public java.util.Date[] getTimeDates() {
     if ((timeTaxis != null) && (timeTaxis.getSize() > 0)) {
       return timeTaxis.getTimeDates();

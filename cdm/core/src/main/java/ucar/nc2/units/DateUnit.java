@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
  * This is a wrapper around ucar.units package.
  * It tracks the value, the base time unit, and the date origin seperately.
  * 
- * @deprecated use {@link ucar.nc2.time.CalendarDate}
+ * @deprecated use {@link ucar.nc2.time.CalendarDateUnit}
  */
 @Deprecated
 public class DateUnit {
@@ -31,6 +31,7 @@ public class DateUnit {
    *        </pre>
    * 
    * @return Date or null if not date unit.
+   * @deprecated use CalendarDateUnit withCalendar()
    */
   public static Date getStandardDate(String text) {
     double value;

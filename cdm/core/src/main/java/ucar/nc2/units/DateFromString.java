@@ -17,7 +17,10 @@ import java.text.ParseException;
 /**
  * Convenience routines for parsing a String to produce a Date.
  * Used in thredds date extraction, also in aggregation configuration DateFormatMark.
+ * 
+ * @deprecated do not use, will move in version 7
  */
+@Deprecated
 public class DateFromString {
   private static final Logger logger = LoggerFactory.getLogger(DateFromString.class);
 

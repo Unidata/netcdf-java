@@ -34,7 +34,7 @@ import java.util.Date;
  *
  * @author john caron
  * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
- * @deprecated will move in version 7
+ * @deprecated do not use: will move in version 7
  */
 @Deprecated
 public class TimeDuration {
@@ -252,6 +252,8 @@ public class TimeDuration {
     return to.getValueInSeconds() == getValueInSeconds();
   }
 
+  /** @deprecated, , will be removed in ver7. */
+  @Deprecated
   public Date add(Date d) {
     return timeUnit.add(d);
   }

@@ -6,9 +6,13 @@ package ucar.nc2.internal.util;
 
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
-import java.util.*;
 
 /**
  * This is a general purpose utility for determining a place to write files and cache them, eg for
@@ -251,7 +255,7 @@ public class DiskCache {
       return;
     for (File file : children) {
       String org = EscapeStrings.urlDecode(file.getName()); // TODO whats the point of urlDecode?
-      pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
+      pw.println(" " + file.length() + " " + CalendarDate.of(file.lastModified()) + " " + org);
     }
   }
 
@@ -260,7 +264,9 @@ public class DiskCache {
    *
    * @param cutoff earliest date to allow
    * @param sbuff write results here, null is ok.
+   * @deprecated use cleanCache(CalendarDate cutoff, StringBuilder sbuff)
    */
+  @Deprecated
   public static void cleanCache(Date cutoff, StringBuilder sbuff) {
     if (sbuff != null)
       sbuff.append("CleanCache files before ").append(cutoff).append("\n");
@@ -271,6 +277,32 @@ public class DiskCache {
     for (File file : children) {
       Date lastMod = new Date(file.lastModified());
       if (lastMod.before(cutoff)) {
+        boolean ret = file.delete();
+        if (sbuff != null) {
+          sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
+          if (!ret)
+            sbuff.append("Error deleting ").append(file).append("\n");
+        }
+      }
+    }
+  }
+
+  /**
+   * Remove all files with date < cutoff.
+   *
+   * @param cutoff earliest date to allow
+   * @param sbuff write results here, null is ok.
+   */
+  public static void cleanCache(CalendarDate cutoff, StringBuilder sbuff) {
+    if (sbuff != null)
+      sbuff.append("CleanCache files before ").append(cutoff).append("\n");
+    File dir = new File(root);
+    File[] children = dir.listFiles();
+    if (children == null)
+      return;
+    for (File file : children) {
+      CalendarDate lastMod = CalendarDate.of(file.lastModified());
+      if (lastMod.isBefore(cutoff)) {
         boolean ret = file.delete();
         if (sbuff != null) {
           sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");

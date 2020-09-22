@@ -721,7 +721,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
           ii.setObjectNext(dset.coordValue); // coordValueDate as a String, see setInfo()
 
         } else if (du != null) {
-          double val = du.makeValue(dset.coordValueDate);
+          double val = du.makeValue(dset.coordValueDate.toDate());
           ii.setDoubleNext(val);
         }
 

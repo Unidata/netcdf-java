@@ -6,9 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Date;
 import org.junit.Test;
 import ucar.nc2.internal.util.DiskCache;
+import ucar.nc2.time.CalendarDate;
 
 /** Test DiskCache */
 public class TestDiskCache {
@@ -21,7 +21,7 @@ public class TestDiskCache {
       assert ret;
     }
     System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = "
-        + new Date(want.lastModified()));
+        + CalendarDate.of(want.lastModified()));
     System.out.println(" original=" + filename);
   }
 

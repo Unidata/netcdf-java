@@ -9,11 +9,11 @@ import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 
@@ -92,19 +92,19 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
   private static class MFileRemote implements MFile {
     private Object info;
     private final Access access;
-    private Date lastModified;
+    private CalendarDate lastModified;
 
     MFileRemote(Access access) {
       this.access = access;
       for (DateType dateType : access.getDataset().getDates()) {
         if (dateType.getType().equals("modified"))
-          lastModified = dateType.getDate();
+          lastModified = dateType.getCalendarDate();
       }
     }
 
     @Override
     public long getLastModified() {
-      return lastModified == null ? -1 : lastModified.getTime();
+      return lastModified == null ? -1 : lastModified.getMillis();
     }
 
     @Override

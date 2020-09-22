@@ -8,7 +8,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -149,7 +148,7 @@ abstract class WriterCFPointAbstract implements Closeable {
   private void addNetcdf3UnknownAtts(boolean noTimeCoverage) {
     // dummy values, update in finish()
     if (!noTimeCoverage) {
-      CalendarDate now = CalendarDate.of(new Date());
+      CalendarDate now = CalendarDate.present();
       writerb.addAttribute(new Attribute(ACDD.TIME_START, CalendarDateFormatter.toDateTimeStringISO(now)));
       writerb.addAttribute(new Attribute(ACDD.TIME_END, CalendarDateFormatter.toDateTimeStringISO(now)));
     }
