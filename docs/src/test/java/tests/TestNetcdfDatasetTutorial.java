@@ -21,7 +21,7 @@ public class TestNetcdfDatasetTutorial {
   private static DatasetUrl datasetUrl;
 
   @BeforeClass
-  public static void setUpTests() throws Exception {
+  public static void setUpTests() throws IOException {
     datasetUrl = DatasetUrl.findDatasetUrl(dataPathStr);
   }
 

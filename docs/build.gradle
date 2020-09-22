@@ -9,6 +9,7 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 
 dependencies {
   testCompile project(':cdm:cdm-core')
+  testCompile project(':netcdf4')
   testCompile project(':cdm-test-utils')
   testCompile 'org.slf4j:slf4j-api'
   testCompile 'junit:junit'
