@@ -607,7 +607,7 @@ class Giniheader {
           // According to https://github.com/Unidata/gempak/blob/master/gempak/source/gemlib/mv/Linux/mvitob.c,
           // which is used when writing gini files, if the first bit is set, that indicates that we have a negative
           // value and need to do a bit more work.
-          // Check if left-most bit is 1. Left shift bit pattern of value 31 times. This will make all bits 0, or
+          // Check if left-most bit is 1. Right shift bit pattern of value 31 times. This will make all bits 0, or
           // all bits 1. If all 0, then the result will equal zero. If all 1's, then the result will equal -1, and
           // that's how we know we need to do more work.
           if ((mind >> 31) == -1) {
@@ -615,7 +615,7 @@ class Giniheader {
             // 0x7FFFFFFF -> left-most bit is zero, all the rest are 1's.
             // The bit-wise & results in flipping the first bit of "mind" (because we know it is 1 at this point, and
             // 1 & 0 -> 0) while retaining the rest of the pattern of mind (because 0 & 1 -> 0, 1 & 1 -> 1).
-            // To negate, just use the negative sign...we could do (mind & 0x7FFFFFFF) + 1, but let's not hang out
+            // To negate, just use the negative sign...we could do ~(mind & 0x7FFFFFFF) + 1, but let's not hang out
             // in bit operator land longer than we need to.
             mind = -(mind & 0x7FFFFFFF);
           }
