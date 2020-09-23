@@ -328,6 +328,14 @@ public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
       DataDDS dataDDS = readDataDDSfromServer(buff.toString());
       DodsV root = DodsV.parseDataDDS(dataDDS);
       DodsV want = root.children.get(0); // can only be one
+      // Find the child node matching the requested variable
+      for (int i = 1; i < root.children.size(); i++) {
+        DodsV element = root.children.get(i);
+        if (element.getFullName().equals(v.getFullName())) {
+          want = element;
+          break;
+        }
+      }
       dataArray = convertD2N.convertTopVariable(v, section.getRanges(), want);
 
     } catch (DAP2Exception ex) {
