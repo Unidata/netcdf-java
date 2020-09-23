@@ -38,10 +38,10 @@ import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
 /** HDF5 I/O */
-public class H5iospNew extends AbstractIOServiceProvider {
+public class H5iosp extends AbstractIOServiceProvider {
   public static final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
 
-  private static final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
+  static final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
 
   static boolean debug;
   static boolean debugPos;
@@ -55,7 +55,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   static boolean debugStructure;
   static boolean useHdfEos = true;
 
-  static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iospNew.class);
+  static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug = debugFlag.isSet("H5iosp/read");
@@ -66,14 +66,14 @@ public class H5iospNew extends AbstractIOServiceProvider {
     debugChunkIndexer = debugFlag.isSet("H5iosp/chunkIndexer");
     debugVlen = debugFlag.isSet("H5iosp/vlen");
 
-    H5headerNew.setDebugFlags(debugFlag);
+    H5header.setDebugFlags(debugFlag);
     if (debugFilter)
       H5tiledLayoutBB.debugFilter = debugFilter;
   }
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    return H5headerNew.isValidFile(raf);
+    return H5header.isValidFile(raf);
   }
 
   @Override
@@ -104,8 +104,8 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private H5headerNew header;
-  private boolean isEos;
+  H5header header;
+  boolean isEos;
   boolean includeOriginalAttributes;
   private Charset valueCharset;
 
@@ -114,7 +114,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new H5headerNew(raf, rootGroup, this);
+    header = new H5header(raf, rootGroup, this);
     header.read(null);
 
     // check if its an HDF5-EOS file
@@ -163,12 +163,12 @@ public class H5iospNew extends AbstractIOServiceProvider {
     this.valueCharset = charset;
   }
 
-  public H5headerNew getHeader() {
+  public H5header getHeader() {
     return header;
   }
 
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
+    H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     if (debugRead)
       System.out.printf("%s read %s%n", v2.getFullName(), section);
     return readData(v2, vinfo.dataPos, section);
@@ -176,7 +176,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
 
   // all the work is here, so can be called recursively
   private Array readData(Variable v2, long dataPos, Section wantSection) throws IOException, InvalidRangeException {
-    H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
+    H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
     Object data;
     Layout layout;
@@ -218,7 +218,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
         fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
 
       } else if (vinfo.typeInfo.hdfType == 8) { // enum
-        H5headerNew.TypeInfo baseInfo = vinfo.typeInfo.base;
+        H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
         readDtype = baseInfo.dataType;
         elemSize = readDtype.getSize();
         fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
@@ -231,7 +231,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
       }
 
       if (vinfo.isChunked) {
-        layout = new H5tiledLayout((H5headerNew.Vinfo) v2.getSPobject(), readDtype, wantSection);
+        layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, wantSection);
       } else {
         layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
       }
@@ -257,8 +257,8 @@ public class H5iospNew extends AbstractIOServiceProvider {
         System.out.printf("readFilteredStringData chunk=%s%n", chunk);
       int destPos = (int) chunk.getDestElem();
       for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
-        sa[destPos++] = header.readHeapString(bb, (chunk.getSrcElem() + i) * 16); // LOOK does this handle section
-                                                                                  // correctly ??
+        // LOOK does this handle section correctly ??
+        sa[destPos++] = header.readHeapString(bb, (chunk.getSrcElem() + i) * 16);
       }
     }
     return sa;
@@ -276,10 +276,10 @@ public class H5iospNew extends AbstractIOServiceProvider {
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  private Object readData(H5headerNew.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
+  private Object readData(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
       Object fillValue, int endian) throws IOException, InvalidRangeException {
 
-    H5headerNew.TypeInfo typeInfo = vinfo.typeInfo;
+    H5header.TypeInfo typeInfo = vinfo.typeInfo;
 
     // special processing
     if (typeInfo.hdfType == 2) { // time
@@ -415,7 +415,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
     for (StructureMembers.Member m : sm.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       assert v2 != null;
-      H5headerNew.Vinfo vm = (H5headerNew.Vinfo) v2.getSPobject();
+      H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
 
       // apparently each member may have seperate byte order (!!!??)
       if (vm.typeInfo.endian >= 0) {
@@ -570,7 +570,7 @@ public class H5iospNew extends AbstractIOServiceProvider {
   public String toStringDebug(Object o) {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
-      H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v.getSPobject();
+      H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
       return vinfo.toString();
     }
     return null;

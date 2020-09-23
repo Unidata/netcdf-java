@@ -31,14 +31,15 @@ public enum DataType {
   ENUM2("enum2", 2, short.class, false), // short
   ENUM4("enum4", 4, int.class, false), // int
 
-  OPAQUE("opaque", 1, ByteBuffer.class, false), // byte blobs
-
-  OBJECT("object", 1, Object.class, false), // added for use with Array
+  OPAQUE("opaque", 1, ByteBuffer.class, false), // byte blobs;
+  OBJECT("object", 1, Object.class, false), // use with ucar.ma2.Array
 
   UBYTE("ubyte", 1, byte.class, true), // unsigned byte
   USHORT("ushort", 2, short.class, true), // unsigned short
   UINT("uint", 4, int.class, true), // unsigned int
-  ULONG("ulong", 8, long.class, true); // unsigned long
+  ULONG("ulong", 8, long.class, true), // unsigned long
+
+  VLEN("vlen", 1, Object.class, false); // use with ucar.array.Array
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both

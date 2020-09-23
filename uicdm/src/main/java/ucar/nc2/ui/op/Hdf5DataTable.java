@@ -9,8 +9,8 @@ import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.internal.iosp.hdf5.H5headerNew;
-import ucar.nc2.internal.iosp.hdf5.H5iospNew;
+import ucar.nc2.internal.iosp.hdf5.H5header;
+import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
@@ -44,7 +44,7 @@ public class Hdf5DataTable extends JPanel {
 
   private TextHistoryPane infoTA;
 
-  private H5iospNew iosp;
+  private H5iosp iosp;
   private String location;
 
   public Hdf5DataTable(PreferencesExt prefs, JPanel buttPanel) {
@@ -157,7 +157,7 @@ public class Hdf5DataTable extends JPanel {
     this.location = raf.getLocation();
     List<VarBean> beanList = new ArrayList<>();
 
-    iosp = new H5iospNew();
+    iosp = new H5iosp();
     NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     try {
       iosp.open(raf, ncfile, null);
@@ -246,14 +246,14 @@ public class Hdf5DataTable extends JPanel {
 
   public class VarBean {
     Variable v;
-    H5headerNew.Vinfo vinfo;
+    H5header.Vinfo vinfo;
     long[] countResult;
 
     public VarBean() {}
 
     public VarBean(Variable v) {
       this.v = v;
-      this.vinfo = (H5headerNew.Vinfo) v.getSPobject();
+      this.vinfo = (H5header.Vinfo) v.getSPobject();
     }
 
     public String getName() {

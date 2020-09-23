@@ -30,7 +30,7 @@ public class IteratorFast implements IndexIterator {
   private Index counter; // usually not used
 
   public String toString() {
-    if (counter == null || counter.toString().equals("")) // not sure about the second condition
+    if (counter == null)
       counter = Index.factory(maa.getShape());
     counter.setCurrentCounter(currElement);
     return counter.toString();

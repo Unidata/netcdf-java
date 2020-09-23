@@ -67,7 +67,7 @@ public class H5tiledLayoutBB implements LayoutBB {
       throws InvalidRangeException, IOException {
     wantSection = Section.fill(wantSection, v2.getShape());
 
-    H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v2.getSPobject();
+    H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     Preconditions.checkNotNull(vinfo);
     Preconditions.checkArgument(vinfo.isChunked);
     Preconditions.checkNotNull(vinfo.btree);
@@ -101,11 +101,11 @@ public class H5tiledLayoutBB implements LayoutBB {
       try {
         int size = Integer.parseInt(System.getProperty(INFLATEBUFFERSIZE_PROPERTY));
         if (size <= 0)
-          H5iospNew.log.warn(String.format("-D%s must be > 0", INFLATEBUFFERSIZE_PROPERTY));
+          H5iosp.log.warn(String.format("-D%s must be > 0", INFLATEBUFFERSIZE_PROPERTY));
         else
           this.inflatebuffersize = size;
       } catch (NumberFormatException nfe) {
-        H5iospNew.log.warn(String.format("-D%s is not an integer", INFLATEBUFFERSIZE_PROPERTY));
+        H5iosp.log.warn(String.format("-D%s is not an integer", INFLATEBUFFERSIZE_PROPERTY));
       }
     }
     if (debugFilter)

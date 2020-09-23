@@ -20,7 +20,7 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.internal.iosp.hdf5.H5iospNew;
+import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.stream.CdmRemote;
@@ -674,7 +674,7 @@ public class ToolsUI extends JPanel {
     log.debug("setDebugFlags");
 
     NetcdfFile.setDebugFlags(debugFlags);
-    H5iospNew.setDebugFlags(debugFlags);
+    H5iosp.setDebugFlags(debugFlags);
     NcmlReader.setDebugFlags(debugFlags);
     // DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);

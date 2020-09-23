@@ -567,6 +567,13 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return _read();
   }
 
+  public ucar.array.Array<?> readArray() throws IOException, InvalidRangeException {
+    if (cache.data != null) {
+      return ucar.array.Arrays.convert(cache.data);
+    }
+    return ncfile.readArrayData(this, getShapeAsSection());
+  }
+
   ///// scalar reading
 
   /**

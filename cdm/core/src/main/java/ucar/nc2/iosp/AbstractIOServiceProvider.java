@@ -13,6 +13,7 @@ import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
@@ -86,6 +87,12 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   public void reacquire() throws IOException {
     raf = RandomAccessFile.acquire(location);
     this.raf.order(rafOrder);
+  }
+
+  @Override
+  public ucar.array.Array<?> readArrayData(Variable v2, Section section)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    return null;
   }
 
   @Override

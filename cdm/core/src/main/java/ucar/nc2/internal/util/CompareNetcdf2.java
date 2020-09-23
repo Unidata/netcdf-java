@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Formatter;
 import java.util.ArrayList;
-import ucar.nc2.internal.iosp.hdf5.H5headerNew;
+import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
 
@@ -72,11 +72,11 @@ public class CompareNetcdf2 {
       // if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getShortName();
 
-      if (name.equals(H5headerNew.HDF5_DIMENSION_LIST))
+      if (name.equals(H5header.HDF5_DIMENSION_LIST))
         return false;
-      if (name.equals(H5headerNew.HDF5_DIMENSION_SCALE))
+      if (name.equals(H5header.HDF5_DIMENSION_SCALE))
         return false;
-      if (name.equals(H5headerNew.HDF5_DIMENSION_LABELS))
+      if (name.equals(H5header.HDF5_DIMENSION_LABELS))
         return false;
 
       // added by cdm

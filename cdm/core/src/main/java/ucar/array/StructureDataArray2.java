@@ -6,6 +6,7 @@ package ucar.array;
 
 import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import ucar.array.ArrayDouble.StorageD;
@@ -16,7 +17,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /** Superclass for implementations of Array of StructureData. */
-public class StructureDataArray extends ucar.array.Array<StructureData> {
+public class StructureDataArray2 extends Array<StructureData> {
 
   public static int[] makeMemberOffsets(Structure structure) {
     int pos = 0;
@@ -30,36 +31,15 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  Storage<StructureData> storageSD;
-  StructureMembers members;
+  private final StorageBB storageSD;
+  private final StructureMembers members;
+  private ArrayList<Object> heap = new ArrayList<>();
 
-  /** Create an empty Array of type StructureData and the given shape. */
-  public StructureDataArray(StructureMembers members, int[] shape) {
+  /** Create an Array of type StructureData and the given shape and storage with ByteBuffer. */
+  public StructureDataArray2(StructureMembers members, int[] shape, ByteBuffer bytes) {
     super(DataType.STRUCTURE, shape);
     this.members = members;
-    storageSD = new StorageSD(new StructureData[(int) indexFn.length()]);
-  }
-
-  /** Create an Array of type StructureData and the given shape and storage. */
-  public StructureDataArray(StructureMembers members, int[] shape, Storage<StructureData> storageSD) {
-    super(DataType.STRUCTURE, shape);
-    Preconditions.checkArgument(indexFn.length() == storageSD.getLength());
-    this.members = members;
-    this.storageSD = storageSD;
-  }
-
-  /** Create an Array of type StructureData and the given shape and storage with ByteBuffer and offsets. */
-  public StructureDataArray(StructureMembers members, int[] shape, ByteBuffer bytes, int[] offsets) {
-    super(DataType.STRUCTURE, shape);
-    this.members = members;
-    this.storageSD = new StorageBB(bytes, members, offsets, (int) length());;
-  }
-
-  /** Create an Array of type StructureData and the given indexFn and storage. */
-  private StructureDataArray(StructureMembers members, IndexFn indexFn, Storage<StructureData> storageSD) {
-    super(DataType.STRUCTURE, indexFn);
-    this.members = members;
-    this.storageSD = storageSD;
+    this.storageSD = new StorageBB(bytes, members, (int) length());;
   }
 
   /** Get the StructureMembers. */
@@ -108,7 +88,7 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
   }
 
   @Override
-  public StructureData get(ucar.array.Index index) {
+  public StructureData get(Index index) {
     return get(index.getCurrentIndex());
   }
 
@@ -117,15 +97,21 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
     return storageSD;
   }
 
-  public void setStructureData(int index, StructureData sdata) {
-    // TODO kludge
-    ((StorageSD) storageSD).storage[index] = sdata;
-  }
-
   /** Get the size of each StructureData object in bytes. */
   public int getStructureSize() {
     return members.getStructureSize();
   }
+
+  public int addObjectToHeap(Object s) {
+    heap.add(s);
+    return heap.size() - 1;
+  }
+
+  public ByteBuffer getByteBuffer() {
+    return storageSD.bbuffer;
+  }
+
+  /////////////////////////////////////////////////////////////////
 
   private class CanonicalIterator implements Iterator<StructureData> {
     // used when the data is not in canonical order
@@ -142,62 +128,16 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
     }
   }
 
-  ////////////////////////////////////////////////////////////////
-
-  static class StorageSD implements Storage<StructureData> {
-    final StructureData[] storage;
-
-    StorageSD(StructureData[] storage) {
-      this.storage = storage;
-    }
-
-    @Override
-    public long getLength() {
-      return storage.length;
-    }
-
-    @Override
-    public StructureData get(long elem) {
-      return storage[(int) elem];
-    }
-
-    @Override
-    public void arraycopy(int srcPos, Object dest, int destPos, long length) {
-      // TODO
-    }
-
-    @Override
-    public Iterator<StructureData> iterator() {
-      return new Iter();
-    }
-
-    private final class Iter implements Iterator<StructureData> {
-      private int count = 0;
-
-      @Override
-      public final boolean hasNext() {
-        return count < storage.length;
-      }
-
-      @Override
-      public final StructureData next() {
-        return storage[count++];
-      }
-    }
-  }
-
   ////////////////////////////////////////////////////////////
 
   static class StorageBB implements Storage<StructureData> {
     private final ByteBuffer bbuffer;
     private final int nelems;
     private final StructureMembers members;
-    private final int[] offset;
 
-    StorageBB(ByteBuffer bbuffer, StructureMembers members, int[] offset, int nelems) {
+    StorageBB(ByteBuffer bbuffer, StructureMembers members, int nelems) {
       this.bbuffer = bbuffer;
       this.members = members;
-      this.offset = offset;
       this.nelems = nelems;
     }
 
@@ -246,23 +186,32 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
       @Override
       public Array<?> getMemberData(Member m) {
         DataType dataType = m.getDataType();
-        int pos = recno * members.getStructureSize() + offset[m.getIndex()];
-        int size = m.length();
+        bbuffer.order(m.getByteOrder());
+        int length = m.length();
+        int pos = recno * members.getStructureSize() + m.getOffset();
 
         switch (dataType) {
           case DOUBLE:
-            double[] darray = new double[size];
-            for (int count = 0; count < size; count++) {
+            double[] darray = new double[length];
+            for (int count = 0; count < length; count++) {
               darray[count] = bbuffer.getDouble(pos + 8 * count);
             }
             return new ArrayDouble(m.getShape(), new StorageD(darray));
 
           case FLOAT:
-            float[] farray = new float[size];
-            for (int count = 0; count < size; count++) {
+            float[] farray = new float[length];
+            for (int count = 0; count < length; count++) {
               farray[count] = bbuffer.getFloat(pos + 4 * count);
             }
             return new ArrayFloat(m.getShape(), new StorageF(farray));
+
+          case STRUCTURE:
+            StructureMembers nestedMembers = Preconditions.checkNotNull(m.getStructureMembers());
+            int totalSize = length * nestedMembers.getStructureSize();
+            ByteBuffer nestedBB = ByteBuffer.wrap(bbuffer.array(), pos, totalSize);
+            // public StructureDataArray(StructureMembers members, int[] shape, ByteBuffer bytes, int[] offsets) {
+            // look if members had offsets, could construct offset[]. Or wouldnt need it.
+            return new StructureDataArray2(nestedMembers, m.getShape(), nestedBB);
 
           default:
             return null;

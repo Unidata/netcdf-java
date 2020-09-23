@@ -75,6 +75,9 @@ public interface IOServiceProvider extends Closeable {
    */
   ucar.ma2.Array readData(Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
+  ucar.array.Array<?> readArrayData(Variable v2, Section section)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException;
+
   /**
    * Read data from a top level Variable and send data to a OutputStream.
    * Must be in big-endian order, following ncstream conventions.

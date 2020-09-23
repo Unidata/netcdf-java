@@ -19,23 +19,23 @@ public class ArrayFloat extends Array<Float> {
   private final Storage<Float> storageF;
 
   // TODO whats the point if you cant change the storage?
-  /** Create an empty Array of type double and the given shape. */
+  /** Create an empty Array of type float and the given shape. */
   public ArrayFloat(int[] shape) {
     super(DataType.FLOAT, shape);
-    storageF = new StorageF(new float[(int) indexCalc.getSize()]);
+    storageF = new StorageF(new float[(int) indexFn.length()]);
   }
 
-  /** Create an Array of type double and the given shape and storage. */
+  /** Create an Array of type float and the given shape and storage. */
   public ArrayFloat(int[] shape, Storage<Float> storageF) {
-    super(DataType.DOUBLE, shape);
-    Preconditions.checkArgument(indexCalc.getSize() <= storageF.getLength());
+    super(DataType.FLOAT, shape);
+    Preconditions.checkArgument(indexFn.length() <= storageF.getLength());
     this.storageF = storageF;
   }
 
-  /** Create an Array of type double and the given shape and storage. */
-  private ArrayFloat(Strides shape, Storage<Float> storageF) {
-    super(DataType.FLOAT, shape);
-    Preconditions.checkArgument(indexCalc.getSize() <= storageF.getLength());
+  /** Create an Array of type float and the given indexFn and storage. */
+  private ArrayFloat(IndexFn indexFn, Storage<Float> storageF) {
+    super(DataType.FLOAT, indexFn);
+    Preconditions.checkArgument(indexFn.length() <= storageF.getLength());
     this.storageF = storageF;
   }
 
@@ -46,12 +46,12 @@ public class ArrayFloat extends Array<Float> {
 
   @Override
   public Iterator<Float> iterator() {
-    return indexCalc.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
+    return indexFn.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
   }
 
   @Override
   public Float get(int... index) {
-    return storageF.get(indexCalc.get(index));
+    return storageF.get(indexFn.get(index));
   }
 
   @Override
@@ -61,12 +61,12 @@ public class ArrayFloat extends Array<Float> {
 
   @Override
   void arraycopy(int srcPos, Object dest, int destPos, long length) {
-    if (indexCalc.isCanonicalOrder()) {
+    if (indexFn.isCanonicalOrder()) {
       storageF.arraycopy(srcPos, dest, destPos, length);
     } else {
       float[] ddest = (float[]) dest;
       int destIndex = destPos;
-      Iterator<Integer> iter = indexCalc.iterator(srcPos, length);
+      Iterator<Integer> iter = indexFn.iterator(srcPos, length);
       while (iter.hasNext()) {
         ddest[destIndex++] = storageF.get(iter.next());
       }
@@ -78,15 +78,15 @@ public class ArrayFloat extends Array<Float> {
     return storageF;
   }
 
-  /** create new Array with given indexImpl and the same backing store */
+  /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayFloat createView(Strides index) {
-    return new ArrayFloat(index, storageF);
+  protected ArrayFloat createView(IndexFn indexFn) {
+    return new ArrayFloat(indexFn, storageF);
   }
 
   private class CanonicalIterator implements Iterator<Float> {
     // used when the data is not in canonical order
-    private final Iterator<Integer> iter = indexCalc.iterator();
+    private final Iterator<Integer> iter = indexFn.iterator();
 
     @Override
     public boolean hasNext() {
@@ -155,7 +155,7 @@ public class ArrayFloat extends Array<Float> {
       long total = 0L;
       for (Array<?> dataArray : dataArrays) {
         builder.add(((Array<Float>) dataArray).storage());
-        total += dataArray.getSize();
+        total += dataArray.length();
         edge.add(total);
       }
       this.dataArrays = builder.build();

@@ -34,7 +34,7 @@ public class DataBTree {
   private static final boolean debugChunkOrder = false;
   private static java.io.PrintStream debugOut = System.out;
 
-  private final H5headerNew h5;
+  private final H5header h5;
   private final RandomAccessFile raf;
   private final MemTracker memTracker;
 
@@ -44,7 +44,7 @@ public class DataBTree {
 
   private Object owner;
 
-  public DataBTree(H5headerNew h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) {
+  public DataBTree(H5header h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) {
     this.h5 = h5;
     this.raf = h5.getRandomAccessFile();
     this.rootNodeAddress = rootNodeAddress;

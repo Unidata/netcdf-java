@@ -30,7 +30,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.IospFileUpdater;
-import ucar.nc2.internal.iosp.hdf5.H5iospNew;
+import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
 import ucar.nc2.iosp.IOServiceProvider;
@@ -65,7 +65,7 @@ public class NetcdfFormatUpdater implements Closeable {
     try (NetcdfFile ncfile = NetcdfFiles.open(location)) {
       IOServiceProvider iosp = (IOServiceProvider) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_GET_IOSP);
       Preconditions.checkArgument(
-          iosp instanceof N3iospNew || iosp instanceof H5iospNew || iosp.getClass().getName().endsWith("Nc4reader"),
+          iosp instanceof N3iospNew || iosp instanceof H5iosp || iosp.getClass().getName().endsWith("Nc4reader"),
           "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();
       NetcdfFileFormat format = (NetcdfFileFormat) iosp.sendIospMessage(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT);

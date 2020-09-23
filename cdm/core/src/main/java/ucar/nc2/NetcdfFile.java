@@ -521,6 +521,11 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return result;
   }
 
+  @Nullable
+  protected ucar.array.Array<?> readArrayData(Variable v, Section ranges) throws IOException, InvalidRangeException {
+    return iosp.readArrayData(v, ranges);
+  }
+
   /**
    * Read a variable using the given section specification.
    * The result is always an array of the type of the innermost variable.

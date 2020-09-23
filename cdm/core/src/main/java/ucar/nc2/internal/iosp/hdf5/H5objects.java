@@ -31,7 +31,7 @@ public class H5objects {
   private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder;
   private static boolean debugDimensionScales;
 
-  private final H5headerNew header;
+  private final H5header header;
   private final RandomAccessFile raf;
 
   private final PrintWriter debugOut;
@@ -39,7 +39,7 @@ public class H5objects {
   private final Map<Long, GlobalHeap> heapMap = new HashMap<>();
   private final Map<Long, H5Group> hashGroups = new HashMap<>();
 
-  H5objects(H5headerNew header, PrintWriter debugOut, MemTracker memTracker) {
+  H5objects(H5header header, PrintWriter debugOut, MemTracker memTracker) {
     this.header = header;
     this.raf = header.getRandomAccessFile();
     this.debugOut = debugOut;

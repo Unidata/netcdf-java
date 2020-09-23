@@ -33,7 +33,7 @@ public class StructureDataRow extends StructureData {
   public Array getMemberData(Member m) {
     DataType dataType = m.getDataType();
     int offset = offsets[m.getIndex()];
-    int size = m.getSize();
+    int size = m.length();
 
     switch (dataType) {
       case DOUBLE:
@@ -45,7 +45,7 @@ public class StructureDataRow extends StructureData {
       case FLOAT:
         float[] farray = new float[size];
         for (int count = 0; count < size; count++) {
-          farray[count] = bbuffer.getFloat(offset + 8 * count);
+          farray[count] = bbuffer.getFloat(offset + 4 * count);
         }
         return new ArrayFloat(m.getShape(), new StorageF(farray));
       default:
@@ -54,7 +54,7 @@ public class StructureDataRow extends StructureData {
   }
 
   public void setMemberData(Member m, Array data) {
-    Preconditions.checkArgument(data.getSize() == m.getSize());
+    Preconditions.checkArgument(data.length() == m.length());
     DataType dataType = m.getDataType();
     int offset = offsets[m.getIndex()];
     int count = 0;

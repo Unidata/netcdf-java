@@ -9,15 +9,15 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-/** Test {@link Strides} */
-public class TestStrides {
+/** Test {@link IndexFn} */
+public class TestIndexFn {
 
   @Test
   public void testIndex() {
     int[] shape = new int[] {1, 2, 3};
-    Strides index = Strides.builder(shape).build();
+    IndexFn index = IndexFn.builder(shape).build();
     assertThat(index.getShape()).isEqualTo(shape);
-    assertThat(index.getSize()).isEqualTo(6);
+    assertThat(index.length()).isEqualTo(6);
 
     assertThat(index.get(0, 0, 0)).isEqualTo(0);
     assertThat(index.get(0, 0, 2)).isEqualTo(2);
@@ -41,14 +41,14 @@ public class TestStrides {
   @Test
   public void testFlip() {
     int[] shape = new int[] {1, 2, 3};
-    Strides index = Strides.builder(shape).build();
+    IndexFn index = IndexFn.builder(shape).build();
     assertThat(index.toString()).isEqualTo("0, 1, 2, 3, 4, 5");
 
-    Strides indexf1 = index.flip(1);
+    IndexFn indexf1 = index.flip(1);
     assertThat(index.toString()).isEqualTo("0, 1, 2, 3, 4, 5");
     assertThat(indexf1.toString()).isEqualTo("3, 4, 5, 0, 1, 2");
 
-    Strides indexf2 = index.flip(2);
+    IndexFn indexf2 = index.flip(2);
     assertThat(indexf2.toString()).isEqualTo("2, 1, 0, 5, 4, 3");
   }
 
