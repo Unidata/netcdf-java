@@ -28,15 +28,15 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
-import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
+import ucar.nc2.internal.iosp.netcdf3.N3header.Vinfo;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
 /** Netcdf 3 version iosp, using Builders for immutability. */
-public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
-  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
+public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvider {
+  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
 
   /*
    * CLASSIC
@@ -76,14 +76,14 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
    * Note also that all netCDF variables and records are padded to 4 byte boundaries.
    */
 
-  protected N3headerNew header;
+  protected N3header header;
   protected long lastModified; // used by sync
   private final boolean debugRecord = false;
   private Charset valueCharset;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    return N3headerNew.isValidFile(raf);
+    return N3header.isValidFile(raf);
   }
 
   @Override
@@ -201,8 +201,8 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   }
 
   /** Create header for reading netcdf file. */
-  private N3headerNew createHeader() {
-    return new N3headerNew(this);
+  private N3header createHeader() {
+    return new N3header(this);
   }
 
   /////////////////////////////////////////////////////////////////////////////

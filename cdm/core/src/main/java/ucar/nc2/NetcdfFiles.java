@@ -26,8 +26,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nullable;
-import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
-import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
+import ucar.nc2.internal.iosp.netcdf3.N3header;
+import ucar.nc2.internal.iosp.netcdf3.N3iosp;
 import ucar.nc2.internal.util.StringLocker;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -718,8 +718,8 @@ public class NetcdfFiles {
       }
     }
 
-    if (N3headerNew.isValidFile(raf)) {
-      return new N3iospNew();
+    if (N3header.isValidFile(raf)) {
+      return new N3iosp();
 
     } else {
       // look for dynamically loaded IOSPs

@@ -22,8 +22,8 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
-import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
-import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
+import ucar.nc2.internal.iosp.netcdf3.N3header;
+import ucar.nc2.internal.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -115,8 +115,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
     debugSPI = debugFlag.isSet("NetcdfFile/debugSPI");
     debugCompress = debugFlag.isSet("NetcdfFile/debugCompress");
     debugStructureIterator = debugFlag.isSet("NetcdfFile/structureIterator");
-    N3headerNew.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
-    N3headerNew.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
+    N3header.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
+    N3header.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
     showRequest = debugFlag.isSet("NetcdfFile/showRequest");
   }
 
@@ -598,7 +598,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   @Deprecated
   private boolean makeRecordStructure() {
     Boolean didit = false;
-    if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
+    if ((iosp != null) && (iosp instanceof N3iosp) && hasUnlimitedDimension()) {
       didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
     return (didit != null) && didit;

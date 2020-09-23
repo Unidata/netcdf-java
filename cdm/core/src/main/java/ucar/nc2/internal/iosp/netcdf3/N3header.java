@@ -14,8 +14,8 @@ import java.util.*;
 import java.io.IOException;
 
 /** Netcdf version 3 header. Read-only version using Builders for immutablility. */
-public class N3headerNew {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3headerNew.class);
+public class N3header {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
 
   static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
   // 64-bit offset format : only affects the variable offset value
@@ -58,14 +58,14 @@ public class N3headerNew {
 
   protected ucar.unidata.io.RandomAccessFile raf;
 
-  // N3iospNew needs access to these
+  // N3iosp needs access to these
   private boolean isStreaming; // is streaming (numrecs = -1)
   int numrecs; // number of records written
   long recsize; // size of each record (padded) LOOK can it really be bigger than MAX_INTEGER ?
   long recStart = Integer.MAX_VALUE; // where the record data starts LOOK can it really be bigger than MAX_INTEGER ?
 
   boolean useLongOffset;
-  private final N3iospNew n3iospNew;
+  private final N3iosp n3iospNew;
   long nonRecordDataSize; // size of non-record variables
   Dimension udim; // the unlimited dimension
   private final List<Vinfo> vars = new ArrayList<>();
@@ -73,7 +73,7 @@ public class N3headerNew {
 
   private final Charset valueCharset;
 
-  N3headerNew(N3iospNew n3iospNew) {
+  N3header(N3iosp n3iospNew) {
     this.n3iospNew = n3iospNew;
     this.valueCharset = n3iospNew.getValueCharset().orElse(StandardCharsets.UTF_8);
   }
