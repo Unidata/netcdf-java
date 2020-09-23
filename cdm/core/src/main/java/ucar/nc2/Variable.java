@@ -1078,9 +1078,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    */
   @Deprecated
   public void setCachedData(Array cacheData, boolean isMetadata) {
-    if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType()))
+    if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType())) {
       throw new IllegalArgumentException(
           "setCachedData type=" + cacheData.getElementType() + " incompatible with variable type=" + getDataType());
+    }
 
     this.cache.data = cacheData;
     this.cache.isMetadata = isMetadata;

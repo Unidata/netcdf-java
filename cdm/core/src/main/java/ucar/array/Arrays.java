@@ -4,6 +4,8 @@
  */
 package ucar.array;
 
+import com.google.common.base.Preconditions;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.ma2.DataType;
@@ -16,7 +18,29 @@ public class Arrays {
 
   public static Array<?> convert(ucar.ma2.Array from) {
     DataType dtype = from.getDataType();
-    return factory(dtype, from.getShape(), from.get1DJavaArray(dtype));
+    if (dtype == DataType.OPAQUE) {
+      return convertOpaque(from);
+    } else {
+      return factory(dtype, from.getShape(), from.get1DJavaArray(dtype));
+    }
+  }
+
+  public static Array<?> convertOpaque(ucar.ma2.Array from) {
+    DataType dtype = from.getDataType();
+    Preconditions.checkArgument(dtype == DataType.OPAQUE);
+    if (from instanceof ucar.ma2.ArrayObject) {
+      ucar.ma2.ArrayObject ma2 = (ucar.ma2.ArrayObject) from;
+      byte[][] dataArray = new byte[(int) ma2.getSize()][];
+      for (int idx = 0; idx < ma2.getSize(); idx++) {
+        ByteBuffer bb = (ByteBuffer) ma2.getObject(idx);
+        bb.rewind();
+        byte[] raw = new byte[bb.remaining()];
+        bb.get(raw);
+        dataArray[idx] = raw;
+      }
+      return new ArrayVlen<>(dtype, ma2.getShape(), dataArray);
+    }
+    throw new RuntimeException("Unknown opaque array class " + from.getClass().getName());
   }
 
   /**
@@ -29,6 +53,7 @@ public class Arrays {
    */
   public static <T> Array<T> factory(DataType dataType, int[] shape, Object dataArray) {
     switch (dataType) {
+      case BOOLEAN:
       case BYTE:
       case ENUM1:
       case UBYTE: {
@@ -69,8 +94,7 @@ public class Arrays {
         return (Array<T>) new ArrayString(shape, storageS);
       }
       default:
-        return null; // LOOK need to do opaque
-      // throw new RuntimeException();
+        throw new RuntimeException("Unimplemented DataType " + dataType);
     }
   }
 
@@ -83,6 +107,7 @@ public class Arrays {
    */
   public static <T> Array<T> factory(DataType dataType, int[] shape) {
     switch (dataType) {
+      case BOOLEAN:
       case BYTE:
       case ENUM1:
       case UBYTE: {
@@ -115,8 +140,7 @@ public class Arrays {
         return (Array<T>) new ArrayString(shape);
       }
       default:
-        return null; // LOOK need to do opaque
-      // throw new RuntimeException();
+        throw new RuntimeException("Unimplemented DataType " + dataType);
     }
   }
 

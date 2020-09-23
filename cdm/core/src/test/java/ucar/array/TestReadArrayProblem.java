@@ -10,7 +10,6 @@ import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -22,11 +21,22 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 public class TestReadArrayProblem {
 
   // Opaque not implemented yet
-  private final String filename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
+  private final String filename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"; // opaque
   // private final String filename = TestDir.cdmUnitTestDir + "formats/netcdf3/files/nctest_64bit_offset.nc";
 
   @Test
-  public void compareArrays() throws IOException, InvalidRangeException {
+  public void testOpaque() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"; // opaque
+    compareArrays(filename);
+  }
+
+  @Test
+  public void test64bit() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf3/files/nctest_64bit_offset.nc";
+    compareArrays(filename);
+  }
+
+  private void compareArrays(String filename) throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.println("Test input: " + ncfile.getLocation());
 

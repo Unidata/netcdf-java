@@ -7,6 +7,7 @@ package ucar.ma2;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import javax.annotation.Nullable;
 
 /**
  * Type-safe enumeration of data types.
@@ -54,23 +55,21 @@ public enum DataType {
 
   private final String niceName;
   private final int size;
-  private final Class primitiveClass;
+  private final Class<?> primitiveClass;
   private final Signedness signedness;
 
-  DataType(String s, int size, Class primitiveClass, boolean isUnsigned) {
+  DataType(String s, int size, Class<?> primitiveClass, boolean isUnsigned) {
     this(s, size, primitiveClass, isUnsigned ? Signedness.UNSIGNED : Signedness.SIGNED);
   }
 
-  DataType(String s, int size, Class primitiveClass, Signedness signedness) {
+  DataType(String s, int size, Class<?> primitiveClass, Signedness signedness) {
     this.niceName = s;
     this.size = size;
     this.primitiveClass = primitiveClass;
     this.signedness = signedness;
   }
 
-  /**
-   * The DataType name, eg "byte", "float", "String".
-   */
+  /** The DataType name, eg "byte", "float", "String". */
   public String toString() {
     return niceName;
   }
@@ -92,7 +91,7 @@ public enum DataType {
    *
    * @return the primitive class type
    */
-  public Class getPrimitiveClassType() {
+  public Class<?> getPrimitiveClassType() {
     return primitiveClass;
   }
 
@@ -254,11 +253,12 @@ public enum DataType {
 
   /**
    * Find the DataType that matches this class.
-   *
+   * 
    * @param c primitive or object class, eg float.class or Float.class
    * @return DataType or null if no match.
    */
-  public static DataType getType(Class c, boolean isUnsigned) {
+  @Nullable
+  public static DataType getType(Class<?> c, boolean isUnsigned) {
     if ((c == float.class) || (c == Float.class))
       return DataType.FLOAT;
     if ((c == double.class) || (c == Double.class))

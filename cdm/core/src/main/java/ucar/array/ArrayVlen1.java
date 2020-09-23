@@ -13,6 +13,7 @@ import ucar.ma2.DataType;
  * Array of variable length Arrays of T.
  * LOOK Could try ragged primitive arrays, but we'd have to have a seperate class for each type.
  * LOOK Probably vlens are not used enough for that, consider it an optimization that can be added later.
+ * LOOK not used, will likely delete after the dust settles.
  */
 @Immutable
 public class ArrayVlen1<T> extends Array<Array<T>> {

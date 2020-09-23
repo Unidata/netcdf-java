@@ -13,6 +13,7 @@ import ucar.array.Arrays;
 import ucar.array.StructureMembers;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Group;
@@ -231,9 +232,9 @@ public class H5iospArrays extends H5iosp {
       return sa;
     }
 
-    if (dataType == DataType.OPAQUE) { // LOOK using Vlen of Byte; not needed because Opaque is fixed length!
-      ArrayVlen<?> result = ArrayVlen.factory(DataType.BYTE, shape); // no -1 in shape. Use ArrayObject??
-      assert (new Section(shape).computeSize() == layout.getTotalNelems());
+    if (dataType == DataType.OPAQUE) {
+      ArrayVlen<?> result = ArrayVlen.factory(DataType.OPAQUE, shape);
+      Preconditions.checkArgument(Index.computeSize(shape) == layout.getTotalNelems());
 
       int count = 0;
       while (layout.hasNext()) {

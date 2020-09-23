@@ -12,6 +12,7 @@ import ucar.ma2.DataType;
 /**
  * Used for vlens. Each Object is a primitive array of dataType.
  * TODO: problem is that the type is the primitive type. Then you have to check if its a vlen, and process diffeently.
+ * LOOK not used, will likely delete after the dust settles.
  */
 @Immutable
 public class ArrayObject extends Array<Object> {
