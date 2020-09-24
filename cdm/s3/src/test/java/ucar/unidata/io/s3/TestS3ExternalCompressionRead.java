@@ -8,7 +8,7 @@ package ucar.unidata.io.s3;
 import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import software.amazon.awssdk.regions.Region;
@@ -50,6 +50,7 @@ public class TestS3ExternalCompressionRead {
   }
 
   @Test
+  @Ignore("Failing. Reason: This operation is not permitted on an archived blob. ?")
   public void testMicrosoftBlobS3() throws IOException {
     // https://nexradsa.blob.core.windows.net/nexrad-l2/1997/07/07/KHPX/KHPX19970707_000827.gz
     String host = "nexradsa.blob.core.windows.net";
