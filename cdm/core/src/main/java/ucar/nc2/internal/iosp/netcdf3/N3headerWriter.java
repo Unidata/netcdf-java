@@ -20,7 +20,7 @@ import ucar.nc2.write.UnlimitedDimension;
 import ucar.unidata.io.RandomAccessFile;
 
 /** Class to write a netcdf3 header. */
-class N3headerWriter extends N3headerNew {
+class N3headerWriter extends N3header {
   private static final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
   private Group rootGroup;
@@ -33,13 +33,13 @@ class N3headerWriter extends N3headerNew {
    * @param n3iospNew the iosp
    * @param raf write to this file
    */
-  N3headerWriter(N3iospNew n3iospNew, RandomAccessFile raf) {
+  N3headerWriter(N3iosp n3iospNew, RandomAccessFile raf) {
     super(n3iospNew);
     this.raf = raf;
   }
 
-  void initFromExisting(N3iospNew existingIosp, Group.Builder rootb) {
-    N3headerNew existingHeader = existingIosp.header;
+  void initFromExisting(N3iosp existingIosp, Group.Builder rootb) {
+    N3header existingHeader = existingIosp.header;
     this.dataStart = existingHeader.dataStart;
     this.nonRecordDataSize = existingHeader.nonRecordDataSize;
     this.numrecs = existingHeader.numrecs;
@@ -103,7 +103,7 @@ class N3headerWriter extends N3headerNew {
 
     // magic number
     raf.seek(0);
-    raf.write(largeFile ? N3headerNew.MAGIC_LONG : N3headerNew.MAGIC);
+    raf.write(largeFile ? N3header.MAGIC_LONG : N3header.MAGIC);
 
     // numrecs
     raf.writeInt(0);
@@ -115,7 +115,7 @@ class N3headerWriter extends N3headerNew {
       raf.writeInt(0);
       raf.writeInt(0);
     } else {
-      raf.writeInt(N3headerNew.MAGIC_DIM);
+      raf.writeInt(N3header.MAGIC_DIM);
       raf.writeInt(numdims);
     }
     for (Dimension dim : dims) {
@@ -153,7 +153,7 @@ class N3headerWriter extends N3headerNew {
 
     // non-record variable starting positions
     for (Variable.Builder<?> var : rootGroup.vbuilders) {
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) var.spiObject;
+      N3header.Vinfo vinfo = (N3header.Vinfo) var.spiObject;
       if (!vinfo.isRecord) {
         raf.seek(vinfo.begin);
 
@@ -177,7 +177,7 @@ class N3headerWriter extends N3headerNew {
 
     // record variable starting positions
     for (Variable.Builder<?> var : rootGroup.vbuilders) {
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) var.spiObject;
+      N3header.Vinfo vinfo = (N3header.Vinfo) var.spiObject;
       if (vinfo.isRecord) {
         raf.seek(vinfo.begin);
 
@@ -416,7 +416,7 @@ class N3headerWriter extends N3headerNew {
           vsize = unpaddedVsize;
         }
       }
-      var.setSPobject(new N3headerNew.Vinfo(var.shortName, vsize, pos, var.isUnlimited(), varAttsPos));
+      var.setSPobject(new N3header.Vinfo(var.shortName, vsize, pos, var.isUnlimited(), varAttsPos));
     }
   }
 
@@ -469,7 +469,7 @@ class N3headerWriter extends N3headerNew {
     if (v2 == null)
       pos = findAtt(globalAttsPos, att.getShortName());
     else {
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) v2.getSPobject();
+      N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
       pos = findAtt(vinfo.attsPos, att.getShortName());
     }
 

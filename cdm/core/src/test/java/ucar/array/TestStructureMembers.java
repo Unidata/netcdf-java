@@ -53,7 +53,7 @@ public class TestStructureMembers {
     assertThat(m.getDescription()).isEqualTo("mdesc1");
     assertThat(m.getUnitsString()).isEqualTo("munits1");
     assertThat(m.getShape()).isEqualTo(new int[] {11, 11});
-    assertThat(m.getSize()).isEqualTo(121);
+    assertThat(m.length()).isEqualTo(121);
     assertThat(m.getSizeBytes()).isEqualTo(121);
     assertThat(m.getIndex()).isEqualTo(0);
     assertThat(m.isVariableLength()).isEqualTo(false);
@@ -63,14 +63,14 @@ public class TestStructureMembers {
     assertThat(m2).isNotNull();
     assertThat(m2.getDataType()).isEqualTo(DataType.SHORT);
     assertThat(m2.getShape()).isEqualTo(new int[] {});
-    assertThat(m2.getSize()).isEqualTo(1);
+    assertThat(m2.length()).isEqualTo(1);
     assertThat(m2.getSizeBytes()).isEqualTo(2);
 
     try {
       assertThat(sm.getMember(3)).isNull();
       fail();
     } catch (Exception e) {
-      ;// expected
+      // expected
     }
 
     assertThat(sm.getStructureSize()).isEqualTo(200);
@@ -81,24 +81,23 @@ public class TestStructureMembers {
 
   @Test
   public void testNestedStructureMembers() {
-    StructureMembers.Builder builder = StructureMembers.builder();
-    builder.setName("nested");
-    builder.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
+    StructureMembers.Builder nested = StructureMembers.builder();
+    nested.setName("nested");
+    nested.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
     MemberBuilder mbuilder = StructureMembers.memberBuilder();
     mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setDataType(DataType.UBYTE)
         .setShape(new int[] {7, 11});
-    builder.addMember(mbuilder);
-    StructureMembers nested = builder.build();
+    nested.addMember(mbuilder);
 
-    builder = StructureMembers.builder();
-    builder.setName("top");
-    builder.addMember("nname1", "ndesc1", "nunits1", DataType.DOUBLE, new int[] {11});
-    builder.addMember("nname2", "ndesc2", "nunits2", DataType.INT, new int[] {3, 3, 3});
+    StructureMembers.Builder topbuilder = StructureMembers.builder();
+    topbuilder.setName("top");
+    topbuilder.addMember("nname1", "ndesc1", "nunits1", DataType.DOUBLE, new int[] {11});
+    topbuilder.addMember("nname2", "ndesc2", "nunits2", DataType.INT, new int[] {3, 3, 3});
     MemberBuilder nbuilder =
         StructureMembers.memberBuilder().setName("struct").setStructureMembers(nested).setDataType(DataType.STRUCTURE);
-    builder.addMember(nbuilder);
+    topbuilder.addMember(nbuilder);
 
-    StructureMembers sm = builder.build();
+    StructureMembers sm = topbuilder.build();
     assertThat(sm.findMember("mname2")).isNull();
     assertThat(sm.findMember("nname2")).isNotNull();
     assertThat(sm.getStructureSize()).isEqualTo(88 + 108 + 198);
@@ -109,7 +108,7 @@ public class TestStructureMembers {
     assertThat(m.getDescription()).isNull();
     assertThat(m.getUnitsString()).isNull();
     assertThat(m.getShape()).isEqualTo(new int[] {});
-    assertThat(m.getSize()).isEqualTo(1);
+    assertThat(m.length()).isEqualTo(1);
     assertThat(m.getSizeBytes()).isEqualTo(198);
     assertThat(m.getIndex()).isEqualTo(2);
     assertThat(m.isVariableLength()).isEqualTo(false);

@@ -29,11 +29,9 @@ public class TestArray {
     assertThat(array.getDataType()).isEqualTo(DataType.DOUBLE);
     assertThat(array.getRank()).isEqualTo(3);
     assertThat(array.getShape()).isEqualTo(new int[] {1, 2, 3});
-    assertThat(array.getSize()).isEqualTo(6);
+    assertThat(array.length()).isEqualTo(6);
     assertThat(array.getSizeBytes()).isEqualTo(48);
     assertThat(array.getIndex().getCurrentIndex()).isEqualTo(new int[3]);
-    assertThat(array.isUnsigned()).isEqualTo(false);
-    assertThat(array.isVlen()).isEqualTo(false);
     assertThat(array.toString()).isEqualTo("1.0, 2.0, 3.0, 4.0, 5.0, 6.0");
 
     Section expected = Section.builder().appendRange(1).appendRange(2).appendRange(3).build();

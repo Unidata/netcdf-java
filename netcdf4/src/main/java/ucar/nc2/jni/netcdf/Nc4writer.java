@@ -43,7 +43,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.internal.iosp.IospFileCreator;
-import ucar.nc2.internal.iosp.hdf5.H5headerNew;
+import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.Nc4Chunking;
@@ -676,11 +676,11 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     }
 
     // dont propagate these - handled internally
-    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_LIST))
+    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LIST))
       return;
-    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_SCALE))
+    if (att.getShortName().equals(H5header.HDF5_DIMENSION_SCALE))
       return;
-    if (att.getShortName().equals(H5headerNew.HDF5_DIMENSION_LABELS))
+    if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS))
       return;
     if (att.getShortName().equals(CDM.CHUNK_SIZES))
       return;

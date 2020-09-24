@@ -14,7 +14,7 @@ public class TestRuntimeConfigParser {
 
   // needs grib and bufr loaded, so doing it in cdm-test
   private final String config = "<?xml version='1.0' encoding='UTF-8'?>\n" + " <runtimeConfig>\n"
-      + "   <ioServiceProvider class='ucar.nc2.internal.iosp.netcdf3.N3iospNew'/>\n"
+      + "   <ioServiceProvider class='ucar.nc2.internal.iosp.netcdf3.N3iosp'/>\n"
       + "   <coordSystemBuilderFactory convention='foo' class='ucar.nc2.internal.dataset.conv.CF1Convention$Factory'/>\n"
       + "   <coordTransBuilder name='atmos_ln_sigma_coordinates' type='vertical' class='ucar.nc2.dataset.transform.CsmSigma'/>\n"
       + "   <featureDatasetFactory featureType='SIMPLE_GEOMETRY' class='ucar.nc2.ft.SimpleGeometryStandardFactory'/>\n"

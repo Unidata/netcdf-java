@@ -829,8 +829,10 @@ public class Index implements Cloneable {
   }
 
   public String toString() {
+    if (rank == 0) {
+      return "scalar 0";
+    }
     StringBuilder sbuff = new StringBuilder(100);
-    sbuff.setLength(0);
     for (int ii = 0; ii < rank; ii++) {
       if (ii > 0)
         sbuff.append(",");

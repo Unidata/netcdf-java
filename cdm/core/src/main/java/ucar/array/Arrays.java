@@ -4,6 +4,8 @@
  */
 package ucar.array;
 
+import com.google.common.base.Preconditions;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.ma2.DataType;
@@ -13,6 +15,137 @@ import ucar.ma2.Section;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {
+
+  public static Array<?> convert(ucar.ma2.Array from) {
+    DataType dtype = from.getDataType();
+    if (dtype == DataType.OPAQUE) {
+      return convertOpaque(from);
+    } else {
+      return factory(dtype, from.getShape(), from.get1DJavaArray(dtype));
+    }
+  }
+
+  public static Array<?> convertOpaque(ucar.ma2.Array from) {
+    DataType dtype = from.getDataType();
+    Preconditions.checkArgument(dtype == DataType.OPAQUE);
+    if (from instanceof ucar.ma2.ArrayObject) {
+      ucar.ma2.ArrayObject ma2 = (ucar.ma2.ArrayObject) from;
+      byte[][] dataArray = new byte[(int) ma2.getSize()][];
+      for (int idx = 0; idx < ma2.getSize(); idx++) {
+        ByteBuffer bb = (ByteBuffer) ma2.getObject(idx);
+        bb.rewind();
+        byte[] raw = new byte[bb.remaining()];
+        bb.get(raw);
+        dataArray[idx] = raw;
+      }
+      return new ArrayVlen<>(dtype, ma2.getShape(), dataArray);
+    }
+    throw new RuntimeException("Unknown opaque array class " + from.getClass().getName());
+  }
+
+  /**
+   * Create Array using java array of T, or java primitive array, as storage.
+   * Do not use this for Vlens or Structures.
+   *
+   * @param dataType data type of the data. Vlen detected from the shape.
+   * @param shape multidimensional shape, must have same total length as dataArray.
+   * @param dataArray must be java array of T, or java primitive array
+   */
+  public static <T> Array<T> factory(DataType dataType, int[] shape, Object dataArray) {
+    switch (dataType) {
+      case BOOLEAN:
+      case BYTE:
+      case ENUM1:
+      case UBYTE: {
+        Storage<Byte> storageS = new ArrayByte.StorageS((byte[]) dataArray);
+        return (Array<T>) new ArrayByte(dataType, shape, storageS);
+      }
+      case CHAR: {
+        Storage<Character> storageS = new ArrayChar.StorageS((char[]) dataArray);
+        return (Array<T>) new ArrayChar(shape, storageS);
+      }
+      case DOUBLE: {
+        Storage<Double> storageD = new ArrayDouble.StorageD((double[]) dataArray);
+        return (Array<T>) new ArrayDouble(shape, storageD);
+      }
+      case FLOAT: {
+        Storage<Float> storageF = new ArrayFloat.StorageF((float[]) dataArray);
+        return (Array<T>) new ArrayFloat(shape, storageF);
+      }
+      case INT:
+      case ENUM4:
+      case UINT: {
+        Storage<Integer> storageS = new ArrayInteger.StorageS((int[]) dataArray);
+        return (Array<T>) new ArrayInteger(dataType, shape, storageS);
+      }
+      case LONG:
+      case ULONG: {
+        Storage<Long> storageS = new ArrayLong.StorageS((long[]) dataArray);
+        return (Array<T>) new ArrayLong(dataType, shape, storageS);
+      }
+      case SHORT:
+      case ENUM2:
+      case USHORT: {
+        Storage<Short> storageS = new ArrayShort.StorageS((short[]) dataArray);
+        return (Array<T>) new ArrayShort(dataType, shape, storageS);
+      }
+      case STRING: {
+        Storage<String> storageS = new ArrayString.StorageS((String[]) dataArray);
+        return (Array<T>) new ArrayString(shape, storageS);
+      }
+      default:
+        throw new RuntimeException("Unimplemented DataType " + dataType);
+    }
+  }
+
+  /**
+   * Create Array using empty java array of T, or java primitive array, same size as shape.
+   * Do not use this for Vlens or Structures.
+   *
+   * @param dataType
+   * @param shape multidimensional shape;
+   */
+  public static <T> Array<T> factory(DataType dataType, int[] shape) {
+    switch (dataType) {
+      case BOOLEAN:
+      case BYTE:
+      case ENUM1:
+      case UBYTE: {
+        return (Array<T>) new ArrayByte(dataType, shape);
+      }
+      case CHAR: {
+        return (Array<T>) new ArrayChar(shape);
+      }
+      case DOUBLE: {
+        return (Array<T>) new ArrayDouble(shape);
+      }
+      case FLOAT: {
+        return (Array<T>) new ArrayFloat(shape);
+      }
+      case INT:
+      case ENUM4:
+      case UINT: {
+        return (Array<T>) new ArrayInteger(dataType, shape);
+      }
+      case LONG:
+      case ULONG: {
+        return (Array<T>) new ArrayLong(dataType, shape);
+      }
+      case SHORT:
+      case ENUM2:
+      case USHORT: {
+        return (Array<T>) new ArrayShort(dataType, shape);
+      }
+      case STRING: {
+        return (Array<T>) new ArrayString(shape);
+      }
+      default:
+        throw new RuntimeException("Unimplemented DataType " + dataType);
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // Experimental
 
   /** Combine list of Array's by copying the underlying Array's into a single primitive array */
   public static <T> Array<T> factoryCopy(DataType dataType, int[] shape, List<Array<?>> dataArrays) {
@@ -29,29 +162,50 @@ public class Arrays {
     if (size > Integer.MAX_VALUE) {
       throw new OutOfMemoryError();
     }
+    Object all;
 
     switch (dataType) {
-      case FLOAT: {
-        float[] all = new float[(int) size];
-        int start = 0;
-        for (Array<?> dataArray : dataArrays) {
-          dataArray.arraycopy(0, all, start, dataArray.getSize());
-          start += dataArray.getSize();
-        }
-        return all;
-      }
-      case DOUBLE: {
-        double[] all = new double[(int) size];
-        int start = 0;
-        for (Array<?> dataArray : dataArrays) {
-          dataArray.arraycopy(0, all, start, dataArray.getSize());
-          start += dataArray.getSize();
-        }
-        return all;
-      }
+      case BYTE:
+      case ENUM1:
+      case UBYTE:
+        all = new byte[(int) size];
+        break;
+      case CHAR:
+        all = new char[(int) size];
+        break;
+      case DOUBLE:
+        all = new double[(int) size];
+        break;
+      case FLOAT:
+        all = new float[(int) size];
+        break;
+      case INT:
+      case ENUM4:
+      case UINT:
+        all = new int[(int) size];
+        break;
+      case LONG:
+      case ULONG:
+        all = new long[(int) size];
+        break;
+      case SHORT:
+      case ENUM2:
+      case USHORT:
+        all = new short[(int) size];
+        break;
+      case STRING:
+        all = new String[(int) size];
+        break;
       default:
         throw new RuntimeException(" DataType " + dataType);
     }
+
+    int start = 0;
+    for (Array<?> dataArray : dataArrays) {
+      dataArray.arraycopy(0, all, start, dataArray.length());
+      start += dataArray.length();
+    }
+    return all;
   }
 
   // The only advantage over copying AFAICT is that it can handle arrays > 2G. as long as its broken up into
@@ -74,25 +228,7 @@ public class Arrays {
     }
   }
 
-  /**
-   * Create Array using java array of T, or java primitive array, as storage.
-   * 
-   * @param dataType
-   * @param shape multidimensional shape, must have same total length as dataArray.
-   * @param dataArray must be java array of T, or java primitive array
-   */
-  public static <T> Array<T> factory(DataType dataType, int[] shape, Object dataArray) {
-    switch (dataType) {
-      case DOUBLE:
-        Storage<Double> storageD = new ArrayDouble.StorageD((double[]) dataArray);
-        return (Array<T>) new ArrayDouble(shape, storageD);
-      case FLOAT:
-        Storage<Float> storageF = new ArrayFloat.StorageF((float[]) dataArray);
-        return (Array<T>) new ArrayFloat(shape, storageF);
-      default:
-        throw new RuntimeException();
-    }
-  }
+  ////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Create a new Array using same backing store as the org Array, by
@@ -103,7 +239,7 @@ public class Arrays {
    * @return the new Array
    */
   public static <T> Array<T> flip(Array<T> org, int dim) {
-    return org.createView(org.strides().flip(dim));
+    return org.createView(org.indexFn().flip(dim));
   }
 
   /**
@@ -115,7 +251,7 @@ public class Arrays {
    * @return the new Array
    */
   public static <T> Array<T> permute(Array<T> org, int[] dims) {
-    return org.createView(org.strides().permute(dims));
+    return org.createView(org.indexFn().permute(dims));
   }
 
   /**
@@ -126,7 +262,7 @@ public class Arrays {
    * @return the new Array
    */
   public static <T> Array<T> reshape(Array<T> org, int[] shape) {
-    return org.createView(org.strides().reshape(shape));
+    return org.createView(org.indexFn().reshape(shape));
   }
 
   /**
@@ -137,8 +273,8 @@ public class Arrays {
    * @return the new Array, or the same Array if no reduction was done
    */
   public static <T> Array<T> reduce(Array<T> org) {
-    Strides ri = org.strides().reduce();
-    if (ri == org.strides())
+    IndexFn ri = org.indexFn().reduce();
+    if (ri == org.indexFn())
       return org;
     return org.createView(ri);
   }
@@ -152,8 +288,8 @@ public class Arrays {
    * @return the new Array, or the same Array if no reduction was done
    */
   public static <T> Array<T> reduce(Array<T> org, int dim) {
-    Strides ri = org.strides().reduce(dim);
-    if (ri == org.strides())
+    IndexFn ri = org.indexFn().reduce(dim);
+    if (ri == org.indexFn())
       return org;
     return org.createView(ri);
   }
@@ -171,7 +307,7 @@ public class Arrays {
    * @throws InvalidRangeException if ranges is invalid
    */
   public static <T> Array<T> section(Array<T> org, List<Range> ranges) throws InvalidRangeException {
-    return org.createView(org.strides().section(ranges));
+    return org.createView(org.indexFn().section(ranges));
   }
 
   /**
@@ -200,6 +336,6 @@ public class Arrays {
    * @return the new Array
    */
   public static <T> Array<T> transpose(Array<T> org, int dim1, int dim2) {
-    return org.createView(org.strides().transpose(dim1, dim2));
+    return org.createView(org.indexFn().transpose(dim1, dim2));
   }
 }

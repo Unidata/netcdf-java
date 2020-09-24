@@ -4,6 +4,8 @@
  */
 package ucar.nc2;
 
+import java.io.IOException;
+import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.List;
  * However, read() will read in the entire data and return an in-memory ArraySequence.
  */
 @Immutable
-public class Sequence extends Structure {
+public class Sequence extends Structure implements Iterable<ucar.array.StructureData> {
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     if (getCachedData() instanceof ArrayStructure) {
@@ -24,6 +26,15 @@ public class Sequence extends Structure {
       return ncfile.getStructureIterator(this, bufferSize);
     }
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Iterator<ucar.array.StructureData> iterator() {
+    try {
+      return ncfile.getStructureDataArrayIterator(this, -1);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /** Same as read() */

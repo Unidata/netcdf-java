@@ -4,6 +4,14 @@
 </HEAD>
 <BODY>
 Experimental version of multidimensional arrays stored in memory.
-DO NOT USE.
+Will replace ucar.ma2.
+<p>
+  Primitive arrays are byte, char, double, float, int, long, short, String.
+  The unsigned integral types use their signed versions, and the caller must widen if desired.
+  The enums are mapped to byte, short or int.
+  Boolean is represented as byte, 0 = false, non-zero = true.
+  Opaque is Vlen of byte[].
+  Vlen and Structure are handled seperately, eg you cant use Arrays.factory().
+</p>
 </BODY>
 </HTML>

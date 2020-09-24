@@ -40,12 +40,12 @@ public class BTree2 {
   private final short recordSize; // size in bytes of btree records
 
   private final String owner;
-  private final H5headerNew h5;
+  private final H5header h5;
   private final RandomAccessFile raf;
 
   public List<Entry2> entryList = new ArrayList<>();
 
-  public BTree2(H5headerNew h5, String owner, long address) throws IOException {
+  public BTree2(H5header h5, String owner, long address) throws IOException {
     this.h5 = h5;
     this.raf = h5.getRandomAccessFile();
     this.owner = owner;

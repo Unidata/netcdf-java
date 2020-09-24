@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
@@ -18,12 +19,13 @@ import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
-import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
-import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
+import ucar.nc2.internal.iosp.netcdf3.N3header;
+import ucar.nc2.internal.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -115,8 +117,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
     debugSPI = debugFlag.isSet("NetcdfFile/debugSPI");
     debugCompress = debugFlag.isSet("NetcdfFile/debugCompress");
     debugStructureIterator = debugFlag.isSet("NetcdfFile/structureIterator");
-    N3headerNew.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
-    N3headerNew.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
+    N3header.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
+    N3header.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
     showRequest = debugFlag.isSet("NetcdfFile/showRequest");
   }
 
@@ -498,6 +500,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return iosp.getStructureIterator(s, bufferSize);
   }
 
+  protected Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
+    return iosp.getStructureDataArrayIterator(s, bufferSize);
+  }
+
   /**
    * Do not call this directly, use Variable.read() !!
    * Ranges must be filled (no nulls)
@@ -519,6 +525,11 @@ public class NetcdfFile implements FileCacheable, Closeable {
       log.info(" ...took= {} msecs", took);
     }
     return result;
+  }
+
+  @Nullable
+  protected ucar.array.Array<?> readArrayData(Variable v, Section ranges) throws IOException, InvalidRangeException {
+    return iosp.readArrayData(v, ranges);
   }
 
   /**
@@ -593,7 +604,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   @Deprecated
   private boolean makeRecordStructure() {
     Boolean didit = false;
-    if ((iosp != null) && (iosp instanceof N3iospNew) && hasUnlimitedDimension()) {
+    if ((iosp != null) && (iosp instanceof N3iosp) && hasUnlimitedDimension()) {
       didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
     return (didit != null) && didit;

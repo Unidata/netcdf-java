@@ -8,8 +8,8 @@ package ucar.nc2.ui.op;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
-import ucar.nc2.internal.iosp.hdf5.H5headerNew;
-import ucar.nc2.internal.iosp.hdf5.H5iospNew;
+import ucar.nc2.internal.iosp.hdf5.H5header;
+import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.nc2.internal.iosp.hdf5.H5objects;
 import ucar.nc2.util.DebugFlags;
 import ucar.ui.widget.BAMutil;
@@ -48,7 +48,7 @@ public class Hdf5ObjectTable extends JPanel {
   private TextHistoryPane dumpTA, infoTA;
   private IndependentWindow infoWindow;
 
-  private H5iospNew iosp;
+  private H5iosp iosp;
   private String location;
 
   public Hdf5ObjectTable(PreferencesExt prefs) {
@@ -186,10 +186,10 @@ public class Hdf5ObjectTable extends JPanel {
     this.location = raf.getLocation();
     List<ObjectBean> beanList = new ArrayList<>();
 
-    iosp = new H5iospNew();
+    iosp = new H5iosp();
     try {
       NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
-      ncfile.sendIospMessage(H5iospNew.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
+      ncfile.sendIospMessage(H5iosp.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(20000);
       PrintWriter s = new PrintWriter(sw);
@@ -197,7 +197,7 @@ public class Hdf5ObjectTable extends JPanel {
       dumpTA.setText(sw.toString());
     }
 
-    H5headerNew header = (H5headerNew) iosp.sendIospMessage("header");
+    H5header header = (H5header) iosp.sendIospMessage("header");
     for (H5objects.DataObject dataObj : header.getDataObjects()) {
       beanList.add(new ObjectBean(dataObj));
     }
@@ -223,14 +223,14 @@ public class Hdf5ObjectTable extends JPanel {
 
     ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
     PrintWriter pw = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-    H5headerNew.setDebugFlags(DebugFlags
+    H5header.setDebugFlags(DebugFlags
         .create("H5headerNew/header H5headerNew/headerDetails H5headerNew/symbolTable H5headerNew/memTracker"));
-    H5headerNew headerEmpty = (H5headerNew) iosp.sendIospMessage("headerEmpty");
+    H5header headerEmpty = (H5header) iosp.sendIospMessage("headerEmpty");
     headerEmpty.read(pw);
-    H5headerNew.setDebugFlags(DebugFlags.create(""));
+    H5header.setDebugFlags(DebugFlags.create(""));
     pw.flush();
     f.format("%s", os.toString(StandardCharsets.UTF_8.name()));
-    H5headerNew.setDebugFlags(DebugFlags.create(""));
+    H5header.setDebugFlags(DebugFlags.create(""));
   }
 
   /**

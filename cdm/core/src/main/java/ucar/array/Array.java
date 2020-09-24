@@ -12,21 +12,6 @@ import ucar.ma2.Section;
 /** Superclass for implementations of multidimensional arrays. */
 @Immutable
 public abstract class Array<T> implements Iterable<T> {
-  final DataType dataType;
-  final Strides indexCalc;
-  final int rank;
-
-  Array(DataType dataType, int[] shape) {
-    this.dataType = dataType;
-    this.rank = shape.length;
-    this.indexCalc = Strides.builder(shape).build();
-  }
-
-  Array(DataType dataType, Strides shape) {
-    this.dataType = dataType;
-    this.rank = shape.getRank();
-    this.indexCalc = shape;
-  }
 
   @Override
   public abstract Iterator<T> iterator();
@@ -64,57 +49,23 @@ public abstract class Array<T> implements Iterable<T> {
 
   /** Get the shape: length of array in each dimension. */
   public int[] getShape() {
-    return indexCalc.getShape();
+    return indexFn.getShape();
   }
 
   /** Get the section: list of Ranges, one for each dimension. */
   public Section getSection() {
-    return indexCalc.getSection();
+    return indexFn.getSection();
   }
 
   /** Get the total number of elements in the array. */
-  public long getSize() {
-    return indexCalc.getSize();
+  public long length() {
+    return indexFn.length();
   }
 
   /** Get the total number of bytes in the array. */
   public long getSizeBytes() {
-    return indexCalc.getSize() * dataType.getSize();
+    return indexFn.length() * dataType.getSize();
   }
-
-  /**
-   * Find whether the underlying data should be interpreted as unsigned.
-   * Only affects byte, short, int, and long.
-   * When true, conversions to wider types are handled correctly.
-   *
-   * @return true if the data is an unsigned integer type.
-   */
-  public boolean isUnsigned() {
-    return dataType.isUnsigned();
-  }
-
-  public boolean isVlen() {
-    return indexCalc.isVlen();
-  }
-
-  // Mimic of System.arraycopy(Object src, int srcPos, Object dest, int destPos, int length);
-  abstract void arraycopy(int srcPos, Object dest, int destPos, long length);
-
-  /** Get underlying storage. */
-  abstract Storage<T> storage();
-
-  /** Get the Strides for this Array. */
-  Strides strides() {
-    return indexCalc;
-  }
-
-  /**
-   * Create new Array with given Strides and the same backing store
-   *
-   * @param index use this Strides
-   * @return a view of the Array using the given Index
-   */
-  abstract Array<T> createView(Strides index);
 
   public String toString() {
     StringBuilder sbuff = new StringBuilder();
@@ -128,6 +79,44 @@ public abstract class Array<T> implements Iterable<T> {
     }
     return sbuff.toString();
   }
+
+  //////////////////////////////////////////////////////////
+  // package private
+
+  final DataType dataType;
+  final IndexFn indexFn;
+  final int rank;
+
+  Array(DataType dataType, int[] shape) {
+    this.dataType = dataType;
+    this.rank = shape.length;
+    this.indexFn = IndexFn.builder(shape).build();
+  }
+
+  Array(DataType dataType, IndexFn indexFn) {
+    this.dataType = dataType;
+    this.rank = indexFn.getRank();
+    this.indexFn = indexFn;
+  }
+
+  // Mimic of System.arraycopy(Object src, int srcPos, Object dest, int destPos, int length);
+  abstract void arraycopy(int srcPos, Object dest, int destPos, long length);
+
+  /** Get underlying storage. */
+  abstract Storage<T> storage();
+
+  /** Get the IndexFn for this Array. */
+  IndexFn indexFn() {
+    return indexFn;
+  }
+
+  /**
+   * Create new Array with given IndexFn and the same backing store
+   *
+   * @param index use this IndexFn
+   * @return a view of the Array using the given IndexFn
+   */
+  abstract Array<T> createView(IndexFn index);
 
 }
 

@@ -7,35 +7,39 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 
 /**
- * Superclass for implementations of Array of StructureData.
+ * Array<StructureData>.
+ * Specialization is in Storage<StructureData></StructureData>
+ * Not really immutable, since Storage<StructureData> may not be, but thats hidden to the consumer.
  */
-public class StructureDataArray extends ucar.array.Array<StructureData> {
-  Storage<StructureData> storageSD;
-  StructureMembers members;
+@Immutable
+public class StructureDataArray extends Array<StructureData> {
+  private final Storage<StructureData> storage;
+  private final StructureMembers members;
 
-  /** Create an empty Array of type StructureData and the given shape. */
-  public StructureDataArray(StructureMembers members, int[] shape) {
+  /** Create an Array of type StructureData and the given shape and storage. */
+  public StructureDataArray(StructureMembers members, int[] shape, StructureData[] parray) {
     super(DataType.STRUCTURE, shape);
     this.members = members;
-    storageSD = new StorageSD(new StructureData[(int) indexCalc.getSize()]);
+    storage = new StorageSD(parray);
   }
 
   /** Create an Array of type StructureData and the given shape and storage. */
-  public StructureDataArray(StructureMembers members, int[] shape, Storage<StructureData> storageSD) {
+  public StructureDataArray(StructureMembers members, int[] shape, Storage<StructureData> storage) {
     super(DataType.STRUCTURE, shape);
-    Preconditions.checkArgument(indexCalc.getSize() == storageSD.getLength());
+    Preconditions.checkArgument(indexFn.length() == storage.getLength());
     this.members = members;
-    this.storageSD = storageSD;
+    this.storage = storage;
   }
 
-  /** Create an Array of type StructureData and the given shape and storage. */
-  private StructureDataArray(StructureMembers members, Strides shape, Storage<StructureData> storageSD) {
-    super(DataType.STRUCTURE, shape);
+  /** Create an Array of type StructureData and the given indexFn and storage. */
+  public StructureDataArray(StructureMembers members, IndexFn indexFn, Storage<StructureData> storage) {
+    super(DataType.STRUCTURE, indexFn);
     this.members = members;
-    this.storageSD = storageSD;
+    this.storage = storage;
   }
 
   /** Get the StructureMembers. */
@@ -50,7 +54,7 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
 
   @Override
   public long getSizeBytes() {
-    return indexCalc.getSize() * members.getStructureSize();
+    return indexFn.length() * members.getStructureSize();
   }
 
   @Override
@@ -59,43 +63,29 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
   }
 
   @Override
-  Array<StructureData> createView(Strides index) {
+  Array<StructureData> createView(IndexFn index) {
     return null;
   }
 
   @Override
   public Iterator<StructureData> fastIterator() {
-    return storageSD.iterator();
+    return storage.iterator();
   }
 
   @Override
   public Iterator<StructureData> iterator() {
-    return indexCalc.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
-  }
-
-  public StructureData sum() {
-    return null;
+    return indexFn.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
   }
 
   @Override
   public StructureData get(int... index) {
     Preconditions.checkArgument(this.rank == index.length);
-    return storageSD.get(indexCalc.get(index));
+    return storage.get(indexFn.get(index));
   }
 
   @Override
-  public StructureData get(ucar.array.Index index) {
+  public StructureData get(Index index) {
     return get(index.getCurrentIndex());
-  }
-
-  @Override
-  Storage<StructureData> storage() {
-    return storageSD;
-  }
-
-  public void setStructureData(int index, StructureData sdata) {
-    // TODO kludge
-    ((StorageSD) storageSD).storage[index] = sdata;
   }
 
   /** Get the size of each StructureData object in bytes. */
@@ -103,9 +93,14 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
     return members.getStructureSize();
   }
 
+  @Override
+  Storage<StructureData> storage() {
+    return storage;
+  }
+
   private class CanonicalIterator implements Iterator<StructureData> {
     // used when the data is not in canonical order
-    private final Iterator<Integer> iter = indexCalc.iterator();
+    private final Iterator<Integer> iter = indexFn.iterator();
 
     @Override
     public boolean hasNext() {
@@ -114,30 +109,35 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
 
     @Override
     public StructureData next() {
-      return storageSD.get(iter.next());
+      return storage.get(iter.next());
     }
   }
 
-  static class StorageSD implements Storage<StructureData> {
-    final StructureData[] storage;
+  static class StorageSD implements StorageMutable<StructureData> { // LOOK mutable ??
+    final StructureData[] parray;
 
-    StorageSD(StructureData[] storage) {
-      this.storage = storage;
+    StorageSD(StructureData[] parray) {
+      this.parray = parray;
     }
 
     @Override
     public long getLength() {
-      return storage.length;
+      return parray.length;
     }
 
     @Override
     public StructureData get(long elem) {
-      return storage[(int) elem];
+      return parray[(int) elem];
     }
 
     @Override
     public void arraycopy(int srcPos, Object dest, int destPos, long length) {
       // TODO
+    }
+
+    @Override
+    public void set(int index, StructureData value) {
+      parray[index] = value;
     }
 
     @Override
@@ -150,12 +150,12 @@ public class StructureDataArray extends ucar.array.Array<StructureData> {
 
       @Override
       public final boolean hasNext() {
-        return count < storage.length;
+        return count < parray.length;
       }
 
       @Override
       public final StructureData next() {
-        return storage[count++];
+        return parray[count++];
       }
     }
   }

@@ -10,9 +10,9 @@ import java.util.Formatter;
 /** HDF5 diagnostic helper */
 public class H5diagNew {
   private final NetcdfFile ncfile;
-  private final H5iospNew iosp;
+  private final H5iosp iosp;
 
-  public H5diagNew(NetcdfFile ncfile, H5iospNew iosp) {
+  public H5diagNew(NetcdfFile ncfile, H5iosp iosp) {
     this.ncfile = ncfile;
     this.iosp = iosp;
   }
@@ -37,7 +37,7 @@ public class H5diagNew {
   public void showCompress(Formatter f) throws IOException {
     Size totalSize = new Size(0, 0);
     for (Variable v : ncfile.getVariables()) {
-      H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v.getSPobject();
+      H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
       showCompress(v, vinfo, totalSize, f);
     }
     f.format("%n");
@@ -52,7 +52,7 @@ public class H5diagNew {
     f.format(" overhead     = %f%n", overhead);
   }
 
-  public void showCompress(Variable v, H5headerNew.Vinfo vinfo, Size total, Formatter f) throws IOException {
+  public void showCompress(Variable v, H5header.Vinfo vinfo, Size total, Formatter f) throws IOException {
     H5objects.MessageDataspace mdt = vinfo.mds;
 
     long total_elems = 1;
@@ -77,7 +77,7 @@ public class H5diagNew {
         nominalSize, size.storage, ratio, size.count);
   }
 
-  private void countStorageSize(H5headerNew.Vinfo vinfo, Size size) throws IOException {
+  private void countStorageSize(H5header.Vinfo vinfo, Size size) throws IOException {
     DataBTree btree = vinfo.btree;
     if (btree == null || vinfo.useFillValue) {
       size.storage = 0;
@@ -98,7 +98,7 @@ public class H5diagNew {
     size.count = count;
   }
 
-  public long[] countStorageSize(H5headerNew.Vinfo vinfo, Size size, Formatter f) throws IOException {
+  public long[] countStorageSize(H5header.Vinfo vinfo, Size size, Formatter f) throws IOException {
     long[] result = new long[2];
     DataBTree btree = vinfo.btree;
     if (btree == null) {
@@ -132,7 +132,7 @@ public class H5diagNew {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   public void deflate(Formatter f, Variable v) {
-    H5headerNew.Vinfo vinfo = (H5headerNew.Vinfo) v.getSPobject();
+    H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
     DataBTree btree = vinfo.btree;
     if (btree == null || vinfo.useFillValue) {
       f.format("%s not chunked%n", v.getShortName());

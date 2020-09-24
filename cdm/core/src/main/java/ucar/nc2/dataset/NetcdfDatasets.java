@@ -16,7 +16,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.spi.NetcdfFileProvider;
 import ucar.nc2.internal.dataset.DatasetEnhancer;
-import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
+import ucar.nc2.internal.iosp.netcdf3.N3iosp;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;
@@ -236,7 +236,7 @@ public class NetcdfDatasets {
     // Is it a netcdf3 file?
     IOServiceProvider iosp = (IOServiceProvider) orgFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_GET_IOSP);
 
-    if (!(iosp instanceof N3iospNew)) {
+    if (!(iosp instanceof N3iosp)) {
       return ncd;
     }
 

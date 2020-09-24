@@ -8,15 +8,33 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 
 /** A Collection of members contained in StructureData. */
 @Immutable
 public final class StructureMembers {
+
+  public static StructureMembers.Builder makeStructureMembers(Structure structure) {
+    Builder builder = builder().setName(structure.getShortName());
+    for (Variable v2 : structure.getVariables()) {
+      MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(), v2.getDataType(),
+          v2.getShape());
+      if (v2 instanceof Structure) {
+        m.setStructureMembers(makeStructureMembers((Structure) v2));
+      }
+    }
+    return builder;
+  }
+
+  ////////////////////////////////////////////////////////////////////////
 
   /** Get the StructureMembers' name. */
   public String getName() {
@@ -87,10 +105,13 @@ public final class StructureMembers {
     private final String name, desc, units;
     private final DataType dtype;
     private final int index;
-    private final int size;
+    private final int length;
     private final int[] shape;
     private final StructureMembers members; // only if member is type Structure
+    private final ByteOrder byteOrder; // needed by StructureDataArray
+    private final int offset; // needed by StructureDataArray
     private final boolean isVariableLength;
+
 
     private Member(MemberBuilder builder, int index) {
       this.name = Preconditions.checkNotNull(builder.name);
@@ -99,18 +120,20 @@ public final class StructureMembers {
       this.dtype = Preconditions.checkNotNull(builder.dtype);
       this.index = index;
       this.shape = builder.shape != null ? builder.shape : new int[0];
-      this.members = builder.members;
+      this.members = builder.members != null ? builder.members.build() : null;
+      this.byteOrder = builder.byteOrder;
+      this.offset = builder.offset;
 
-      this.size = (int) ucar.ma2.Index.computeSize(shape);
+      this.length = (int) ucar.ma2.Index.computeSize(shape);
       this.isVariableLength = (shape.length > 0 && shape[shape.length - 1] < 0);
     }
 
     /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
     public MemberBuilder toBuilder() {
       MemberBuilder b = new MemberBuilder().setName(this.name).setDesc(this.desc).setUnits(this.units)
-          .setDataType(this.dtype).setShape(this.shape);
+          .setDataType(this.dtype).setShape(this.shape).setByteOrder(this.getByteOrder()).setOffset(this.getOffset());
       if (this.members != null) {
-        b.setStructureMembers(this.members.toBuilder().build());
+        b.setStructureMembers(this.members.toBuilder());
       }
       return b;
     }
@@ -153,12 +176,20 @@ public final class StructureMembers {
     }
 
     /** Get the total number of elements. */
-    public int getSize() {
-      return size;
+    public int length() {
+      return length;
     }
 
     public boolean isVariableLength() {
       return isVariableLength;
+    }
+
+    public ByteOrder getByteOrder() {
+      return byteOrder;
+    }
+
+    public int getOffset() {
+      return offset;
     }
 
     /**
@@ -175,21 +206,22 @@ public final class StructureMembers {
       else if (getDataType() == DataType.STRING)
         return getDataType().getSize();
       else if (getDataType() == DataType.STRUCTURE)
-        return size * members.getStructureSize();
+        return length * members.getStructureSize();
       // else if (this.isVariableLength())
       // return 0; // do not know
       else
-        return size * getDataType().getSize();
+        return length * getDataType().getSize();
     }
 
     /** Is this a scalar (size == 1). */
     public boolean isScalar() {
-      return size == 1;
+      return length == 1;
     }
 
     public String toString() {
       return name;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -200,14 +232,17 @@ public final class StructureMembers {
         return false;
       }
       Member member = (Member) o;
-      return index == member.index && size == member.size && isVariableLength == member.isVariableLength
-          && Objects.equal(name, member.name) && Objects.equal(desc, member.desc) && Objects.equal(units, member.units)
-          && dtype == member.dtype && Objects.equal(shape, member.shape) && Objects.equal(members, member.members);
+      return index == member.index && length == member.length && offset == member.offset
+          && isVariableLength == member.isVariableLength && Objects.equal(name, member.name)
+          && Objects.equal(desc, member.desc) && Objects.equal(units, member.units) && dtype == member.dtype
+          && Objects.equal(shape, member.shape) && Objects.equal(members, member.members)
+          && Objects.equal(byteOrder, member.byteOrder);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(name, desc, units, dtype, index, size, shape, members, isVariableLength);
+      return Objects.hashCode(name, desc, units, dtype, index, length, shape, members, byteOrder, offset,
+          isVariableLength);
     }
   }
 
@@ -215,7 +250,9 @@ public final class StructureMembers {
     private String name, desc, units;
     private DataType dtype;
     private int[] shape;
-    private StructureMembers members; // only if member is type Structure
+    private StructureMembers.Builder members; // only if member is type Structure
+    private ByteOrder byteOrder = ByteOrder.nativeOrder(); // needed by StructureDataArray
+    private int offset = -1; // needed by StructureDataArray
     private boolean built;
 
     private MemberBuilder() {}
@@ -224,6 +261,10 @@ public final class StructureMembers {
       Preconditions.checkNotNull(name);
       this.name = name;
       return this;
+    }
+
+    public String getName() {
+      return this.name;
     }
 
     public MemberBuilder setDesc(String desc) {
@@ -242,13 +283,27 @@ public final class StructureMembers {
       return this;
     }
 
-    public MemberBuilder setStructureMembers(StructureMembers members) {
+    public MemberBuilder setStructureMembers(StructureMembers.Builder members) {
       this.members = members;
       return this;
     }
 
+    public StructureMembers.Builder getStructureMembers() {
+      return this.members;
+    }
+
     public MemberBuilder setShape(int[] shape) {
       this.shape = Preconditions.checkNotNull(shape);
+      return this;
+    }
+
+    public MemberBuilder setByteOrder(ByteOrder byteOrder) {
+      this.byteOrder = byteOrder;
+      return this;
+    }
+
+    public MemberBuilder setOffset(int offset) {
+      this.offset = offset;
       return this;
     }
 
@@ -349,6 +404,10 @@ public final class StructureMembers {
         }
       }
       return false;
+    }
+
+    public List<MemberBuilder> getStructureMembers() {
+      return members;
     }
 
     public Builder setStructureSize(int structureSize) {

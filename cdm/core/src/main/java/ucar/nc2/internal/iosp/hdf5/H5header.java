@@ -70,8 +70,8 @@ import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.unidata.io.RandomAccessFile;
 
 /** Read all of the metadata of an HD5 file. */
-public class H5headerNew implements HdfHeaderIF {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5headerNew.class);
+public class H5header implements HdfHeaderIF {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // special attribute names in HDF5
   public static final String HDF5_CLASS = "CLASS";
@@ -140,7 +140,7 @@ public class H5headerNew implements HdfHeaderIF {
 
   private final RandomAccessFile raf;
   private final Group.Builder root;
-  private final H5iospNew h5iosp;
+  private final H5iosp h5iosp;
 
   private long baseAddress;
   byte sizeOffsets, sizeLengths;
@@ -156,13 +156,13 @@ public class H5headerNew implements HdfHeaderIF {
   private final Map<Long, DataObject> addressMap = new HashMap<>(200);
   private java.text.SimpleDateFormat hdfDateParser;
 
-  private H5objects h5objects;
+  H5objects h5objects;
   private PrintWriter debugOut;
   private MemTracker memTracker;
 
   private final Charset valueCharset;
 
-  H5headerNew(RandomAccessFile myRaf, Group.Builder root, H5iospNew h5iosp) {
+  H5header(RandomAccessFile myRaf, Group.Builder root, H5iosp h5iosp) {
     this.raf = myRaf;
     this.root = root;
     this.h5iosp = h5iosp;
@@ -998,7 +998,7 @@ public class H5headerNew implements HdfHeaderIF {
   }
 
   // read attribute values without creating a Variable
-  private Array readAttributeData(MessageAttribute matt, H5headerNew.Vinfo vinfo, DataType dataType)
+  private Array readAttributeData(MessageAttribute matt, H5header.Vinfo vinfo, DataType dataType)
       throws IOException, InvalidRangeException {
     int[] shape = matt.mds.dimLength;
 
@@ -1144,7 +1144,7 @@ public class H5headerNew implements HdfHeaderIF {
       elemSize = vinfo.mdt.byteSize;
 
     } else if (vinfo.typeInfo.hdfType == 8) { // enum
-      H5headerNew.TypeInfo baseInfo = vinfo.typeInfo.base;
+      H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
       readDtype = baseInfo.dataType;
       elemSize = readDtype.getSize();
       endian = baseInfo.endian;
@@ -2039,22 +2039,18 @@ public class H5headerNew implements HdfHeaderIF {
    * @return the Array read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian)
-      throws IOException, InvalidRangeException {
+  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(globalHeapIdAddress);
     if (debugHeap) {
       log.debug(" heapId= {}", heapId);
     }
     return getHeapDataArray(heapId, dataType, endian);
-    // Object pa = getHeapDataArray(heapId, dataType, endian);
-    // return Array.factory(dataType.getPrimitiveClassType(), new int[]{heapId.nelems}, pa);
   }
 
-  Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, int endian)
-      throws IOException, InvalidRangeException {
+  Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, int endian) throws IOException {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) {
-      throw new InvalidRangeException("Illegal Heap address, HeapObject = " + heapId);
+      throw new IllegalStateException("Illegal Heap address, HeapObject = " + heapId);
     }
     if (debugHeap) {
       log.debug(" HeapObject= {}", ho);
@@ -2138,7 +2134,7 @@ public class H5headerNew implements HdfHeaderIF {
     return raf.readString((int) ho.dataSize, valueCharset);
   }
 
-  Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, int endian) throws IOException, InvalidRangeException {
+  Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, int endian) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(bb, pos);
     return getHeapDataArray(heapId, dataType, endian);
   }

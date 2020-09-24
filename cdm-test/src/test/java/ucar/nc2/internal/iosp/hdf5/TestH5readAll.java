@@ -27,7 +27,7 @@ public class TestH5readAll {
 
   @AfterClass
   static public void after() {
-    H5headerNew.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
+    H5header.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
   @Parameterized.Parameters(name = "{0}")

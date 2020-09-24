@@ -16,26 +16,25 @@ import ucar.ma2.DataType;
 /** Concrete implementation of Array specialized for doubles. */
 @Immutable
 public class ArrayDouble extends ucar.array.Array<Double> {
-
   private final Storage<Double> storageD;
 
   /** Create an empty Array of type double and the given shape. */
   public ArrayDouble(int[] shape) {
     super(DataType.DOUBLE, shape);
-    storageD = new StorageD(new double[(int) indexCalc.getSize()]);
+    storageD = new StorageD(new double[(int) indexFn.length()]);
   }
 
   /** Create an Array of type double and the given shape and storage. */
   public ArrayDouble(int[] shape, Storage<Double> storageD) {
     super(DataType.DOUBLE, shape);
-    Preconditions.checkArgument(indexCalc.getSize() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
     this.storageD = storageD;
   }
 
-  /** Create an Array of type double and the given shape and storage. */
-  private ArrayDouble(Strides shape, Storage<Double> storageD) {
-    super(DataType.DOUBLE, shape);
-    Preconditions.checkArgument(indexCalc.getSize() <= storageD.getLength());
+  /** Create an Array of type double and the given indexFn and storage. */
+  private ArrayDouble(IndexFn indexFn, Storage<Double> storageD) {
+    super(DataType.DOUBLE, indexFn);
+    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
     this.storageD = storageD;
   }
 
@@ -46,12 +45,12 @@ public class ArrayDouble extends ucar.array.Array<Double> {
 
   @Override
   public Iterator<Double> iterator() {
-    return indexCalc.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
+    return indexFn.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
   }
 
   @Override
   public Double get(int... index) {
-    return storageD.get(indexCalc.get(index));
+    return storageD.get(indexFn.get(index));
   }
 
   @Override
@@ -61,12 +60,12 @@ public class ArrayDouble extends ucar.array.Array<Double> {
 
   @Override
   void arraycopy(int srcPos, Object dest, int destPos, long length) {
-    if (indexCalc.isCanonicalOrder()) {
+    if (indexFn.isCanonicalOrder()) {
       storageD.arraycopy(srcPos, dest, destPos, length);
     } else {
       double[] ddest = (double[]) dest;
       int destIndex = destPos;
-      Iterator<Integer> iter = indexCalc.iterator(srcPos, length);
+      Iterator<Integer> iter = indexFn.iterator(srcPos, length);
       while (iter.hasNext()) {
         ddest[destIndex++] = storageD.get(iter.next());
       }
@@ -78,15 +77,15 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     return storageD;
   }
 
-  /** create new Array with given indexImpl and the same backing store */
+  /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayDouble createView(Strides index) {
-    return new ArrayDouble(index, storageD);
+  protected ArrayDouble createView(IndexFn indexFn) {
+    return new ArrayDouble(indexFn, storageD);
   }
 
   // used when the data is not in canonical order
   private class CanonicalIterator implements Iterator<Double> {
-    private final Iterator<Integer> iter = indexCalc.iterator();
+    private final Iterator<Integer> iter = indexFn.iterator();
 
     @Override
     public boolean hasNext() {
@@ -157,7 +156,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
       long total = 0L;
       for (Array<?> dataArray : dataArrays) {
         builder.add(((Array<Double>) dataArray).storage());
-        total += dataArray.getSize();
+        total += dataArray.length();
         edge.add(total);
       }
       this.dataArrays = builder.build();

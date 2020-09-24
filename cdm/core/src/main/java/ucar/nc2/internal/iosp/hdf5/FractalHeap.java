@@ -64,7 +64,7 @@ public class FractalHeap {
   private java.io.PrintStream debugOut = System.out;
   static boolean debugDetail, debugFractalHeap, debugPos;
 
-  private final H5headerNew h5;
+  private final H5header h5;
   private final RandomAccessFile raf;
 
   int version;
@@ -93,7 +93,7 @@ public class FractalHeap {
   BTree2 btreeHugeObjects;
 
 
-  public FractalHeap(H5headerNew h5, String forWho, long address, MemTracker memTracker) throws IOException {
+  public FractalHeap(H5header h5, String forWho, long address, MemTracker memTracker) throws IOException {
     this.h5 = h5;
     this.raf = h5.getRandomAccessFile();
 

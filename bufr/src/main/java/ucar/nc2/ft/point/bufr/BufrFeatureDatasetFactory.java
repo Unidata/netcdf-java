@@ -38,7 +38,7 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.*;
-import ucar.nc2.iosp.bufr.BufrIosp2;
+import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -107,7 +107,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
       // create the list of data variables
       munger = new Munge();
-      obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecordName);
+      obs = (SequenceDS) ncfile.findVariable(BufrIosp.obsRecordName);
       this.dataVariables = munger.makeDataVariables(index, obs);
 
       BufrStationCollection bufrCollection = new BufrStationCollection(ncfile.getLocation());
@@ -135,7 +135,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         super(name, null, null);
 
         // need the center id to match the standard fields
-        Attribute centerAtt = netcdfDataset.findGlobalAttribute(BufrIosp2.centerId);
+        Attribute centerAtt = netcdfDataset.findGlobalAttribute(BufrIosp.centerId);
         int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
         this.extract = new StandardFields.StandardFieldsFromStructure(center, obs);
 

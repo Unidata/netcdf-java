@@ -30,7 +30,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.internal.iosp.hdf5.H5headerNew;
+import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class TestCharFillValue {
 
     try (NetcdfFile ncf = NetcdfFiles.open(filename)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
-      H5headerNew.Vinfo h5 = (H5headerNew.Vinfo) charVarFromFile.getSPobject();
+      H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());
       // should be 3 charFillVal characters
       Array arr = charVarFromFile.read();
@@ -119,7 +119,7 @@ public class TestCharFillValue {
 
     try (NetcdfFile ncf = NetcdfFiles.open(filename)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
-      H5headerNew.Vinfo h5 = (H5headerNew.Vinfo) charVarFromFile.getSPobject();
+      H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
       logger.debug("use fill value: {}", h5.useFillValue());
       // should be 3 charFillVal characters
       Array arr = charVarFromFile.read();

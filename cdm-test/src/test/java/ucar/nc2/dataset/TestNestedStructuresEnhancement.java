@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Sequence;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.bufr.BufrIosp2;
+import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.ma2.StructureData;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayStructure;
@@ -35,7 +35,7 @@ public class TestNestedStructuresEnhancement {
     String filename = TestDir.cdmLocalFromTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDatasets.openFile(filename, null)) {
       logger.debug("Open {}", ncfile.getLocation());
-      Sequence outer = (Sequence) ncfile.findVariable(BufrIosp2.obsRecordName);
+      Sequence outer = (Sequence) ncfile.findVariable(BufrIosp.obsRecordName);
       assert outer != null;
 
       try (StructureDataIterator iter = outer.getStructureIterator()) {
@@ -60,7 +60,7 @@ public class TestNestedStructuresEnhancement {
     String filename = TestDir.cdmLocalFromTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       logger.debug("Open {}", ncfile.getLocation());
-      SequenceDS outer = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecordName);
+      SequenceDS outer = (SequenceDS) ncfile.findVariable(BufrIosp.obsRecordName);
       assert outer != null;
 
       try (StructureDataIterator iter = outer.getStructureIterator()) {
