@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
@@ -18,6 +19,7 @@ import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -496,6 +498,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
     return iosp.getStructureIterator(s, bufferSize);
+  }
+
+  protected Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
+    return iosp.getStructureDataArrayIterator(s, bufferSize);
   }
 
   /**

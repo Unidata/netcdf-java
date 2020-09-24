@@ -62,7 +62,7 @@ public class Arrays {
       }
       case CHAR: {
         Storage<Character> storageS = new ArrayChar.StorageS((char[]) dataArray);
-        return (Array<T>) new ArrayChar(dataType, shape, storageS);
+        return (Array<T>) new ArrayChar(shape, storageS);
       }
       case DOUBLE: {
         Storage<Double> storageD = new ArrayDouble.StorageD((double[]) dataArray);
@@ -114,7 +114,7 @@ public class Arrays {
         return (Array<T>) new ArrayByte(dataType, shape);
       }
       case CHAR: {
-        return (Array<T>) new ArrayChar(dataType, shape);
+        return (Array<T>) new ArrayChar(shape);
       }
       case DOUBLE: {
         return (Array<T>) new ArrayDouble(shape);

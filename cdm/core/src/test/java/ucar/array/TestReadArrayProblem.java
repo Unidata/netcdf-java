@@ -31,8 +31,20 @@ public class TestReadArrayProblem {
   }
 
   @Test
-  public void test64bit() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "formats/netcdf3/files/nctest_64bit_offset.nc";
+  public void testHdf4() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/hdf4/TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF";
+    compareArrays(filename);
+  }
+
+  @Test
+  public void testStructureWithChar() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/hdf5/support/cstr.h5";
+    compareArrays(filename);
+  }
+
+  @Test
+  public void testStructure() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/hdf5/wrf/wrf_bdy_par.h5";
     compareArrays(filename);
   }
 
@@ -60,6 +72,7 @@ public class TestReadArrayProblem {
         } catch (Exception e) {
           System.out.printf(" BAD%n");
           e.printStackTrace();
+          ok = false;
         }
       }
       Assert.assertTrue(filename, ok);

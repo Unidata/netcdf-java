@@ -5,7 +5,7 @@
 package ucar.array;
 
 /** Abstraction for storing Array data. */
-interface Storage<T> extends Iterable<T> {
+public interface Storage<T> extends Iterable<T> {
 
   long getLength();
 

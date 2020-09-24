@@ -377,14 +377,14 @@ public class CdmrDataToMa {
     }
     StructureMembers members = membersb.build();
 
-    StructureDataArray result = new StructureDataArray(members, section.getShape());
+    StructureData[] parr = new StructureData[nrows];
     // row oriented
     int index = 0;
     for (CdmRemoteProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
-      result.setStructureData(index, decodeStructureData(row, members));
+      parr[index] = decodeStructureData(row, members);
       index++;
     }
-    return result;
+    return new StructureDataArray(members, section.getShape(), parr);
   }
 
   public static StructureData decodeStructureData(CdmRemoteProto.StructureDataProto structDataProto,

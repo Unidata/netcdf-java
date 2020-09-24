@@ -26,14 +26,9 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
-/**
- * IOSP for BUFR data - version 2, using the preprocessor.
- *
- * @author caron
- * @since 8/8/13
- */
-public class BufrIosp2 extends AbstractIOServiceProvider {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp2.class);
+/** IOSP for BUFR data - using the preprocessor. */
+public class BufrIosp extends AbstractIOServiceProvider {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
 
   public static final String obsRecordName = "obs";
   public static final String fxyAttName = "BUFR:TableB_descriptor";
@@ -46,13 +41,13 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     debugIter = debugFlag.isSet("Bufr/iter");
   }
 
-  private Sequence obsStructure;
-  private Message protoMessage; // prototypical message: all messages in the file must be the same.
-  private MessageScanner scanner;
-  private HashSet<Integer> messHash;
-  private boolean isSingle;
-  private BufrConfig config;
-  private Element iospParam;
+  Sequence obsStructure;
+  Message protoMessage; // prototypical message: all messages in the file must be the same.
+  MessageScanner scanner;
+  HashSet<Integer> messHash;
+  boolean isSingle;
+  BufrConfig config;
+  Element iospParam;
 
   @Override
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -150,7 +145,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     return iospParam;
   }
 
-  private int nelems = -1;
+  int nelems = -1;
 
   @Override
   public Array readData(Variable v2, Section section) {
@@ -165,7 +160,7 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
   }
 
   private void findRootSequence() {
-    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp2.obsRecordName);
+    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp.obsRecordName);
   }
 
   private class SeqIter implements StructureDataIterator {

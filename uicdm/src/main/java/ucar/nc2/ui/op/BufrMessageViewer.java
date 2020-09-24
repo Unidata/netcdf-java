@@ -65,7 +65,7 @@ public class BufrMessageViewer extends JPanel {
     tableButt.addActionListener(e -> {
       try {
         NetcdfFile ncd = makeBufrDataset();
-        Variable v = ncd.findVariable(BufrIosp2.obsRecordName);
+        Variable v = ncd.findVariable(BufrIosp.obsRecordName);
         if (v instanceof Structure) {
           if (dataTable == null)
             makeDataTable();
@@ -226,7 +226,7 @@ public class BufrMessageViewer extends JPanel {
           return;
         try {
           NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
-          Variable v = ncd.findVariable(BufrIosp2.obsRecordName);
+          Variable v = ncd.findVariable(BufrIosp.obsRecordName);
           if (v instanceof Structure) {
             if (dataTable == null)
               makeDataTable();
@@ -630,7 +630,7 @@ public class BufrMessageViewer extends JPanel {
   }
 
   private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
-    BufrIosp2 iosp = new BufrIosp2();
+    BufrIosp iosp = new BufrIosp();
     NetcdfFile ncfile = iosp.open(raf, m);
 
     // Wrap in a NetcdfDataset so that we can get "*DS" objects. But don't enhance.
@@ -638,7 +638,7 @@ public class BufrMessageViewer extends JPanel {
   }
 
   private NetcdfFile makeBufrDataset() throws IOException {
-    BufrIosp2 iosp = new BufrIosp2();
+    BufrIosp iosp = new BufrIosp();
     NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     return ncfile;
   }
@@ -657,7 +657,7 @@ public class BufrMessageViewer extends JPanel {
     List<ObsBean> beanList = new ArrayList<>();
     try {
       NetcdfFile ncd = makeBufrMessageAsDataset(m);
-      Variable v = ncd.findVariable(BufrIosp2.obsRecordName);
+      Variable v = ncd.findVariable(BufrIosp.obsRecordName);
       if (v instanceof Structure) {
         Structure obs = (Structure) v;
         StandardFields.StandardFieldsFromStructure extract =
@@ -794,7 +794,7 @@ public class BufrMessageViewer extends JPanel {
     private void read() {
       try {
         NetcdfFile ncd = makeBufrMessageAsDataset(m);
-        SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp2.obsRecordName);
+        SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp.obsRecordName);
         try (StructureDataIterator iter = v.getStructureIterator(-1)) {
           while (iter.hasNext())
             iter.next();

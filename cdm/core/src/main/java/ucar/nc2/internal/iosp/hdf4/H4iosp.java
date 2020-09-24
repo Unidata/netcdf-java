@@ -13,6 +13,8 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
 import ucar.array.Arrays;
+import ucar.array.Storage;
+import ucar.array.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -249,15 +251,13 @@ public class H4iosp extends AbstractIOServiceProvider {
     int recsize = vinfo.elemSize;
 
     // create the StructureMembers
-    ucar.array.StructureMembers.Builder members = ucar.array.StructureMembers.makeStructureMembers(s);
-    int[] offsets = new int[members.getStructureMembers().size()];
-    int mcount = 0;
-    for (ucar.array.StructureMembers.MemberBuilder m : members.getStructureMembers()) {
+    ucar.array.StructureMembers.Builder membersb = ucar.array.StructureMembers.makeStructureMembers(s);
+    for (ucar.array.StructureMembers.MemberBuilder m : membersb.getStructureMembers()) {
       Variable v2 = s.findVariable(m.getName());
       H4header.Minfo minfo = (H4header.Minfo) v2.getSPobject();
-      offsets[mcount++] = minfo.offset;
+      m.setOffset(minfo.offset);
     }
-    members.setStructureSize(recsize);
+    membersb.setStructureSize(recsize);
 
     int nrecs = (int) section.getSize();
     byte[] result = new byte[(int) (nrecs * recsize)];
@@ -289,7 +289,10 @@ public class H4iosp extends AbstractIOServiceProvider {
       throw new IllegalStateException();
     }
 
-    return new ucar.array.StructureDataArray(members.build(), section.getShape(), ByteBuffer.wrap(result), offsets);
+    ucar.array.StructureMembers members = membersb.build();
+    Storage<StructureData> storage =
+        new ucar.array.StructureDataStorageBB(members, ByteBuffer.wrap(result), (int) section.getSize());
+    return new ucar.array.StructureDataArray(members, section.getShape(), storage);
   }
 
   public String toStringDebug(Object o) {

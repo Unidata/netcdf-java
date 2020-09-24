@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Formatter;
 import java.util.Optional;
+import ucar.array.Storage;
+import ucar.array.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
@@ -303,13 +305,11 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     Range recordRange = section.getRange(0);
 
     // create the StructureMembers
-    ucar.array.StructureMembers.Builder members = ucar.array.StructureMembers.makeStructureMembers(s);
-    int[] offsets = new int[members.getStructureMembers().size()];
-    int mcount = 0;
-    for (ucar.array.StructureMembers.MemberBuilder m : members.getStructureMembers()) {
+    ucar.array.StructureMembers.Builder membersb = ucar.array.StructureMembers.makeStructureMembers(s);
+    for (ucar.array.StructureMembers.MemberBuilder m : membersb.getStructureMembers()) {
       Variable v2 = s.findVariable(m.getName());
       Vinfo vinfo = (Vinfo) v2.getSPobject();
-      offsets[mcount++] = (int) (vinfo.begin - header.recStart);
+      m.setOffset((int) (vinfo.begin - header.recStart));
     }
 
     // protect against too large of reads
@@ -321,7 +321,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
       throw new IllegalArgumentException(
           "Too large read: nrecs * recsize= " + (nrecs * header.recsize) + " bytes exceeds " + Integer.MAX_VALUE);
     }
-    members.setStructureSize((int) header.recsize);
+    membersb.setStructureSize((int) header.recsize);
 
     byte[] result = new byte[(int) (nrecs * header.recsize)];
     int rcount = 0;
@@ -338,6 +338,9 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
       rcount++;
     }
 
-    return new ucar.array.StructureDataArray(members.build(), section.getShape(), ByteBuffer.wrap(result), offsets);
+    ucar.array.StructureMembers members = membersb.build();
+    Storage<StructureData> storage =
+        new ucar.array.StructureDataStorageBB(members, ByteBuffer.wrap(result), (int) section.getSize());
+    return new ucar.array.StructureDataArray(members, section.getShape(), storage);
   }
 }

@@ -7,13 +7,16 @@ package ucar.nc2.iosp;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import javax.annotation.Nullable;
+import ucar.array.StructureData;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
@@ -117,11 +120,14 @@ public interface IOServiceProvider extends Closeable {
    */
   StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
 
+  Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException;
+
+
   /**
    * Close the file.
    * It is the IOServiceProvider's job to close the file (even though it didnt open it),
    * and to free any other resources it has used.
-   * 
+   *
    * @throws IOException if read error
    */
   void close() throws IOException;

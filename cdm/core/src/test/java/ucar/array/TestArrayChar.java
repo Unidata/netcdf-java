@@ -18,7 +18,7 @@ public class TestArrayChar {
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Character> store = new ArrayChar.StorageS(new char[] {1, 2, 3, 4, 5, 6});
-    ArrayChar array = new ArrayChar(DataType.CHAR, shape, store);
+    ArrayChar array = new ArrayChar(shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -59,7 +59,7 @@ public class TestArrayChar {
   public void testNonCanonicalOrder() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Character> store = new ArrayChar.StorageS(new char[] {1, 2, 3, 4, 5, 6});
-    Array<Character> array = new ArrayChar(DataType.CHAR, shape, store);
+    Array<Character> array = new ArrayChar(shape, store);
     array = Arrays.flip(array, 1);
     char[] expected = new char[] {4, 5, 6, 1, 2, 3};
     int count = 0;

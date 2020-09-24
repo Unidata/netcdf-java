@@ -15,21 +15,21 @@ public class ArrayChar extends Array<Character> {
   private final Storage<Character> storage;
 
   /** Create an empty Array of type Char and the given shape. */
-  public ArrayChar(DataType dtype, int[] shape) {
-    super(dtype, shape);
+  public ArrayChar(int[] shape) {
+    super(DataType.CHAR, shape);
     storage = new StorageS(new char[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Char and the given shape and storage. */
-  public ArrayChar(DataType dtype, int[] shape, Storage<Character> storage) {
-    super(dtype, shape);
+  public ArrayChar(int[] shape, Storage<Character> storage) {
+    super(DataType.CHAR, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.getLength());
     this.storage = storage;
   }
 
   /** Create an Array of type Char and the given indexFn and storage. */
-  private ArrayChar(DataType dtype, IndexFn indexFn, Storage<Character> storageD) {
-    super(dtype, indexFn);
+  private ArrayChar(IndexFn indexFn, Storage<Character> storageD) {
+    super(DataType.CHAR, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
     this.storage = storageD;
   }
@@ -76,7 +76,7 @@ public class ArrayChar extends Array<Character> {
   /** create new Array with given IndexFn and the same backing store */
   @Override
   protected ArrayChar createView(IndexFn indexFn) {
-    return new ArrayChar(this.dataType, indexFn, this.storage);
+    return new ArrayChar(indexFn, this.storage);
   }
 
   // used when the data is not in canonical order

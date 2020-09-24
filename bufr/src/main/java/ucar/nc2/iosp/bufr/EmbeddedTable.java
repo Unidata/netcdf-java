@@ -109,7 +109,7 @@ public class EmbeddedTable {
       if (showB)
         System.out.printf("%s == %s%n", v, data);
 
-      Attribute att = v.attributes().findAttribute(BufrIosp2.fxyAttName);
+      Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
       switch (att.getStringValue()) {
         case "0-0-10":
           sdata.getScalarString(m);
@@ -189,7 +189,7 @@ public class EmbeddedTable {
         continue;
       }
 
-      Attribute att = v.attributes().findAttribute(BufrIosp2.fxyAttName);
+      Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
       if (att != null) {
         if (showD)
           System.out.printf("%s == %s%n", v, sdata.getScalarString(m));
@@ -236,7 +236,7 @@ public class EmbeddedTable {
         if (showD)
           System.out.printf("%s == %s%n", v, data);
 
-        Attribute att = v.attributes().findAttribute(BufrIosp2.fxyAttName);
+        Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
         if (att != null && att.getStringValue().equals("0-0-30"))
           fxyS = sdata.getScalarString(m);
       }

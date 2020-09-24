@@ -10,6 +10,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
+import ucar.array.IndexFn;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -379,9 +382,10 @@ public class H5iospArrays extends H5iosp {
     }
 
     // place data into a StructureArray
-    return makeStructureDataArray(v, layout, shape, byteArray); // LOOK
+    return makeStructureDataArray(v, layout, shape, byteArray);
   }
 
+  // already read the data into the byte buffer.
   private ucar.array.Array<ucar.array.StructureData> makeStructureDataArray(Structure s, Layout layout, int[] shape,
       byte[] byteArray) throws IOException {
 
@@ -404,19 +408,21 @@ public class H5iospArrays extends H5iosp {
       throw new IOException("H5iosp illegal structure size " + s.getFullName());
     }
 
-    ucar.array.StructureDataArray2 structArray =
-        new ucar.array.StructureDataArray2(sm, shape, ByteBuffer.wrap(byteArray));
+    ByteBuffer bb = ByteBuffer.wrap(byteArray);
+    StructureDataStorageBB storage =
+        new StructureDataStorageBB(sm, ByteBuffer.wrap(byteArray), (int) IndexFn.computeSize(shape));
+    storage.setCharIsOneByte(true);
 
     // strings and vlens are stored on the heap, and must be read separately
     if (hasHeap) {
       int destPos = 0;
       for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
-        convertArrayHeap(structArray, destPos, sm);
-        destPos += layout.getElemSize();
+        readHeapData(bb, storage, destPos, sm);
+        destPos += layout.getElemSize(); // LOOK use recSize ??
       }
     }
 
-    return structArray;
+    return new StructureDataArray(sm, shape, storage);
   }
 
   // recursive
@@ -452,8 +458,9 @@ public class H5iospArrays extends H5iosp {
     return hasHeap;
   }
 
-  private void convertArrayHeap(ucar.array.StructureDataArray2 asbb, int pos, StructureMembers sm) throws IOException {
-    ByteBuffer bb = asbb.getByteBuffer();
+  // Reads the Strings and Vlens from the heap
+  private void readHeapData(ByteBuffer bb, StructureDataStorageBB storage, int pos, StructureMembers sm)
+      throws IOException {
     for (StructureMembers.Member m : sm.getMembers()) {
       if (m.getDataType() == DataType.STRING) {
         int size = m.length();
@@ -463,17 +470,17 @@ public class H5iospArrays extends H5iosp {
           result[i] = header.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
         }
 
-        int index = asbb.addObjectToHeap(result);
+        int index = storage.addObjectToHeap(result);
         bb.order(m.getByteOrder()); // write the string index in whatever that member's byte order is.
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
 
-      } else if (m.isVariableLength()) {
+      } else if (m.isVariableLength()) { // LOOK this is wrong
         int startPos = pos + m.getOffset();
         bb.order(ByteOrder.LITTLE_ENDIAN);
 
-        ByteOrder bo = (ByteOrder) m.getByteOrder();
+        ByteOrder bo = m.getByteOrder();
         int endian = bo.equals(ByteOrder.LITTLE_ENDIAN) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
-        // Compute rank and size upto the first (and ideally last) VLEN
+        // Compute rank and size up to the first (and ideally last) VLEN
         int[] fieldshape = m.getShape();
         int prefixrank = 0;
         int size = 1;
@@ -482,7 +489,8 @@ public class H5iospArrays extends H5iosp {
             break;
           size *= fieldshape[prefixrank];
         }
-        assert size == m.length() : "Internal error: field size mismatch";
+        Preconditions.checkArgument(size == m.length(), "Internal error: field size mismatch");
+
         Array[] fieldarray = new Array[size]; // hold all the vlen instance data
         // destPos will point to each vlen instance in turn
         // assuming we have 'size' such instances in a row.
@@ -493,6 +501,7 @@ public class H5iospArrays extends H5iosp {
           fieldarray[i] = vlenArray;
           destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
         }
+
         Array result;
         if (prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
@@ -502,7 +511,7 @@ public class H5iospArrays extends H5iosp {
           // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
           result = Array.makeVlenArray(newshape, fieldarray);
         }
-        int index = asbb.addObjectToHeap(result);
+        int index = storage.addObjectToHeap(result);
         bb.order(ByteOrder.nativeOrder());
         bb.putInt(startPos, index); // overwrite with the index into the Heap
       }
