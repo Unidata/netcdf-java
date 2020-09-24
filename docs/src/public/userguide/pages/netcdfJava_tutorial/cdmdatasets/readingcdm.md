@@ -72,7 +72,7 @@ If you want all the data in a variable, use:
 {{ rmd | markdownify }}
 
 When you want to subset the data, you have a number of options, all of which have situations where they are the most convenient.
-Take, for example, the 3D variable `T` in the above example":
+Take, for example, the 3D variable `T` in the above example:
 
 ~~~
 double T(time=31, lat=3, lon=4);
@@ -263,4 +263,4 @@ In that case you may do better copying the file to a local drive, or putting the
 ## Opening remote files on AWS S3
 
 Files stored as single objects on AWS S3 can also be accessed using `NetcdfFiles` and `NetcdfDatasets`.
-For more information, see [dataset_urls.html#object-stores](dataset_urls.html#object-stores).
+For more information, please see the object store section of the [Dataset URL](dataset_urls.html#object-stores) documentation.

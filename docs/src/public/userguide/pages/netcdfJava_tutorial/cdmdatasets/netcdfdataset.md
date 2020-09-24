@@ -34,6 +34,8 @@ The preferred way to open a `NetcdfFile` is through the `NetcdfDatasets.openFile
 * Opens an *NcML dataset*, if the location ends with `.xml` or `.ncml`, or is a URL starting with `ncmdl:` (version 4.4+)
 * Otherwise, calls `NetcdfFile.open`, which handles local file or HTTP access to any CDM file.
 
+For more information, see the [Dataset URL](dataset_urls.html) documentation.
+
 #### Using NetcdfDataset.openDataset to open an enhanced NetcdfDataset
 
 When you want the Netcdf-Java library to deal with missing values and scale/offset unpacking, and to identify coordinate systems, 
