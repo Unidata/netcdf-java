@@ -36,10 +36,12 @@ module Jekyll
         # init function text
         codestring = ""
         # find function start
-        startscan = /#{@function}\(.*\)\s*\{/ =~ filestring
+        startscan = /#{@function}\(.*\).*\{/m =~ filestring
 
         # find function end
-        unless startscan.nil?
+        if startscan.nil?
+          raise "Function name "+ @function + " not found in file " + File.basename(@path)
+        else
           start = filestring.index("{", startscan)
           i = start
           brackets = ["{"]
@@ -70,6 +72,9 @@ module Jekyll
     def format(codestring, startline, endline)
       # split code into line array and subset
       codelines = codestring.split("\n")[startline..endline]
+      # remove lines with ignore tag
+      ignoreTag = "/*DOCS-IGNORE*/"
+      codelines.select! { |s| !s.include? ignoreTag}
       # remove fixed num of tab characters from each line
       offset = /\S/ =~ codelines[0]
       codelines.map! { |s| s[offset..-1]}
