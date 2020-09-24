@@ -51,7 +51,7 @@ public class TestS3ExternalCompressionRead {
   }
 
   @Test
-  @Ignore("needs radial")
+  @Ignore("Needs Radial. Also, failing. Reason: This operation is not permitted on an archived blob. ?")
   public void testMicrosoftBlobS3() throws IOException {
     // https://nexradsa.blob.core.windows.net/nexrad-l2/1997/07/07/KHPX/KHPX19970707_000827.gz
     String host = "nexradsa.blob.core.windows.net";
