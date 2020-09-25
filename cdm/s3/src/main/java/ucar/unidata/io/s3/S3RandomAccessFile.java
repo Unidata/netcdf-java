@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -37,6 +39,11 @@ import ucar.unidata.io.spi.RandomAccessFileProvider;
  */
 
 public final class S3RandomAccessFile extends RemoteRandomAccessFile implements ReadableRemoteFile, Closeable {
+
+  private static final Logger logger = LoggerFactory.getLogger(S3RandomAccessFile.class);
+
+  private static final String AWS_REGION_ENV_VAR_NAME = "AWS_REGION";
+  private static final String AWS_REGION_PROP_NAME = "aws.region";
 
   private static final int s3BufferSize = Integer
       .parseInt(System.getProperty("ucar.unidata.io.s3.bufferSize", String.valueOf(defaultRemoteFileBufferSize)));
@@ -76,8 +83,27 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
     // If, by the time we make the client, profileRegion isn't set, we will default to the AWS_GLOBAL region, which is
     // like a no-op region when it comes to S3. This will allow requests to non-AWS-S3 object stores to work, because
     // a region must be set, even if it's useless.
+    // First, look for a region in the default profile of the default config file (~/.aws/config)
     Optional<Region> profileRegion = ProfileFile.defaultProfileFile().profile("default")
         .map(p -> p.properties().get(ProfileProperty.REGION)).map(Region::of);
+
+    // If region not found, check the aws.region system property and, if not found there, the environmental
+    // variable AWS_REGION
+    if (!profileRegion.isPresent()) {
+      // first check system property
+      logger.debug("Checking system property {} for Region.", AWS_REGION_PROP_NAME);
+      String regionName = System.getProperty(AWS_REGION_PROP_NAME);
+      if (regionName == null) {
+        // ok, now check environmental variable
+        logger.debug("Checking environmental variable {} for Region.", AWS_REGION_ENV_VAR_NAME);
+        regionName = System.getenv(AWS_REGION_ENV_VAR_NAME);
+      }
+
+      if (regionName != null) {
+        logger.debug("Region found: {}", regionName);
+        profileRegion = Optional.ofNullable(Region.of(regionName));
+      }
+    }
 
     try {
       uri = new CdmS3Uri(url);
@@ -110,12 +136,16 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
       // add it to the chain that it is the first thing checked for credentials
       cdmCredentialsProviderChainBuilder.addCredentialsProvider(namedProfileCredentials);
 
-      // Read the region associated with the profile, if set
+      // Read the region associated with the profile, if set, as it might be different than the
+      // default value in the profile file, or the value found in the System property or Environmental
+      // variable.
       // Note: the java sdk does not do this by default
       Optional<Region> namedProfileRegion = ProfileFile.defaultProfileFile().profile(profileName)
           .map(p -> p.properties().get(ProfileProperty.REGION)).map(Region::of);
       // if the named profile has a region, update profileRegion to use it.
       if (namedProfileRegion.isPresent()) {
+        logger.debug("Region {} found for profile {} - will be using this region.", namedProfileRegion.get(),
+            profileName);
         profileRegion = namedProfileRegion;
       }
     }
@@ -133,7 +163,7 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
     // Add the credentials provider to the client builder
     s3ClientBuilder.credentialsProvider(cdmCredentialsProviderChain);
 
-    // Set the region for the client builder (default to AWS_GLOBAL)
+    // Set the region for the client builder (or default to AWS_GLOBAL)
     s3ClientBuilder.region(profileRegion.orElse(Region.AWS_GLOBAL));
 
     // Build the client

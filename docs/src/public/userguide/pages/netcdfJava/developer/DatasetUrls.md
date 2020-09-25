@@ -120,9 +120,9 @@ Example `cdms3` URIs (specific to AWS S3):
 * cdms3://profile_name@aws/bucket-name?super/long/key
 
 Note: In order to supply a profile name (one way to set the region and/or credentials) while maintaining conformance to the URI specification, you may use "aws" as the host.
-When the generic "aws" host is used, netCDF-Java will allow the AWS SDK to set the appropriate host based on region.
-There are multiple to set a region, and they are described in the [AWS Documentation](https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/java-dg-region-selection.html#default-region-provider-chain){:target="_blank"}.
-Use of the credentials file, as described above, takes precedence over all others.
+In addition to the use of the credentials file for setting the region, as described above, the region may be set using the `aws.region` Java System Property, or the `AWS_REGION` environment variable.
+Note that a region set within the credentials file for the `default` profile will take precedence over all others.
+Possible values for the region code can be found in the [AWS Regional endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints){:target="_blank"} documentation.
  
 The following examples show how one could access the same GOES 16 data file across a variety of Object Store technologies (special thanks to the [NOAA Big Data project's](https://www.noaa.gov/big-data-project){:target="_blank"}):
 
