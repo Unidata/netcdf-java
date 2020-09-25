@@ -4,7 +4,7 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.util.DiskCache;
+import ucar.nc2.internal.util.DiskCache;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestLogger;
 

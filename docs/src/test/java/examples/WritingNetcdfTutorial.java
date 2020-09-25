@@ -2,6 +2,7 @@ package examples;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.*;
 import ucar.unidata.util.test.TestLogger;
 
@@ -98,9 +99,9 @@ public class WritingNetcdfTutorial {
    * @return NetcdfFormatWriter
    * @throws IOException
    */
-  public static NetcdfFormatWriter openNCFileForWrite(String filePathStr) throws IOException {
-    NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(filePathStr).build();
-    return writer; /*DOCS-IGNORE*/
+  public static NetcdfFormatUpdater openNCFileForWrite(String filePathStr) throws IOException {
+    NetcdfFormatUpdater updater = NetcdfFormatUpdater.openExisting(filePathStr).build();
+    return updater; /*DOCS-IGNORE*/
   }
 
   /**
@@ -292,7 +293,7 @@ public class WritingNetcdfTutorial {
    * @param nc4format
    * @return created netCDF-4 file
    */
-  public static NetcdfFile writeWithCompression(NetcdfFile inFile, String outFilePath, Nc4Chunking.Strategy strategyType,
+  public static void writeWithCompression(NetcdfFile inFile, String outFilePath, Nc4Chunking.Strategy strategyType,
                                                 int dl, boolean shfl, NetcdfFileFormat nc4format)  {
     // 1) Create an Nc4Chunking object
     Nc4Chunking.Strategy type = strategyType;
@@ -307,14 +308,12 @@ public class WritingNetcdfTutorial {
     // 4) Create a NetcdfCopier and pass it the opened file and NetcdfFormatWriter.Builder
     NetcdfCopier copier = NetcdfCopier.create(inFile, builder);
 
-    // 5) Write new file
-    try (NetcdfFile ncfileOut = copier.write(null)) {
+    try {
+      // 5) Write new file
+      copier.write(null);
       // do stuff with newly create chunked and compressed file
-      return ncfileOut; /*DOCS-IGNORE*/
     } catch (IOException e) {
       logger.log(yourWriteNetcdfFileErrorMsgTxt);
     }
-
-    return null; /*DOCS-IGNORE*/
   }
 }

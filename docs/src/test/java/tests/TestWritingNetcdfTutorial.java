@@ -11,13 +11,15 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.iosp.NetcdfFileFormat;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatUpdater;
 import ucar.nc2.write.NetcdfFormatWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 public class TestWritingNetcdfTutorial {
@@ -69,7 +71,7 @@ public class TestWritingNetcdfTutorial {
 
     assertThat(w).isNotNull();
     assertThat(w.findDimension("lat")).isNotNull();
-    assertThat((Iterable<?>) w.findVariable("temperature")).isNotNull();
+    assertThat(w.findVariable("temperature")).isNotNull();
     assertThat(w.findGlobalAttribute("versionStr")).isNotNull();
     assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
   }
@@ -83,7 +85,7 @@ public class TestWritingNetcdfTutorial {
   @Test
   public void testOpenNCFileForWriteTutorial() throws IOException, InvalidRangeException {
     // open writer to existing file
-    NetcdfFormatWriter returnedWriter = WritingNetcdfTutorial.openNCFileForWrite(existingFilePath);
+    NetcdfFormatUpdater returnedWriter = WritingNetcdfTutorial.openNCFileForWrite(existingFilePath);
     assertThat(returnedWriter).isNotNull();
 
     // write with writer
@@ -198,7 +200,7 @@ public class TestWritingNetcdfTutorial {
     int numRecords = 10;
     for (String name : varNames) {
       Variable v = ncfile.findVariable(name);
-      assertThat((Iterable<?>) v).isNotNull();
+      assertThat(v).isNotNull();
       assertThat(v.getShape(0)).isEqualTo(numRecords);
     }
 
@@ -213,11 +215,14 @@ public class TestWritingNetcdfTutorial {
     NetcdfFile ncIn = NetcdfDatasets.openFile(datasetIn, null);
 
     String datasetOut = tempFolder.newFile().getAbsolutePath();
-    NetcdfFile ncOut = WritingNetcdfTutorial.writeWithCompression(ncIn, datasetOut, Nc4Chunking.Strategy.standard,
+    WritingNetcdfTutorial.writeWithCompression(ncIn, datasetOut, Nc4Chunking.Strategy.standard,
             0,false, NetcdfFileFormat.NETCDF4);
 
+    NetcdfFile ncOut = NetcdfDatasets.openFile(datasetOut, null);
+
     assertThat(ncOut).isNotNull();
-    assertThat(new CompareNetcdf2().compare(ncIn, ncOut)).isTrue();
+    CompareNetcdf2 tc = new CompareNetcdf2(new Formatter(), false, false, true);
+    assertThat(tc.compare(ncIn, ncOut, new CompareNetcdf2.Netcdf4ObjectFilter())).isTrue();
 
     assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
   }
