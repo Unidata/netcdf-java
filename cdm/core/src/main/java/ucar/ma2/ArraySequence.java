@@ -34,6 +34,7 @@ public class ArraySequence extends ArrayStructure {
    * @param nelems iterator count, may be missing (<0)
    */
   public ArraySequence(StructureMembers members, StructureDataIterator iter, int nelems) {
+    // super(members, new int[] {nelems < 0 ? 0 : nelems});
     super(members, new int[] {0});
     this.iter = iter;
     this.nelems = nelems;

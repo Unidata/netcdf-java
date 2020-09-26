@@ -88,19 +88,19 @@ public class BitCounterUncompressed implements BitCounter {
     countBits = replicationCountSize;
     this.startBit = new int[nrows];
 
-    for (int i = 0; i < nrows; i++) {
-      this.startBit[i] = startBit + countBits;
+    for (int row = 0; row < nrows; row++) {
+      this.startBit[row] = startBit + countBits;
       if (debug)
-        System.out.println(" BitCounterUncompressed row " + i + " startBit=" + this.startBit[i]);
+        System.out.println(" BitCounterUncompressed row " + row + " startBit=" + this.startBit[row]);
 
       for (DataDescriptor nd : parent.subKeys) {
         BitCounterUncompressed[] bitCounter = (subCounters == null) ? null : subCounters.get(nd);
-        if (bitCounter == null) // a regular field
+        if (bitCounter == null) { // a regular field
           countBits += nd.getBitWidth();
-        else {
+        } else if (bitCounter[row] != null) {
           if (debug)
             System.out.println(" ---------> nested " + nd.getFxyName() + " starts at =" + (startBit + countBits));
-          countBits += bitCounter[i].countBits(startBit + countBits);
+          countBits += bitCounter[row].countBits(startBit + countBits);
           if (debug)
             System.out.println(" <--------- nested " + nd.getFxyName() + " ends at =" + (startBit + countBits));
         }

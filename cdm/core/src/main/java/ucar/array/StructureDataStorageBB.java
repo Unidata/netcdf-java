@@ -14,7 +14,7 @@ import ucar.nc2.iosp.IospHelper;
 
 /**
  * Storage for Array<StructureData> with all data in a single ByteBuffer, member offsets and ByteOrder,
- * and a heap for vlen data such as Strings. Mimics ArrayStructureBB.
+ * and a heap for vlen data such as Strings, Vlens, and Sequences. Mimics ArrayStructureBB.
  * The StructureData are manufactured on the fly, referencing the ByteBuffer and heap for data.
  */
 public class StructureDataStorageBB implements Storage<StructureData> {
@@ -22,7 +22,8 @@ public class StructureDataStorageBB implements Storage<StructureData> {
   private final int nelems;
   private final StructureMembers members;
   private final ArrayList<Object> heap = new ArrayList<>();
-  private boolean charIsOneByte = false;
+  private boolean charIsOneByte = true;
+  private boolean structuresOnHeap = false;
 
   public StructureDataStorageBB(StructureMembers members, ByteBuffer bbuffer, int nelems) {
     this.members = members;
@@ -32,6 +33,11 @@ public class StructureDataStorageBB implements Storage<StructureData> {
 
   public StructureDataStorageBB setCharIsOneByte(boolean charIsOneByte) {
     this.charIsOneByte = charIsOneByte;
+    return this;
+  }
+
+  public StructureDataStorageBB setStructuresOnHeap(boolean structuresOnHeap) {
+    this.structuresOnHeap = structuresOnHeap;
     return this;
   }
 
@@ -53,6 +59,10 @@ public class StructureDataStorageBB implements Storage<StructureData> {
   @Override
   public void arraycopy(int srcPos, Object dest, int destPos, long length) {
     // TODO
+  }
+
+  public int getStructureSize() {
+    return members.getStorageSizeBytes();
   }
 
   @Override
@@ -87,7 +97,7 @@ public class StructureDataStorageBB implements Storage<StructureData> {
       DataType dataType = m.getDataType();
       bbuffer.order(m.getByteOrder());
       int length = m.length();
-      int pos = recno * members.getStructureSize() + m.getOffset();
+      int pos = recno * members.getStorageSizeBytes() + m.getOffset();
 
       switch (dataType) {
         case BOOLEAN:
@@ -138,7 +148,7 @@ public class StructureDataStorageBB implements Storage<StructureData> {
         case INT: {
           int[] array = new int[length];
           for (int count = 0; count < length; count++) {
-            array[count] = bbuffer.get(pos + 4 * count);
+            array[count] = bbuffer.getInt(pos + 4 * count);
           }
           return new ArrayInteger(dataType, m.getShape(), new ucar.array.ArrayInteger.StorageS(array));
         }
@@ -147,7 +157,7 @@ public class StructureDataStorageBB implements Storage<StructureData> {
         case LONG: {
           long[] array = new long[length];
           for (int count = 0; count < length; count++) {
-            array[count] = bbuffer.get(pos + 8 * count);
+            array[count] = bbuffer.getLong(pos + 8 * count);
           }
           return new ArrayLong(dataType, m.getShape(), new ucar.array.ArrayLong.StorageS(array));
         }
@@ -157,25 +167,37 @@ public class StructureDataStorageBB implements Storage<StructureData> {
         case SHORT: {
           short[] array = new short[length];
           for (int count = 0; count < length; count++) {
-            array[count] = bbuffer.get(pos + 2 * count);
+            array[count] = bbuffer.getShort(pos + 2 * count);
           }
           return new ArrayShort(dataType, m.getShape(), new ucar.array.ArrayShort.StorageS(array));
         }
 
         case STRING: {
-          int heapIdx = bbuffer.get(pos);
+          int heapIdx = bbuffer.getInt(pos);
           String[] array = (String[]) heap.get(heapIdx);
           return new ArrayString(m.getShape(), new ucar.array.ArrayString.StorageS(array));
         }
 
+        case SEQUENCE: {
+          int heapIdx = bbuffer.getInt(pos);
+          StructureDataArray structArray = (StructureDataArray) heap.get(heapIdx);
+          return structArray;
+        }
+
         case STRUCTURE:
-          StructureMembers nestedMembers = Preconditions.checkNotNull(m.getStructureMembers());
-          int totalSize = length * nestedMembers.getStructureSize();
-          ByteBuffer nestedBB = ByteBuffer.wrap(bbuffer.array(), pos, totalSize);
-          // LOOK probably wrong
-          Storage<StructureData> nestedStorage =
-              new ucar.array.StructureDataStorageBB(members, nestedBB, length).setCharIsOneByte(charIsOneByte);
-          return new StructureDataArray(nestedMembers, m.getShape(), nestedStorage);
+          if (structuresOnHeap) {
+            int heapIdx = bbuffer.getInt(pos);
+            StructureDataArray structArray = (StructureDataArray) heap.get(heapIdx);
+            return structArray;
+          } else {
+            StructureMembers nestedMembers = Preconditions.checkNotNull(m.getStructureMembers());
+            int totalSize = length * nestedMembers.getStorageSizeBytes();
+            ByteBuffer nestedBB = ByteBuffer.wrap(bbuffer.array(), pos, totalSize);
+            // LOOK probably wrong
+            Storage<StructureData> nestedStorage =
+                new ucar.array.StructureDataStorageBB(nestedMembers, nestedBB, length).setCharIsOneByte(charIsOneByte);
+            return new StructureDataArray(nestedMembers, m.getShape(), nestedStorage);
+          }
 
         default:
           throw new RuntimeException("unknown dataType " + dataType);

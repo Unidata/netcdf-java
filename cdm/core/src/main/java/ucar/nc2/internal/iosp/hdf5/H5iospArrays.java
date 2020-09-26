@@ -403,8 +403,8 @@ public class H5iospArrays extends H5iosp {
     mb.setStructureSize(recSize); // needed ?
     ucar.array.StructureMembers sm = mb.build();
 
-    if (recSize != sm.getStructureSize()) {
-      log.error("calcSize = {} actualSize = {}%n", sm.getStructureSize(), recSize);
+    if (recSize != sm.getStorageSizeBytes()) {
+      log.error("calcSize = {} actualSize = {}%n", sm.getStorageSizeBytes(), recSize);
       throw new IOException("H5iosp illegal structure size " + s.getFullName());
     }
 
@@ -448,7 +448,7 @@ public class H5iospArrays extends H5iosp {
         hasHeap = true;
       }
 
-      // recurse
+      // recurse : nested structure are inside of outer structure in the byte array
       if (v2 instanceof Structure) {
         Structure nested = (Structure) v2;
         StructureMembers.Builder nestSm = mb.getStructureMembers();

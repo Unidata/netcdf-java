@@ -4,8 +4,6 @@
  */
 package ucar.array;
 
-import java.util.List;
-
 /** A container for a Structure's data. */
 public abstract class StructureData {
   protected StructureMembers members;
@@ -22,11 +20,6 @@ public abstract class StructureData {
   /** @return StructureMembers */
   public StructureMembers getStructureMembers() {
     return members;
-  }
-
-  /** @return List of StructureMembers.Member */
-  public List<StructureMembers.Member> getMembers() {
-    return members.getMembers();
   }
 
   /**
