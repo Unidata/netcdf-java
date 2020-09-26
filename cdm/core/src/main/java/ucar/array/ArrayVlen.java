@@ -259,7 +259,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<Byte> next() {
         byte[] p = primitiveArray[count++];
-        return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
@@ -310,7 +310,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<Character> next() {
         char[] p = primitiveArray[count++];
-        return Arrays.factory(DataType.CHAR, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(DataType.CHAR, new int[] {p.length}, p);
       }
     }
   }
@@ -361,7 +361,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<Double> next() {
         double[] p = primitiveArray[count++];
-        return Arrays.factory(DataType.DOUBLE, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(DataType.DOUBLE, new int[] {p.length}, p);
       }
     }
   }
@@ -412,7 +412,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<Float> next() {
         float[] p = primitiveArray[count++];
-        return Arrays.factory(DataType.FLOAT, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(DataType.FLOAT, new int[] {p.length}, p);
       }
     }
   }
@@ -465,7 +465,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<Integer> next() {
         int[] p = primitiveArray[count++];
-        return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
@@ -518,7 +518,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<Long> next() {
         long[] p = primitiveArray[count++];
-        return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
@@ -571,7 +571,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<Short> next() {
         short[] p = primitiveArray[count++];
-        return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
@@ -622,7 +622,7 @@ public class ArrayVlen<T> extends Array<Object> {
       @Override
       public final Array<String> next() {
         String[] p = primitiveArray[count++];
-        return Arrays.factory(DataType.STRING, new int[] {p.length}, p);
+        return (p == null) ? null : Arrays.factory(DataType.STRING, new int[] {p.length}, p);
       }
     }
   }

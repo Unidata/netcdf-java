@@ -7,7 +7,9 @@ package ucar.array;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import java.util.List;
 import org.junit.Test;
 import ucar.ma2.DataType;
 
@@ -22,12 +24,16 @@ public class TestArrayVlen {
     short[][] ragged = new short[][] {arr1, arr2};
     ArrayVlen<Short> array = ArrayVlen.factory(DataType.SHORT, shape, ragged);
 
-    assertThat(array.get(0, 0)).isEqualTo(arr1);
-    assertThat(array.get(0, 1)).isEqualTo(arr2);
+    Array<Short> elem1 = (Array<Short>) array.get(0, 0);
+    assertThat(Iterables.toString(elem1)).isEqualTo("[1, 2, 3, 4, 5]");
+    Array<Short> elem2 = (Array<Short>) array.get(0, 1);
+    assertThat(Iterables.toString(elem2)).isEqualTo("[6, 7]");
 
+    List<Integer> list = ImmutableList.of(5, 2);
     int count = 0;
     for (Object val : array) {
-      assertThat(val).isEqualTo(ragged[count]);
+      Array<Short> elem = (Array<Short>) val;
+      assertThat(elem.length()).isEqualTo(list.get(count));
       count++;
     }
 
@@ -56,24 +62,31 @@ public class TestArrayVlen {
     array.set(0, arr1);
     array.set(1, arr2);
 
-    assertThat(array.get(0, 0)).isEqualTo(arr1);
-    assertThat(array.get(0, 1)).isEqualTo(arr2);
+    Array<Short> elem1 = (Array<Short>) array.get(0, 0);
+    assertThat(Iterables.toString(elem1)).isEqualTo("[1, 2, 3, 4, 5]");
+    Array<Short> elem2 = (Array<Short>) array.get(0, 1);
+    assertThat(Iterables.toString(elem2)).isEqualTo("[6, 7]");
 
+    List<Integer> list = ImmutableList.of(5, 2);
     int count = 0;
     for (Object val : array) {
-      assertThat(val).isEqualTo(ragged[count]);
+      Array<Short> elem = (Array<Short>) val;
+      assertThat(elem.length()).isEqualTo(list.get(count));
       count++;
     }
 
     ArrayVlen<Short> flipped = (ArrayVlen<Short>) Arrays.flip(array, 1);
 
-    assertThat(flipped.get(0, 0)).isEqualTo(arr2);
-    assertThat(flipped.get(0, 1)).isEqualTo(arr1);
+    Array<Short> felem1 = (Array<Short>) flipped.get(0, 0);
+    assertThat(Iterables.toString(felem1)).isEqualTo("[6, 7]");
+    Array<Short> felem2 = (Array<Short>) flipped.get(0, 1);
+    assertThat(Iterables.toString(felem2)).isEqualTo("[1, 2, 3, 4, 5]");
 
-    short[][] fragged = new short[][] {arr2, arr1};
+    List<Integer> fragged = ImmutableList.of(2, 5);
     count = 0;
     for (Object val : flipped) {
-      assertThat(val).isEqualTo(fragged[count]);
+      Array<Short> elem = (Array<Short>) val;
+      assertThat(elem.length()).isEqualTo(fragged.get(count));
       count++;
     }
   }
@@ -86,6 +99,7 @@ public class TestArrayVlen {
     assertThat(storage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(storage.getLength()).isEqualTo(11);
     assertThat(Iterables.size(array)).isEqualTo(11);
+    assertThat(array.get(array.getIndex())).isNotNull();
 
     ArrayVlen<Character> carray = ArrayVlen.factory(DataType.CHAR, new int[] {12});
     Storage<Object> cstorage = carray.storage();
@@ -93,6 +107,7 @@ public class TestArrayVlen {
     assertThat(cstorage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(cstorage.getLength()).isEqualTo(12);
     assertThat(Iterables.size(carray)).isEqualTo(12);
+    assertThat(carray.get(carray.getIndex())).isNotNull();
 
     ArrayVlen<Integer> iarray = ArrayVlen.factory(DataType.INT, new int[] {13});
     Storage<Object> istorage = iarray.storage();
@@ -100,6 +115,7 @@ public class TestArrayVlen {
     assertThat(istorage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(istorage.getLength()).isEqualTo(13);
     assertThat(Iterables.size(iarray)).isEqualTo(13);
+    assertThat(iarray.get(iarray.getIndex())).isNotNull();
 
     ArrayVlen<Integer> larray = ArrayVlen.factory(DataType.ULONG, new int[] {14});
     Storage<Object> lstorage = larray.storage();
@@ -107,6 +123,7 @@ public class TestArrayVlen {
     assertThat(lstorage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(lstorage.getLength()).isEqualTo(14);
     assertThat(Iterables.size(larray)).isEqualTo(14);
+    assertThat(larray.get(larray.getIndex())).isNotNull();
 
     ArrayVlen<Double> darray = ArrayVlen.factory(DataType.DOUBLE, new int[] {15});
     Storage<Object> dstorage = darray.storage();
@@ -114,6 +131,7 @@ public class TestArrayVlen {
     assertThat(dstorage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(dstorage.getLength()).isEqualTo(15);
     assertThat(Iterables.size(dstorage)).isEqualTo(15);
+    assertThat(darray.get(darray.getIndex())).isNotNull();
 
     ArrayVlen<Float> farray = ArrayVlen.factory(DataType.FLOAT, new int[] {16});
     Storage<Object> fstorage = farray.storage();
@@ -121,6 +139,7 @@ public class TestArrayVlen {
     assertThat(fstorage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(fstorage.getLength()).isEqualTo(16);
     assertThat(Iterables.size(fstorage)).isEqualTo(16);
+    assertThat(farray.get(farray.getIndex())).isNotNull();
 
     ArrayVlen<String> sarray = ArrayVlen.factory(DataType.STRING, new int[] {17});
     Storage<Object> sstorage = sarray.storage();
@@ -128,7 +147,7 @@ public class TestArrayVlen {
     assertThat(sstorage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(sstorage.getLength()).isEqualTo(17);
     assertThat(Iterables.size(sstorage)).isEqualTo(17);
-
+    assertThat(sarray.get(sarray.getIndex())).isNotNull();
   }
 
 
