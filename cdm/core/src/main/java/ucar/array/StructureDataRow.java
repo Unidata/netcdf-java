@@ -11,22 +11,20 @@ import ucar.array.ArrayFloat.StorageF;
 import ucar.array.StructureMembers.Member;
 import ucar.ma2.DataType;
 
-/**
- * Describe {@link Class}
- */
+/** Experimental, used in Cdmr */
 public class StructureDataRow extends StructureData {
   private final ByteBuffer bbuffer;
   private final int[] offsets;
 
   public StructureDataRow(StructureMembers members) {
     super(members);
-    this.bbuffer = ByteBuffer.allocate(members.getStructureSize());
+    this.bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
     this.offsets = new int[members.numberOfMembers()];
     int offset = 0;
     int count = 0;
     for (StructureMembers.Member m : members.getMembers()) {
       this.offsets[count] = offset;
-      offset += m.getSizeBytes();
+      offset += m.getStorageSizeBytes();
     }
   }
 

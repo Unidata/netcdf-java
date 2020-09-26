@@ -54,7 +54,7 @@ public class TestStructureMembers {
     assertThat(m.getUnitsString()).isEqualTo("munits1");
     assertThat(m.getShape()).isEqualTo(new int[] {11, 11});
     assertThat(m.length()).isEqualTo(121);
-    assertThat(m.getSizeBytes()).isEqualTo(121);
+    assertThat(m.getStorageSizeBytes()).isEqualTo(121);
     assertThat(m.getIndex()).isEqualTo(0);
     assertThat(m.isVariableLength()).isEqualTo(false);
     assertThat(m.getStructureMembers()).isNull();
@@ -64,7 +64,7 @@ public class TestStructureMembers {
     assertThat(m2.getDataType()).isEqualTo(DataType.SHORT);
     assertThat(m2.getShape()).isEqualTo(new int[] {});
     assertThat(m2.length()).isEqualTo(1);
-    assertThat(m2.getSizeBytes()).isEqualTo(2);
+    assertThat(m2.getStorageSizeBytes()).isEqualTo(2);
 
     try {
       assertThat(sm.getMember(3)).isNull();
@@ -73,10 +73,13 @@ public class TestStructureMembers {
       // expected
     }
 
-    assertThat(sm.getStructureSize()).isEqualTo(200);
+    assertThat(sm.getStorageSizeBytes()).isEqualTo(200);
     assertThat(sm.toString())
         .isEqualTo("StructureMembers{name=name, members=[mname1, mname3, mname2], structureSize=200}");
     assertThat(sm.toBuilder().build()).isEqualTo(sm);
+    assertThat(sm.toBuilder().build().equals(sm)).isTrue();
+    assertThat(sm.toString())
+        .contains("StructureMembers{name=name, members=[mname1, mname3, mname2], structureSize=200}");
   }
 
   @Test
@@ -100,7 +103,7 @@ public class TestStructureMembers {
     StructureMembers sm = topbuilder.build();
     assertThat(sm.findMember("mname2")).isNull();
     assertThat(sm.findMember("nname2")).isNotNull();
-    assertThat(sm.getStructureSize()).isEqualTo(88 + 108 + 198);
+    assertThat(sm.getStorageSizeBytes()).isEqualTo(88 + 108 + 198);
 
     Member m = sm.findMember("struct");
     assertThat(m).isNotNull();
@@ -109,7 +112,7 @@ public class TestStructureMembers {
     assertThat(m.getUnitsString()).isNull();
     assertThat(m.getShape()).isEqualTo(new int[] {});
     assertThat(m.length()).isEqualTo(1);
-    assertThat(m.getSizeBytes()).isEqualTo(198);
+    assertThat(m.getStorageSizeBytes()).isEqualTo(198);
     assertThat(m.getIndex()).isEqualTo(2);
     assertThat(m.isVariableLength()).isEqualTo(false);
 
@@ -118,7 +121,7 @@ public class TestStructureMembers {
     assertThat(ncm.numberOfMembers()).isEqualTo(2);
     assertThat(ncm.findMember("mname2")).isNotNull();
     assertThat(ncm.findMember("nname2")).isNull();
-    assertThat(ncm.getStructureSize()).isEqualTo(198);
+    assertThat(ncm.getStorageSizeBytes()).isEqualTo(198);
   }
 
 }

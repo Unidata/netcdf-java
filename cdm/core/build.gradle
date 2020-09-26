@@ -29,6 +29,7 @@ dependencies {
 
   testImplementation project(':cdm-test-utils')
 
+  testImplementation project(':bufr')
   testImplementation 'com.google.truth:truth'
   testImplementation 'commons-io:commons-io'
   testImplementation 'junit:junit'

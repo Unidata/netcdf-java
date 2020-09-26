@@ -20,7 +20,7 @@ public class TestStructureDataArray {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("name");
     builder.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
-    builder.addMember("mname2", "mdesc2", "munits1", DataType.INT, new int[] {});
+    builder.addMember("mname2", "mdesc2", "munits1", DataType.FLOAT, new int[] {});
     StructureMembers members = builder.build();
 
     StructureData[] parr = new StructureData[2];
@@ -58,6 +58,10 @@ public class TestStructureDataArray {
     assertThat(array.getSizeBytes()).isEqualTo(2 * array.getStructureSize());
     assertThat(array.storage().getLength()).isEqualTo(2);
 
+    StructureData sdata = array.get(0);
+    assertThat(sdata.getStructureMembers()).isEqualTo(members);
+    assertThat(sdata.getMemberData("mname2")).isNotNull();
+    assertThat(sdata.getName()).isEqualTo("name");
   }
 
 }

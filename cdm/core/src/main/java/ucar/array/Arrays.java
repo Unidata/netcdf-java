@@ -38,7 +38,7 @@ public class Arrays {
         bb.get(raw);
         dataArray[idx] = raw;
       }
-      return new ArrayVlen<>(dtype, ma2.getShape(), dataArray);
+      return ArrayVlen.factory(dtype, ma2.getShape(), dataArray);
     }
     throw new RuntimeException("Unknown opaque array class " + from.getClass().getName());
   }

@@ -12,15 +12,19 @@ import ucar.ma2.DataType;
 /**
  * Array of variable length primitive arrays of T, eg double[length][];
  * Cast resulting Object, eg to double[].
- * Find out type from getPrimitiveArrayType().
+ * Find out type from getPrimitiveArrayType() (not getDataType, which is VLEN).
  * This is mutable, to assist users in constructing. See set(index, value).
  */
 public class ArrayVlen<T> extends Array<Object> {
 
+  /**
+   * Creates a Vlen of type dataType, and the appropriate primitive array.
+   * The shape of the resulting array has vlen dimension removed, if present.
+   */
   public static <T> ArrayVlen<T> factory(DataType dataType, int[] shape) {
     // find leftmost vlen, doesnt have to exist.
     // TODO this implies that vlen doesnt have to be rightmost dimension. For now, we flatten into 1D.
-    int prefixrank = 0;
+    int prefixrank = shape.length;
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] < 0) {
         prefixrank = i;
@@ -30,7 +34,22 @@ public class ArrayVlen<T> extends Array<Object> {
     int[] newshape = new int[prefixrank];
     System.arraycopy(shape, 0, newshape, 0, prefixrank);
 
-    return new ArrayVlen<>(dataType, newshape, null);
+    return new ArrayVlen<>(dataType, newshape);
+  }
+
+  /** Creates a Vlen of type dataType, and the appropriate primitive array. */
+  public static <T> ArrayVlen<T> factory(DataType dataType, int[] shape, Object storage) {
+    int prefixrank = shape.length;
+    for (int i = 0; i < shape.length; i++) {
+      if (shape[i] < 0) {
+        prefixrank = i;
+        break;
+      }
+    }
+    int[] newshape = new int[prefixrank];
+    System.arraycopy(shape, 0, newshape, 0, prefixrank);
+
+    return new ArrayVlen<>(dataType, newshape, storage);
   }
 
   public static StorageMutable<Object> createStorage(DataType dataType, int length, Object dataArray) {
@@ -114,25 +133,17 @@ public class ArrayVlen<T> extends Array<Object> {
   private final StorageMutable<Object> storage;
   private final DataType primitiveArrayType;
 
-  /** Create an empty Array of type Array<T> and the given shape. */
-  public ArrayVlen(DataType primitiveArrayType, int[] shape) {
+  /** Create an empty Vlen of type primitiveArrayType and the given shape. */
+  private ArrayVlen(DataType primitiveArrayType, int[] shape) {
     super(DataType.VLEN, shape);
     this.storage = createStorage(primitiveArrayType, (int) IndexFn.computeSize(shape), null);
     this.primitiveArrayType = primitiveArrayType;
   }
 
-  /** Create an Array of type Array<T> and the given shape and data array T[][]. */
-  public ArrayVlen(DataType primitiveArrayType, int[] shape, Object dataArray) {
+  /** Create an empty Vlen of type primitiveArrayType and data array T[][]. */
+  private ArrayVlen(DataType primitiveArrayType, int[] shape, Object dataArray) {
     super(DataType.VLEN, shape);
     this.storage = createStorage(primitiveArrayType, (int) IndexFn.computeSize(shape), dataArray);
-    this.primitiveArrayType = primitiveArrayType;
-  }
-
-  /** Create an Array of type Array<T> and the given shape and storage. */
-  public ArrayVlen(DataType primitiveArrayType, int[] shape, StorageMutable<Object> storage) {
-    super(DataType.VLEN, shape);
-    Preconditions.checkArgument(indexFn.length() <= storage.getLength());
-    this.storage = storage;
     this.primitiveArrayType = primitiveArrayType;
   }
 

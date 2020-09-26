@@ -5,7 +5,10 @@
 
 package ucar.nc2.ui.op;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
@@ -441,7 +444,7 @@ public class BufrMessageViewer extends JPanel {
 
   private void writeAll() {
     List<MessageBean> beans = messageTable.getBeans();
-    HashMap<Integer, Message> map = new HashMap<>(2 * beans.size());
+    Multimap<Integer, Message> map = ArrayListMultimap.create();
 
     for (MessageBean mb : beans) {
       map.put(mb.m.hashCode(), mb.m);
@@ -450,28 +453,31 @@ public class BufrMessageViewer extends JPanel {
     makeFileChooser();
     String defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
     String dirName = fileChooser.chooseDirectory(defloc);
-    if (dirName == null)
+    if (dirName == null) {
       return;
+    }
+    int pos = raf.getLocation().lastIndexOf("/");
+    String name = raf.getLocation().substring(pos + 1);
+    pos = name.lastIndexOf(".");
+    if (pos > 0) {
+      name = name.substring(0, pos);
+    }
 
     try {
       int count = 0;
-      for (Message m : map.values()) {
-        String header = m.getHeader();
-        if (header != null) {
-          header = header.split(" ")[0];
-        } else {
-          // header is the non-negative hash code of m. Note that using Math.abs() for this operation is a bug:
-          // http://findbugs.blogspot.com/2006/09/is-mathabs-broken.html
-          header = Integer.toString(m.hashCode() & Integer.MAX_VALUE);
-        }
+      for (Integer key : map.keySet()) {
+        Collection<Message> messes = map.get(key);
+        File file = new File(dirName + "/" + name + count + ".bufr");
 
-        File file = new File(dirName + "/" + header + ".bufr");
         try (FileOutputStream fos = new FileOutputStream(file); WritableByteChannel wbc = fos.getChannel()) {
-          String headerS = m.getHeader();
-          if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes(StandardCharsets.UTF_8)));
-          byte[] raw = scan.getMessageBytes(m);
-          wbc.write(ByteBuffer.wrap(raw));
+          for (Message m : messes) {
+            String headerS = m.getHeader();
+            if (headerS != null) {
+              wbc.write(ByteBuffer.wrap(headerS.getBytes(StandardCharsets.UTF_8)));
+            }
+            byte[] raw = scan.getMessageBytes(m);
+            wbc.write(ByteBuffer.wrap(raw));
+          }
         }
         count++;
       }

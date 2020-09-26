@@ -157,8 +157,7 @@ public class MessageCompressedDataReader {
   // An iterator is stored in member.getDataObject() which keeps track of where we are.
   // For fixed length nested Structures, we need fld(dataset, inner1, inner2, ...) but we have fld(inner1, inner2, ... ,
   // dataset)
-  // so we permute the dimensions
-  // before we set the iterator.
+  // so we permute the dimensions before we set the iterator.
   public static void setIterators(ArrayStructureMA ama) {
     StructureMembers sms = ama.getStructureMembers();
     for (StructureMembers.Member sm : sms.getMembers()) {
@@ -502,6 +501,7 @@ public class MessageCompressedDataReader {
     return bitOffset;
   }
 
+  // DataPresentIndicator
   private static class DpiTracker {
     DataDescriptorTreeConstructor.DataPresentIndicator dpi;
     boolean[] isPresent;

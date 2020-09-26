@@ -54,7 +54,7 @@ public class StructureDataArray extends Array<StructureData> {
 
   @Override
   public long getSizeBytes() {
-    return indexFn.length() * members.getStructureSize();
+    return indexFn.length() * members.getStorageSizeBytes();
   }
 
   @Override
@@ -64,7 +64,7 @@ public class StructureDataArray extends Array<StructureData> {
 
   @Override
   Array<StructureData> createView(IndexFn index) {
-    return null;
+    return new StructureDataArray(this.members, indexFn, this.storage);
   }
 
   @Override
@@ -90,7 +90,7 @@ public class StructureDataArray extends Array<StructureData> {
 
   /** Get the size of each StructureData object in bytes. */
   public int getStructureSize() {
-    return members.getStructureSize();
+    return members.getStorageSizeBytes();
   }
 
   @Override

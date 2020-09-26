@@ -5,6 +5,7 @@
 package ucar.nc2.iosp.bufr;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Iterator;
 import ucar.array.StructureData;
@@ -13,22 +14,26 @@ import ucar.nc2.Sequence;
 
 /** IOSP for BUFR data - using the preprocessor. */
 public class BufrIospArrays extends BufrIosp {
+
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIospArrays.class);
 
   @Override
-  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
-      throws IOException {
+  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) {
     findRootSequence();
-    return isSingle ? new SeqIterSingle() : new SeqIter();
+    return isSingle ? new SeqIterSingleArray() : new SeqIterArray();
   }
 
   private void findRootSequence() {
     this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIospArrays.obsRecordName);
   }
 
-  private class SeqIter implements Iterator<ucar.array.StructureData> {
+  private class SeqIterArray implements Iterator<ucar.array.StructureData> {
     Iterator<StructureData> currIter;
     int recnum;
+
+    SeqIterArray() {
+      scanner.reset();
+    }
 
     @Override
     public boolean hasNext() {
@@ -63,20 +68,23 @@ public class BufrIospArrays extends BufrIosp {
     }
 
     private Iterator<StructureData> readNextMessage() throws IOException {
-      if (!scanner.hasNext())
+      if (!scanner.hasNext()) {
         return null;
+      }
       Message m = scanner.next();
       if (m == null) {
         log.warn("BUFR scanner hasNext() true but next() null!");
         return null;
       }
-      if (m.containsBufrTable()) // data messages only
+      if (m.containsBufrTable()) { // data messages only
         return readNextMessage();
+      }
 
       // mixed messages
       if (!protoMessage.equals(m)) {
-        if (messHash == null)
+        if (messHash == null) {
           messHash = new HashSet<>(20);
+        }
         if (!messHash.contains(m.hashCode())) {
           log.warn("File " + raf.getLocation() + " has different BUFR message types hash=" + protoMessage.hashCode()
               + "; skipping");
@@ -90,22 +98,28 @@ public class BufrIospArrays extends BufrIosp {
     }
 
     private StructureDataArray readMessage(Message m) throws IOException {
-      /*
-       * StructureDataArray as;
-       * if (m.dds.isCompressed()) {
-       * MessageCompressedDataReader comp = new MessageCompressedDataReader();
-       * as = comp.readEntireMessage(obsStructure, protoMessage, m, raf, null);
-       * } else {
-       * MessageUncompressedDataReader uncomp = new MessageUncompressedDataReader();
-       * as = uncomp.readEntireMessage(obsStructure, protoMessage, m, raf, null);
-       * }
-       * return as;
-       */
-      return null;
+      Formatter f = new Formatter();
+      StructureDataArray as;
+      try {
+        if (m.dds.isCompressed()) {
+          MessageArrayCompressedReader comp = new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, f);
+          as = comp.readEntireMessage();
+        } else {
+          MessageArrayUncompressedReader uncomp =
+              new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
+          as = uncomp.readEntireMessage();
+        }
+      } catch (Throwable t) {
+        System.out.printf("FAIL %s%n", f);
+        throw t;
+      }
+      // System.out.printf("SUCCEED %s%n", f);
+      return as;
     }
   }
 
-  private class SeqIterSingle implements Iterator<ucar.array.StructureData> {
+  private class SeqIterSingleArray implements Iterator<ucar.array.StructureData> {
+
     Iterator<StructureData> currIter;
     int recnum;
 
@@ -133,20 +147,19 @@ public class BufrIospArrays extends BufrIosp {
     }
 
     private Iterator<StructureData> readProtoMessage() throws IOException {
-      /*
-       * Message m = protoMessage;
-       * StructureDataArray as;
-       * if (m.dds.isCompressed()) {
-       * MessageCompressedDataReader reader = new MessageCompressedDataReader();
-       * as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
-       * } else {
-       * MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-       * as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
-       * }
-       * 
-       * return as.iterator();
-       */
-      return null;
+      Message m = protoMessage;
+      StructureDataArray as;
+      if (m.dds.isCompressed()) {
+        MessageArrayCompressedReader reader =
+            new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, null);
+        as = reader.readEntireMessage();
+      } else {
+        MessageArrayUncompressedReader uncomp =
+            new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, null);
+        as = uncomp.readEntireMessage();
+      }
+
+      return as.iterator();
     }
   }
 }

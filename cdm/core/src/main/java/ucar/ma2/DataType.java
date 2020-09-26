@@ -26,21 +26,21 @@ public enum DataType {
   // object types
   SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
   STRING("String", 4, String.class, false), // 32-bit index
-  STRUCTURE("Structure", 0, StructureData.class, false), // size meaningless
+  STRUCTURE("Structure", 0, StructureData.class, false), // size unknown
 
   ENUM1("enum1", 1, byte.class, false), // byte
   ENUM2("enum2", 2, short.class, false), // short
   ENUM4("enum4", 4, int.class, false), // int
 
-  OPAQUE("opaque", 1, ByteBuffer.class, false), // byte blobs;
-  OBJECT("object", 1, Object.class, false), // use with ucar.ma2.Array
+  OPAQUE("opaque", 1, ByteBuffer.class, false), // size unknown, byte blobs;
+  OBJECT("object", 1, Object.class, false), // size unknown, use with ucar.ma2.Array
 
   UBYTE("ubyte", 1, byte.class, true), // unsigned byte
   USHORT("ushort", 2, short.class, true), // unsigned short
   UINT("uint", 4, int.class, true), // unsigned int
   ULONG("ulong", 8, long.class, true), // unsigned long
 
-  VLEN("vlen", 1, Object.class, false); // use with ucar.array.Array
+  VLEN("vlen", 1, Object.class, false); // size unknown; use with ucar.array.Array
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both
