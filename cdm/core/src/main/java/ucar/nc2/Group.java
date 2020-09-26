@@ -924,7 +924,7 @@ public class Group extends CDMNode implements AttributeContainer {
     private NetcdfFile ncfile; // set by NetcdfFile.build()
     private AttributeContainerMutable attributes = new AttributeContainerMutable("");
     private List<Dimension> dimensions = new ArrayList<>();
-    private List<EnumTypedef> enumTypedefs = new ArrayList<>();
+    public List<EnumTypedef> enumTypedefs = new ArrayList<>();
     private boolean built;
 
     public Builder setParentGroup(@Nullable Group.Builder parentGroup) {
