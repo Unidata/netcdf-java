@@ -5,6 +5,7 @@
 
 package ucar.nc2.jni.netcdf;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
@@ -117,7 +118,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return NetcdfClibrary.setLogLevel(level);
   }
 
-  private static boolean useHdfEos;
+  private static boolean useHdfEos = true;
 
   public static void useHdfEos(boolean val) {
     useHdfEos = val;
@@ -205,6 +206,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (isEos)
       return "HDF5-EOS";
     return version.isNetdf4format() ? DataFormatType.NETCDF4.getDescription() : DataFormatType.HDF5.getDescription();
+  }
+
+  @Override
+  public String getFileTypeVersion() {
+    // TODO this only works for files writtten by netcdf4 c library. what about plain hdf5?
+    return ncfile.getRootGroup().findAttributeString(CDM.NCPROPERTIES, "N/A");
   }
 
   @Override
@@ -457,7 +464,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   // follow what happens in the Java side
-  private String makeAttString(byte[] b) throws IOException {
+  private String makeAttString(byte[] b) {
     // null terminates
     int count = 0;
     while (count < b.length) {
@@ -1068,8 +1075,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       EnumTypedef enumTypedef = g.findEnumeration(utype.name);
       v.setEnumTypedef(enumTypedef);
     } else if (dtype == DataType.OPAQUE) {
+      // TODO whats the problem with knowing the size?? Needed to read properly??
       if (this.markreserved) {
-        v.annotate(UCARTAGOPAQUE, utype.size);
+        // v.annotate(UCARTAGOPAQUE, utype.size);
       }
     }
 
@@ -1231,9 +1239,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     @Override
     public String toString() {
-      String sb = "UserType" + "{grpid=" + grpid + ", typeid=" + typeid + ", name='" + name + '\'' + ", size=" + size
+      return "UserType" + "{grpid=" + grpid + ", typeid=" + typeid + ", name='" + name + '\'' + ", size=" + size
           + ", baseTypeid=" + baseTypeid + ", nfields=" + nfields + ", typeClass=" + typeClass + ", e=" + e + '}';
-      return sb;
     }
 
     void readFields() throws IOException {
@@ -1750,6 +1757,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
               return Array.factory(DataType.SHORT, shape, bb);
             case Nc4prototypes.NC_USHORT:
               return Array.factory(DataType.USHORT, shape, bb);
+            case Nc4prototypes.NC_INT:
+              return Array.factory(DataType.INT, shape, bb);
+            case Nc4prototypes.NC_UINT:
+              return Array.factory(DataType.UINT, shape, bb);
           }
           throw new IOException("unknown type " + userType.baseTypeid);
         } else if (userType.typeClass == Nc4prototypes.NC_VLEN) {
@@ -2038,7 +2049,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   // opaques use ArrayObjects of ByteBuffer
-  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException, InvalidRangeException {
+  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException {
     int ret;
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
@@ -3413,10 +3424,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           } else if (value.equalsIgnoreCase(TRANSLATE_NC4)) {
             this.markreserved = true;
           } // else ignore
-        } // else ignore
+        }
       }
     }
-    return null;
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      return version;
+    }
+    return super.sendIospMessage(message);
   }
 
 }

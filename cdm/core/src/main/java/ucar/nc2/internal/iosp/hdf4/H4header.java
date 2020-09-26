@@ -110,6 +110,7 @@ public class H4header implements HdfHeaderIF {
   RandomAccessFile raf;
   private Group.Builder root;
   private boolean isEos;
+  String version = "N/A";
 
   private List<Tag> alltags;
   private Map<Integer, Tag> tagMap = new HashMap<>();
@@ -304,7 +305,8 @@ public class H4header implements HdfHeaderIF {
     root.addAttribute(new Attribute("_History", "Direct read of HDF4 file through CDM library"));
     for (Tag t : alltags) {
       if (t.code == 30) {
-        root.addAttribute(new Attribute("HDF4_Version", ((TagVersion) t).value()));
+        this.version = ((TagVersion) t).value();
+        root.addAttribute(new Attribute("HDF4_Version", this.version));
         t.used = true;
 
       } else if (t.code == 100) {

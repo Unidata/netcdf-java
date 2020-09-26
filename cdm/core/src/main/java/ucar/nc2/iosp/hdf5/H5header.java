@@ -138,6 +138,10 @@ public class H5header extends NCheader implements H5headerIF {
     return isNetcdf4;
   }
 
+  boolean isClassic() {
+    return false; // TODO
+  }
+
   public void read(java.io.PrintWriter debugPS) throws IOException {
     if (debugPS != null) {
       debugOut = debugPS;

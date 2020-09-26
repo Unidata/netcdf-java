@@ -135,6 +135,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   @Deprecated
   public static final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
   public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
+  public static final String IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT = "NetcdfFileFormat";
   private static final int default_buffersize = 8092;
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();
   private static final StringLocker stringLocker = new StringLocker();

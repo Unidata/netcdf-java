@@ -4,6 +4,8 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.ma2.*;
@@ -11,6 +13,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.*;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.File;
 import java.io.IOException;
@@ -982,6 +985,10 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
       return header.removeRecordStructure();
 
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      return header.useLongOffset ? NetcdfFileFormat.NETCDF3_64BIT_OFFSET : NetcdfFileFormat.NETCDF3;
+    }
+
     return super.sendIospMessage(message);
   }
 
@@ -993,6 +1000,11 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   @Override
   public String getFileTypeDescription() {
     return "NetCDF-3/CDM";
+  }
+
+  @Override
+  public String getFileTypeVersion() {
+    return "1";
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////

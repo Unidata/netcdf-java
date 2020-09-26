@@ -2315,6 +2315,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
     return isNetcdf4;
   }
 
+  boolean isClassic() {
+    return false; // TODO
+  }
+
   public void close() {
     if (debugTracker) {
       Formatter f = new Formatter();
