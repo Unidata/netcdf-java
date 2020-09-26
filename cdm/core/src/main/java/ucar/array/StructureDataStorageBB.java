@@ -85,6 +85,7 @@ public class StructureDataStorageBB implements Storage<StructureData> {
   }
 
   class StructureDataBB extends StructureData {
+
     private final int recno;
 
     private StructureDataBB(int recno) {
@@ -94,6 +95,10 @@ public class StructureDataStorageBB implements Storage<StructureData> {
 
     @Override
     public Array<?> getMemberData(Member m) {
+      if (m.isVariableLength()) {
+        return getMemberVlenData(m);
+      }
+
       DataType dataType = m.getDataType();
       bbuffer.order(m.getByteOrder());
       int length = m.length();
@@ -203,5 +208,20 @@ public class StructureDataStorageBB implements Storage<StructureData> {
           throw new RuntimeException("unknown dataType " + dataType);
       }
     }
+
+    private Array<?> getMemberVlenData(Member m) {
+      bbuffer.order(m.getByteOrder());
+      int pos = recno * members.getStorageSizeBytes() + m.getOffset();
+
+      int heapIdx = bbuffer.getInt(pos);
+      ArrayVlen<?> vlenArray = (ArrayVlen<?>) heap.get(heapIdx);
+
+      if (vlenArray.length() == 1) {
+        Array<?> vlen = (Array<?>) vlenArray.get(vlenArray.getIndex());
+        return vlen;
+      }
+      return vlenArray;
+    }
+
   }
 }

@@ -8,15 +8,13 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import ucar.array.Array;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
-import ucar.array.IndexFn;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Group;
@@ -235,9 +233,9 @@ public class H5iospArrays extends H5iosp {
       return sa;
     }
 
-    if (dataType == DataType.OPAQUE) {
+    if (dataType == DataType.OPAQUE) { // LOOK this may be wrong, needs testing
       ArrayVlen<?> result = ArrayVlen.factory(DataType.OPAQUE, shape);
-      Preconditions.checkArgument(Index.computeSize(shape) == layout.getTotalNelems());
+      Preconditions.checkArgument(Arrays.computeSize(shape) == layout.getTotalNelems());
 
       int count = 0;
       while (layout.hasNext()) {
@@ -269,7 +267,7 @@ public class H5iospArrays extends H5iosp {
       readType = DataType.LONG;
     }
 
-    ArrayVlen<?> result = ArrayVlen.factory(dataType, shape);
+    ArrayVlen<?> vlenArray = ArrayVlen.factory(dataType, shape);
     int count = 0;
     while (layout.hasNext()) {
       Layout.Chunk chunk = layout.next();
@@ -278,11 +276,15 @@ public class H5iospArrays extends H5iosp {
       for (int i = 0; i < chunk.getNelems(); i++) {
         long address = chunk.getSrcPos() + layout.getElemSize() * i;
         Object refArray = readHeapPrimitiveArray(address, readType, endian);
-        result.set(count, (typeInfo.base.hdfType == 7) ? convertReferenceArray((long[]) refArray) : refArray);
+        vlenArray.set(count, (typeInfo.base.hdfType == 7) ? convertReferenceArray((long[]) refArray) : refArray);
         count++;
       }
     }
-    return result;
+    if (vlenArray.length() == 1) {
+      Array<?> vlen = (Array<?>) vlenArray.get();
+      return vlen;
+    }
+    return vlenArray;
   }
 
   private String[] convertReferenceArray(long[] refArray) throws IOException {
@@ -410,7 +412,7 @@ public class H5iospArrays extends H5iosp {
 
     ByteBuffer bb = ByteBuffer.wrap(byteArray);
     StructureDataStorageBB storage =
-        new StructureDataStorageBB(sm, ByteBuffer.wrap(byteArray), (int) IndexFn.computeSize(shape));
+        new StructureDataStorageBB(sm, ByteBuffer.wrap(byteArray), (int) Arrays.computeSize(shape));
     storage.setCharIsOneByte(true);
 
     // strings and vlens are stored on the heap, and must be read separately
@@ -474,45 +476,29 @@ public class H5iospArrays extends H5iosp {
         bb.order(m.getByteOrder()); // write the string index in whatever that member's byte order is.
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
 
-      } else if (m.isVariableLength()) { // LOOK this is wrong
+      } else if (m.isVariableLength()) { // LOOK this may be wrong, needs testing
         int startPos = pos + m.getOffset();
         bb.order(ByteOrder.LITTLE_ENDIAN);
 
         ByteOrder bo = m.getByteOrder();
         int endian = bo.equals(ByteOrder.LITTLE_ENDIAN) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
-        // Compute rank and size up to the first (and ideally last) VLEN
-        int[] fieldshape = m.getShape();
-        int prefixrank = 0;
-        int size = 1;
-        for (; prefixrank < fieldshape.length; prefixrank++) {
-          if (fieldshape[prefixrank] < 0)
-            break;
-          size *= fieldshape[prefixrank];
-        }
+
+        ArrayVlen<?> vlenArray = ArrayVlen.factory(m.getDataType(), m.getShape());
+        int size = (int) Arrays.computeSize(vlenArray.getShape());
         Preconditions.checkArgument(size == m.length(), "Internal error: field size mismatch");
 
-        Array[] fieldarray = new Array[size]; // hold all the vlen instance data
-        // destPos will point to each vlen instance in turn
-        // assuming we have 'size' such instances in a row.
-        int destPos = startPos;
+        int readPos = startPos;
         for (int i = 0; i < size; i++) {
-          // vlenarray extracts the i'th vlen contents (struct not supported).
-          Array vlenArray = header.readHeapVlen(bb, destPos, m.getDataType(), endian);
-          fieldarray[i] = vlenArray;
-          destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
+          // LOOK coud we use readHeapPrimitiveArray(long globalHeapIdAddress, DataType dataType, int endian) ??
+          // header.readHeapVlen reads the vlen at destPos from H5 heap, into a ucar.ma2.Array primitive array. Structs
+          // not supported.
+          ucar.ma2.Array vlen = header.readHeapVlen(bb, readPos, m.getDataType(), endian);
+          vlenArray.set(i, vlen.get1DJavaArray(m.getDataType()));
+          readPos += VLEN_T_SIZE;
         }
-
-        Array result;
-        if (prefixrank == 0) // if scalar, return just the singleton vlen array
-          result = fieldarray[0];
-        else {
-          int[] newshape = new int[prefixrank];
-          System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-          // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
-          result = Array.makeVlenArray(newshape, fieldarray);
-        }
-        int index = storage.addObjectToHeap(result);
-        bb.order(ByteOrder.nativeOrder());
+        // put resulting ArrayVlen into the storage heap.
+        int index = storage.addObjectToHeap(vlenArray);
+        bb.order(ByteOrder.nativeOrder()); // LOOK correct? depends on ArrayStuctureStogareBB
         bb.putInt(startPos, index); // overwrite with the index into the Heap
       }
     }

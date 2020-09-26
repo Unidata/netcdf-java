@@ -53,6 +53,7 @@ public class Arrays {
    */
   public static <T> Array<T> factory(DataType dataType, int[] shape, Object dataArray) {
     switch (dataType) {
+      case OPAQUE:
       case BOOLEAN:
       case BYTE:
       case ENUM1:
@@ -337,5 +338,47 @@ public class Arrays {
    */
   public static <T> Array<T> transpose(Array<T> org, int dim1, int dim2) {
     return org.createView(org.indexFn().transpose(dim1, dim2));
+  }
+
+  /**
+   * Compute total number of elements in the array. Stop at vlen.
+   *
+   * @param shape length of array in each dimension.
+   * @return total number of elements in the array.
+   */
+  public static long computeSize(int[] shape) {
+    long product = 1;
+    for (int aShape : shape) {
+      if (aShape < 0)
+        break; // stop at vlen
+      product *= aShape;
+    }
+    return product;
+  }
+
+  public static boolean isVariableLength(int[] shape) {
+    return shape.length > 0 && shape[shape.length - 1] < 0;
+  }
+
+  /**
+   * If there are any VLEN dimensions (length < 0), remove it and all dimensions to the right.
+   * 
+   * @param shape
+   * @return modified shape, if needed.
+   */
+  // TODO this implies that vlen doesnt have to be rightmost dimension. Is that true?
+  public static int[] removeVlen(int[] shape) {
+    int prefixrank;
+    for (prefixrank = 0; prefixrank < shape.length; prefixrank++) {
+      if (shape[prefixrank] < 0) {
+        break;
+      }
+    }
+    if (prefixrank == shape.length) {
+      return shape;
+    }
+    int[] newshape = new int[prefixrank];
+    System.arraycopy(shape, 0, newshape, 0, prefixrank);
+    return newshape;
   }
 }

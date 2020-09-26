@@ -16,23 +16,7 @@ import ucar.ma2.Section;
 
 /** Translate between multidimensional index and 1-d arrays. */
 @Immutable
-public class IndexFn implements Iterable<Integer> {
-
-  /**
-   * Compute total number of elements in the array. Stop at vlen.
-   *
-   * @param shape length of array in each dimension.
-   * @return total number of elements in the array.
-   */
-  public static long computeSize(int[] shape) {
-    long product = 1;
-    for (int aShape : shape) {
-      if (aShape < 0)
-        break; // stop at vlen
-      product *= aShape;
-    }
-    return product;
-  }
+class IndexFn implements Iterable<Integer> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -171,7 +155,7 @@ public class IndexFn implements Iterable<Integer> {
   }
 
   IndexFn reshape(int[] shape) {
-    Preconditions.checkArgument(computeSize(shape) == length());
+    Preconditions.checkArgument(Arrays.computeSize(shape) == length());
     return builder(shape).build();
   }
 
@@ -219,7 +203,7 @@ public class IndexFn implements Iterable<Integer> {
     newindex.setStride(newstride);
 
     // if equal, then its not a real subset, so can still use fastIterator
-    newindex.canonicalOrder = canonicalOrder && (computeSize(newindex.shape) == size);
+    newindex.canonicalOrder = canonicalOrder && (Arrays.computeSize(newindex.shape) == size);
     return newindex.build();
   }
 
@@ -331,7 +315,7 @@ public class IndexFn implements Iterable<Integer> {
       Preconditions.checkArgument(builder.stride.length == rank);
       this.stride = new int[rank];
       System.arraycopy(builder.stride, 0, this.stride, 0, rank);
-      this.size = computeSize(shape);
+      this.size = Arrays.computeSize(shape);
     }
     this.offset = builder.offset;
     this.canonicalOrder = builder.canonicalOrder;

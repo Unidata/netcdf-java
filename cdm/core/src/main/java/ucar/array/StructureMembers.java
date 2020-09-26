@@ -314,7 +314,7 @@ public final class StructureMembers implements Iterable<Member> {
 
     private int getStorageSizeBytes(boolean structuresOnHeap) {
       boolean isVariableLength = (shape != null && shape.length > 0 && shape[shape.length - 1] < 0);
-      int length = (shape == null) ? 1 : (int) IndexFn.computeSize(shape);
+      int length = (shape == null) ? 1 : (int) Arrays.computeSize(shape);
 
       if (isVariableLength) {
         return 4;
