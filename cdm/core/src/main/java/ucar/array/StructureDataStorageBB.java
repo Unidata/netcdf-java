@@ -217,7 +217,7 @@ public class StructureDataStorageBB implements Storage<StructureData> {
       ArrayVlen<?> vlenArray = (ArrayVlen<?>) heap.get(heapIdx);
 
       if (vlenArray.length() == 1) {
-        Array<?> vlen = (Array<?>) vlenArray.get(vlenArray.getIndex());
+        Array<?> vlen = vlenArray.get(vlenArray.getIndex());
         return vlen;
       }
       return vlenArray;

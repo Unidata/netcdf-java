@@ -11,14 +11,14 @@ import ucar.ma2.DataType;
 
 /**
  * Array of variable length primitive arrays of T, eg double[length][];
- * Cast resulting Object, eg to Array<Double></Double>
+ * Cast resulting Array<T>, eg to Array<Double>.
  * Find out type from getPrimitiveArrayType() (not getDataType(), which is VLEN).
  * This is mutable, to assist users in constructing. See set(index, value).
  */
-public class ArrayVlen<T> extends Array<Object> {
+public class ArrayVlen<T> extends Array<Array<T>> {
 
   /**
-   * Creates a Vlen of type dataType, and the appropriate primitive array.
+   * Creates a Vlen of type dataType, and the given shape.
    * The shape of the resulting array has vlen dimension removed, if present.
    */
   public static <T> ArrayVlen<T> factory(DataType dataType, int[] shape) {
@@ -26,14 +26,15 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   /**
-   * Creates a Vlen of type dataType, and the appropriate primitive array.
+   * Creates a Vlen of type dataType, and the given shape and primitive array like double[][].
    * The shape of the resulting array has vlen dimension removed, if present.
    */
   public static <T> ArrayVlen<T> factory(DataType dataType, int[] shape, Object storage) {
     return new ArrayVlen<>(dataType, Arrays.removeVlen(shape), storage);
   }
 
-  public static StorageMutable<Object> createStorage(DataType dataType, int length, Object dataArray) {
+  /** Creates storage for a Vlen of type dataType, and the given length and primitive array like double[][]. */
+  public static <T> StorageMutable<Array<T>> createStorage(DataType dataType, int length, Object dataArray) {
     if (dataArray == null) {
       dataArray = createVlenArray(dataType, length);
     }
@@ -75,9 +76,10 @@ public class ArrayVlen<T> extends Array<Object> {
       default:
         throw new RuntimeException("Unimplemented DataType " + dataType);
     }
-    return (StorageMutable<Object>) result;
+    return (StorageMutable<Array<T>>) result;
   }
 
+  /** Creates primitive array like double[length][] for a Vlen of type dataType, and the given length. */
   public static Object createVlenArray(DataType dataType, int length) {
     switch (dataType) {
       case BOOLEAN:
@@ -111,7 +113,7 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  private final StorageMutable<Object> storage;
+  private final StorageMutable<Array<T>> storage;
   private final DataType primitiveArrayType;
 
   /** Create an empty Vlen of type primitiveArrayType and the given shape. */
@@ -129,7 +131,7 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   /** Create an Array of type Array<T> and the given indexFn and storage. */
-  private ArrayVlen(DataType primitiveArrayType, IndexFn indexFn, StorageMutable<Object> storage) {
+  private ArrayVlen(DataType primitiveArrayType, IndexFn indexFn, StorageMutable<Array<T>> storage) {
     super(DataType.VLEN, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storage.getLength());
     this.storage = storage;
@@ -137,22 +139,22 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   @Override
-  public Iterator<Object> fastIterator() {
+  public Iterator<Array<T>> fastIterator() {
     return storage.iterator();
   }
 
   @Override
-  public Iterator<Object> iterator() {
+  public Iterator<Array<T>> iterator() {
     return indexFn.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
   }
 
   @Override
-  public Object get(int... index) {
+  public Array<T> get(int... index) {
     return storage.get(indexFn.get(index));
   }
 
   @Override
-  public Object get(Index index) {
+  public Array<T> get(Index index) {
     return get(index.getCurrentIndex());
   }
 
@@ -186,7 +188,7 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   @Override
-  Storage<Object> storage() {
+  Storage<Array<T>> storage() {
     return storage;
   }
 
@@ -197,7 +199,7 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   // used when the data is not in canonical order
-  private class CanonicalIterator implements Iterator<Object> {
+  private class CanonicalIterator implements Iterator<Array<T>> {
     private final Iterator<Integer> iter = indexFn.iterator();
 
     @Override
@@ -206,7 +208,7 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Object next() {
+    public Array<T> next() {
       return storage.get(iter.next());
     }
   }

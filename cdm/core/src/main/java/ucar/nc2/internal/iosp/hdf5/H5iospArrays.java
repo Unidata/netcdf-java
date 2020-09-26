@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import ucar.array.Array;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
 import ucar.array.StructureDataArray;
@@ -171,7 +170,7 @@ public class H5iospArrays extends H5iosp {
    * @throws InvalidRangeException if invalid section
    */
   private Object readArrayOrPrimitive(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
-      Object fillValue, int endian) throws IOException, InvalidRangeException {
+      Object fillValue, int endian) throws IOException {
 
     H5header.TypeInfo typeInfo = vinfo.typeInfo;
 
@@ -200,23 +199,6 @@ public class H5iospArrays extends H5iosp {
     if (dataType == DataType.STRUCTURE) { // LOOK what about subsetting ?
       return readStructureData((Structure) v, shape, layout);
     }
-
-    // normal case
-    return readDataArrayPrimitive(layout, dataType, shape, fillValue, endian, true);
-  }
-
-  /**
-   * Read data subset from file for a variable, create primitive array.
-   *
-   * @param layout handles skipping around in the file.
-   * @param dataType dataType of the variable
-   * @param shape the shape of the output
-   * @param fillValue fill value as a wrapped primitive
-   * @param endian byte order
-   * @return primitive array with data read in
-   */
-  private Object readDataArrayPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian,
-      boolean convertChar) throws IOException {
 
     if (dataType == DataType.STRING) {
       int size = (int) layout.getTotalNelems();
@@ -254,7 +236,7 @@ public class H5iospArrays extends H5iosp {
     }
 
     // normal case
-    return IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, convertChar);
+    return IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
   }
 
   ///////////////////////////////////////////////
@@ -281,8 +263,7 @@ public class H5iospArrays extends H5iosp {
       }
     }
     if (vlenArray.length() == 1) {
-      Array<?> vlen = (Array<?>) vlenArray.get();
-      return vlen;
+      return vlenArray.get();
     }
     return vlenArray;
   }
