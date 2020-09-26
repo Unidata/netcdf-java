@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -319,11 +318,9 @@ public class H4header implements HdfHeaderIF {
     Set<Dimension> dimUsed = dimUsedMap.keySet();
 
     // remove unused dimensions from root group
-    Iterator<Dimension> iter = root.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension dim = iter.next();
+    for ( Dimension dim : root.getDimensions()) {
       if (!dimUsed.contains(dim)) {
-        iter.remove();
+        root.removeDimension(dim.getShortName());
       }
     }
 
