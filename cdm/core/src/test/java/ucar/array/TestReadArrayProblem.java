@@ -26,6 +26,17 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestReadArrayProblem {
 
+  @Test
+  public void testGrib1() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/SST_Global_5x2p5deg_20071119_0000.grib1";
+    compareArrays(filename);
+  }
+
+  @Test
+  public void testGrib2() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/grib2/ds.wdir.bin";
+    compareArrays(filename);
+  }
 
   @Test
   public void testStructureNestedSequence() throws IOException {

@@ -53,6 +53,9 @@ public class TestReadArrayCompare {
 
       result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF"});
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"});
+
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib1/SST_Global_5x2p5deg_20071119_0000.grib1"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib2/ds.wdir.bin"});
     } catch (IOException e) {
       e.printStackTrace();
     }
