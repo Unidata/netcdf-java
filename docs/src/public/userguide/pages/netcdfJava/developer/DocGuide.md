@@ -362,13 +362,13 @@ The tag takes the following arguments:
 
 Arguments to the tag are separated by the '&' character.
 
-For example, including the function `openNCFileTutorial` from `netcdf-java/cdm/core/src/test/java/examples/tutorials/NCTutorial.java`
+For example, including the function `openNCFile` from `netcdf-java/cdm/core/src/test/java/examples/tutorials/ReadingCdmTutorial.java`
 would be written like this:
 
 ~~~md
 {% raw %}
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/examples/NCTutorial.java&openNCFileTutorial %}
+{% includecodeblock netcdf-java&docs/src/examples/ReadingCdmTutorial.java&openNCFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 {% endraw %}
@@ -376,7 +376,7 @@ would be written like this:
 
 The markdownified text would look like this:
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/NCTutorial.java&openNCFileTutorial %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/ReadingCdmTutorial.java&openNCFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -384,7 +384,7 @@ Alternatively, to include the same code snippet by line number:
 ~~~md
 {% raw %}
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/examples/NCTutorial.java&18&23 %}
+{% includecodeblock netcdf-java&docs/src/examples/ReadingCdmTutorial.java&33&38 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 {% endraw %}
@@ -394,3 +394,22 @@ The include-by-line-numbers option is provided since not all documented code can
 However, when code blocks are included by function name, the blocks will update automatically
 if the code is edited such that the line numbers change; for code blocks included by line numbers,
 markdown files will need to be manually updated. 
+
+To exclude lines of Java code from the documentation, add the `/*DOCS-IGNORE*/` tag to the line.
+For example, the following function:
+
+~~~java
+ public static Array readAllVarData(Variable v) throws IOException {
+    Array data = v.read();
+    return data; /*DOCS-IGNORE*/
+  }
+~~~
+
+will render as:
+
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/ReadingCdmTutorial.java&readAllVarData %}
+{% endcapture %}
+{{ rmd | markdownify }}
+
+The allows code included in the documentation to log or return values for the purpose of testing.

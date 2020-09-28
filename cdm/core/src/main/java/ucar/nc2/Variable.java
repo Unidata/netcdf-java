@@ -567,6 +567,13 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return _read();
   }
 
+  public ucar.array.Array<?> readArray() throws IOException, InvalidRangeException {
+    if (cache.data != null) {
+      return ucar.array.Arrays.convert(cache.data);
+    }
+    return ncfile.readArrayData(this, getShapeAsSection());
+  }
+
   ///// scalar reading
 
   /**
@@ -1071,9 +1078,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    */
   @Deprecated
   public void setCachedData(Array cacheData, boolean isMetadata) {
-    if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType()))
+    if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType())) {
       throw new IllegalArgumentException(
           "setCachedData type=" + cacheData.getElementType() + " incompatible with variable type=" + getDataType());
+    }
 
     this.cache.data = cacheData;
     this.cache.isMetadata = isMetadata;

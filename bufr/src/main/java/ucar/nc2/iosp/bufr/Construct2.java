@@ -57,7 +57,7 @@ class Construct2 {
     rootGroup.addAttribute(new Attribute("BUFR:category", proto.ids.getCategory()));
     rootGroup.addAttribute(new Attribute("BUFR:subCategory", proto.ids.getSubCategory()));
     rootGroup.addAttribute(new Attribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory()));
-    rootGroup.addAttribute(new Attribute(BufrIosp2.centerId, proto.ids.getCenterId()));
+    rootGroup.addAttribute(new Attribute(BufrIosp.centerId, proto.ids.getCenterId()));
     rootGroup.addAttribute(new Attribute("BUFR:subCenter", proto.ids.getSubCenterId()));
     // ncfile.addAttribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
     rootGroup.addAttribute(new Attribute("BUFR:table", proto.ids.getMasterTableId()));
@@ -78,7 +78,7 @@ class Construct2 {
       recordb.addAttribute(new Attribute("coordinates", coordS));
 
     this.ncfile = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(location).build();
-    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp2.obsRecordName);
+    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp.obsRecordName);
   }
 
   NetcdfFile getNetcdfFile() {
@@ -90,7 +90,7 @@ class Construct2 {
   }
 
   private void makeObsRecord(BufrConfig bufrConfig) {
-    recordb = Sequence.builder().setName(BufrIosp2.obsRecordName);
+    recordb = Sequence.builder().setName(BufrIosp.obsRecordName);
     rootGroup.addVariable(recordb);
 
     BufrConfig.FieldConverter root = bufrConfig.getRootConverter();
@@ -332,7 +332,7 @@ class Construct2 {
     }
 
     annotate(v, fld);
-    v.addAttribute(new Attribute(BufrIosp2.fxyAttName, dataDesc.getFxyName()));
+    v.addAttribute(new Attribute(BufrIosp.fxyAttName, dataDesc.getFxyName()));
     v.addAttribute(new Attribute("BUFR:bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
 

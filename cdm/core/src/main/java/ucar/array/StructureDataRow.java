@@ -11,29 +11,27 @@ import ucar.array.ArrayFloat.StorageF;
 import ucar.array.StructureMembers.Member;
 import ucar.ma2.DataType;
 
-/**
- * Describe {@link Class}
- */
+/** Experimental, used in Cdmr */
 public class StructureDataRow extends StructureData {
   private final ByteBuffer bbuffer;
   private final int[] offsets;
 
   public StructureDataRow(StructureMembers members) {
     super(members);
-    this.bbuffer = ByteBuffer.allocate(members.getStructureSize());
+    this.bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
     this.offsets = new int[members.numberOfMembers()];
     int offset = 0;
     int count = 0;
     for (StructureMembers.Member m : members.getMembers()) {
       this.offsets[count] = offset;
-      offset += m.getSizeBytes();
+      offset += m.getStorageSizeBytes();
     }
   }
 
   public Array getMemberData(Member m) {
     DataType dataType = m.getDataType();
     int offset = offsets[m.getIndex()];
-    int size = m.getSize();
+    int size = m.length();
 
     switch (dataType) {
       case DOUBLE:
@@ -45,7 +43,7 @@ public class StructureDataRow extends StructureData {
       case FLOAT:
         float[] farray = new float[size];
         for (int count = 0; count < size; count++) {
-          farray[count] = bbuffer.getFloat(offset + 8 * count);
+          farray[count] = bbuffer.getFloat(offset + 4 * count);
         }
         return new ArrayFloat(m.getShape(), new StorageF(farray));
       default:
@@ -54,7 +52,7 @@ public class StructureDataRow extends StructureData {
   }
 
   public void setMemberData(Member m, Array data) {
-    Preconditions.checkArgument(data.getSize() == m.getSize());
+    Preconditions.checkArgument(data.length() == m.length());
     DataType dataType = m.getDataType();
     int offset = offsets[m.getIndex()];
     int count = 0;

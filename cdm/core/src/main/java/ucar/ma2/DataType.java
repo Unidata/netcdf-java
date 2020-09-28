@@ -7,6 +7,7 @@ package ucar.ma2;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import javax.annotation.Nullable;
 
 /**
  * Type-safe enumeration of data types.
@@ -25,20 +26,21 @@ public enum DataType {
   // object types
   SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
   STRING("String", 4, String.class, false), // 32-bit index
-  STRUCTURE("Structure", 0, StructureData.class, false), // size meaningless
+  STRUCTURE("Structure", 0, StructureData.class, false), // size unknown
 
   ENUM1("enum1", 1, byte.class, false), // byte
   ENUM2("enum2", 2, short.class, false), // short
   ENUM4("enum4", 4, int.class, false), // int
 
-  OPAQUE("opaque", 1, ByteBuffer.class, false), // byte blobs
-
-  OBJECT("object", 1, Object.class, false), // added for use with Array
+  OPAQUE("opaque", 1, ByteBuffer.class, false), // size unknown, byte blobs;
+  OBJECT("object", 1, Object.class, false), // size unknown, use with ucar.ma2.Array
 
   UBYTE("ubyte", 1, byte.class, true), // unsigned byte
   USHORT("ushort", 2, short.class, true), // unsigned short
   UINT("uint", 4, int.class, true), // unsigned int
-  ULONG("ulong", 8, long.class, true); // unsigned long
+  ULONG("ulong", 8, long.class, true), // unsigned long
+
+  VLEN("vlen", 1, Object.class, false); // size unknown; use with ucar.array.Array
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both
@@ -53,23 +55,21 @@ public enum DataType {
 
   private final String niceName;
   private final int size;
-  private final Class primitiveClass;
+  private final Class<?> primitiveClass;
   private final Signedness signedness;
 
-  DataType(String s, int size, Class primitiveClass, boolean isUnsigned) {
+  DataType(String s, int size, Class<?> primitiveClass, boolean isUnsigned) {
     this(s, size, primitiveClass, isUnsigned ? Signedness.UNSIGNED : Signedness.SIGNED);
   }
 
-  DataType(String s, int size, Class primitiveClass, Signedness signedness) {
+  DataType(String s, int size, Class<?> primitiveClass, Signedness signedness) {
     this.niceName = s;
     this.size = size;
     this.primitiveClass = primitiveClass;
     this.signedness = signedness;
   }
 
-  /**
-   * The DataType name, eg "byte", "float", "String".
-   */
+  /** The DataType name, eg "byte", "float", "String". */
   public String toString() {
     return niceName;
   }
@@ -91,7 +91,7 @@ public enum DataType {
    *
    * @return the primitive class type
    */
-  public Class getPrimitiveClassType() {
+  public Class<?> getPrimitiveClassType() {
     return primitiveClass;
   }
 
@@ -253,11 +253,12 @@ public enum DataType {
 
   /**
    * Find the DataType that matches this class.
-   *
+   * 
    * @param c primitive or object class, eg float.class or Float.class
    * @return DataType or null if no match.
    */
-  public static DataType getType(Class c, boolean isUnsigned) {
+  @Nullable
+  public static DataType getType(Class<?> c, boolean isUnsigned) {
     if ((c == float.class) || (c == Float.class))
       return DataType.FLOAT;
     if ((c == double.class) || (c == Double.class))

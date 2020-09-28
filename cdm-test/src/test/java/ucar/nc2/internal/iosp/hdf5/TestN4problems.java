@@ -37,7 +37,7 @@ public class TestN4problems {
 
   @AfterClass
   static public void after() {
-    H5headerNew.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
+    H5header.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
   /*
@@ -77,7 +77,7 @@ public class TestN4problems {
 
   // @Test
   public void utestEnum() throws IOException {
-    H5headerNew.setDebugFlags(DebugFlags.create("H5header/header"));
+    H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = TestN4reading.testDir + "nc4/tst_enum_data.nc";
     NetcdfFile ncfile = NetcdfFiles.open(filename);
     Variable v = ncfile.findVariable("primary_cloud");
@@ -85,7 +85,7 @@ public class TestN4problems {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     logger.debug(Ncdump.printArray(data, "primary_cloud", null));
     ncfile.close();
-    H5headerNew.setDebugFlags(DebugFlags.create(""));
+    H5header.setDebugFlags(DebugFlags.create(""));
   }
 
   // @Test

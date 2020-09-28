@@ -17,7 +17,7 @@ public class BitCounterCompressed implements BitCounter {
   private final DataDescriptor dkey; // the field to count
   private final int nrows; // number of (obs) in the compression
   private final int bitOffset; // starting position of the compressed data, reletive to start of data section
-  private int dataWidth; // bitWidth of incremental values
+  private int dataWidth; // bitWidth of incremental values in nbits
   private BitCounterCompressed[][] nested; // used if the dkey is a structure = nested[innerRows][dkey.subkeys.size]
 
   /**

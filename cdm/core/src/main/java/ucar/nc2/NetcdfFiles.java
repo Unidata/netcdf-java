@@ -26,8 +26,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nullable;
-import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
-import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
+import ucar.nc2.internal.iosp.netcdf3.N3header;
+import ucar.nc2.internal.iosp.netcdf3.N3iosp;
 import ucar.nc2.internal.util.StringLocker;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -64,7 +64,7 @@ public class NetcdfFiles {
     // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
     // making open() slow. So we load the core ones here to make sure they are tried first.
     try {
-      registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospNew");
+      registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospArrays");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class H5iosp", e);
@@ -718,8 +718,8 @@ public class NetcdfFiles {
       }
     }
 
-    if (N3headerNew.isValidFile(raf)) {
-      return new N3iospNew();
+    if (N3header.isValidFile(raf)) {
+      return new N3iosp();
 
     } else {
       // look for dynamically loaded IOSPs

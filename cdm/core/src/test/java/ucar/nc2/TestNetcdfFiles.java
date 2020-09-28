@@ -18,7 +18,7 @@ public class TestNetcdfFiles {
   public void testOpenWithClassName()
       throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "longOffset.nc",
-        "ucar.nc2.internal.iosp.netcdf3.N3iospNew", -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+        "ucar.nc2.internal.iosp.netcdf3.N3iosp", -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("%s%n", ncfile);
     }
   }

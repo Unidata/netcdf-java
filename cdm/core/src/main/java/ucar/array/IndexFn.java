@@ -14,13 +14,12 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 
-/** Strides for Multidimensional arrays. Translate between multidimensional index and 1d arrays. */
+/** Translate between multidimensional index and 1-d arrays. */
 @Immutable
-public class Strides implements Iterable<Integer> {
+public class IndexFn implements Iterable<Integer> {
 
   /**
-   * Compute total number of elements in the array.
-   * Stop at vlen
+   * Compute total number of elements in the array. Stop at vlen.
    *
    * @param shape length of array in each dimension.
    * @return total number of elements in the array.
@@ -91,17 +90,33 @@ public class Strides implements Iterable<Integer> {
     return new Odometer(start, length);
   }
 
+  /** Get the total number of elements in the array. */
+  public long length() {
+    return size;
+  }
+
+  public String toString() {
+    StringBuilder sbuff = new StringBuilder();
+    boolean first = true;
+    for (int i : this) {
+      if (!first) {
+        sbuff.append(", ");
+      }
+      sbuff.append(i);
+      first = false;
+    }
+    return sbuff.toString();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
   boolean isCanonicalOrder() {
     return canonicalOrder;
   }
 
   boolean isVlen() {
     return shape.length > 0 && shape[shape.length - 1] < 0;
-  }
-
-  /** Get the total number of elements in the array. */
-  public long getSize() {
-    return size;
   }
 
   /**
@@ -111,11 +126,11 @@ public class Strides implements Iterable<Integer> {
    * @param index dimension to flip, may not be vlen
    * @return new index with flipped dimension
    */
-  Strides flip(int index) {
+  IndexFn flip(int index) {
     Preconditions.checkArgument(index >= 0 && index < rank);
     Preconditions.checkArgument(shape[index] >= 0);
 
-    Strides.Builder ib = this.toBuilder();
+    IndexFn.Builder ib = this.toBuilder();
     ib.offset += stride[index] * (shape[index] - 1);
     ib.stride[index] = -stride[index];
     ib.canonicalOrder = false;
@@ -128,7 +143,7 @@ public class Strides implements Iterable<Integer> {
    * @param dims: the old index dim[k] becomes the new kth index.
    * @return new Index with permuted indices
    */
-  Strides permute(int[] dims) {
+  IndexFn permute(int[] dims) {
     Preconditions.checkArgument(dims.length == shape.length);
     Set<Integer> used = new HashSet<>();
     for (int dim : dims) {
@@ -142,7 +157,7 @@ public class Strides implements Iterable<Integer> {
     }
 
     boolean isPermuted = false;
-    Strides.Builder newIndex = toBuilder();
+    IndexFn.Builder newIndex = toBuilder();
     for (int i = 0; i < dims.length; i++) {
       newIndex.stride[i] = stride[dims[i]];
       newIndex.shape[i] = shape[dims[i]];
@@ -155,8 +170,8 @@ public class Strides implements Iterable<Integer> {
     return newIndex.build();
   }
 
-  Strides reshape(int[] shape) {
-    Preconditions.checkArgument(computeSize(shape) == getSize());
+  IndexFn reshape(int[] shape) {
+    Preconditions.checkArgument(computeSize(shape) == length());
     return builder(shape).build();
   }
 
@@ -169,7 +184,7 @@ public class Strides implements Iterable<Integer> {
    * @return new Index, with same rank as original.
    * @throws InvalidRangeException if ranges dont match current shape
    */
-  Strides section(List<Range> ranges) throws InvalidRangeException {
+  IndexFn section(List<Range> ranges) throws InvalidRangeException {
     Preconditions.checkArgument(ranges.size() == rank);
     for (int ii = 0; ii < rank; ii++) {
       Range r = ranges.get(ii);
@@ -184,7 +199,7 @@ public class Strides implements Iterable<Integer> {
     }
 
     // allocate
-    Strides.Builder newindex = builder(rank);
+    IndexFn.Builder newindex = builder(rank);
     newindex.offset = offset;
     int[] newstride = new int[rank];
 
@@ -214,11 +229,11 @@ public class Strides implements Iterable<Integer> {
    *
    * @return the new Index
    */
-  Strides reduce() {
-    Strides c = this;
+  IndexFn reduce() {
+    IndexFn c = this;
     for (int ii = 0; ii < rank; ii++)
       if (shape[ii] == 1) { // do this on the first one you find
-        Strides newc = c.reduce(ii);
+        IndexFn newc = c.reduce(ii);
         return newc.reduce(); // any more to do?
       }
     return c;
@@ -231,13 +246,13 @@ public class Strides implements Iterable<Integer> {
    * @param dim: dimension to eliminate: must be of length one, else IllegalArgumentException
    * @return the new Index
    */
-  Strides reduce(int dim) {
+  IndexFn reduce(int dim) {
     if ((dim < 0) || (dim >= rank))
       throw new IllegalArgumentException("illegal reduce dim " + dim);
     if (shape[dim] != 1)
       throw new IllegalArgumentException("illegal reduce dim " + dim + " : length != 1");
 
-    Strides.Builder newindex = builder(rank - 1);
+    IndexFn.Builder newindex = builder(rank - 1);
     newindex.offset = offset;
     int[] newstride = new int[rank - 1];
 
@@ -262,7 +277,7 @@ public class Strides implements Iterable<Integer> {
    * @param index2 transpose these two indices
    * @return new Index with transposed indices
    */
-  Strides transpose(int index1, int index2) {
+  IndexFn transpose(int index1, int index2) {
     if ((index1 < 0) || (index1 >= rank))
       throw new IllegalArgumentException();
     if ((index2 < 0) || (index2 >= rank))
@@ -270,7 +285,7 @@ public class Strides implements Iterable<Integer> {
     if (index1 == index2)
       return this;
 
-    Strides.Builder newIndex = toBuilder();
+    IndexFn.Builder newIndex = toBuilder();
     newIndex.stride[index1] = stride[index2];
     newIndex.stride[index2] = stride[index1];
     newIndex.shape[index1] = shape[index2];
@@ -278,19 +293,6 @@ public class Strides implements Iterable<Integer> {
 
     newIndex.setCanonicalOrder(false);
     return newIndex.build();
-  }
-
-  public String toString() {
-    StringBuilder sbuff = new StringBuilder();
-    boolean first = true;
-    for (int i : this) {
-      if (!first) {
-        sbuff.append(", ");
-      }
-      sbuff.append(i);
-      first = false;
-    }
-    return sbuff.toString();
   }
 
   public static Builder builder(int rank) {
@@ -315,7 +317,7 @@ public class Strides implements Iterable<Integer> {
   private final int offset; // element = offset + stride[0]*current[0] + ...
   private final boolean canonicalOrder; // can use fast iterator if in canonical order
 
-  private Strides(Builder builder) {
+  private IndexFn(Builder builder) {
     Preconditions.checkNotNull(builder.shape);
     this.rank = builder.shape.length;
 
@@ -359,14 +361,14 @@ public class Strides implements Iterable<Integer> {
     }
 
     Builder setShape(int[] shape) {
-      Preconditions.checkArgument(shape.length == this.shape.length);
+      this.shape = new int[shape.length];
       System.arraycopy(shape, 0, this.shape, 0, shape.length);
       return this;
     }
 
+    /** Dimension strides (not Section strides) */
     Builder setStride(int[] stride) {
-      Preconditions.checkArgument(stride.length == this.shape.length);
-      this.stride = new int[this.shape.length];
+      this.stride = new int[stride.length];
       System.arraycopy(stride, 0, this.stride, 0, stride.length);
       return this;
     }
@@ -381,12 +383,12 @@ public class Strides implements Iterable<Integer> {
       return this;
     }
 
-    public Strides build() {
-      return new Strides(this);
+    public IndexFn build() {
+      return new IndexFn(this);
     }
   }
 
-  /** what is the odometer for element? */
+  /** what is the odometer (n-dim index) for element (1-d index)? */
   private int[] odometer(long element) {
     int[] odometer = new int[rank];
     for (int dim = 0; dim < rank; dim++) {

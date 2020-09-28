@@ -479,10 +479,10 @@ public class DataDescriptorTreeConstructor {
       for (DataDescriptor dd : tree) {
         if (dd.f == 0) {
           linear.add(dd);
-
         } else if (dd.f == 1) {
-          for (int i = 0; i < dd.replication; i++) // whut about defered replication hahahahahah
+          for (int i = 0; i < dd.replication; i++) { // whut about defered replication hahahahahah
             linearize(dd.getSubKeys());
+          }
         }
       }
     }

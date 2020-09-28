@@ -36,7 +36,7 @@ public class H5tiledLayout implements Layout {
    * @param wantSection the wanted section of data, contains a List of Range objects, must be complete
    * @throws IOException on io error
    */
-  public H5tiledLayout(H5headerNew.Vinfo vinfo, DataType dtype, Section wantSection) throws IOException {
+  public H5tiledLayout(H5header.Vinfo vinfo, DataType dtype, Section wantSection) throws IOException {
     assert vinfo.isChunked;
     assert vinfo.btree != null;
 

@@ -614,8 +614,9 @@ public class IospHelper {
   public static char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; i++) {
       cbuff[i] = (char) DataType.unsignedByteToShort(byteArray[i]); // NOTE: not Unicode !
+    }
     return cbuff;
   }
 

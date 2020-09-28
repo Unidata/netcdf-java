@@ -8,7 +8,7 @@ package ucar.nc2.iosp.bufr.writer;
 import com.google.common.escape.Escaper;
 import com.google.common.xml.XmlEscapers;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.bufr.BufrIosp2;
+import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.*;
 import ucar.nc2.util.Indent;
@@ -101,7 +101,7 @@ public class Bufr2Xml {
       staxWriter.writeCharacters(message.getLookup().getCategoryFullName());
       staxWriter.writeEndElement();
 
-      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecordName);
+      SequenceDS obs = (SequenceDS) ncfile.findVariable(BufrIosp.obsRecordName);
       StructureDataIterator sdataIter = obs.getStructureIterator(-1);
 
       writeSequence(obs, sdataIter);
@@ -214,7 +214,7 @@ public class Bufr2Xml {
       staxWriter.writeAttribute(CDM.UNITS, escaper.escape(v.getUnitsString()));
     }
 
-    String desc = v.attributes().findAttributeString(BufrIosp2.fxyAttName, "N/A");
+    String desc = v.attributes().findAttributeString(BufrIosp.fxyAttName, "N/A");
     staxWriter.writeAttribute("bufr", escaper.escape(desc));
 
     if (v.getDataType() == DataType.CHAR) {

@@ -36,7 +36,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 /** IOServiceProviderWriter for Netcdf3 files. */
-public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFileUpdater {
+public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpdater {
   private boolean fill = true;
   private final IOServiceProvider iosp;
   private N3headerWriter headerw;
@@ -90,7 +90,7 @@ public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFile
     }
 
     this.headerw = new N3headerWriter(this, raf);
-    headerw.initFromExisting((N3iospNew) this.iosp, rootGroup); // hack-a-whack
+    headerw.initFromExisting((N3iosp) this.iosp, rootGroup); // hack-a-whack
     this.header = headerw;
 
     NetcdfFile.Builder<?> ncfileb = NetcdfFile.builder().setRootGroup(rootGroup).setLocation(location);
@@ -117,7 +117,7 @@ public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFile
 
   @Override
   public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
-    N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) v2.getSPobject();
+    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
     if (v2.isUnlimited()) {
@@ -183,7 +183,7 @@ public class N3iospWriter extends N3iospNew implements IospFileCreator, IospFile
       }
 
       // layout of the destination
-      N3headerNew.Vinfo vinfo = (N3headerNew.Vinfo) vm.getSPobject();
+      N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
       long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
       Section memberSection = vm.getShapeAsSection();
       Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
