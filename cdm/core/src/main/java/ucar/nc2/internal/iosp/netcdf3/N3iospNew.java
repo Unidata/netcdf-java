@@ -42,6 +42,9 @@ import javax.annotation.Nullable;
 public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
 
+  // NetCDF File Format Type (defined in netcdf.h from the C library)
+  private static final String NC_FORMATX_NC3 = String.valueOf(NetcdfFileFormat.NETCDF3.version());
+
   /*
    * CLASSIC
    * The maximum size of a record in the classic format in versions 3.5.1 and earlier is 2^32 - 4 bytes.
@@ -320,7 +323,7 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
 
   @Override
   public String getFileTypeVersion() {
-    return "1";
+    return NC_FORMATX_NC3;
   }
 
   /**

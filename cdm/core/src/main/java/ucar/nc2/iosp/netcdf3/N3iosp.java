@@ -127,6 +127,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    */
   public static final int MAX_NUMRECS = Integer.MAX_VALUE;
 
+  // NetCDF File Format Type (defined in netcdf.h from the C library)
+  private static final String NC_FORMATX_NC3 = String.valueOf(NetcdfFileFormat.NETCDF3.version());
+
   private static boolean syncExtendOnly;
 
   /**
@@ -1004,7 +1007,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
   @Override
   public String getFileTypeVersion() {
-    return "1";
+    return NC_FORMATX_NC3;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
