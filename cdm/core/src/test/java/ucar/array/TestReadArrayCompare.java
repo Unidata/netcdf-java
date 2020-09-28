@@ -9,7 +9,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +42,8 @@ public class TestReadArrayCompare {
     List<Object[]> result = new ArrayList<>(500);
     try {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4/tst/", ff, result);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/samples/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/support/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/complex/", ff, result);
@@ -52,6 +53,9 @@ public class TestReadArrayCompare {
 
       result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF"});
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"});
+
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib1/SST_Global_5x2p5deg_20071119_0000.grib1"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib2/ds.wdir.bin"});
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -100,17 +104,27 @@ public class TestReadArrayCompare {
     }
 
     if (!Misc.compare(org.getShape(), array.getShape(), f)) {
-      f.format(" WARN shape %s: data shape %s !== %s%n", name, java.util.Arrays.toString(org.getShape()),
-          Arrays.toString(array.getShape()));
+      f.format(" WARN %s: data shape %s !== %s%n", name, java.util.Arrays.toString(org.getShape()),
+          java.util.Arrays.toString(array.getShape()));
       // ok = false;
     }
 
-    if (array.getDataType() == DataType.VLEN) {
-      testTypes = false;
+    if (org.isVlen() != (array.getDataType() == DataType.VLEN)) {
+      f.format(" WARN  %s: data vlen %s !== %s%n", name, org.isVlen(), (array.getDataType() == DataType.VLEN));
+      // ok = false;
     }
+
     if (testTypes && org.getDataType() != array.getDataType()) {
-      f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getDataType());
-      ok = false;
+      if (array instanceof ArrayVlen) {
+        ArrayVlen<?> arrv = (ArrayVlen<?>) array;
+        if (org.getDataType() != arrv.getPrimitiveArrayType()) {
+          f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), arrv.getPrimitiveArrayType());
+          ok = false;
+        }
+      } else {
+        f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getDataType());
+        ok = false;
+      }
     }
 
     if (!ok) {
@@ -119,6 +133,26 @@ public class TestReadArrayCompare {
 
     DataType dt = org.getDataType();
     IndexIterator iter1 = org.getIndexIterator();
+
+    if (org.isVlen()) {
+      Iterator<Object> iter2 = (Iterator<Object>) array.iterator();
+      while (iter1.hasNext() && iter2.hasNext()) {
+        Object v1 = iter1.getObjectNext();
+        Object v2 = iter2.next();
+        if (v1 instanceof ucar.ma2.Array && v2 instanceof ucar.array.Array) {
+          ok &= compareData(f, name, (ucar.ma2.Array) v1, (ucar.array.Array) v2, justOne, testTypes);
+        } else if (v1 instanceof ucar.ma2.Array) {
+          // problem is we are unwrapping scalar Vlens, different from ma2
+          ok &= compareData(f, name, (ucar.ma2.Array) v1, array, justOne, testTypes);
+        } else {
+          f.format(" DIFF %s: Vlen class %s != %s %n", name, v1.getClass().getName(), v2.getClass().getName());
+          ok = false;
+          if (justOne)
+            break;
+        }
+      }
+      return ok;
+    }
 
     switch (dt) {
       case BYTE:
@@ -221,14 +255,14 @@ public class TestReadArrayCompare {
         while (iter1.hasNext() && iter2.hasNext()) {
           ByteBuffer v1 = (ByteBuffer) iter1.getObjectNext();
           v1.rewind();
-          byte[] v2 = (byte[]) iter2.next();
-          if (v1.remaining() != v2.length) {
-            f.format(" DIFF %s: opaque sizes differ %d != %d%n", name, v1.remaining(), v2.length);
+          Array<Byte> v2 = (Array<Byte>) iter2.next();
+          if (v1.remaining() != v2.length()) {
+            f.format(" DIFF %s: opaque sizes differ %d != %d%n", name, v1.remaining(), v2.length());
             ok = false;
           }
-          for (int idx = 0; idx < v1.remaining() && idx < v2.length; idx++) {
-            if (v1.get(idx) != v2[idx]) {
-              f.format(createNumericDataDiffMessage(dt, name, v1.get(idx), v2[idx], iter1));
+          for (int idx = 0; idx < v1.remaining() && idx < v2.length(); idx++) {
+            if (v1.get(idx) != v2.get(idx)) {
+              f.format(createNumericDataDiffMessage(dt, name, v1.get(idx), v2.get(idx), iter1));
               ok = false;
               if (justOne)
                 break;

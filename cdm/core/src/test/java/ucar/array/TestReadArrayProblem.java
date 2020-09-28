@@ -27,6 +27,25 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 public class TestReadArrayProblem {
 
   @Test
+  public void testGrib1() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/SST_Global_5x2p5deg_20071119_0000.grib1";
+    compareArrays(filename);
+  }
+
+  @Test
+  public void testGrib2() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/grib2/ds.wdir.bin";
+    compareArrays(filename);
+  }
+
+  @Test
+  public void testStructureNestedSequence() throws IOException {
+    // problem is we are unwrapping scalar Vlens, different from ma2
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/IntTimSciSamp.nc";
+    compareArrays(filename);
+  }
+
+  @Test
   public void testOpaque() throws IOException {
     String filename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"; // opaque
     compareArrays(filename);
@@ -78,6 +97,12 @@ public class TestReadArrayProblem {
   public void testBufrCompressedNestedStructure() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/TimeIncr0.bufr";
     compareSequence(filename);
+  }
+
+  @Test
+  public void testNc4Vlen() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/cdm_sea_soundings.nc4";
+    compareArrays(filename);
   }
 
   private void compareSequence(String filename) throws IOException {

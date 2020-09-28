@@ -10,19 +10,14 @@ import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
+import ucar.array.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.Coordinate;
-import ucar.nc2.grib.coord.CoordinateRuntime;
-import ucar.nc2.grib.coord.CoordinateTime;
 import ucar.nc2.grib.coord.CoordinateTime2D;
-import ucar.nc2.grib.coord.CoordinateTimeAbstract;
-import ucar.nc2.grib.coord.CoordinateTimeIntv;
-import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
@@ -176,166 +171,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
-  private Array makeLazyCoordinateData(Variable v2, Time2Dinfo info) {
-    if (info.time2D != null) {
-      return makeLazyTime2Darray(v2, info);
-    } else {
-      return makeLazyTime1Darray(v2, info);
-    }
-  }
-
-  // only for the 2d times
-  private Array makeLazyTime1Darray(Variable v2, Time2Dinfo info) {
-    int length = info.time1D.getSize();
-    double[] data = new double[length];
-    for (int i = 0; i < length; i++) {
-      data[i] = Double.NaN;
-    }
-
-    // coordinate values
-    switch (info.which) {
-      case reftime:
-        CoordinateRuntime rtc = (CoordinateRuntime) info.time1D;
-        int count = 0;
-        for (double val : rtc.getOffsetsInTimeUnits()) {
-          data[count++] = val;
-        }
-        return Array.factory(DataType.DOUBLE, v2.getShape(), data);
-
-      case timeAuxRef:
-        CoordinateTimeAbstract time = (CoordinateTimeAbstract) info.time1D;
-        count = 0;
-        List<Double> masterOffsets = gribCollection.getMasterRuntime().getOffsetsInTimeUnits();
-        for (int masterIdx : time.getTime2runtime()) {
-          data[count++] = masterOffsets.get(masterIdx - 1);
-        }
-        return Array.factory(DataType.DOUBLE, v2.getShape(), data);
-
-      default:
-        throw new IllegalStateException("makeLazyTime1Darray must be reftime or timeAuxRef");
-    }
-  }
-
-  // only for the 2d times
-  private Array makeLazyTime2Darray(Variable coord, Time2Dinfo info) {
-    CoordinateTime2D time2D = info.time2D;
-    CalendarPeriod timeUnit = time2D.getTimeUnit();
-
-    int nruns = time2D.getNruns();
-    int ntimes = time2D.getNtimes();
-
-    int length = (int) coord.getSize();
-    if (info.which == Time2DinfoType.bounds) {
-      length *= 2;
-    }
-
-    double[] data = new double[length];
-    for (int i = 0; i < length; i++) {
-      data[i] = Double.NaN;
-    }
-    int count;
-
-    // coordinate values
-    switch (info.which) {
-      case off:
-        for (int runIdx = 0; runIdx < nruns; runIdx++) {
-          CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
-          int timeIdx = 0;
-          for (int val : coordTime.getOffsetSorted()) {
-            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
-            timeIdx++;
-          }
-        }
-        break;
-
-      case offU:
-        count = 0;
-        for (int runIdx = 0; runIdx < nruns; runIdx++) {
-          CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
-          for (int val : coordTime.getOffsetSorted()) {
-            data[count++] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
-          }
-        }
-        break;
-
-      case intv:
-        for (int runIdx = 0; runIdx < nruns; runIdx++) {
-          CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-          int timeIdx = 0;
-          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use
-                                                                                                                  // upper
-                                                                                                                  // bounds
-                                                                                                                  // for
-                                                                                                                  // coord
-                                                                                                                  // value
-            timeIdx++;
-          }
-        }
-        break;
-
-      case intvU:
-        count = 0;
-        for (int runIdx = 0; runIdx < nruns; runIdx++) {
-          CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for
-                                                                                                // coord value
-          }
-        }
-        break;
-
-      case is1Dtime:
-        CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
-        count = 0;
-        for (double val : runtime.getOffsetsInTimeUnits()) { // convert to udunits
-          data[count++] = val;
-        }
-        break;
-
-      case isUniqueRuntime: // the aux runtime coordinate
-        CoordinateRuntime runtimeU = time2D.getRuntimeCoordinate();
-        List<Double> runOffsets = runtimeU.getOffsetsInTimeUnits();
-        count = 0;
-        for (int run = 0; run < time2D.getNruns(); run++) {
-          CoordinateTimeAbstract timeCoord = time2D.getTimeCoordinate(run);
-          for (int time = 0; time < timeCoord.getNCoords(); time++) {
-            data[count++] = runOffsets.get(run);
-          }
-        }
-        break;
-
-      case bounds:
-        for (int runIdx = 0; runIdx < nruns; runIdx++) {
-          CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-          int timeIdx = 0;
-          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes * 2 + timeIdx] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
-            data[runIdx * ntimes * 2 + timeIdx + 1] =
-                timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
-            timeIdx += 2;
-          }
-        }
-        break;
-
-      case boundsU:
-        count = 0;
-        for (int runIdx = 0; runIdx < nruns; runIdx++) {
-          CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
-            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
-          }
-        }
-        break;
-
-      default:
-        throw new IllegalStateException();
-    }
-
-    return Array.factory(DataType.DOUBLE, coord.getShape(), data);
-  }
-
   @Nullable
   String searchCoord(Grib2Utils.LatLonCoordType type, List<GribCollectionImmutable.VariableIndex> list) {
     if (type == null) {
@@ -397,7 +232,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     // see if its time2D - then generate data on the fly
     if (v2.getSPobject() instanceof Time2Dinfo) {
       Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
-      Array data = makeLazyCoordinateData(v2, info);
+      Array data = Time2DLazyCoordinate.makeLazyCoordinateData(v2, info, gribCollection);
       Section sectionFilled = Section.fill(section, v2.getShape());
       return data.sectionNoReduce(sectionFilled.getRanges());
     }
@@ -417,112 +252,28 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
-  /*
-   * private Array readDataFromCollectionNew(Variable v, Section section) throws IOException, InvalidRangeException {
-   * GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v.getSPobject();
-   * GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-   * return dataReader.readDataFromCollection(vindex, section, v.getShape());
-   * }
-   * 
-   * 
-   * private Array readDataFromCollection(Variable v, Section section, WritableByteChannel channel) throws IOException,
-   * InvalidRangeException {
-   * GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v.getSPobject();
-   * 
-   * // first time, read records and keep in memory
-   * vindex.readRecords();
-   * 
-   * int sectionLen = section.getRank();
-   * Range yRange = section.getRange(sectionLen - 2);
-   * Range xRange = section.getRange(sectionLen - 1);
-   * 
-   * Section sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
-   * Section.Iterator iterWanted = sectionWanted.getIterator(v.getShape());
-   * int[] indexWanted = new int[sectionLen - 2]; // place to put the iterator result
-   * 
-   * // collect all the records that need to be read
-   * // this assumes that the coordinates reflect the vindex.sparseArray exactly
-   * GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-   * int count = 0;
-   * while (iterWanted.hasNext()) {
-   * int sourceIndex = iterWanted.next(indexWanted);
-   * dataReader.addRecord(sourceIndex, count++);
-   * }
-   * 
-   * // sort by file and position, then read
-   * GribDataReader.DataReceiverIF dataReceiver = (channel == null) ? new GribDataReader.DataReceiver(section) : new
-   * GribDataReader.ChannelReceiver(channel, yRange, xRange);
-   * dataReader.read(dataReceiver);
-   * return dataReceiver.getArray();
-   * }
-   * 
-   * private Array readDataFromPartition(Variable v, Section section, WritableByteChannel channel) throws IOException,
-   * InvalidRangeException {
-   * PartitionCollectionImmutable.VariableIndexPartitioned vindexP =
-   * (PartitionCollectionImmutable.VariableIndexPartitioned) v.getSPobject(); // the variable in the partition
-   * collection
-   * 
-   * int sectionLen = section.getRank();
-   * Range yRange = section.getRange(sectionLen - 2); // last 2
-   * Range xRange = section.getRange(sectionLen - 1);
-   * Section sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
-   * Section.Iterator iterWanted = sectionWanted.getIterator(v.getShape()); // iterator over wanted indices in vindexP
-   * int[] indexWanted = new int[sectionLen - 2]; // place to put the iterator result
-   * int[] useIndex = indexWanted;
-   * 
-   * // collect all the records that need to be read
-   * GribDataReader dataReader = GribDataReader.factory(gribCollection, vindexP);
-   * int resultPos = 0;
-   * while (iterWanted.hasNext()) {
-   * iterWanted.next(indexWanted); // returns the vindexP index in indexWanted array
-   * 
-   * // for 1D TP, second index is implictly 0
-   * if (vindexP.getType() == GribCollectionImmutable.Type.TP) {
-   * int[] indexReallyWanted = new int[indexWanted.length+1];
-   * indexReallyWanted[0] = indexWanted[0];
-   * indexReallyWanted[1] = 0;
-   * System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length-1);
-   * useIndex = indexReallyWanted;
-   * }
-   * 
-   * PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
-   * if (record == null) {
-   * // vindexP.getDataRecord(indexWanted); // debug
-   * resultPos++;
-   * continue;
-   * }
-   * record.resultIndex = resultPos;
-   * dataReader.addPartitionedRecord(record);
-   * resultPos++;
-   * }
-   * 
-   * // sort by file and position, then read
-   * GribDataReader.DataReceiverIF dataReceiver = (channel == null) ? new GribDataReader.DataReceiver(section) : new
-   * GribDataReader.ChannelReceiver(channel, yRange, xRange);
-   * dataReader.readPartitioned(dataReceiver);
-   * 
-   * return dataReceiver.getArray();
-   * }
-   * 
-   * 
-   * /* LOOK this is by Variable - might want to do over variables, so only touch a file once, if multiple variables in
-   * a file
-   * 
-   * @Override
-   * public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-   * throws java.io.IOException, ucar.ma2.InvalidRangeException {
-   * 
-   * long start = System.currentTimeMillis();
-   * 
-   * /* if (isPartitioned)
-   * streamDataFromPartition(v2, section, channel);
-   * else
-   * readDataFromCollection(v2, section, channel);
-   * 
-   * long took = System.currentTimeMillis() - start;
-   * return 0;
-   * }
-   */
+  @Override
+  public ucar.array.Array<?> readArrayData(Variable v2, Section section)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    // see if its time2D - then generate data on the fly
+    if (v2.getSPobject() instanceof Time2Dinfo) {
+      Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
+      ucar.array.Array<?> data = Time2DLazyCoordinate.makeLazyCoordinateArray(v2, info, gribCollection);
+      Section sectionFilled = Section.fill(section, v2.getShape());
+      return Arrays.section(data, sectionFilled.getRanges());
+    }
+
+    try {
+      GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v2.getSPobject();
+      GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vindex);
+      SectionIterable sectionIter = new SectionIterable(section, v2.getShape());
+      return dataReader.readData(sectionIter);
+
+    } catch (IOException ioe) {
+      logger.error("Failed to readData ", ioe);
+      throw ioe;
+    }
+  }
 
   ///////////////////////////////////////
   // debugging back door

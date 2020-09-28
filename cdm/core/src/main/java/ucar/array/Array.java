@@ -57,7 +57,7 @@ public abstract class Array<T> implements Iterable<T> {
     return indexFn.getSection();
   }
 
-  /** Get the total number of elements in the array. */
+  /** Get the total number of elements in the array. Excludes vlen dimensins. */
   public long length() {
     return indexFn.length();
   }

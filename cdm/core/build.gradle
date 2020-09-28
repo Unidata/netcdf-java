@@ -30,6 +30,7 @@ dependencies {
   testImplementation project(':cdm-test-utils')
 
   testImplementation project(':bufr')
+  testImplementation project(':grib')
   testImplementation 'com.google.truth:truth'
   testImplementation 'commons-io:commons-io'
   testImplementation 'junit:junit'

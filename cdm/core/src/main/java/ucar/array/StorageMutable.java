@@ -7,5 +7,5 @@ package ucar.array;
 
 /** Storage that can be changed. */
 public interface StorageMutable<T> extends Storage<T> {
-  void set(int index, T value);
+  void set(int index, Object value);
 }

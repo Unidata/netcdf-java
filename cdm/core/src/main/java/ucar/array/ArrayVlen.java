@@ -11,48 +11,30 @@ import ucar.ma2.DataType;
 
 /**
  * Array of variable length primitive arrays of T, eg double[length][];
- * Cast resulting Object, eg to double[].
- * Find out type from getPrimitiveArrayType() (not getDataType, which is VLEN).
+ * Cast resulting Array<T>, eg to Array<Double>.
+ * Find out type from getPrimitiveArrayType() (not getDataType(), which is VLEN).
  * This is mutable, to assist users in constructing. See set(index, value).
  */
-public class ArrayVlen<T> extends Array<Object> {
+public class ArrayVlen<T> extends Array<Array<T>> {
 
   /**
-   * Creates a Vlen of type dataType, and the appropriate primitive array.
+   * Creates a Vlen of type dataType, and the given shape.
    * The shape of the resulting array has vlen dimension removed, if present.
    */
   public static <T> ArrayVlen<T> factory(DataType dataType, int[] shape) {
-    // find leftmost vlen, doesnt have to exist.
-    // TODO this implies that vlen doesnt have to be rightmost dimension. For now, we flatten into 1D.
-    int prefixrank = shape.length;
-    for (int i = 0; i < shape.length; i++) {
-      if (shape[i] < 0) {
-        prefixrank = i;
-        break;
-      }
-    }
-    int[] newshape = new int[prefixrank];
-    System.arraycopy(shape, 0, newshape, 0, prefixrank);
-
-    return new ArrayVlen<>(dataType, newshape);
+    return new ArrayVlen<>(dataType, Arrays.removeVlen(shape));
   }
 
-  /** Creates a Vlen of type dataType, and the appropriate primitive array. */
+  /**
+   * Creates a Vlen of type dataType, and the given shape and primitive array like double[][].
+   * The shape of the resulting array has vlen dimension removed, if present.
+   */
   public static <T> ArrayVlen<T> factory(DataType dataType, int[] shape, Object storage) {
-    int prefixrank = shape.length;
-    for (int i = 0; i < shape.length; i++) {
-      if (shape[i] < 0) {
-        prefixrank = i;
-        break;
-      }
-    }
-    int[] newshape = new int[prefixrank];
-    System.arraycopy(shape, 0, newshape, 0, prefixrank);
-
-    return new ArrayVlen<>(dataType, newshape, storage);
+    return new ArrayVlen<>(dataType, Arrays.removeVlen(shape), storage);
   }
 
-  public static StorageMutable<Object> createStorage(DataType dataType, int length, Object dataArray) {
+  /** Creates storage for a Vlen of type dataType, and the given length and primitive array like double[][]. */
+  public static <T> StorageMutable<Array<T>> createStorage(DataType dataType, int length, Object dataArray) {
     if (dataArray == null) {
       dataArray = createVlenArray(dataType, length);
     }
@@ -63,7 +45,7 @@ public class ArrayVlen<T> extends Array<Object> {
       case ENUM1:
       case OPAQUE:
       case UBYTE:
-        result = new StorageVByte((byte[][]) dataArray);
+        result = new StorageVByte(dataType, (byte[][]) dataArray);
         break;
       case CHAR:
         result = new StorageVChar((char[][]) dataArray);
@@ -77,16 +59,16 @@ public class ArrayVlen<T> extends Array<Object> {
       case INT:
       case ENUM4:
       case UINT:
-        result = new StorageVInt((int[][]) dataArray);
+        result = new StorageVInt(dataType, (int[][]) dataArray);
         break;
       case LONG:
       case ULONG:
-        result = new StorageVLong((long[][]) dataArray);
+        result = new StorageVLong(dataType, (long[][]) dataArray);
         break;
       case SHORT:
       case ENUM2:
       case USHORT:
-        result = new StorageVShort((short[][]) dataArray);
+        result = new StorageVShort(dataType, (short[][]) dataArray);
         break;
       case STRING:
         result = new StorageVString((String[][]) dataArray);
@@ -94,9 +76,10 @@ public class ArrayVlen<T> extends Array<Object> {
       default:
         throw new RuntimeException("Unimplemented DataType " + dataType);
     }
-    return (StorageMutable<Object>) result;
+    return (StorageMutable<Array<T>>) result;
   }
 
+  /** Creates primitive array like double[length][] for a Vlen of type dataType, and the given length. */
   public static Object createVlenArray(DataType dataType, int length) {
     switch (dataType) {
       case BOOLEAN:
@@ -130,25 +113,25 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  private final StorageMutable<Object> storage;
+  private final StorageMutable<Array<T>> storage;
   private final DataType primitiveArrayType;
 
   /** Create an empty Vlen of type primitiveArrayType and the given shape. */
   private ArrayVlen(DataType primitiveArrayType, int[] shape) {
     super(DataType.VLEN, shape);
-    this.storage = createStorage(primitiveArrayType, (int) IndexFn.computeSize(shape), null);
+    this.storage = createStorage(primitiveArrayType, (int) Arrays.computeSize(shape), null);
     this.primitiveArrayType = primitiveArrayType;
   }
 
   /** Create an empty Vlen of type primitiveArrayType and data array T[][]. */
   private ArrayVlen(DataType primitiveArrayType, int[] shape, Object dataArray) {
     super(DataType.VLEN, shape);
-    this.storage = createStorage(primitiveArrayType, (int) IndexFn.computeSize(shape), dataArray);
+    this.storage = createStorage(primitiveArrayType, (int) Arrays.computeSize(shape), dataArray);
     this.primitiveArrayType = primitiveArrayType;
   }
 
   /** Create an Array of type Array<T> and the given indexFn and storage. */
-  private ArrayVlen(DataType primitiveArrayType, IndexFn indexFn, StorageMutable<Object> storage) {
+  private ArrayVlen(DataType primitiveArrayType, IndexFn indexFn, StorageMutable<Array<T>> storage) {
     super(DataType.VLEN, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storage.getLength());
     this.storage = storage;
@@ -156,22 +139,22 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   @Override
-  public Iterator<Object> fastIterator() {
+  public Iterator<Array<T>> fastIterator() {
     return storage.iterator();
   }
 
   @Override
-  public Iterator<Object> iterator() {
+  public Iterator<Array<T>> iterator() {
     return indexFn.isCanonicalOrder() ? fastIterator() : new CanonicalIterator();
   }
 
   @Override
-  public Object get(int... index) {
+  public Array<T> get(int... index) {
     return storage.get(indexFn.get(index));
   }
 
   @Override
-  public Object get(Index index) {
+  public Array<T> get(Index index) {
     return get(index.getCurrentIndex());
   }
 
@@ -205,7 +188,7 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   @Override
-  Storage<Object> storage() {
+  Storage<Array<T>> storage() {
     return storage;
   }
 
@@ -216,7 +199,7 @@ public class ArrayVlen<T> extends Array<Object> {
   }
 
   // used when the data is not in canonical order
-  private class CanonicalIterator implements Iterator<Object> {
+  private class CanonicalIterator implements Iterator<Array<T>> {
     private final Iterator<Integer> iter = indexFn.iterator();
 
     @Override
@@ -225,17 +208,19 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Object next() {
+    public Array<T> next() {
       return storage.get(iter.next());
     }
   }
 
   // standard storage using ragged array byte[fixed][]
   @Immutable
-  static class StorageVByte implements StorageMutable<byte[]> {
+  static class StorageVByte implements StorageMutable<Array<Byte>> {
+    private final DataType primitiveArrayType;
     private final byte[][] primitiveArray;
 
-    StorageVByte(byte[][] primitiveArray) {
+    StorageVByte(DataType primitiveArrayType, byte[][] primitiveArray) {
+      this.primitiveArrayType = primitiveArrayType;
       this.primitiveArray = primitiveArray;
     }
 
@@ -245,8 +230,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public byte[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<Byte> get(long elem) {
+      byte[] p = primitiveArray[(int) elem];
+      return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
     }
 
     @Override
@@ -255,16 +241,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<byte[]> iterator() {
+    public Iterator<Array<Byte>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, byte[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (byte[]) value;
     }
 
-    private final class StorageIter implements Iterator<byte[]> {
+    private final class StorageIter implements Iterator<Array<Byte>> {
       private int count = 0;
 
       @Override
@@ -273,15 +259,16 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final byte[] next() {
-        return primitiveArray[count++];
+      public final Array<Byte> next() {
+        byte[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
 
   // standard storage using ragged array char[fixed][]
   @Immutable
-  static class StorageVChar implements StorageMutable<char[]> {
+  static class StorageVChar implements StorageMutable<Array<Character>> {
     private final char[][] primitiveArray;
 
     StorageVChar(char[][] primitiveArray) {
@@ -294,8 +281,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public char[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<Character> get(long elem) {
+      char[] p = primitiveArray[(int) elem];
+      return Arrays.factory(DataType.CHAR, new int[] {p.length}, p);
     }
 
     @Override
@@ -304,16 +292,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<char[]> iterator() {
+    public Iterator<Array<Character>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, char[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (char[]) value;
     }
 
-    private final class StorageIter implements Iterator<char[]> {
+    private final class StorageIter implements Iterator<Array<Character>> {
       private int count = 0;
 
       @Override
@@ -322,15 +310,16 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final char[] next() {
-        return primitiveArray[count++];
+      public final Array<Character> next() {
+        char[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(DataType.CHAR, new int[] {p.length}, p);
       }
     }
   }
 
   // standard storage using ragged array double[fixed][]
   @Immutable
-  static class StorageVDouble implements StorageMutable<double[]> {
+  static class StorageVDouble implements StorageMutable<Array<Double>> {
     private final double[][] primitiveArray;
 
     StorageVDouble(double[][] primitiveArray) {
@@ -343,8 +332,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public double[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<Double> get(long elem) {
+      double[] p = primitiveArray[(int) elem];
+      return Arrays.factory(DataType.DOUBLE, new int[] {p.length}, p);
     }
 
     @Override
@@ -353,16 +343,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<double[]> iterator() {
+    public Iterator<Array<Double>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, double[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (double[]) value;
     }
 
-    private final class StorageIter implements Iterator<double[]> {
+    private final class StorageIter implements Iterator<Array<Double>> {
       private int count = 0;
 
       @Override
@@ -371,15 +361,16 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final double[] next() {
-        return primitiveArray[count++];
+      public final Array<Double> next() {
+        double[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(DataType.DOUBLE, new int[] {p.length}, p);
       }
     }
   }
 
   // standard storage using ragged array float[fixed][]
   @Immutable
-  static class StorageVFloat implements StorageMutable<float[]> {
+  static class StorageVFloat implements StorageMutable<Array<Float>> {
     private final float[][] primitiveArray;
 
     StorageVFloat(float[][] primitiveArray) {
@@ -392,8 +383,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public float[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<Float> get(long elem) {
+      float[] p = primitiveArray[(int) elem];
+      return Arrays.factory(DataType.FLOAT, new int[] {p.length}, p);
     }
 
     @Override
@@ -402,16 +394,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<float[]> iterator() {
+    public Iterator<Array<Float>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, float[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (float[]) value;
     }
 
-    private final class StorageIter implements Iterator<float[]> {
+    private final class StorageIter implements Iterator<Array<Float>> {
       private int count = 0;
 
       @Override
@@ -420,18 +412,21 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final float[] next() {
-        return primitiveArray[count++];
+      public final Array<Float> next() {
+        float[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(DataType.FLOAT, new int[] {p.length}, p);
       }
     }
   }
 
   // standard storage using ragged array int[fixed][]
   @Immutable
-  static class StorageVInt implements StorageMutable<int[]> {
+  static class StorageVInt implements StorageMutable<Array<Integer>> {
+    private final DataType primitiveArrayType;
     private final int[][] primitiveArray;
 
-    StorageVInt(int[][] primitiveArray) {
+    StorageVInt(DataType primitiveArrayType, int[][] primitiveArray) {
+      this.primitiveArrayType = primitiveArrayType;
       this.primitiveArray = primitiveArray;
     }
 
@@ -441,8 +436,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public int[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<Integer> get(long elem) {
+      int[] p = primitiveArray[(int) elem];
+      return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
     }
 
     @Override
@@ -451,16 +447,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<int[]> iterator() {
+    public Iterator<Array<Integer>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, int[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (int[]) value;
     }
 
-    private final class StorageIter implements Iterator<int[]> {
+    private final class StorageIter implements Iterator<Array<Integer>> {
       private int count = 0;
 
       @Override
@@ -469,18 +465,21 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final int[] next() {
-        return primitiveArray[count++];
+      public final Array<Integer> next() {
+        int[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
 
   // standard storage using ragged array long[fixed][]
   @Immutable
-  static class StorageVLong implements StorageMutable<long[]> {
+  static class StorageVLong implements StorageMutable<Array<Long>> {
+    private final DataType primitiveArrayType;
     private final long[][] primitiveArray;
 
-    StorageVLong(long[][] primitiveArray) {
+    StorageVLong(DataType primitiveArrayType, long[][] primitiveArray) {
+      this.primitiveArrayType = primitiveArrayType;
       this.primitiveArray = primitiveArray;
     }
 
@@ -490,8 +489,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public long[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<Long> get(long elem) {
+      long[] p = primitiveArray[(int) elem];
+      return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
     }
 
     @Override
@@ -500,16 +500,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<long[]> iterator() {
+    public Iterator<Array<Long>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, long[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (long[]) value;
     }
 
-    private final class StorageIter implements Iterator<long[]> {
+    private final class StorageIter implements Iterator<Array<Long>> {
       private int count = 0;
 
       @Override
@@ -518,18 +518,21 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final long[] next() {
-        return primitiveArray[count++];
+      public final Array<Long> next() {
+        long[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
 
   // standard storage using ragged array short[fixed][]
   @Immutable
-  static class StorageVShort implements StorageMutable<short[]> {
+  static class StorageVShort implements StorageMutable<Array<Short>> {
+    private final DataType primitiveArrayType;
     private final short[][] primitiveArray;
 
-    StorageVShort(short[][] primitiveArray) {
+    StorageVShort(DataType primitiveArrayType, short[][] primitiveArray) {
+      this.primitiveArrayType = primitiveArrayType;
       this.primitiveArray = primitiveArray;
     }
 
@@ -539,8 +542,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public short[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<Short> get(long elem) {
+      short[] p = primitiveArray[(int) elem];
+      return Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
     }
 
     @Override
@@ -549,16 +553,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<short[]> iterator() {
+    public Iterator<Array<Short>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, short[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (short[]) value;
     }
 
-    private final class StorageIter implements Iterator<short[]> {
+    private final class StorageIter implements Iterator<Array<Short>> {
       private int count = 0;
 
       @Override
@@ -567,15 +571,16 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final short[] next() {
-        return primitiveArray[count++];
+      public final Array<Short> next() {
+        short[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
     }
   }
 
   // standard storage using ragged array String[fixed][]
   @Immutable
-  static class StorageVString implements StorageMutable<String[]> {
+  static class StorageVString implements StorageMutable<Array<String>> {
     private final String[][] primitiveArray;
 
     StorageVString(String[][] primitiveArray) {
@@ -588,8 +593,9 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public String[] get(long elem) {
-      return primitiveArray[(int) elem];
+    public Array<String> get(long elem) {
+      String[] p = primitiveArray[(int) elem];
+      return Arrays.factory(DataType.STRING, new int[] {p.length}, p);
     }
 
     @Override
@@ -598,16 +604,16 @@ public class ArrayVlen<T> extends Array<Object> {
     }
 
     @Override
-    public Iterator<String[]> iterator() {
+    public Iterator<Array<String>> iterator() {
       return new StorageIter();
     }
 
     @Override
-    public void set(int index, String[] value) {
-      primitiveArray[index] = value;
+    public void set(int index, Object value) {
+      primitiveArray[index] = (String[]) value;
     }
 
-    private final class StorageIter implements Iterator<String[]> {
+    private final class StorageIter implements Iterator<Array<String>> {
       private int count = 0;
 
       @Override
@@ -616,8 +622,9 @@ public class ArrayVlen<T> extends Array<Object> {
       }
 
       @Override
-      public final String[] next() {
-        return primitiveArray[count++];
+      public final Array<String> next() {
+        String[] p = primitiveArray[count++];
+        return (p == null) ? null : Arrays.factory(DataType.STRING, new int[] {p.length}, p);
       }
     }
   }

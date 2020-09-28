@@ -136,8 +136,8 @@ public class StructureDataArray extends Array<StructureData> {
     }
 
     @Override
-    public void set(int index, StructureData value) {
-      parray[index] = value;
+    public void set(int index, Object value) {
+      parray[index] = (StructureData) value;
     }
 
     @Override
