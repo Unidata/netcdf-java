@@ -138,6 +138,10 @@ public class H5header extends NCheader implements H5headerIF {
     return isNetcdf4;
   }
 
+  boolean isClassic() {
+    return false; // TODO
+  }
+
   public void read(java.io.PrintWriter debugPS) throws IOException {
     if (debugPS != null) {
       debugOut = debugPS;
@@ -476,6 +480,39 @@ public class H5header extends NCheader implements H5headerIF {
 
     createDimensions(ncGroup, h5group);
 
+    // process types first
+    for (DataObjectFacade facadeNested : h5group.nestedObjects) {
+      if (facadeNested.isTypedef) {
+        if (debugReference && facadeNested.dobj.mdt.type == 7) {
+          log.debug("{}", facadeNested);
+        }
+
+        if (facadeNested.dobj.mdt.map != null) {
+          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+          if (enumTypedef == null) {
+            DataType basetype;
+            switch (facadeNested.dobj.mdt.byteSize) {
+              case 1:
+                basetype = DataType.ENUM1;
+                break;
+              case 2:
+                basetype = DataType.ENUM2;
+                break;
+              default:
+                basetype = DataType.ENUM4;
+                break;
+            }
+            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
+            ncGroup.addEnumeration(enumTypedef);
+          }
+        }
+        if (debugV) {
+          log.debug("  made enumeration {}", facadeNested.name);
+        }
+      }
+
+    } // loop over typedefs
+
     // nested objects - groups and variables
     for (DataObjectFacade facadeNested : h5group.nestedObjects) {
 
@@ -523,36 +560,7 @@ public class H5header extends NCheader implements H5headerIF {
             log.debug("  made Variable " + v.getFullName() + "  vinfo= " + vinfo + "\n" + v);
           }
         }
-
-      } else if (facadeNested.isTypedef) {
-        if (debugReference && facadeNested.dobj.mdt.type == 7) {
-          log.debug("{}", facadeNested);
-        }
-
-        if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
-          if (enumTypedef == null) {
-            DataType basetype;
-            switch (facadeNested.dobj.mdt.byteSize) {
-              case 1:
-                basetype = DataType.ENUM1;
-                break;
-              case 2:
-                basetype = DataType.ENUM2;
-                break;
-              default:
-                basetype = DataType.ENUM4;
-                break;
-            }
-            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
-            ncGroup.addEnumeration(enumTypedef);
-          }
-        }
-        if (debugV) {
-          log.debug("  made enumeration {}", facadeNested.name);
-        }
       }
-
     } // loop over nested objects
 
     // create group attributes last. need enums to be found first
@@ -1731,8 +1739,13 @@ public class H5header extends NCheader implements H5headerIF {
     // set the enumTypedef
     if (dt.isEnum()) {
       Group ncGroup = v.getParentGroupOrRoot();
-      EnumTypedef enumTypedef = ncGroup.findEnumeration(mdt.enumTypeName);
-      if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
+      EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
+      EnumTypedef enumTypedef =
+          ncGroup.getEnumTypedefs().stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
+      if (enumTypedef != null) {
+        // if found, make sure it is added to the group
+        ncGroup.addEnumeration(enumTypedef);
+      } else { // if shared object, wont have a name, shared version gets added later
         enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
         ncGroup.addEnumeration(enumTypedef);
       }

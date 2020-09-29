@@ -146,17 +146,6 @@ public class ModesMenu extends JMenu {
     BAMutil.setActionProperties(a, null, "Use HDF-EOS StructMetadata to augment HDF4", true, '4', -1);
     BAMutil.addActionToMenu(subMenu, a);
 
-    a = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        boolean state = (Boolean) getValue(BAMutil.STATE);
-        Nc4Iosp.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "Use HDF-EOS StructMetadata to augment netcdf4 (JNI)", true, 'N', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
     // Add the submenu
     add(subMenu);
   }

@@ -1,6 +1,8 @@
 /* Copyright Unidata */
 package ucar.nc2.internal.iosp.netcdf3;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -27,6 +29,7 @@ import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew.Vinfo;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
@@ -38,6 +41,9 @@ import javax.annotation.Nullable;
  */
 public class N3iospNew extends AbstractIOServiceProvider implements IOServiceProvider {
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iospNew.class);
+
+  // NetCDF File Format Type (defined in netcdf.h from the C library)
+  private static final String NC_FORMATX_NC3 = String.valueOf(NetcdfFileFormat.NETCDF3.version());
 
   /*
    * CLASSIC
@@ -279,6 +285,9 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
       this.useRecordStructure = true;
       return null;
     }
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      return header.useLongOffset ? NetcdfFileFormat.NETCDF3_64BIT_OFFSET : NetcdfFileFormat.NETCDF3;
+    }
     return super.sendIospMessage(message);
   }
 
@@ -310,6 +319,11 @@ public class N3iospNew extends AbstractIOServiceProvider implements IOServicePro
   @Override
   public String getFileTypeDescription() {
     return "NetCDF-3/CDM";
+  }
+
+  @Override
+  public String getFileTypeVersion() {
+    return NC_FORMATX_NC3;
   }
 
   /**

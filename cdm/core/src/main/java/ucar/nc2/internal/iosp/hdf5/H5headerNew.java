@@ -487,6 +487,39 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
     createDimensions(parentGroup, h5group);
 
+    // process types first
+    for (DataObjectFacade facadeNested : h5group.nestedObjects) {
+      if (facadeNested.isTypedef) {
+        if (debugReference && facadeNested.dobj.mdt.type == 7) {
+          log.debug("{}", facadeNested);
+        }
+
+        if (facadeNested.dobj.mdt.map != null) {
+          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
+          if (enumTypedef == null) {
+            DataType basetype;
+            switch (facadeNested.dobj.mdt.byteSize) {
+              case 1:
+                basetype = DataType.ENUM1;
+                break;
+              case 2:
+                basetype = DataType.ENUM2;
+                break;
+              default:
+                basetype = DataType.ENUM4;
+                break;
+            }
+            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
+            parentGroup.addEnumTypedef(enumTypedef);
+          }
+        }
+        if (debugV) {
+          log.debug("  made enumeration {}", facadeNested.name);
+        }
+      }
+
+    } // loop over typedefs
+
     // nested objects - groups and variables
     for (DataObjectFacade facadeNested : h5group.nestedObjects) {
 
@@ -531,34 +564,6 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
           if (debugV) {
             log.debug("  made Variable " + v.shortName + "  vinfo= " + vinfo + "\n" + v);
           }
-        }
-
-      } else if (facadeNested.isTypedef) {
-        if (debugReference && facadeNested.dobj.mdt.type == 7) {
-          log.debug("{}", facadeNested);
-        }
-
-        if (facadeNested.dobj.mdt.map != null) {
-          EnumTypedef enumTypedef = parentGroup.findEnumTypedef(facadeNested.name).orElse(null);
-          if (enumTypedef == null) {
-            DataType basetype;
-            switch (facadeNested.dobj.mdt.byteSize) {
-              case 1:
-                basetype = DataType.ENUM1;
-                break;
-              case 2:
-                basetype = DataType.ENUM2;
-                break;
-              default:
-                basetype = DataType.ENUM4;
-                break;
-            }
-            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);
-            parentGroup.addEnumTypedef(enumTypedef);
-          }
-        }
-        if (debugV) {
-          log.debug("  made enumeration {}", facadeNested.name);
         }
       }
 
@@ -1564,7 +1569,8 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
       // TODO Not sure why, but there may be both a user type and a "local" mdt enum. May need to do a value match?
       EnumTypedef enumTypedef = parent.findEnumTypedef(mdt.enumTypeName).orElse(null);
       if (enumTypedef == null) { // if shared object, wont have a name, shared version gets added later
-        enumTypedef = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        EnumTypedef local = new EnumTypedef(mdt.enumTypeName, mdt.map);
+        enumTypedef = parent.enumTypedefs.stream().filter((e) -> e.equalsMapOnly(local)).findFirst().orElse(local);
         parent.addEnumTypedef(enumTypedef);
       }
       v.setEnumTypeName(enumTypedef.getShortName());
@@ -2307,6 +2313,10 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   boolean isNetcdf4() {
     return isNetcdf4;
+  }
+
+  boolean isClassic() {
+    return false; // TODO
   }
 
   public void close() {

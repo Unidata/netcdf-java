@@ -77,8 +77,8 @@ public class N3header extends NCheader {
   int numrecs; // number of records written
   long recsize; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
+  boolean useLongOffset;
 
-  private boolean useLongOffset;
   private long nonRecordDataSize; // size of non-record variables
   private long dataStart = Long.MAX_VALUE; // where the data starts
 

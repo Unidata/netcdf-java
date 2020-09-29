@@ -4,12 +4,15 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.write.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
@@ -648,6 +651,13 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (message.toString().equals("headerEmpty")) {
       NetcdfFile ncfile = new NetcdfFileSubclass();
       return new H5header(raf, ncfile, this);
+    }
+
+    if (message.equals(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT)) {
+      if (!headerParser.isNetcdf4()) {
+        return null;
+      }
+      return headerParser.isClassic() ? NetcdfFileFormat.NETCDF4_CLASSIC : NetcdfFileFormat.NETCDF4;
     }
 
     return super.sendIospMessage(message);

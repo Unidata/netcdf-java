@@ -66,6 +66,11 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   @Override
+  public String getFileTypeVersion() {
+    return header.version;
+  }
+
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
     Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);

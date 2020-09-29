@@ -92,6 +92,8 @@ public class H4header extends NCheader {
     return isEos;
   }
 
+  String version = "N/A";
+
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
     this.raf = myRaf;
     this.ncfile = ncfile;
@@ -259,7 +261,8 @@ public class H4header extends NCheader {
     ncfile.addAttribute(null, new Attribute("_History", "Direct read of HDF4 file through CDM library"));
     for (Tag t : alltags) {
       if (t.code == 30) {
-        ncfile.addAttribute(null, new Attribute("HDF4_Version", ((TagVersion) t).value()));
+        this.version = ((TagVersion) t).value();
+        ncfile.addAttribute(null, new Attribute("HDF4_Version", this.version));
         t.used = true;
 
       } else if (t.code == 100) {

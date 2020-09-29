@@ -133,6 +133,8 @@ public class HdfEos {
       } else if (A instanceof ArrayObject.D0) {
         ArrayObject ao = (ArrayObject) A;
         structMetadata = (String) ao.getObject(0);
+      } else if (A instanceof ArrayObject.D1) {
+        structMetadata = (String) A.getObject(0);
       } else {
         log.error("Unsupported array type {} for StructMetadata", A.getElementType());
       }
