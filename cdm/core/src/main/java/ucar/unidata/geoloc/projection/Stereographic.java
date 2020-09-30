@@ -38,15 +38,13 @@ public class Stereographic extends AbstractProjection {
   private final double scale, earthRadius;
   private final double latt, lont;
   private final double sinlatt, coslatt;
-  private double latts;
-  private boolean isNorth;
-  private boolean isPolar;
+  private final double latts;
+  private final boolean isNorth;
+  private final boolean isPolar;
 
   // values passed in through the constructor
   // need for constructCopy
-  private final double _latts;
-  private final double _latt;
-  private final double _lont;
+  private final double _latts, _latt, _lont, _scale;
 
   @Override
   public Projection constructCopy() {
@@ -98,6 +96,7 @@ public class Stereographic extends AbstractProjection {
     this._latts = lat_ts_deg;
     this._latt = latt_deg;
     this._lont = lont_deg;
+    this._scale = 0;
 
     this.latts = Math.toRadians(lat_ts_deg);
     this.latt = Math.toRadians(latt_deg);
@@ -134,9 +133,15 @@ public class Stereographic extends AbstractProjection {
       double radius) {
     super("Stereographic", false);
 
-    this._latts = 0.0;
+    // defaults
+    this.latts = 0;
+    this.isNorth = false;
+    this.isPolar = false;
+
+    this._latts = 0;
     this._latt = latt;
     this._lont = lont;
+    this._scale = scale;
 
     this.latt = Math.toRadians(latt);
     this.lont = Math.toRadians(lont);
@@ -197,7 +202,7 @@ public class Stereographic extends AbstractProjection {
    * @return the scale
    */
   public double getScale() {
-    return scale / earthRadius;
+    return _scale;
   }
 
   /**
