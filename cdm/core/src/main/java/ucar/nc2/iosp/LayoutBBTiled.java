@@ -149,9 +149,11 @@ public class LayoutBBTiled implements LayoutBB {
    * Read nelems from src at srcPos, store in destination at destPos.
    */
   private static class Chunk implements LayoutBB.Chunk {
-    IndexChunker.Chunk delegate;
+    private IndexChunker.Chunk delegate;
 
     private final ByteBuffer bb;
+    private int nelems;
+
     private ShortBuffer sb;
     private IntBuffer ib;
     private LongBuffer longb;
@@ -164,6 +166,7 @@ public class LayoutBBTiled implements LayoutBB {
 
     public void setDelegate(IndexChunker.Chunk delegate) {
       this.delegate = delegate;
+      this.nelems = delegate.getNelems();
     }
 
     @Override
@@ -173,7 +176,7 @@ public class LayoutBBTiled implements LayoutBB {
 
     @Override
     public int getNelems() {
-      return delegate.getNelems();
+      return nelems;
     }
 
     @Override

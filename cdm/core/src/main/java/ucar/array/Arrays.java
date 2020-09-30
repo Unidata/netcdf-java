@@ -16,16 +16,32 @@ import ucar.ma2.Section;
 /** Static helper classes for {@link Array} */
 public class Arrays {
 
+  public static ucar.ma2.Array convert(Array<?> from) {
+    ucar.ma2.Array values = ucar.ma2.Array.factory(from.getDataType(), from.getShape());
+    int count = 0;
+    for (Object val : from) {
+      values.setObject(count++, val);
+    }
+    return values;
+  }
+
   public static Array<?> convert(ucar.ma2.Array from) {
     DataType dtype = from.getDataType();
     if (dtype == DataType.OPAQUE) {
       return convertOpaque(from);
+    } else if (dtype == DataType.STRING) {
+      String[] sarray = new String[(int) from.getSize()];
+      for (int idx = 0; idx < sarray.length; idx++) {
+        sarray[idx] = (String) from.getObject(idx);
+      }
+      return factory(dtype, from.getShape(), sarray);
     } else {
       return factory(dtype, from.getShape(), from.get1DJavaArray(dtype));
     }
   }
 
-  public static Array<?> convertOpaque(ucar.ma2.Array from) {
+  // Opaque is Vlen of byte
+  private static Array<?> convertOpaque(ucar.ma2.Array from) {
     DataType dtype = from.getDataType();
     Preconditions.checkArgument(dtype == DataType.OPAQUE);
     if (from instanceof ucar.ma2.ArrayObject) {
@@ -41,6 +57,54 @@ public class Arrays {
       return ArrayVlen.factory(dtype, ma2.getShape(), dataArray);
     }
     throw new RuntimeException("Unknown opaque array class " + from.getClass().getName());
+  }
+
+  /**
+   * Create Array using java array of T, or java primitive array, as storage.
+   * Do not use this for Vlens or Structures.
+   *
+   * @param dataType data type of the data. Vlen detected from the shape.
+   * @param shape multidimensional shape, must have same total length as dataArray.
+   * @param storage storage for type T.
+   */
+  public static <T> Array<T> factory(DataType dataType, int[] shape, Storage<T> storage) {
+    switch (dataType) {
+      case OPAQUE:
+      case BOOLEAN:
+      case BYTE:
+      case ENUM1:
+      case UBYTE: {
+        return (Array<T>) new ArrayByte(dataType, shape, (Storage<Byte>) storage);
+      }
+      case CHAR: {
+        return (Array<T>) new ArrayChar(shape, (Storage<Character>) storage);
+      }
+      case DOUBLE: {
+        return (Array<T>) new ArrayDouble(shape, (Storage<Double>) storage);
+      }
+      case FLOAT: {
+        return (Array<T>) new ArrayFloat(shape, (Storage<Float>) storage);
+      }
+      case INT:
+      case ENUM4:
+      case UINT: {
+        return (Array<T>) new ArrayInteger(dataType, shape, (Storage<Integer>) storage);
+      }
+      case LONG:
+      case ULONG: {
+        return (Array<T>) new ArrayLong(dataType, shape, (Storage<Long>) storage);
+      }
+      case SHORT:
+      case ENUM2:
+      case USHORT: {
+        return (Array<T>) new ArrayShort(dataType, shape, (Storage<Short>) storage);
+      }
+      case STRING: {
+        return (Array<T>) new ArrayString(shape, (Storage<String>) storage);
+      }
+      default:
+        throw new RuntimeException("Unimplemented DataType " + dataType);
+    }
   }
 
   /**
@@ -149,7 +213,7 @@ public class Arrays {
   // Experimental
 
   /** Combine list of Array's by copying the underlying Array's into a single primitive array */
-  public static <T> Array<T> factoryCopy(DataType dataType, int[] shape, List<Array<?>> dataArrays) {
+  public static <T> Array<T> factoryCopy(DataType dataType, int[] shape, List<Array<T>> dataArrays) {
     if (dataArrays.size() == 1) {
       return factory(dataType, shape, dataArrays.get(0).storage());
     }
@@ -157,7 +221,7 @@ public class Arrays {
     return factory(dataType, shape, dataArray);
   }
 
-  private static Object combine(DataType dataType, int[] shape, List<Array<?>> dataArrays) {
+  private static <T> Object combine(DataType dataType, int[] shape, List<Array<T>> dataArrays) {
     Section section = new Section(shape);
     long size = section.getSize();
     if (size > Integer.MAX_VALUE) {
@@ -214,7 +278,7 @@ public class Arrays {
   /** Experimental: keep list of Arrays seperate. This allows length > 2Gb. */
   public static <T> Array<T> factoryArrays(DataType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
-      return factory(dataType, shape, dataArrays.get(0).storage());
+      return factory(dataType, shape, (Storage<T>) dataArrays.get(0).storage());
     }
 
     switch (dataType) {

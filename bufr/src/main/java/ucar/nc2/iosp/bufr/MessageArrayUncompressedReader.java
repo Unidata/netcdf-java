@@ -20,7 +20,6 @@ import ucar.array.StructureMembers;
 import ucar.array.StructureMembers.Member;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
-import ucar.nc2.Variable;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -206,7 +205,7 @@ class MessageArrayUncompressedReader {
           System.out.printf("HEY %s: expected = %d != actual %d%n", member.getName(), expected, pos);
         }
 
-        int index = req.storageBB.addObjectToHeap(seq);
+        int index = req.storageBB.putOnHeap(seq);
         req.bb.putInt(index); // an index into the Heap
         continue;
       }

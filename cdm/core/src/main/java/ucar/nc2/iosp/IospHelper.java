@@ -633,7 +633,6 @@ public class IospHelper {
   }
 
   // section reading for member data
-
   public static ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     Variable inner = null;
     List<Range> totalRanges = new ArrayList<>();
@@ -650,8 +649,8 @@ public class IospHelper {
 
     // must be a Structure
     Structure outer = (Structure) cer.getVariable();
-    Structure outerSubset = outer.select(cer.getChild().getVariable().getShortName()); // allows IOSPs to optimize for
-                                                                                       // this case
+    // allows IOSPs to optimize for this case
+    Structure outerSubset = outer.select(cer.getChild().getVariable().getShortName());
     ArrayStructure outerData = (ArrayStructure) outerSubset.read(cer.getSection());
     extractSection(cer.getChild(), outerData, result.getIndexIterator());
     return result;

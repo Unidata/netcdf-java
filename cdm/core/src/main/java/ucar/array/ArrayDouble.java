@@ -142,6 +142,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////
   // experimental storage using List of Storage<Double>
   @Immutable
   static class StorageDM implements Storage<Double> {
@@ -155,7 +156,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
       edge.add(0L);
       long total = 0L;
       for (Array<?> dataArray : dataArrays) {
-        builder.add(((Array<Double>) dataArray).storage());
+        builder.add((Storage<Double>) dataArray.storage());
         total += dataArray.length();
         edge.add(total);
       }

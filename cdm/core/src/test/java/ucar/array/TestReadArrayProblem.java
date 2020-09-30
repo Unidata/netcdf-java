@@ -7,9 +7,11 @@ package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.base.Stopwatch;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -130,35 +132,44 @@ public class TestReadArrayProblem {
     }
   }
 
-  private void compareArrays(String filename) throws IOException {
+  static long compareArrays(String filename) throws IOException {
+    long total = 0;
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.println("Test input: " + ncfile.getLocation());
 
       boolean ok = true;
       for (Variable v : ncfile.getVariables()) {
         System.out.printf("  read variable %s %s", v.getDataType(), v.getShortName());
+        com.google.common.base.Stopwatch stopwatch = Stopwatch.createStarted();
         ucar.ma2.Array org = v.read();
         try {
           Array<?> array = v.readArray();
-          if (array != null) {
-            System.out.printf("  COMPARE%n");
-            Formatter f = new Formatter();
-            boolean ok1 = TestReadArrayCompare.compareData(f, v.getShortName(), org, array, false, true);
-            if (!ok1) {
-              System.out.printf("%s%n", f);
-            }
-            ok &= ok1;
-          } else {
+          if (array == null) {
             System.out.printf("%n");
+            continue;
           }
+          System.out.printf("  COMPARE%n");
+          Formatter f = new Formatter();
+          boolean ok1 = TestReadArrayCompare.compareData(f, v.getShortName(), org, array, false, true);
+          if (!ok1) { // array not ok
+            System.out.printf("%s%n", f);
+          } else {
+            stopwatch.stop();
+            long size = array.length() + org.getSize();
+            double rate = ((double) array.length()) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
+            System.out.printf("    size = %d, time = %s rate = %10.4f MB/sec%n", size, stopwatch, rate);
+            total += size;
+          }
+          ok &= ok1;
         } catch (Exception e) {
           System.out.printf(" BAD%n");
           e.printStackTrace();
           ok = false;
         }
       }
-      Assert.assertTrue(filename, ok);
+      assertThat(ok).isTrue();
     }
+    return total;
   }
 }
 
