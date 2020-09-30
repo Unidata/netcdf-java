@@ -378,10 +378,6 @@ public class H5iospArrays extends H5iosp {
     // set offsets and byteOrders
     boolean hasHeap = augmentStructureMembers(s, mb);
 
-    // LOOK Problem is Strings and Vlens, and nested Structures
-    // LOOK Opaque is ok, because in hdf5, its not variable length!
-    // This is wrong, need to use H5header.Vinfo.dataPos
-
     int recSize = layout.getElemSize();
     mb.setStructureSize(recSize); // needed ?
     ucar.array.StructureMembers sm = mb.build();
@@ -453,7 +449,7 @@ public class H5iospArrays extends H5iosp {
           result[i] = header.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
         }
 
-        int index = storage.addObjectToHeap(result);
+        int index = storage.putOnHeap(result);
         bb.order(m.getByteOrder()); // write the string index in whatever that member's byte order is.
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
 
@@ -478,7 +474,7 @@ public class H5iospArrays extends H5iosp {
           readPos += VLEN_T_SIZE;
         }
         // put resulting ArrayVlen into the storage heap.
-        int index = storage.addObjectToHeap(vlenArray);
+        int index = storage.putOnHeap(vlenArray);
         bb.order(ByteOrder.nativeOrder()); // LOOK correct? depends on ArrayStuctureStogareBB
         bb.putInt(startPos, index); // overwrite with the index into the Heap
       }

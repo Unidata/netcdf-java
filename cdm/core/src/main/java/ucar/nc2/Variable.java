@@ -567,12 +567,29 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return _read();
   }
 
-  public ucar.array.Array<?> readArray() throws IOException, InvalidRangeException {
+  public ucar.array.Array<?> readArray() throws IOException {
     if (cache.data != null) {
       return ucar.array.Arrays.convert(cache.data);
     }
-    return ncfile.readArrayData(this, getShapeAsSection());
+    try {
+      return ncfile.readArrayData(this, getShapeAsSection());
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
   }
+
+  public ucar.array.Array<?> readArray(ucar.ma2.Section section)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    if (section == null) {
+      return readArray();
+    }
+    if (cache.data != null) {
+      ucar.array.Array<?> all = ucar.array.Arrays.convert(cache.data);
+      return ucar.array.Arrays.section(all, section.getRanges());
+    }
+    return ncfile.readArrayData(this, section);
+  }
+
 
   ///// scalar reading
 

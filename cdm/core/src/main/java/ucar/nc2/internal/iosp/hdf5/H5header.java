@@ -963,17 +963,17 @@ public class H5header implements HdfHeaderIF {
 
     // check for empty attribute case
     if (matt.mds.type == 2) {
-      if (dtype == DataType.CHAR)
-        return Attribute.builder(matt.name).setDataType(DataType.STRING).build(); // empty char considered to be a null
-                                                                                  // string attr
-      else
+      if (dtype == DataType.CHAR) {
+        // empty char considered to be a null string attr
+        return Attribute.builder(matt.name).setDataType(DataType.STRING).build();
+      } else {
         return Attribute.builder(matt.name).setDataType(dtype).build();
+      }
     }
 
     Array attData;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
-
     } catch (InvalidRangeException e) {
       log.warn("failed to read Attribute " + matt.name + " HDF5 file=" + raf.getLocation());
       return null;
@@ -984,11 +984,11 @@ public class H5header implements HdfHeaderIF {
       List<Object> dataList = new ArrayList<>();
       while (attData.hasNext()) {
         Array nested = (Array) attData.next();
-        while (nested.hasNext())
+        while (nested.hasNext()) {
           dataList.add(nested.next());
+        }
       }
       result = Attribute.builder(matt.name).setValues(dataList, matt.mdt.unsigned).build();
-
     } else {
       result = Attribute.fromArray(matt.name, attData);
     }

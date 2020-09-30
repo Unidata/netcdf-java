@@ -29,11 +29,11 @@ message DataResponse {
   uint32 version = 2; // response version
 
   string location = 3;
-  string variableSpec = 4;     // the requested variable and optionally, its section
+  string variableSpec = 4;     // the requested variableSpec
   string varFullName = 5;      // Variable full name
   Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
-  bool isVariableLength = 7;
-  Data data = 8;
+
+  Data data = 7;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -147,24 +147,22 @@ message Section {
 
 message Data {
   DataType dataType = 1;
+  repeated uint32 shape = 2;
 
   // oneof, depends on dataType
-  repeated bytes bdata = 2;   // CHAR, ENUM1, BYTE, OPAQUE
-  repeated sint32 idata = 3;  // SHORT, INT
-  repeated uint32 uidata = 4; // ENUM2, USHORT, ENUM4, UINT
-  repeated sint64 ldata = 5;  // LONG
-  repeated uint64 uldata = 6; // ULONG
-  repeated float fdata = 7;   // FLOAT
-  repeated double ddata = 8;  // DOUBLE
-  repeated string sdata = 9;  // STRING
+  repeated bytes bdata = 3;   // ENUM1, BYTE, OPAQUE
+  repeated sint32 idata = 4;  // SHORT, INT, CHAR
+  repeated uint32 uidata = 5; // ENUM2, USHORT, ENUM4, UINT
+  repeated sint64 ldata = 6;  // LONG
+  repeated uint64 uldata = 7; // ULONG
+  repeated float fdata = 8;   // FLOAT
+  repeated double ddata = 9;  // DOUBLE
+  repeated string sdata = 10;  // STRING
+  repeated Data vlen = 11;  // VLEN
 
   // STRUCTURE, SEQUENCE
-  repeated StructureMemberProto members = 10;
-  repeated StructureDataProto rows = 11;  // row oriented: one for each row
-  repeated Data cols = 12;  // col oriented: one for each member
-
-  // VLEN
-  repeated uint32 vlen = 13; // length of variable length arrays
+  repeated StructureMemberProto members = 12;
+  repeated StructureDataProto rows = 13;  // row oriented: one for each row
 }
 
 message StructureDataProto {

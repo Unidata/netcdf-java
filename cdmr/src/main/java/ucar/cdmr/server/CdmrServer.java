@@ -11,6 +11,7 @@ import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import ucar.array.Arrays;
 import ucar.cdmr.CdmRemoteGrpc.CdmRemoteImplBase;
 import ucar.cdmr.CdmRemoteProto;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
@@ -19,10 +20,7 @@ import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
 import ucar.cdmr.CdmRemoteProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.Index;
+import ucar.array.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
@@ -167,7 +165,7 @@ public class CdmrServer {
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
         Section section = new Section(chunkOrigin, chunkShape);
         getOneChunk(ncfile, new ParsedSectionSpec(var, section), responseObserver);
-        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+        index.setCurrentCounter(index.currentElement() + (int) Arrays.computeSize(chunkShape));
       }
     }
 
@@ -175,21 +173,18 @@ public class CdmrServer {
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       String spec = varSection.makeSectionSpecString();
-      DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec);
-      Array data = ncfile.readSection(spec);
-      response.setSection(CdmrConverter.encodeSection(varSection.getSection()));
+      Variable var = varSection.getVariable();
+      Section wantSection = varSection.getSection();
 
-      if (varSection.getVariable().isVariableLength()) { // LOOK CANT CHUNK VLEN I THINK ??
-        response.setData(CdmrConverter.encodeVlenData(data.getDataType(), (ArrayObject) data));
-        response.setIsVariableLength(true);
-      } else if (data instanceof ArrayStructure) {
-        response.setData(CdmrConverter.encodeArrayStructureData((ArrayStructure) data));
-      } else {
-        response.setData(CdmrConverter.encodeData(data.getDataType(), data));
-      }
+      DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
+          .setVarFullName(var.getFullName()).setSection(CdmrConverter.encodeSection(wantSection));
+
+      Array<?> data = var.readArray(wantSection);
+      response.setData(CdmrConverter.encodeData(data.getDataType(), data));
+
       responseObserver.onNext(response.build());
       System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
-          data.getSize() * varSection.getVariable().getElementSize());
+          data.length() * varSection.getVariable().getElementSize());
     }
 
   }

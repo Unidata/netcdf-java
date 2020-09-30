@@ -41,7 +41,8 @@ public class StructureDataStorageBB implements Storage<StructureData> {
     return this;
   }
 
-  public int addObjectToHeap(Object s) {
+  /** Put the object on the heap, return heap index. */
+  public int putOnHeap(Object s) {
     heap.add(s);
     return heap.size() - 1;
   }

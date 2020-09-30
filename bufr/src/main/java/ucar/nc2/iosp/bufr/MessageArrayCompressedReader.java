@@ -451,7 +451,7 @@ public class MessageArrayCompressedReader {
       try {
         List<Range> ranges = ImmutableList.of(new Range(count, count + nestedNrows - 1));
         StructureDataArray nestedRow = (StructureDataArray) Arrays.section(nested, ranges);
-        int index = req.storageBB.addObjectToHeap(nestedRow);
+        int index = req.storageBB.putOnHeap(nestedRow);
         int pos = member.getOffset() + req.getStructureSize() * dataset;
         req.bb.position(pos);
         req.bb.putInt(index);

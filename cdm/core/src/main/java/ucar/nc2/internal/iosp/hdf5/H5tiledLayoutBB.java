@@ -309,14 +309,6 @@ public class H5tiledLayoutBB implements LayoutBB {
         count[k] = k * m;
 
       byte[] result = new byte[data.length];
-      /*
-       * for (int i = 0; i < data.length; i += n) {
-       * for (int k = 0; k < n; k++) {
-       * result[count[k]++] = data[i + k];
-       * }
-       * }
-       */
-
       for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
           result[i * n + j] = data[i + count[j]];

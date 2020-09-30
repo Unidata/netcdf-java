@@ -12,7 +12,7 @@ import ucar.ma2.DataType;
 
 /**
  * Array<StructureData>.
- * Specialization is in Storage<StructureData></StructureData>
+ * Specialization is in Storage<StructureData>
  * Not really immutable, since Storage<StructureData> may not be, but thats hidden to the consumer.
  */
 @Immutable

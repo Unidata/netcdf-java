@@ -14,23 +14,15 @@ import ucar.ma2.DataType;
 /** Experimental, used in Cdmr */
 public class StructureDataRow extends StructureData {
   private final ByteBuffer bbuffer;
-  private final int[] offsets;
 
   public StructureDataRow(StructureMembers members) {
     super(members);
     this.bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
-    this.offsets = new int[members.numberOfMembers()];
-    int offset = 0;
-    int count = 0;
-    for (StructureMembers.Member m : members.getMembers()) {
-      this.offsets[count] = offset;
-      offset += m.getStorageSizeBytes();
-    }
   }
 
   public Array getMemberData(Member m) {
     DataType dataType = m.getDataType();
-    int offset = offsets[m.getIndex()];
+    int offset = m.getOffset();
     int size = m.length();
 
     switch (dataType) {
@@ -54,7 +46,7 @@ public class StructureDataRow extends StructureData {
   public void setMemberData(Member m, Array data) {
     Preconditions.checkArgument(data.length() == m.length());
     DataType dataType = m.getDataType();
-    int offset = offsets[m.getIndex()];
+    int offset = m.getOffset();
     int count = 0;
 
     switch (dataType) {
