@@ -45,9 +45,10 @@ public class Stereographic extends ProjectionImpl {
 
   // values passed in through the constructor
   // need for constructCopy
-  private final double _latts;
-  private final double _latt;
-  private final double _lont;
+  private double _latts;
+  private double _latt;
+  private double _lont;
+  private double _scale;
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -104,6 +105,7 @@ public class Stereographic extends ProjectionImpl {
     this._latts = 0.0;
     this._latt = latt;
     this._lont = lont;
+    this._scale = scale;
 
     this.latt = Math.toRadians(latt);
     this.lont = Math.toRadians(lont);
@@ -132,7 +134,7 @@ public class Stereographic extends ProjectionImpl {
    *
    * @param lat_ts_deg Latitude at natural origin (degrees_north)
    * @param latt_deg tangent point of projection (degrees_north)
-   * @param lont_deg tangent point of projection, also origin of projection coord system ((degrees_east)
+   * @param lont_deg tangent point of projection, also origin of projection coord system (degrees_east)
    * @param north true if north pole, false is south pole
    */
   public Stereographic(double lat_ts_deg, double latt_deg, double lont_deg, boolean north) {
@@ -206,7 +208,7 @@ public class Stereographic extends ProjectionImpl {
    * @return the scale
    */
   public double getScale() {
-    return scale / earthRadius;
+    return _scale;
   }
 
   /**
@@ -254,14 +256,18 @@ public class Stereographic extends ProjectionImpl {
   /**
    * @deprecated
    */
+  @Deprecated
   public void setScale(double scale) {
+    _scale = scale;
     this.scale = earthRadius * scale;
   }
 
   /**
    * @deprecated
    */
+  @Deprecated
   public void setTangentLat(double latt) {
+    _latt = latt;
     this.latt = Math.toRadians(latt);
     precalculate();
   }
@@ -269,7 +275,9 @@ public class Stereographic extends ProjectionImpl {
   /**
    * @deprecated
    */
+  @Deprecated
   public void setTangentLon(double lont) {
+    _lont = lont;
     this.lont = Math.toRadians(lont);
     precalculate();
   }
@@ -279,6 +287,7 @@ public class Stereographic extends ProjectionImpl {
   /**
    * @deprecated
    */
+  @Deprecated
   public void setCentralMeridian(double lont) {
     setTangentLon(lont);
   }
@@ -289,6 +298,7 @@ public class Stereographic extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -299,6 +309,7 @@ public class Stereographic extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }

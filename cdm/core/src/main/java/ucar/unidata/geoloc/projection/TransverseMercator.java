@@ -27,7 +27,7 @@ public class TransverseMercator extends ProjectionImpl {
 
   // values passed in through the constructor
   // need for constructCopy
-  private final double _lat0, _lon0, _scale;
+  private double _lat0, _lon0, _scale;
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -166,7 +166,9 @@ public class TransverseMercator extends ProjectionImpl {
    *
    * @param scale the scale
    */
+  @Deprecated
   public void setScale(double scale) {
+    _scale = scale;
     this.scale = earthRadius * scale;
   }
 
@@ -175,7 +177,9 @@ public class TransverseMercator extends ProjectionImpl {
    *
    * @param lat the origin latitude
    */
+  @Deprecated
   public void setOriginLat(double lat) {
+    _lat0 = lat0;
     lat0 = Math.toRadians(lat);
   }
 
@@ -184,7 +188,9 @@ public class TransverseMercator extends ProjectionImpl {
    *
    * @param lon the tangent longitude
    */
+  @Deprecated
   public void setTangentLon(double lon) {
+    _lon0 = lon0;
     lon0 = Math.toRadians(lon);
   }
 
@@ -194,6 +200,7 @@ public class TransverseMercator extends ProjectionImpl {
    * 
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -204,6 +211,7 @@ public class TransverseMercator extends ProjectionImpl {
    * 
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }

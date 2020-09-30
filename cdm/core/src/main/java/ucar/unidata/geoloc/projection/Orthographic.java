@@ -155,7 +155,9 @@ public class Orthographic extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
+  @Deprecated
   public void setOriginLon(double lon) {
+    lon0Degrees = lon0;
     lon0 = Math.toRadians(lon);
     precalculate();
   }
@@ -165,7 +167,9 @@ public class Orthographic extends ProjectionImpl {
    *
    * @param lat the origin latitude.
    */
+  @Deprecated
   public void setOriginLat(double lat) {
+    _lat0 = lat0;
     lat0 = Math.toRadians(lat);
     precalculate();
   }

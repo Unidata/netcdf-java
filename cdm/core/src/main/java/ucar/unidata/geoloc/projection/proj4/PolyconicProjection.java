@@ -73,7 +73,7 @@ public class PolyconicProjection extends ProjectionImpl {
 
   // values passed in through the constructor
   // need for constructCopy
-  private final double _lat0, _lon0;
+  private double _lat0, _lon0;
 
   public PolyconicProjection() {
     this(23.56, 76.54);
@@ -313,7 +313,9 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param lat the origin latitude.
    */
+  @Deprecated
   public void setOriginLatitude(double lat) { // suppply in degrees
+    _lat0 = lat;
     projectionLatitude = Math.toRadians(lat);
   }
 
@@ -331,7 +333,9 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
-  public void setOriginLongitude(double lon) {// suppply in degrees
+  @Deprecated
+  public void setOriginLongitude(double lon) {// supply in degrees
+    _lon0 = lon;
     projectionLongitude = Math.toRadians(lon);
   }
 
@@ -359,6 +363,7 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -378,6 +383,7 @@ public class PolyconicProjection extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }
