@@ -201,10 +201,6 @@ class MessageArrayUncompressedReader {
 
         int expected = member.getOffset() + row * req.storageBB.getStructureSize();
         int pos = req.bb.position();
-        if (expected != pos) {
-          System.out.printf("HEY %s: expected = %d != actual %d%n", member.getName(), expected, pos);
-        }
-
         int index = req.storageBB.putOnHeap(seq);
         req.bb.putInt(index); // an index into the Heap
         continue;

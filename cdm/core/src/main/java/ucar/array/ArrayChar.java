@@ -68,6 +68,52 @@ public class ArrayChar extends Array<Character> {
     }
   }
 
+  /**
+   * Create a String out of this rank zero or one ArrayChar.
+   * If there is a null (0) value in the ArrayChar array, the String will end there.
+   * The null is not returned as part of the String.
+   *
+   * @return String value of CharArray
+   * @throws IllegalArgumentException if rank != 1
+   */
+  public String makeStringFromChar() {
+    Preconditions.checkArgument(getRank() < 2);
+    char[] carr = new char[(int) length()];
+    int idx = 0;
+    for (char c : this) {
+      if (c == 0) {
+        break;
+      }
+      carr[idx++] = c;
+    }
+    return String.valueOf(carr);
+  }
+
+  public Array<String> makeStringsFromChar() {
+    if (getRank() < 2) {
+      return Arrays.factory(DataType.STRING, new int[] {1}, new String[] {makeStringFromChar()});
+    }
+    int innerLength = this.indexFn.getShape(this.rank - 1);
+    int outerLength = (int) this.length() / innerLength;
+    int[] outerShape = new int[this.rank - 1];
+    System.arraycopy(this.getShape(), 0, outerShape, 0, this.rank - 1);
+
+    String[] result = new String[outerLength];
+    char[] carr = new char[innerLength];
+    int sidx = 0;
+    int cidx = 0;
+    int idx = 0;
+    for (char c : this) {
+      carr[cidx++] = c;
+      idx++;
+      if (idx % innerLength == 0) {
+        result[sidx++] = String.valueOf(carr);
+        cidx = 0;
+      }
+    }
+    return Arrays.factory(DataType.STRING, outerShape, result);
+  }
+
   @Override
   Storage<Character> storage() {
     return storage;

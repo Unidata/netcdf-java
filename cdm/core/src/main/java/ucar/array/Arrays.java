@@ -159,7 +159,7 @@ public class Arrays {
         return (Array<T>) new ArrayString(shape, storageS);
       }
       default:
-        throw new RuntimeException("Unimplemented DataType " + dataType);
+        throw new RuntimeException("Unimplemented DataType= " + dataType);
     }
   }
 
