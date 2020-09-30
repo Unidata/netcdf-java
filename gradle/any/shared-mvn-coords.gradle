@@ -13,6 +13,7 @@ ext {
   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
   buildPlugins.grgit = 'org.ajoberstar.grgit:grgit-core:4.0.2'
   buildPlugins.protobuf = 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
+  buildPlugins.depcheck = 'org.owasp:dependency-check-gradle:6.0.2'
 
   // slf4j version is declared in a place where we cannot use the tds-platform project to handle resolving versions
   // (e.g. gradle/any/dependencies.gradle, for transitive dependency replacement purposes)

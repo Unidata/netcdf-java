@@ -105,7 +105,7 @@ dependencies {
 
     // legacy gradle module
     // todo: remove with legacy in 6
-    api 'com.amazonaws:aws-java-sdk-s3:1.11.819'
+    api 'com.amazonaws:aws-java-sdk-s3:1.11.871'
 
     // In Spock, allows mocking of classes (in addition to interfaces).
     // todo: remove with legacy in 6
