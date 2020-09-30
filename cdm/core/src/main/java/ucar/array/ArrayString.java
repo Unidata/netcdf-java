@@ -11,7 +11,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Strings. */
 @Immutable
-public class ArrayString extends Array<String> {
+public final class ArrayString extends Array<String> {
   private final Storage<String> storage;
 
   /** Create an empty Array of type String and the given shape. */
@@ -96,7 +96,7 @@ public class ArrayString extends Array<String> {
 
   // standard storage using String[] primitive array
   @Immutable
-  static class StorageS implements Storage<String> {
+  static final class StorageS implements Storage<String> {
     private final String[] storage;
 
     StorageS(String[] storage) {

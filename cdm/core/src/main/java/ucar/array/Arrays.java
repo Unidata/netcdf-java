@@ -17,6 +17,9 @@ import ucar.ma2.Section;
 public class Arrays {
 
   public static ucar.ma2.Array convert(Array<?> from) {
+    if (from == null) {
+      System.out.printf("HEY%n");
+    }
     ucar.ma2.Array values = ucar.ma2.Array.factory(from.getDataType(), from.getShape());
     int count = 0;
     for (Object val : from) {

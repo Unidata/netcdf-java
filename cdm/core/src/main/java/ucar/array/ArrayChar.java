@@ -11,7 +11,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Char. */
 @Immutable
-public class ArrayChar extends Array<Character> {
+public final class ArrayChar extends Array<Character> {
   private final Storage<Character> storage;
 
   /** Create an empty Array of type Char and the given shape. */
@@ -78,7 +78,14 @@ public class ArrayChar extends Array<Character> {
    */
   public String makeStringFromChar() {
     Preconditions.checkArgument(getRank() < 2);
-    char[] carr = new char[(int) length()];
+    int count = 0;
+    for (char c : this) {
+      if (c == 0) {
+        break;
+      }
+      count++;
+    }
+    char[] carr = new char[count];
     int idx = 0;
     for (char c : this) {
       if (c == 0) {
@@ -140,9 +147,9 @@ public class ArrayChar extends Array<Character> {
     }
   }
 
-  // standard storage using short[] primitive array
+  // standard storage using char[] primitive array
   @Immutable
-  static class StorageS implements Storage<Character> {
+  static final class StorageS implements Storage<Character> {
     private final char[] storage;
 
     StorageS(char[] storage) {

@@ -166,8 +166,11 @@ class Nc4IospMiscSpec extends Specification {
         Attribute attrNullCharAfter = ncFile.findGlobalAttribute(attrNullCharBefore.getShortName())
         attrNullCharBefore.getValues().getSize() == attrNullCharAfter.getValues().getSize()
         attrNullCharBefore.getValues().getSize() == 1
-        attrNullCharBefore.getValue(0).equals(attrNullCharAfter.getValue(0))
-        attrNullCharBefore.equals(attrNullCharAfter)
+        String val1 = attrNullCharBefore.getStringValue();
+        String val2 = attrNullCharAfter.getStringValue();
+        val1.length() == 0;
+        val2.length() == 0;
+        val1.equals(val2)
 
         cleanup: "close writer and reader"
         writer?.close()  // Under normal circumstances, this will already be closed. Luckily method is idempotent.

@@ -11,7 +11,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Short. */
 @Immutable
-public class ArrayShort extends Array<Short> {
+public final class ArrayShort extends Array<Short> {
   private final Storage<Short> storage;
 
   /** Create an empty Array of type Short and the given shape. */

@@ -17,7 +17,7 @@ import ucar.nc2.iosp.IospHelper;
  * and a heap for vlen data such as Strings, Vlens, and Sequences. Mimics ArrayStructureBB.
  * The StructureData are manufactured on the fly, referencing the ByteBuffer and heap for data.
  */
-public class StructureDataStorageBB implements Storage<StructureData> {
+public final class StructureDataStorageBB implements Storage<StructureData> {
   private final ByteBuffer bbuffer;
   private final int nelems;
   private final StructureMembers members;
@@ -85,8 +85,7 @@ public class StructureDataStorageBB implements Storage<StructureData> {
     }
   }
 
-  class StructureDataBB extends StructureData {
-
+  private final class StructureDataBB extends StructureData {
     private final int recno;
 
     private StructureDataBB(int recno) {

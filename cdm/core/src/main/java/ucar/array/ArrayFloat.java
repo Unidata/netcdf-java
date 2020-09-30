@@ -15,7 +15,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for floats. */
 @Immutable
-public class ArrayFloat extends Array<Float> {
+public final class ArrayFloat extends Array<Float> {
   private final Storage<Float> storageF;
 
   // TODO whats the point if you cant change the storage?
@@ -100,7 +100,7 @@ public class ArrayFloat extends Array<Float> {
   }
 
   @Immutable
-  static class StorageF implements Storage<Float> {
+  static final class StorageF implements Storage<Float> {
     private final float[] storage;
 
     StorageF(float[] storage) {

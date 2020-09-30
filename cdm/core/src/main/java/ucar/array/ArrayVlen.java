@@ -15,7 +15,7 @@ import ucar.ma2.DataType;
  * Find out type from getPrimitiveArrayType() (not getDataType(), which is VLEN).
  * This is mutable, to assist users in constructing. See set(index, value).
  */
-public class ArrayVlen<T> extends Array<Array<T>> {
+public final class ArrayVlen<T> extends Array<Array<T>> {
 
   /**
    * Creates a Vlen of type dataType, and the given shape.
@@ -215,7 +215,7 @@ public class ArrayVlen<T> extends Array<Array<T>> {
 
   // standard storage using ragged array byte[fixed][]
   @Immutable
-  static class StorageVByte implements StorageMutable<Array<Byte>> {
+  static final class StorageVByte implements StorageMutable<Array<Byte>> {
     private final DataType primitiveArrayType;
     private final byte[][] primitiveArray;
 
