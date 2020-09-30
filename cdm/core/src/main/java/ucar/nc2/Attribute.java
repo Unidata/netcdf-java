@@ -606,12 +606,20 @@ public class Attribute {
           return this;
         }
         // otherwise its an array of Strings
-        Array<String> sarr = carr.makeStringsFromChar();
-        arr = sarr;
+        arr = carr.makeStringsFromChar();
+      }
+
+      if (arr.length() == 1) {
+        if (arr.getDataType().isNumeric()) {
+          this.nvalue = (Number) arr.get(0);
+          this.nelems = 1;
+          this.dataType = arr.getDataType();
+          return this;
+        }
       }
 
       this.values = arr;
-      this.nelems = (int) arr.length();
+      this.nelems = (int) arr.length();H
       this.dataType = arr.getDataType();
       return this;
     }

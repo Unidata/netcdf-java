@@ -65,7 +65,7 @@ public class TestNetcdfCopierExtended {
   public void doOne() throws IOException {
     File fin = new File(filename);
     File fout = tempFolder.newFile();
-    String fileout = "C:/Temp/copier.nc4"; // tempFolder.newFile();
+    String fileout = tempFolder.newFile().getAbsolutePath();
     System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(),
         fout.getParentFile().exists());
 
