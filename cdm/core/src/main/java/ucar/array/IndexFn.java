@@ -30,9 +30,6 @@ final class IndexFn implements Iterable<Integer> {
     if (this.rank == 0 && index.length == 1 && index[0] == 0) {
       return 0;
     }
-    if (this.rank != index.length) {
-      System.out.printf("HEY%n");
-    }
     Preconditions.checkArgument(this.rank == index.length,
         String.format("bad index rank %d != %d", index.length, this.rank));
     for (int i = 0; i < rank; i++) {

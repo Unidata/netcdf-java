@@ -122,7 +122,7 @@ public class Attribute {
     return nelems;
   }
 
-  /** Get the Attribute name. */
+  /** Get the Attribute name, same as the short name. */
   public String getName() {
     return name;
   }
@@ -152,6 +152,10 @@ public class Attribute {
       } catch (NumberFormatException e) {
         return null;
       }
+    }
+
+    if (nvalue != null && index == 0) {
+      return nvalue;
     }
 
     Preconditions.checkNotNull(values);
@@ -218,8 +222,9 @@ public class Attribute {
    */
   @Nullable
   public Object getValue(int index) {
-    if (isString())
+    if (isString()) {
       return getStringValue(index);
+    }
     return getNumericValue(index);
   }
 
@@ -365,6 +370,10 @@ public class Attribute {
       return att.getStringValue().equals(getStringValue());
     }
 
+    if (nvalue != null) {
+      return nvalue.equals(att.nvalue);
+    }
+
     // TODO Array doesnt have equals() !
     if (values != null) {
       for (int i = 0; i < getLength(); i++) {
@@ -384,9 +393,11 @@ public class Attribute {
     result = 37 * result + getShortName().hashCode();
     result = 37 * result + nelems;
     result = 37 * result + getDataType().hashCode();
-    if (svalue != null)
+    if (svalue != null) {
       result = 37 * result + svalue.hashCode();
-    else if (values != null) {
+    } else if (nvalue != null) {
+      result = 37 * result + nvalue.hashCode();
+    } else if (values != null) {
       for (int i = 0; i < getLength(); i++) {
         int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
         result = 37 * result + h;
@@ -426,6 +437,8 @@ public class Attribute {
     Builder b = builder().setName(this.name).setDataType(this.dataType).setEnumType(this.enumtype);
     if (this.svalue != null) {
       b.setStringValue(this.svalue);
+    } else if (this.nvalue != null) {
+      b.setNumericValue(this.nvalue, this.dataType.isUnsigned());
     } else if (this.values != null) {
       b.setArrayValues(this.values);
     }
@@ -568,6 +581,10 @@ public class Attribute {
 
     /** Set the values from an Array, and the DataType from values.getElementType(). */
     public Builder setValues(ucar.ma2.Array arr) {
+      if (arr == null) {
+        dataType = DataType.STRING;
+        return this;
+      }
       setArrayValues(Arrays.convert(arr));
       return this;
     }
@@ -577,6 +594,19 @@ public class Attribute {
       if (arr == null) {
         dataType = DataType.STRING;
         return this;
+      }
+
+      if (arr.getDataType() == DataType.CHAR) { // turn CHAR into STRING
+        ucar.array.ArrayChar carr = (ucar.array.ArrayChar) arr;
+        if (carr.getRank() < 2) { // common case
+          svalue = carr.makeStringFromChar();
+          this.nelems = 1;
+          this.dataType = DataType.STRING;
+          return this;
+        }
+        // otherwise its an array of Strings
+        Array<String> sarr = carr.makeStringsFromChar();
+        arr = sarr;
       }
 
       this.values = arr;
@@ -591,7 +621,6 @@ public class Attribute {
       built = true;
       return new Attribute(this);
     }
-
   }
 
 

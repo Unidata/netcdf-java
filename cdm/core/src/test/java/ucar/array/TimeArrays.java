@@ -8,7 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.base.Stopwatch;
 import java.io.IOException;
-import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -17,14 +16,15 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.Slow;
 
 /** Time {@link Arrays} */
-@Category({NeedsCdmUnitTest.class})
+@Category({NeedsCdmUnitTest.class, Slow.class})
 public class TimeArrays {
   String filename =
       TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
 
-  @Test
+  // @Test
   public void testNc4Array() throws IOException {
     Stopwatch stopwatch = Stopwatch.createStarted();
     long total = TestReadArrayProblem.compareArrays(filename);
@@ -33,7 +33,7 @@ public class TimeArrays {
     System.out.printf("*** %d bytes took %s = %10.4f MB/sec%n", total, stopwatch, rate);
   }
 
-  @Test
+  // @Test
   public void readMa2() throws IOException {
     long total = 0;
     Stopwatch stopwatchAll = Stopwatch.createStarted();
@@ -57,7 +57,7 @@ public class TimeArrays {
     System.out.printf("*** %d bytes took %s = %10.4f MB/sec%n", total, stopwatchAll, rate);
   }
 
-  @Test
+  // @Test
   public void readArray() throws IOException {
     long total = 0;
     Stopwatch stopwatchAll = Stopwatch.createStarted();
