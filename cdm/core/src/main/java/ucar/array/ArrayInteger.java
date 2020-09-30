@@ -11,7 +11,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Integer. */
 @Immutable
-public class ArrayInteger extends Array<Integer> {
+public final class ArrayInteger extends Array<Integer> {
   private final Storage<Integer> storage;
 
   /** Create an empty Array of type Integer and the given shape. */
@@ -96,7 +96,7 @@ public class ArrayInteger extends Array<Integer> {
 
   // standard storage using int[] primitive array
   @Immutable
-  static class StorageS implements Storage<Integer> {
+  static final class StorageS implements Storage<Integer> {
     private final int[] storage;
 
     StorageS(int[] storage) {

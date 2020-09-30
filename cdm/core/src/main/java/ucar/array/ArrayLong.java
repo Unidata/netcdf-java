@@ -11,7 +11,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Long. */
 @Immutable
-public class ArrayLong extends Array<Long> {
+public final class ArrayLong extends Array<Long> {
   private final Storage<Long> storage;
 
   /** Create an empty Array of type Long and the given shape. */
@@ -96,7 +96,7 @@ public class ArrayLong extends Array<Long> {
 
   // standard storage using long[] primitive array
   @Immutable
-  static class StorageS implements Storage<Long> {
+  static final class StorageS implements Storage<Long> {
     private final long[] storage;
 
     StorageS(long[] storage) {

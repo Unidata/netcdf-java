@@ -228,13 +228,14 @@ public class Attribute {
     return getNumericValue(index);
   }
 
-  /** Get the value as an ucar.ma2.Array. */
+  /** Get the values as an ucar.ma2.Array. */
   @Nullable
   public ucar.ma2.Array getValues() {
-    return Arrays.convert(getArrayValues());
+    ucar.array.Array<?> arrayValues = getArrayValues();
+    return arrayValues == null ? null : Arrays.convert(arrayValues);
   }
 
-  /** Get the value as an ucar.array.Array. */
+  /** Get the values as an ucar.array.Array. */
   @Nullable
   public ucar.array.Array<?> getArrayValues() {
     if (svalue != null) {

@@ -16,7 +16,7 @@ import ucar.ma2.DataType;
  * Not really immutable, since Storage<StructureData> may not be, but thats hidden to the consumer.
  */
 @Immutable
-public class StructureDataArray extends Array<StructureData> {
+public final class StructureDataArray extends Array<StructureData> {
   private final Storage<StructureData> storage;
   private final StructureMembers members;
 
@@ -113,7 +113,7 @@ public class StructureDataArray extends Array<StructureData> {
     }
   }
 
-  static class StorageSD implements StorageMutable<StructureData> { // LOOK mutable ??
+  static final class StorageSD implements StorageMutable<StructureData> { // LOOK mutable ??
     final StructureData[] parray;
 
     StorageSD(StructureData[] parray) {
