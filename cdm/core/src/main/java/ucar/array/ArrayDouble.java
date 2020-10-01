@@ -15,7 +15,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for doubles. */
 @Immutable
-public class ArrayDouble extends ucar.array.Array<Double> {
+public final class ArrayDouble extends ucar.array.Array<Double> {
   private final Storage<Double> storageD;
 
   /** Create an empty Array of type double and the given shape. */
@@ -100,7 +100,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
 
   // standard storage using double[] primitive array
   @Immutable
-  static class StorageD implements Storage<Double> {
+  static final class StorageD implements Storage<Double> {
     private final double[] storage;
 
     StorageD(double[] storage) {
@@ -142,6 +142,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////
   // experimental storage using List of Storage<Double>
   @Immutable
   static class StorageDM implements Storage<Double> {
@@ -155,7 +156,7 @@ public class ArrayDouble extends ucar.array.Array<Double> {
       edge.add(0L);
       long total = 0L;
       for (Array<?> dataArray : dataArrays) {
-        builder.add(((Array<Double>) dataArray).storage());
+        builder.add((Storage<Double>) dataArray.storage());
         total += dataArray.length();
         edge.add(total);
       }

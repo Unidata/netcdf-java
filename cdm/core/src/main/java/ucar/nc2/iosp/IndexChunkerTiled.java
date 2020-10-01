@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.Formatter;
 import ucar.ma2.Index;
@@ -62,10 +63,7 @@ public class IndexChunkerTiled {
     // The actual wanted data we can get from this section
     Section intersect = dataSection.intersect(wantSection);
     this.total = intersect.computeSize();
-    if (total <= 0) {
-      System.out.println("IndexChunkerTiled HEY");
-    }
-    assert total > 0;
+    Preconditions.checkArgument(total > 0);
     int varRank = intersect.getRank();
 
     // create the List<Dim>

@@ -11,7 +11,7 @@ import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Byte. */
 @Immutable
-public class ArrayByte extends Array<Byte> {
+public final class ArrayByte extends Array<Byte> {
   private final Storage<Byte> storage;
 
   /** Create an empty Array of type Byte and the given shape. */
@@ -96,7 +96,7 @@ public class ArrayByte extends Array<Byte> {
 
   // standard storage using byte[] primitive array
   @Immutable
-  static class StorageS implements Storage<Byte> {
+  static final class StorageS implements Storage<Byte> {
     private final byte[] storage;
 
     StorageS(byte[] storage) {

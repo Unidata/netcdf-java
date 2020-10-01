@@ -509,26 +509,17 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Ranges must be filled (no nulls)
    */
   protected Array readData(Variable v, Section ranges) throws IOException, InvalidRangeException {
-    long start = 0;
-    if (showRequest) {
-      log.info("Data request for variable: {} section {}...", v.getFullName(), ranges);
-      start = System.currentTimeMillis();
-    }
-
     if (iosp == null) {
       throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
     }
-    Array result = iosp.readData(v, ranges);
-
-    if (showRequest) {
-      long took = System.currentTimeMillis() - start;
-      log.info(" ...took= {} msecs", took);
-    }
-    return result;
+    return iosp.readData(v, ranges);
   }
 
   @Nullable
   protected ucar.array.Array<?> readArrayData(Variable v, Section ranges) throws IOException, InvalidRangeException {
+    if (iosp == null) {
+      throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
+    }
     return iosp.readArrayData(v, ranges);
   }
 

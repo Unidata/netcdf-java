@@ -4,6 +4,7 @@
  */
 package ucar.array;
 
+import com.google.common.base.Objects;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
@@ -78,6 +79,24 @@ public abstract class Array<T> implements Iterable<T> {
       first = false;
     }
     return sbuff.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Array)) {
+      return false;
+    }
+    Array<?> array = (Array<?>) o;
+    return getRank() == array.getRank() && getDataType() == array.getDataType()
+        && Objects.equal(indexFn, array.indexFn);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(getDataType(), indexFn, getRank());
   }
 
   //////////////////////////////////////////////////////////

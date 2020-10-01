@@ -20,7 +20,6 @@ import org.junit.runners.Parameterized;
 import ucar.ma2.ArraySequence;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
@@ -48,7 +47,8 @@ public class TestReadArrayCompare {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/support/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/complex/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/wrf/", ff, result);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/xmdf/", ff, result);
+      // too slow
+      // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/xmdf/", ff, result);
       // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/", ff, result, false);
 
       result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF"});
@@ -72,7 +72,7 @@ public class TestReadArrayCompare {
   private final String filename;
 
   @Test
-  public void compareArrays() throws IOException, InvalidRangeException {
+  public void compareArrays() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       System.out.println("Test input: " + ncfile.getLocation());
 

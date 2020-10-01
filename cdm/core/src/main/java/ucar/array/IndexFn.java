@@ -16,7 +16,7 @@ import ucar.ma2.Section;
 
 /** Translate between multidimensional index and 1-d arrays. */
 @Immutable
-class IndexFn implements Iterable<Integer> {
+final class IndexFn implements Iterable<Integer> {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -26,9 +26,15 @@ class IndexFn implements Iterable<Integer> {
    * @param index list of indices, one for each dimension. For vlen, the last is ignored.
    */
   public int get(int... index) {
-    Preconditions.checkArgument(this.rank == index.length);
+    // scalar case
+    if (this.rank == 0 && index.length == 1 && index[0] == 0) {
+      return 0;
+    }
+    Preconditions.checkArgument(this.rank == index.length,
+        String.format("bad index rank %d != %d", index.length, this.rank));
     for (int i = 0; i < rank; i++) {
-      Preconditions.checkArgument(index[i] >= 0 && index[i] < shape[i]);
+      Preconditions.checkArgument(index[i] >= 0 && index[i] < shape[i],
+          String.format("index %d must be less than %d", index[i], shape[i]));
     }
     int value = offset;
     for (int ii = 0; ii < rank; ii++) {

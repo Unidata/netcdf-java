@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
+import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
@@ -24,6 +25,7 @@ public class TestAttribute {
   public void testBuilder() {
     Attribute att = Attribute.builder().setName("name").setDataType(DataType.FLOAT)
         .setValues(Array.makeArray(DataType.FLOAT, ImmutableList.of("3.14", ".0015"))).build();
+    assertThat(att.getName()).isEqualTo("name");
     assertThat(att.getShortName()).isEqualTo("name");
     assertThat(att.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(att.getLength()).isEqualTo(2);
@@ -157,7 +159,8 @@ public class TestAttribute {
     assertThat(att.isString()).isFalse();
     assertThat(att.getEnumType()).isEqualTo(typedef);
 
-    assertThat(att).isEqualTo(att.toBuilder().build());
+    Attribute copy = att.toBuilder().build();
+    assertThat(att).isEqualTo(copy);
   }
 
   @Test
@@ -203,8 +206,23 @@ public class TestAttribute {
 
     Array values = att.getValues();
     assertThat(values.equals(data)).isFalse(); // Array.equals !!!
+    assertThat(MAMath.equals(values, data)).isTrue();
 
     Attribute attNullArray = Attribute.builder().setName("name").setValues(null).build();
+    assertThat(attNullArray).isEqualTo(Attribute.emptyValued("name", DataType.STRING));
+  }
+
+  @Test
+  public void testSetArrayValues() {
+    ucar.array.Array<?> data = Arrays.factory(DataType.FLOAT, new int[] {2}, new float[] {3.14f, .001f});
+    Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
+    assertThat(att).isEqualTo(Attribute.fromArray("name", data));
+    assertThat(att).isEqualTo(att.toBuilder().build());
+
+    ucar.array.Array<?> values = att.getArrayValues();
+    assertThat(values.equals(data)).isTrue();
+
+    Attribute attNullArray = Attribute.builder().setName("name").setArrayValues(null).build();
     assertThat(attNullArray).isEqualTo(Attribute.emptyValued("name", DataType.STRING));
   }
 
@@ -231,30 +249,34 @@ public class TestAttribute {
     assertThat(att.getStringValue(1)).isEqualTo("dg");
   }
 
-  @Test
-  public void testSetValuesOpaque() {
-    ByteBuffer bb1 = ByteBuffer.allocate(11);
-    int[] shape = new int[] {1};
-    Object[] adata = new Object[] {bb1};
-    Array data = Array.factory(DataType.OPAQUE, shape, adata);
-
-    Attribute att = Attribute.builder().setName("name").setValues(data).build();
-    assertThat(att.getDataType()).isEqualTo(DataType.BYTE);
-    assertThat(att.getLength()).isEqualTo(11);
-  }
-
-  @Test
-  public void testSetValuesOpaqueArray() {
-    ByteBuffer bb1 = ByteBuffer.allocate(11);
-    ByteBuffer bb2 = ByteBuffer.allocate(1);
-    int[] shape = new int[] {2};
-    Object[] adata = new Object[] {bb1, bb2};
-    Array data = Array.factory(DataType.OPAQUE, shape, adata);
-
-    Attribute att = Attribute.builder().setName("name").setValues(data).build();
-    assertThat(att.getDataType()).isEqualTo(DataType.BYTE);
-    assertThat(att.getLength()).isEqualTo(12); // TODO Seems wrong
-  }
+  /*
+   * LOOK are we allowing opagq atttributes?
+   * 
+   * @Test
+   * public void testSetValuesOpaque() {
+   * ByteBuffer bb1 = ByteBuffer.allocate(11);
+   * int[] shape = new int[] {1};
+   * Object[] adata = new Object[] {bb1};
+   * Array data = Array.factory(DataType.OPAQUE, shape, adata);
+   * 
+   * Attribute att = Attribute.builder().setName("name").setValues(data).build();
+   * assertThat(att.getDataType()).isEqualTo(DataType.BYTE);
+   * assertThat(att.getLength()).isEqualTo(11);
+   * }
+   * 
+   * @Test
+   * public void testSetValuesOpaqueArray() {
+   * ByteBuffer bb1 = ByteBuffer.allocate(11);
+   * ByteBuffer bb2 = ByteBuffer.allocate(1);
+   * int[] shape = new int[] {2};
+   * Object[] adata = new Object[] {bb1, bb2};
+   * Array data = Array.factory(DataType.OPAQUE, shape, adata);
+   * 
+   * Attribute att = Attribute.builder().setName("name").setValues(data).build();
+   * assertThat(att.getDataType()).isEqualTo(DataType.BYTE);
+   * assertThat(att.getLength()).isEqualTo(12); // TODO Seems wrong
+   * }
+   */
 
   @Test
   public void testSetValuesFromByteArray() {

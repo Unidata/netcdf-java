@@ -60,7 +60,6 @@ public class TestStructureDataArray {
 
     StructureData sdata = array.get(0);
     assertThat(sdata.getStructureMembers()).isEqualTo(members);
-    assertThat(sdata.getMemberData("mname2")).isNotNull();
     assertThat(sdata.getName()).isEqualTo("name");
   }
 

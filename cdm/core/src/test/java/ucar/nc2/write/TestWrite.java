@@ -7,11 +7,8 @@ package ucar.nc2.write;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.nc2.Attribute;
@@ -23,8 +20,6 @@ import ucar.nc2.Variable;
 /** Test NetcdfFormatWriter */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestWrite {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -77,7 +72,7 @@ public class TestWrite {
       Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[] {1}, null);
       writerb.addAttribute(Attribute.fromArray("versionB", bad));
       assert (false);
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       assert (true);
     }
 
