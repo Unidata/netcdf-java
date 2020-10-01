@@ -250,7 +250,7 @@ public class TestAttribute {
   }
 
   /*
-   * LOOK are we allowing opagq atttributes?
+   * LOOK are we allowing opaque atttributes?
    * 
    * @Test
    * public void testSetValuesOpaque() {

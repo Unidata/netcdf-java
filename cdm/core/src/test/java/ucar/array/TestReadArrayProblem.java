@@ -28,6 +28,12 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestReadArrayProblem {
 
+  // @Test
+  public void testBufrProblem() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/problems/0-01-030_bitWidth-128.bufr";
+    compareSequence(filename);
+  }
+
   @Test
   public void testGrib1() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/SST_Global_5x2p5deg_20071119_0000.grib1";
