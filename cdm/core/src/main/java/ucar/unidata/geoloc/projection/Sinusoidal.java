@@ -110,6 +110,7 @@ public class Sinusoidal extends ProjectionImpl {
    *
    * @param centMeridian central Meridian in degrees
    */
+  @Deprecated
   public void setCentMeridian(double centMeridian) {
     this.centMeridian = centMeridian;
   }
@@ -120,6 +121,7 @@ public class Sinusoidal extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -130,6 +132,7 @@ public class Sinusoidal extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }

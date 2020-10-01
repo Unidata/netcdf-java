@@ -31,7 +31,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
 
   // values passed in through the constructor
   // need for constructCopy
-  private final double _lat0;
+  private double _lat0;
 
   @Override
   public ProjectionImpl constructCopy() {
@@ -198,7 +198,9 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
+  @Deprecated
   public void setOriginLon(double lon) {
+    lon0Degrees = lon0;
     lon0 = Math.toRadians(lon);
     precalculate();
   }
@@ -208,7 +210,9 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
    *
    * @param lat the origin latitude.
    */
+  @Deprecated
   public void setOriginLat(double lat) {
+    _lat0 = lat0;
     lat0 = Math.toRadians(lat);
     precalculate();
   }
@@ -219,6 +223,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -229,6 +234,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }

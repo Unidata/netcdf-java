@@ -163,6 +163,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param par the first standard parallel
    */
+  @Deprecated
   public void setParallel(double par) {
     this.par = par;
     this.par_r = Math.toRadians(par);
@@ -174,6 +175,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
+  @Deprecated
   public void setOriginLon(double lon) {
     lon0 = lon;
     precalculate();
@@ -185,6 +187,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -195,6 +198,7 @@ public class Mercator extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }

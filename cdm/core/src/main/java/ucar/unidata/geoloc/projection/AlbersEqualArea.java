@@ -29,7 +29,7 @@ public class AlbersEqualArea extends ProjectionImpl {
 
   // values passed in through the constructor
   // need for constructCopy
-  private final double _lat0, _lon0;
+  private double _lat0, _lon0;
 
   /**
    * constants from Snyder's equations
@@ -278,6 +278,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    *
    * @param par the second standard parallel
    */
+  @Deprecated
   public void setParallelTwo(double par) {
     par2 = par;
     precalculate();
@@ -288,6 +289,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    *
    * @param par the first standard parallel
    */
+  @Deprecated
   public void setParallelOne(double par) {
     par1 = par;
     precalculate();
@@ -298,7 +300,9 @@ public class AlbersEqualArea extends ProjectionImpl {
    *
    * @param lon the origin longitude.
    */
+  @Deprecated
   public void setOriginLon(double lon) {
+    _lon0 = lon0;
     lon0 = Math.toRadians(lon);
     precalculate();
   }
@@ -308,7 +312,9 @@ public class AlbersEqualArea extends ProjectionImpl {
    *
    * @param lat the origin latitude.
    */
+  @Deprecated
   public void setOriginLat(double lat) {
+    _lat0 = lat0;
     lat0 = Math.toRadians(lat);
     precalculate();
   }
@@ -319,6 +325,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -329,6 +336,7 @@ public class AlbersEqualArea extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }
