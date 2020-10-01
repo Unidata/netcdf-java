@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import ucar.array.ArrayByte;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
 import ucar.array.StructureData;
@@ -297,53 +298,61 @@ public class CdmrConverter {
       case ENUM1:
       case UBYTE:
       case BYTE: {
-        Array<Byte> bdata = (Array<Byte>) data;
-        // char is unsigned, can be converted to/from an int. protobuf stores as vlen, so no real size penalty.
-        byte[] cdata = new byte[(int) data.length()];
-        for (int i = 0; i < cdata.length; i++) {
-          cdata[i] = bdata.get(i);
-        }
-        builder.addBdata(ByteString.copyFrom(cdata));
+        ArrayByte bdata = (ArrayByte) data;
+        builder.addBdata(bdata.getByteString());
         break;
       }
-      case CHAR: // LOOK unsigned short better?
-      case SHORT:
+      case CHAR: { // LOOK unsigned short better?
+        // char is unsigned, can be converted to/from an int. protobuf stores as vlen, so no real size penalty.
+        Array<Character> idata = (Array<Character>) data;
+        idata.forEach(val -> builder.addIdata(val));
+        break;
+      }
+      case SHORT:  {
+        Array<Short> idata = (Array<Short>) data;
+        idata.forEach(val -> builder.addIdata(val.intValue()));
+        break;
+      }
       case INT: {
         Array<Integer> idata = (Array<Integer>) data;
-        idata.forEach(val -> builder.addIdata((int) val));
+        idata.forEach(val -> builder.addIdata(val));
         break;
       }
       case ENUM2:
+      case USHORT: {
+        Array<Short> idata = (Array<Short>) data;
+        idata.forEach(val -> builder.addUidata(val.intValue()));
+        break;
+      }
       case ENUM4:
-      case USHORT:
       case UINT: {
         Array<Integer> idata = (Array<Integer>) data;
-        idata.forEach(val -> builder.addUidata((int) val));
+        idata.forEach(val -> builder.addUidata(val));
         break;
       }
       case LONG: {
         Array<Long> ldata = (Array<Long>) data;
-        ldata.forEach(val -> builder.addLdata((long) val));
+        ldata.forEach(val -> builder.addLdata(val));
         break;
       }
       case ULONG: {
         Array<Long> ldata = (Array<Long>) data;
-        ldata.forEach(val -> builder.addUldata((long) val));
+        ldata.forEach(val -> builder.addUldata(val));
         break;
       }
       case FLOAT: {
         Array<Float> fdata = (Array<Float>) data;
-        fdata.forEach(val -> builder.addFdata((float) val));
+        fdata.forEach(val -> builder.addFdata(val));
         break;
       }
       case DOUBLE: {
         Array<Double> ddata = (Array<Double>) data;
-        ddata.forEach(val -> builder.addDdata((double) val));
+        ddata.forEach(val -> builder.addDdata(val));
         break;
       }
       case STRING: {
         Array<String> sdata = (Array<String>) data;
-        sdata.forEach(val -> builder.addSdata((String) val));
+        sdata.forEach(val -> builder.addSdata(val));
         break;
       }
       default:

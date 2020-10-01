@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import ucar.array.Array;
+import ucar.array.Arrays;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
@@ -22,14 +24,12 @@ import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
 import ucar.cdmr.CdmRemoteProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
-import ucar.array.Array;
-import ucar.cdmr.CdmrConverterMa2;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
@@ -37,26 +37,41 @@ import ucar.nc2.Variable;
 public class CdmrNetcdfFile extends NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrNetcdfFile.class);
   private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
+  private static boolean showRequest = true;
 
   public static final String PROTOCOL = "cdmr";
   public static final String SCHEME = PROTOCOL + ":";
-
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
   }
 
-  private static boolean showRequest = true;
 
   @Override
-  public ucar.ma2.Array readSection(String variableSection) throws IOException {
+  protected ucar.ma2.Array readData(Variable v, Section sectionWanted) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  protected Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
+    return null; // iosp.getStructureDataArrayIterator(s, bufferSize);
+  }
+
+  @Nullable
+  protected ucar.array.Array<?> readArrayData(Variable v, Section sectionWanted) throws IOException {
+    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
     if (showRequest)
-      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", variableSection,
+      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", spec,
           this.remoteURI, this.path);
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    List<ucar.ma2.Array> results = new ArrayList<>();
+    List<ucar.array.Array<?>> results = new ArrayList<>();
     long size = 0;
-    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(variableSection).build();
+    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
       Iterator<DataResponse> responses = blockingStub.withDeadlineAfter(15, TimeUnit.SECONDS).getData(request);
       while (responses.hasNext()) {
@@ -64,10 +79,10 @@ public class CdmrNetcdfFile extends NetcdfFile {
         if (response.hasError()) {
           throw new IOException(response.getError().getMessage());
         }
-        Section sectionReturned = CdmrConverter.decodeSection(response.getSection());
-        ucar.ma2.Array result = CdmrConverterMa2.decodeData(response.getData(), sectionReturned);
+        // Section sectionReturned = CdmrConverter.decodeSection(response.getSection());
+        ucar.array.Array<?> result = CdmrConverter.decodeData(response.getData());
         results.add(result);
-        size += result.getSize();
+        size += result.length();
       }
 
     } catch (StatusRuntimeException e) {
@@ -81,74 +96,11 @@ public class CdmrNetcdfFile extends NetcdfFile {
     }
     System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
 
-    // LOOK;
     if (results.size() == 1) {
       return results.get(0);
     } else {
-      return combine(variableSection, results);
+      return Arrays.factoryCopy(v.getDataType(), sectionWanted.getShape(), (List) results); // TODO generics
     }
-  }
-
-  private ucar.ma2.Array combine(String variableSection, List<ucar.ma2.Array> results) {
-    ParsedSectionSpec spec;
-    try {
-      spec = ParsedSectionSpec.parseVariableSection(this, variableSection);
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new RuntimeException(e);
-    }
-
-    Section section = spec.getSection();
-    Variable var = spec.getVariable();
-    long size = section.getSize();
-    if (size > Integer.MAX_VALUE) {
-      throw new OutOfMemoryError();
-    }
-
-    switch (var.getDataType()) {
-      case FLOAT: {
-        float[] all = new float[(int) size];
-        int start = 0;
-        for (ucar.ma2.Array result : results) {
-          float[] array = (float[]) result.getStorage();
-          System.arraycopy(array, 0, all, start, array.length);
-          start += array.length;
-        }
-        return ucar.ma2.Array.factory(var.getDataType(), section.getShape(), all);
-      }
-      case DOUBLE: {
-        double[] all = new double[(int) size];
-        int start = 0;
-        for (ucar.ma2.Array result : results) {
-          double[] array = (double[]) result.getStorage();
-          System.arraycopy(array, 0, all, start, array.length);
-          start += array.length;
-        }
-        return ucar.ma2.Array.factory(var.getDataType(), section.getShape(), all);
-      }
-      default:
-        throw new RuntimeException(" DataType " + var.getDataType());
-    }
-
-  }
-
-  @Override
-  protected ucar.ma2.Array readData(Variable v, Section sectionWanted) throws IOException {
-    String variableSection = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
-    return readSection(variableSection);
-  }
-
-  @Nullable
-  protected ucar.array.Array<?> readArrayData(Variable v, Section sectionWanted)
-      throws IOException, InvalidRangeException {
-    String variableSection = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
-    return null; // readSectionArray(variableSection);
-  }
-
-
-  @Override
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
-    throw new UnsupportedOperationException();
   }
 
   @Override
