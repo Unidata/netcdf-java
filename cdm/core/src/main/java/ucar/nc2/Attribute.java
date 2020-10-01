@@ -148,7 +148,7 @@ public class Attribute {
     if (dataType == DataType.STRING) {
       String svalue = Preconditions.checkNotNull(getStringValue(index));
       try {
-        return new Double(svalue);
+        return Double.parseDouble(svalue);
       } catch (NumberFormatException e) {
         return null;
       }
@@ -209,7 +209,7 @@ public class Attribute {
   }
 
   private String _getStringValue(int index) {
-    if ((index < 0) || (index >= nelems))
+    if ((index < 0) || (index >= nelems) || values == null)
       return null;
     return (String) values.get(index);
   }
@@ -302,11 +302,11 @@ public class Attribute {
           f.format(", ");
         }
         EnumTypedef en = getEnumType();
-        int value = getValues().getInt(i);
-        String ecname = en.lookupEnumString(value);
+        Integer intValue = (Integer) getValue(i);
+        String ecname = intValue == null ? "" : en.lookupEnumString(intValue);
         if (ecname == null) {
           // TODO What does the C library do ?
-          ecname = Integer.toString(value);
+          ecname = Integer.toString(intValue);
         }
         f.format("\"%s\"", encodeString(ecname));
       }
@@ -344,7 +344,7 @@ public class Attribute {
   }
 
   private static final char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
-  private static final String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
+  private static final String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\'", "\\\""};
 
   private static String encodeString(String s) {
     return StringUtil2.replace(s, org, replace);
@@ -522,7 +522,7 @@ public class Attribute {
       if (values == null || values.isEmpty())
         throw new IllegalArgumentException("values may not be null or empty");
       int n = values.size();
-      Class c = values.get(0).getClass();
+      Class<?> c = values.get(0).getClass();
       Object pa;
       if (c == String.class) {
         this.dataType = DataType.STRING;
@@ -606,8 +606,16 @@ public class Attribute {
           return this;
         }
         // otherwise its an array of Strings
-        Array<String> sarr = carr.makeStringsFromChar();
-        arr = sarr;
+        arr = carr.makeStringsFromChar();
+      }
+
+      if (arr.length() == 1) {
+        if (arr.getDataType().isNumeric()) {
+          this.nvalue = (Number) arr.get(0);
+          this.nelems = 1;
+          this.dataType = arr.getDataType();
+          return this;
+        }
       }
 
       this.values = arr;

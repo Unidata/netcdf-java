@@ -47,9 +47,11 @@ public class TestReadArrayCompare {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/support/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/complex/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/wrf/", ff, result);
-      // too slow
-      // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/xmdf/", ff, result);
-      // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/", ff, result, false);
+
+      if (Boolean.getBoolean("runSlowTests")) {
+        TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/xmdf/", ff, result);
+        TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/", ff, result, false);
+      }
 
       result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF"});
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"});
