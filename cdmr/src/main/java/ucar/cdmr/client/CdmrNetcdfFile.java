@@ -39,6 +39,7 @@ import ucar.nc2.Variable;
 /** A remote CDM dataset, using cdmremote protocol to communicate. */
 public class CdmrNetcdfFile extends NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrNetcdfFile.class);
+  private static final int MAX_DATA_WAIT_SECONDS = 30;
   private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
   private static boolean showRequest = true;
 
@@ -82,7 +83,8 @@ public class CdmrNetcdfFile extends NetcdfFile {
     long size = 0;
     DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
-      Iterator<DataResponse> responses = blockingStub.withDeadlineAfter(15, TimeUnit.SECONDS).getData(request);
+      Iterator<DataResponse> responses =
+          blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getData(request);
       while (responses.hasNext()) {
         DataResponse response = responses.next();
         if (response.hasError()) {
@@ -195,8 +197,8 @@ public class CdmrNetcdfFile extends NetcdfFile {
     }
 
     private void openChannel() {
+      // parse the URI
       URI uri = java.net.URI.create(this.remoteURI);
-
       String target = uri.getAuthority();
       this.path = uri.getPath();
       if (this.path.startsWith("/")) {

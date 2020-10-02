@@ -5,10 +5,12 @@
 
 package ucar.nc2.internal.util;
 
+import com.google.common.base.Stopwatch;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import ucar.array.Array;
 import ucar.array.ArrayVlen;
 import ucar.ma2.ArraySequence;
@@ -17,10 +19,57 @@ import ucar.ma2.IndexIterator;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Sequence;
+import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
 
-/** Compare reading netcdf with Array */
+/**
+ * Compare reading netcdf with Ma2 and same file with Array. Open seperate files to prevent them from colliding.
+ * Also use to test round trip through cmdr.
+ */
 public class CompareArrayToMa2 {
+
+  public static boolean compareFiles(NetcdfFile ma2File, NetcdfFile arrayFile) throws IOException {
+    Stopwatch stopwatchAll = Stopwatch.createStarted();
+    // Just the header
+    Formatter errlog = new Formatter();
+    boolean ok = CompareNetcdf2.compareFiles(ma2File, arrayFile, errlog, false, false, false);
+    if (!ok) {
+      System.out.printf("FAIL %s %s%n", arrayFile.getLocation(), errlog);
+      return false;
+    }
+
+    for (Variable v : ma2File.getVariables()) {
+      if (v.getDataType() == DataType.SEQUENCE) {
+        System.out.printf("  read sequence %s %s%n", v.getDataType(), v.getShortName());
+        Sequence s = (Sequence) v;
+        StructureDataIterator orgSeq = s.getStructureIterator(-1);
+        Sequence copyv = (Sequence) arrayFile.findVariable(v.getFullName());
+        Iterator<ucar.array.StructureData> array = copyv.iterator();
+        Formatter f = new Formatter();
+        boolean ok1 = CompareArrayToMa2.compareSequence(f, v.getShortName(), orgSeq, array);
+        if (!ok1) {
+          System.out.printf("%s%n", f);
+        }
+        ok &= ok1;
+
+      } else {
+        ucar.ma2.Array org = v.read();
+        Variable cdmrVar = arrayFile.findVariable(v.getFullName());
+        Array<?> array = v.readArray();
+        System.out.printf("  check %s %s%n", v.getDataType(), v.getNameAndDimensions());
+        Formatter f = new Formatter();
+        boolean ok1 = CompareArrayToMa2.compareData(f, v.getShortName(), org, array, false, true);
+        if (!ok1) {
+          System.out.printf("%s%n", f);
+        }
+        ok &= ok1;
+      }
+    }
+    System.out.printf("*** took %s%n", stopwatchAll.stop());
+    return ok;
+  }
 
   public static boolean compareData(Formatter f, String name, ucar.ma2.Array org, Array<?> array, boolean justOne,
       boolean testTypes) throws IOException {
