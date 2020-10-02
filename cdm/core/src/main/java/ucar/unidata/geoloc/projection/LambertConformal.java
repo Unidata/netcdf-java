@@ -298,33 +298,41 @@ public class LambertConformal extends ProjectionImpl {
   //////////////////////////////////////////////
   // setters for IDV serialization - do not use except for object creating
 
+  @Deprecated
   public void setOriginLat(double lat0) {
+    _lat0 = lat0;
     this.lat0 = Math.toRadians(lat0);
     precalculate();
   }
 
+  @Deprecated
   public void setOriginLon(double lon0) {
+    _lon0 = lon0;
     this.lon0 = Math.toRadians(lon0);
     precalculate();
   }
 
   // sic
+  @Deprecated
   public void setParellelOne(double par1) {
     this.par1 = par1;
     precalculate();
   }
 
   // sic
+  @Deprecated
   public void setParellelTwo(double par2) {
     this.par2 = par2;
     precalculate();
   }
 
+  @Deprecated
   public void setParallelOne(double par1) {
     this.par1 = par1;
     precalculate();
   }
 
+  @Deprecated
   public void setParallelTwo(double par2) {
     this.par2 = par2;
     precalculate();
@@ -336,6 +344,7 @@ public class LambertConformal extends ProjectionImpl {
    *
    * @param falseEasting x offset
    */
+  @Deprecated
   public void setFalseEasting(double falseEasting) {
     this.falseEasting = falseEasting;
   }
@@ -346,6 +355,7 @@ public class LambertConformal extends ProjectionImpl {
    *
    * @param falseNorthing y offset
    */
+  @Deprecated
   public void setFalseNorthing(double falseNorthing) {
     this.falseNorthing = falseNorthing;
   }

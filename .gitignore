@@ -58,3 +58,6 @@ Thumbs.db
 # Coverity files 
 cov-int
 thredds.tgz
+
+# dependency check NVD files
+project-files/owasp-dependency-check/nvd

@@ -31,6 +31,10 @@ public class VerticalPerspectiveView extends ProjectionImpl {
   private double cosLat0, sinLat0;
   private double maxR; // "map limit" circle of this radius from the origin, p 173
 
+  // values passed in through the constructor
+  // need for constructCopy
+  private double _lat0, _lon0;
+
   @Override
   public ProjectionImpl constructCopy() {
     ProjectionImpl result =
@@ -171,7 +175,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    * @return the origin longitude.
    */
   public double getOriginLon() {
-    return Math.toDegrees(lon0);
+    return _lon0;
   }
 
   /**
@@ -180,7 +184,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    * @return the origin latitude.
    */
   public double getOriginLat() {
-    return Math.toDegrees(lat0);
+    return _lat0;
   }
 
   public double getP() {
@@ -196,7 +200,9 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    * 
    * @param lon the origin longitude.
    */
+  @Deprecated
   public void setOriginLon(double lon) {
+    _lon0 = lon;
     lon0 = Math.toRadians(lon);
     precalculate();
   }
@@ -206,6 +212,7 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    * 
    * @param height height above the earth
    */
+  @Deprecated
   public void setHeight(double height) {
     H = height;
     precalculate();
@@ -216,7 +223,9 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    *
    * @param lat the origin latitude.
    */
+  @Deprecated
   public void setOriginLat(double lat) {
+    _lat0 = lat0;
     lat0 = Math.toRadians(lat);
     precalculate();
   }
