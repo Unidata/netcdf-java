@@ -79,8 +79,8 @@ public final class ArrayDouble extends ucar.array.Array<Double> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayDouble createView(IndexFn indexFn) {
-    return new ArrayDouble(indexFn, storageD);
+  protected ArrayDouble createView(IndexFn view) {
+    return new ArrayDouble(view, storageD);
   }
 
   // used when the data is not in canonical order

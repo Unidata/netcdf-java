@@ -4,19 +4,20 @@
  */
 package ucar.cdmr.client;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -30,8 +31,9 @@ public class TestCdmrNetcdf4 {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/formats/netcdf4", new SuffixFileFilter(".nc4"), result,
-          false);
+      FileFilter ff = new SuffixFileFilter(".nc4");
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4", ff, result, false);
+
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -52,12 +54,8 @@ public class TestCdmrNetcdf4 {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
-      Formatter errlog = new Formatter();
-      boolean ok = CompareNetcdf2.compareFiles(ncfile, cdmrFile, errlog, true, false, false);
-      if (!ok) {
-        System.out.printf("FAIL %s %s%n", cdmrUrl, errlog);
-      }
-      Assert.assertTrue(ok);
+      boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      assertThat(ok).isTrue();
     }
   }
 }

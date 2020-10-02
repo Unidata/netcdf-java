@@ -20,11 +20,11 @@ public final class StructureDataArray extends Array<StructureData> {
   private final Storage<StructureData> storage;
   private final StructureMembers members;
 
-  /** Create an Array of type StructureData and the given shape and storage. */
+  /** Create an Array of type StructureData and the given shape and storage. Ok if parray is bigger than shape. */
   public StructureDataArray(StructureMembers members, int[] shape, StructureData[] parray) {
     super(DataType.STRUCTURE, shape);
     this.members = members;
-    storage = new StorageSD(parray);
+    storage = new StorageSD(parray, (int) indexFn.length());
   }
 
   /** Create an Array of type StructureData and the given shape and storage. */
@@ -63,8 +63,8 @@ public final class StructureDataArray extends Array<StructureData> {
   }
 
   @Override
-  Array<StructureData> createView(IndexFn index) {
-    return new StructureDataArray(this.members, indexFn, this.storage);
+  Array<StructureData> createView(IndexFn view) {
+    return new StructureDataArray(this.members, view, this.storage);
   }
 
   @Override
@@ -115,14 +115,17 @@ public final class StructureDataArray extends Array<StructureData> {
 
   static final class StorageSD implements StorageMutable<StructureData> { // LOOK mutable ??
     final StructureData[] parray;
+    final int length;
 
-    StorageSD(StructureData[] parray) {
+    StorageSD(StructureData[] parray, int length) {
+      Preconditions.checkArgument(parray.length >= length);
       this.parray = parray;
+      this.length = length;
     }
 
     @Override
     public long getLength() {
-      return parray.length;
+      return length;
     }
 
     @Override
@@ -150,7 +153,7 @@ public final class StructureDataArray extends Array<StructureData> {
 
       @Override
       public final boolean hasNext() {
-        return count < parray.length;
+        return count < length;
       }
 
       @Override

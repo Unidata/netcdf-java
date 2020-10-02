@@ -5,6 +5,7 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
+import com.google.protobuf.ByteString;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
@@ -68,6 +69,20 @@ public final class ArrayByte extends Array<Byte> {
     }
   }
 
+
+  public ByteString getByteString() {
+    if (indexFn.isCanonicalOrder()) {
+      ByteString.copyFrom(((StorageS) storage).storage);
+    }
+
+    byte[] raw = new byte[(int) length()];
+    int idx = 0;
+    for (byte bval : this) {
+      raw[idx++] = bval;
+    }
+    return ByteString.copyFrom(raw);
+  }
+
   @Override
   Storage<Byte> storage() {
     return storage;
@@ -75,8 +90,8 @@ public final class ArrayByte extends Array<Byte> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayByte createView(IndexFn indexFn) {
-    return new ArrayByte(this.dataType, indexFn, this.storage);
+  protected ArrayByte createView(IndexFn view) {
+    return new ArrayByte(this.dataType, view, this.storage);
   }
 
   // used when the data is not in canonical order

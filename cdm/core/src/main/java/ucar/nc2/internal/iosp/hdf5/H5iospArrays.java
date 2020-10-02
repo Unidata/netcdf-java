@@ -390,7 +390,6 @@ public class H5iospArrays extends H5iosp {
     ByteBuffer bb = ByteBuffer.wrap(byteArray);
     StructureDataStorageBB storage =
         new StructureDataStorageBB(sm, ByteBuffer.wrap(byteArray), (int) Arrays.computeSize(shape));
-    storage.setCharIsOneByte(true);
 
     // strings and vlens are stored on the heap, and must be read separately
     if (hasHeap) {

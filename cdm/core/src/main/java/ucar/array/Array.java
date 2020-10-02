@@ -132,10 +132,10 @@ public abstract class Array<T> implements Iterable<T> {
   /**
    * Create new Array with given IndexFn and the same backing store
    *
-   * @param index use this IndexFn
+   * @param view use this IndexFn
    * @return a view of the Array using the given IndexFn
    */
-  abstract Array<T> createView(IndexFn index);
+  abstract Array<T> createView(IndexFn view);
 
 }
 

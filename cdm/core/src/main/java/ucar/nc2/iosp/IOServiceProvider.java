@@ -120,8 +120,7 @@ public interface IOServiceProvider extends Closeable {
    */
   StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
 
-  Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException;
-
+  Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize);
 
   /**
    * Close the file.
