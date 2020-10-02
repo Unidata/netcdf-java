@@ -40,15 +40,11 @@ public class TestCdmrNetcdfFile {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      // TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir, new SuffixFileFilter(".nc"), result, true);
-
+      TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir, new SuffixFileFilter(".nc"), result, true);
       FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc");
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
 
-      /* File file1 = new File(TestDir.cdmLocalFromTestDataDir + "standardVar.nc");
-      System.out.printf("%s%n", file1.getCanonicalPath());
-      result.add(new Object[] {file1.getCanonicalPath()}); */
-
+      // result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/bufr/userExamples/WMO_v16_3-10-61.bufr"});
 
     } catch (Exception e) {
       e.printStackTrace();

@@ -497,13 +497,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
   // section is null for full read
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
-    if (iosp == null) {
-      System.out.printf("HEY%n");
-    }
     return iosp.getStructureIterator(s, bufferSize);
   }
 
-  protected Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
+  public Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
     return iosp.getStructureDataArrayIterator(s, bufferSize);
   }
 

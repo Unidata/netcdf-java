@@ -70,7 +70,7 @@ class Construct2 {
 
     String header = proto.getHeader();
     if (header != null && !header.isEmpty())
-      rootGroup.addAttribute(new Attribute("WMO Header", header));
+      rootGroup.addAttribute(new Attribute("WMO_Header", header));
 
     makeObsRecord(bufrConfig);
     String coordS = coordinates.toString();

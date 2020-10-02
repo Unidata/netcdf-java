@@ -336,7 +336,7 @@ public class CdmrConverterMa2 {
     for (Member member : sm.getMembers()) {
       StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
           .setDataType(convertDataType(member.getDataType())).addAllShape(Ints.asList(member.getShape()));
-      builder.addMembers(smBuilder);
+      // builder.addMembers(smBuilder);
     }
 
     // row oriented
@@ -829,24 +829,27 @@ public class CdmrConverterMa2 {
     Preconditions.checkArgument(nrows > 0);
     Preconditions.checkArgument(section.getSize() == nrows);
 
-    StructureMembers.Builder membersb = StructureMembers.builder();
-    for (StructureMemberProto memberProto : arrayStructureProto.getMembersList()) {
-      MemberBuilder memberb = StructureMembers.memberBuilder();
-      memberb.setName(memberProto.getName());
-      memberb.setDataType(convertDataType(memberProto.getDataType()));
-      memberb.setShape(Ints.toArray(memberProto.getShapeList()));
-      membersb.addMember(memberb);
-    }
-    StructureMembers members = membersb.build();
-
-    ArrayStructureW result = new ArrayStructureW(members, section.getShape());
-    // row oriented
-    int index = 0;
-    for (CdmRemoteProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
-      result.setStructureData(decodeStructureData(row, members), index);
-      index++;
-    }
-    return result;
+    /*
+     * StructureMembers.Builder membersb = StructureMembers.builder();
+     * for (StructureMemberProto memberProto : arrayStructureProto.getMembersList()) {
+     * MemberBuilder memberb = StructureMembers.memberBuilder();
+     * memberb.setName(memberProto.getName());
+     * memberb.setDataType(convertDataType(memberProto.getDataType()));
+     * memberb.setShape(Ints.toArray(memberProto.getShapeList()));
+     * membersb.addMember(memberb);
+     * }
+     * StructureMembers members = membersb.build();
+     * 
+     * ArrayStructureW result = new ArrayStructureW(members, section.getShape());
+     * // row oriented
+     * int index = 0;
+     * for (CdmRemoteProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
+     * result.setStructureData(decodeStructureData(row, members), index);
+     * index++;
+     * }
+     * return result;
+     */
+    return null;
   }
 
   public static StructureData decodeStructureData(CdmRemoteProto.StructureDataProto structDataProto,

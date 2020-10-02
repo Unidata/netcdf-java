@@ -80,8 +80,8 @@ public final class ArrayFloat extends Array<Float> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayFloat createView(IndexFn indexFn) {
-    return new ArrayFloat(indexFn, storageF);
+  protected ArrayFloat createView(IndexFn view) {
+    return new ArrayFloat(view, storageF);
   }
 
   private class CanonicalIterator implements Iterator<Float> {

@@ -7,7 +7,12 @@ package ucar.array;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.junit.Test;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 
 /** Test {@link IndexFn} */
 public class TestIndexFn {
@@ -50,6 +55,18 @@ public class TestIndexFn {
 
     IndexFn indexf2 = index.flip(2);
     assertThat(indexf2.toString()).isEqualTo("2, 1, 0, 5, 4, 3");
+  }
+
+  @Test
+  public void testSection() throws InvalidRangeException {
+    int[] shape = new int[] {100};
+    IndexFn index = IndexFn.builder(shape).build();
+
+    IndexFn subset = index.section(ImmutableList.of(new Range(11, 15)));
+    assertThat(subset.toString()).isEqualTo("11, 12, 13, 14, 15");
+    assertThat(subset.getRank()).isEqualTo(1);
+    assertThat(subset.getShape()).isEqualTo(new int[] {5});
+    assertThat(subset.length()).isEqualTo(5);
   }
 
 }

@@ -291,9 +291,7 @@ public class MessageArrayCompressedReader {
                 cval = 0; // printable ascii KLUDGE!
               incValue[i] = (byte) cval;
             }
-
             putBytes(req.bb, req.getStructureSize(), member, dataset, nestedRow, incValue);
-
             if (out != null) {
               out.f.format(" %s,", new String(incValue, StandardCharsets.UTF_8));
             }

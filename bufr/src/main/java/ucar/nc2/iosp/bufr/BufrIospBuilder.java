@@ -65,7 +65,7 @@ class BufrIospBuilder {
 
     String header = proto.getHeader();
     if (header != null && !header.isEmpty()) {
-      atts.addAttribute("WMO Header", header);
+      atts.addAttribute("WMO_Header", header);
     }
 
     makeObsRecord(bufrConfig);

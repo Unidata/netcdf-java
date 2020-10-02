@@ -154,9 +154,11 @@ public class BufrIospArrays extends BufrIosp {
             new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, null);
         as = reader.readEntireMessage();
       } else {
+        Formatter f = new Formatter();
         MessageArrayUncompressedReader uncomp =
-            new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, null);
+            new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
         as = uncomp.readEntireMessage();
+        System.out.printf("%s%n", f);
       }
 
       return as.iterator();

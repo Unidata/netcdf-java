@@ -128,8 +128,8 @@ public final class ArrayChar extends Array<Character> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayChar createView(IndexFn indexFn) {
-    return new ArrayChar(indexFn, this.storage);
+  protected ArrayChar createView(IndexFn view) {
+    return new ArrayChar(view, this.storage);
   }
 
   // used when the data is not in canonical order

@@ -75,8 +75,8 @@ public final class ArrayInteger extends Array<Integer> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayInteger createView(IndexFn indexFn) {
-    return new ArrayInteger(this.dataType, indexFn, this.storage);
+  protected ArrayInteger createView(IndexFn view) {
+    return new ArrayInteger(this.dataType, view, this.storage);
   }
 
   // used when the data is not in canonical order

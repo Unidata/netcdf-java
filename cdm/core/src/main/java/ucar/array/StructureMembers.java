@@ -307,6 +307,7 @@ public final class StructureMembers implements Iterable<Member> {
       return this;
     }
 
+    /** The offset of the member in the ByteBuffer. If a StructureArray, then for the first record. */
     public MemberBuilder setOffset(int offset) {
       this.offset = offset;
       return this;
@@ -446,28 +447,17 @@ public final class StructureMembers implements Iterable<Member> {
     }
 
     /** Set structureSize and offsets yourself, or call setStandardOffsets. */
-    public int setStandardOffsets(boolean structuresOnHeap) {
-      return setStandardOffsets(structuresOnHeap, 0);
-    }
-
-    private int setStandardOffsets(boolean structuresOnHeap, int start) {
+    public void setStandardOffsets(boolean structuresOnHeap) {
       this.structuresOnHeap = structuresOnHeap;
-      int offset = start;
-      int totalSize = 0;
+      int offset = 0;
       for (MemberBuilder m : members) {
         m.setOffset(offset);
-
-        if (m.dataType.equals(DataType.SEQUENCE)) {
-          m.getStructureMembers().setStandardOffsets(structuresOnHeap, 0);
-        } else if (m.dataType.equals(DataType.STRUCTURE)) {
-          m.getStructureMembers().setStandardOffsets(structuresOnHeap, structuresOnHeap ? 0 : offset);
+        if (m.dataType == DataType.SEQUENCE || m.dataType == DataType.STRUCTURE) {
+          m.getStructureMembers().setStandardOffsets(structuresOnHeap);
         }
-
         offset += m.getStorageSizeBytes(structuresOnHeap);
-        totalSize += m.getStorageSizeBytes(structuresOnHeap);
       }
-      setStructureSize(totalSize);
-      return offset;
+      setStructureSize(offset);
     }
 
     /** Get the total size of the Structure in bytes. */

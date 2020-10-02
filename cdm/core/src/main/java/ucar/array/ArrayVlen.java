@@ -194,8 +194,8 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayVlen<T> createView(IndexFn indexFn) {
-    return new ArrayVlen<>(this.dataType, indexFn, this.storage);
+  protected ArrayVlen<T> createView(IndexFn view) {
+    return new ArrayVlen<>(this.dataType, view, this.storage);
   }
 
   // used when the data is not in canonical order

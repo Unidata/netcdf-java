@@ -75,8 +75,8 @@ public final class ArrayShort extends Array<Short> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayShort createView(IndexFn indexFn) {
-    return new ArrayShort(this.dataType, indexFn, this.storage);
+  protected ArrayShort createView(IndexFn view) {
+    return new ArrayShort(this.dataType, view, this.storage);
   }
 
   // used when the data is not in canonical order

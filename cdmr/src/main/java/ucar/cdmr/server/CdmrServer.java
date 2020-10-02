@@ -10,8 +10,12 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import ucar.array.Arrays;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 import ucar.cdmr.CdmRemoteGrpc.CdmRemoteImplBase;
 import ucar.cdmr.CdmRemoteProto;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
@@ -21,10 +25,12 @@ import ucar.cdmr.CdmRemoteProto.HeaderRequest;
 import ucar.cdmr.CdmRemoteProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
 import ucar.array.Array;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.ChunkingIndex;
@@ -33,6 +39,7 @@ import ucar.nc2.write.ChunkingIndex;
 public class CdmrServer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmrServer.class);
   private static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb
+  private static final int SEQUENCE_CHUNK = 1000;
 
   private Server server;
 
@@ -122,9 +129,13 @@ public class CdmrServer {
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) { // LOOK cache ncfile?
         ParsedSectionSpec varSection = ParsedSectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
         Variable var = varSection.getVariable();
-        Section wantSection = varSection.getSection();
-        size = var.getElementSize() * wantSection.getSize();
-        getData(ncfile, varSection, responseObserver);
+        if (var instanceof Sequence) {
+          size = getSequenceData(ncfile, varSection, responseObserver);
+        } else {
+          Section wantSection = varSection.getSection();
+          size = var.getElementSize() * wantSection.getSize();
+          getData(ncfile, varSection, responseObserver);
+        }
         responseObserver.onCompleted();
         logger.info("CdmrServer getData " + req.getLocation());
 
@@ -133,7 +144,8 @@ public class CdmrServer {
         t.printStackTrace();
         DataResponse.Builder response =
             DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
-        response.setError(CdmRemoteProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(
+            CdmRemoteProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
         responseObserver.onNext(response.build());
       }
 
@@ -142,7 +154,6 @@ public class CdmrServer {
 
     private void getData(NetcdfFile ncfile, ParsedSectionSpec varSection, StreamObserver<DataResponse> responseObserver)
         throws IOException, InvalidRangeException {
-
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getSection();
       long size = var.getElementSize() * wantSection.getSize();
@@ -158,8 +169,8 @@ public class CdmrServer {
 
       Variable var = varSection.getVariable();
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
-      ChunkingIndex index = new ChunkingIndex(var.getShape()); // LOOK wrong this assume starts at 0, should start at
-                                                               // varSection
+      // LOOK wrong this assume starts at 0, should start at varSection
+      ChunkingIndex index = new ChunkingIndex(var.getShape());
       while (index.currentElement() < index.getSize()) {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
@@ -187,5 +198,35 @@ public class CdmrServer {
           data.length() * varSection.getVariable().getElementSize());
     }
 
+
+    private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
+        StreamObserver<DataResponse> responseObserver) throws InvalidRangeException {
+
+      String spec = varSection.makeSectionSpecString();
+      Sequence seq = (Sequence) varSection.getVariable();
+      StructureMembers.Builder membersb = StructureMembers.makeStructureMembers(seq);
+      membersb.setStandardOffsets(false);
+      StructureMembers members = membersb.build();
+
+      StructureData[] sdata = new StructureData[SEQUENCE_CHUNK];
+      int start = 0;
+      int count = 0;
+      Iterator<StructureData> it = seq.iterator();
+      while (it.hasNext()) {
+        sdata[count++] = it.next();
+
+        if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
+          StructureDataArray sdataArray = new StructureDataArray(members, new int[] {count}, sdata);
+          Section section = Section.builder().appendRange(start, start + count).build();
+          DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
+              .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(CdmrConverter.encodeSection(section));
+          response.setData(CdmrConverter.encodeData(DataType.SEQUENCE, sdataArray));
+          responseObserver.onNext(response.build());
+          start = count;
+          count = 0;
+        }
+      }
+      return (start + count) * members.getStorageSizeBytes();
+    }
   }
 }

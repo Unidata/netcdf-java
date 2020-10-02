@@ -303,6 +303,7 @@ public class CompareArrayToMa2 {
       Iterator<ucar.array.StructureData> array) throws IOException {
     boolean ok = true;
     int obsrow = 0;
+    System.out.printf(" compareSequence %s%n", name);
     while (org.hasNext() && array.hasNext()) {
       ok &= compareStructureData(f, org.next(), array.next(), false);
       obsrow++;

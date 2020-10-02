@@ -4,6 +4,7 @@
  */
 package ucar.cdmr.client;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import ucar.array.Array;
 import ucar.array.Arrays;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
@@ -41,6 +44,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
 
   public static final String PROTOCOL = "cdmr";
   public static final String SCHEME = PROTOCOL + ":";
+
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
   }
@@ -57,16 +61,21 @@ public class CdmrNetcdfFile extends NetcdfFile {
   }
 
   @Override
-  protected Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
-    return null; // iosp.getStructureDataArrayIterator(s, bufferSize);
+  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
+      throws IOException {
+    ucar.array.Array<?> data = readArrayData(s, s.getShapeAsSection());
+    Preconditions.checkNotNull(data);
+    Preconditions.checkArgument(data instanceof StructureDataArray);
+    StructureDataArray sdata = (StructureDataArray) data;
+    return sdata.iterator();
   }
 
   @Nullable
   protected ucar.array.Array<?> readArrayData(Variable v, Section sectionWanted) throws IOException {
     String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
     if (showRequest)
-      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", spec,
-          this.remoteURI, this.path);
+      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", spec, this.remoteURI,
+          this.path);
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
     List<ucar.array.Array<?>> results = new ArrayList<>();
