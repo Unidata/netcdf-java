@@ -5,7 +5,7 @@
 
 package ucar.nc2;
 
-import ucar.ma2.Array;
+import ucar.array.Arrays;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.util.CancelTask; // ??
@@ -20,8 +20,10 @@ public interface ProxyReader {
    * @param client the client Variable
    * @param cancelTask user may cancel
    * @return memory resident Array containing the data. Will have same shape as the Variable.
+   * @deprecated use proxyReadArray()
    */
-  Array reallyRead(Variable client, CancelTask cancelTask) throws IOException;
+  @Deprecated
+  ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException;
 
   /**
    * Read a section of the data for a Variable.
@@ -32,6 +34,21 @@ public interface ProxyReader {
    *
    * @return memory resident Array containing the data. Will have same shape as the Section.
    * @throws ucar.ma2.InvalidRangeException if section has incorrect rank or illegal shape.
+   * @deprecated use proxyReadArray()
    */
-  Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
+  @Deprecated
+  ucar.ma2.Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException;
+
+  /** Read all the data for a Variable, returning ucar.array.Array. */
+  default ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
+    return Arrays.convert(reallyRead(client, cancelTask));
+  }
+
+  /** Read a section of the data for a Variable, returning ucar.array.Array. */
+  default ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
+    return Arrays.convert(reallyRead(client, section, cancelTask));
+  }
+
 }

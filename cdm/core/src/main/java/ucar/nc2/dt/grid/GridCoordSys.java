@@ -602,11 +602,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     DataType dtype = axis.getDataType();
     if (dtype.isFloatingPoint()) {
       IndexIterator ii = data.getIndexIterator();
-      while (ii.hasNext())
+      while (ii.hasNext()) {
         ii.setDoubleCurrent(factor * ii.getDoubleNext());
+      }
 
-      CoordinateAxis.Builder newAxisBuilder = axis.toBuilder();
-      newAxisBuilder.setCachedData(data, false);
+      CoordinateAxis.Builder<?> newAxisBuilder = axis.toBuilder();
+      newAxisBuilder.setCachedData(data);
       newAxisBuilder.setUnits("km");
       return newAxisBuilder.build(axis.getParentGroup());
 
@@ -617,9 +618,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       while (ii.hasNext() && newi.hasNext())
         newi.setDoubleNext(factor * ii.getDoubleNext());
 
-      CoordinateAxis.Builder newAxisBuilder = axis.toBuilder();
+      CoordinateAxis.Builder<?> newAxisBuilder = axis.toBuilder();
       newAxisBuilder.setDataType(DataType.DOUBLE);
-      newAxisBuilder.setCachedData(newData, false);
+      newAxisBuilder.setCachedData(newData);
       newAxisBuilder.setUnits("km");
       return newAxisBuilder.build(axis.getParentGroup());
     }

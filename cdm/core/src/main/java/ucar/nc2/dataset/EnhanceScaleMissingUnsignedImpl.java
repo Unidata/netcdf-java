@@ -27,12 +27,14 @@ import static ucar.ma2.DataType.*;
 class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DataType origDataType, unsignedConversionType, scaledOffsetType;
+  private final DataType origDataType;
+  private DataType unsignedConversionType;
+  private DataType scaledOffsetType;
 
   // defaults from NetcdfDataset modes
-  private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
-  private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
-  private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;
+  private boolean invalidDataIsMissing;
+  private boolean fillValueIsMissing;
+  private boolean missingDataIsMissing;
 
   private boolean useScaleOffset;
   private double scale = 1.0, offset;

@@ -38,7 +38,7 @@ public class TestSequence {
     for (int i = 0; i < 4; i++) {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
-    structb.setCachedData(cacheData, true);
+    structb.setCachedData(cacheData);
     Structure struct = structb.build(makeDummyGroup());
 
     Array data = struct.read();
@@ -80,7 +80,7 @@ public class TestSequence {
     for (int i = 0; i < 4; i++) {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
-    structb.setCachedData(cacheData, true);
+    structb.setCachedData(cacheData);
     Structure struct = structb.build(makeDummyGroup());
 
     try {
@@ -144,7 +144,7 @@ public class TestSequence {
     for (int i = 0; i < 4; i++) {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
-    structb.setCachedData(cacheData, true);
+    structb.setCachedData(cacheData);
     Structure struct1 = structb.build(makeDummyGroup());
     Structure struct2 = struct1.toBuilder().setName("struct2").build(makeDummyGroup());
 

@@ -449,7 +449,7 @@ public class CdmrConverterMa2 {
 
     if (var.hasData()) {
       Array data = decodeData(var.getData(), section.build());
-      ncvar.setCachedData(data, true);
+      ncvar.setCachedData(data);
     }
 
     return ncvar;

@@ -247,6 +247,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   ////////////////////////////////////////////////////////////////////////
 
+  // TODO move to builder
   private List<CalendarDate> makeTimesFromChar(VariableDS org, Formatter errMessages) throws IOException {
     int ncoords = (int) org.getSize();
     int rank = org.getRank();
@@ -257,15 +258,15 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     ArrayChar data = (ArrayChar) org.read();
     ArrayChar.StringIterator ii = data.getStringIterator();
-    ArrayObject.D1 sdata = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {ncoords});
 
+    String[] dateStrings = new String[ncoords];
     for (int i = 0; i < ncoords; i++) {
       String coordValue = ii.next();
       CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);
-      sdata.set(i, coordValue);
+      dateStrings[i] = coordValue;
       result.add(cd);
     }
-    setCachedData(sdata, true);
+    setCachedData(ucar.array.Arrays.factory(DataType.STRING, new int[] {ncoords}, dateStrings));
     return result;
   }
 

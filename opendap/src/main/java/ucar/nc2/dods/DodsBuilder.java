@@ -419,7 +419,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
 
     // might as well cache the data
     if (data != null) {
-      v.setCachedData(data, false);
+      v.setCachedData(data);
     }
   }
 

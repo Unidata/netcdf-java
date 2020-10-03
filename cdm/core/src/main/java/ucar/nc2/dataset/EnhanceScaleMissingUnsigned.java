@@ -116,7 +116,9 @@ import javax.annotation.Nullable;
  *
  * @author caron
  * @author cwardgar
+ * @deprecated do not use
  */
+@Deprecated
 public interface EnhanceScaleMissingUnsigned extends IsMissingEvaluator {
   /** true if Variable data will be converted using scale and offset */
   boolean hasScaleOffset();

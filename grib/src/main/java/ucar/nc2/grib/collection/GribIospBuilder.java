@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import org.slf4j.Logger;
+import ucar.array.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -84,27 +85,27 @@ class GribIospBuilder {
     boolean isLatLon = isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
 
     if (isRotatedLatLon) {
-      Variable.Builder hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
+      Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
+      hcsV.setCachedData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
         hcsV.addAttribute(Attribute.fromParameter(p));
       }
       horizDims = "rlat rlon";
       g.addDimension(new Dimension("rlat", hcs.ny));
       g.addDimension(new Dimension("rlon", hcs.nx));
-      Variable.Builder rlat = Variable.builder().setName("rlat").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
+      Variable.Builder<?> rlat = Variable.builder().setName("rlat").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
           .setDimensionsByName("rlat");
       g.addVariable(rlat);
       rlat.addAttribute(new Attribute(CF.STANDARD_NAME, CF.GRID_LATITUDE));
       rlat.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
-      rlat.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy), false);
-      Variable.Builder rlon = Variable.builder().setName("rlon").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
+      rlat.setAutoGen(hcs.starty, hcs.dy);
+      Variable.Builder<?> rlon = Variable.builder().setName("rlon").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
           .setDimensionsByName("rlon");
       g.addVariable(rlon);
       rlon.addAttribute(new Attribute(CF.STANDARD_NAME, CF.GRID_LONGITUDE));
       rlon.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
-      rlon.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx), false);
+      rlon.setAutoGen(hcs.startx, hcs.dx);
     } else if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
       horizDims = "lat lon";
 
@@ -114,9 +115,9 @@ class GribIospBuilder {
 
     } else if (isLatLon) {
       // make horiz coordsys coordinate variable
-      Variable.Builder hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
+      Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
+      hcsV.setCachedData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
         hcsV.addAttribute(Attribute.fromParameter(p));
       }
@@ -125,28 +126,28 @@ class GribIospBuilder {
       g.addDimension(new Dimension("lon", hcs.nx));
       g.addDimension(new Dimension("lat", hcs.ny));
 
-      Variable.Builder lat = Variable.builder().setName("lat").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
+      Variable.Builder<?> lat = Variable.builder().setName("lat").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
           .setDimensionsByName("lat");
       g.addVariable(lat);
       lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       if (hcs.getGaussianLats() != null) {
-        lat.setCachedData(hcs.getGaussianLats(), false);
+        lat.setCachedData(hcs.getGaussianLats());
         lat.addAttribute(new Attribute(CDM.GAUSSIAN, "true"));
       } else {
-        lat.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy), false);
+        lat.setAutoGen(hcs.starty, hcs.dy);
       }
 
-      Variable.Builder lon = Variable.builder().setName("lon").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
+      Variable.Builder<?> lon = Variable.builder().setName("lon").setDataType(DataType.FLOAT).setParentGroupBuilder(g)
           .setDimensionsByName("lon");
       g.addVariable(lon);
       lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
-      lon.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx), false);
+      lon.setAutoGen(hcs.startx, hcs.dx);
 
     } else {
       // make horiz coordsys coordinate variable
-      Variable.Builder hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
+      Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] {0}), false);
+      hcsV.setCachedData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
         hcsV.addAttribute(Attribute.fromParameter(p));
       }
@@ -155,19 +156,19 @@ class GribIospBuilder {
       g.addDimension(new Dimension("x", hcs.nx));
       g.addDimension(new Dimension("y", hcs.ny));
 
-      Variable.Builder xcv =
+      Variable.Builder<?> xcv =
           Variable.builder().setName("x").setDataType(DataType.FLOAT).setParentGroupBuilder(g).setDimensionsByName("x");
       g.addVariable(xcv);
       xcv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_X_COORDINATE));
       xcv.addAttribute(new Attribute(CDM.UNITS, "km"));
-      xcv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx), false);
+      xcv.setAutoGen(hcs.startx, hcs.dx);
 
-      Variable.Builder ycv =
+      Variable.Builder<?> ycv =
           Variable.builder().setName("y").setDataType(DataType.FLOAT).setParentGroupBuilder(g).setDimensionsByName("y");
       g.addVariable(ycv);
       ycv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_Y_COORDINATE));
       ycv.addAttribute(new Attribute(CDM.UNITS, "km"));
-      ycv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy), false);
+      ycv.setAutoGen(hcs.starty, hcs.dy);
     }
 
     boolean singleRuntimeWasMade = false;
@@ -270,7 +271,7 @@ class GribIospBuilder {
         coordinateAtt.format("%s ", horizDims);
 
         String vname = iosp.makeVariableName(vindex);
-        Variable.Builder v = Variable.builder().setName(vname).setDataType(DataType.FLOAT).setParentGroupBuilder(g)
+        Variable.Builder<?> v = Variable.builder().setName(vname).setDataType(DataType.FLOAT).setParentGroupBuilder(g)
             .setDimensionsByName(dimNames.toString());
         g.addVariable(v);
 
@@ -341,7 +342,7 @@ class GribIospBuilder {
       g.addDimension(new Dimension(tcName, n));
     }
 
-    Variable.Builder v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
     g.addVariable(v);
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
@@ -368,7 +369,7 @@ class GribIospBuilder {
     String timeDimName = make2dValidTimeDimensionName(tcName);
 
     g.addDimension(new Dimension(timeDimName, ntimes));
-    Variable.Builder v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(timeDimName);
     g.addVariable(v);
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
@@ -384,7 +385,7 @@ class GribIospBuilder {
       v.setSPobject(new Time2Dinfo(Time2DinfoType.intvU, time2D, null));
       // bounds for intervals
       String bounds_name = timeDimName + "_bounds";
-      Variable.Builder bounds = Variable.builder().setName(bounds_name).setDataType(DataType.DOUBLE)
+      Variable.Builder<?> bounds = Variable.builder().setName(bounds_name).setDataType(DataType.DOUBLE)
           .setParentGroupBuilder(g).setDimensionsByName(timeDimName + " 2");
       g.addVariable(bounds);
       v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
@@ -397,7 +398,7 @@ class GribIospBuilder {
       // for this case we have to generate a separate reftime, because have to use the same dimension
       String refName = "ref" + tcName;
       if (!g.findVariableLocal(refName).isPresent()) {
-        Variable.Builder vref = Variable.builder().setName(refName).setDataType(DataType.DOUBLE)
+        Variable.Builder<?> vref = Variable.builder().setName(refName).setDataType(DataType.DOUBLE)
             .setParentGroupBuilder(g).setDimensionsByName(timeDimName);
         g.addVariable(vref);
         vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
@@ -439,7 +440,7 @@ class GribIospBuilder {
     int dimLength = ntimes;
 
     g.addDimension(new Dimension(timeDimName, dimLength));
-    Variable.Builder v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
     g.addVariable(v);
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
@@ -459,7 +460,7 @@ class GribIospBuilder {
       v.setSPobject(new Time2Dinfo(Time2DinfoType.intv, time2D, null));
       // bounds for intervals
       String bounds_name = timeDimName + "_bounds";
-      Variable.Builder bounds = Variable.builder().setName(bounds_name).setDataType(DataType.DOUBLE)
+      Variable.Builder<?> bounds = Variable.builder().setName(bounds_name).setDataType(DataType.DOUBLE)
           .setParentGroupBuilder(g).setDimensionsByName(dims + " 2");
       g.addVariable(bounds);
       v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
@@ -467,7 +468,6 @@ class GribIospBuilder {
       bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
       bounds.setSPobject(new Time2Dinfo(Time2DinfoType.bounds, time2D, null));
     }
-
   }
 
   private Array makeLazyCoordinateData(Variable v2, Time2Dinfo info) {
@@ -636,7 +636,7 @@ class GribIospBuilder {
     String tcName = coordTime.getName();
     String dims = coordTime.getName();
     g.addDimension(new Dimension(tcName, ntimes));
-    Variable.Builder v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
     g.addVariable(v);
     String units = coordTime.getTimeUdUnit();
@@ -652,7 +652,7 @@ class GribIospBuilder {
     for (int val : coordTime.getOffsetSorted()) {
       data[count++] = val;
     }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes}, data), false);
+    v.setCachedData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }
@@ -662,7 +662,7 @@ class GribIospBuilder {
       return;
     }
     String tcName = "ref" + timeName;
-    Variable.Builder v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(timeName);
     g.addVariable(v);
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
@@ -680,7 +680,7 @@ class GribIospBuilder {
     String tcName = coordTime.getName();
     String dims = coordTime.getName();
     g.addDimension(new Dimension(tcName, ntimes));
-    Variable.Builder v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
     g.addVariable(v);
     String units = coordTime.getTimeUdUnit();
@@ -696,11 +696,11 @@ class GribIospBuilder {
     for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
       data[count++] = tinv.getBounds2();
     }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes}, data), false);
+    v.setCachedData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
 
     // bounds
     String bounds_name = tcName + "_bounds";
-    Variable.Builder bounds = Variable.builder().setName(bounds_name).setDataType(DataType.DOUBLE)
+    Variable.Builder<?> bounds = Variable.builder().setName(bounds_name).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(g).setDimensionsByName(dims + " 2");
     g.addVariable(bounds);
     v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
@@ -713,7 +713,7 @@ class GribIospBuilder {
       data[count++] = tinv.getBounds1();
       data[count++] = tinv.getBounds2();
     }
-    bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {ntimes, 2}, data), false);
+    bounds.setCachedData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes, 2}, data));
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }
@@ -723,7 +723,7 @@ class GribIospBuilder {
     String vcName = vc.getName().toLowerCase();
 
     g.addDimension(new Dimension(vcName, n));
-    Variable.Builder v = Variable.builder().setName(vcName).setDataType(DataType.FLOAT).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(vcName).setDataType(DataType.FLOAT).setParentGroupBuilder(g)
         .setDimensionsByName(vcName);
     g.addVariable(v);
     if (vc.getUnit() != null) {
@@ -749,9 +749,9 @@ class GribIospBuilder {
       for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
       }
-      v.setCachedData(Array.factory(DataType.FLOAT, new int[] {n}, data), false);
+      v.setCachedData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
 
-      Variable.Builder bounds = Variable.builder().setName(vcName + "_bounds").setDataType(DataType.FLOAT)
+      Variable.Builder<?> bounds = Variable.builder().setName(vcName + "_bounds").setDataType(DataType.FLOAT)
           .setParentGroupBuilder(g).setDimensionsByName(vcName + " 2");
       g.addVariable(bounds);
       v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
@@ -767,7 +767,7 @@ class GribIospBuilder {
         data[count++] = (float) level.getValue1();
         data[count++] = (float) level.getValue2();
       }
-      bounds.setCachedData(Array.factory(DataType.FLOAT, new int[] {n, 2}, data), false);
+      bounds.setCachedData(Arrays.factory(DataType.FLOAT, new int[] {n, 2}, data));
 
     } else {
       float[] data = new float[n];
@@ -775,7 +775,7 @@ class GribIospBuilder {
       for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) val.getValue1();
       }
-      v.setCachedData(Array.factory(DataType.FLOAT, new int[] {n}, data), false);
+      v.setCachedData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
     }
   }
 
@@ -784,7 +784,7 @@ class GribIospBuilder {
     String ecName = ec.getName().toLowerCase();
     g.addDimension(new Dimension(ecName, n));
 
-    Variable.Builder v = Variable.builder().setName(ecName).setDataType(DataType.INT).setParentGroupBuilder(g)
+    Variable.Builder<?> v = Variable.builder().setName(ecName).setDataType(DataType.INT).setParentGroupBuilder(g)
         .setDimensionsByName(ecName);
     g.addVariable(v);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Ensemble.toString()));
@@ -794,6 +794,6 @@ class GribIospBuilder {
     for (EnsCoordValue ecc : ec.getEnsSorted()) {
       data[count++] = ecc.getEnsMember();
     }
-    v.setCachedData(Array.factory(DataType.INT, new int[] {n}, data), false);
+    v.setCachedData(Arrays.factory(DataType.INT, new int[] {n}, data));
   }
 }

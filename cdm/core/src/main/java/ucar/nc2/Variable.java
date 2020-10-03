@@ -10,7 +10,15 @@ import com.google.common.collect.ImmutableSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.*;
+import ucar.array.Arrays;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.IospHelper;
@@ -240,12 +248,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @return total number of elements in the Variable.
    */
   public long getSize() {
-    long size = 1;
-    for (int aShape : shape) {
-      if (aShape >= 0)
-        size *= aShape;
-    }
-    return size;
+    return Arrays.computeSize(this.shape);
   }
 
   /**
@@ -301,7 +304,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** Is this variable metadata?. True if its values need to be included explicitly in NcML output. */
   public boolean isMetadata() {
-    return cache != null && cache.isMetadata;
+    return cache != null && cache.srcData != null;
   }
 
   /** Whether this is a scalar Variable (rank == 0). */
@@ -472,6 +475,14 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // _read(Section section)
   // _readNestedData(Section section, boolean flatten)
 
+  /** Read variable data to a stream. Support for NcStreamWriter. */
+  public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
+    if ((ncfile == null) || hasCachedData())
+      return IospHelper.copyToOutputStream(read(section), out);
+
+    return ncfile.readToOutputStream(this, section, out);
+  }
+
   /**
    * Read a section of the data for this Variable and return a memory resident Array.
    * The Array has the same element type as the Variable, and the requested shape.
@@ -485,7 +496,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @param shape int array specifying the extents in each dimension.
    *        This becomes the shape of the returned Array.
    * @return the requested data in a memory-resident Array
+   * @deprecated use readArray(Section)
    */
+  @Deprecated
   public Array read(int[] origin, int[] shape) throws IOException, InvalidRangeException {
     if ((origin == null) && (shape == null))
       return read();
@@ -506,7 +519,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @param sectionSpec specification string, eg "1:2,10,:,1:100:10". May optionally have ().
    * @return the requested data in a memory-resident Array
    * @see ucar.ma2.Section for sectionSpec syntax
+   * @deprecated use readArray(new Section(sectionSpec))
    */
+  @Deprecated
   public Array read(String sectionSpec) throws IOException, InvalidRangeException {
     return read(new Section(sectionSpec));
   }
@@ -519,7 +534,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @throws IOException if error
    * @throws InvalidRangeException if ranges is invalid
    * @see #read(Section)
+   * @deprecated use readArray(new Section(ranges))
    */
+  @Deprecated
   public Array read(List<Range> ranges) throws IOException, InvalidRangeException {
     if (null == ranges)
       return _read();
@@ -548,7 +565,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @return the requested data in a memory-resident Array
    * @throws IOException if error
    * @throws InvalidRangeException if section is invalid
+   * @deprecated use readArray(Section)
    */
+  @Deprecated
   public Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
     return (section == null) ? _read() : _read(Section.fill(section, shape));
   }
@@ -562,34 +581,44 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * To read the data in all structures, use ncfile.readSection().
    *
    * @return the requested data in a memory-resident Array.
+   * @deprecated use readArray()
    */
+  @Deprecated
   public Array read() throws IOException {
     return _read();
   }
 
   public ucar.array.Array<?> readArray() throws IOException {
-    if (cache.data != null) {
-      return ucar.array.Arrays.convert(cache.data);
+    if (cache.getData() != null) {
+      return cache.getData();
     }
-    try {
-      return ncfile.readArrayData(this, getShapeAsSection());
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e);
+
+    ucar.array.Array<?> data = proxyReader.proxyReadArray(this, null);
+
+    // optionally cache it
+    if (isCaching()) {
+      cache.setCachedData(data);
     }
+
+    // ucar.array.Array allegedly Immutable
+    return data;
   }
 
   public ucar.array.Array<?> readArray(ucar.ma2.Section section)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    if (section == null) {
+    if ((null == section) || section.computeSize() == getSize()) {
       return readArray();
     }
-    if (cache.data != null) {
-      ucar.array.Array<?> all = ucar.array.Arrays.convert(cache.data);
-      return ucar.array.Arrays.section(all, section.getRanges());
+    // full read was cached
+    if (isCaching()) {
+      if (cache.getData() == null) {
+        cache.setCachedData(readArray()); // read and cache entire array
+      }
+      return Arrays.section(cache.getData(), section.getRanges()); // subset it
     }
-    return ncfile.readArrayData(this, section);
+    // not caching
+    return proxyReader.proxyReadArray(this, section, null);
   }
-
 
   ///// scalar reading
 
@@ -598,8 +627,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException if data type not convertible to byte
+   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @deprecated use (byte) readArray().getScalar();
    */
+  @Deprecated
   public byte readScalarByte() throws IOException {
     Array data = _readScalarData();
     return data.getByte(Index.scalarIndexImmutable);
@@ -610,8 +641,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException if data type not convertible to short
+   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @deprecated use (short) readArray().getScalar();
    */
+  @Deprecated
   public short readScalarShort() throws IOException {
     Array data = _readScalarData();
     return data.getShort(Index.scalarIndexImmutable);
@@ -622,8 +655,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException if data type not convertible to int
+   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @deprecated use (int) readArray().getScalar();
    */
+  @Deprecated
   public int readScalarInt() throws IOException {
     Array data = _readScalarData();
     return data.getInt(Index.scalarIndexImmutable);
@@ -634,8 +669,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable
-   * @throws ForbiddenConversionException if data type not convertible to long
+   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @deprecated use (long) readArray().getScalar();
    */
+  @Deprecated
   public long readScalarLong() throws IOException {
     Array data = _readScalarData();
     return data.getLong(Index.scalarIndexImmutable);
@@ -646,8 +683,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException if data type not convertible to float
+   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @deprecated use (float) readArray().getScalar();
    */
+  @Deprecated
   public float readScalarFloat() throws IOException {
     Array data = _readScalarData();
     return data.getFloat(Index.scalarIndexImmutable);
@@ -658,8 +697,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ForbiddenConversionException if data type not convertible to double
+   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @deprecated use (double) readArray().getScalar();
    */
+  @Deprecated
   public double readScalarDouble() throws IOException {
     Array data = _readScalarData();
     return data.getDouble(Index.scalarIndexImmutable);
@@ -672,7 +713,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar or one-dimensional.
    * @throws ClassCastException if data type not DataType.STRING or DataType.CHAR.
+   * @deprecated use (String) readArray().getScalar() or if CHAR, readArray().makeStringFromChar()
    */
+  @Deprecated
   public String readScalarString() throws IOException {
     Array data = _readScalarData();
     if (dataType == DataType.STRING)
@@ -693,20 +736,16 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected Array _read() throws IOException {
     // caching overrides the proxyReader
     // check if already cached
-    if (cache.data != null) {
-      if (debugCaching)
-        System.out.println("got data from cache " + getFullName());
-      return cache.data.copy();
+    if (cache.getData() != null) {
+      return Arrays.convert(cache.getData());
     }
 
     Array data = proxyReader.reallyRead(this, null);
 
     // optionally cache it
     if (isCaching()) {
-      setCachedData(data);
-      if (debugCaching)
-        System.out.println("cache " + getFullName());
-      return cache.data.copy(); // dont let users get their nasty hands on cached data
+      cache.setCachedData(Arrays.convert(data));
+      return Arrays.convert(cache.getData()); // dont let users get their nasty hands on cached data
     } else {
       return data;
     }
@@ -716,24 +755,27 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // assume filled, validated Section
   protected Array _read(Section section) throws IOException, InvalidRangeException {
     // check if its really a full read
-    if ((null == section) || section.computeSize() == getSize())
+    if ((null == section) || section.computeSize() == getSize()) {
       return _read();
+    }
 
     // full read was cached
     if (isCaching()) {
-      if (cache.data == null) {
-        setCachedData(_read()); // read and cache entire array
-        if (debugCaching)
-          System.out.println("cache " + getFullName());
+      Array cacheData;
+      if (cache.getData() == null) {
+        cacheData = _read();
+        cache.setCachedData(Arrays.convert(cacheData)); // read and cache entire array
+      } else {
+        cacheData = Arrays.convert(cache.getData());
       }
-      if (debugCaching)
-        System.out.println("got data from cache " + getFullName());
-      return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
+      return cacheData.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
     }
 
     return proxyReader.reallyRead(this, section, null);
   }
 
+  /** @deprecated do not use */
+  @Deprecated
   protected Array _readScalarData() throws IOException {
     Array scalarData = read();
     scalarData = scalarData.reduce();
@@ -747,6 +789,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** public by accident, do not call directly. */
   @Override
+  @Deprecated
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     if (isMemberOfStructure()) { // LOOK should be UnsupportedOperationException ??
       List<String> memList = new ArrayList<>();
@@ -766,6 +809,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** public by accident, do not call directly. */
   @Override
+  @Deprecated
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     if (isMemberOfStructure()) {
@@ -775,12 +819,29 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return ncfile.readData(this, section);
   }
 
-  /** Read variable data to a stream. Support for NcStreamWriter. */
-  public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
-    if ((ncfile == null) || hasCachedData())
-      return IospHelper.copyToOutputStream(read(section), out);
+  /** public by accident, do not call directly. */
+  @Override
+  public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
+    if (isMemberOfStructure()) {
+      throw new UnsupportedOperationException("Cannot directly read Member Variable=" + getFullName());
+    }
 
-    return ncfile.readToOutputStream(this, section, out);
+    try {
+      return ncfile.readArrayData(this, getShapeAsSection());
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IOException(e.getMessage()); // cant happen haha
+    }
+  }
+
+  /** public by accident, do not call directly. */
+  @Override
+  public ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
+    if (isMemberOfStructure()) {
+      throw new UnsupportedOperationException("Cannot directly read section of Member Variable=" + getFullName());
+    }
+    return ncfile.readArrayData(this, section);
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1012,38 +1073,28 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @return size at which caching happens
    */
   public int getSizeToCache() {
-    if (sizeToCache >= 0)
-      return sizeToCache; // it was set
+    if (cache.sizeToCacheBytes != null) { // it was set
+      return cache.sizeToCacheBytes;
+    }
+    // default
     return isCoordinateVariable() ? defaultCoordsSizeToCache : defaultSizeToCache;
-  }
-
-  /**
-   * Set the sizeToCache. If not set, use defaults
-   *
-   * @param sizeToCache size at which caching happens. < 0 means use defaults
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setSizeToCache(int sizeToCache) {
-    this.sizeToCache = sizeToCache;
   }
 
   /**
    * Set whether to cache or not. Implies that the entire array will be stored, once read.
    * Normally this is set automatically based on size of data.
-   *
-   * @param caching set if caching.
-   * @deprecated Use Variable.builder()
+   * if false, cachedData is cleared.
    */
-  @Deprecated
   public void setCaching(boolean caching) {
-    this.cache.isCaching = caching;
-    this.cache.cachingSet = true;
+    this.cache.setIsCaching(caching);
+    if (!caching) {
+      this.cache.setCachedData(null);
+    }
   }
 
   /**
    * Will this Variable be cached when read.
-   * Set externally, or calculated based on total size < sizeToCache.
+   * Set externally by setCaching, or calculated based on total size < sizeToCache.
    * <p>
    * This will always return {@code false} if {@link #permitCaching caching isn't permitted}.
    *
@@ -1053,90 +1104,55 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     if (!permitCaching) {
       return false;
     }
-
-    if (!this.cache.cachingSet) {
-      cache.isCaching =
-          !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
-      if (debugCaching)
-        System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(),
-            getSizeToCache());
-      this.cache.cachingSet = true;
+    if (this.cache.isCaching != null) {
+      return this.cache.isCaching;
     }
-    return cache.isCaching;
+
+    return !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
   }
 
-  /**
-   * Note that standalone Ncml caches data values set in the Ncml.
-   * So one cannont invalidate those caches.
-   * 
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
+  /** Remove any cached values (but not srcData) */
   public void invalidateCache() {
-    cache.data = null;
+    cache.setCachedData(null);
   }
 
-  /** @deprecated Use Variable.builder() */
-  @Deprecated
-  public void setCachedData(Array cacheData) {
-    setCachedData(cacheData, false);
-  }
-
-  Array getCachedData() {
-    return cache.data;
-  }
-
-  /**
-   * Set the data cache
-   *
-   * @param cacheData cache this Array
-   * @param isMetadata : synthesized data, set true if must be saved in NcML output (ie data not actually in the file).
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void setCachedData(Array cacheData, boolean isMetadata) {
-    if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType())) {
+  protected void setCachedData(ucar.array.Array<?> cacheData) {
+    if ((cacheData != null) && (cacheData.getDataType() != getDataType())) {
       throw new IllegalArgumentException(
-          "setCachedData type=" + cacheData.getElementType() + " incompatible with variable type=" + getDataType());
+          "setCachedData type=" + cacheData.getDataType() + " incompatible with variable type=" + getDataType());
     }
-
-    this.cache.data = cacheData;
-    this.cache.isMetadata = isMetadata;
-    this.cache.cachingSet = true;
-    this.cache.isCaching = true;
+    this.cache.setCachedData(cacheData);
   }
 
-  /**
-   * Create a new data cache, use this when you dont want to share the cache.
-   */
-  public void createNewCache() {
-    this.cache = new Cache();
-  }
-
-  /**
-   * Has data been read and cached.
-   * Use only on a Variable, not a subclass.
-   *
-   * @return true if data is read and cached
-   */
+  /** If this has cached data, or source data. */
   public boolean hasCachedData() {
-    return (null != cache.data);
+    return (null != cache.cacheData) || (null != cache.srcData);
   }
 
   // this indirection allows us to share the cache among the variable's sections and copies
-  private static class Cache {
-    private Array data;
-    protected boolean isCaching;
-    protected boolean cachingSet; // true if cache was explicitly set
-    private boolean isMetadata;
+  protected static class Cache {
+    private ucar.array.Array<?> srcData; // this is the only source of the data, do not erase, can only be set in the
+                                         // builder
+    private ucar.array.Array<?> cacheData; // this is temporary data, may be erased, can be set by setCachedData()
+    private Integer sizeToCacheBytes; // bytes
+    private Boolean isCaching;
 
     private Cache() {}
 
-    public void reset() {
-      this.data = null;
-      this.isCaching = false;
-      this.cachingSet = false;
-      this.isMetadata = false;
+    protected void reset() {
+      this.cacheData = null;
+    }
+
+    protected ucar.array.Array<?> getData() {
+      return (srcData != null) ? srcData : cacheData;
+    }
+
+    protected void setIsCaching(boolean isCaching) {
+      this.isCaching = isCaching;
+    }
+
+    protected void setCachedData(ucar.array.Array<?> data) {
+      this.cacheData = data;
     }
   }
 
@@ -1163,10 +1179,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected boolean isVariableLength;
   protected int elementSize;
 
-  // TODO do we need these? breaks immutability
-  // TODO maybe caching read data should be seperate from "this is the source of the data".
-  protected Cache cache = new Cache(); // cache cannot be null
-  protected int sizeToCache = -1; // bytes
+  protected Cache cache;
 
   protected Variable(Builder<?> builder, Group parentGroup) {
     if (parentGroup == null) {
@@ -1225,7 +1238,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       int index = builder.slicer.index;
       Section slice = Dimensions.makeSectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
       useProxyReader = new SliceReader(parentGroup, builder.slicer.orgName, dim, slice);
-      setCaching(false); // dont cache
+      builder.resetCache(); // no caching
       // remove that dimension in this variable
       dims.remove(dim);
     }
@@ -1233,8 +1246,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     this.dimensions = ImmutableList.copyOf(dims);
     if (builder.autoGen != null) {
-      this.cache.data = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
-      this.cache.isMetadata = true; // So it gets copied
+      this.cache.srcData = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
     }
 
     // calculated fields
@@ -1281,8 +1293,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       builder.setProxyReader(this.proxyReader);
     }
 
-    if (this.cache.isMetadata) {
-      builder.setCachedData(this.cache.data, true);
+    if (this.cache.srcData != null) {
+      builder.setCachedData(this.cache.srcData);
     }
     return builder;
   }
@@ -1566,11 +1578,13 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
-    public T setCachedData(Array cacheData, boolean isMetadata) {
-      this.cache.data = cacheData;
-      this.cache.isMetadata = isMetadata;
-      this.cache.cachingSet = true;
-      this.cache.isCaching = true;
+    public T setCachedData(Array srcData) {
+      this.cache.srcData = ucar.array.Arrays.convert(srcData);
+      return self();
+    }
+
+    public T setCachedData(ucar.array.Array<?> srcData) {
+      this.cache.srcData = srcData;
       return self();
     }
 
@@ -1585,16 +1599,17 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     public T resetCache() {
-      this.cache.data = null;
-      this.cache.isMetadata = false;
-      this.cache.cachingSet = false;
-      this.cache.isCaching = false;
+      this.cache = new Cache();
       return self();
     }
 
     public T setCaching(boolean caching) {
       this.cache.isCaching = caching;
-      this.cache.cachingSet = true;
+      return self();
+    }
+
+    public T setSizeToCacheInBytes(int sizeToCacheBytes) {
+      this.cache.sizeToCacheBytes = sizeToCacheBytes;
       return self();
     }
 
@@ -1672,9 +1687,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       this.incr = incr;
     }
 
-    private Array makeDataArray(DataType dtype, List<Dimension> dimensions) {
+    private ucar.array.Array<?> makeDataArray(DataType dtype, List<Dimension> dimensions) {
       Section section = Dimensions.makeSectionFromDimensions(dimensions).build();
-      return Array.makeArray(dtype, (int) section.getSize(), start, incr).reshape(section.getShape());
+      return Arrays.convert(Array.makeArray(dtype, (int) section.getSize(), start, incr).reshape(section.getShape()));
     }
   }
 

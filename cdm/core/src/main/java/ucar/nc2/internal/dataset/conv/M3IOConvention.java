@@ -193,7 +193,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("level").setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(unitName)
         .setDesc("synthesized coordinate from " + levelsName + " global attributes");
-    v.setCachedData(dataLev, true);
+    v.setCachedData(dataLev);
     v.addAttribute(new Attribute("positive", "down"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
 
@@ -204,7 +204,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     CoordinateAxis.Builder<?> vedge = CoordinateAxis1D.builder().setName(edge_name).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(edge_name).setUnits(unitName)
         .setDesc("synthesized coordinate from " + levelsName + " global attributes");
-    vedge.setCachedData(dataLayers, true);
+    vedge.setCachedData(dataLayers);
     v.setBoundary(edge_name);
 
     datasetBuilder.replaceCoordinateAxis(rootGroup, v);

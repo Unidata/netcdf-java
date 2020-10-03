@@ -55,8 +55,7 @@ public class TestH5ReadArray {
 
 
       // read part of array
-      dset.setCachedData(null, false); // turn off caching to test read subset
-      dset.setCaching(false);
+      dset.setCaching(false); // turn off caching to test read subset
       int[] origin2 = new int[3];
       int[] shape2 = new int[] {10, 1, 1};
       try {

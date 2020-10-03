@@ -283,7 +283,7 @@ public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpd
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) {
         v.resetShape(); // LOOK
-        v.setCachedData(null, false);
+        v.invalidateCache();
       }
     }
 

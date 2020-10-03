@@ -7,6 +7,7 @@ package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
 import java.util.Optional;
+import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
@@ -237,7 +238,7 @@ public class ADASConvention extends CoordSystemBuilder {
     CoordinateAxis.Builder<?> cb = CoordinateAxis1D.builder().setName(axisName).setDataType(dtype)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(axisName).setUnits(units)
         .setDesc("synthesized non-staggered " + axisName + " coordinate");
-    cb.setCachedData(data, true);
+    cb.setCachedData(data);
     datasetBuilder.replaceCoordinateAxis(rootGroup, cb);
   }
 

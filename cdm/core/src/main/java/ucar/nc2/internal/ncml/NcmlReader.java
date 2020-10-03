@@ -24,6 +24,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
+import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -1201,31 +1202,25 @@ public class NcmlReader {
           errlog.format("Cant find attribute %s %n", fromAttribute);
           return;
         }
-        Array data = att.getValues();
-        v.setCachedData(data, true);
+        v.setCachedData(att.getArrayValues());
         return;
       }
 
       // check if values are specified by start / increment
       String startS = valuesElem.getAttributeValue("start");
       String incrS = valuesElem.getAttributeValue("increment");
-      String nptsS = valuesElem.getAttributeValue("npts");
-      int npts = (nptsS == null) ? 0 : Integer.parseInt(nptsS);
+      // String nptsS = valuesElem.getAttributeValue("npts");
+      // int npts = (nptsS == null) ? 0 : Integer.parseInt(nptsS); NOT USED
 
       // start, increment are specified
       if ((startS != null) && (incrS != null)) {
         double start = Double.parseDouble(startS);
         double incr = Double.parseDouble(incrS);
-        if (npts == 0) {
-          // this defers creation until build(), when all dimension sizes are known.
-          // must also set dimensions by name.
-          v.setAutoGen(start, incr);
-          if (v.getRank() > 0) {
-            v.setDimensionsByName(v.makeDimensionsString());
-          }
-        } else {
-          Array data = Array.makeArray(dtype, npts, start, incr);
-          v.setCachedData(data, true);
+        // this defers creation until build(), when all dimension sizes are known.
+        // must also set dimensions by name.
+        v.setAutoGen(start, incr);
+        if (v.getRank() > 0) {
+          v.setDimensionsByName(v.makeDimensionsString());
         }
         return;
       }
@@ -1241,8 +1236,8 @@ public class NcmlReader {
         for (int i = 0; i < nhave && i < nwant; i++) {
           data[i] = values.charAt(i);
         }
-        Array dataArray = Array.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
-        v.setCachedData(dataArray, true);
+        ucar.array.Array<?> dataArray = Arrays.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
+        v.setCachedData(dataArray);
 
       } else {
         List<String> valList = getTokens(values, sep);
@@ -1250,7 +1245,7 @@ public class NcmlReader {
         if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
           data = data.reshape(Dimensions.makeShape(v.getDimensions()));
         }
-        v.setCachedData(data, true);
+        v.setCachedData(data);
       }
 
     } catch (Throwable t) {

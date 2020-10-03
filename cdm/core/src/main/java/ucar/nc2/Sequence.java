@@ -19,9 +19,6 @@ import java.util.List;
 public class Sequence extends Structure implements Iterable<ucar.array.StructureData> {
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    if (getCachedData() instanceof ArrayStructure) {
-      return ((ArrayStructure) getCachedData()).getStructureDataIterator();
-    }
     if (ncfile != null) {
       return ncfile.getStructureIterator(this, bufferSize);
     }

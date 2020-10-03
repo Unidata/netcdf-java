@@ -529,7 +529,7 @@ public class NcStream {
       // LOOK may mess with ability to change var size later.
       ByteBuffer bb = ByteBuffer.wrap(var.getData().toByteArray());
       Array data = Array.factory(varType, section.build().getShape(), bb);
-      ncvar.setCachedData(data, true);
+      ncvar.setCachedData(data);
     }
 
     return ncvar;
