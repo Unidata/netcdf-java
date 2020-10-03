@@ -72,7 +72,7 @@ public final class StructureMembers implements Iterable<Member> {
     return members.stream().filter(m -> m.name.equals(memberName)).findFirst().orElse(null);
   }
 
-  /** Get the total size of the Structure in bytes. */
+  /** Get the total size of one Structure in bytes. */
   public int getStorageSizeBytes() {
     return structureSize;
   }
@@ -210,13 +210,21 @@ public final class StructureMembers implements Iterable<Member> {
      * Get the total size in bytes needed for storing the data in this Member.
      * A Sequence, String and Vlen are always stored on the heap, so this returns 4 bytes used for the heap index.
      * A Structure may be stored on the heap, depending on StructureMembers.isStructuresOnHeap().
-     * If true, then takes 4 bytes. If false, then this will be the sum of the member's sizes, including nested
-     * Structures.
+     * If true, then takes 4 bytes. If false, then this will be the sum of the member's sizes (including nested
+     * Structures) times the number of Strutures.
+     *
+     * If the Member is a Structure, then the size of one Structure will be getStructureMembers.getStorageSizeBytes().
      *
      * @return total size in bytes
      */
     public int getStorageSizeBytes() {
       return storageSizeInBytes;
+    }
+
+    /** Convenience method for members.getStorageSizeBytes(). Throws exception if not a Structure. */
+    public int getStructureSize() {
+      Preconditions.checkNotNull(this.members);
+      return members.getStorageSizeBytes();
     }
 
     /** Is this a scalar (size == 1). */

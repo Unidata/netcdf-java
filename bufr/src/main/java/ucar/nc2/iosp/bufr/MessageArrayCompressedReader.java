@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp.bufr;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -83,9 +84,7 @@ public class MessageArrayCompressedReader {
 
   // top level sequence
   private final int ndatasets;
-  private final ByteBuffer bbuffer;
-  private final StructureMembers members;
-  private final StructureDataStorageBB storageBB;
+  private final Request topreq;
 
   /**
    * Read all datasets from a single message
@@ -108,50 +107,55 @@ public class MessageArrayCompressedReader {
     // allocate ArrayStructureBB for outer structure
     StructureMembers.Builder membersb = StructureMembers.makeStructureMembers(s);
     membersb.setStandardOffsets(structuresOnHeap); // LOOK ??
-    this.members = membersb.build();
+    StructureMembers members = membersb.build();
 
     this.ndatasets = message.getNumberDatasets();
-    this.bbuffer = ByteBuffer.allocate(this.ndatasets * members.getStorageSizeBytes());
-    this.bbuffer.order(ByteOrder.BIG_ENDIAN);
+    ByteBuffer bbuffer = ByteBuffer.allocate(this.ndatasets * members.getStorageSizeBytes());
+    bbuffer.order(ByteOrder.BIG_ENDIAN);
 
-    storageBB = new StructureDataStorageBB(members, this.bbuffer, this.ndatasets);
+    StructureDataStorageBB storageBB = new StructureDataStorageBB(members, bbuffer, this.ndatasets);
     storageBB.setStructuresOnHeap(structuresOnHeap);
 
     // map dkey to Member recursively
-    MessageArrayReaderUtils.associateMessage2Members(this.members, message.getRootDataDescriptor(), topmap);
+    MessageArrayReaderUtils.associateMessage2Members(members, message.getRootDataDescriptor(), topmap);
+    this.topreq = new Request(storageBB, bbuffer, members, members.getStorageSizeBytes(), topmap);
   }
 
   // manage the request
   private static class Request {
-    StructureDataStorageBB storageBB; // data goes here, may be null?
-    HashMap<DataDescriptor, Member> memberMap;
-    ByteBuffer bb;
+    final StructureDataStorageBB storageBB;
+    final ByteBuffer bb;
+    final StructureMembers members;
+    final int datasetSize;
+    final HashMap<DataDescriptor, Member> memberMap;
+
     @Nullable
     DpiTracker dpiTracker; // may be null
     int dpiRow; // dont understand this, but used for dpi
 
-    Request(StructureDataStorageBB storageBB, ByteBuffer bb, HashMap<DataDescriptor, Member> memberMap) {
+    Request(StructureDataStorageBB storageBB, ByteBuffer bb, StructureMembers members, int datasetSize,
+        HashMap<DataDescriptor, Member> memberMap) {
       this.storageBB = storageBB;
       this.bb = bb;
+      this.members = members;
+      this.datasetSize = datasetSize; // number of bytes one dataset is.
       this.memberMap = memberMap;
     }
 
-    int getStructureSize() {
-      return storageBB.getStructureSize();
+    int getDatasetSize() {
+      return datasetSize;
     }
   }
 
   // read / count the bits in a compressed message
   public StructureDataArray readEntireMessage() throws IOException {
-    Request req = new Request(storageBB, bbuffer, topmap);
-
     BitReader reader = new BitReader(raf, message.dataSection.getDataPos() + 4);
     DataDescriptor root = message.getRootDataDescriptor();
     if (!root.isBad) {
       DebugOut out = (f == null) ? null : new DebugOut(f);
       // one for each field LOOK why not m.counterFlds ?
       BitCounterCompressed[] counterFlds = new BitCounterCompressed[root.subKeys.size()];
-      readData(reader, counterFlds, root, 0, 0, req, out);
+      readData(reader, root, 0, 0, this.topreq, counterFlds, out);
 
       message.msg_nbits = 0;
       for (BitCounterCompressed counter : counterFlds) {
@@ -163,22 +167,21 @@ public class MessageArrayCompressedReader {
       throw new RuntimeException("Bad root descriptor");
     }
 
-    return new ucar.array.StructureDataArray(members, new int[] {this.ndatasets}, storageBB);
+    return new ucar.array.StructureDataArray(this.topreq.members, new int[] {this.ndatasets}, this.topreq.storageBB);
   }
 
   /**
-   * Recursive.
-   * 
+   *
    * @param reader raf wrapper for bit reading
-   * @param fldCounters one for each field
    * @param parent parent.subkeys() holds the fields
-   * @param bitOffset bit offset from beginning of data
+   * @param bitOffset bit offset from beginning of message's data
+   * @param posOffset bytebuffer position offset, for nested structs
    * @param req for writing into the StructureDataArray;
+   * @param fldCounters bitCounters, one for each field
    * @param out debug info; may be null
-   * @return bitOffset
    */
-  private int readData(BitReader reader, BitCounterCompressed[] fldCounters, DataDescriptor parent, int bitOffset,
-      int nestedRow, Request req, @Nullable DebugOut out) throws IOException {
+  private int readData(BitReader reader, DataDescriptor parent, int bitOffset, int posOffset, Request req,
+      BitCounterCompressed[] fldCounters, @Nullable DebugOut out) throws IOException {
 
     List<DataDescriptor> flds = parent.getSubKeys();
     for (int fldidx = 0; fldidx < flds.size(); fldidx++) {
@@ -193,11 +196,16 @@ public class MessageArrayCompressedReader {
         }
         continue;
       }
+      Member member = req.memberMap.get(dkey);
+      if (member == null && dkey.subKeys != null) {
+        member = req.memberMap.get(dkey.subKeys.get(0)); // use first field of the
+      }
+      Preconditions.checkNotNull(member);
 
       BitCounterCompressed counter = new BitCounterCompressed(dkey, this.ndatasets, bitOffset);
       fldCounters[fldidx] = counter;
 
-      // sequence
+      // replicated with unknown length (sequence)
       if (dkey.replication == 0) {
         reader.setBitOffset(bitOffset);
         int nestedNrows = (int) reader.bits2UInt(dkey.replicationCountSize);
@@ -213,12 +221,11 @@ public class MessageArrayCompressedReader {
         counter.addNestedCounters(nestedNrows);
 
         // make an ArrayObject of ArraySequence, place it into the data array
-        Member member = req.memberMap.get(dkey);
         bitOffset = makeNestedSequence(reader, member, dkey, bitOffset, nestedNrows, req, counter, out);
         continue;
       }
 
-      // structure
+      // replicated with known length (structure or non-scalar field)
       if (dkey.type == 3) {
         if (null != out) {
           out.f.format("%s--structure %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset,
@@ -227,16 +234,23 @@ public class MessageArrayCompressedReader {
 
         // p 11 of "standard", doesnt describe the case of compression with nested replication.
         counter.addNestedCounters(dkey.replication);
-        for (int dataset = 0; dataset < dkey.replication; dataset++) {
-          BitCounterCompressed[] nested = counter.getNestedCounters(dataset);
-          req.dpiRow = dataset;
+        for (int nrow = 0; nrow < dkey.replication; nrow++) {
+          BitCounterCompressed[] bitCounters = counter.getNestedCounters(nrow);
+          req.dpiRow = nrow;
+          int nestedOffset;
+          if (member.getStructureMembers() == null) {
+            // this is the case where its a singleton replica, so not a compound, just a non-scalar field.
+            nestedOffset = posOffset + nrow * member.getDataType().getSize();
+          } else {
+            nestedOffset = posOffset + nrow * member.getStructureSize() + member.getOffset();
+          }
           if (null != out) {
             out.f.format("%n");
             out.indent.incr();
-            bitOffset = readData(reader, nested, dkey, bitOffset, nestedRow, req, out);
+            bitOffset = readData(reader, dkey, bitOffset, nestedOffset, req, bitCounters, out);
             out.indent.decr();
           } else {
-            bitOffset = readData(reader, nested, dkey, bitOffset, nestedRow, req, null);
+            bitOffset = readData(reader, dkey, bitOffset, nestedOffset, req, bitCounters, null);
           }
         }
         continue;
@@ -244,7 +258,6 @@ public class MessageArrayCompressedReader {
 
       //// all other fields
 
-      Member member = req.memberMap.get(dkey);
       // IndexIterator iter = (IndexIterator) member.getDataObject();
       // LOOK setDataArray never called
       // StructureDataArray dataDpi = (iter == null) ? (StructureDataArray) member.getDataArray() : null;
@@ -272,8 +285,11 @@ public class MessageArrayCompressedReader {
         }
 
         for (int dataset = 0; dataset < this.ndatasets; dataset++) {
+          int pos = posOffset + req.getDatasetSize() * dataset + member.getOffset();
+          req.bb.position(pos);
+
           if (dataWidth == 0) { // use the min value
-            putBytes(req.bb, req.getStructureSize(), member, dataset, nestedRow, minValue);
+            req.bb.put(minValue);
 
           } else { // read the incremental value
             int nt = Math.min(nc, dataWidth);
@@ -291,7 +307,7 @@ public class MessageArrayCompressedReader {
                 cval = 0; // printable ascii KLUDGE!
               incValue[i] = (byte) cval;
             }
-            putBytes(req.bb, req.getStructureSize(), member, dataset, nestedRow, incValue);
+            req.bb.put(incValue);
             if (out != null) {
               out.f.format(" %s,", new String(incValue, StandardCharsets.UTF_8));
             }
@@ -358,7 +374,7 @@ public class MessageArrayCompressedReader {
           }
         }
 
-        int pos = member.getOffset() + req.getStructureSize() * dataset + nestedRow * member.getStorageSizeBytes();
+        int pos = posOffset + req.getDatasetSize() * dataset + member.getOffset();
         req.bb.position(pos);
         MessageArrayReaderUtils.putNumericData(dkey, req.bb, value);
 
@@ -399,12 +415,7 @@ public class MessageArrayCompressedReader {
     return bitOffset;
   }
 
-  private void putBytes(ByteBuffer bb, int recsize, Member member, int dataset, int row, byte[] values) {
-    int pos = member.getOffset() + recsize * dataset + row * member.getStorageSizeBytes();
-    bb.position(pos);
-    bb.put(values);
-  }
-
+  // TODO: Not sure this handles seq inside of seq inside of obs, or if compressed message allows that (?)
   private int makeNestedSequence(BitReader reader, Member member, DataDescriptor seqdd, int bitOffset, int nestedNrows,
       Request req, BitCounterCompressed bitCounterNested, DebugOut out) throws IOException {
 
@@ -423,17 +434,19 @@ public class MessageArrayCompressedReader {
 
     HashMap<DataDescriptor, Member> nestedMap = new HashMap<>();
     MessageArrayReaderUtils.associateMessage2Members(nestedMembers, seqdd, nestedMap);
-    Request nreq = new Request(nestedStorage, nestedBB, nestedMap);
+    Request nreq =
+        new Request(nestedStorage, nestedBB, nestedMembers, member.getStructureSize() * nestedNrows, nestedMap);
 
     if (out != null) {
       out.indent.incr();
     }
 
     // iterate over the number of replications, reading ndataset compressed values at each iteration
-    for (int row = 0; row < nestedNrows; row++) {
-      BitCounterCompressed[] nested = bitCounterNested.getNestedCounters(row);
-      nreq.dpiRow = row;
-      bitOffset = readData(reader, nested, seqdd, bitOffset, row, nreq, out);
+    for (int nrow = 0; nrow < nestedNrows; nrow++) {
+      BitCounterCompressed[] bitCounters = bitCounterNested.getNestedCounters(nrow);
+      nreq.dpiRow = nrow;
+      int nestedOffset = nrow * member.getStructureSize();
+      bitOffset = readData(reader, seqdd, bitOffset, nestedOffset, nreq, bitCounters, out);
     }
 
     if (out != null) {
@@ -443,14 +456,14 @@ public class MessageArrayCompressedReader {
     int[] shape = {nestedElements};
     StructureDataArray nested = new StructureDataArray(nestedMembers, shape, nestedStorage);
 
-    // We made ndatasets * nestedNrows structs, now distribute to each datasets
+    // We made ndatasets * nestedNrows structs, now distribute to each dataset
     int count = 0;
     for (int dataset = 0; dataset < this.ndatasets; dataset++) {
       try {
         List<Range> ranges = ImmutableList.of(new Range(count, count + nestedNrows - 1));
         StructureDataArray nestedRow = (StructureDataArray) Arrays.section(nested, ranges);
         int index = req.storageBB.putOnHeap(nestedRow);
-        int pos = member.getOffset() + req.getStructureSize() * dataset;
+        int pos = dataset * req.getDatasetSize() + member.getOffset();
         req.bb.position(pos);
         req.bb.putInt(index);
         count += nestedNrows;

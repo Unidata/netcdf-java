@@ -28,9 +28,21 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestReadArrayProblem {
 
-  // @Test
+  @Test
   public void testBufrProblem() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/DART2.bufr";
+    compareSequence(filename);
+  }
+
+  @Test
+  public void testBufrCompressedNestedStruct() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/problems/0-01-030_bitWidth-128.bufr";
+    compareSequence(filename);
+  }
+
+  @Test
+  public void testBufrProblemMixed() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/mixed/TimeIncr.bufr";
     compareSequence(filename);
   }
 
@@ -96,13 +108,13 @@ public class TestReadArrayProblem {
   }
 
   @Test
-  public void testBufrUncompressedNestedStructure() throws IOException {
+  public void testBufrUncompressedNested() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/test1.bufr";
     compareSequence(filename);
   }
 
   @Test
-  public void testBufrCompressedNestedStructure() throws IOException {
+  public void testBufrCompressedNestedSequence() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/TimeIncr0.bufr";
     compareSequence(filename);
   }
