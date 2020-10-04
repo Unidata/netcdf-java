@@ -903,6 +903,7 @@ public class NcmlReader {
         VariableDS.Builder<?> aggDs = (VariableDS.Builder<?>) agg;
         aggDs.setOriginalName(nameInFile);
       }
+      agg.setParentGroupBuilder(groupBuilder);
       DataType reallyFinalDtype = finalDtype != null ? finalDtype : agg.dataType;
       augmentVariableNew(agg, reallyFinalDtype, varElem);
     });
@@ -926,6 +927,7 @@ public class NcmlReader {
             .orElseThrow(() -> new IllegalStateException("Cant find variable " + nameInFile));
       }
     }
+    vb.setParentGroupBuilder(groupBuilder);
     vb.setName(name).setDataType(dtype);
     if (typedefS != null) {
       vb.setEnumTypeName(typedefS);
