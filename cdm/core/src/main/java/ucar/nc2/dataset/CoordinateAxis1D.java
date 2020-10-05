@@ -4,7 +4,6 @@
  */
 package ucar.nc2.dataset;
 
-import ucar.array.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
@@ -681,7 +680,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (getDataType() != DataType.DOUBLE)
       cachedData = MAMath.convert(cachedData, getDataType());
 
-    builder.setCachedData(cachedData);
+    builder.setSourceData(cachedData);
 
     // LOOK repalce in parentGroup? too late for that.
     return builder.build(this.getParentGroup());

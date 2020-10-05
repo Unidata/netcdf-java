@@ -31,7 +31,7 @@ public class TestStructureData {
     StructureData sdata = makeStructureData(1);
     ArrayStructureW cacheData = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1});
     cacheData.setStructureData(sdata, 0);
-    structb.setCachedData(cacheData);
+    structb.setSourceData(cacheData);
     Structure struct = structb.build(makeDummyGroup());
 
     StructureData scalarData = struct.readStructure(0);
@@ -63,7 +63,7 @@ public class TestStructureData {
     for (int i = 0; i < 4; i++) {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
-    structb.setCachedData(cacheData);
+    structb.setSourceData(cacheData);
     structb.setIsCaching(true);
     Structure struct = structb.build(makeDummyGroup());
 

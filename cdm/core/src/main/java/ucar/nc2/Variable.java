@@ -1108,6 +1108,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     if (this.cache.isCaching != null) {
       return this.cache.isCaching;
     }
+    if (this.cache.srcData != null || this.cache.cacheData != null) {
+      return true;
+    }
 
     return !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
   }
@@ -1132,8 +1135,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   // this indirection allows us to share the cache among the variable's sections and copies
   protected static class Cache {
-    private ucar.array.Array<?> srcData; // this is the only source of the data, do not erase, can only be set in the
-                                         // builder
+    // this is the only source of the data, do not erase, can only be set in the builder
+    private ucar.array.Array<?> srcData;
     private ucar.array.Array<?> cacheData; // this is temporary data, may be erased, can be set by setCachedData()
     private Integer sizeToCacheBytes; // bytes
     private Boolean isCaching;
@@ -1295,7 +1298,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     if (this.cache.srcData != null) {
-      builder.setCachedData(this.cache.srcData);
+      builder.setSourceData(this.cache.srcData);
     }
     return builder;
   }
@@ -1579,12 +1582,12 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
-    public T setCachedData(Array srcData) {
+    public T setSourceData(Array srcData) {
       this.cache.srcData = ucar.array.ArraysConvert.convertToArray(srcData);
       return self();
     }
 
-    public T setCachedData(ucar.array.Array<?> srcData) {
+    public T setSourceData(ucar.array.Array<?> srcData) {
       this.cache.srcData = srcData;
       return self();
     }

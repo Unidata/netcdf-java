@@ -739,7 +739,7 @@ public class CoordSystemBuilder {
     v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data
-    v.setCachedData(Arrays.factory(DataType.CHAR, new int[] {}, new char[] {' '}));
+    v.setSourceData(Arrays.factory(DataType.CHAR, new int[] {}, new char[] {' '}));
 
     parseInfo.format("  made CoordinateTransformVariable: %s%n", ct.getName());
     return v;

@@ -492,7 +492,7 @@ public class TestVariable {
   public void testReadScalarString() throws IOException {
     Array data = Array.makeArray(DataType.STRING, new String[] {"one"});
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.STRING).setCachedData(data).build(makeDummyGroup());
+        Variable.builder().setName("varb").setDataType(DataType.STRING).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readScalarString()).isEqualTo("one");
   }
 
@@ -500,7 +500,7 @@ public class TestVariable {
   public void testReadScalarChar() throws IOException {
     Array data = Array.factory(DataType.CHAR, new int[] {3}, new char[] {'1', '2', '3'});
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.CHAR).setCachedData(data).build(makeDummyGroup());
+        Variable.builder().setName("varb").setDataType(DataType.CHAR).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readScalarString()).isEqualTo("123");
   }
 

@@ -5,7 +5,6 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -80,7 +79,7 @@ public class TestArraysConvert {
     assertThat(converted.getSize()).isEqualTo(ma2Struct.getSize());
 
     Formatter f = new Formatter();
-    CompareNetcdf2 compare = new CompareNetcdf2();
+    CompareNetcdf2 compare = new CompareNetcdf2(f);
     boolean ok = compare.compareData("testConvertStructureDataRoundtrip", ma2Struct, converted, false);
     if (!ok) {
       System.out.printf("%s%n", f);
@@ -129,7 +128,7 @@ public class TestArraysConvert {
     return sdata;
   }
 
-  public StructureDataArray makeStructureDataArray() {
+  private StructureDataArray makeStructureDataArray() {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("name");
     builder.addMember("mbyte", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});

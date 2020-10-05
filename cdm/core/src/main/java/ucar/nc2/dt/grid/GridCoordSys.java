@@ -607,7 +607,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
 
       CoordinateAxis.Builder<?> newAxisBuilder = axis.toBuilder();
-      newAxisBuilder.setCachedData(data);
+      newAxisBuilder.setSourceData(data);
       newAxisBuilder.setUnits("km");
       return newAxisBuilder.build(axis.getParentGroup());
 
@@ -620,7 +620,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       CoordinateAxis.Builder<?> newAxisBuilder = axis.toBuilder();
       newAxisBuilder.setDataType(DataType.DOUBLE);
-      newAxisBuilder.setCachedData(newData);
+      newAxisBuilder.setSourceData(newData);
       newAxisBuilder.setUnits("km");
       return newAxisBuilder.build(axis.getParentGroup());
     }

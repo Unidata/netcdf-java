@@ -87,7 +87,7 @@ class GribIospBuilder {
     if (isRotatedLatLon) {
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setCachedData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
+      hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
         hcsV.addAttribute(Attribute.fromParameter(p));
       }
@@ -117,7 +117,7 @@ class GribIospBuilder {
       // make horiz coordsys coordinate variable
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setCachedData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
+      hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
         hcsV.addAttribute(Attribute.fromParameter(p));
       }
@@ -131,7 +131,7 @@ class GribIospBuilder {
       g.addVariable(lat);
       lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       if (hcs.getGaussianLats() != null) {
-        lat.setCachedData(hcs.getGaussianLats());
+        lat.setSourceData(hcs.getGaussianLats());
         lat.addAttribute(new Attribute(CDM.GAUSSIAN, "true"));
       } else {
         lat.setAutoGen(hcs.starty, hcs.dy);
@@ -147,7 +147,7 @@ class GribIospBuilder {
       // make horiz coordsys coordinate variable
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setCachedData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
+      hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
       for (Parameter p : hcs.proj.getProjectionParameters()) {
         hcsV.addAttribute(Attribute.fromParameter(p));
       }
@@ -652,7 +652,7 @@ class GribIospBuilder {
     for (int val : coordTime.getOffsetSorted()) {
       data[count++] = val;
     }
-    v.setCachedData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
+    v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }
@@ -696,7 +696,7 @@ class GribIospBuilder {
     for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
       data[count++] = tinv.getBounds2();
     }
-    v.setCachedData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
+    v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
 
     // bounds
     String bounds_name = tcName + "_bounds";
@@ -713,7 +713,7 @@ class GribIospBuilder {
       data[count++] = tinv.getBounds1();
       data[count++] = tinv.getBounds2();
     }
-    bounds.setCachedData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes, 2}, data));
+    bounds.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes, 2}, data));
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }
@@ -749,7 +749,7 @@ class GribIospBuilder {
       for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
       }
-      v.setCachedData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
+      v.setSourceData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
 
       Variable.Builder<?> bounds = Variable.builder().setName(vcName + "_bounds").setDataType(DataType.FLOAT)
           .setParentGroupBuilder(g).setDimensionsByName(vcName + " 2");
@@ -767,7 +767,7 @@ class GribIospBuilder {
         data[count++] = (float) level.getValue1();
         data[count++] = (float) level.getValue2();
       }
-      bounds.setCachedData(Arrays.factory(DataType.FLOAT, new int[] {n, 2}, data));
+      bounds.setSourceData(Arrays.factory(DataType.FLOAT, new int[] {n, 2}, data));
 
     } else {
       float[] data = new float[n];
@@ -775,7 +775,7 @@ class GribIospBuilder {
       for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) val.getValue1();
       }
-      v.setCachedData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
+      v.setSourceData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
     }
   }
 
@@ -794,6 +794,6 @@ class GribIospBuilder {
     for (EnsCoordValue ecc : ec.getEnsSorted()) {
       data[count++] = ecc.getEnsMember();
     }
-    v.setCachedData(Arrays.factory(DataType.INT, new int[] {n}, data));
+    v.setSourceData(Arrays.factory(DataType.INT, new int[] {n}, data));
   }
 }

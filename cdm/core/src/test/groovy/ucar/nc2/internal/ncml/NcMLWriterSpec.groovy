@@ -80,28 +80,28 @@ recordsGroup/recordsStruct = UNREADABLE
             .setParentGroupBuilder(root).setDimensionsByName("time").setEnumTypeName("dessertType")
             .addAttribute(Attribute.emptyValued("zero", DataType.ULONG)) ; // unsigned, zero-length, LONG attribute
         short[] dessertStorage = [18, 268, 3284] as short[]
-        dessert.setCachedData(Array.factory(DataType.SHORT, [3] as int[], dessertStorage))  // Irregularly-spaced values
+        dessert.setSourceData(Array.factory(DataType.SHORT, [3] as int[], dessertStorage))  // Irregularly-spaced values
         root.addVariable(dessert)
 
         and: "create 'time' coordinate Variable"
         Variable.Builder time = Variable.builder().setName("time").setDataType(DataType.SHORT)
                 .setParentGroupBuilder(root).setDimensionsByName("time");
         short[] timeStorage = [4, 5, 6] as short[]
-        time.setCachedData(Array.factory(DataType.SHORT, [3] as int[], timeStorage))
+        time.setSourceData(Array.factory(DataType.SHORT, [3] as int[], timeStorage))
         root.addVariable(time)
 
         and: "create char-valued Variable with anonymous Dimension"
         Variable.Builder charVar = Variable.builder().setName("charVar").setDataType(DataType.CHAR)
                 .setParentGroupBuilder(root).setDimensionsByName("5");
         char[] charStorage = ['a', 'b', 'c', 'd', 'e'] as char[]
-        charVar.setCachedData(Array.factory(DataType.CHAR, [5] as int[], charStorage))
+        charVar.setSourceData(Array.factory(DataType.CHAR, [5] as int[], charStorage))
         root.addVariable(charVar)
 
         and: "create string-valued Variable"
         Variable.Builder stringVar = Variable.builder().setName("stringVar").setDataType(DataType.STRING)
                 .setParentGroupBuilder(root).setDimensionsByName("4");
         String[] stringStorage = ['Frodo Baggins', 'Samwise Gamgee', 'Meriadoc Brandybuck', 'Peregrin Took'] as String[]
-        stringVar.setCachedData(Array.factory(DataType.STRING, [4] as int[], stringStorage))
+        stringVar.setSourceData(Array.factory(DataType.STRING, [4] as int[], stringStorage))
         root.addVariable(stringVar)
 
         and: "create Group for records"

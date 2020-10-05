@@ -554,7 +554,7 @@ public class CdmrConverter {
 
     if (var.hasData()) {
       Array<?> data = decodePrimitiveData(var.getData());
-      ncvar.setCachedData(data);
+      ncvar.setSourceData(data);
     }
 
     return ncvar;

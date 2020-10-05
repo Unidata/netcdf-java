@@ -63,7 +63,7 @@ public class ZebraConvention extends CoordSystemBuilder {
       return;
     }
 
-    time.setCachedData(data);
+    time.setSourceData(data);
   }
 
   public static class Factory implements CoordSystemBuilderFactory {

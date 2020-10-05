@@ -227,7 +227,7 @@ public class Structure extends Variable {
    * @return StructureDataIterator over type StructureData
    * @throws java.io.IOException on read error
    * @see #getStructureIterator(int bufferSize)
-   * @deprecated use readArray()
+   * @deprecated use readArray().iterator()
    */
   @Deprecated
   public StructureDataIterator getStructureIterator() throws java.io.IOException {
@@ -253,7 +253,7 @@ public class Structure extends Variable {
    * @param bufferSize size in bytes to buffer, set < 0 to use default size
    * @return StructureDataIterator over type StructureData
    * @throws java.io.IOException on read error
-   * @deprecated use readArray()
+   * @deprecated use readArray().iterator()
    */
   @Deprecated
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {

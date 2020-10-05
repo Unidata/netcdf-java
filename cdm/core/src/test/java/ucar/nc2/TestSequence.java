@@ -10,14 +10,17 @@ import static ucar.nc2.TestUtils.makeDummyGroup;
 
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Formatter;
 import org.junit.Test;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
+import ucar.array.StructureMembers;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.ma2.StructureData;
@@ -38,7 +41,7 @@ public class TestSequence {
     for (int i = 0; i < 4; i++) {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
-    structb.setCachedData(cacheData);
+    structb.setSourceData(cacheData);
     Structure struct = structb.build(makeDummyGroup());
 
     Array data = struct.read();
@@ -65,13 +68,63 @@ public class TestSequence {
       assertThat(count).isEqualTo(4);
     }
 
-    // The Section should be ignored
     Array data2 = struct.read(new Section());
-    assertThat(MAMath.equals(data, data2)).isTrue();
+
+    Formatter f = new Formatter();
+    CompareNetcdf2 compare = new CompareNetcdf2(f);
+    boolean ok = compare.compareData("testSequence", data, data2, false);
+    if (!ok) {
+      System.out.printf("%s%n", f);
+    }
+    assertThat(ok).isTrue();
   }
 
   @Test
-  public void testUnsupportedMethods() throws IOException, InvalidRangeException {
+  public void testSequenceArray() throws IOException, InvalidRangeException {
+    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
+        .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
+
+    structb.setSourceData(makeStructureDataArray());
+    Structure struct = structb.build(makeDummyGroup());
+
+    ucar.array.Array<?> data = struct.readArray();
+    assertThat(data).isNotNull();
+    assertThat(data).isInstanceOf(ucar.array.StructureDataArray.class);
+    ucar.array.StructureDataArray as = (ucar.array.StructureDataArray) data;
+    int count = 0;
+    for (ucar.array.StructureData sd : as) {
+      count++;
+    }
+    assertThat(count).isEqualTo(2);
+  }
+
+  private StructureDataArray makeStructureDataArray() {
+    StructureMembers.Builder builder = StructureMembers.builder();
+    builder.setName("name");
+    builder.addMember("mbyte", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
+    builder.addMember("mfloat", "mdesc2", "munits1", DataType.FLOAT, new int[] {});
+    builder.setStandardOffsets(false);
+    StructureMembers members = builder.build();
+
+    int nrows = 2;
+    ByteBuffer bbuffer = ByteBuffer.allocate(nrows * members.getStorageSizeBytes());
+    StructureDataStorageBB storage = new StructureDataStorageBB(members, bbuffer, nrows);
+    for (int row = 0; row < nrows; row++) {
+      for (StructureMembers.Member m : members) {
+        if (m.getName().equals("mbyte")) {
+          for (int i = 0; i < m.length(); i++) {
+            bbuffer.put((byte) i);
+          }
+        } else if (m.getName().equals("mbyte")) {
+          bbuffer.putFloat(99.5f);
+        }
+      }
+    }
+    return new StructureDataArray(members, new int[] {nrows}, storage);
+  }
+
+  @Test
+  public void testUnsupportedMethods() {
     Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
         .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
 
@@ -80,7 +133,7 @@ public class TestSequence {
     for (int i = 0; i < 4; i++) {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
-    structb.setCachedData(cacheData);
+    structb.setSourceData(cacheData);
     Structure struct = structb.build(makeDummyGroup());
 
     try {
@@ -144,7 +197,7 @@ public class TestSequence {
     for (int i = 0; i < 4; i++) {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
-    structb.setCachedData(cacheData);
+    structb.setSourceData(cacheData);
     Structure struct1 = structb.build(makeDummyGroup());
     Structure struct2 = struct1.toBuilder().setName("struct2").build(makeDummyGroup());
 
@@ -164,7 +217,7 @@ public class TestSequence {
   }
 
   @Test
-  public void testNoData() throws IOException {
+  public void testNoData() {
     Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
         .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
     Structure struct = structb.build(makeDummyGroup());

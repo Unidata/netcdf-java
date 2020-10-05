@@ -1204,7 +1204,7 @@ public class NcmlReader {
           errlog.format("Cant find attribute %s %n", fromAttribute);
           return;
         }
-        v.setCachedData(att.getArrayValues());
+        v.setSourceData(att.getArrayValues());
         return;
       }
 
@@ -1239,7 +1239,7 @@ public class NcmlReader {
           data[i] = values.charAt(i);
         }
         ucar.array.Array<?> dataArray = Arrays.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
-        v.setCachedData(dataArray);
+        v.setSourceData(dataArray);
 
       } else {
         List<String> valList = getTokens(values, sep);
@@ -1247,7 +1247,7 @@ public class NcmlReader {
         if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
           data = data.reshape(Dimensions.makeShape(v.getDimensions()));
         }
-        v.setCachedData(data);
+        v.setSourceData(data);
       }
 
     } catch (Throwable t) {
