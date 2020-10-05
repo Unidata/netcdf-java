@@ -42,9 +42,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
 
-/**
- * DODSNetcdfFile builder
- */
+/** DODSNetcdfFile builder */
 @NotThreadSafe
 abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<T> {
 
@@ -203,7 +201,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
 
           DodsVariableBuilder<?> dodsVar = (DodsVariableBuilder<?>) var;
           dodsVar.setCE(vCE);
-          dodsVar.setCaching(true);
+          dodsVar.setIsCaching(true);
         }
       }
     }
