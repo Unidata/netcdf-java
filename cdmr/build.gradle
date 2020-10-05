@@ -10,6 +10,10 @@ apply from: "$rootDir/gradle/any/protobuf.gradle"
 dependencies {
   api project(':cdm:cdm-core')
 
+  // for CdmrServer: we should just add on the classpath?
+  api project(':bufr')
+  api project(':grib')
+
   implementation "io.grpc:grpc-protobuf:${depVersion.grpc}"
   implementation "io.grpc:grpc-stub:${depVersion.grpc}"
   compileOnly 'org.apache.tomcat:annotations-api:6.0.53'

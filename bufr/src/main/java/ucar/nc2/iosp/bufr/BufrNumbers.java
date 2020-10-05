@@ -7,15 +7,11 @@ package ucar.nc2.iosp.bufr;
 import java.io.IOException;
 import ucar.unidata.io.RandomAccessFile;
 
-/**
- * A class that contains static methods for converting multiple
- * bytes into one float or integer.
- */
-
+/** Static utility methods for converting multiple bytes into one float or integer. */
 public final class BufrNumbers {
 
   // used to check missing values when value is packed with all 1's
-  private static final long[] missing_value = new long[2049];
+  private static final long[] missing_value = new long[65];
 
   static {
     long accum = 0;
@@ -26,11 +22,13 @@ public final class BufrNumbers {
   }
 
   public static boolean isMissing(long raw, int bitWidth) {
-    return (raw == BufrNumbers.missing_value[bitWidth]);
+    int nbits = Math.min(bitWidth, 64);
+    return (raw == BufrNumbers.missing_value[nbits]);
   }
 
   static long missingValue(int bitWidth) {
-    return BufrNumbers.missing_value[bitWidth];
+    int nbits = Math.min(bitWidth, 64);
+    return BufrNumbers.missing_value[nbits];
   }
 
   /** if missing value is not defined use this value. */
@@ -40,7 +38,6 @@ public final class BufrNumbers {
   static int int2(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
-
     return int2(a, b);
   }
 
@@ -48,7 +45,6 @@ public final class BufrNumbers {
   private static int int2(int a, int b) {
     if ((a == 0xff && b == 0xff)) // all bits set to one
       return UNDEFINED;
-
     return (1 - ((a & 128) >> 6)) * ((a & 127) << 8 | b);
   }
 
@@ -57,7 +53,6 @@ public final class BufrNumbers {
     int a = raf.read();
     int b = raf.read();
     int c = raf.read();
-
     return int3(a, b, c);
   }
 
@@ -72,7 +67,6 @@ public final class BufrNumbers {
     int b = raf.read();
     int c = raf.read();
     int d = raf.read();
-
     return int4(a, b, c, d);
   }
 
@@ -81,15 +75,13 @@ public final class BufrNumbers {
     // all bits set to ones
     if (a == 0xff && b == 0xff && c == 0xff && d == 0xff)
       return UNDEFINED;
-
     return (1 - ((a & 128) >> 6)) * ((a & 127) << 24 | b << 16 | c << 8 | d);
-  } // end int4
+  }
 
   /** Convert 2 bytes into an unsigned integer. */
   static int uint2(RandomAccessFile raf) throws IOException {
     int a = raf.read();
     int b = raf.read();
-
     return uint2(a, b);
   }
 
@@ -103,7 +95,6 @@ public final class BufrNumbers {
     int a = raf.read();
     int b = raf.read();
     int c = raf.read();
-
     return uint3(a, b, c);
   }
 
@@ -125,14 +116,12 @@ public final class BufrNumbers {
   /** Convert 4 bytes to a float. */
   private static float float4(int a, int b, int c, int d) {
     int sgn, mant, exp;
-
     mant = b << 16 | c << 8 | d;
-    if (mant == 0)
+    if (mant == 0) {
       return 0.0f;
-
+    }
     sgn = -(((a & 128) >> 6) - 1);
     exp = (a & 127) - 64;
-
     return (float) (sgn * Math.pow(16.0, exp - 6) * mant);
   }
 
@@ -146,7 +135,6 @@ public final class BufrNumbers {
     int f = raf.read();
     int g = raf.read();
     int h = raf.read();
-
     return (1 - ((a & 128) >> 6))
         * ((long) (a & 127) << 56 | (long) b << 48 | (long) c << 40 | (long) d << 32 | e << 24 | f << 16 | g << 8 | h);
   }

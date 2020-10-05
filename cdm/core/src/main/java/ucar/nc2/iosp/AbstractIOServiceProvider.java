@@ -117,7 +117,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
-  public Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
+  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) {
     throw new UnsupportedOperationException();
   }
 

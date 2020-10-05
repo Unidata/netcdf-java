@@ -75,8 +75,8 @@ public final class ArrayString extends Array<String> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayString createView(IndexFn indexFn) {
-    return new ArrayString(indexFn, storage);
+  protected ArrayString createView(IndexFn view) {
+    return new ArrayString(view, storage);
   }
 
   // used when the data is not in canonical order

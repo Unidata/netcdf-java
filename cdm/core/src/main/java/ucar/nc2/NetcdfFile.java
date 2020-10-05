@@ -497,13 +497,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
   // section is null for full read
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
-    if (iosp == null) {
-      System.out.printf("HEY%n");
-    }
     return iosp.getStructureIterator(s, bufferSize);
   }
 
-  protected Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
+  public Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
     return iosp.getStructureDataArrayIterator(s, bufferSize);
   }
 
@@ -518,6 +515,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return iosp.readData(v, ranges);
   }
 
+  /**
+   * Do not call this directly, use Variable.readArray() !!
+   * Ranges must be filled (no nulls)
+   */
   @Nullable
   protected ucar.array.Array<?> readArrayData(Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (iosp == null) {

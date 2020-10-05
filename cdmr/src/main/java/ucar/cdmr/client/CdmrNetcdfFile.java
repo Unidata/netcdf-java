@@ -4,6 +4,7 @@
  */
 package ucar.cdmr.client;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -15,6 +16,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmRemoteProto.DataRequest;
 import ucar.cdmr.CdmRemoteProto.DataResponse;
@@ -22,21 +27,21 @@ import ucar.cdmr.CdmRemoteProto.Header;
 import ucar.cdmr.CdmRemoteProto.HeaderRequest;
 import ucar.cdmr.CdmRemoteProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
-import ucar.array.Array;
-import ucar.cdmr.CdmrConverterMa2;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /** A remote CDM dataset, using cdmremote protocol to communicate. */
 public class CdmrNetcdfFile extends NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrNetcdfFile.class);
+  private static final int MAX_DATA_WAIT_SECONDS = 30;
   private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
+  private static boolean showRequest = true;
 
   public static final String PROTOCOL = "cdmr";
   public static final String SCHEME = PROTOCOL + ":";
@@ -45,29 +50,50 @@ public class CdmrNetcdfFile extends NetcdfFile {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
   }
 
-  private static boolean showRequest = true;
 
   @Override
-  public ucar.ma2.Array readSection(String variableSection) throws IOException {
+  protected ucar.ma2.Array readData(Variable v, Section sectionWanted) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
+      throws IOException {
+    ucar.array.Array<?> data = readArrayData(s, s.getShapeAsSection());
+    Preconditions.checkNotNull(data);
+    Preconditions.checkArgument(data instanceof StructureDataArray);
+    StructureDataArray sdata = (StructureDataArray) data;
+    return sdata.iterator();
+  }
+
+  @Nullable
+  protected ucar.array.Array<?> readArrayData(Variable v, Section sectionWanted) throws IOException {
+    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
     if (showRequest)
-      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", variableSection,
-          this.remoteURI, this.path);
+      System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", spec, this.remoteURI,
+          this.path);
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
-    List<ucar.ma2.Array> results = new ArrayList<>();
+    List<ucar.array.Array<?>> results = new ArrayList<>();
     long size = 0;
-    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(variableSection).build();
+    DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
-      Iterator<DataResponse> responses = blockingStub.withDeadlineAfter(15, TimeUnit.SECONDS).getData(request);
+      Iterator<DataResponse> responses =
+          blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getData(request);
       while (responses.hasNext()) {
         DataResponse response = responses.next();
         if (response.hasError()) {
           throw new IOException(response.getError().getMessage());
         }
-        Section sectionReturned = CdmrConverter.decodeSection(response.getSection());
-        ucar.ma2.Array result = CdmrConverterMa2.decodeData(response.getData(), sectionReturned);
+        // Section sectionReturned = CdmrConverter.decodeSection(response.getSection());
+        ucar.array.Array<?> result = CdmrConverter.decodeData(response.getData());
         results.add(result);
-        size += result.getSize();
+        size += result.length();
       }
 
     } catch (StatusRuntimeException e) {
@@ -81,74 +107,11 @@ public class CdmrNetcdfFile extends NetcdfFile {
     }
     System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
 
-    // LOOK;
     if (results.size() == 1) {
       return results.get(0);
     } else {
-      return combine(variableSection, results);
+      return Arrays.factoryCopy(v.getDataType(), sectionWanted.getShape(), (List) results); // TODO generics
     }
-  }
-
-  private ucar.ma2.Array combine(String variableSection, List<ucar.ma2.Array> results) {
-    ParsedSectionSpec spec;
-    try {
-      spec = ParsedSectionSpec.parseVariableSection(this, variableSection);
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new RuntimeException(e);
-    }
-
-    Section section = spec.getSection();
-    Variable var = spec.getVariable();
-    long size = section.getSize();
-    if (size > Integer.MAX_VALUE) {
-      throw new OutOfMemoryError();
-    }
-
-    switch (var.getDataType()) {
-      case FLOAT: {
-        float[] all = new float[(int) size];
-        int start = 0;
-        for (ucar.ma2.Array result : results) {
-          float[] array = (float[]) result.getStorage();
-          System.arraycopy(array, 0, all, start, array.length);
-          start += array.length;
-        }
-        return ucar.ma2.Array.factory(var.getDataType(), section.getShape(), all);
-      }
-      case DOUBLE: {
-        double[] all = new double[(int) size];
-        int start = 0;
-        for (ucar.ma2.Array result : results) {
-          double[] array = (double[]) result.getStorage();
-          System.arraycopy(array, 0, all, start, array.length);
-          start += array.length;
-        }
-        return ucar.ma2.Array.factory(var.getDataType(), section.getShape(), all);
-      }
-      default:
-        throw new RuntimeException(" DataType " + var.getDataType());
-    }
-
-  }
-
-  @Override
-  protected ucar.ma2.Array readData(Variable v, Section sectionWanted) throws IOException {
-    String variableSection = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
-    return readSection(variableSection);
-  }
-
-  @Nullable
-  protected ucar.array.Array<?> readArrayData(Variable v, Section sectionWanted)
-      throws IOException, InvalidRangeException {
-    String variableSection = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
-    return null; // readSectionArray(variableSection);
-  }
-
-
-  @Override
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
-    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -234,8 +197,8 @@ public class CdmrNetcdfFile extends NetcdfFile {
     }
 
     private void openChannel() {
+      // parse the URI
       URI uri = java.net.URI.create(this.remoteURI);
-
       String target = uri.getAuthority();
       this.path = uri.getPath();
       if (this.path.startsWith("/")) {

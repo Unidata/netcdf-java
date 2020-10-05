@@ -66,7 +66,7 @@ public class Attribute {
    */
   public Attribute(String name, @Nullable String val) {
     Preconditions.checkNotNull(Strings.emptyToNull(name), "Attribute name cannot be empty or null");
-    this.name = name;
+    this.name = NetcdfFiles.makeValidCdmObjectName(name);
     this.dataType = DataType.STRING;
 
     if (val != null) {

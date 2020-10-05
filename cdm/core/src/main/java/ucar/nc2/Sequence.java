@@ -11,7 +11,7 @@ import ucar.ma2.*;
 import java.util.List;
 
 /**
- * Sequence is a one-dimensional Structure with indeterminate length.
+ * Sequence is a one-dimensional Structure with indeterminate length, including 0.
  * The only data access is through getStructureIterator().
  * However, read() will read in the entire data and return an in-memory ArraySequence.
  */

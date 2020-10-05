@@ -3,22 +3,16 @@
  * See LICENSE for license information.
  */
 
-package ucar.array;
+package ucar.nc2.internal.util;
 
-import static com.google.common.truth.Truth.assertThat;
-
-import java.io.FileFilter;
+import com.google.common.base.Stopwatch;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Iterator;
-import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import java.util.concurrent.TimeUnit;
+import ucar.array.Array;
+import ucar.array.ArrayVlen;
 import ucar.ma2.ArraySequence;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -26,79 +20,58 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/** Compare reading netcdf with Array */
-@RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
-public class TestReadArrayCompare {
+/**
+ * Compare reading netcdf with Ma2 and same file with Array. Open seperate files to prevent them from colliding.
+ * Also use to test round trip through cmdr.
+ */
+public class CompareArrayToMa2 {
 
-  @Parameterized.Parameters(name = "{0}")
-  public static List<Object[]> getTestParameters() {
-    FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc");
-    List<Object[]> result = new ArrayList<>(500);
-    try {
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4/tst/", ff, result);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/", ff, result);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/samples/", ff, result);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/support/", ff, result);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/complex/", ff, result);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/wrf/", ff, result);
-
-      if (Boolean.getBoolean("runSlowTests")) {
-        TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/xmdf/", ff, result);
-        TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/hdf5/", ff, result, false);
-      }
-
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF"});
-      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc"});
-
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib1/SST_Global_5x2p5deg_20071119_0000.grib1"});
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib2/ds.wdir.bin"});
-    } catch (IOException e) {
-      e.printStackTrace();
+  public static boolean compareFiles(NetcdfFile ma2File, NetcdfFile arrayFile) throws IOException {
+    Stopwatch stopwatchAll = Stopwatch.createStarted();
+    // Just the header
+    Formatter errlog = new Formatter();
+    boolean ok = CompareNetcdf2.compareFiles(ma2File, arrayFile, errlog, false, false, false);
+    if (!ok) {
+      System.out.printf("FAIL %s %s%n", arrayFile.getLocation(), errlog);
+      return false;
     }
 
-    return result;
-  }
-
-  /////////////////////////////////////////////////////////////
-
-  public TestReadArrayCompare(String filename) {
-    this.filename = filename;
-  }
-
-  private final String filename;
-
-  @Test
-  public void compareArrays() throws IOException {
-    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
-      System.out.println("Test input: " + ncfile.getLocation());
-
-      boolean ok = true;
-      for (Variable v : ncfile.getVariables()) {
-        ucar.ma2.Array org = v.read();
-        Array<?> array = v.readArray();
-        if (array != null) {
-          System.out.printf("  check %s %s%n", v.getDataType(), v.getNameAndDimensions());
-          Formatter f = new Formatter();
-          boolean ok1 = TestReadArrayCompare.compareData(f, v.getShortName(), org, array, false, true);
-          if (!ok1) {
-            System.out.printf("%s%n", f);
-          }
-          ok &= ok1;
+    for (Variable v : ma2File.getVariables()) {
+      if (v.getDataType() == DataType.SEQUENCE) {
+        System.out.printf("  read sequence %s %s%n", v.getDataType(), v.getShortName());
+        Sequence s = (Sequence) v;
+        StructureDataIterator orgSeq = s.getStructureIterator(-1);
+        Sequence copyv = (Sequence) arrayFile.findVariable(v.getFullName());
+        Iterator<ucar.array.StructureData> array = copyv.iterator();
+        Formatter f = new Formatter();
+        boolean ok1 = CompareArrayToMa2.compareSequence(f, v.getShortName(), orgSeq, array);
+        if (!ok1) {
+          System.out.printf("%s%n", f);
         }
+        ok &= ok1;
+
+      } else {
+        ucar.ma2.Array org = v.read();
+        Variable cdmrVar = arrayFile.findVariable(v.getFullName());
+        Array<?> array = v.readArray();
+        System.out.printf("  check %s %s%n", v.getDataType(), v.getNameAndDimensions());
+        Formatter f = new Formatter();
+        boolean ok1 = CompareArrayToMa2.compareData(f, v.getShortName(), org, array, false, true);
+        if (!ok1) {
+          System.out.printf("%s%n", f);
+        }
+        ok &= ok1;
       }
-      assertThat(ok).isTrue();
     }
+    System.out.printf("*** took %s%n", stopwatchAll.stop());
+    return ok;
   }
 
-  static boolean compareData(Formatter f, String name, ucar.ma2.Array org, ucar.array.Array<?> array, boolean justOne,
+  public static boolean compareData(Formatter f, String name, ucar.ma2.Array org, Array<?> array, boolean justOne,
       boolean testTypes) throws IOException {
     boolean ok = true;
 
@@ -143,8 +116,8 @@ public class TestReadArrayCompare {
       while (iter1.hasNext() && iter2.hasNext()) {
         Object v1 = iter1.getObjectNext();
         Object v2 = iter2.next();
-        if (v1 instanceof ucar.ma2.Array && v2 instanceof ucar.array.Array) {
-          ok &= compareData(f, name, (ucar.ma2.Array) v1, (ucar.array.Array) v2, justOne, testTypes);
+        if (v1 instanceof ucar.ma2.Array && v2 instanceof Array) {
+          ok &= compareData(f, name, (ucar.ma2.Array) v1, (Array) v2, justOne, testTypes);
         } else if (v1 instanceof ucar.ma2.Array) {
           // problem is we are unwrapping scalar Vlens, different from ma2
           ok &= compareData(f, name, (ucar.ma2.Array) v1, array, justOne, testTypes);
@@ -365,7 +338,7 @@ public class TestReadArrayCompare {
         continue;
       }
       ucar.ma2.Array data1 = org.getArray(m1);
-      ucar.array.Array<?> data2 = array.getMemberData(m2);
+      Array<?> data2 = array.getMemberData(m2);
       if (data2 != null) {
         f.format("    compare member %s %s%n", m1.getDataType(), m1.getName());
         ok &= compareData(f, m1.getName(), data1, data2, justOne, false);
@@ -375,10 +348,11 @@ public class TestReadArrayCompare {
     return ok;
   }
 
-  static boolean compareSequence(Formatter f, String name, StructureDataIterator org,
+  public static boolean compareSequence(Formatter f, String name, StructureDataIterator org,
       Iterator<ucar.array.StructureData> array) throws IOException {
     boolean ok = true;
     int obsrow = 0;
+    System.out.printf(" compareSequence %s%n", name);
     while (org.hasNext() && array.hasNext()) {
       ok &= compareStructureData(f, org.next(), array.next(), false);
       obsrow++;

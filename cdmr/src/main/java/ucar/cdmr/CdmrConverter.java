@@ -13,16 +13,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import ucar.array.ArrayByte;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
 import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
-import ucar.array.StructureDataRow;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
 import ucar.array.StructureMembers.Member;
 import ucar.array.StructureMembers.MemberBuilder;
 import ucar.cdmr.CdmRemoteProto.Data;
+import ucar.cdmr.CdmRemoteProto.StructureDataProto;
 import ucar.cdmr.CdmRemoteProto.StructureMemberProto;
 import ucar.array.Array;
 import ucar.ma2.DataType;
@@ -276,7 +277,7 @@ public class CdmrConverter {
     if (data instanceof ArrayVlen) {
       return encodeVlenData(dataType, (ArrayVlen) data);
     } else if (data instanceof StructureDataArray) {
-      return encodeStructureDataArray((StructureDataArray) data);
+      return encodeStructureDataArray(dataType, (StructureDataArray) data);
     } else {
       return encodePrimitiveData(dataType, data);
     }
@@ -297,53 +298,61 @@ public class CdmrConverter {
       case ENUM1:
       case UBYTE:
       case BYTE: {
-        Array<Byte> bdata = (Array<Byte>) data;
-        // char is unsigned, can be converted to/from an int. protobuf stores as vlen, so no real size penalty.
-        byte[] cdata = new byte[(int) data.length()];
-        for (int i = 0; i < cdata.length; i++) {
-          cdata[i] = bdata.get(i);
-        }
-        builder.addBdata(ByteString.copyFrom(cdata));
+        ArrayByte bdata = (ArrayByte) data;
+        builder.addBdata(bdata.getByteString());
         break;
       }
-      case CHAR: // LOOK unsigned short better?
-      case SHORT:
+      case CHAR: { // LOOK unsigned short better?
+        // char is unsigned, can be converted to/from an int. protobuf stores as vlen, so no real size penalty.
+        Array<Character> idata = (Array<Character>) data;
+        idata.forEach(val -> builder.addIdata(val));
+        break;
+      }
+      case SHORT: {
+        Array<Short> idata = (Array<Short>) data;
+        idata.forEach(val -> builder.addIdata(val.intValue()));
+        break;
+      }
       case INT: {
         Array<Integer> idata = (Array<Integer>) data;
-        idata.forEach(val -> builder.addIdata((int) val));
+        idata.forEach(val -> builder.addIdata(val));
         break;
       }
       case ENUM2:
+      case USHORT: {
+        Array<Short> idata = (Array<Short>) data;
+        idata.forEach(val -> builder.addUidata(val.intValue()));
+        break;
+      }
       case ENUM4:
-      case USHORT:
       case UINT: {
         Array<Integer> idata = (Array<Integer>) data;
-        idata.forEach(val -> builder.addUidata((int) val));
+        idata.forEach(val -> builder.addUidata(val));
         break;
       }
       case LONG: {
         Array<Long> ldata = (Array<Long>) data;
-        ldata.forEach(val -> builder.addLdata((long) val));
+        ldata.forEach(val -> builder.addLdata(val));
         break;
       }
       case ULONG: {
         Array<Long> ldata = (Array<Long>) data;
-        ldata.forEach(val -> builder.addUldata((long) val));
+        ldata.forEach(val -> builder.addUldata(val));
         break;
       }
       case FLOAT: {
         Array<Float> fdata = (Array<Float>) data;
-        fdata.forEach(val -> builder.addFdata((float) val));
+        fdata.forEach(val -> builder.addFdata(val));
         break;
       }
       case DOUBLE: {
         Array<Double> ddata = (Array<Double>) data;
-        ddata.forEach(val -> builder.addDdata((double) val));
+        ddata.forEach(val -> builder.addDdata(val));
         break;
       }
       case STRING: {
         Array<String> sdata = (Array<String>) data;
-        sdata.forEach(val -> builder.addSdata((String) val));
+        sdata.forEach(val -> builder.addSdata(val));
         break;
       }
       default:
@@ -352,30 +361,41 @@ public class CdmrConverter {
     return builder.build();
   }
 
-  private static CdmRemoteProto.Data encodeStructureDataArray(StructureDataArray arrayStructure) {
+  private static CdmRemoteProto.Data encodeStructureDataArray(DataType dataType, StructureDataArray arrayStructure) {
     CdmRemoteProto.Data.Builder builder = CdmRemoteProto.Data.newBuilder();
-    builder.setDataType(convertDataType(DataType.STRUCTURE));
+    builder.setDataType(convertDataType(dataType));
     encodeShape(builder, arrayStructure.getShape());
-
-    StructureMembers sm = arrayStructure.getStructureMembers();
-    for (Member member : sm.getMembers()) {
-      StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
-          .setDataType(convertDataType(member.getDataType())).addAllShape(Ints.asList(member.getShape()));
-      builder.addMembers(smBuilder);
-    }
+    builder.setMembers(encodeStructureMembers(arrayStructure.getStructureMembers()));
 
     // row oriented
+    int count = 0;
     for (StructureData sdata : arrayStructure) {
       builder.addRows(encodeStructureData(sdata));
+      count++;
     }
     return builder.build();
   }
 
   private static CdmRemoteProto.StructureDataProto encodeStructureData(StructureData structData) {
     CdmRemoteProto.StructureDataProto.Builder builder = CdmRemoteProto.StructureDataProto.newBuilder();
+    int count = 0;
     for (Member member : structData.getStructureMembers()) {
       Array<?> data = structData.getMemberData(member);
       builder.addMemberData(encodeData(member.getDataType(), data));
+    }
+    return builder.build();
+  }
+
+  private static CdmRemoteProto.StructureMembersProto encodeStructureMembers(StructureMembers members) {
+    CdmRemoteProto.StructureMembersProto.Builder builder = CdmRemoteProto.StructureMembersProto.newBuilder();
+    builder.setName(members.getName());
+    for (Member member : members.getMembers()) {
+      StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
+          .setDataType(convertDataType(member.getDataType())).addAllShape(Ints.asList(member.getShape()));
+      if (member.getStructureMembers() != null) {
+        smBuilder.setMembers(encodeStructureMembers(member.getStructureMembers()));
+      }
+      builder.addMembers(smBuilder);
     }
     return builder.build();
   }
@@ -545,12 +565,13 @@ public class CdmrConverter {
   public static <T> Array<T> decodeData(CdmRemoteProto.Data data) {
     if (data.getVlenCount() > 0) {
       return (Array<T>) decodeVlenData(data);
+    } else if (data.hasMembers()) {
+      return (Array<T>) decodeStructureDataArray(data);
     } else {
       return decodePrimitiveData(data);
     }
   }
 
-  // Note that this converts to Objects, so not very efficient ??
   private static <T> Array<T> decodePrimitiveData(CdmRemoteProto.Data data) {
     DataType dataType = convertDataType(data.getDataType());
     int[] shape = decodeShape(data);
@@ -643,10 +664,6 @@ public class CdmrConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case SEQUENCE:
-      case STRUCTURE: {
-        return (Array<T>) decodeStructureDataArray(data);
-      }
       case OPAQUE: { // LOOK WRONG
         int i = 0;
         Object[] array = new Object[data.getBdataCount()];
@@ -664,41 +681,50 @@ public class CdmrConverter {
     int nrows = arrayStructureProto.getRowsCount();
     int[] shape = decodeShape(arrayStructureProto);
 
-    Preconditions.checkArgument(nrows > 0);
+    // ok to have nrows = 0
     Preconditions.checkArgument(Arrays.computeSize(shape) == nrows);
 
-    StructureMembers.Builder membersb = StructureMembers.builder();
-    for (StructureMemberProto memberProto : arrayStructureProto.getMembersList()) {
-      MemberBuilder memberb = StructureMembers.memberBuilder();
-      memberb.setName(memberProto.getName());
-      memberb.setDataType(convertDataType(memberProto.getDataType()));
-      memberb.setShape(Ints.toArray(memberProto.getShapeList()));
-      membersb.addMember(memberb);
-    }
-    membersb.setStandardOffsets(false);
-    StructureMembers members = membersb.build();
-
-    ByteBuffer bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
+    StructureMembers members = decodeStructureMembers(arrayStructureProto.getMembers()).build();
+    ByteBuffer bbuffer = ByteBuffer.allocate(nrows * members.getStorageSizeBytes());
     StructureDataStorageBB storage = new StructureDataStorageBB(members, bbuffer, nrows);
     int row = 0;
     for (CdmRemoteProto.StructureDataProto structProto : arrayStructureProto.getRowsList()) {
-      decodeStructureDataProto(structProto, members, storage, bbuffer, row);
+      decodeStructureData(structProto, members, storage, bbuffer, row);
       row++;
     }
     return new StructureDataArray(members, shape, storage);
   }
 
-  private static void decodeStructureDataProto(CdmRemoteProto.StructureDataProto structDataProto,
-      StructureMembers members, StructureDataStorageBB storage, ByteBuffer bbuffer, int row) {
+  private static StructureMembers.Builder decodeStructureMembers(CdmRemoteProto.StructureMembersProto membersProto) {
+    StructureMembers.Builder membersb = StructureMembers.builder();
+    membersb.setName(membersProto.getName());
+    for (StructureMemberProto memberProto : membersProto.getMembersList()) {
+      MemberBuilder mb = StructureMembers.memberBuilder();
+      mb.setName(memberProto.getName());
+      mb.setDataType(convertDataType(memberProto.getDataType()));
+      mb.setShape(Ints.toArray(memberProto.getShapeList()));
+      if (memberProto.hasMembers()) {
+        mb.setStructureMembers(decodeStructureMembers(memberProto.getMembers()));
+      }
+      membersb.addMember(mb);
+    }
+    membersb.setStandardOffsets(false);
+    return membersb;
+  }
+
+  private static void decodeStructureData(CdmRemoteProto.StructureDataProto structDataProto, StructureMembers members,
+      StructureDataStorageBB storage, ByteBuffer bbuffer, int rowidx) {
     for (int i = 0; i < structDataProto.getMemberDataCount(); i++) {
       Data data = structDataProto.getMemberData(i);
       Member member = members.getMember(i);
-      bbuffer.position(row * members.getStorageSizeBytes() + member.getOffset());
-      decodePrimitiveDataBB(data, storage, bbuffer);
+      int computed = members.getStorageSizeBytes() * rowidx + member.getOffset();
+      bbuffer.position(computed);
+      decodeNestedData(member, data, storage, bbuffer);
     }
   }
 
-  private static void decodePrimitiveDataBB(CdmRemoteProto.Data data, StructureDataStorageBB storage, ByteBuffer bb) {
+  private static void decodeNestedData(Member member, CdmRemoteProto.Data data, StructureDataStorageBB storage,
+      ByteBuffer bb) {
     if (data.getVlenCount() > 0) {
       ArrayVlen<?> vlen = decodeVlenData(data);
       int index = storage.putOnHeap(vlen);
@@ -725,7 +751,7 @@ public class CdmrConverter {
       }
       case CHAR: {
         for (int val : data.getIdataList()) {
-          bb.putChar((char) val);
+          bb.put((byte) val);
         }
         return;
       }
@@ -780,19 +806,44 @@ public class CdmrConverter {
         return;
       }
       case STRING: {
+        String[] vals = new String[data.getSdataCount()];
+        int idx = 0;
         for (String val : data.getSdataList()) {
-          int index = storage.putOnHeap(val);
-          bb.putInt(index);
+          vals[idx++] = val;
         }
+        int index = storage.putOnHeap(vals);
+        bb.putInt(index);
         return;
       }
-      case SEQUENCE:
+      case SEQUENCE: {
+        StructureDataArray seqData = decodeStructureDataArray(data);
+        int index = storage.putOnHeap(seqData);
+        bb.putInt(index);
+        return;
+      }
       case STRUCTURE: {
-        decodePrimitiveDataBB(data, storage, bb);
+        Preconditions.checkArgument(member.getStructureMembers() != null);
+        decodeNestedStructureDataArray(member.getStructureMembers(), data.getRowsList(), storage, bb);
         return;
       }
       default:
         throw new IllegalStateException("Unkown datatype " + dataType);
+    }
+  }
+
+  private static void decodeNestedStructureDataArray(StructureMembers members, List<StructureDataProto> rows,
+      StructureDataStorageBB storage, ByteBuffer bbuffer) {
+    int offset = bbuffer.position();
+    int rowidx = 0;
+    for (CdmRemoteProto.StructureDataProto structProto : rows) {
+      int memberIdx = 0;
+      for (Member nestedMember : members) {
+        int computed = offset + members.getStorageSizeBytes() * rowidx + nestedMember.getOffset();
+        bbuffer.position(computed);
+        decodeNestedData(nestedMember, structProto.getMemberData(memberIdx), storage, bbuffer);
+        memberIdx++;
+      }
+      rowidx++;
     }
   }
 
@@ -811,47 +862,4 @@ public class CdmrConverter {
     }
     return result;
   }
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // not used
-
-  private static StructureDataArray decodeStructureDataArrayRow(CdmRemoteProto.Data arrayStructureProto) {
-    int nrows = arrayStructureProto.getRowsCount();
-    int[] shape = decodeShape(arrayStructureProto);
-
-    Preconditions.checkArgument(nrows > 0);
-    Preconditions.checkArgument(Arrays.computeSize(shape) == nrows);
-
-    StructureMembers.Builder membersb = StructureMembers.builder();
-    for (StructureMemberProto memberProto : arrayStructureProto.getMembersList()) {
-      MemberBuilder memberb = StructureMembers.memberBuilder();
-      memberb.setName(memberProto.getName());
-      memberb.setDataType(convertDataType(memberProto.getDataType()));
-      memberb.setShape(Ints.toArray(memberProto.getShapeList()));
-      membersb.addMember(memberb);
-    }
-    membersb.setStandardOffsets(false);
-    StructureMembers members = membersb.build();
-
-    // LOOK row oriented, could use StructureDataStorageBB
-    StructureData[] storage = new StructureData[nrows];
-    int index = 0;
-    for (CdmRemoteProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
-      storage[index] = decodeStructureDataRow(row, members);
-      index++;
-    }
-    return new StructureDataArray(members, shape, storage);
-  }
-
-  private static StructureData decodeStructureDataRow(CdmRemoteProto.StructureDataProto structDataProto,
-      StructureMembers members) {
-    StructureDataRow sdata = new StructureDataRow(members);
-    for (int i = 0; i < structDataProto.getMemberDataCount(); i++) {
-      Data data = structDataProto.getMemberData(i);
-      Member member = members.getMember(i);
-      sdata.setMemberData(member, decodePrimitiveData(data));
-    }
-    return sdata;
-  }
-
 }

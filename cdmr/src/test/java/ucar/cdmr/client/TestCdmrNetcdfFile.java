@@ -4,19 +4,19 @@
  */
 package ucar.cdmr.client;
 
-import java.io.IOException;
+import static com.google.common.truth.Truth.assertThat;
+
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Formatter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NotJenkins;
@@ -30,7 +30,12 @@ public class TestCdmrNetcdfFile {
     List<Object[]> result = new ArrayList<>(500);
     try {
       TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir, new SuffixFileFilter(".nc"), result, true);
-    } catch (IOException e) {
+      FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc");
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
+
+      // result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/bufr/userExamples/WMO_v16_3-10-61.bufr"});
+
+    } catch (Exception e) {
       e.printStackTrace();
     }
     return result;
@@ -40,9 +45,10 @@ public class TestCdmrNetcdfFile {
   private final String cdmrUrl;
 
   public TestCdmrNetcdfFile(String filename) {
-    this.filename = filename;
+    this.filename = filename.replace("\\", "/");
+
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.cdmrUrl = "cdmr://localhost:16111/" + filename;
+    this.cdmrUrl = "cdmr://localhost:16111/" + this.filename;
   }
 
   @Test
@@ -51,12 +57,9 @@ public class TestCdmrNetcdfFile {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
-      Formatter errlog = new Formatter();
-      boolean ok = CompareNetcdf2.compareFiles(ncfile, cdmrFile, errlog, true, false, false);
-      if (!ok) {
-        System.out.printf("FAIL %s %s%n", cdmrUrl, errlog);
-      }
-      Assert.assertTrue(ok);
+      boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      assertThat(ok).isTrue();
     }
   }
+
 }

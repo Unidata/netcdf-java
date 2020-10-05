@@ -75,8 +75,8 @@ public final class ArrayLong extends Array<Long> {
 
   /** create new Array with given IndexFn and the same backing store */
   @Override
-  protected ArrayLong createView(IndexFn indexFn) {
-    return new ArrayLong(this.dataType, indexFn, this.storage);
+  protected ArrayLong createView(IndexFn view) {
+    return new ArrayLong(this.dataType, view, this.storage);
   }
 
   // used when the data is not in canonical order

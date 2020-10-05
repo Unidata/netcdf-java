@@ -4,13 +4,13 @@
  */
 package ucar.cdmr.client;
 
-import java.util.Formatter;
-import org.junit.Assert;
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NotJenkins;
@@ -31,16 +31,12 @@ public class TestCdmrProblem {
 
   @Test
   public void doOne() throws Exception {
-    System.out.printf("TestCdmrProblem %s%n", filename);
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
-      Formatter errlog = new Formatter();
-      boolean ok = CompareNetcdf2.compareFiles(ncfile, cdmrFile, errlog, true, false, false);
-      if (!ok) {
-        System.out.printf("FAIL %s %s%n", cdmrUrl, errlog);
-      }
-      Assert.assertTrue(ok);
+      boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      assertThat(ok).isTrue();
     }
   }
+
 }

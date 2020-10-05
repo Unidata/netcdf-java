@@ -161,7 +161,7 @@ message Data {
   repeated Data vlen = 11;  // VLEN
 
   // STRUCTURE, SEQUENCE
-  repeated StructureMemberProto members = 12;
+  StructureMembersProto members = 12;
   repeated StructureDataProto rows = 13;  // row oriented: one for each row
 }
 
@@ -169,8 +169,14 @@ message StructureDataProto {
   repeated Data memberData = 1;  // one for each memeber
 }
 
+message StructureMembersProto {
+  string name = 1;
+  repeated StructureMemberProto members = 12;
+}
+
 message StructureMemberProto {
   string name = 1;
   DataType dataType = 2;
   repeated int32 shape = 3;
+  StructureMembersProto members = 4;
 }

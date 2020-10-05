@@ -12,15 +12,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
-import ucar.array.Arrays;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.Slow;
 
-/** Time {@link Arrays} */
-@Category({NeedsCdmUnitTest.class})
+/** Time {@link CdmrNetcdfFile} takes ~ 3 minutes */
+@Category({NeedsCdmUnitTest.class, Slow.class})
 public class TimeCdmr {
   String localFilename =
       TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
