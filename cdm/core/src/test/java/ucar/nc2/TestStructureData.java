@@ -64,6 +64,7 @@ public class TestStructureData {
       cacheData.setStructureData(makeStructureData(i + 1), i);
     }
     structb.setCachedData(cacheData);
+    structb.setIsCaching(true);
     Structure struct = structb.build(makeDummyGroup());
 
     StructureData scalarData = struct.readStructure(0);

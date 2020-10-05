@@ -282,7 +282,7 @@ public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
           }
 
           if (var.isCaching()) {
-            this.setCachedData(var, ucar.array.Arrays.convert(data));
+            this.setCachedData(var, ucar.array.ArraysConvert.convertToArray(data));
             if (DodsNetcdfFiles.debugCached) {
               System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
             }

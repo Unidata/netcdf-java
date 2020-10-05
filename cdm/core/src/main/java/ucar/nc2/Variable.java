@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayStructure;
@@ -382,7 +383,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     Variable.Builder<?> sectionV = this.toBuilder(); // subclasses override toBuilder()
     sectionV.setProxyReader(new SectionReader(this, subsection));
     sectionV.resetCache(); // dont cache
-    sectionV.setCaching(false); // dont cache
+    sectionV.setIsCaching(false); // dont cache
 
     // replace dimensions if needed !! LOOK not shared
     int[] shape = subsection.getShape();
@@ -431,7 +432,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     slice.replaceRange(dim, new Range(value, value));
     sliceV.setProxyReader(new SliceReader(this, dim, slice.build()));
     sliceV.resetCache(); // dont share the cache
-    sliceV.setCaching(false); // dont cache
+    sliceV.setIsCaching(false); // dont cache
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
@@ -458,7 +459,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     Variable.Builder<?> sliceV = this.toBuilder(); // subclasses override toBuilder()
     sliceV.setProxyReader(new ReduceReader(this, dimIdx));
     sliceV.resetCache(); // dont share the cache
-    sliceV.setCaching(false); // dont cache
+    sliceV.setIsCaching(false); // dont cache
 
     // remove dimension(s) - reduce rank
     for (Dimension d : dims) {
@@ -737,15 +738,15 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     // caching overrides the proxyReader
     // check if already cached
     if (cache.getData() != null) {
-      return Arrays.convert(cache.getData());
+      return ArraysConvert.convertFromArray(cache.getData());
     }
 
     Array data = proxyReader.reallyRead(this, null);
 
     // optionally cache it
     if (isCaching()) {
-      cache.setCachedData(Arrays.convert(data));
-      return Arrays.convert(cache.getData()); // dont let users get their nasty hands on cached data
+      cache.setCachedData(ArraysConvert.convertToArray(data));
+      return ArraysConvert.convertFromArray(cache.getData()); // dont let users get their nasty hands on cached data
     } else {
       return data;
     }
@@ -764,9 +765,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       Array cacheData;
       if (cache.getData() == null) {
         cacheData = _read();
-        cache.setCachedData(Arrays.convert(cacheData)); // read and cache entire array
+        cache.setCachedData(ArraysConvert.convertToArray(cacheData)); // read and cache entire array
       } else {
-        cacheData = Arrays.convert(cache.getData());
+        cacheData = ArraysConvert.convertFromArray(cache.getData());
       }
       return cacheData.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
     }
@@ -1579,7 +1580,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     public T setCachedData(Array srcData) {
-      this.cache.srcData = ucar.array.Arrays.convert(srcData);
+      this.cache.srcData = ucar.array.ArraysConvert.convertToArray(srcData);
       return self();
     }
 
@@ -1603,7 +1604,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
-    public T setCaching(boolean caching) {
+    public T setIsCaching(boolean caching) {
       this.cache.isCaching = caching;
       return self();
     }
@@ -1689,7 +1690,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     private ucar.array.Array<?> makeDataArray(DataType dtype, List<Dimension> dimensions) {
       Section section = Dimensions.makeSectionFromDimensions(dimensions).build();
-      return Arrays.convert(Array.makeArray(dtype, (int) section.getSize(), start, incr).reshape(section.getShape()));
+      return ArraysConvert
+          .convertToArray(Array.makeArray(dtype, (int) section.getSize(), start, incr).reshape(section.getShape()));
     }
   }
 

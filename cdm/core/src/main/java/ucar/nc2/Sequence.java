@@ -18,6 +18,8 @@ import java.util.List;
 @Immutable
 public class Sequence extends Structure implements Iterable<ucar.array.StructureData> {
 
+  /** @deprecated use iterator() */
+  @Deprecated
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     if (ncfile != null) {
       return ncfile.getStructureIterator(this, bufferSize);

@@ -5,7 +5,7 @@
 
 package ucar.nc2;
 
-import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.util.CancelTask; // ??
@@ -42,13 +42,13 @@ public interface ProxyReader {
 
   /** Read all the data for a Variable, returning ucar.array.Array. */
   default ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
-    return Arrays.convert(reallyRead(client, cancelTask));
+    return ArraysConvert.convertToArray(reallyRead(client, cancelTask));
   }
 
   /** Read a section of the data for a Variable, returning ucar.array.Array. */
   default ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
-    return Arrays.convert(reallyRead(client, section, cancelTask));
+    return ArraysConvert.convertToArray(reallyRead(client, section, cancelTask));
   }
 
 }
