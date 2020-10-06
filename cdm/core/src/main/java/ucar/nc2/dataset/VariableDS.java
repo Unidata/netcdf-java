@@ -7,14 +7,15 @@ package ucar.nc2.dataset;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
+import ucar.nc2.internal.dataset.DataEnhancer;
 import ucar.nc2.util.CancelTask;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -60,37 +61,15 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   }
 
   ucar.ma2.Array convert(ucar.ma2.Array data) {
-    return convert(data, enhanceMode);
+    return dataEnhancer.convert(data, enhanceMode);
   }
 
   ucar.ma2.Array convert(ucar.ma2.Array data, Set<NetcdfDataset.Enhance> enhancements) {
-    if (enhancements.contains(Enhance.ConvertEnums)
-        && (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
-      // Creates STRING data. As a result, we can return here, because the other conversions don't apply to STRING.
-      return convertEnums(data);
-    } else {
-      // TODO: make work for isVariableLength; i thought BUFR worked?
-      if (this.isVariableLength) {
-        return data;
-      }
-      return scaleMissingUnsignedProxy.convert(data, enhancements.contains(Enhance.ConvertUnsigned),
-          enhancements.contains(Enhance.ApplyScaleOffset), enhancements.contains(Enhance.ConvertMissing));
-    }
+    return dataEnhancer.convert(data, enhancements);
   }
 
-  private ucar.ma2.Array convertEnums(ucar.ma2.Array values) {
-    if (!values.getDataType().isIntegral()) {
-      return values; // Nothing to do!
-    }
-
-    ucar.ma2.Array result = ucar.ma2.Array.factory(DataType.STRING, values.getShape());
-    IndexIterator ii = result.getIndexIterator();
-    values.resetLocalIterator();
-    while (values.hasNext()) {
-      String sval = lookupEnumString(values.nextInt());
-      ii.setObjectNext(sval);
-    }
-    return result;
+  ucar.array.Array<?> convertArray(ucar.array.Array<?> data) {
+    return dataEnhancer.convertArray(data, enhanceMode);
   }
 
   /**
@@ -174,6 +153,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   ////////////////////////////////////////////////////////////////////////
 
   @Override
+  @Deprecated
   protected ucar.ma2.Array _read() throws IOException {
     ucar.ma2.Array result;
 
@@ -186,12 +166,46 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return convert(result);
   }
 
+  public ucar.array.Array<?> readArray() throws IOException {
+    ucar.array.Array<?> result;
+
+    // check if already cached - caching in VariableDS only done explicitly by app
+    if (hasCachedData())
+      result = super.readArray();
+    else
+      result = proxyReader.proxyReadArray(this, null);
+
+    return convertArray(result);
+  }
+
+  @Override
+  @Deprecated
+  public ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    if (orgVar == null) {
+      return getMissingDataArray(shape);
+    }
+
+    return orgVar.read();
+  }
+
+  @Override
+  public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
+    if (orgVar == null) {
+      // LOOK where is this used? Do we need to make fast?
+      return ArraysConvert.convertToArray(getMissingDataArray(shape));
+    }
+
+    return orgVar.readArray();
+  }
+
   // section of regular Variable
   @Override
+  @Deprecated
   protected ucar.ma2.Array _read(Section section) throws IOException, InvalidRangeException {
     // really a full read
-    if ((null == section) || section.computeSize() == getSize())
+    if ((null == section) || section.computeSize() == getSize()) {
       return _read();
+    }
 
     ucar.ma2.Array result;
     if (hasCachedData())
@@ -202,27 +216,53 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return convert(result);
   }
 
-  // do not call directly
   @Override
-  public ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    if (orgVar == null)
-      return getMissingDataArray(shape);
-
-    return orgVar.read();
-  }
-
-  // do not call directly
-  @Override
+  @Deprecated
   public ucar.ma2.Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     // see if its really a full read
-    if ((null == section) || section.computeSize() == getSize())
+    if ((null == section) || section.computeSize() == getSize()) {
       return reallyRead(client, cancelTask);
+    }
 
-    if (orgVar == null)
+    if (orgVar == null) {
       return getMissingDataArray(section.getShape());
+    }
 
     return orgVar.read(section);
+  }
+
+  @Override
+  public ucar.array.Array<?> readArray(Section section) throws IOException, InvalidRangeException {
+    // really a full read
+    if ((null == section) || section.computeSize() == getSize()) {
+      return readArray();
+    }
+
+    ucar.array.Array<?> result;
+    if (hasCachedData()) {
+      result = super.readArray(section);
+    } else {
+      result = proxyReader.proxyReadArray(this, section, null);
+    }
+
+    return convertArray(result);
+  }
+
+  @Override
+  public ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
+    // see if its really a full read
+    if ((null == section) || section.computeSize() == getSize()) {
+      return proxyReadArray(client, cancelTask);
+    }
+
+    if (orgVar == null) {
+      // LOOK where is this used? Do we need to make fast?
+      return ArraysConvert.convertToArray(getMissingDataArray(section.getShape()));
+    }
+
+    return orgVar.readArray(section);
   }
 
   @Override
@@ -521,6 +561,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
   private final EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
   private final Set<Enhance> enhanceMode; // The set of enhancements that were made.
+  private final DataEnhancer dataEnhancer;
 
   protected final Variable orgVar; // wrap this Variable : use it for the I/O
   protected final DataType orgDataType; // keep separate for the case where there is no orgVar.
@@ -567,6 +608,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
     // We have to complete this after the NetcdfDataset is built.
     this.coordSysNames = builder.coordSysNames;
+
+    this.dataEnhancer = new DataEnhancer(this, this.scaleMissingUnsignedProxy);
   }
 
   public Builder<?> toBuilder() {
@@ -588,7 +631,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
   /** @deprecated do not use */
   @Deprecated
-  public void setCoordinateSystems(CoordinatesHelper coords) {
+  void setCoordinateSystems(CoordinatesHelper coords) {
     ImmutableList.Builder<CoordinateSystem> sysBuilder = ImmutableList.builder();
     for (String name : this.coordSysNames) {
       coords.findCoordSystem(name).ifPresent(sysBuilder::add);

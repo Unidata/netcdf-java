@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -21,10 +21,10 @@ import static ucar.ma2.DataType.*;
 /**
  * Implementation of EnhanceScaleMissingUnsigned for unsigned data, scale/offset packed data, and missing data.
  *
- * @author caron
- * @author cwardgar
+ * @deprecated will move in ver7
  */
-class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
+@Deprecated
+public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final DataType origDataType;
@@ -55,7 +55,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    *
    * @param forVar the Variable to decorate.
    */
-  EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements) {
+  public EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements) {
     this(forVar, enhancements, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
         NetcdfDataset.missingDataIsMissing);
   }
@@ -69,7 +69,7 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
+  public EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
       boolean invalidDataIsMissing, boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;

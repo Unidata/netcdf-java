@@ -589,38 +589,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return _read();
   }
 
-  public ucar.array.Array<?> readArray() throws IOException {
-    if (cache.getData() != null) {
-      return cache.getData();
-    }
-
-    ucar.array.Array<?> data = proxyReader.proxyReadArray(this, null);
-
-    // optionally cache it
-    if (isCaching()) {
-      cache.setCachedData(data);
-    }
-
-    // ucar.array.Array allegedly Immutable
-    return data;
-  }
-
-  public ucar.array.Array<?> readArray(ucar.ma2.Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    if ((null == section) || section.computeSize() == getSize()) {
-      return readArray();
-    }
-    // full read was cached
-    if (isCaching()) {
-      if (cache.getData() == null) {
-        cache.setCachedData(readArray()); // read and cache entire array
-      }
-      return Arrays.section(cache.getData(), section.getRanges()); // subset it
-    }
-    // not caching
-    return proxyReader.proxyReadArray(this, section, null);
-  }
-
   ///// scalar reading
 
   /**
@@ -752,6 +720,22 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
   }
 
+  public ucar.array.Array<?> readArray() throws IOException {
+    if (cache.getData() != null) {
+      return cache.getData();
+    }
+
+    ucar.array.Array<?> data = proxyReader.proxyReadArray(this, null);
+
+    // optionally cache it
+    if (isCaching()) {
+      cache.setCachedData(data);
+    }
+
+    // ucar.array.Array allegedly Immutable
+    return data;
+  }
+
   // section of non-structure-member Variable
   // assume filled, validated Section
   protected Array _read(Section section) throws IOException, InvalidRangeException {
@@ -773,6 +757,22 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     return proxyReader.reallyRead(this, section, null);
+  }
+
+  public ucar.array.Array<?> readArray(ucar.ma2.Section section)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    if ((null == section) || section.computeSize() == getSize()) {
+      return readArray();
+    }
+    // full read was cached
+    if (isCaching()) {
+      if (cache.getData() == null) {
+        cache.setCachedData(readArray()); // read and cache entire array
+      }
+      return Arrays.section(cache.getData(), section.getRanges()); // subset it
+    }
+    // not caching
+    return proxyReader.proxyReadArray(this, section, null);
   }
 
   /** @deprecated do not use */
@@ -810,18 +810,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** public by accident, do not call directly. */
   @Override
-  @Deprecated
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
-    if (isMemberOfStructure()) {
-      throw new UnsupportedOperationException("Cannot directly read section of Member Variable=" + getFullName());
-    }
-    // read just this section
-    return ncfile.readData(this, section);
-  }
-
-  /** public by accident, do not call directly. */
-  @Override
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (isMemberOfStructure()) {
       throw new UnsupportedOperationException("Cannot directly read Member Variable=" + getFullName());
@@ -833,6 +821,18 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       e.printStackTrace();
       throw new IOException(e.getMessage()); // cant happen haha
     }
+  }
+
+  /** public by accident, do not call directly. */
+  @Override
+  @Deprecated
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
+    if (isMemberOfStructure()) {
+      throw new UnsupportedOperationException("Cannot directly read section of Member Variable=" + getFullName());
+    }
+    // read just this section
+    return ncfile.readData(this, section);
   }
 
   /** public by accident, do not call directly. */
