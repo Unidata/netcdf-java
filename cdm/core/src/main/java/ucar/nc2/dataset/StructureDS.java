@@ -34,6 +34,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
   }
 
   @Override
+  @Deprecated
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array result;
 
@@ -54,6 +55,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
   // section of regular Variable
 
   @Override
+  @Deprecated
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     if (section.computeSize() == getSize())
