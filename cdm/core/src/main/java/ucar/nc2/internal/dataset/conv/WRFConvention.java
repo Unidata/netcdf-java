@@ -199,7 +199,7 @@ public class WRFConvention extends CoordSystemBuilder {
         if (gridE)
           glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glat.setDimensionsByName("south_north west_east");
-        glat.setCachedData(convertToDegrees(glat), false);
+        glat.setSourceData(convertToDegrees(glat));
         ((VariableDS.Builder<?>) glat).setUnits(CDM.LAT_UNITS);
       }
 
@@ -212,7 +212,7 @@ public class WRFConvention extends CoordSystemBuilder {
         if (gridE)
           glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glon.setDimensionsByName("south_north west_east");
-        glon.setCachedData(convertToDegrees(glon), false);
+        glon.setSourceData(convertToDegrees(glon));
         ((VariableDS.Builder<?>) glon).setUnits(CDM.LON_UNITS);
       }
 
@@ -220,7 +220,7 @@ public class WRFConvention extends CoordSystemBuilder {
       VariableDS.Builder<?> v = VariableDS.builder().setName("LatLonCoordSys").setDataType(DataType.CHAR);
       v.addAttribute(new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
       Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
-      v.setCachedData(data, true);
+      v.setSourceData(data);
       rootGroup.addVariable(v);
 
       rootGroup.findVariableLocal("LANDMASK")
@@ -585,7 +585,7 @@ public class WRFConvention extends CoordSystemBuilder {
           double d = it.getDoubleNext();
           newArray.set(count++, d);
         }
-        v.setCachedData(newArray, true);
+        v.setSourceData(newArray);
       } catch (Exception e) {
         e.printStackTrace();
       } // ADD: error?
@@ -696,7 +696,7 @@ public class WRFConvention extends CoordSystemBuilder {
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
-    v.setCachedData(values, true);
+    v.setSourceData(values);
     return v;
   }
 
@@ -752,7 +752,7 @@ public class WRFConvention extends CoordSystemBuilder {
         double d = it.getDoubleNext();
         newArray.set(count++, d);
       }
-      v.setCachedData(newArray, true);
+      v.setSourceData(newArray);
     } catch (Exception e) {
       e.printStackTrace();
     }

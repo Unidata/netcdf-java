@@ -33,6 +33,11 @@ public abstract class Array<T> implements Iterable<T> {
    */
   public abstract T get(Index index);
 
+  /** Get the first element of the Array */
+  public T getScalar() {
+    return this.get(this.getIndex());
+  }
+
   /** Return the datatype for this array */
   public DataType getDataType() {
     return this.dataType;

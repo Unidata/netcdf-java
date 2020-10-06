@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.array.Array;
 import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -232,7 +233,7 @@ public class Attribute {
   @Nullable
   public ucar.ma2.Array getValues() {
     ucar.array.Array<?> arrayValues = getArrayValues();
-    return arrayValues == null ? null : Arrays.convert(arrayValues);
+    return arrayValues == null ? null : ArraysConvert.convertFromArray(arrayValues);
   }
 
   /** Get the values as an ucar.array.Array. */
@@ -244,7 +245,7 @@ public class Attribute {
     if (nvalue != null) {
       ucar.ma2.Array values = ucar.ma2.Array.factory(this.dataType, new int[] {1});
       values.setObject(values.getIndex(), nvalue);
-      return Arrays.convert(values);
+      return ArraysConvert.convertToArray(values);
     }
     return values;
   }
@@ -586,7 +587,7 @@ public class Attribute {
         dataType = DataType.STRING;
         return this;
       }
-      setArrayValues(Arrays.convert(arr));
+      setArrayValues(ArraysConvert.convertToArray(arr));
       return this;
     }
 

@@ -10,6 +10,6 @@ public interface DodsVariableBuilder<T> {
 
   T setCE(String CE);
 
-  T setCaching(boolean caching);
+  T setIsCaching(boolean caching);
 
 }

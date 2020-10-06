@@ -147,7 +147,7 @@ public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
   // called from ucar.nc2.Variable
 
   /**
-   * Make a single call to the DODS Server to read and cache all the named v\Variable's
+   * Make a single call to the DODS Server to read and cache all the named Variables
    * in one client/server roundtrip.
    *
    * @param preloadVariables list of type Variable
@@ -282,7 +282,7 @@ public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
           }
 
           if (var.isCaching()) {
-            var.setCachedData(data);
+            this.setCachedData(var, ucar.array.ArraysConvert.convertToArray(data));
             if (DodsNetcdfFiles.debugCached) {
               System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
             }

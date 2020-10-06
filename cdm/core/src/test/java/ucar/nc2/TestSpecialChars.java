@@ -58,7 +58,6 @@ public class TestSpecialChars {
       assert val.equals(trouble);
 
       Variable v = ncfile.findVariable("t");
-      v.setCachedData(v.read(), true); // why?
 
       val = v.findAttributeString("yow", null);
       assert val != null;
@@ -76,7 +75,6 @@ public class TestSpecialChars {
         assert val2.equals(trouble);
 
         Variable v2 = ncfile2.findVariable("t");
-        v2.setCachedData(v2.read(), true);
 
         val2 = v2.findAttributeString("yow", null);
         assert val2 != null;
@@ -92,7 +90,6 @@ public class TestSpecialChars {
       assert val.equals(trouble);
 
       Variable v = ncfile.findVariable("t");
-      v.setCachedData(v.read(), true);
 
       val = v.findAttributeString("yow", null);
       assert val != null;

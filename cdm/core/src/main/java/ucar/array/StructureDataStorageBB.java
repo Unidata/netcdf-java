@@ -70,6 +70,119 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     return members.getStorageSizeBytes();
   }
 
+  // TODO go away in version 7 I hope
+  ByteBuffer buffer() {
+    return bbuffer;
+  }
+
+  /** Copy Array data into ByteBuffer. Not sure if this is useful. */
+  public void setMemberData(int row, Member member, Array<?> data) {
+    setMemberData(0, members.getStorageSizeBytes(), row, member, data);
+  }
+
+  private void setMemberData(int offset, int structSize, int row, Member member, Array<?> data) {
+    int pos = offset + row * structSize + member.getOffset();
+    bbuffer.position(pos);
+    if (member.isVariableLength()) {
+      // LOOK not making a copy
+      int index = this.putOnHeap(data);
+      bbuffer.putInt(index);
+      return;
+    }
+
+    DataType dataType = data.getDataType();
+    switch (dataType) {
+      case ENUM1:
+      case UBYTE:
+      case BYTE: {
+        Array<Byte> bdata = (Array<Byte>) data;
+        for (byte val : bdata) {
+          bbuffer.put(val);
+        }
+        return;
+      }
+      case OPAQUE: {
+        int index = this.putOnHeap(data);
+        bbuffer.putInt(index);
+        return;
+      }
+      case CHAR: {
+        Array<Character> cdata = (Array<Character>) data;
+        for (char val : cdata) {
+          bbuffer.put((byte) val);
+        }
+        return;
+      }
+      case ENUM2:
+      case USHORT:
+      case SHORT: {
+        Array<Short> sdata = (Array<Short>) data;
+        for (short val : sdata) {
+          bbuffer.putShort(val);
+        }
+        return;
+      }
+      case ENUM4:
+      case UINT:
+      case INT: {
+        Array<Integer> idata = (Array<Integer>) data;
+        for (int val : idata) {
+          bbuffer.putInt(val);
+        }
+        return;
+      }
+      case ULONG:
+      case LONG: {
+        Array<Long> ldata = (Array<Long>) data;
+        for (long val : ldata) {
+          bbuffer.putLong(val);
+        }
+        return;
+      }
+      case FLOAT: {
+        Array<Float> fdata = (Array<Float>) data;
+        for (float val : fdata) {
+          bbuffer.putFloat(val);
+        }
+        return;
+      }
+      case DOUBLE: {
+        Array<Double> ddata = (Array<Double>) data;
+        for (double val : ddata) {
+          bbuffer.putDouble(val);
+        }
+        return;
+      }
+      case STRING: {
+        // LOOK could put Array<Sting> onto the heap
+        String[] vals = new String[(int) data.length()];
+        Array<String> sdata = (Array<String>) data;
+        int idx = 0;
+        for (String val : sdata) {
+          vals[idx++] = val;
+        }
+        int index = this.putOnHeap(vals);
+        bbuffer.putInt(index);
+        return;
+      }
+      case STRUCTURE: {
+        Preconditions.checkArgument(member.getStructureMembers() != null);
+        StructureDataArray orgArray = (StructureDataArray) data;
+        StructureMembers nestedMembers = orgArray.getStructureMembers();
+        int length = (int) orgArray.length();
+        for (int nrow = 0; nrow < length; nrow++) {
+          StructureData orgData = orgArray.get(nrow);
+          for (StructureMembers.Member nmember : nestedMembers) {
+            setMemberData(pos, nestedMembers.getStorageSizeBytes(), nrow, nmember, orgData.getMemberData(nmember));
+          }
+        }
+        return;
+      }
+      default:
+        throw new IllegalStateException("Unkown datatype " + dataType);
+    }
+  }
+
   @Override
   public Iterator<StructureData> iterator() {
     return new Iter();

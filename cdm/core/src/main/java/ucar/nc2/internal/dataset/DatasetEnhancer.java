@@ -14,7 +14,7 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.CancelTask;
 
-/** Helper class to enhance Datasets, with coordinate systems and scale/offset/missing */
+/** Helper class to enhance NetcdfDataset, with coordinate systems and scale/offset/missing */
 public class DatasetEnhancer {
 
   public static boolean enhanceNeeded(Set<Enhance> want, Set<Enhance> have) {

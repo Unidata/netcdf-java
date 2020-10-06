@@ -262,7 +262,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
 
     Array data = Array.makeArray(DataType.DOUBLE, values);
-    v.setCachedData(data, true);
+    v.setSourceData(data);
     datasetBuilder.replaceCoordinateAxis(rootGroup, v);
 
     parseInfo.format("Created Z Coordinate Axis = %s%n", name);
@@ -541,15 +541,16 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
     // create the units out of the filename if possible
     String units = makeTimeUnitFromFilename(datasetBuilder.location);
-    if (units == null) // ok that didnt work, try something else
+    if (units == null) {// ok that didnt work, try something else
       return makeTimeCoordAxisFromReference(vals);
+    }
 
     // create the coord axis
     String name = "timeCoord";
     String desc = "synthesized time coordinate from valtimeMINUSreftime and filename YYYYMMDD_HHMM";
     CoordinateAxis1D.Builder<?> timeCoord =
         CoordinateAxis1D.builder().setName(name).setDataType(DataType.INT).setParentGroupBuilder(rootGroup)
-            .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(vals, true);
+            .setDimensionsByName("record").setUnits(units).setDesc(desc).setSourceData(vals);
 
     parseInfo.format("Created Time Coordinate Axis = %s%n", name);
     return timeCoord;
@@ -613,7 +614,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
     CoordinateAxis1D.Builder<?> timeCoord =
         CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
-            .setDimensionsByName("record").setUnits(units).setDesc(desc).setCachedData(dvals, true);
+            .setDimensionsByName("record").setUnits(units).setDesc(desc).setSourceData(dvals);
 
     parseInfo.format("Created Time Coordinate Axis From reftime Variable%n");
     return timeCoord;

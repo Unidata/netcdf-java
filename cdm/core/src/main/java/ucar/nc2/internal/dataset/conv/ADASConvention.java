@@ -237,7 +237,7 @@ public class ADASConvention extends CoordSystemBuilder {
     CoordinateAxis.Builder<?> cb = CoordinateAxis1D.builder().setName(axisName).setDataType(dtype)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(axisName).setUnits(units)
         .setDesc("synthesized non-staggered " + axisName + " coordinate");
-    cb.setCachedData(data, true);
+    cb.setSourceData(data);
     datasetBuilder.replaceCoordinateAxis(rootGroup, cb);
   }
 

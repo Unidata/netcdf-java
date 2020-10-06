@@ -7,6 +7,7 @@ package ucar.nc2;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
+import ucar.array.ArraysConvert;
 import ucar.ma2.*;
 import java.util.List;
 
@@ -18,9 +19,17 @@ import java.util.List;
 @Immutable
 public class Sequence extends Structure implements Iterable<ucar.array.StructureData> {
 
+  /** @deprecated use iterator() */
+  @Deprecated
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    if (getCachedData() instanceof ArrayStructure) {
-      return ((ArrayStructure) getCachedData()).getStructureDataIterator();
+    if (cache.getData() != null) {
+      ucar.array.Array<?> array = cache.getData();
+      if (array instanceof ucar.array.StructureDataArray) {
+        ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(array);
+        if (ma2 instanceof ArrayStructure) {
+          return ((ArrayStructure) ma2).getStructureDataIterator();
+        }
+      }
     }
     if (ncfile != null) {
       return ncfile.getStructureIterator(this, bufferSize);
@@ -30,6 +39,12 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
 
   @Override
   public Iterator<ucar.array.StructureData> iterator() {
+    if (cache.getData() != null) {
+      ucar.array.Array<?> array = cache.getData();
+      if (array instanceof ucar.array.StructureDataArray) {
+        return (Iterator<ucar.array.StructureData>) array;
+      }
+    }
     try {
       return ncfile.getStructureDataArrayIterator(this, -1);
     } catch (IOException e) {

@@ -680,8 +680,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (getDataType() != DataType.DOUBLE)
       cachedData = MAMath.convert(cachedData, getDataType());
 
-    // LOOK should be "pinned" meaning cant be purged
-    builder.setCachedData(cachedData, true);
+    builder.setSourceData(cachedData);
 
     // LOOK repalce in parentGroup? too late for that.
     return builder.build(this.getParentGroup());

@@ -5,7 +5,6 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.ma2.DataType;
@@ -15,49 +14,6 @@ import ucar.ma2.Section;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {
-
-  public static ucar.ma2.Array convert(Array<?> from) {
-    ucar.ma2.Array values = ucar.ma2.Array.factory(from.getDataType(), from.getShape());
-    int count = 0;
-    for (Object val : from) {
-      values.setObject(count++, val);
-    }
-    return values;
-  }
-
-  public static Array<?> convert(ucar.ma2.Array from) {
-    DataType dtype = from.getDataType();
-    if (dtype == DataType.OPAQUE) {
-      return convertOpaque(from);
-    } else if (dtype == DataType.STRING) {
-      String[] sarray = new String[(int) from.getSize()];
-      for (int idx = 0; idx < sarray.length; idx++) {
-        sarray[idx] = (String) from.getObject(idx);
-      }
-      return factory(dtype, from.getShape(), sarray);
-    } else {
-      return factory(dtype, from.getShape(), from.get1DJavaArray(dtype));
-    }
-  }
-
-  // Opaque is Vlen of byte
-  private static Array<?> convertOpaque(ucar.ma2.Array from) {
-    DataType dtype = from.getDataType();
-    Preconditions.checkArgument(dtype == DataType.OPAQUE);
-    if (from instanceof ucar.ma2.ArrayObject) {
-      ucar.ma2.ArrayObject ma2 = (ucar.ma2.ArrayObject) from;
-      byte[][] dataArray = new byte[(int) ma2.getSize()][];
-      for (int idx = 0; idx < ma2.getSize(); idx++) {
-        ByteBuffer bb = (ByteBuffer) ma2.getObject(idx);
-        bb.rewind();
-        byte[] raw = new byte[bb.remaining()];
-        bb.get(raw);
-        dataArray[idx] = raw;
-      }
-      return ArrayVlen.factory(dtype, ma2.getShape(), dataArray);
-    }
-    throw new RuntimeException("Unknown opaque array class " + from.getClass().getName());
-  }
 
   /**
    * Create Array using java array of T, or java primitive array, as storage.

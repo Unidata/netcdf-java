@@ -496,18 +496,23 @@ public class NetcdfFile implements FileCacheable, Closeable {
   // this is for reading non-member variables
   // section is null for full read
 
+  /** @deprecated use getStructureDataArrayIterator() */
+  @Deprecated
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
     return iosp.getStructureIterator(s, bufferSize);
   }
 
-  public Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
+  protected Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
     return iosp.getStructureDataArrayIterator(s, bufferSize);
   }
 
   /**
    * Do not call this directly, use Variable.read() !!
    * Ranges must be filled (no nulls)
+   * 
+   * @deprecated use readArrayData()
    */
+  @Deprecated
   protected Array readData(Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (iosp == null) {
       throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
@@ -603,6 +608,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
       didit = (Boolean) iosp.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
     return (didit != null) && didit;
+  }
+
+  protected void setCachedData(Variable v, ucar.array.Array<?> cacheData) {
+    v.setCachedData(cacheData);
   }
 
 

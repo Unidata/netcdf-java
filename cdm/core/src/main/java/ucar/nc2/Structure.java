@@ -15,6 +15,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -166,7 +167,9 @@ public class Structure extends Variable {
    * @return ith StructureData
    * @throws java.io.IOException on read error
    * @throws ucar.ma2.InvalidRangeException if index out of range
+   * @deprecated use readArray().get(index)
    */
+  @Deprecated
   public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
     Section.Builder sb = Section.builder();
 
@@ -183,8 +186,13 @@ public class Structure extends Variable {
     }
 
     Array dataArray = read(sb.build());
-    ArrayStructure data = (ArrayStructure) dataArray;
-    return data.getStructureData(0);
+    if (dataArray instanceof ArrayStructure) {
+      ArrayStructure data = (ArrayStructure) dataArray;
+      return data.getStructureData(0);
+    } else if (dataArray instanceof ArrayObject) {
+      return (StructureData) dataArray.getObject(0);
+    }
+    throw new RuntimeException("Unknown structure array class " + dataArray.getClass().getName());
   }
 
   /**
@@ -196,7 +204,9 @@ public class Structure extends Variable {
    * @return the StructureData recordsfrom start to start+count-1
    * @throws java.io.IOException on read error
    * @throws ucar.ma2.InvalidRangeException if start, count out of range
+   * @deprecated use readArray(Section)
    */
+  @Deprecated
   public ArrayStructure readStructure(int start, int count) throws IOException, ucar.ma2.InvalidRangeException {
     Preconditions.checkArgument(getRank() <= 1, "not a vector structure");
     int[] origin = {start};
@@ -217,7 +227,9 @@ public class Structure extends Variable {
    * @return StructureDataIterator over type StructureData
    * @throws java.io.IOException on read error
    * @see #getStructureIterator(int bufferSize)
+   * @deprecated use readArray().iterator()
    */
+  @Deprecated
   public StructureDataIterator getStructureIterator() throws java.io.IOException {
     return getStructureIterator(defaultBufferSize);
   }
@@ -241,7 +253,9 @@ public class Structure extends Variable {
    * @param bufferSize size in bytes to buffer, set < 0 to use default size
    * @return StructureDataIterator over type StructureData
    * @throws java.io.IOException on read error
+   * @deprecated use readArray().iterator()
    */
+  @Deprecated
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     return (getRank() < 2) ? new Structure.IteratorRank1(bufferSize) : new IteratorRankAny();
   }

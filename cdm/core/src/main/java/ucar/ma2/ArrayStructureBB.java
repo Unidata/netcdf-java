@@ -108,7 +108,7 @@ public class ArrayStructureBB extends ArrayStructure {
    * @param members the list of structure members.
    * @param shape the shape of the structure array
    * @param bbuffer the data is stored in this ByteBuffer. bbuffer.order must already be set.
-   * @param offset offset from the start of the ByteBufffer to the first record.
+   * @param offset offset from the start of the ByteBuffer to the first record.
    */
   public ArrayStructureBB(StructureMembers members, int[] shape, ByteBuffer bbuffer, int offset) {
     super(members, shape);

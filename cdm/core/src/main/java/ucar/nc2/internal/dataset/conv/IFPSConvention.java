@@ -176,7 +176,7 @@ public class IFPSConvention extends CoordSystemBuilder {
 
     CoordinateAxis1D.Builder<?> timeCoord = CoordinateAxis1D.builder().setName(dimName).setDataType(dtype)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(units).setDesc(desc);
-    timeCoord.setCachedData(timesArray, true);
+    timeCoord.setSourceData(timesArray);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
 
@@ -271,8 +271,8 @@ public class IFPSConvention extends CoordSystemBuilder {
     yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "y on projection"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
 
-    xaxis.setCachedData(xData, true);
-    yaxis.setCachedData(yData, true);
+    xaxis.setSourceData(xData);
+    yaxis.setSourceData(yData);
 
     rootGroup.addVariable(xaxis);
     rootGroup.addVariable(yaxis);

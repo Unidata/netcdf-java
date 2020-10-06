@@ -257,7 +257,7 @@ public class CoordTransformFactory {
 
     // fake data
     Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
-    vb.setCachedData(data, true);
+    vb.setSourceData(data);
 
     return vb.build(ds.getRootGroup());
   }

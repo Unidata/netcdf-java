@@ -113,7 +113,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
             data.set(i, stop - i * incr);
           }
         }
-        timeVar.setCachedData(data, false);
+        timeVar.setSourceData(data);
       }
 
       // in java 9 can use .or
@@ -214,10 +214,10 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         i++;
       }
 
-      latVar.setCachedData(latData, false);
-      lonVar.setCachedData(lonData, false);
-      altVar.setCachedData(altData, false);
-      tVar.setCachedData(timeData, false);
+      latVar.setSourceData(latData);
+      lonVar.setSourceData(lonData);
+      altVar.setSourceData(altData);
+      tVar.setSourceData(timeData);
     }
   }
 

@@ -22,7 +22,6 @@ import ucar.cdmr.CdmRemoteProto.StructureMemberProto;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
-import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
@@ -33,7 +32,6 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.StructureMembers.Member;
-import ucar.ma2.StructureMembers.MemberBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -449,7 +447,7 @@ public class CdmrConverterMa2 {
 
     if (var.hasData()) {
       Array data = decodeData(var.getData(), section.build());
-      ncvar.setCachedData(data, true);
+      ncvar.setSourceData(data);
     }
 
     return ncvar;

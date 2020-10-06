@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -116,7 +116,9 @@ import javax.annotation.Nullable;
  *
  * @author caron
  * @author cwardgar
+ * @deprecated do not use
  */
+@Deprecated
 public interface EnhanceScaleMissingUnsigned extends IsMissingEvaluator {
   /** true if Variable data will be converted using scale and offset */
   boolean hasScaleOffset();

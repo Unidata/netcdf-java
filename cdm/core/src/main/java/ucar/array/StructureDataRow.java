@@ -43,7 +43,7 @@ public class StructureDataRow extends StructureData {
     }
   }
 
-  public void setMemberData(Member m, Array data) {
+  public void setMemberData(Member m, Array<?> data) {
     Preconditions.checkArgument(data.length() == m.length());
     DataType dataType = m.getDataType();
     int offset = m.getOffset();
