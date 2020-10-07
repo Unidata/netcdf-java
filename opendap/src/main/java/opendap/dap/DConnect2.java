@@ -42,6 +42,8 @@ package opendap.dap;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+
+import com.google.common.io.Files;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -159,14 +161,22 @@ public class DConnect2 implements Closeable {
       URL testURL = new URL(urlString);
       if ("file".equals(testURL.getProtocol())) {
         filePath = testURL.getPath();
-        // See if .dds and .dods files exist
-        File f = new File(filePath + ".dds");
-        if (!f.canRead()) {
-          throw new HTTPException("file not readable: " + urlString + ".dds");
+        // Can open a file containing a dods binary response as long as the urlString starts with "file:" and ends with
+        // ".dods"
+        // filePath should not contain the extension though, so we need to make sure whichever one is used gets removed
+        String extension = Files.getFileExtension(testURL.getPath());
+        int extIndex = filePath.lastIndexOf(extension);
+        if (extIndex > 0) {
+          // remove "." plus the extension
+          filePath = filePath.substring(0, extIndex - 1);
+        } else {
+          throw new HTTPException("cannot determine the extension on: file:" + filePath + ". Must be .dods");
         }
-        f = new File(filePath + ".dods");
+
+        // Make sure .dods files exist and is readable
+        File f = new File(filePath + ".dods");
         if (!f.canRead()) {
-          throw new HTTPException("file not readable: " + urlString + ".dods");
+          throw new HTTPException("file not readable: file:" + filePath + ".dods");
         }
       } else {
         _session = HTTPFactory.newSession(this.urlString);
@@ -515,7 +525,8 @@ public class DConnect2 implements Closeable {
   /**
    * Returns the DDS object from the dataset referenced by this object's URL.
    * The DDS object is referred to by appending `.dds' to the end of a OPeNDAP
-   * URL.
+   * URL. If reading from a file, access the DDS object from the captured
+   * .dods response.
    *
    * @param CE The constraint expression to be applied to this request by the
    *        server. This is combined with any CE given in the constructor.
@@ -531,7 +542,8 @@ public class DConnect2 implements Closeable {
     DDSCommand command = new DDSCommand();
     command.setURL(CE == null || CE.length() == 0 ? urlString : urlString + "?" + CE);
     if (filePath != null) {
-      try (FileInputStream is = new FileInputStream(filePath + ".dds")) {
+      // try grabbing the DDS directly from the captured .dods response
+      try (FileInputStream is = new FileInputStream(filePath + ".dods")) {
         command.process(is);
       }
     } else if (stream != null) {
