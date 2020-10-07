@@ -24,7 +24,6 @@ public class TestDatasetUrlExamples {
 
   private static final String dodsUrl = tds + baseFilename + ".dods";
   private static final String dasUrl = dodsUrl.replace(".dods", ".das");
-  private static final String  ddsUrl = dodsUrl.replace(".dods", ".dds");
 
   private static File[] tempFiles;
   private static File dodsFile;
@@ -35,12 +34,10 @@ public class TestDatasetUrlExamples {
     tmpDownloadDir.toFile().deleteOnExit();
     String escapedCe = Escape.escapeURLQuery(constraintExpression);
     dodsFile = tmpDownloadDir.resolve(baseFilename + ".dods").toFile();
-    File ddsFile = tmpDownloadDir.resolve(baseFilename + ".dds").toFile();
     File dasFile = tmpDownloadDir.resolve(baseFilename + ".das").toFile();
     IO.readURLtoFile(dodsUrl + "?" + escapedCe, dodsFile);
-    IO.readURLtoFile(ddsUrl + "?" + escapedCe, ddsFile);
     IO.readURLtoFile(dasUrl, dasFile);
-    tempFiles = new File[] {dodsFile, ddsFile, dasFile};
+    tempFiles = new File[] {dodsFile, dasFile};
   }
 
   @Test

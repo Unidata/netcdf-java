@@ -69,7 +69,7 @@ public class DatasetUrlExamples {
    * Code snippet to open a local .dods file
    *
    * @param pathToDodsFile: path to the file containing the dap2 binary response (must end in .dods)
-   * @throws IOException Encountered a problem opening the .dods, .dds, and .das temp files
+   * @throws IOException Encountered a problem opening the .dods or .das temp files
    */
   public static void openDodsBinaryFile(String pathToDodsFile) throws IOException {
     // pathToDodsFile looks like C:/Users/me/Downloads/cool-dataset.nc.dods

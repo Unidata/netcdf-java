@@ -181,9 +181,9 @@ Using the `dods:` prefix makes it clear which protocol to use.
 
 The netCDF-Java `NetcdfDatasets.open*` methods can also be used to read the binary response from an OPeNDAP server from a file on disk.
 **Note:** one downside to this approach is that the entire dataset will be loaded into memory.
-At a minimum, you will need to have saved the binary response (`.dods`) and the Dataset Descriptor Structure (`.dds`).
+At a minimum, you will need to have saved the binary response (`.dods`).
 It is _strongly recommended_ that you also save the Data Attribute Structure (`.das`) as well, as this contains metadata for the dataset.
-The three files must be located in the same directory and should only differ by file extension.
+The two files must be located in the same directory and should only differ by file extension.
 Once the files are in place, you may open the saved response by appending the `file:` protocol to the path to the `.dods` file:
 
 {% capture rmd %}
@@ -192,16 +192,14 @@ Once the files are in place, you may open the saved response by appending the `f
 {{ rmd | markdownify }}
 
 In the example above, `pathToDodsFile` should look like `C:/Users/me/Downloads/cool-dataset.nc.dods` or `/home/me/data/cool-dataset.nc.dods`.
-In addition to `cool-dataset.nc.dods`, `cool-dataset.nc.dds` must also exist.
-`cool-dataset.nc.das` should also exist, but is technically optional (you will not have metadata without it).
+Again, is it _strongly recommended_ that `cool-dataset.nc.das` exist, but its existence is technically optional (but you will **not** have metadata without it).
 
-As an example, the following three URLs will provide an example of each type of file needed:
+As an example, the following two URLs will provide an example of each type of file needed:
 * [.dods](https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/NAM_20161031_1200.nc.dods?time[0:1:0],y[0:100:427],x[0:100:613],lat[0:100:427][0:100:613],lon[0:100:427][0:100:613],Temperature_height_above_ground[0:1:0][0:1:0][0:100:427][0:100:613],height_above_ground1[0:1:1])
-* [.dds](https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/NAM_20161031_1200.nc.dds?time[0:1:0],y[0:100:427],x[0:100:613],lat[0:100:427][0:100:613],lon[0:100:427][0:100:613],Temperature_height_above_ground[0:1:0][0:1:0][0:100:427][0:100:613],height_above_ground1[0:1:1])
 * [.das](https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/NAM_20161031_1200.nc.das)
 
 {% comment %}
-  If any of the three urls above change, make sure the changes are reflected in docs/src/test/java/examples/DatasetUrlExamples.java
+  If any of the two urls above change, make sure the changes are reflected in docs/src/test/java/examples/DatasetUrlExamples.java
 {% endcomment %}
 
 ### NcML datasets
