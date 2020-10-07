@@ -42,6 +42,8 @@ package opendap.dap;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+
+import com.google.common.io.Files;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -159,14 +161,27 @@ public class DConnect2 implements Closeable {
       URL testURL = new URL(urlString);
       if ("file".equals(testURL.getProtocol())) {
         filePath = testURL.getPath();
+        // Can open a file containing a dods binary response as long as the urlString starts with "file:" and ends with
+        // ".dds", ".das", or ".dods"
+        // filePath should not contain the extension though, so we need to make sure whichever one is used gets removed
+        String extension = Files.getFileExtension(testURL.getPath());
+        int extIndex = filePath.lastIndexOf(extension);
+        if (extIndex > 0) {
+          // remove "." plus the extension
+          filePath = filePath.substring(0, extIndex - 1);
+        } else {
+          throw new HTTPException(
+              "cannot determine the extension on: file:" + filePath + ". Must be .dods, .dds, or .das");
+        }
+
         // See if .dds and .dods files exist
         File f = new File(filePath + ".dds");
         if (!f.canRead()) {
-          throw new HTTPException("file not readable: " + urlString + ".dds");
+          throw new HTTPException("file not readable: file:" + filePath + ".dds");
         }
         f = new File(filePath + ".dods");
         if (!f.canRead()) {
-          throw new HTTPException("file not readable: " + urlString + ".dods");
+          throw new HTTPException("file not readable: file:" + filePath + ".dods");
         }
       } else {
         _session = HTTPFactory.newSession(this.urlString);
